@@ -1,0 +1,6 @@
+Hello,
+
+This email is to confirm that {{ organisation }}’s National Operator Code (NOC) has been amended on the Bus Open Data Service. No further action is required on your end at this time.
+
+Kind regards,
+Bus Open Data Service

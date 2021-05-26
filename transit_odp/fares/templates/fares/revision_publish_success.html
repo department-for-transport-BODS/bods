@@ -1,0 +1,59 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title_tag %}
+  {% if update %}
+    {% trans 'Data set updated' %}
+  {% else %}
+    {% trans 'Data set published' %}
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break"/>
+      <div class="govuk-panel govuk-panel--confirmation" style="height: 14rem">
+        <h1 class="govuk-panel__title;font-size: 19px">
+          {% blocktrans %}
+            Your data set has been successfully
+          {% endblocktrans %}
+          {% if update %}
+            updated
+          {% else %}
+            published
+          {% endif %}
+        </h1>
+      </div>
+      <p class="govuk-body-m">
+        {% trans 'We have sent you a confirmation email.' %}
+      </p>
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+      <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
+      <p class="govuk-body-m">
+        {% blocktrans %}
+          You can view the data set on
+        {% endblocktrans %}
+        <a class="govuk-link" href={% url 'fares:feed-list' pk1=pk1 host hosts.publish %}>{% trans 'your fares data sets' %}</a>
+        {% blocktrans %}
+          or by clicking the button below. The data will now be live for everyone else to see.
+        {% endblocktrans %}
+      </p>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
+      <a role="button" class="govuk-button" href=
+              "{% url 'fares:feed-detail' pk1=pk1 pk=pk host hosts.publish %}"
+      >
+        {% trans 'View published data set' %}
+      </a>
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+    </div>
+    <div class="govuk-!-width-one-third">
+
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "site_admin/base.html" %}
+
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load relative_url %}
+{% load breadcrumbs %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Organisation management' %}
+{% endblock %}
+
+
+{% block title_text %}{% trans 'Organisation management' %}{% endblock %}
+{% block subtitle %}
+{% endblock %}
+
+{% block inner %}
+  <h2 class="govuk-heading-m">{% trans 'Add new organisation' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
+      Send an email invite to the organisation to invite them to the bus open data service
+    {% endblocktrans %}
+  </p>
+  <a class="govuk-button" href="{% url 'users:organisation-new' host hosts.admin %}" role="button">{% trans "Add new organisation" %}</a>
+{% endblock %}
+
+
+{% block inner_secondary %}
+{% endblock %}
+
+{% block extra_content %}
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">{% trans 'View and manage organisations' %}</h2>
+      <div class="organisation-table__controls">
+        {% include 'common/snippets/range_filter.html' %}
+      </div>
+      {% render_table table %}
+    </div>
+  </div>
+{% endblock %}

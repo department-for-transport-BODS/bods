@@ -1,0 +1,6 @@
+@import "../variables";
+@import "govuk-frontend/govuk/objects/grid";
+
+.govuk-grid-row__separator {
+  border-bottom: 2px solid $govuk-border-colour;
+}

@@ -1,0 +1,22 @@
+<div class="govuk-radios__item">
+  <input
+    class="govuk-radios__input"
+    id="{{ div.css_id }}-radio"
+    {# Create a parameter on the RadioAccordion to set the radio name #}
+    name="selected_item"
+    type="radio"
+    value="{{ div.css_id }}"
+    onclick="CrispyFormsGovUK.onRadioSelect('{{ div.data_parent}}-content', '{{ div.css_id }}')"
+    {% if div.active %} checked{% endif %}
+    data-aria-controls="{{ div.css_id }}">
+  <label class="govuk-label govuk-radios__label" for="{{ div.css_id }}-radio">
+    {{ div.name }}
+  </label>
+</div>
+<div
+  id="{{ div.css_id }}"
+  class="govuk-radios__conditional
+  {% if not div.active %} govuk-radios__conditional--hidden{% endif %}">
+{#  {% if div.has_errors %} govuk-radios__conditional--error{% endif %}">#}
+  {{ fields|safe }}
+</div>

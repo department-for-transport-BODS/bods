@@ -1,0 +1,34 @@
+{% extends "guidance/bus_operators/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+  <h1 class="govuk-heading-xl">{% trans 'Searching for Data' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
+      There are two ways to search for data.
+    {% endblocktrans %}</p>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+  <h2 class="govuk-heading-m">{% trans 'Search Bar' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
+      You can use the <b> search bar </b> on the Bus Open Data digital platform homepage.
+      The search bar function looks for specific words in the title and
+      description in each data set. Search terms can be <b> geographic areas </b> or
+      <b> bus operator names. </b>
+      By default, best matches are returned first. However, you can also use the
+      <b> filter function </b> on the right hand side of the return page to <b> filter out </b> any
+      terms you do not want to see.
+    {% endblocktrans %}</p>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+  <h2 class="govuk-heading-m">{% trans 'API Searching' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
+      Each data set has an <b> API key </b>, which can be copied from the data page.
+      The Bus Open Data API provided by JSON and extensions.
+    {% endblocktrans %}</p>
+
+{% url 'guidance:support-bus_operators' host hosts.publish as url %}
+{% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+{% include '../snippets/next.html' with url=url next_page=next_page %}
+{% endblock %}

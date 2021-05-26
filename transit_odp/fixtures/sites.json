@@ -1,0 +1,34 @@
+[
+  {
+    "model": "sites.site",
+    "pk": 1,
+    "fields": {
+      "domain": "www.bods.local",
+      "name": "Bus Open Data Service"
+    }
+  },
+  {
+    "model": "sites.site",
+    "pk": 2,
+    "fields": {
+      "domain": "data.bods.local",
+      "name": "Find Open Data Service"
+    }
+  },
+  {
+    "model": "sites.site",
+    "pk": 3,
+    "fields": {
+      "domain": "publish.bods.local",
+      "name": "Publish Open Data Service"
+    }
+  },
+  {
+    "model": "sites.site",
+    "pk": 4,
+    "fields": {
+      "domain": "admin.bods.local",
+      "name": "Bus Open Data Service (Internal)"
+    }
+  }
+]

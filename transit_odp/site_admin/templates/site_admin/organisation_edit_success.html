@@ -1,0 +1,27 @@
+{% extends "base_success.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Organisation details updated' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block title_text %}
+    {% trans 'Organisation details have been updated' %}
+{% endblock %}
+
+{% block body_text %}
+   {% trans 'Organisation information has been updated.' %}
+ {% endblock %}
+
+{% block button_href %}
+  {% url 'users:organisation-detail' pk=pk host hosts.admin %}
+{% endblock %}
+
+{% block button_text %}
+  {% trans 'Go back to organisation' %}
+{% endblock %}

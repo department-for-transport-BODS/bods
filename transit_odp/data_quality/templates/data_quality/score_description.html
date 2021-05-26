@@ -1,0 +1,125 @@
+{% extends "page.html" %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Bus operator requirements' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Guidance' 'guidance:operators-home' host hosts.publish %}
+  {% breadcrumb 'Score description' %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-xl">{% trans "Data Quality Score" %}</h1>
+
+          <h2 class="govuk-heading-m">{% trans "Data Quality" %}</h2>
+          <p class="govuk-body">
+            {% blocktrans %}
+            Passengers rely on high-quality information being provided to the Bus
+            Open Data Service. The data quality score have been defined by the Department
+            for Transport as an indicator for timetables data quality.
+            {% endblocktrans %}
+          </p>
+
+          <h2 class="govuk-heading-m">{% trans "Critical observations" %}</h2>
+          <p class="govuk-body">
+            {% blocktrans %}
+            Data quality observations are divided into critical and advisory
+            observations.
+            Operators should aim to have zero critical observations in their data.
+            Advisory observations should be investigated and addressed.
+            Alternatively, if the observation is a result of intended behaviour an
+            operator can suppress the observation.
+            {% endblocktrans %}
+          </p>
+
+          <h2 class="govuk-heading-m">{% trans "Methods for measurement" %}</h2>
+          <p class="govuk-body">
+            {% blocktrans %}
+            Only critical observations are included in the data quality measurement.
+            For each type of critical observation, the percentage of tests passed is calculated.
+            These are then used to find the weighted average percentage, using the
+            following weightings:
+            {% endblocktrans %}
+          </p>
+
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">%</th>
+                <th scope="col" class="govuk-table__header">Observation</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for o in observations %}
+              <tr class="govuk-table__row">
+                {% widthratio o.weighting 1 100 as percentage %}
+                <td class="govuk-table__cell">{{percentage}}%</td>
+                <td class="govuk-table__cell">{{o.title}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <h2 class="govuk-heading-m">{% trans "Example" %}</h2>
+          <p class="govuk-body">
+            {% blocktrans %}
+            If you have two services in a data set, and one of them has a backward date range,
+            then only 50% of the backward date range tests have been passed. As backward
+            date range can contribute a maximum of 12% of the score, in this case you would
+            only get 50% of that 12%, which is a 6% contribution in this case. These
+            contribution are summed to give the final data quality score.
+            {% endblocktrans %}
+          </p>
+
+          <h2 class="govuk-heading-m">{% trans "Thresholds" %}</h2>
+          <p class="govuk-body">
+            {% blocktrans %}
+            The service expects operators to be meeting the Green data quality standard for all
+            local bus service data. The data quality report provided to operators will support
+            operators to identify issues in their data. Operators should aim to have zero critical
+            data quality observations, and this will result in a score of 100%.
+            {% endblocktrans %}
+          </p>
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header govuk-!-width-full"></th>
+            </tr>
+          </thead>
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <span class="status-indicator status-indicator--error"></span>
+                </td>
+                <td class="govuk-table__cell">RED &leq; 90%</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <span class="status-indicator status-indicator--warning"></span>
+                </td>
+                <td class="govuk-table__cell">AMBER &gt; 90%</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <span class="status-indicator status-indicator--success"></span>
+                </td>
+                <td class="govuk-table__cell">GREEN &equals; 100</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    </main>
+  </div>
+
+{% endblock %}

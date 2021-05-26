@@ -1,0 +1,23 @@
+{% extends 'common/custom_govuk_table.html' %}
+
+{% load django_tables2 %}
+{% load i18n %}
+
+
+{% block table.tbody.row %}
+  {{ block.super }}
+
+  {% if row.record.status == 'error' and row.record.errors %}
+    <!--DEBUG: status={{ row.record.status }}-->
+    {# Display warnings/errors associated with the changelog record in an extra row. This keeps the table flat.#}
+    <tr class="govuk-table__row govuk-table__row--error">
+      <td colspan="4" class="govuk-table__cell">
+        <ul class="govuk-list {% if row.record.status == 'error' %}govuk-list--error {% else %} govuk-list--warning{% endif %}">
+          {% for error in row.record.errors.all %}
+            <li>{{ error.description }}</li>
+          {% endfor %}
+        </ul>
+      </td>
+    </tr>
+  {% endif %}
+{% endblock %}

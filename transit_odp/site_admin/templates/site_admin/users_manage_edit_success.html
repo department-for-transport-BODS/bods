@@ -1,0 +1,29 @@
+{% extends 'base_success.html' %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'User details updated' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block title_text %}
+  {% trans 'User detail has been updated' %}
+{% endblock %}
+
+{% block body_text %}
+  {% trans 'User' %}
+  {{ user.username }}
+  {% trans 'has been updated.' %}
+{% endblock %}
+
+{% block button_href %}
+    {% url 'users:manage-user-detail' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.admin %}
+{% endblock %}
+
+{% block button_text %}
+    {% trans 'Go back to user profile' %}
+{% endblock %}

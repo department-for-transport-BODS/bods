@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block page %}
+  {% block header %}
+    {% include "header.html" %}
+  {% endblock %}
+
+  <div class="govuk-width-container">
+    {% include "banner.html" %}
+
+    {% block breadcrumb %}
+      <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+          {% block breadcrumb.content %}
+          {% endblock %}
+        </ol>
+      </div>
+    {% endblock %}
+
+    {% block backlink %}
+    {% endblock %}
+
+    <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
+      {% block content %}
+      {% endblock %}
+    </main>
+  </div>
+
+  {% block footer %}
+    {% include "footer.html" %}
+  {% endblock %}
+{% endblock %}

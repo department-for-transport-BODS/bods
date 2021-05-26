@@ -1,0 +1,13 @@
+.*
+!.coveragerc
+!.env
+!.pylintrc
+
+docker-compose*
+
+README.rst
+CHANGELOG.md
+
+node_modules
+**/node_modules
+npm-debug.log

@@ -1,0 +1,79 @@
+{% extends "users/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'My organisation details' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Organisation profile' %}
+{% endblock %}
+
+{% block backlink %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if user.is_agent_user %}
+        {% include "snippets/org_profile_selector.html" with current_url=current_url %}
+      {% endif %}
+      <h1 class="govuk-heading-xl">{{ organisation.name }}</h1>
+
+      <table class="govuk-table manage-users-table">
+        <caption class="govuk-table__caption manage-users-table__caption">
+          {% trans 'Organisation detail' %}
+        </caption>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell"></td>
+            <td colspan="2" class="govuk-table__cell"></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell manage-users-table__key">
+              {% trans 'Short name' %}
+            </td>
+            <td colspan="2" class="govuk-table__cell">
+              {{ organisation.short_name }}
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell manage-users-table__key" style="border: 0">
+              {% trans 'National Operator Code' %}
+            </td>
+            {% if organisation %}
+              {% for noc in organisation.nocs.all %}
+                <td colspan="2" class="govuk-table__cell" style="border: 0">
+                  {{ noc.noc }}
+                </td>
+                <tr/><tr><td></td>
+              {% endfor %}
+            {% else %}
+              <tr/>
+            {% endif %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell"></td>
+            <td colspan="2" class="govuk-table__cell"></td>
+          </tr>
+          </tbody>
+      </table>
+      <a role="button" class="govuk-button govuk-button--secondary"
+        href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}">
+        {% trans 'Edit' %}
+      </a>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <p class="govuk-body">
+        <a class="govuk-link"
+           href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/">
+          {% trans 'View general guidance on NOC' %}
+        </a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

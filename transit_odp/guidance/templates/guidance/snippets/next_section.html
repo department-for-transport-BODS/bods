@@ -1,0 +1,14 @@
+{% load i18n %}
+{% if section %}
+  <a class="prevandnext" href="{{ url }}?section={{ section.name }}">
+   <div>
+     <span class="prevandnext__title">
+        <i class='fas fa-arrow-right'></i>
+        {% trans 'Next' %}
+     </span>
+     <span class="prevandnext__link">
+       {{ section.title }}
+     </span>
+   </div>
+  </a>
+{% endif %}

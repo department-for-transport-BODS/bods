@@ -1,0 +1,430 @@
+import itertools
+import json
+from collections import defaultdict
+from pathlib import Path
+from typing import Callable, List
+
+from dateutil import parser
+from dateutil.relativedelta import relativedelta
+from lxml import etree
+
+from transit_odp.data_quality.pti.functions import (
+    cast_to_bool,
+    cast_to_date,
+    contains_date,
+    has_name,
+    has_prohibited_chars,
+    has_unique_links,
+    is_member_of,
+    regex,
+    strip,
+    to_days,
+    today,
+    validate_bank_holidays,
+    validate_line_id,
+    validate_modification_date_time,
+    validate_run_time,
+    validate_timing_link_stops,
+)
+from transit_odp.data_quality.pti.models import Observation, Schema, Violation
+from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
+
+
+def has_destination_display(context, patterns):
+    """
+    First check if DestinationDisplay in JourneyPattern is provided.
+
+    If not, we need to check in if DynamicDestinationDisplay is provided for
+    each stop inside a JourneyPatternTimingLink.
+
+    If both conditions above fail, then DestinationDisplay should
+    mandatory nside VehicleJourney.
+    """
+    pattern = patterns[0]
+    validator = DestinationDisplayValidator(pattern)
+    return validator.validate()
+
+
+def validate_lines(context, lines):
+    lines = lines[0]
+    validator = LinesValidator(lines)
+    return validator.validate()
+
+
+def validate_non_naptan_stop_points(context, points):
+    point = points[0]
+    validator = StopPointValidator(point)
+    return validator.validate()
+
+
+class BaseValidator:
+    def __init__(self, root):
+        self.root = root
+        self.namespaces = {"x": self.root.nsmap.get(None)}
+
+        self._vehicle_journeys = None
+        self._lines = None
+        self._journey_patterns = None
+
+    @property
+    def lines(self):
+        if self._lines is not None:
+            return self._lines
+        lines = self.root.xpath("//x:Line", namespaces=self.namespaces)
+        self._lines = [Line.from_xml(line) for line in lines]
+        return self._lines
+
+    @property
+    def vehicle_journeys(self):
+        if self._vehicle_journeys is not None:
+            return self._vehicle_journeys
+        xpath = "//x:VehicleJourneys/x:VehicleJourney"
+        journeys = self.root.xpath(xpath, namespaces=self.namespaces)
+        self._vehicle_journeys = [VehicleJourney.from_xml(vj) for vj in journeys]
+        return self._vehicle_journeys
+
+    @property
+    def journey_patterns(self):
+        if self._journey_patterns is not None:
+            return self._journey_patterns
+
+        xpath = "//x:JourneyPatterns/x:JourneyPattern"
+        patterns = self.root.xpath(xpath, namespaces=self.namespaces)
+        self._journey_patterns = patterns
+        return self._journey_patterns
+
+    def get_journey_pattern_ref_by_vehicle_journey_code(self, code: str):
+        vehicle_journeys = self.get_vehicle_journey_by_code(code)
+
+        if len(vehicle_journeys) < 1:
+            return ""
+
+        vj = vehicle_journeys[0]
+        if vj.journey_pattern_ref != "":
+            return vj.journey_pattern_ref
+        elif vj.vehicle_journey_ref != "":
+            return self.get_journey_pattern_ref_by_vehicle_journey_code(
+                vj.vehicle_journey_ref
+            )
+        else:
+            return ""
+
+    def get_journey_pattern_refs_by_line_ref(self, ref: str):
+        """
+        Returns all the JourneyPatternRefs that appear in the VehicleJourneys have
+        LineRef equal to ref.
+        """
+        jp_refs = set()
+        vehicle_journeys = self.get_vehicle_journey_by_line_ref(ref)
+        for journey in vehicle_journeys:
+            jp_ref = self.get_journey_pattern_ref_by_vehicle_journey_code(journey.code)
+            if jp_ref != "":
+                jp_refs.add(jp_ref)
+        return list(jp_refs)
+
+    def get_vehicle_journey_by_line_ref(self, ref) -> List[VehicleJourney]:
+        """
+        Get all the VehicleJourneys that have LineRef equal to ref.
+        """
+        return [vj for vj in self.vehicle_journeys if vj.line_ref == ref]
+
+    def get_vehicle_journey_by_pattern_journey_ref(self, ref) -> List[VehicleJourney]:
+        """
+        Get all the VehicleJourneys that JourneyPatternRef equal to ref.
+        """
+        return [vj for vj in self.vehicle_journeys if vj.journey_pattern_ref == ref]
+
+    def get_vehicle_journey_by_code(self, code) -> List[VehicleJourney]:
+        """
+        Get the VehicleJourney with VehicleJourneyCode equal to code.
+        """
+        return [vj for vj in self.vehicle_journeys if vj.code == code]
+
+    def get_route_section_by_stop_point_ref(self, ref):
+        xpath = (
+            "//x:RouteSections/x:RouteSection/"
+            f"x:RouteLink[string(x:From/x:StopPointRef) = '{ref}' "
+            f"or string(x:To/x:StopPointRef) = '{ref}']/@id"
+        )
+        link_refs = self.root.xpath(xpath, namespaces=self.namespaces)
+        return list(set(link_refs))
+
+    def get_journey_pattern_section_refs_by_route_link_ref(self, ref):
+        xpath = (
+            "//x:JourneyPatternSections/x:JourneyPatternSection"
+            f"[x:JourneyPatternTimingLink[string(x:RouteLinkRef) = '{ref}']]/@id"
+        )
+        section_refs = self.root.xpath(xpath, namespaces=self.namespaces)
+        return list(set(section_refs))
+
+    def get_journey_pattern_ref_by_journey_pattern_section_ref(self, ref):
+        xpath = f"//x:JourneyPattern[string(x:JourneyPatternSectionRefs) = '{ref}']/@id"
+        journey_pattern_refs = self.root.xpath(xpath, namespaces=self.namespaces)
+        return list(set(journey_pattern_refs))
+
+    def get_stop_point_ref_from_journey_pattern_ref(self, ref):
+        xpath = (
+            f"//x:StandardService/x:JourneyPattern[@id='{ref}']"
+            "/x:JourneyPatternSectionRefs/text()"
+        )
+        section_refs = self.root.xpath(xpath, namespaces=self.namespaces)
+
+        all_stop_refs = []
+        for section_ref in section_refs:
+            xpath = (
+                "//x:JourneyPatternSections/x:JourneyPatternSection"
+                f"[@id='{section_ref}']/x:JourneyPatternTimingLink/*"
+                "[local-name() = 'From' or local-name() = 'To']/x:StopPointRef/text()"
+            )
+            stop_refs = self.root.xpath(xpath, namespaces=self.namespaces)
+            all_stop_refs += stop_refs
+
+        return list(set(all_stop_refs))
+
+
+class DestinationDisplayValidator:
+    def __init__(self, journey_pattern):
+        self.namespaces = {"x": journey_pattern.nsmap.get(None)}
+        self.journey_pattern = journey_pattern
+        self.journey_pattern_ref = self.journey_pattern.get("id")
+
+    @property
+    def vehicle_journeys(self):
+        root = self.journey_pattern.getroottree()
+        xpath = (
+            "//x:VehicleJourney[contains(x:JourneyPatternRef, "
+            f"'{self.journey_pattern_ref}')]"
+        )
+        return root.xpath(xpath, namespaces=self.namespaces)
+
+    @property
+    def journey_pattern_sections(self):
+        xpath = "x:JourneyPatternSectionRefs/text()"
+        refs = self.journey_pattern.xpath(xpath, namespaces=self.namespaces)
+        xpaths = [f"//x:JourneyPatternSection[@id='{ref}']" for ref in refs]
+
+        sections = []
+        for xpath in xpaths:
+            sections += self.journey_pattern.xpath(xpath, namespaces=self.namespaces)
+        return sections
+
+    def journey_pattern_has_display(self):
+        displays = self.journey_pattern.xpath(
+            "x:DestinationDisplay", namespaces=self.namespaces
+        )
+        return len(displays) > 0
+
+    def links_have_dynamic_displays(self):
+        for section in self.journey_pattern_sections:
+            links = section.xpath(
+                "x:JourneyPatternTimingLink", namespaces=self.namespaces
+            )
+            for link in links:
+                from_display = link.xpath(
+                    "x:From/x:DynamicDestinationDisplay", namespaces=self.namespaces
+                )
+                to_display = link.xpath(
+                    "x:To/x:DynamicDestinationDisplay", namespaces=self.namespaces
+                )
+                if not all([to_display, from_display]):
+                    return False
+        return True
+
+    def vehicle_journeys_have_displays(self):
+        xpath = "x:DestinationDisplay"
+        for journey in self.vehicle_journeys:
+            display = journey.xpath(xpath, namespaces=self.namespaces)
+            if not display:
+                return False
+
+        return True
+
+    def validate(self):
+
+        if self.journey_pattern_has_display():
+            return True
+
+        if self.links_have_dynamic_displays():
+            return True
+
+        if self.vehicle_journeys_have_displays():
+            return True
+
+        return False
+
+
+class LinesValidator(BaseValidator):
+    def check_for_common_journey_patterns(self):
+        """
+        Check whether related lines share a JourneyPattern with the
+        designated main line.
+        """
+        line_to_journey_pattern = {}
+        for line in self.lines:
+            jp_refs = self.get_journey_pattern_refs_by_line_ref(line.ref)
+            line_to_journey_pattern[line.ref] = jp_refs
+
+        combinations = itertools.combinations(line_to_journey_pattern.keys(), 2)
+        for line1, line2 in combinations:
+            line1_refs = line_to_journey_pattern.get(line1)
+            line2_refs = line_to_journey_pattern.get(line2)
+
+            if set(line1_refs).isdisjoint(line2_refs):
+                return False
+        return True
+
+    def check_for_common_stops_points(self):
+        """
+        Check if all lines share common stop points.
+        """
+        line_to_stops = defaultdict(list)
+        for line in self.lines:
+            jp_refs = self.get_journey_pattern_refs_by_line_ref(line.ref)
+            for jp_ref in jp_refs:
+                stops = self.get_stop_point_ref_from_journey_pattern_ref(jp_ref)
+                line_to_stops[line.ref] += stops
+
+        combinations = itertools.combinations(line_to_stops.keys(), 2)
+        for line1, line2 in combinations:
+            line1_stops = line_to_stops.get(line1)
+            line2_stops = line_to_stops.get(line2)
+            if set(line1_stops).isdisjoint(line2_stops):
+                return False
+
+        return True
+
+    def validate(self):
+        """
+        Validates that all Line that appears in Lines are related.
+
+        """
+        if len(self.lines) < 2:
+            return True
+
+        if self.check_for_common_journey_patterns():
+            return True
+
+        if self.check_for_common_stops_points():
+            return True
+
+        return False
+
+
+class StopPointValidator(BaseValidator):
+    @property
+    def stop_point_ref(self):
+        xpath = "string(x:AtcoCode)"
+        return self.root.xpath(xpath, namespaces=self.namespaces)
+
+    def get_operating_profile_by_vehicle_journey_code(self, ref):
+        xpath = (
+            f"//x:VehicleJourney[string(x:VehicleJourneyCode) = '{ref}']"
+            "//x:OperatingProfile"
+        )
+        profiles = self.root.xpath(xpath, namespaces=self.namespaces)
+        return profiles
+
+    def has_valid_operating_profile(self, ref):
+        profiles = self.get_operating_profile_by_vehicle_journey_code(ref)
+
+        if len(profiles) < 1:
+            return True
+        else:
+            profile = profiles[0]
+
+        start_date = profile.xpath("string(.//x:StartDate)", namespaces=self.namespaces)
+        end_date = profile.xpath("string(.//x:EndDate)", namespaces=self.namespaces)
+
+        if start_date == "" and end_date == "":
+            return False
+
+        if end_date == "":
+            return False
+
+        start_date = parser.parse(start_date)
+        end_date = parser.parse(end_date)
+        less_than_2_months = end_date <= start_date + relativedelta(months=2)
+        return less_than_2_months
+
+    def validate(self):
+        route_link_refs = self.get_route_section_by_stop_point_ref(self.stop_point_ref)
+        all_vj = []
+
+        for link_ref in route_link_refs:
+            section_refs = self.get_journey_pattern_section_refs_by_route_link_ref(
+                link_ref
+            )
+            for section_ref in section_refs:
+                jp_refs = self.get_journey_pattern_ref_by_journey_pattern_section_ref(
+                    section_ref
+                )
+                for jp_ref in jp_refs:
+                    all_vj += self.get_vehicle_journey_by_pattern_journey_ref(jp_ref)
+
+        for journey in all_vj:
+            if not self.has_valid_operating_profile(journey.code):
+                return False
+
+        return True
+
+
+class PTIValidator:
+    def __init__(self, source):
+        json_ = json.load(source)
+        self.schema = Schema(**json_)
+
+        self.namespaces = self.schema.header.namespaces
+        self.violations = []
+
+        self.fns = etree.FunctionNamespace(None)
+        self.register_function("bool", cast_to_bool)
+        self.register_function("contains_date", contains_date)
+        self.register_function("date", cast_to_date)
+        self.register_function("days", to_days)
+        self.register_function("has_destination_display", has_destination_display)
+        self.register_function("has_name", has_name)
+        self.register_function("has_prohibited_chars", has_prohibited_chars)
+        self.register_function("has_unique_links", has_unique_links)
+        self.register_function("in", is_member_of)
+        self.register_function("regex", regex)
+        self.register_function("strip", strip)
+        self.register_function("today", today)
+        self.register_function("validate_line_id", validate_line_id)
+        self.register_function("validate_lines", validate_lines)
+        self.register_function(
+            "validate_modification_date_time", validate_modification_date_time
+        )
+        self.register_function(
+            "validate_non_naptan_stop_points", validate_non_naptan_stop_points
+        )
+        self.register_function("validate_run_time", validate_run_time)
+        self.register_function("validate_timing_link_stops", validate_timing_link_stops)
+        self.register_function("validate_bank_holidays", validate_bank_holidays)
+
+    def register_function(self, key: str, function: Callable):
+        self.fns[key] = function
+
+    def add_violation(self, violation: Violation):
+        self.violations.append(violation)
+
+    def check_observation(self, observation: Observation, element: etree._Element):
+        for rule in observation.rules:
+            result = element.xpath(rule.test, namespaces=self.namespaces)
+            if not result:
+                name = element.xpath("local-name(.)", namespaces=self.namespaces)
+                violation = Violation(
+                    line=element.sourceline,
+                    name=name,
+                    filename=Path(element.base).name,
+                    observation=observation,
+                )
+                self.add_violation(violation)
+                break
+
+    def is_valid(self, source):
+        document = etree.parse(source)
+        for observation in self.schema.observations:
+            elements = document.xpath(observation.context, namespaces=self.namespaces)
+            for element in elements:
+                self.check_observation(observation, element)
+        return len(self.violations) == 0

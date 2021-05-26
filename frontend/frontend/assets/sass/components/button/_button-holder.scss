@@ -1,0 +1,6 @@
+.button-holder {
+  button:not(:last-child),
+  a:not(:last-child) {
+    margin-right: 1.5rem;
+  }
+}

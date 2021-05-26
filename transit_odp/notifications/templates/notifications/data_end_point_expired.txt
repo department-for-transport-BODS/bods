@@ -1,0 +1,12 @@
+Hello,
+
+The following timetable/fares/AVL data set published on the Bus Open Data Service has been deactivated.
+
+Data set: {{ feed_name }}
+Dataset ID: {{ feed_id }}
+Short Description: {{ feed_short_description }}
+Published: {{ published_time }}
+Deactived: {{ expiry_time }}
+
+Kind Regards,
+The Bus Open Data Team

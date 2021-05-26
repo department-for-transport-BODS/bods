@@ -1,0 +1,12 @@
+Hello,
+We have noticed a change in the following timetable/fares/AVL bus data in the Bus Open Data Service.
+
+Dataset: {{ feed_name }}
+Data set ID: {{ feed_id }}
+Short Description: {{ feed_short_description }}
+Link to data set: {{ link }}
+
+We are currently processing the changes. If we detect errors in the new data, you will receive an email. No action is required at this point.
+
+Kind regards,
+Bus Open Data Service

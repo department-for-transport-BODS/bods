@@ -1,0 +1,63 @@
+@import "../../variables";
+
+.status-indicator {
+  font-family: "nta", Arial, sans-serif;
+  /*font-size: 1.125rem;*/
+  font-size: inherit;
+  //vertical-align: middle;
+  white-space: nowrap;
+
+  &:before {
+    content: " ";
+    display: inline-block;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    margin: 0 0.4rem 0 0.2rem;
+  }
+
+  &--success:before {
+    background-color: #006435;
+  }
+
+  &--indexing:before {
+    background-color: #005ea5;
+  }
+
+  &--warning:before {
+    background-color: #ffbf47;
+  }
+
+  &--unavailable:before {
+    background-color: #f47738;
+  }
+
+  &--inactive:before {
+    background-color: $govuk-error-colour;
+  }
+
+  &--error:before {
+    background-color: #b10e1e;
+  }
+
+  &--draft:before {
+    background-color: #bfc1c3;
+  }
+
+  &--pending:before {
+    background-color: #bfc1c3;
+  }
+}
+
+// TODO - refactor these styles and status-indicator styles to make generic set of indicators to use for both
+.user__status-indicator {
+  /*background-color: #006435;*/
+}
+
+.user__status-indicator--unactive {
+  color: #f47738;
+}
+
+.user__status-indicator--pending {
+  color: #6f777b;
+}

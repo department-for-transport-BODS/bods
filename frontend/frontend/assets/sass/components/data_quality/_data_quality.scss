@@ -1,0 +1,35 @@
+@import "../../variables";
+
+// warning detail page
+.total_vehicles {
+  width: 23%;
+  margin-bottom: govuk-spacing(5);
+}
+
+.red_warning_text {
+  @extend .govuk-body-l;
+  color: map-get($govuk-colours, "red");
+  margin-bottom: govuk-spacing(2);
+}
+
+// incorrect stop type
+.incorrect_stop_type_list {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+
+  &__item {
+    @extend .govuk-body;
+    margin-bottom: govuk-spacing(2);
+
+    &__key {
+      font-weight: bold;
+      padding: 0 govuk-spacing(3) 0 0;
+      display: inline-block;
+      text-align: right;
+    }
+    &__value {
+      margin: 0 0 0 0;
+    }
+  }
+}

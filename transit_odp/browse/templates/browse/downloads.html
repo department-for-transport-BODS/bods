@@ -1,0 +1,101 @@
+{% extends 'browse/base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Download all data' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Download all data' %}
+{% endblock %}
+
+{% block heading.title.text %}{% trans 'Download all data' %}{% endblock %}
+
+{% block secondary.title %}
+  <p class="govuk-body govuk-!-margin-bottom-0">
+    <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}">
+      {% trans 'Timetables data' %}
+    </a>
+  </p>
+{% endblock %}
+
+{% block heading.subtitle %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      You can download all the timetables data cached on the service. Timetables data is
+      provided in a TransXchange format within a compressed Zip file. This file is
+      updated daily around 6.00am.
+    {% endblocktrans %}
+  </p>
+{% endblock %}
+
+{% block heading.secondary %}
+  <div class="govuk-grid-column-one-third">
+    <h3 class="govuk-heading-m">
+      {% trans 'What you need to know' %}
+    </h3>
+    <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
+        {% trans 'View developer documentation' %}
+      </a>
+    </p>
+    <p class="govuk-body">
+      <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
+         target="_blank">
+        {% trans 'Find out more about bus open data' %}
+      </a>
+    </p>
+    <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
+        {% trans 'Contact us for technical issues' %}
+      </a>
+    </p>
+  <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
+        {% trans 'Download data catalogue' %}
+      </a>
+    </p>
+  </div>
+{% endblock %}
+
+{% block inner %}
+  {% if feature.avl %}
+    <div class="govuk-grid-row govuk-!-margin-top-5">
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body govuk-!-margin-bottom-0">
+          <a class="govuk-link" href="{% url 'download-avl' host hosts.data %}">
+            {% trans 'Bus location data' %}
+          </a>
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
+            Bus location data provides the most recent real time vehicle position cached on the
+            service. You can download all current bus location data. This file will update every
+            5 seconds. The data will be provided in a SIRI-VM format within a compressed Zip file.
+          {% endblocktrans %}
+        </p>
+      </div>
+    </div>
+  {% endif %}
+  {% if feature.fares %}
+    <div class="govuk-grid-row govuk-!-margin-top-5">
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body govuk-!-margin-bottom-0">
+          <a class="govuk-link" href="{% url 'download-fares' host hosts.data %}">
+            {% trans 'Fares data' %}
+          </a>
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
+            You can download all fares data cached on the service. Fares are provided in the
+            NeTEx format, within a compressed Zip file. This file is updated daily around 6:00am GMT.
+          {% endblocktrans %}
+        </p>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

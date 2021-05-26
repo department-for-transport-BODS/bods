@@ -1,0 +1,7 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/typography";
+
+.app-noc-table__caption {
+  @include govuk-typography-weight-regular;
+  border-bottom: 1px solid $govuk-border-colour;
+}

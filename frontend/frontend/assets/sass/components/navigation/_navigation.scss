@@ -1,0 +1,16 @@
+.sidebar-related-links {
+  margin-bottom: 2.5rem;
+}
+
+.govuk-link-bold {
+  @extend .govuk-link;
+  font-weight: 700;
+}
+
+.app-nav-bold {
+  font-weight: bold !important;
+}
+
+.app-nav-no-underline {
+  text-decoration: none !important;
+}

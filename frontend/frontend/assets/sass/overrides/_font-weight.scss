@@ -1,0 +1,9 @@
+@import "govuk-frontend/govuk/helpers/typography";
+
+.app-\!-font-regular {
+  @include govuk-typography-weight-regular;
+}
+
+.app-\!-font-bold {
+  @include govuk-typography-weight-bold;
+}

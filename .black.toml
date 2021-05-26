@@ -1,0 +1,21 @@
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | \.venv-aws
+  | _build
+  | buck-out
+  | build
+  | dist
+  | node_modules
+  | crispy-forms-govuk
+  | cavl-client
+)/
+'''

@@ -1,0 +1,80 @@
+{% extends 'browse/base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Browse' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Browse' %}
+{% endblock %}
+
+{% block heading.title.text %}
+  {% trans 'Browse' %}
+{% endblock %}
+
+{% block heading.subtitle %}
+  <div class="govuk-!-padding-right-9">
+    <p class="govuk-body">
+      {% blocktrans %}
+        You can browse the individual data sets or data feeds provided by the publishers. By clicking
+        on a data set or data feed you can see its metadata, description and more information.
+      {% endblocktrans %}
+    </p>
+
+    <a class="govuk-link-bold govuk-body" href="{% url 'search' host hosts.data %}">{% trans 'Timetables data' %}</a>
+    <p class="govuk-body govuk-!-padding-top-3">
+      {% trans 'Bus routes are provided in a TransXchange format.' %}
+    </p>
+  {% if feature.avl %}
+    <a class="govuk-link-bold govuk-body" href="{% url 'avl-search' host hosts.data %}">{% trans 'Bus location data' %}</a>
+    <p class="govuk-body govuk-!-padding-top-3">
+      {% blocktrans %}
+        Bus location data provides the real time vehicle position data in SIRI-VM format. This is real
+        time data, giving live locations of buses at a specific point in time.
+      {% endblocktrans %}
+    </p>
+  {% endif %}
+  {% if feature.fares %}
+   <a class="govuk-link-bold govuk-body" href="{% url 'search-fares' host hosts.data %}">{% trans 'Fares data' %}</a>
+    <p class="govuk-body govuk-!-padding-top-3">
+      {% blocktrans %}
+        Fares data are static data sets provided in a NeTEx format.
+      {% endblocktrans %}
+    </p>
+  {% endif %}
+  </div>
+{% endblock %}
+
+{% block heading.secondary %}
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">
+      {% trans 'What you need to know' %}
+    </h2>
+    <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
+        {% trans 'View developer documentation' %}
+      </a>
+    </p>
+    <p class="govuk-body">
+      <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
+         target="_blank">
+        {% trans 'Find out more about bus open data' %}
+      </a>
+    </p>
+    <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
+        {% trans 'Contact us for technical issues' %}
+      </a>
+    </p>
+  <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
+        {% trans 'Download data catalogue' %}
+      </a>
+    </p>
+  </div>
+{% endblock %}

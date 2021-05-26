@@ -1,0 +1,298 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:25:13",
+    "naptan_date": "",
+    "sources": ["warnings-test.xml"]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST260010374",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.36464256339576995, 52.5525512209811581]
+          },
+          "properties": {
+            "atco_code": "260010374",
+            "bearing": 1,
+            "feature_name": "ASDA (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST260010944",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.3530073055690599, 52.5524523260918528]
+          },
+          "properties": {
+            "atco_code": "260010944",
+            "bearing": 5,
+            "feature_name": "Golf Club (outside)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST260010966",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.36850242714998593, 52.552850535399017]
+          },
+          "properties": {
+            "atco_code": "260010966",
+            "bearing": 3,
+            "feature_name": "Netherley Court (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST260010967",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.34841676503400487, 52.52577167010881]
+          },
+          "properties": {
+            "atco_code": "260010967",
+            "bearing": 7,
+            "feature_name": "Orchard Close (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST260070132",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.35704393696643044, 52.5507392133662066]
+          },
+          "properties": {
+            "atco_code": "260070132",
+            "bearing": 3,
+            "feature_name": "Laneside Drive (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.36850242714998593, 52.552850535399017],
+              [-1.34841676503400487, 52.52577167010881],
+              [-1.36464256339576995, 52.5525512209811581],
+              [-1.35704393696643044, 52.5507392133662066],
+              [-1.3530073055690599, 52.5524523260918528]
+            ]
+          },
+          "properties": {
+            "feature_name": "Hinckley - Burbage",
+            "length_m": 7368.43262,
+            "route_shape": true,
+            "line": "LI0",
+            "stops": [
+              "ST260010966",
+              "ST260010967",
+              "ST260010374",
+              "ST260070132",
+              "ST260010944"
+            ],
+            "timing_patterns": ["TP0"],
+            "service_links": ["SL0", "SL1", "SL2", "SL3"]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.36850242714998593, 52.552850535399017],
+              [-1.34841676503400487, 52.52577167010881]
+            ]
+          },
+          "properties": {
+            "feature_name": "Netherley Court (adj)-Orchard Close (adj)",
+            "from_stop": "ST260010966",
+            "length_m": 3305.95239,
+            "route_shape": false,
+            "to_stop": "ST260010967",
+            "service_patterns": ["SP0"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.34841676503400487, 52.52577167010881],
+              [-1.36464256339576995, 52.5525512209811581]
+            ]
+          },
+          "properties": {
+            "feature_name": "Orchard Close (adj)-ASDA (opp)",
+            "from_stop": "ST260010967",
+            "length_m": 3175.70312,
+            "route_shape": false,
+            "to_stop": "ST260010374",
+            "service_patterns": ["SP0"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.36464256339576995, 52.5525512209811581],
+              [-1.35704393696643044, 52.5507392133662066]
+            ]
+          },
+          "properties": {
+            "feature_name": "ASDA (opp)-Laneside Drive (adj)",
+            "from_stop": "ST260010374",
+            "length_m": 553.26123,
+            "route_shape": false,
+            "to_stop": "ST260070132",
+            "service_patterns": ["SP0"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.35704393696643044, 52.5507392133662066],
+              [-1.3530073055690599, 52.5524523260918528]
+            ]
+          },
+          "properties": {
+            "feature_name": "Laneside Drive (adj)-Golf Club (outside)",
+            "from_stop": "ST260070132",
+            "length_m": 333.516113,
+            "route_shape": false,
+            "to_stop": "ST260010944",
+            "service_patterns": ["SP0"]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI0",
+        "name": "L1:Hinckley - Burbage"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP0",
+        "service_pattern": "SP0",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1200,
+            "departure_time_secs": 1200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 61800,
+            "departure_time_secs": 61800,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ0", "VJ1"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0",
+        "timing_pattern": "TP0",
+        "start": 25200,
+        "feature_name": "07:00:00 -- L1: Hinckley to Hinckley",
+        "dates": ["2019-11-18", "2019-11-19"]
+      },
+      {
+        "id": "VJ1",
+        "timing_pattern": "TP0",
+        "start": 68400,
+        "feature_name": "19:00:00 -- L1: Hinckley to Hinckley",
+        "dates": []
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "journeys-without-headsign",
+      "values": [
+        {
+          "id": "VJ0",
+          "warning_type": "journeys-without-headsign",
+          "warning_id": 0
+        }
+      ]
+    }
+  ]
+}

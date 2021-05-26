@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load django_tables2 %}
+{% load relative_url %}
+{% load my_paginator_range %}
+{# Using django_tables2 'table_page_range' tag to return a list of max 10 (by default) page numbers #}
+
+{# note in the 'querystring' tags, I've hardcoded query param 'page', could use prefixed_page_field #}
+{% with prefixed_page_field=prefixed_page_field|default:"page" %}
+  {% with params=request.GET.urlencode %}
+
+    {% block pagination %}
+      <ul class="pagination">
+
+        {% if page.has_previous or page.has_next %}
+
+          {% block pagination.range %}
+
+            {% for item in page|my_paginator_range:paginator %}
+              <li>
+                {% if item.clickable %}
+                  <a class="govuk-link" style="font-size: 18px"
+                    href="{% relative_url item.url prefixed_page_field params %}">
+                    {{ item.label }}
+                  </a>
+
+                {% else %}
+                  <a class="govuk-link noclick" style="font-size: 18px">{{ item.label }}</a>
+                {% endif %}
+
+              </li>
+            {% endfor %}
+
+          {% endblock pagination.range %}
+
+        {% else %}
+          <li>
+            <a class="govuk-link noclick" style="font-size: 18px" href="#">1</a>
+          </li>
+        {% endif %}
+
+
+      </ul>
+    {% endblock pagination %}
+
+  {% endwith %}
+{% endwith %}

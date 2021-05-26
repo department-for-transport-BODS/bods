@@ -1,0 +1,257 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:23:13",
+    "naptan_date": "",
+    "sources": ["Bods_import_warnings.xml", "Bods_sample_warnings.xml"]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST2900G17120",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72593958312595386, 52.5837364947662209]
+          },
+          "properties": {
+            "atco_code": "2900G17120",
+            "bearing": 7,
+            "feature_name": "Avenue Road (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100HAVRFDW",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-4.96023563731104655, 51.8026433068371048]
+          },
+          "properties": {
+            "atco_code": "9100HAVRFDW",
+            "bearing": 8,
+            "feature_name": "Haverfordwest Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-4.96023563731104655, 51.8026433068371048],
+              [1.72593958312595386, 52.5837364947662209]
+            ]
+          },
+          "properties": {
+            "feature_name": "Haverfordwest - Avenue Road",
+            "length_m": 465147.688,
+            "route_shape": true,
+            "line": "LI0",
+            "stops": ["ST9100HAVRFDW", "ST2900G17120"],
+            "timing_patterns": ["TP0", "TP3", "TP4", "TP5"],
+            "service_links": ["SL0"]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-4.96023563731104655, 51.8026433068371048],
+              [1.72593958312595386, 52.5837364947662209]
+            ]
+          },
+          "properties": {
+            "feature_name": "Haverfordwest Rail Station-Avenue Road (opp)",
+            "from_stop": "ST9100HAVRFDW",
+            "length_m": 465147.688,
+            "route_shape": false,
+            "to_stop": "ST2900G17120",
+            "service_patterns": ["SP0"]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI0",
+        "name": "6:Haverfordwest - Anson Road"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP0",
+        "service_pattern": "SP0",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 240,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ0", "VJ6"]
+      },
+      {
+        "id": "TP3",
+        "service_pattern": "SP0",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6240,
+            "departure_time_secs": 6240,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ3"]
+      },
+      {
+        "id": "TP4",
+        "service_pattern": "SP0",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ4"]
+      },
+      {
+        "id": "TP5",
+        "service_pattern": "SP0",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": -2147483648,
+            "departure_time_secs": -2147483648,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 465147,
+            "speed": 0
+          }
+        ],
+        "vehicle_journeys": ["VJ5"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0",
+        "timing_pattern": "TP0",
+        "start": 25320,
+        "feature_name": "07:02:00 -- 6: Haverfordwest to Gorleston",
+        "dates": []
+      },
+      {
+        "id": "VJ3",
+        "timing_pattern": "TP3",
+        "start": 47040,
+        "feature_name": "13:04:00 -- 6: Haverfordwest to Gorleston",
+        "dates": []
+      },
+      {
+        "id": "VJ4",
+        "timing_pattern": "TP4",
+        "start": 50640,
+        "feature_name": "14:04:00 -- 6: Haverfordwest to Gorleston",
+        "dates": []
+      },
+      {
+        "id": "VJ5",
+        "timing_pattern": "TP5",
+        "start": 54240,
+        "feature_name": "15:04:00 -- 6: Haverfordwest to Gorleston",
+        "dates": []
+      },
+      {
+        "id": "VJ6",
+        "timing_pattern": "TP0",
+        "start": 57840,
+        "feature_name": "16:04:00 -- 6: Haverfordwest to Gorleston",
+        "dates": []
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-backwards",
+      "values": [
+        {
+          "id": "TP5",
+          "warning_type": "timing-backwards",
+          "warning_id": 0,
+          "none": false,
+          "all": false,
+          "indexes": [0]
+        }
+      ]
+    }
+  ]
+}

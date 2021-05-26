@@ -1,0 +1,45 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title_tag %}
+  {% trans 'Could not publish changes' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break"/>
+
+      <div class="govuk-error-summary govuk-!-margin-bottom-0" aria-labelledby="error-summary-title" role="alert"
+           tabindex="-1" data-module="govuk-error-summary">
+        <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
+          {% trans 'Your changes could not be published' %}
+        </h2>
+
+        <div class="govuk-error-summary__body">
+          <ul class="govuk-list govuk-error-summary__list ">
+            <li class="app-error-summary__item" style="text-decoration: none">
+              Something went wrong. Please try again later.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
+        <a role="button" class="govuk-button govuk-!-margin-bottom-0"
+           href="{{ backlink }}">
+          {{ _('Go back to review page') }}
+        </a>
+      </div>
+
+    </div>
+    <div class="govuk-!-width-one-third">
+
+    </div>
+  </div>
+{% endblock %}

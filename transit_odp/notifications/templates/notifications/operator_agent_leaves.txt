@@ -1,0 +1,8 @@
+Hello,
+
+This email is to confirm that {{ agent_organisation }} has terminated their role as an agent for your organisation on the Bus Open Data Service.
+
+Please note it is your legal obligation as the operator to ensure that your data is up to date.
+
+Kind regards,
+Bus Open Data Service

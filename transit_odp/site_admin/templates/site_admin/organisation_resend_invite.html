@@ -1,0 +1,36 @@
+{% extends "site_admin/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+  {% trans 'Resend invitation' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block backlink %}
+  {% url 'users:organisation-manage' host host.name as backlink %}
+  {% include 'snippets/backlink.html' with url=backlink %}
+{% endblock %}
+
+
+{% block title_text %}
+  {% trans 'Resend invitation' %}
+{% endblock %}
+
+{% block subtitle_text %}
+  {% blocktrans %}
+    Would you like to re-send invitation to {{ invite_email }}?
+  {% endblocktrans %}
+{% endblock %}
+
+{% block inner %}
+  {% crispy form %}
+{% endblock %}
+
+{% block inner_secondary %}
+{% endblock %}

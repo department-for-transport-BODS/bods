@@ -1,0 +1,1293 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Fri, 19 Feb 2021 10:48:24",
+    "naptan_date": "",
+    "sources": ["Bods_journey_overlap_with_end_dates_u8kE4cE.xml"]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST1900HA010161",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.25030387839614932, 51.3284091971910073]
+          },
+          "properties": {
+            "atco_code": "1900HA010161",
+            "bearing": 4,
+            "feature_name": "Wellmans Meadow (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HA010163",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.24648795795474232, 51.3247879740601434]
+          },
+          "properties": {
+            "atco_code": "1900HA010163",
+            "bearing": 3,
+            "feature_name": "St Mary's Church (SE-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HA010165",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.24354400355520678, 51.324903901065916]
+          },
+          "properties": {
+            "atco_code": "1900HA010165",
+            "bearing": 2,
+            "feature_name": "Library (E-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HA010167",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.24007934785494967, 51.3270035960723234]
+          },
+          "properties": {
+            "atco_code": "1900HA010167",
+            "bearing": 1,
+            "feature_name": "Fawconer Road (NE-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HA010482",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.14506154217712575, 51.356715081238228]
+          },
+          "properties": {
+            "atco_code": "1900HA010482",
+            "bearing": 6,
+            "feature_name": "Fire Station (o/s)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HA010560",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.18721463966322127, 51.3622750599980691]
+          },
+          "properties": {
+            "atco_code": "1900HA010560",
+            "bearing": 6,
+            "feature_name": "The Pineapple Inn (W-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA90989",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.23163479628551542, 51.3316333544985923]
+          },
+          "properties": {
+            "atco_code": "1900HAA90989",
+            "bearing": 5,
+            "feature_name": "Knowl Hill (SW-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA90991",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.21623143969313352, 51.3427083630962429]
+          },
+          "properties": {
+            "atco_code": "1900HAA90991",
+            "bearing": 5,
+            "feature_name": "Dairy House Farm (SW-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA90993",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.20621982255434435, 51.3471459718272598]
+          },
+          "properties": {
+            "atco_code": "1900HAA90993",
+            "bearing": 5,
+            "feature_name": "Fair Oak Farm (SW-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA90995",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.20372410942953034, 51.3536301953341976]
+          },
+          "properties": {
+            "atco_code": "1900HAA90995",
+            "bearing": 5,
+            "feature_name": "Ashford Hill Road (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA91104",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.15115167474500146, 51.3566694051450483]
+          },
+          "properties": {
+            "atco_code": "1900HAA91104",
+            "bearing": 6,
+            "feature_name": "Bond Close (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA91624",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.15666195065899147, 51.3569159750217423]
+          },
+          "properties": {
+            "atco_code": "1900HAA91624",
+            "bearing": 0,
+            "feature_name": "Bishopwood Court (N-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA91872",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.24775393502008836, 51.3228448528482986]
+          },
+          "properties": {
+            "atco_code": "1900HAA91872",
+            "bearing": 6,
+            "feature_name": "Fielden Court (outside)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA91873",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.25044637005911374, 51.3293542586637486]
+          },
+          "properties": {
+            "atco_code": "1900HAA91873",
+            "bearing": 3,
+            "feature_name": "Rose Hudson Court (outside)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST1900HAA91874",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.14082086193536836, 51.3561625565737785]
+          },
+          "properties": {
+            "atco_code": "1900HAA91874",
+            "bearing": 7,
+            "feature_name": "Sainsbury (outside)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST4680SWA10267",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.78322727366871114, 51.563965991182684]
+          },
+          "properties": {
+            "atco_code": "4680SWA10267",
+            "bearing": 8,
+            "feature_name": "Bus Station (Bay 17)",
+            "synthetic": false,
+            "type": "BCS"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST4680SWA10470",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.79169078178457264, 51.5619222931544954]
+          },
+          "properties": {
+            "atco_code": "4680SWA10470",
+            "bearing": 7,
+            "feature_name": "Emlyn Square (NW-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST4680SWA10472",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.79595334999998069, 51.5604012417887816]
+          },
+          "properties": {
+            "atco_code": "4680SWA10472",
+            "bearing": 6,
+            "feature_name": "Dean Street (W-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST4680SWA10474",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.79965309015020059, 51.5621339877315563]
+          },
+          "properties": {
+            "atco_code": "4680SWA10474",
+            "bearing": 5,
+            "feature_name": "Great Western Outlet Village (SW-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST4680SWA10496",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.80493953591471734, 51.5572875103199593]
+          },
+          "properties": {
+            "atco_code": "4680SWA10496",
+            "bearing": 5,
+            "feature_name": "Paddington Drive (SW-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST4680SWA10742",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.81107982204105289, 51.5549418035209257]
+          },
+          "properties": {
+            "atco_code": "4680SWA10742",
+            "bearing": 6,
+            "feature_name": "Mannington Roundabout (W-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.14082086193536836, 51.3561625565737785],
+              [-1.14506154217712575, 51.356715081238228],
+              [-1.15115167474500146, 51.3566694051450483],
+              [-1.15666195065899147, 51.3569159750217423],
+              [-1.14082086193536836, 51.3561625565737785],
+              [-1.18721463966322127, 51.3622750599980691],
+              [-1.20372410942953034, 51.3536301953341976],
+              [-1.20621982255434435, 51.3471459718272598],
+              [-1.21623143969313352, 51.3427083630962429],
+              [-1.23163479628551542, 51.3316333544985923],
+              [-1.25044637005911374, 51.3293542586637486],
+              [-1.25030387839614932, 51.3284091971910073],
+              [-1.24775393502008836, 51.3228448528482986],
+              [-1.24648795795474232, 51.3247879740601434],
+              [-1.24354400355520678, 51.324903901065916],
+              [-1.24007934785494967, 51.3270035960723234]
+            ]
+          },
+          "properties": {
+            "feature_name": "Tadley - Kingsclere",
+            "length_m": 13105.5898,
+            "route_shape": true,
+            "line": "LI859",
+            "stops": [
+              "ST1900HAA91874",
+              "ST1900HA010482",
+              "ST1900HAA91104",
+              "ST1900HAA91624",
+              "ST1900HAA91874",
+              "ST1900HA010560",
+              "ST1900HAA90995",
+              "ST1900HAA90993",
+              "ST1900HAA90991",
+              "ST1900HAA90989",
+              "ST1900HAA91873",
+              "ST1900HA010161",
+              "ST1900HAA91872",
+              "ST1900HA010163",
+              "ST1900HA010165",
+              "ST1900HA010167"
+            ],
+            "timing_patterns": ["TPcec6ccbff0c0abba26bb892e9e62c80ee684df59"],
+            "service_links": [
+              "SLe33e59ae7b524189188d4f5b2fa137cc5651ee9a",
+              "SL1df3052fde9a03255451a91295b872576fae1b75",
+              "SLf3405b8d814233c9fa034ed8d20c4ae2b2d95b63",
+              "SL5d9a35332f7eb0ab67c71bf3ce8ee5b9ac7c3c0a",
+              "SLd626725c96b522414a5aa457f60b79a635f5fab9",
+              "SL8efb37a2177264349d68ac83d56495e4237c6e93",
+              "SL5524ba3f64a1699876ea7e18606532642e9a5709",
+              "SLb1230ba526df8b07cf257d3ad711652d76335715",
+              "SL338192a9420e806b8043655ffc7cd401df1f2cc0",
+              "SL008b7a31308650076cd009a7ccefae194d2521f5",
+              "SL3f3d79e5e58b89e6e5b08ad494cac908d59afc0c",
+              "SL8745ee6ebfe59715bec767cce7595913ef8401ca",
+              "SL95a3e588e1155a7924f743b95c26e84916f71c29",
+              "SLbd82a25077f35fceb1ea3a397ec5835c56d3299c",
+              "SLfac3eb8717d5461a834cdb521086d6fa6d9f788d"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SPd062bd4eec358d25dd2d150ee0360546027aed1f",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.14082086193536836, 51.3561625565737785],
+              [-1.14506154217712575, 51.356715081238228],
+              [-1.15115167474500146, 51.3566694051450483],
+              [-1.15666195065899147, 51.3569159750217423],
+              [-1.14082086193536836, 51.3561625565737785],
+              [-1.18721463966322127, 51.3622750599980691],
+              [-1.20372410942953034, 51.3536301953341976],
+              [-1.20621982255434435, 51.3471459718272598],
+              [-1.21623143969313352, 51.3427083630962429],
+              [-1.23163479628551542, 51.3316333544985923],
+              [-1.25044637005911374, 51.3293542586637486],
+              [-1.25030387839614932, 51.3284091971910073],
+              [-1.24775393502008836, 51.3228448528482986],
+              [-1.24648795795474232, 51.3247879740601434],
+              [-1.24354400355520678, 51.324903901065916],
+              [-1.24007934785494967, 51.3270035960723234],
+              [-1.78322727366871114, 51.563965991182684],
+              [-1.79169078178457264, 51.5619222931544954],
+              [-1.79595334999998069, 51.5604012417887816],
+              [-1.79965309015020059, 51.5621339877315563],
+              [-1.80493953591471734, 51.5572875103199593],
+              [-1.81107982204105289, 51.5549418035209257]
+            ]
+          },
+          "properties": {
+            "feature_name": "Tadley - Mannington",
+            "length_m": 61583.9375,
+            "route_shape": true,
+            "line": "LI859",
+            "stops": [
+              "ST1900HAA91874",
+              "ST1900HA010482",
+              "ST1900HAA91104",
+              "ST1900HAA91624",
+              "ST1900HAA91874",
+              "ST1900HA010560",
+              "ST1900HAA90995",
+              "ST1900HAA90993",
+              "ST1900HAA90991",
+              "ST1900HAA90989",
+              "ST1900HAA91873",
+              "ST1900HA010161",
+              "ST1900HAA91872",
+              "ST1900HA010163",
+              "ST1900HA010165",
+              "ST1900HA010167",
+              "ST4680SWA10267",
+              "ST4680SWA10470",
+              "ST4680SWA10472",
+              "ST4680SWA10474",
+              "ST4680SWA10496",
+              "ST4680SWA10742"
+            ],
+            "timing_patterns": ["TPea1590f80aff3b60425003dd138b09757a31f192"],
+            "service_links": [
+              "SLe33e59ae7b524189188d4f5b2fa137cc5651ee9a",
+              "SL1df3052fde9a03255451a91295b872576fae1b75",
+              "SLf3405b8d814233c9fa034ed8d20c4ae2b2d95b63",
+              "SL5d9a35332f7eb0ab67c71bf3ce8ee5b9ac7c3c0a",
+              "SLd626725c96b522414a5aa457f60b79a635f5fab9",
+              "SL8efb37a2177264349d68ac83d56495e4237c6e93",
+              "SL5524ba3f64a1699876ea7e18606532642e9a5709",
+              "SLb1230ba526df8b07cf257d3ad711652d76335715",
+              "SL338192a9420e806b8043655ffc7cd401df1f2cc0",
+              "SL008b7a31308650076cd009a7ccefae194d2521f5",
+              "SL3f3d79e5e58b89e6e5b08ad494cac908d59afc0c",
+              "SL8745ee6ebfe59715bec767cce7595913ef8401ca",
+              "SL95a3e588e1155a7924f743b95c26e84916f71c29",
+              "SLbd82a25077f35fceb1ea3a397ec5835c56d3299c",
+              "SLfac3eb8717d5461a834cdb521086d6fa6d9f788d",
+              "SL1e31ad8a011931a1a6e628f8cede8f9734fa1c82",
+              "SL15900e6a05c2a6160ca5e4eb716b7beca9175d74",
+              "SL4509bef0e9f9818a08e24b16f40b7c5e917c9c6e",
+              "SL4b2933bf1656a7db4c20d0c3464d81b47208bb98",
+              "SL7583d65df5bd464aa9a8979585ccc0508b309744",
+              "SLdde52e25a59a7efc451f0780d98465c7e248a89a"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL008b7a31308650076cd009a7ccefae194d2521f5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.23163479628551542, 51.3316333544985923],
+              [-1.25044637005911374, 51.3293542586637486]
+            ]
+          },
+          "properties": {
+            "feature_name": "Knowl Hill (SW-bound)-Rose Hudson Court (outside)",
+            "from_stop": "ST1900HAA90989",
+            "length_m": 1334.97302,
+            "route_shape": false,
+            "to_stop": "ST1900HAA91873",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL15900e6a05c2a6160ca5e4eb716b7beca9175d74",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.78322727366871114, 51.563965991182684],
+              [-1.79169078178457264, 51.5619222931544954]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bus Station (Bay 17)-Emlyn Square (NW-bound)",
+            "from_stop": "ST4680SWA10267",
+            "length_m": 629.155762,
+            "route_shape": false,
+            "to_stop": "ST4680SWA10470",
+            "service_patterns": ["SPd062bd4eec358d25dd2d150ee0360546027aed1f"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1df3052fde9a03255451a91295b872576fae1b75",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.14506154217712575, 51.356715081238228],
+              [-1.15115167474500146, 51.3566694051450483]
+            ]
+          },
+          "properties": {
+            "feature_name": "Fire Station (o/s)-Bond Close (opp)",
+            "from_stop": "ST1900HA010482",
+            "length_m": 424.11792,
+            "route_shape": false,
+            "to_stop": "ST1900HAA91104",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1e31ad8a011931a1a6e628f8cede8f9734fa1c82",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.24007934785494967, 51.3270035960723234],
+              [-1.78322727366871114, 51.563965991182684]
+            ]
+          },
+          "properties": {
+            "feature_name": "Fawconer Road (NE-bound)-Bus Station (Bay 17)",
+            "from_stop": "ST1900HA010167",
+            "length_m": 46036.8594,
+            "route_shape": false,
+            "to_stop": "ST4680SWA10267",
+            "service_patterns": ["SPd062bd4eec358d25dd2d150ee0360546027aed1f"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL338192a9420e806b8043655ffc7cd401df1f2cc0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.21623143969313352, 51.3427083630962429],
+              [-1.23163479628551542, 51.3316333544985923]
+            ]
+          },
+          "properties": {
+            "feature_name": "Dairy House Farm (SW-bound)-Knowl Hill (SW-bound)",
+            "from_stop": "ST1900HAA90991",
+            "length_m": 1633.59998,
+            "route_shape": false,
+            "to_stop": "ST1900HAA90989",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3f3d79e5e58b89e6e5b08ad494cac908d59afc0c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.25044637005911374, 51.3293542586637486],
+              [-1.25030387839614932, 51.3284091971910073]
+            ]
+          },
+          "properties": {
+            "feature_name": "Rose Hudson Court (outside)-Wellmans Meadow (S-bound)",
+            "from_stop": "ST1900HAA91873",
+            "length_m": 105.574615,
+            "route_shape": false,
+            "to_stop": "ST1900HA010161",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4509bef0e9f9818a08e24b16f40b7c5e917c9c6e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.79169078178457264, 51.5619222931544954],
+              [-1.79595334999998069, 51.5604012417887816]
+            ]
+          },
+          "properties": {
+            "feature_name": "Emlyn Square (NW-bound)-Dean Street (W-bound)",
+            "from_stop": "ST4680SWA10470",
+            "length_m": 340.4776,
+            "route_shape": false,
+            "to_stop": "ST4680SWA10472",
+            "service_patterns": ["SPd062bd4eec358d25dd2d150ee0360546027aed1f"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4b2933bf1656a7db4c20d0c3464d81b47208bb98",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.79595334999998069, 51.5604012417887816],
+              [-1.79965309015020059, 51.5621339877315563]
+            ]
+          },
+          "properties": {
+            "feature_name": "Dean Street (W-bound)-Great Western Outlet Village (SW-bound)",
+            "from_stop": "ST4680SWA10472",
+            "length_m": 320.800568,
+            "route_shape": false,
+            "to_stop": "ST4680SWA10474",
+            "service_patterns": ["SPd062bd4eec358d25dd2d150ee0360546027aed1f"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5524ba3f64a1699876ea7e18606532642e9a5709",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.20372410942953034, 51.3536301953341976],
+              [-1.20621982255434435, 51.3471459718272598]
+            ]
+          },
+          "properties": {
+            "feature_name": "Ashford Hill Road (opp)-Fair Oak Farm (SW-bound)",
+            "from_stop": "ST1900HAA90995",
+            "length_m": 741.811951,
+            "route_shape": false,
+            "to_stop": "ST1900HAA90993",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5d9a35332f7eb0ab67c71bf3ce8ee5b9ac7c3c0a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.15666195065899147, 51.3569159750217423],
+              [-1.14082086193536836, 51.3561625565737785]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishopwood Court (N-bound)-Sainsbury (outside)",
+            "from_stop": "ST1900HAA91624",
+            "length_m": 1106.28076,
+            "route_shape": false,
+            "to_stop": "ST1900HAA91874",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7583d65df5bd464aa9a8979585ccc0508b309744",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.79965309015020059, 51.5621339877315563],
+              [-1.80493953591471734, 51.5572875103199593]
+            ]
+          },
+          "properties": {
+            "feature_name": "Great Western Outlet Village (SW-bound)-Paddington Drive (SW-bound)",
+            "from_stop": "ST4680SWA10474",
+            "length_m": 651.786011,
+            "route_shape": false,
+            "to_stop": "ST4680SWA10496",
+            "service_patterns": ["SPd062bd4eec358d25dd2d150ee0360546027aed1f"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8745ee6ebfe59715bec767cce7595913ef8401ca",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.25030387839614932, 51.3284091971910073],
+              [-1.24775393502008836, 51.3228448528482986]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wellmans Meadow (S-bound)-Fielden Court (outside)",
+            "from_stop": "ST1900HA010161",
+            "length_m": 643.851685,
+            "route_shape": false,
+            "to_stop": "ST1900HAA91872",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8efb37a2177264349d68ac83d56495e4237c6e93",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.18721463966322127, 51.3622750599980691],
+              [-1.20372410942953034, 51.3536301953341976]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Pineapple Inn (W-bound)-Ashford Hill Road (opp)",
+            "from_stop": "ST1900HA010560",
+            "length_m": 1498.66504,
+            "route_shape": false,
+            "to_stop": "ST1900HAA90995",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL95a3e588e1155a7924f743b95c26e84916f71c29",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.24775393502008836, 51.3228448528482986],
+              [-1.24648795795474232, 51.3247879740601434]
+            ]
+          },
+          "properties": {
+            "feature_name": "Fielden Court (outside)-St Mary's Church (SE-bound)",
+            "from_stop": "ST1900HAA91872",
+            "length_m": 233.420227,
+            "route_shape": false,
+            "to_stop": "ST1900HA010163",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLb1230ba526df8b07cf257d3ad711652d76335715",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.20621982255434435, 51.3471459718272598],
+              [-1.21623143969313352, 51.3427083630962429]
+            ]
+          },
+          "properties": {
+            "feature_name": "Fair Oak Farm (SW-bound)-Dairy House Farm (SW-bound)",
+            "from_stop": "ST1900HAA90993",
+            "length_m": 854.32135,
+            "route_shape": false,
+            "to_stop": "ST1900HAA90991",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLbd82a25077f35fceb1ea3a397ec5835c56d3299c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.24648795795474232, 51.3247879740601434],
+              [-1.24354400355520678, 51.324903901065916]
+            ]
+          },
+          "properties": {
+            "feature_name": "St Mary's Church (SE-bound)-Library (E-bound)",
+            "from_stop": "ST1900HA010163",
+            "length_m": 205.54805,
+            "route_shape": false,
+            "to_stop": "ST1900HA010165",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLd626725c96b522414a5aa457f60b79a635f5fab9",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.14082086193536836, 51.3561625565737785],
+              [-1.18721463966322127, 51.3622750599980691]
+            ]
+          },
+          "properties": {
+            "feature_name": "Sainsbury (outside)-The Pineapple Inn (W-bound)",
+            "from_stop": "ST1900HAA91874",
+            "length_m": 3301.22607,
+            "route_shape": false,
+            "to_stop": "ST1900HA010560",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLdde52e25a59a7efc451f0780d98465c7e248a89a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.80493953591471734, 51.5572875103199593],
+              [-1.81107982204105289, 51.5549418035209257]
+            ]
+          },
+          "properties": {
+            "feature_name": "Paddington Drive (SW-bound)-Mannington Roundabout (W-bound)",
+            "from_stop": "ST4680SWA10496",
+            "length_m": 499.268463,
+            "route_shape": false,
+            "to_stop": "ST4680SWA10742",
+            "service_patterns": ["SPd062bd4eec358d25dd2d150ee0360546027aed1f"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe33e59ae7b524189188d4f5b2fa137cc5651ee9a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.14082086193536836, 51.3561625565737785],
+              [-1.14506154217712575, 51.356715081238228]
+            ]
+          },
+          "properties": {
+            "feature_name": "Sainsbury (outside)-Fire Station (o/s)",
+            "from_stop": "ST1900HAA91874",
+            "length_m": 301.628906,
+            "route_shape": false,
+            "to_stop": "ST1900HA010482",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf3405b8d814233c9fa034ed8d20c4ae2b2d95b63",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.15115167474500146, 51.3566694051450483],
+              [-1.15666195065899147, 51.3569159750217423]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bond Close (opp)-Bishopwood Court (N-bound)",
+            "from_stop": "ST1900HAA91104",
+            "length_m": 384.688171,
+            "route_shape": false,
+            "to_stop": "ST1900HAA91624",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLfac3eb8717d5461a834cdb521086d6fa6d9f788d",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.24354400355520678, 51.324903901065916],
+              [-1.24007934785494967, 51.3270035960723234]
+            ]
+          },
+          "properties": {
+            "feature_name": "Library (E-bound)-Fawconer Road (NE-bound)",
+            "from_stop": "ST1900HA010165",
+            "length_m": 335.882416,
+            "route_shape": false,
+            "to_stop": "ST1900HA010167",
+            "service_patterns": [
+              "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+              "SPd062bd4eec358d25dd2d150ee0360546027aed1f"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI859",
+        "name": "123:Tadley - Mannington"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TPcec6ccbff0c0abba26bb892e9e62c80ee684df59",
+        "service_pattern": "SPa6713047cdc5e84a00abc318d3dd53ed3aa99f90",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 300,
+            "departure_time_secs": 300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 540,
+            "departure_time_secs": 540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2100,
+            "departure_time_secs": 2100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2280,
+            "departure_time_secs": 2280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2520,
+            "departure_time_secs": 2520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2760,
+            "departure_time_secs": 2760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2760,
+            "departure_time_secs": 2760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2880,
+            "departure_time_secs": 2880,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJf6eaacee965d987ccc80be8aa3c50486cf1bd2b8"]
+      },
+      {
+        "id": "TPea1590f80aff3b60425003dd138b09757a31f192",
+        "service_pattern": "SPd062bd4eec358d25dd2d150ee0360546027aed1f",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 300,
+            "departure_time_secs": 300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 540,
+            "departure_time_secs": 540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2100,
+            "departure_time_secs": 2100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2280,
+            "departure_time_secs": 2280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2520,
+            "departure_time_secs": 2520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2760,
+            "departure_time_secs": 2760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2760,
+            "departure_time_secs": 2760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2880,
+            "departure_time_secs": 2880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3780,
+            "departure_time_secs": 3780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3960,
+            "departure_time_secs": 3960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4020,
+            "departure_time_secs": 4020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4080,
+            "departure_time_secs": 4080,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4140,
+            "departure_time_secs": 4140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4140,
+            "departure_time_secs": 4140,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ034aa998f346c65c5cefacf54b7b5b3543a7f757"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ034aa998f346c65c5cefacf54b7b5b3543a7f757",
+        "timing_pattern": "TPea1590f80aff3b60425003dd138b09757a31f192",
+        "start": 44400,
+        "feature_name": "12:20:00 -- 123: Tadley to Mannington",
+        "headsign": "",
+        "dates": [
+          "2021-02-05",
+          "2021-02-12",
+          "2021-02-19",
+          "2021-02-26",
+          "2021-03-04",
+          "2021-03-11",
+          "2021-03-18",
+          "2021-03-25",
+          "2021-04-01"
+        ]
+      },
+      {
+        "id": "VJf6eaacee965d987ccc80be8aa3c50486cf1bd2b8",
+        "timing_pattern": "TPcec6ccbff0c0abba26bb892e9e62c80ee684df59",
+        "start": 44400,
+        "feature_name": "12:20:00 -- 123: Tadley to Kingsclere",
+        "headsign": "",
+        "dates": [
+          "2021-02-05",
+          "2021-02-12",
+          "2021-02-19",
+          "2021-02-26",
+          "2021-03-04",
+          "2021-03-11",
+          "2021-03-18",
+          "2021-03-25",
+          "2021-04-01"
+        ]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "operators": []
+  },
+  "warnings": [
+    {
+      "warning_type": "line-missing-block-id",
+      "values": [
+        {
+          "id": "LI859",
+          "warning_type": "line-missing-block-id",
+          "journeys": [
+            "VJ034aa998f346c65c5cefacf54b7b5b3543a7f757",
+            "VJf6eaacee965d987ccc80be8aa3c50486cf1bd2b8"
+          ]
+        }
+      ]
+    }
+  ]
+}

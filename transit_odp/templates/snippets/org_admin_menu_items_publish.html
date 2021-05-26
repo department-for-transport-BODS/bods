@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load active_url %}
+<a class="govuk-link {% active_url 'users:manage' css_class='govuk-link--active' host='publish' %}"
+   href="{% url 'users:organisation-profile' pk=request.user.organisation.id host hosts.publish %}">
+  {% trans 'Organisation profile' %}</a>
+<a class="govuk-link {% active_url 'users:manage' css_class='govuk-link--active' host='publish' %}"
+   href="{% url 'users:manage' pk=request.user.organisation.id host hosts.publish %}">
+  {% trans 'User management' %}</a>

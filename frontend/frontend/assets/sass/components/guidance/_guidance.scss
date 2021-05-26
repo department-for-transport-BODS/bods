@@ -1,0 +1,29 @@
+@import "govuk-frontend/govuk/helpers/spacing";
+
+.prevandnext {
+  @extend .govuk-link;
+  display: block;
+  text-decoration-line: none;
+  margin-top: govuk-spacing(2);
+
+  %prevandnext__common {
+    color: inherit;
+    font: inherit;
+    font-family: inherit;
+    font-weight: 400;
+    display: block;
+  }
+
+  .prevandnext__title {
+    @extend %prevandnext__common;
+    text-decoration-line: none;
+    font-size: 1.5rem;
+  }
+
+  .prevandnext__link {
+    @extend %prevandnext__common;
+    padding-left: govuk-spacing(5);
+    text-decoration-line: underline;
+    font-size: 1.1875rem;
+  }
+}

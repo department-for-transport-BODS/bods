@@ -1,0 +1,63 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Account settings' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Account settings' %}
+{% endblock %}
+
+{% block inner %}
+  <h1 class="govuk-heading-xl">{% trans 'Account settings' %}</h1>
+  <table class="govuk-table manage-users-table">
+    <caption class="govuk-table__caption manage-users-table__caption">Account details</caption>
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"></td>
+      <td colspan="2" class="govuk-table__cell"></td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell manage-users-table__key">{% trans 'User name' %}</td>
+      <td colspan="2" class="govuk-table__cell">{{ user.username }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell manage-users-table__key">{% trans 'Email address' %}</td>
+      <td colspan="2" class="govuk-table__cell">{{ user.email }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell manage-users-table__key">{% trans 'Password' %}</td>
+      <td class="govuk-table__cell manage-users-table__value left">&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</td>
+      <td class="govuk-table__cell manage-users-table__value right">
+        <a class="manage-users-table__change" href="{% url 'account_change_password' host host.name %}">
+          {% trans 'Change' %}
+        </a>
+      </td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell manage-users-table__key">{% trans 'API Key' %}</td>
+      <td colspan="2" class="govuk-table__cell">{{ api_key }}</td>
+    </tr>
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block inner_secondary %}
+  <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
+  <ul class="govuk-list">
+    <li>
+      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact the Bus Open Data Service' %}</a>
+    </li>
+  </ul>
+{% endblock %}
+
+{% block extra_content %}
+  {% if user.is_org_user %}
+    {% crispy form %}
+  {% endif %}
+{% endblock %}

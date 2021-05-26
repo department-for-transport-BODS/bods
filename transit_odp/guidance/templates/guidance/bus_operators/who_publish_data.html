@@ -1,0 +1,18 @@
+{% extends "guidance/bus_operators/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+<h1 data-qa="who-publish-heading" class="govuk-heading-l">
+  {% trans 'Who must publish open data?' %}
+</h1>
+<p data-qa="who-publish-paragraph" class="govuk-body">
+  {% blocktrans %}
+  All operators who run public bus services in England must publish their data from
+  late 2020.
+  Community bus operators are currently outside the scope of the new service (i.e.
+  those with exemptions under Section 19 or Section 22 of the Local Government Act 1985).
+  {% endblocktrans %}
+</p>
+
+{% endblock %}

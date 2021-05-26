@@ -1,0 +1,118 @@
+swagger: "2.0"
+info:
+  title: Bus location data API
+  description: '<span class="govuk-body-m">You can use the interactive documentation to customise your API </br>response using the available query parameters. If you are registered and </br>logged in, you will be given a full response. Otherwise you will be given </br>an example response.</span><p><a class="govuk-link" href="/guidance/requirements/?section=Using the API">View developer documentation</a></p>'
+  version: ""
+basePath: "/api/v1"
+paths:
+  /datafeed:
+    get:
+      produces:
+        - text/xml
+      tags:
+        - SIRI VM Data feed
+      description: Returns all published datafeeds
+      parameters:
+        - in: query
+          name: boundingBox
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: number
+          description: >
+            Limit results to bus location data with vehicle position within the rectangular boundingBox you set using co-ordinates.</br></br>
+            [minLongitude, minLatitude, maxLongitude, maxLatitude]
+
+        - in: query
+          name: operatorRef
+          type: string
+          description: Limit results to bus location data with the specified operatorRef. The National Operator Code is often used as the input for operatorRef. Comma separated list of values can be used for querying.
+
+        - in: query
+          name: lineRef
+          type: string
+          description: Limit results to bus location data with the specified lineRef.
+
+        - in: query
+          name: producerRef
+          type: string
+          description: Limit results to bus location data with the specified producerRef.
+
+        - in: query
+          name: originRef
+          type: string
+          description: Limit results to bus location data with the specified originRef.
+
+        - in: query
+          name: destinationRef
+          type: string
+          description: Limit results to bus location data with the specified destinationRef.
+
+      responses:
+        200:
+          description: Successfully retrieved all datafeeds
+        400:
+          description: Invalid data supplied
+
+  /datafeed/{datafeedID}/:
+    get:
+      tags:
+        - SIRI VM Data feed
+      summary: Find datafeed by ID
+      produces:
+        - text/xml
+      description: Returns a single datafeed
+      parameters:
+        - name: datafeedID
+          in: path
+          description: Limit results to a specific data feed of a publisher using the data feed ID.
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successfully retrieve all vehicles in a datafeed
+        404:
+          description: Datafeed not found
+
+  /gtfsrtdatafeed/:
+    get:
+      tags:
+        - GTFS RT Data feed
+      summary: Returns all vehicles in GTFS RT format
+      produces:
+        - application/bin
+        - application/protobuf
+      description: Returns all published datafeeds
+      responses:
+        200:
+          description: Successfully retrieved all datafeeds
+        400:
+          description: Invalid data supplied
+      parameters:
+        - in: query
+          name: boundingBox
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: number
+          description: >
+            Limit results to bus location data with vehicle position within the rectangular boundingBox you set using co-ordinates.</br></br>
+            [minLongitude, minLatitude, maxLongitude, maxLatitude]
+
+        - in: query
+          name: routeId
+          type: string
+          description: Limit results to bus location data with the specified route id.
+
+        - in: query
+          name: startTimeAfter
+          type: int
+          description: Limit results to bus location data with a start time after startTimeAfter.
+
+        - in: query
+          name: startTimeBefore
+          type: int
+          description: Limit results to bus location data with a start time before startTimeBefore.

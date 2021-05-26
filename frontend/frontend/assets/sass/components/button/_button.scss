@@ -1,0 +1,148 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/button/button";
+
+%button-no-style {
+  /* remove button styling */
+  background: none;
+  border: none;
+  box-shadow: none;
+  //padding: 0;  // want the vertical position of the context box to match a button
+  padding-left: 0;
+  padding-right: 0;
+  cursor: pointer;
+  outline: inherit;
+  color: inherit;
+  margin: 0;
+
+  &:link,
+  &:visited,
+  &:active,
+  &:hover,
+  &:focus {
+    top: unset;
+    background-color: unset;
+    outline: none;
+  }
+}
+
+// TODO - remove above style
+// TODO - clean this up
+.govuk-button--link {
+  @extend %button-no-style;
+  // Can be applied to an anchor or a button to make a button styled like a link
+  // <a class="govuk-button govuk-button--link"></a>
+  // or <button class="govuk-button govuk-button--link"></button>
+  color: $govuk-link-colour;
+  text-decoration: underline;
+
+  &:link,
+  &:visited,
+  &:active,
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+    text-decoration-color: $govuk-link-colour;
+    background-color: $govuk-body-background-colour;
+  }
+
+  @include govuk-link-common;
+  @include govuk-link-style-default;
+  @include govuk-link-print-friendly;
+
+  // Quite cumbersome but doing this because the mixins do not apply text-decoration with the appropriate colour
+  &:link {
+    color: $govuk-link-colour;
+    text-decoration-color: $govuk-link-colour;
+  }
+
+  &:visited {
+    color: $govuk-link-visited-colour;
+    text-decoration-color: $govuk-link-visited-colour;
+  }
+
+  &:hover {
+    color: $govuk-link-hover-colour;
+    text-decoration-color: $govuk-link-hover-colour;
+  }
+
+  &:active {
+    color: $govuk-link-active-colour;
+    text-decoration-color: $govuk-link-active-colour;
+  }
+
+  // When focussed, the text colour needs to be darker to ensure that colour
+  // contrast is still acceptable
+  &:focus {
+    color: $govuk-focus-text-colour;
+    text-decoration-color: $govuk-focus-text-colour;
+    outline: none;
+  }
+}
+
+.govuk-button-back-link {
+  // This make a button look like .govuk-back-link. Useful as form wizard back button
+  // TODO - try to use %button-no-style
+  //@extend %button-no-style;
+  @extend .govuk-back-link;
+
+  background: none;
+  box-shadow: none;
+  padding: 0 0 0 14px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &,
+  &:focus,
+  &:link {
+    // have to reapply style from .govuk-back-link which are removed when we remove button styles
+    // is it possible to remove all button styles first and then extend .govuk-back-link to do a clean override?
+    border: none;
+    border-bottom: 1px solid govuk-colour("black");
+  }
+}
+
+%govuk-button--width {
+  display: block;
+}
+
+.govuk-button--width-30 {
+  @extend %govuk-button--width;
+  max-width: 59ex;
+}
+
+.govuk-button--width-25 {
+  @extend %govuk-button--width;
+  max-width: 50ex;
+}
+
+.govuk-button--width-20 {
+  @extend %govuk-button--width;
+  max-width: 41ex;
+}
+
+.govuk-button--width-10 {
+  @extend %govuk-button--width;
+  max-width: 23ex;
+}
+
+.govuk-button--width-5 {
+  @extend %govuk-button--width;
+  max-width: 10.8ex;
+}
+
+.govuk-button--width-4 {
+  @extend %govuk-button--width;
+  max-width: 9ex;
+}
+
+.govuk-button--width-3 {
+  @extend %govuk-button--width;
+  max-width: 7.2ex;
+}
+
+.govuk-button--width-2 {
+  @extend %govuk-button--width;
+  max-width: 5.4ex;
+}

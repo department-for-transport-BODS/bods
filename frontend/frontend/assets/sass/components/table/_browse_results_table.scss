@@ -1,0 +1,69 @@
+@import "govuk-frontend/govuk/helpers/grid";
+
+// Table
+
+.status_cell {
+  white-space: nowrap;
+  display: table-cell;
+  width: 15%;
+}
+
+.name_cell {
+  width: 23%;
+}
+
+.last_updated_cell {
+  width: 20%;
+}
+
+.admin_area_cell {
+  width: 18%;
+}
+
+.num_of_routes_cell {
+  width: 12%;
+}
+
+.num_of_stops_cell {
+  width: 12%;
+}
+
+// Pagination
+
+.browse_pagination__previous {
+  display: flex;
+  justify-content: flex-start;
+
+  .browse_pagination_icon_left {
+    font-size: 1rem;
+    padding-right: govuk-spacing(2);
+  }
+}
+
+.browse_pagination__next {
+  display: flex;
+  justify-content: flex-end;
+
+  .browse_pagination_icon_right {
+    font-size: 1rem;
+    padding-left: govuk-spacing(2);
+  }
+}
+
+.browse_pagination__numbers {
+  display: flex;
+  justify-content: center;
+
+  .browse_pagination_links_numbers {
+    @extend .govuk-link;
+    font-size: 1.25rem;
+    padding-right: govuk-spacing(3);
+    text-decoration: unset;
+  }
+}
+
+.browse_pagination_links {
+  @extend .govuk-link;
+  font-size: 1.25rem;
+  text-decoration: unset;
+}

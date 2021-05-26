@@ -1,0 +1,67 @@
+{% load i18n %}
+{% load tz %}
+
+<table class="govuk-table dataset-property-table">
+  <tbody class="govuk-table__body">
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Data type' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans 'Bus location data' %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Data feed ID' %}</th>
+    <td class="govuk-table__cell dont-break-out">{{ object.id }}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans object.description %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between">
+          {% include 'organisation/snippets/status_indicator.html' with status=object.status record=object %}
+      </div>
+    </td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+    <td class="govuk-table__cell">{% trans object.organisation.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'SIRI-VM version' %}</th>
+    <td class="govuk-table__cell">{{object.live_revision.metadata.schema_version}}
+    </td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Feed details last updated' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between">
+        <span>
+            {{ object.published_at|date:"j M Y H:i" }} {% trans 'by ' %}
+          {% if object.live_revision.published_by %}
+                {{ object.live_revision.published_by.username }}
+          {% else %}
+            {% trans 'System' %}
+          {% endif %}
+        </span>
+        <span style="text-align: right">
+          {% block inner.last_updated.changelog_link %}
+            <a class="govuk-link"
+               href="{% url 'avl-feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>
+          {% endblock %}
+        </span>
+      </div>
+    </td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Last automated update' %}</th>
+    <td class="govuk-table__cell">
+      {{ object.avl_feed_last_checked|date:"j M Y H:i" }}
+    </td>
+  </tr>
+  </tbody>
+</table>

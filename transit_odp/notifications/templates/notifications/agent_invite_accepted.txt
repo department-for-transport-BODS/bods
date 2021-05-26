@@ -1,0 +1,8 @@
+Hello,
+
+This email is to confirm that you have accepted the request to be an agent on behalf of {{ organisation }} on the Bus Open Data Service.
+
+Please ensure you have regular communications with your operator(s) who you are acting on behalf of as agents. We also recommend that you have contracts agreed with them external to the Bus Open Data platform as the legal obligation to publish still lies with your operator.
+
+Kind regards,
+Bus Open Data Service

@@ -1,0 +1,35 @@
+{% extends "site_admin/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Data consumers' 'users:consumer-list' host hosts.admin %}
+  {% breadcrumb_url user.email 'users:consumer-detail' pk=user.id host hosts.admin %}
+  {% breadcrumb 'Edit notes' %}
+{% endblock %}
+
+{% block title_tag %}
+    {% trans 'Edit notes' %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Edit notes</h1>
+        <form method="post">
+          {% csrf_token %}
+          {{form | crispy }}
+          <button class="govuk-button govuk-!-margin-right-1"
+            type="submit">Save and continue</button>
+          <a href="{% url 'users:consumer-detail' pk=user.id host hosts.admin %}"
+            class="govuk-button govuk-button--secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+</div>
+{% endblock %}

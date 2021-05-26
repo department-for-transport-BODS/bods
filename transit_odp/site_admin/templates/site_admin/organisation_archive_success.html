@@ -1,0 +1,48 @@
+{% extends "base_success.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% if object.is_active %}
+    {% trans 'Organisation activated' %}
+  {% else %}
+    {% trans 'Organisation deactivated' %}
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block title_text %}
+  {% if object.is_active %}
+    {% trans 'Organisation has been activated' %}
+  {% else %}
+    {% trans 'Organisation has been deactivated' %}
+  {% endif %}
+{% endblock %}
+
+{% block body_text %}
+  {% blocktrans %}
+    Organisation
+  {% endblocktrans %}
+  {{ object.name }}
+  {% if object.is_active %}
+    {% blocktrans %}
+       has been activated.
+    {% endblocktrans %}
+  {% else %}
+    {% blocktrans %}
+       has been deactivated.
+    {% endblocktrans %}
+  {% endif %}
+{% endblock %}
+
+{% block button_href %}
+    {% url 'users:organisation-manage' host hosts.admin %}
+{% endblock %}
+
+{% block button_text %}
+    {% trans 'Go back to Organisation management' %}
+{% endblock %}

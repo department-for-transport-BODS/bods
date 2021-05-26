@@ -1,0 +1,12 @@
+@import "../../variables";
+
+.app-error-summary__item {
+  @include govuk-font($size: 19, $weight: bold);
+  color: $govuk-error-colour;
+  text-decoration: underline;
+
+  &--no-decoration {
+    @extend .app-error-summary__item;
+    text-decoration: none;
+  }
+}

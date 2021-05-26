@@ -1,0 +1,131 @@
+// Variables are imported before vendor scss to override defaults
+@import "variables";
+
+// Vendor packages
+@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "@fortawesome/fontawesome-free/scss/solid.scss";
+@import "govuk-frontend/govuk/all";
+@import "govuk-frontend/govuk/helpers/spacing";
+
+// Local packages
+@import "overrides/all";
+@import "core/all";
+@import "objects/all";
+@import "components/all";
+
+.key-value-list {
+  list-style: none;
+  padding: 0;
+  font-family: "nta", Arial, sans-serif;
+  font-size: 1.125rem;
+  margin: govuk-spacing(3) 0 0 0;
+
+  li {
+    margin: 0;
+
+    .item__key {
+      display: inline-block;
+      font-weight: bold;
+      width: 30%;
+      padding-bottom: govuk-spacing(2);
+    }
+
+    .item__value {
+      display: inline-block;
+    }
+  }
+}
+
+.sort_container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flexfill {
+  flex: 1;
+}
+
+/* Used to prevent long words, such as urls and api_key for overflowing */
+/* see https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/ */
+.dont-break-out {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.operator-heading {
+  color: $govuk-link-colour;
+}
+
+.govuk-\!-font-size-24__custom {
+  font-size: 20px !important;
+  line-height: 1.11111 !important;
+  font-weight: bold;
+}
+
+ul.dashed {
+  list-style-type: none;
+}
+
+ul.dashed > li {
+  text-indent: -5px;
+}
+
+ul.dashed > li:before {
+  content: "-";
+  text-indent: -5px;
+}
+
+.govuk-grid-row__custom {
+  margin-right: -15px;
+  margin-left: -15px;
+  word-wrap: break-word;
+}
+
+.no-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+fieldset {
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+.govuk-label--bold {
+  @extend .govuk-label;
+  font-weight: bold;
+}
+
+/* Screen readers sometimes require labels that should otherwise be invisible to the user
+   settings like display: none can't be used because they also affect visibility to screen readers
+   https://webaim.org/techniques/css/invisiblecontent/
+   see data.gov.uk search box for an example */
+.hide-using-position {
+  position: absolute;
+  overflow: hidden;
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+.hidden-overflow {
+  overflow: hidden;
+}

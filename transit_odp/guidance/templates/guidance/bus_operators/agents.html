@@ -1,0 +1,105 @@
+{% extends "guidance/bus_operators/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+<h2 data-qa="agents-header" class="govuk-heading-l">{% trans 'Agents' %}</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  Agents are defined as people outside the operator’s organisation that can publish
+  data on behalf of an operator. Mostly commonly, these will be local transport
+  authorities. It is expected that operators will have contracts establishing the
+  services and expectations with agents, prior to allocating them as an agent on
+  this service.
+  {% endblocktrans %}
+</p>
+
+<h2 data-qa="removing-agents-header" class="govuk-heading-l">{% trans 'Allocating and removing agents' %}</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  Please ensure operators and agents have support agreements and contracts in place
+  prior to allocating agent users on this service.
+  {% endblocktrans %}
+</p>
+
+<p class="govuk-body">
+  {% blocktrans %}
+  An operator’s admin user can allocate agents to publish data to the service, by
+  going to my account and selecting user management.
+  {% endblocktrans %}
+</p>
+
+<h2 class="govuk-heading-l">{% trans 'Agent users' %}</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  Please ensure the operator invites all the agent users to be agents for their
+  organisation, this may be multiple emails for local authority. Alternatively,
+  agents may wish to use a functional mailbox for the agent user account. However,
+  this will limit people that can log in at once to those with the same external
+  IP address.
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  An operator’s admin user can allocate agents to publish data to the service,
+  by going to my account and selecting user management.
+  {% endblocktrans %}
+</p>
+
+<h2 class="govuk-heading-l">{% trans 'Agents can' %}</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  Publish all types of data
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  Update the National Operator Codes (NOC) associated with the operator the service
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  Remove themselves as an agent for an operator
+  {% endblocktrans %}
+</p>
+
+<h2 class="govuk-heading-l">{% trans 'Agents cannot' %}</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  Take over the legal obligation to provide data to BODS; they can only publish data
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  Agent cannot add users to an operator’s organisation
+  {% endblocktrans %}
+</p>
+
+
+<h2 class="govuk-heading-l">{% trans 'Notification emails' %}</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  Notification emails will be sent to both the admin user and agent when:
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  Any user publishes data
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  If an agent accepts or rejects the invite to the operator’s organisation
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  An agent or operator removes the agent at a later date
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">
+  {% blocktrans %}
+  National Operator Codes are edited
+  {% endblocktrans %}
+</p>
+{% endblock %}

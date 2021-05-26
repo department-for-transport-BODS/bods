@@ -1,0 +1,46 @@
+{% load crispy_forms_field %}
+{% load crispy_forms_govuk_tags %}
+
+{# This is just like govuk/field.html but without the wrapper govuk-form-group, label or help_text#}
+
+{% if field.is_hidden %}
+        {{ field }}
+{% else %}
+    {% if field|is_checkbox %}
+        {# A checkbox input has inline label and hint #}
+        {% include 'govuk/snippets/field_errors.html' %}
+        {% include 'govuk/layout/checkbox.html' %}
+    {% else %}
+
+        {% if field|is_checkboxselectmultiple or field|is_radioselect %}
+          {% comment %}
+          Keep fieldset as it's structural but remove legend. Not sure how useful it would be to have a radio/checkboxes
+          field in a formset.
+          {% endcomment %}
+          <fieldset class="govuk-fieldset">
+        {% endif %}
+
+        {# Render form group errors #}
+        {% include 'govuk/snippets/field_errors.html' %}
+
+        {# Render input(s) #}
+        {% if field|is_radioselect %}
+            {# style standard radio select container #}
+            {% include 'govuk/layout/radioselect.html' %}
+        {% elif field|is_select %}
+            {# style select container #}
+            {% include 'govuk/layout/select.html' %}
+        {% elif field|is_checkboxselectmultiple %}
+            {# style multi checkbox container #}
+            {% include 'govuk/layout/checkboxmultiple.html' %}
+        {% else %}
+            {# render widget #}
+            {% include "govuk/widget.html" %}
+        {% endif %}
+
+        {# Close fieldset tag #}
+        {% if field|is_checkbox or field|is_checkboxselectmultiple or field|is_radioselect %}
+          </fieldset>
+        {% endif %}
+    {% endif %}
+{% endif %}

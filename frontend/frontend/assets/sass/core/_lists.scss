@@ -1,0 +1,162 @@
+@import "../variables";
+@import "govuk-frontend/govuk/core/lists";
+@import "govuk-frontend/govuk/helpers/media-queries";
+@import "govuk-frontend/govuk/helpers/spacing";
+@import "govuk-frontend/govuk/helpers/typography";
+@import "govuk-frontend/govuk/settings/typography-responsive";
+
+.govuk-list-inline {
+  display: flex;
+}
+
+.govuk-list-inline li {
+  margin-right: 2.5rem;
+}
+
+// List containing error/warning messages
+
+%govuk-list--modifier {
+  margin: 0;
+  padding-left: govuk-spacing(5);
+
+  li {
+    padding-left: govuk-spacing(3);
+  }
+}
+
+.govuk-list--error {
+  @extend %govuk-list--modifier;
+
+  li {
+    // This uses the same styles as the .govuk-form-group--error selector
+    border-left: $govuk-border-width-form-group-error solid $govuk-error-colour;
+  }
+}
+
+.govuk-list--warning {
+  @extend %govuk-list--modifier;
+
+  li {
+    // This uses the same styles as the .govuk-form-group--error selector
+    border-left: $govuk-border-width-form-group-error solid
+      $govuk-warning-colour;
+  }
+}
+
+// navigation list - used for secondary list of links
+
+.app-list--nav {
+  line-height: 1.8;
+  font-size: 1rem;
+
+  > li {
+    margin-bottom: 0.8rem;
+  }
+}
+
+// Feed info list
+
+.info-list {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0;
+
+  li {
+    padding: 1rem 0;
+    border-bottom: 1px solid $govuk-border-colour;
+    border-bottom: 1px solid $govuk-border-colour;
+
+    .info-item__title,
+    .info-item__description {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      vertical-align: middle;
+
+      @include govuk-text-colour;
+      @include govuk-font(
+        $size: 19
+      ); // see sizes in govuk _typegraphy-responsive.scss
+    }
+
+    .info-item__title {
+      margin-bottom: 0.5rem;
+      padding-right: 1rem;
+    }
+
+    @include mq($from: tablet) {
+      .info-item__title {
+        margin: 0;
+        display: inline-block;
+        width: 32%;
+      }
+      .info-item__description {
+        display: inline-block;
+        width: 66%;
+      }
+    }
+
+    .info-item__description--space-items {
+      //display: flex;
+      justify-content: space-between;
+    }
+  }
+}
+
+// Feed upload/update wizard
+.wizard-header {
+  text-align: right;
+  padding: 1rem;
+  padding-bottom: 0;
+}
+
+.wizard-unordered-list {
+  list-style-type: none;
+  padding: 0;
+
+  .wizard-list-item {
+    display: flex;
+    flex-direction: row;
+    background-color: #d5ecea;
+    list-style-type: none;
+    margin: 0;
+    padding: 1rem;
+    padding-left: 1.5rem;
+    list-style-position: inside;
+    border-bottom: 1px solid #bfc1c3;
+
+    .wizard-step-div {
+      flex: 1;
+
+      .div__heading {
+        flex: 1;
+        font-size: 16px;
+        font-weight: normal;
+        margin: 0 0 0.5rem 0;
+        border: 0;
+      }
+
+      .wizard-paragraph {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        color: #315843;
+        font-size: 16px;
+      }
+    }
+
+    .wizard-change-div {
+      text-align: right;
+      margin: 0;
+      border: 0;
+
+      button {
+        padding: 0;
+      }
+    }
+  }
+}
+
+.govuk-list.download-list {
+  line-height: 1.7;
+}

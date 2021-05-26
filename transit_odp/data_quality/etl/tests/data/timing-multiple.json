@@ -1,0 +1,4802 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:14:15",
+    "naptan_date": "Tue, 12 Nov 2019 08:00:36",
+    "sources": [
+      "MERGED_MERGED_schedules_SVRYNCO022.xml",
+      "MERGED_MERGED_schedules_SVRYNEO023.xml",
+      "MERGED_schedules_SVRYNBO022.xml",
+      "MERGED_schedules_SVRYNDO023.xml",
+      "TERMINAL_LOOP_FIRST_PART",
+      "TERMINAL_LOOP_FIRST_PART_schedules_SVRYNFO003.xml",
+      "TERMINAL_LOOP_FIRST_PART_schedules_SVRYWAO933.xml",
+      "TERMINAL_LOOP_SECOND_PART",
+      "TERMINAL_LOOP_SECOND_PART_schedules_SVRYNFO003.xml",
+      "TERMINAL_LOOP_SECOND_PART_schedules_SVRYWAO933.xml",
+      "schedules_SVRYEACB03.xml",
+      "schedules_SVRYEAGT00.xml",
+      "schedules_SVRYEAO004.xml",
+      "schedules_SVRYEAO005A.xml",
+      "schedules_SVRYEAO006.xml",
+      "schedules_SVRYEAO012.xml",
+      "schedules_SVRYEAO014.xml",
+      "schedules_SVRYEAO045A.xml",
+      "schedules_SVRYEAO075.xml",
+      "schedules_SVRYEAO076.xml",
+      "schedules_SVRYEAO077.xml",
+      "schedules_SVRYEAO079.xml",
+      "schedules_SVRYEAO106.xml",
+      "schedules_SVRYEAO106S.xml",
+      "schedules_SVRYEAO121C.xml",
+      "schedules_SVRYEAO121S.xml",
+      "schedules_SVRYEAO122.xml",
+      "schedules_SVRYEAO122B.xml",
+      "schedules_SVRYEAO123.xml",
+      "schedules_SVRYEAO142.xml",
+      "schedules_SVRYEAO143.xml",
+      "schedules_SVRYEAO155.xml",
+      "schedules_SVRYEAO155A.xml",
+      "schedules_SVRYEAO155B.xml",
+      "schedules_SVRYEAO197.xml",
+      "schedules_SVRYEAO240.xml",
+      "schedules_SVRYEAO242.xml",
+      "schedules_SVRYEAO243.xml",
+      "schedules_SVRYEAO520.xml",
+      "schedules_SVRYEAO521.xml",
+      "schedules_SVRYEAO550.xml",
+      "schedules_SVRYEAO921.xml",
+      "schedules_SVRYEAO922.xml",
+      "schedules_SVRYEAO923.xml",
+      "schedules_SVRYEAO925.xml",
+      "schedules_SVRYEAO926.xml",
+      "schedules_SVRYEAO929.xml",
+      "schedules_SVRYEAO930.xml",
+      "schedules_SVRYEAO933.xml",
+      "schedules_SVRYEAO934.xml",
+      "schedules_SVRYEAO935.xml",
+      "schedules_SVRYEAO936.xml",
+      "schedules_SVRYEAO937.xml",
+      "schedules_SVRYEAO940.xml",
+      "schedules_SVRYEAO941.xml",
+      "schedules_SVRYEAO942.xml",
+      "schedules_SVRYEAO943.xml",
+      "schedules_SVRYEAX055.xml",
+      "schedules_SVRYEBGT00.xml",
+      "schedules_SVRYEBO080.xml",
+      "schedules_SVRYEBO129.xml",
+      "schedules_SVRYEBO131.xml",
+      "schedules_SVRYEBO136.xml",
+      "schedules_SVRYEBO142.xml",
+      "schedules_SVRYEBO173.xml",
+      "schedules_SVRYEBO183.xml",
+      "schedules_SVRYEBO199.xml",
+      "schedules_SVRYEBO361.xml",
+      "schedules_SVRYEBO522.xml",
+      "schedules_SVRYEBO530.xml",
+      "schedules_SVRYEBO747.xml",
+      "schedules_SVRYEBO920.xml",
+      "schedules_SVRYECGT00.xml",
+      "schedules_SVRYECO003.xml",
+      "schedules_SVRYECO006.xml",
+      "schedules_SVRYECO071.xml",
+      "schedules_SVRYECO088.xml",
+      "schedules_SVRYECO130.xml",
+      "schedules_SVRYECO196.xml",
+      "schedules_SVRYECO198.xml",
+      "schedules_SVRYECO246.xml",
+      "schedules_SVRYECO358.xml",
+      "schedules_SVRYECO360.xml",
+      "schedules_SVRYECO504.xml",
+      "schedules_SVRYEDO018.xml",
+      "schedules_SVRYEDO046.xml",
+      "schedules_SVRYEDO135.xml",
+      "schedules_SVRYEDO195.xml",
+      "schedules_SVRYEDX046.xml",
+      "schedules_SVRYEEO001.xml",
+      "schedules_SVRYEEO005.xml",
+      "schedules_SVRYEEO045.xml",
+      "schedules_SVRYEEO180.xml",
+      "schedules_SVRYEFO078.xml",
+      "schedules_SVRYEGO002.xml",
+      "schedules_SVRYEGO005.xml",
+      "schedules_SVRYEGO277.xml",
+      "schedules_SVRYEHX047.xml",
+      "schedules_SVRYEIO124.xml",
+      "schedules_SVRYELO121.xml",
+      "schedules_SVRYHAAM01.xml",
+      "schedules_SVRYHAAM02.xml",
+      "schedules_SVRYHAO001W.xml",
+      "schedules_SVRYHAO002.xml",
+      "schedules_SVRYHAO002S.xml",
+      "schedules_SVRYHAO003.xml",
+      "schedules_SVRYHAO004.xml",
+      "schedules_SVRYHAO004A.xml",
+      "schedules_SVRYHAO005.xml",
+      "schedules_SVRYHAO006.xml",
+      "schedules_SVRYHAO008.xml",
+      "schedules_SVRYHAO008X.xml",
+      "schedules_SVRYHAO010X.xml",
+      "schedules_SVRYHAO011A.xml",
+      "schedules_SVRYHAO012.xml",
+      "schedules_SVRYHAO012A.xml",
+      "schedules_SVRYHAO020.xml",
+      "schedules_SVRYHAO021.xml",
+      "schedules_SVRYHAO022.xml",
+      "schedules_SVRYHAO033.xml",
+      "schedules_SVRYHAO034.xml",
+      "schedules_SVRYHAO034C.xml",
+      "schedules_SVRYHAO044.xml",
+      "schedules_SVRYHAO044A.xml",
+      "schedules_SVRYHAO050.xml",
+      "schedules_SVRYHAO056.xml",
+      "schedules_SVRYHAO057.xml",
+      "schedules_SVRYHAO063.xml",
+      "schedules_SVRYHAO063C.xml",
+      "schedules_SVRYHAO066.xml",
+      "schedules_SVRYHAO066B.xml",
+      "schedules_SVRYHAO070.xml",
+      "schedules_SVRYHAO081.xml",
+      "schedules_SVRYHAO082.xml",
+      "schedules_SVRYHAO083.xml",
+      "schedules_SVRYHAO084.xml",
+      "schedules_SVRYHAO085.xml",
+      "schedules_SVRYHAO104.xml",
+      "schedules_SVRYHAO105.xml",
+      "schedules_SVRYHAO152.xml",
+      "schedules_SVRYHAO153.xml",
+      "schedules_SVRYHAO154.xml",
+      "schedules_SVRYHAO250.xml",
+      "schedules_SVRYHAO677.xml",
+      "schedules_SVRYHAO924.xml",
+      "schedules_SVRYHAO927.xml",
+      "schedules_SVRYHAO928.xml",
+      "schedules_SVRYHAO931.xml",
+      "schedules_SVRYHAO932.xml",
+      "schedules_SVRYHAO938.xml",
+      "schedules_SVRYHAU005.xml",
+      "schedules_SVRYHBO003B.xml",
+      "schedules_SVRYHBO007A.xml",
+      "schedules_SVRYHBO008A.xml",
+      "schedules_SVRYHBO009.xml",
+      "schedules_SVRYHBO009A.xml",
+      "schedules_SVRYHBO010A.xml",
+      "schedules_SVRYHBO035.xml",
+      "schedules_SVRYHBO035A.xml",
+      "schedules_SVRYHBO103.xml",
+      "schedules_SVRYHBO151.xml",
+      "schedules_SVRYHCN002.xml",
+      "schedules_SVRYHCO007.xml",
+      "schedules_SVRYHCO010.xml",
+      "schedules_SVRYHCO011.xml",
+      "schedules_SVRYHCO044C.xml",
+      "schedules_SVRYHCO107.xml",
+      "schedules_SVRYHDO003A.xml",
+      "schedules_SVRYHDO014.xml",
+      "schedules_SVRYHDO051.xml",
+      "schedules_SVRYHFO001.xml",
+      "schedules_SVRYHGO016.xml",
+      "schedules_SVRYHGO350.xml",
+      "schedules_SVRYNAC000.xml",
+      "schedules_SVRYNAF001.xml",
+      "schedules_SVRYNAF002.xml",
+      "schedules_SVRYNAF005.xml",
+      "schedules_SVRYNAJKM0.xml",
+      "schedules_SVRYNAO001A.xml",
+      "schedules_SVRYNAO001B.xml",
+      "schedules_SVRYNAO001C.xml",
+      "schedules_SVRYNAO001D.xml",
+      "schedules_SVRYNAO001N.xml",
+      "schedules_SVRYNAO002A.xml",
+      "schedules_SVRYNAO002B.xml",
+      "schedules_SVRYNAO004.xml",
+      "schedules_SVRYNAO004A.xml",
+      "schedules_SVRYNAO006.xml",
+      "schedules_SVRYNAO009A.xml",
+      "schedules_SVRYNAO020.xml",
+      "schedules_SVRYNAO030X.xml",
+      "schedules_SVRYNAO034.xml",
+      "schedules_SVRYNAO042.xml",
+      "schedules_SVRYNAO044.xml",
+      "schedules_SVRYNAO054.xml",
+      "schedules_SVRYNAO060.xml",
+      "schedules_SVRYNAO070.xml",
+      "schedules_SVRYNAO072A.xml",
+      "schedules_SVRYNAO072B.xml",
+      "schedules_SVRYNAO073.xml",
+      "schedules_SVRYNAO074B.xml",
+      "schedules_SVRYNAO080.xml",
+      "schedules_SVRYNAO081.xml",
+      "schedules_SVRYNAO089.xml",
+      "schedules_SVRYNAO119.xml",
+      "schedules_SVRYNAO128.xml",
+      "schedules_SVRYNAO138.xml",
+      "schedules_SVRYNAO138A.xml",
+      "schedules_SVRYNAO139.xml",
+      "schedules_SVRYNAO144.xml",
+      "schedules_SVRYNAO159.xml",
+      "schedules_SVRYNAO175.xml",
+      "schedules_SVRYNAO176.xml",
+      "schedules_SVRYNAO182.xml",
+      "schedules_SVRYNAO184.xml",
+      "schedules_SVRYNAO185.xml",
+      "schedules_SVRYNAO187.xml",
+      "schedules_SVRYNAO333.xml",
+      "schedules_SVRYNAO415.xml",
+      "schedules_SVRYNAO469R.xml",
+      "schedules_SVRYNAO495.xml",
+      "schedules_SVRYNAO555.xml",
+      "schedules_SVRYNAO581.xml",
+      "schedules_SVRYNAO616.xml",
+      "schedules_SVRYNAO620H.xml",
+      "schedules_SVRYNAO634.xml",
+      "schedules_SVRYNAO777.xml",
+      "schedules_SVRYNAO777S.xml",
+      "schedules_SVRYNAO780H.xml",
+      "schedules_SVRYNAO781H.xml",
+      "schedules_SVRYNAO856.xml",
+      "schedules_SVRYNAO975.xml",
+      "schedules_SVRYNAR001.xml",
+      "schedules_SVRYNAR001A.xml",
+      "schedules_SVRYNAR002.xml",
+      "schedules_SVRYNAR003A.xml",
+      "schedules_SVRYNAR004.xml",
+      "schedules_SVRYNAS036.xml",
+      "schedules_SVRYNAT001.xml",
+      "schedules_SVRYNAT002.xml",
+      "schedules_SVRYNAX006.xml",
+      "schedules_SVRYNAX006A.xml",
+      "schedules_SVRYNAX008.xml",
+      "schedules_SVRYNAX011.xml",
+      "schedules_SVRYNAX012.xml",
+      "schedules_SVRYNAX026.xml",
+      "schedules_SVRYNAX027.xml",
+      "schedules_SVRYNAX079.xml",
+      "schedules_SVRYNBE000.xml",
+      "schedules_SVRYNBM009.xml",
+      "schedules_SVRYNBO001.xml",
+      "schedules_SVRYNBO007.xml",
+      "schedules_SVRYNBO007A.xml",
+      "schedules_SVRYNBO008A.xml",
+      "schedules_SVRYNBO009.xml",
+      "schedules_SVRYNBO010.xml",
+      "schedules_SVRYNBO016.xml",
+      "schedules_SVRYNBO016A.xml",
+      "schedules_SVRYNBO022.xml",
+      "schedules_SVRYNBO030S.xml",
+      "schedules_SVRYNBO030X.xml",
+      "schedules_SVRYNBO031B.xml",
+      "schedules_SVRYNBO037.xml",
+      "schedules_SVRYNBO040.xml",
+      "schedules_SVRYNBO053.xml",
+      "schedules_SVRYNBO055.xml",
+      "schedules_SVRYNBO060A.xml",
+      "schedules_SVRYNBO074A.xml",
+      "schedules_SVRYNBO079.xml",
+      "schedules_SVRYNBO095.xml",
+      "schedules_SVRYNBO113.xml",
+      "schedules_SVRYNBO115.xml",
+      "schedules_SVRYNBO128.xml",
+      "schedules_SVRYNBO150.xml",
+      "schedules_SVRYNBO173.xml",
+      "schedules_SVRYNBO174.xml",
+      "schedules_SVRYNBO190.xml",
+      "schedules_SVRYNBO194.xml",
+      "schedules_SVRYNBO211.xml",
+      "schedules_SVRYNBO441.xml",
+      "schedules_SVRYNBO486.xml",
+      "schedules_SVRYNBO488.xml",
+      "schedules_SVRYNBO580.xml",
+      "schedules_SVRYNBX001.xml",
+      "schedules_SVRYNBX004.xml",
+      "schedules_SVRYNCO001.xml",
+      "schedules_SVRYNCO004.xml",
+      "schedules_SVRYNCO005.xml",
+      "schedules_SVRYNCO006.xml",
+      "schedules_SVRYNCO007.xml",
+      "schedules_SVRYNCO012.xml",
+      "schedules_SVRYNCO014.xml",
+      "schedules_SVRYNCO021.xml",
+      "schedules_SVRYNCO022.xml",
+      "schedules_SVRYNCO024.xml",
+      "schedules_SVRYNCO028A.xml",
+      "schedules_SVRYNCO030.xml",
+      "schedules_SVRYNCO031A.xml",
+      "schedules_SVRYNCO032.xml",
+      "schedules_SVRYNCO059.xml",
+      "schedules_SVRYNCO072.xml",
+      "schedules_SVRYNCO136.xml",
+      "schedules_SVRYNCO155.xml",
+      "schedules_SVRYNCO156.xml",
+      "schedules_SVRYNCO193.xml",
+      "schedules_SVRYNCO210.xml",
+      "schedules_SVRYNCO400.xml",
+      "schedules_SVRYNCO401.xml",
+      "schedules_SVRYNCO496.xml",
+      "schedules_SVRYNCR001.xml",
+      "schedules_SVRYNCR002.xml",
+      "schedules_SVRYNCR003.xml",
+      "schedules_SVRYNCX004.xml",
+      "schedules_SVRYNDO006.xml",
+      "schedules_SVRYNDO007.xml",
+      "schedules_SVRYNDO011.xml",
+      "schedules_SVRYNDO029.xml",
+      "schedules_SVRYNDO030.xml",
+      "schedules_SVRYNDO072.xml",
+      "schedules_SVRYNDO073.xml",
+      "schedules_SVRYNDO075.xml",
+      "schedules_SVRYNDO147.xml",
+      "schedules_SVRYNDO170.xml",
+      "schedules_SVRYNDO492.xml",
+      "schedules_SVRYNDO493.xml",
+      "schedules_SVRYNDO494.xml",
+      "schedules_SVRYNEO001.xml",
+      "schedules_SVRYNEO002.xml",
+      "schedules_SVRYNEO003.xml",
+      "schedules_SVRYNEO011.xml",
+      "schedules_SVRYNEO029.xml",
+      "schedules_SVRYNEO153.xml",
+      "schedules_SVRYNEX093.xml",
+      "schedules_SVRYNFO003.xml",
+      "schedules_SVRYNFO004.xml",
+      "schedules_SVRYNFO031X.xml",
+      "schedules_SVRYNFX093.xml",
+      "schedules_SVRYNGO171.xml",
+      "schedules_SVRYNHO008.xml",
+      "schedules_SVRYSAA002.xml",
+      "schedules_SVRYSAB000.xml",
+      "schedules_SVRYSAD000.xml",
+      "schedules_SVRYSAM057.xml",
+      "schedules_SVRYSAO016.xml",
+      "schedules_SVRYSAO021A.xml",
+      "schedules_SVRYSAO022C.xml",
+      "schedules_SVRYSAO022X.xml",
+      "schedules_SVRYSAO028C.xml",
+      "schedules_SVRYSAO037S.xml",
+      "schedules_SVRYSAO050A.xml",
+      "schedules_SVRYSAO050B.xml",
+      "schedules_SVRYSAO051.xml",
+      "schedules_SVRYSAO053A.xml",
+      "schedules_SVRYSAO054.xml",
+      "schedules_SVRYSAO055.xml",
+      "schedules_SVRYSAO057C.xml",
+      "schedules_SVRYSAO057F.xml",
+      "schedules_SVRYSAO058F.xml",
+      "schedules_SVRYSAO064.xml",
+      "schedules_SVRYSAO064A.xml",
+      "schedules_SVRYSAO067A.xml",
+      "schedules_SVRYSAO067B.xml",
+      "schedules_SVRYSAO067C.xml",
+      "schedules_SVRYSAO071.xml",
+      "schedules_SVRYSAO071A.xml",
+      "schedules_SVRYSAO073X.xml",
+      "schedules_SVRYSAO075.xml",
+      "schedules_SVRYSAO076.xml",
+      "schedules_SVRYSAO081.xml",
+      "schedules_SVRYSAO082.xml",
+      "schedules_SVRYSAO083B.xml",
+      "schedules_SVRYSAO084B.xml",
+      "schedules_SVRYSAO086A.xml",
+      "schedules_SVRYSAO087.xml",
+      "schedules_SVRYSAO087B.xml",
+      "schedules_SVRYSAO093A.xml",
+      "schedules_SVRYSAO094B.xml",
+      "schedules_SVRYSAO095.xml",
+      "schedules_SVRYSAO095A.xml",
+      "schedules_SVRYSAO097.xml",
+      "schedules_SVRYSAO098.xml",
+      "schedules_SVRYSAO115.xml",
+      "schedules_SVRYSAO130.xml",
+      "schedules_SVRYSAO138.xml",
+      "schedules_SVRYSAO139.xml",
+      "schedules_SVRYSAO200.xml",
+      "schedules_SVRYSAO208.xml",
+      "schedules_SVRYSAO218A.xml",
+      "schedules_SVRYSAO219.xml",
+      "schedules_SVRYSAO219A.xml",
+      "schedules_SVRYSAO220.xml",
+      "schedules_SVRYSAO226.xml",
+      "schedules_SVRYSAO345.xml",
+      "schedules_SVRYSAO353.xml",
+      "schedules_SVRYSAO399.xml",
+      "schedules_SVRYSAO409.xml",
+      "schedules_SVRYSAO474.xml",
+      "schedules_SVRYSAO482A.xml",
+      "schedules_SVRYSAO488.xml",
+      "schedules_SVRYSAO490.xml",
+      "schedules_SVRYSAO499.xml",
+      "schedules_SVRYSAO595.xml",
+      "schedules_SVRYSAO718.xml",
+      "schedules_SVRYSAO720.xml",
+      "schedules_SVRYSAO725.xml",
+      "schedules_SVRYSAO752.xml",
+      "schedules_SVRYSAO775.xml",
+      "schedules_SVRYSAO798.xml",
+      "schedules_SVRYSAP000.xml",
+      "schedules_SVRYSAR002.xml",
+      "schedules_SVRYSAS001A.xml",
+      "schedules_SVRYSAT000.xml",
+      "schedules_SVRYSAX001.xml",
+      "schedules_SVRYSAX054.xml",
+      "schedules_SVRYSAX074.xml",
+      "schedules_SVRYSBD001.xml",
+      "schedules_SVRYSBI004.xml",
+      "schedules_SVRYSBO006.xml",
+      "schedules_SVRYSBO007A.xml",
+      "schedules_SVRYSBO008A.xml",
+      "schedules_SVRYSBO009A.xml",
+      "schedules_SVRYSBO011.xml",
+      "schedules_SVRYSBO012.xml",
+      "schedules_SVRYSBO015.xml",
+      "schedules_SVRYSBO015A.xml",
+      "schedules_SVRYSBO018A.xml",
+      "schedules_SVRYSBO020.xml",
+      "schedules_SVRYSBO021.xml",
+      "schedules_SVRYSBO022A.xml",
+      "schedules_SVRYSBO024A.xml",
+      "schedules_SVRYSBO027B.xml",
+      "schedules_SVRYSBO028A.xml",
+      "schedules_SVRYSBO030A.xml",
+      "schedules_SVRYSBO038A.xml",
+      "schedules_SVRYSBO041A.xml",
+      "schedules_SVRYSBO050B.xml",
+      "schedules_SVRYSBO051A.xml",
+      "schedules_SVRYSBO052A.xml",
+      "schedules_SVRYSBO058C.xml",
+      "schedules_SVRYSBO065.xml",
+      "schedules_SVRYSBO066.xml",
+      "schedules_SVRYSBO072X.xml",
+      "schedules_SVRYSBO073A.xml",
+      "schedules_SVRYSBO083A.xml",
+      "schedules_SVRYSBO084A.xml",
+      "schedules_SVRYSBO087A.xml",
+      "schedules_SVRYSBO093.xml",
+      "schedules_SVRYSBO094A.xml",
+      "schedules_SVRYSBO095.xml",
+      "schedules_SVRYSBO095A.xml",
+      "schedules_SVRYSBO099.xml",
+      "schedules_SVRYSBO110.xml",
+      "schedules_SVRYSBO113.xml",
+      "schedules_SVRYSBO114.xml",
+      "schedules_SVRYSBO120.xml",
+      "schedules_SVRYSBO124.xml",
+      "schedules_SVRYSBO125.xml",
+      "schedules_SVRYSBO135.xml",
+      "schedules_SVRYSBO135A.xml",
+      "schedules_SVRYSBO136.xml",
+      "schedules_SVRYSBO137.xml",
+      "schedules_SVRYSBO140.xml",
+      "schedules_SVRYSBO141.xml",
+      "schedules_SVRYSBO142.xml",
+      "schedules_SVRYSBO204.xml",
+      "schedules_SVRYSBO205.xml",
+      "schedules_SVRYSBO208.xml",
+      "schedules_SVRYSBO222.xml",
+      "schedules_SVRYSBO272.xml",
+      "schedules_SVRYSBO273.xml",
+      "schedules_SVRYSBO275.xml",
+      "schedules_SVRYSBO415.xml",
+      "schedules_SVRYSBO428.xml",
+      "schedules_SVRYSBO441.xml",
+      "schedules_SVRYSBO456.xml",
+      "schedules_SVRYSBO541.xml",
+      "schedules_SVRYSBO627.xml",
+      "schedules_SVRYSBO639.xml",
+      "schedules_SVRYSBO649.xml",
+      "schedules_SVRYSBO730.xml",
+      "schedules_SVRYSBO731.xml",
+      "schedules_SVRYSBO762.xml",
+      "schedules_SVRYSBO763.xml",
+      "schedules_SVRYSBO764.xml",
+      "schedules_SVRYSBO781.xml",
+      "schedules_SVRYSBO782.xml",
+      "schedules_SVRYSBO784.xml",
+      "schedules_SVRYSBO786.xml",
+      "schedules_SVRYSBO790.xml",
+      "schedules_SVRYSBO952.xml",
+      "schedules_SVRYSBT006.xml",
+      "schedules_SVRYSBX002.xml",
+      "schedules_SVRYSBX005.xml",
+      "schedules_SVRYSBX007.xml",
+      "schedules_SVRYSBX008.xml",
+      "schedules_SVRYSBX010.xml",
+      "schedules_SVRYSBX017.xml",
+      "schedules_SVRYSBX020.xml",
+      "schedules_SVRYSBX045.xml",
+      "schedules_SVRYSBX054.xml",
+      "schedules_SVRYSBX055.xml",
+      "schedules_SVRYSCH001.xml",
+      "schedules_SVRYSCO001.xml",
+      "schedules_SVRYSCO010.xml",
+      "schedules_SVRYSCO014.xml",
+      "schedules_SVRYSCO019A.xml",
+      "schedules_SVRYSCO020.xml",
+      "schedules_SVRYSCO027.xml",
+      "schedules_SVRYSCO027A.xml",
+      "schedules_SVRYSCO029A.xml",
+      "schedules_SVRYSCO032.xml",
+      "schedules_SVRYSCO050.xml",
+      "schedules_SVRYSCO050A.xml",
+      "schedules_SVRYSCO051A.xml",
+      "schedules_SVRYSCO057.xml",
+      "schedules_SVRYSCO059.xml",
+      "schedules_SVRYSCO059A.xml",
+      "schedules_SVRYSCO065A.xml",
+      "schedules_SVRYSCO066A.xml",
+      "schedules_SVRYSCO067.xml",
+      "schedules_SVRYSCO070A.xml",
+      "schedules_SVRYSCO074A.xml",
+      "schedules_SVRYSCO076A.xml",
+      "schedules_SVRYSCO082.xml",
+      "schedules_SVRYSCO084.xml",
+      "schedules_SVRYSCO086.xml",
+      "schedules_SVRYSCO094A.xml",
+      "schedules_SVRYSCO096A.xml",
+      "schedules_SVRYSCO107.xml",
+      "schedules_SVRYSCO116.xml",
+      "schedules_SVRYSCO120.xml",
+      "schedules_SVRYSCO126.xml",
+      "schedules_SVRYSCO134.xml",
+      "schedules_SVRYSCO136.xml",
+      "schedules_SVRYSCO138.xml",
+      "schedules_SVRYSCO216.xml",
+      "schedules_SVRYSCO218.xml",
+      "schedules_SVRYSCO221.xml",
+      "schedules_SVRYSCO272.xml",
+      "schedules_SVRYSCO291.xml",
+      "schedules_SVRYSCO405.xml",
+      "schedules_SVRYSCO419.xml",
+      "schedules_SVRYSCO429.xml",
+      "schedules_SVRYSCO450.xml",
+      "schedules_SVRYSCO489.xml",
+      "schedules_SVRYSCO492.xml",
+      "schedules_SVRYSCO521.xml",
+      "schedules_SVRYSCO523.xml",
+      "schedules_SVRYSCO540.xml",
+      "schedules_SVRYSCO552.xml",
+      "schedules_SVRYSCO637.xml",
+      "schedules_SVRYSCO648.xml",
+      "schedules_SVRYSCO655.xml",
+      "schedules_SVRYSCO710.xml",
+      "schedules_SVRYSCO728.xml",
+      "schedules_SVRYSCO751.xml",
+      "schedules_SVRYSCO779.xml",
+      "schedules_SVRYSCO780.xml",
+      "schedules_SVRYSCO783.xml",
+      "schedules_SVRYSCO785.xml",
+      "schedules_SVRYSCP000.xml",
+      "schedules_SVRYSCS001.xml",
+      "schedules_SVRYSCX019.xml",
+      "schedules_SVRYSCX078.xml",
+      "schedules_SVRYSCY000.xml",
+      "schedules_SVRYSDA001.xml",
+      "schedules_SVRYSDM092.xml",
+      "schedules_SVRYSDO006.xml",
+      "schedules_SVRYSDO018.xml",
+      "schedules_SVRYSDO019.xml",
+      "schedules_SVRYSDO025A.xml",
+      "schedules_SVRYSDO026A.xml",
+      "schedules_SVRYSDO028.xml",
+      "schedules_SVRYSDO030.xml",
+      "schedules_SVRYSDO035A.xml",
+      "schedules_SVRYSDO036.xml",
+      "schedules_SVRYSDO043.xml",
+      "schedules_SVRYSDO044.xml",
+      "schedules_SVRYSDO050.xml",
+      "schedules_SVRYSDO051.xml",
+      "schedules_SVRYSDO056.xml",
+      "schedules_SVRYSDO081.xml",
+      "schedules_SVRYSDO086.xml",
+      "schedules_SVRYSDO088.xml",
+      "schedules_SVRYSDO098.xml",
+      "schedules_SVRYSDO218.xml",
+      "schedules_SVRYSDO236.xml",
+      "schedules_SVRYSDO257.xml",
+      "schedules_SVRYSDO271.xml",
+      "schedules_SVRYSDO273.xml",
+      "schedules_SVRYSDO350.xml",
+      "schedules_SVRYSDO408.xml",
+      "schedules_SVRYSDO409.xml",
+      "schedules_SVRYSDO419.xml",
+      "schedules_SVRYSDO449.xml",
+      "schedules_SVRYSDO457.xml",
+      "schedules_SVRYSDO479.xml",
+      "schedules_SVRYSDO488.xml",
+      "schedules_SVRYSDO522.xml",
+      "schedules_SVRYSDO614.xml",
+      "schedules_SVRYSDO616.xml",
+      "schedules_SVRYSDO637.xml",
+      "schedules_SVRYSDO665.xml",
+      "schedules_SVRYSDO723.xml",
+      "schedules_SVRYSDO765.xml",
+      "schedules_SVRYSDX006.xml",
+      "schedules_SVRYSDX010.xml",
+      "schedules_SVRYSEA001.xml",
+      "schedules_SVRYSEO005.xml",
+      "schedules_SVRYSEO010A.xml",
+      "schedules_SVRYSEO011A.xml",
+      "schedules_SVRYSEO021.xml",
+      "schedules_SVRYSEO022.xml",
+      "schedules_SVRYSEO023A.xml",
+      "schedules_SVRYSEO028.xml",
+      "schedules_SVRYSEO029A.xml",
+      "schedules_SVRYSEO036.xml",
+      "schedules_SVRYSEO041.xml",
+      "schedules_SVRYSEO055.xml",
+      "schedules_SVRYSEO057A.xml",
+      "schedules_SVRYSEO071.xml",
+      "schedules_SVRYSEO083.xml",
+      "schedules_SVRYSEO086.xml",
+      "schedules_SVRYSEO097.xml",
+      "schedules_SVRYSEO128.xml",
+      "schedules_SVRYSEO181.xml",
+      "schedules_SVRYSEO203.xml",
+      "schedules_SVRYSEO215.xml",
+      "schedules_SVRYSEO252.xml",
+      "schedules_SVRYSEO271.xml",
+      "schedules_SVRYSEO409.xml",
+      "schedules_SVRYSEO416.xml",
+      "schedules_SVRYSEO455.xml",
+      "schedules_SVRYSEO456.xml",
+      "schedules_SVRYSEO457.xml",
+      "schedules_SVRYSEO466.xml",
+      "schedules_SVRYSEO482.xml",
+      "schedules_SVRYSEO490.xml",
+      "schedules_SVRYSEO638.xml",
+      "schedules_SVRYSEO689.xml",
+      "schedules_SVRYSEO760.xml",
+      "schedules_SVRYSEP001.xml",
+      "schedules_SVRYSES001.xml",
+      "schedules_SVRYSFM017.xml",
+      "schedules_SVRYSFO008A.xml",
+      "schedules_SVRYSFO010A.xml",
+      "schedules_SVRYSFO011.xml",
+      "schedules_SVRYSFO019.xml",
+      "schedules_SVRYSFO026.xml",
+      "schedules_SVRYSFO058A.xml",
+      "schedules_SVRYSFO061.xml",
+      "schedules_SVRYSFO062.xml",
+      "schedules_SVRYSFO072A.xml",
+      "schedules_SVRYSFO083.xml",
+      "schedules_SVRYSFO094.xml",
+      "schedules_SVRYSFO201.xml",
+      "schedules_SVRYSFO218.xml",
+      "schedules_SVRYSFO274.xml",
+      "schedules_SVRYSFO447.xml",
+      "schedules_SVRYSFO458.xml",
+      "schedules_SVRYSFO481.xml",
+      "schedules_SVRYSFO482.xml",
+      "schedules_SVRYSFO485.xml",
+      "schedules_SVRYSFO491.xml",
+      "schedules_SVRYSFO662.xml",
+      "schedules_SVRYSFO664.xml",
+      "schedules_SVRYSFO766.xml",
+      "schedules_SVRYSFO777.xml",
+      "schedules_SVRYSGO026.xml",
+      "schedules_SVRYSGO038.xml",
+      "schedules_SVRYSGO043.xml",
+      "schedules_SVRYSGO049.xml",
+      "schedules_SVRYSGO058.xml",
+      "schedules_SVRYSGO066.xml",
+      "schedules_SVRYSGO096.xml",
+      "schedules_SVRYSGO129.xml",
+      "schedules_SVRYSGO274.xml",
+      "schedules_SVRYSGO401.xml",
+      "schedules_SVRYSGO412.xml",
+      "schedules_SVRYSGO478.xml",
+      "schedules_SVRYSGO481.xml",
+      "schedules_SVRYSGO619.xml",
+      "schedules_SVRYSGO638.xml",
+      "schedules_SVRYSGO668.xml",
+      "schedules_SVRYSGO688.xml",
+      "schedules_SVRYSGO690.xml",
+      "schedules_SVRYSHO001.xml",
+      "schedules_SVRYSHO002.xml",
+      "schedules_SVRYSHO009.xml",
+      "schedules_SVRYSHO010.xml",
+      "schedules_SVRYSHO020.xml",
+      "schedules_SVRYSHO022.xml",
+      "schedules_SVRYSHO024.xml",
+      "schedules_SVRYSHO026.xml",
+      "schedules_SVRYSHO027.xml",
+      "schedules_SVRYSHO032.xml",
+      "schedules_SVRYSHO037.xml",
+      "schedules_SVRYSHO041.xml",
+      "schedules_SVRYSHO056.xml",
+      "schedules_SVRYSHO057.xml",
+      "schedules_SVRYSHO123.xml",
+      "schedules_SVRYSHO777.xml",
+      "schedules_SVRYSHX030.xml",
+      "schedules_SVRYSIO001.xml",
+      "schedules_SVRYSIO009.xml",
+      "schedules_SVRYSIO023.xml",
+      "schedules_SVRYSIO027.xml",
+      "schedules_SVRYSIO029.xml",
+      "schedules_SVRYSIO044.xml",
+      "schedules_SVRYSIO052.xml",
+      "schedules_SVRYSIO074.xml",
+      "schedules_SVRYSIO410.xml",
+      "schedules_SVRYSIO412.xml",
+      "schedules_SVRYSIO483.xml",
+      "schedules_SVRYSJO007.xml",
+      "schedules_SVRYSJO008.xml",
+      "schedules_SVRYSJO018.xml",
+      "schedules_SVRYSJO025.xml",
+      "schedules_SVRYSJO044.xml",
+      "schedules_SVRYSJO052.xml",
+      "schedules_SVRYSJO057.xml",
+      "schedules_SVRYSJO065.xml",
+      "schedules_SVRYSJO070.xml",
+      "schedules_SVRYSJO073.xml",
+      "schedules_SVRYSJO074.xml",
+      "schedules_SVRYSJO408.xml",
+      "schedules_SVRYSKO004.xml",
+      "schedules_SVRYSKO025.xml",
+      "schedules_SVRYSKO053.xml",
+      "schedules_SVRYSKO070.xml",
+      "schedules_SVRYSKO072.xml",
+      "schedules_SVRYSKO073.xml",
+      "schedules_SVRYSKO407.xml",
+      "schedules_SVRYSKO422.xml",
+      "schedules_SVRYSLO007.xml",
+      "schedules_SVRYSLO024.xml",
+      "schedules_SVRYSLO029.xml",
+      "schedules_SVRYSLO073.xml",
+      "schedules_SVRYSMO004.xml",
+      "schedules_SVRYSMO029.xml",
+      "schedules_SVRYSMO491.xml",
+      "schedules_SVRYSNO008.xml",
+      "schedules_SVRYSNO025.xml",
+      "schedules_SVRYSNO420.xml",
+      "schedules_SVRYSNO491.xml",
+      "schedules_SVRYSOO025.xml",
+      "schedules_SVRYSPO072.xml",
+      "schedules_SVRYSQO072.xml",
+      "schedules_SVRYWAA043.xml",
+      "schedules_SVRYWAA099.xml",
+      "schedules_SVRYWAB001.xml",
+      "schedules_SVRYWAB002.xml",
+      "schedules_SVRYWAB003.xml",
+      "schedules_SVRYWAC025.xml",
+      "schedules_SVRYWAC035.xml",
+      "schedules_SVRYWAC039.xml",
+      "schedules_SVRYWAC040.xml",
+      "schedules_SVRYWAC048.xml",
+      "schedules_SVRYWAC068.xml",
+      "schedules_SVRYWAC0A1.xml",
+      "schedules_SVRYWAC0A2.xml",
+      "schedules_SVRYWAC0M3.xml",
+      "schedules_SVRYWAD0TBB.xml",
+      "schedules_SVRYWAE003.xml",
+      "schedules_SVRYWAE005.xml",
+      "schedules_SVRYWAE007.xml",
+      "schedules_SVRYWAE0H1.xml",
+      "schedules_SVRYWAE0H3.xml",
+      "schedules_SVRYWAF0LXX.xml",
+      "schedules_SVRYWAF0TBB.xml",
+      "schedules_SVRYWAH001.xml",
+      "schedules_SVRYWAH002.xml",
+      "schedules_SVRYWAH003.xml",
+      "schedules_SVRYWAH005.xml",
+      "schedules_SVRYWAH006.xml",
+      "schedules_SVRYWAH007.xml",
+      "schedules_SVRYWAH0A1.xml",
+      "schedules_SVRYWAH0A2.xml",
+      "schedules_SVRYWAH0G1.xml",
+      "schedules_SVRYWAH0SBB.xml",
+      "schedules_SVRYWAJ0F1.xml",
+      "schedules_SVRYWAK001.xml",
+      "schedules_SVRYWAK002.xml",
+      "schedules_SVRYWAK003.xml",
+      "schedules_SVRYWAK005.xml",
+      "schedules_SVRYWAK007.xml",
+      "schedules_SVRYWAK008.xml",
+      "schedules_SVRYWAK009.xml",
+      "schedules_SVRYWAK010.xml",
+      "schedules_SVRYWAK012.xml",
+      "schedules_SVRYWAK013.xml",
+      "schedules_SVRYWAK015.xml",
+      "schedules_SVRYWAK016.xml",
+      "schedules_SVRYWAK017.xml",
+      "schedules_SVRYWAK019.xml",
+      "schedules_SVRYWAK0M1.xml",
+      "schedules_SVRYWAK0M2.xml",
+      "schedules_SVRYWAK20AA.xml",
+      "schedules_SVRYWAK20BB.xml",
+      "schedules_SVRYWAL0TUU.xml",
+      "schedules_SVRYWAM000U.xml",
+      "schedules_SVRYWAM002.xml",
+      "schedules_SVRYWAM003.xml",
+      "schedules_SVRYWAM004.xml",
+      "schedules_SVRYWAM0G1.xml",
+      "schedules_SVRYWAM0L1.xml",
+      "schedules_SVRYWAM0L2.xml",
+      "schedules_SVRYWAN001.xml",
+      "schedules_SVRYWAN009.xml",
+      "schedules_SVRYWAN010.xml",
+      "schedules_SVRYWAN066.xml",
+      "schedules_SVRYWAO001.xml",
+      "schedules_SVRYWAO001A.xml",
+      "schedules_SVRYWAO001B.xml",
+      "schedules_SVRYWAO002.xml",
+      "schedules_SVRYWAO002A.xml",
+      "schedules_SVRYWAO003.xml",
+      "schedules_SVRYWAO003A.xml",
+      "schedules_SVRYWAO004.xml",
+      "schedules_SVRYWAO004G.xml",
+      "schedules_SVRYWAO005.xml",
+      "schedules_SVRYWAO005A.xml",
+      "schedules_SVRYWAO006.xml",
+      "schedules_SVRYWAO007.xml",
+      "schedules_SVRYWAO007A.xml",
+      "schedules_SVRYWAO007S.xml",
+      "schedules_SVRYWAO008.xml",
+      "schedules_SVRYWAO009.xml",
+      "schedules_SVRYWAO009A.xml",
+      "schedules_SVRYWAO010.xml",
+      "schedules_SVRYWAO010A.xml",
+      "schedules_SVRYWAO011.xml",
+      "schedules_SVRYWAO011A.xml",
+      "schedules_SVRYWAO011S.xml",
+      "schedules_SVRYWAO012.xml",
+      "schedules_SVRYWAO013.xml",
+      "schedules_SVRYWAO013A.xml",
+      "schedules_SVRYWAO014.xml",
+      "schedules_SVRYWAO015.xml",
+      "schedules_SVRYWAO016.xml",
+      "schedules_SVRYWAO016A.xml",
+      "schedules_SVRYWAO018X.xml",
+      "schedules_SVRYWAO019.xml",
+      "schedules_SVRYWAO019A.xml",
+      "schedules_SVRYWAO019M.xml",
+      "schedules_SVRYWAO019X.xml",
+      "schedules_SVRYWAO020.xml",
+      "schedules_SVRYWAO020A.xml",
+      "schedules_SVRYWAO021.xml",
+      "schedules_SVRYWAO022.xml",
+      "schedules_SVRYWAO023.xml",
+      "schedules_SVRYWAO024.xml",
+      "schedules_SVRYWAO025.xml",
+      "schedules_SVRYWAO026.xml",
+      "schedules_SVRYWAO027.xml",
+      "schedules_SVRYWAO028.xml",
+      "schedules_SVRYWAO029B.xml",
+      "schedules_SVRYWAO030.xml",
+      "schedules_SVRYWAO031.xml",
+      "schedules_SVRYWAO032.xml",
+      "schedules_SVRYWAO033.xml",
+      "schedules_SVRYWAO034.xml",
+      "schedules_SVRYWAO035.xml",
+      "schedules_SVRYWAO036.xml",
+      "schedules_SVRYWAO036A.xml",
+      "schedules_SVRYWAO036B.xml",
+      "schedules_SVRYWAO039.xml",
+      "schedules_SVRYWAO040.xml",
+      "schedules_SVRYWAO042.xml",
+      "schedules_SVRYWAO047.xml",
+      "schedules_SVRYWAO048.xml",
+      "schedules_SVRYWAO048A.xml",
+      "schedules_SVRYWAO049.xml",
+      "schedules_SVRYWAO050.xml",
+      "schedules_SVRYWAO050A.xml",
+      "schedules_SVRYWAO051.xml",
+      "schedules_SVRYWAO052.xml",
+      "schedules_SVRYWAO054.xml",
+      "schedules_SVRYWAO055.xml",
+      "schedules_SVRYWAO055C.xml",
+      "schedules_SVRYWAO056.xml",
+      "schedules_SVRYWAO059.xml",
+      "schedules_SVRYWAO060.xml",
+      "schedules_SVRYWAO061.xml",
+      "schedules_SVRYWAO061A.xml",
+      "schedules_SVRYWAO062.xml",
+      "schedules_SVRYWAO064.xml",
+      "schedules_SVRYWAO065.xml",
+      "schedules_SVRYWAO066.xml",
+      "schedules_SVRYWAO066A.xml",
+      "schedules_SVRYWAO066X.xml",
+      "schedules_SVRYWAO067.xml",
+      "schedules_SVRYWAO071.xml",
+      "schedules_SVRYWAO072.xml",
+      "schedules_SVRYWAO074.xml",
+      "schedules_SVRYWAO074A.xml",
+      "schedules_SVRYWAO075.xml",
+      "schedules_SVRYWAO077.xml",
+      "schedules_SVRYWAO078A.xml",
+      "schedules_SVRYWAO080.xml",
+      "schedules_SVRYWAO081.xml",
+      "schedules_SVRYWAO081A.xml",
+      "schedules_SVRYWAO083.xml",
+      "schedules_SVRYWAO083A.xml",
+      "schedules_SVRYWAO084.xml",
+      "schedules_SVRYWAO084A.xml",
+      "schedules_SVRYWAO086.xml",
+      "schedules_SVRYWAO087.xml",
+      "schedules_SVRYWAO091.xml",
+      "schedules_SVRYWAO0G1.xml",
+      "schedules_SVRYWAO0G2.xml",
+      "schedules_SVRYWAO0G3.xml",
+      "schedules_SVRYWAO0G4.xml",
+      "schedules_SVRYWAO100.xml",
+      "schedules_SVRYWAO101.xml",
+      "schedules_SVRYWAO102.xml",
+      "schedules_SVRYWAO103.xml",
+      "schedules_SVRYWAO104.xml",
+      "schedules_SVRYWAO105.xml",
+      "schedules_SVRYWAO107.xml",
+      "schedules_SVRYWAO108.xml",
+      "schedules_SVRYWAO109.xml",
+      "schedules_SVRYWAO110.xml",
+      "schedules_SVRYWAO110S.xml",
+      "schedules_SVRYWAO111.xml",
+      "schedules_SVRYWAO112.xml",
+      "schedules_SVRYWAO113.xml",
+      "schedules_SVRYWAO116.xml",
+      "schedules_SVRYWAO117.xml",
+      "schedules_SVRYWAO118.xml",
+      "schedules_SVRYWAO118A.xml",
+      "schedules_SVRYWAO118S.xml",
+      "schedules_SVRYWAO119.xml",
+      "schedules_SVRYWAO120.xml",
+      "schedules_SVRYWAO125.xml",
+      "schedules_SVRYWAO126.xml",
+      "schedules_SVRYWAO127.xml",
+      "schedules_SVRYWAO128.xml",
+      "schedules_SVRYWAO128A.xml",
+      "schedules_SVRYWAO144.xml",
+      "schedules_SVRYWAO146.xml",
+      "schedules_SVRYWAO147.xml",
+      "schedules_SVRYWAO147A.xml",
+      "schedules_SVRYWAO148.xml",
+      "schedules_SVRYWAO148A.xml",
+      "schedules_SVRYWAO149.xml",
+      "schedules_SVRYWAO153.xml",
+      "schedules_SVRYWAO154.xml",
+      "schedules_SVRYWAO156.xml",
+      "schedules_SVRYWAO159.xml",
+      "schedules_SVRYWAO163.xml",
+      "schedules_SVRYWAO166.xml",
+      "schedules_SVRYWAO167.xml",
+      "schedules_SVRYWAO168.xml",
+      "schedules_SVRYWAO173A.xml",
+      "schedules_SVRYWAO174.xml",
+      "schedules_SVRYWAO174A.xml",
+      "schedules_SVRYWAO175.xml",
+      "schedules_SVRYWAO175A.xml",
+      "schedules_SVRYWAO177.xml",
+      "schedules_SVRYWAO181.xml",
+      "schedules_SVRYWAO183.xml",
+      "schedules_SVRYWAO184.xml",
+      "schedules_SVRYWAO185.xml",
+      "schedules_SVRYWAO186.xml",
+      "schedules_SVRYWAO187.xml",
+      "schedules_SVRYWAO188.xml",
+      "schedules_SVRYWAO189.xml",
+      "schedules_SVRYWAO195.xml",
+      "schedules_SVRYWAO196.xml",
+      "schedules_SVRYWAO197.xml",
+      "schedules_SVRYWAO200.xml",
+      "schedules_SVRYWAO201.xml",
+      "schedules_SVRYWAO201A.xml",
+      "schedules_SVRYWAO202.xml",
+      "schedules_SVRYWAO203.xml",
+      "schedules_SVRYWAO205.xml",
+      "schedules_SVRYWAO212.xml",
+      "schedules_SVRYWAO212A.xml",
+      "schedules_SVRYWAO213.xml",
+      "schedules_SVRYWAO223.xml",
+      "schedules_SVRYWAO226.xml",
+      "schedules_SVRYWAO228.xml",
+      "schedules_SVRYWAO229.xml",
+      "schedules_SVRYWAO231.xml",
+      "schedules_SVRYWAO232.xml",
+      "schedules_SVRYWAO233.xml",
+      "schedules_SVRYWAO241.xml",
+      "schedules_SVRYWAO249.xml",
+      "schedules_SVRYWAO254.xml",
+      "schedules_SVRYWAO254A.xml",
+      "schedules_SVRYWAO255.xml",
+      "schedules_SVRYWAO256.xml",
+      "schedules_SVRYWAO257.xml",
+      "schedules_SVRYWAO257A.xml",
+      "schedules_SVRYWAO258.xml",
+      "schedules_SVRYWAO259.xml",
+      "schedules_SVRYWAO261.xml",
+      "schedules_SVRYWAO262.xml",
+      "schedules_SVRYWAO263.xml",
+      "schedules_SVRYWAO268.xml",
+      "schedules_SVRYWAO271.xml",
+      "schedules_SVRYWAO280.xml",
+      "schedules_SVRYWAO281.xml",
+      "schedules_SVRYWAO283.xml",
+      "schedules_SVRYWAO301.xml",
+      "schedules_SVRYWAO302.xml",
+      "schedules_SVRYWAO303.xml",
+      "schedules_SVRYWAO304.xml",
+      "schedules_SVRYWAO306.xml",
+      "schedules_SVRYWAO308.xml",
+      "schedules_SVRYWAO309.xml",
+      "schedules_SVRYWAO310.xml",
+      "schedules_SVRYWAO314.xml",
+      "schedules_SVRYWAO316.xml",
+      "schedules_SVRYWAO317.xml",
+      "schedules_SVRYWAO319.xml",
+      "schedules_SVRYWAO321.xml",
+      "schedules_SVRYWAO323.xml",
+      "schedules_SVRYWAO324.xml",
+      "schedules_SVRYWAO327.xml",
+      "schedules_SVRYWAO327A.xml",
+      "schedules_SVRYWAO328.xml",
+      "schedules_SVRYWAO335.xml",
+      "schedules_SVRYWAO341.xml",
+      "schedules_SVRYWAO342.xml",
+      "schedules_SVRYWAO343.xml",
+      "schedules_SVRYWAO349.xml",
+      "schedules_SVRYWAO351.xml",
+      "schedules_SVRYWAO352.xml",
+      "schedules_SVRYWAO354.xml",
+      "schedules_SVRYWAO355.xml",
+      "schedules_SVRYWAO356.xml",
+      "schedules_SVRYWAO357.xml",
+      "schedules_SVRYWAO358.xml",
+      "schedules_SVRYWAO359.xml",
+      "schedules_SVRYWAO360.xml",
+      "schedules_SVRYWAO363.xml",
+      "schedules_SVRYWAO370.xml",
+      "schedules_SVRYWAO371.xml",
+      "schedules_SVRYWAO372.xml",
+      "schedules_SVRYWAO374.xml",
+      "schedules_SVRYWAO375.xml",
+      "schedules_SVRYWAO377.xml",
+      "schedules_SVRYWAO378.xml",
+      "schedules_SVRYWAO384.xml",
+      "schedules_SVRYWAO385.xml",
+      "schedules_SVRYWAO387.xml",
+      "schedules_SVRYWAO388.xml",
+      "schedules_SVRYWAO389.xml",
+      "schedules_SVRYWAO393.xml",
+      "schedules_SVRYWAO394.xml",
+      "schedules_SVRYWAO395.xml",
+      "schedules_SVRYWAO396.xml",
+      "schedules_SVRYWAO397.xml",
+      "schedules_SVRYWAO398.xml",
+      "schedules_SVRYWAO399.xml",
+      "schedules_SVRYWAO402.xml",
+      "schedules_SVRYWAO403.xml",
+      "schedules_SVRYWAO406.xml",
+      "schedules_SVRYWAO407.xml",
+      "schedules_SVRYWAO410.xml",
+      "schedules_SVRYWAO411.xml",
+      "schedules_SVRYWAO412.xml",
+      "schedules_SVRYWAO420.xml",
+      "schedules_SVRYWAO425.xml",
+      "schedules_SVRYWAO425A.xml",
+      "schedules_SVRYWAO427.xml",
+      "schedules_SVRYWAO435.xml",
+      "schedules_SVRYWAO436.xml",
+      "schedules_SVRYWAO436A.xml",
+      "schedules_SVRYWAO437.xml",
+      "schedules_SVRYWAO437A.xml",
+      "schedules_SVRYWAO440.xml",
+      "schedules_SVRYWAO444.xml",
+      "schedules_SVRYWAO446.xml",
+      "schedules_SVRYWAO476.xml",
+      "schedules_SVRYWAO485.xml",
+      "schedules_SVRYWAO493.xml",
+      "schedules_SVRYWAO496.xml",
+      "schedules_SVRYWAO497.xml",
+      "schedules_SVRYWAO499.xml",
+      "schedules_SVRYWAO500.xml",
+      "schedules_SVRYWAO501.xml",
+      "schedules_SVRYWAO503.xml",
+      "schedules_SVRYWAO504.xml",
+      "schedules_SVRYWAO508.xml",
+      "schedules_SVRYWAO510.xml",
+      "schedules_SVRYWAO512.xml",
+      "schedules_SVRYWAO521.xml",
+      "schedules_SVRYWAO522.xml",
+      "schedules_SVRYWAO523.xml",
+      "schedules_SVRYWAO525.xml",
+      "schedules_SVRYWAO526.xml",
+      "schedules_SVRYWAO527.xml",
+      "schedules_SVRYWAO532.xml",
+      "schedules_SVRYWAO533.xml",
+      "schedules_SVRYWAO534.xml",
+      "schedules_SVRYWAO535.xml",
+      "schedules_SVRYWAO536.xml",
+      "schedules_SVRYWAO537.xml",
+      "schedules_SVRYWAO539.xml",
+      "schedules_SVRYWAO541.xml",
+      "schedules_SVRYWAO542.xml",
+      "schedules_SVRYWAO546.xml",
+      "schedules_SVRYWAO547.xml",
+      "schedules_SVRYWAO548.xml",
+      "schedules_SVRYWAO549.xml",
+      "schedules_SVRYWAO555.xml",
+      "schedules_SVRYWAO560.xml",
+      "schedules_SVRYWAO561.xml",
+      "schedules_SVRYWAO562.xml",
+      "schedules_SVRYWAO563.xml",
+      "schedules_SVRYWAO563A.xml",
+      "schedules_SVRYWAO564.xml",
+      "schedules_SVRYWAO571.xml",
+      "schedules_SVRYWAO574.xml",
+      "schedules_SVRYWAO576.xml",
+      "schedules_SVRYWAO577.xml",
+      "schedules_SVRYWAO579.xml",
+      "schedules_SVRYWAO589.xml",
+      "schedules_SVRYWAO590.xml",
+      "schedules_SVRYWAO592.xml",
+      "schedules_SVRYWAO594.xml",
+      "schedules_SVRYWAO595.xml",
+      "schedules_SVRYWAO596.xml",
+      "schedules_SVRYWAO597.xml",
+      "schedules_SVRYWAO598.xml",
+      "schedules_SVRYWAO599.xml",
+      "schedules_SVRYWAO600.xml",
+      "schedules_SVRYWAO605.xml",
+      "schedules_SVRYWAO606.xml",
+      "schedules_SVRYWAO607.xml",
+      "schedules_SVRYWAO608.xml",
+      "schedules_SVRYWAO610.xml",
+      "schedules_SVRYWAO611.xml",
+      "schedules_SVRYWAO612.xml",
+      "schedules_SVRYWAO613.xml",
+      "schedules_SVRYWAO614.xml",
+      "schedules_SVRYWAO615.xml",
+      "schedules_SVRYWAO616.xml",
+      "schedules_SVRYWAO617.xml",
+      "schedules_SVRYWAO618.xml",
+      "schedules_SVRYWAO619.xml",
+      "schedules_SVRYWAO620.xml",
+      "schedules_SVRYWAO621.xml",
+      "schedules_SVRYWAO622.xml",
+      "schedules_SVRYWAO624A.xml",
+      "schedules_SVRYWAO626.xml",
+      "schedules_SVRYWAO629.xml",
+      "schedules_SVRYWAO630.xml",
+      "schedules_SVRYWAO633.xml",
+      "schedules_SVRYWAO634.xml",
+      "schedules_SVRYWAO635.xml",
+      "schedules_SVRYWAO636.xml",
+      "schedules_SVRYWAO637.xml",
+      "schedules_SVRYWAO640.xml",
+      "schedules_SVRYWAO641.xml",
+      "schedules_SVRYWAO643.xml",
+      "schedules_SVRYWAO644.xml",
+      "schedules_SVRYWAO645.xml",
+      "schedules_SVRYWAO649.xml",
+      "schedules_SVRYWAO653.xml",
+      "schedules_SVRYWAO656.xml",
+      "schedules_SVRYWAO658.xml",
+      "schedules_SVRYWAO660.xml",
+      "schedules_SVRYWAO662.xml",
+      "schedules_SVRYWAO671.xml",
+      "schedules_SVRYWAO675.xml",
+      "schedules_SVRYWAO676.xml",
+      "schedules_SVRYWAO677.xml",
+      "schedules_SVRYWAO678.xml",
+      "schedules_SVRYWAO679.xml",
+      "schedules_SVRYWAO680.xml",
+      "schedules_SVRYWAO681.xml",
+      "schedules_SVRYWAO682.xml",
+      "schedules_SVRYWAO686.xml",
+      "schedules_SVRYWAO687.xml",
+      "schedules_SVRYWAO688.xml",
+      "schedules_SVRYWAO700.xml",
+      "schedules_SVRYWAO737.xml",
+      "schedules_SVRYWAO747.xml",
+      "schedules_SVRYWAO757.xml",
+      "schedules_SVRYWAO781.xml",
+      "schedules_SVRYWAO821.xml",
+      "schedules_SVRYWAO840.xml",
+      "schedules_SVRYWAO843.xml",
+      "schedules_SVRYWAO862.xml",
+      "schedules_SVRYWAO873.xml",
+      "schedules_SVRYWAO874.xml",
+      "schedules_SVRYWAO884.xml",
+      "schedules_SVRYWAO900.xml",
+      "schedules_SVRYWAO901.xml",
+      "schedules_SVRYWAO902.xml",
+      "schedules_SVRYWAO903.xml",
+      "schedules_SVRYWAO911.xml",
+      "schedules_SVRYWAO923.xml",
+      "schedules_SVRYWAO933.xml",
+      "schedules_SVRYWAO936.xml",
+      "schedules_SVRYWAO937.xml",
+      "schedules_SVRYWAO938.xml",
+      "schedules_SVRYWAO940.xml",
+      "schedules_SVRYWAO948.xml",
+      "schedules_SVRYWAO962.xml",
+      "schedules_SVRYWAO963.xml",
+      "schedules_SVRYWAO964.xml",
+      "schedules_SVRYWAO965.xml",
+      "schedules_SVRYWAO966.xml",
+      "schedules_SVRYWAP0R1.xml",
+      "schedules_SVRYWAP0R2.xml",
+      "schedules_SVRYWAR007.xml",
+      "schedules_SVRYWAS0W1.xml",
+      "schedules_SVRYWAST11.xml",
+      "schedules_SVRYWAT001.xml",
+      "schedules_SVRYWAT002.xml",
+      "schedules_SVRYWAT003.xml",
+      "schedules_SVRYWAT004.xml",
+      "schedules_SVRYWAT006.xml",
+      "schedules_SVRYWAT008.xml",
+      "schedules_SVRYWAT0K1.xml",
+      "schedules_SVRYWAT0K2.xml",
+      "schedules_SVRYWAW0A1.xml",
+      "schedules_SVRYWAW0A2.xml",
+      "schedules_SVRYWAW0CBB.xml",
+      "schedules_SVRYWAW0M1.xml",
+      "schedules_SVRYWAW0M2.xml",
+      "schedules_SVRYWAX004.xml",
+      "schedules_SVRYWAX006.xml",
+      "schedules_SVRYWAX007.xml",
+      "schedules_SVRYWAX010.xml",
+      "schedules_SVRYWAX011.xml",
+      "schedules_SVRYWAX014.xml",
+      "schedules_SVRYWAX017.xml",
+      "schedules_SVRYWAX022.xml",
+      "schedules_SVRYWAX025.xml",
+      "schedules_SVRYWAX026.xml",
+      "schedules_SVRYWAX027.xml",
+      "schedules_SVRYWAX032.xml",
+      "schedules_SVRYWAX036.xml",
+      "schedules_SVRYWAX041.xml",
+      "schedules_SVRYWAX049.xml",
+      "schedules_SVRYWAX052.xml",
+      "schedules_SVRYWAX056.xml",
+      "schedules_SVRYWAX058.xml",
+      "schedules_SVRYWAX060.xml",
+      "schedules_SVRYWAX062.xml",
+      "schedules_SVRYWAX063.xml",
+      "schedules_SVRYWAX064.xml",
+      "schedules_SVRYWAX070.xml",
+      "schedules_SVRYWAX084.xml",
+      "schedules_SVRYWAX085.xml",
+      "schedules_SVRYWAX098.xml",
+      "schedules_SVRYWAX099.xml",
+      "schedules_SVRYWAZ0APP.xml",
+      "schedules_SVRYWBK017.xml",
+      "schedules_SVRYWBO001.xml",
+      "schedules_SVRYWBO002.xml",
+      "schedules_SVRYWBO003.xml",
+      "schedules_SVRYWBO003A.xml",
+      "schedules_SVRYWBO004.xml",
+      "schedules_SVRYWBO005.xml",
+      "schedules_SVRYWBO006.xml",
+      "schedules_SVRYWBO007.xml",
+      "schedules_SVRYWBO008.xml",
+      "schedules_SVRYWBO009.xml",
+      "schedules_SVRYWBO010.xml",
+      "schedules_SVRYWBO011.xml",
+      "schedules_SVRYWBO012.xml",
+      "schedules_SVRYWBO013.xml",
+      "schedules_SVRYWBO014.xml",
+      "schedules_SVRYWBO016.xml",
+      "schedules_SVRYWBO019.xml",
+      "schedules_SVRYWBO020.xml",
+      "schedules_SVRYWBO021.xml",
+      "schedules_SVRYWBO022.xml",
+      "schedules_SVRYWBO024.xml",
+      "schedules_SVRYWBO026.xml",
+      "schedules_SVRYWBO027.xml",
+      "schedules_SVRYWBO036.xml",
+      "schedules_SVRYWBO062.xml",
+      "schedules_SVRYWBO064.xml",
+      "schedules_SVRYWBO066.xml",
+      "schedules_SVRYWBO074A.xml",
+      "schedules_SVRYWBO084.xml",
+      "schedules_SVRYWBO126.xml",
+      "schedules_SVRYWBO159.xml",
+      "schedules_SVRYWBO183.xml",
+      "schedules_SVRYWBO184.xml",
+      "schedules_SVRYWBO200.xml",
+      "schedules_SVRYWBO205.xml",
+      "schedules_SVRYWBO231.xml",
+      "schedules_SVRYWBO232.xml",
+      "schedules_SVRYWBO256.xml",
+      "schedules_SVRYWBO262.xml",
+      "schedules_SVRYWBO323.xml",
+      "schedules_SVRYWBO324.xml",
+      "schedules_SVRYWBO342.xml",
+      "schedules_SVRYWBO356.xml",
+      "schedules_SVRYWBO358.xml",
+      "schedules_SVRYWBO370.xml",
+      "schedules_SVRYWBO371.xml",
+      "schedules_SVRYWBO412.xml",
+      "schedules_SVRYWBO537.xml",
+      "schedules_SVRYWBO560.xml",
+      "schedules_SVRYWBO571.xml",
+      "schedules_SVRYWBO574.xml",
+      "schedules_SVRYWBO579.xml",
+      "schedules_SVRYWBO630.xml",
+      "schedules_SVRYWBO633.xml",
+      "schedules_SVRYWBO680.xml",
+      "schedules_SVRYWBX007.xml",
+      "schedules_SVRYWBX011.xml",
+      "schedules_SVRYWBX049.xml",
+      "schedules_SVRYWCO007.xml",
+      "schedules_SVRYWCO009.xml",
+      "schedules_SVRYWCO019.xml",
+      "schedules_SVRYWCO021.xml",
+      "schedules_SVRYWCO183.xml",
+      "schedules_SVRYWCO200.xml",
+      "schedules_SVRYWCO633.xml",
+      "schedules_SVRYWDO007.xml"
+    ]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SH450026008",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85449951534848312, 53.5975404726727334]
+          },
+          "properties": {
+            "atco_code": "450026008",
+            "bearing": 3,
+            "feature_name": "Highfield Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026010",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85572369580832741, 53.5974520609499336]
+          },
+          "properties": {
+            "atco_code": "450026010",
+            "bearing": 1,
+            "feature_name": "Highfield Avenue (E bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026012",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85452684905430054, 53.5983853986826446]
+          },
+          "properties": {
+            "atco_code": "450026012",
+            "bearing": 5,
+            "feature_name": "Highfield Crescent",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026013",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85192029176303063, 53.5918927285796443]
+          },
+          "properties": {
+            "atco_code": "450026013",
+            "bearing": 6,
+            "feature_name": "Greens End Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026014",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85343033697510351, 53.5921013024930346]
+          },
+          "properties": {
+            "atco_code": "450026014",
+            "bearing": 6,
+            "feature_name": "Colders Lane (on)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026016",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85581862159829325, 53.5917266758585171]
+          },
+          "properties": {
+            "atco_code": "450026016",
+            "bearing": 6,
+            "feature_name": "Matthew Lane Colders Ln (after)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026017",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85675640506682105, 53.5913952289087945]
+          },
+          "properties": {
+            "atco_code": "450026017",
+            "bearing": 4,
+            "feature_name": "Whingrove Avenue",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026018",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85665255834529885, 53.5908288473700765]
+          },
+          "properties": {
+            "atco_code": "450026018",
+            "bearing": 3,
+            "feature_name": "Colders Drive (on)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026019",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85736452169275479, 53.5902544449307427]
+          },
+          "properties": {
+            "atco_code": "450026019",
+            "bearing": 5,
+            "feature_name": "Bracewell Rd Popley Drive (at)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026020",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85956943051742485, 53.5904727493237658]
+          },
+          "properties": {
+            "atco_code": "450026020",
+            "bearing": 7,
+            "feature_name": "Hanson Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026021",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85965610647533963, 53.5916772722907098]
+          },
+          "properties": {
+            "atco_code": "450026021",
+            "bearing": 1,
+            "feature_name": "Matthew Grove (on)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026022",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.86223794796717934, 53.5921566237827705]
+          },
+          "properties": {
+            "atco_code": "450026022",
+            "bearing": 6,
+            "feature_name": "Mill Moor Road (W bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026023",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.86445127038815817, 53.58976826269447]
+          },
+          "properties": {
+            "atco_code": "450026023",
+            "bearing": 3,
+            "feature_name": "Leygards Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026024",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85666057074222657, 53.5884469767011424]
+          },
+          "properties": {
+            "atco_code": "450026024",
+            "bearing": 1,
+            "feature_name": "Wessenden Head Road (E bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026025",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85192397832440325, 53.5908321225499691]
+          },
+          "properties": {
+            "atco_code": "450026025",
+            "bearing": 1,
+            "feature_name": "Wessenden Head Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026359",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84911582503482919, 53.5903253006306954]
+          },
+          "properties": {
+            "atco_code": "450026359",
+            "bearing": 5,
+            "feature_name": "Tinker Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026360",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84917946713418124, 53.5894175692675603]
+          },
+          "properties": {
+            "atco_code": "450026360",
+            "bearing": 5,
+            "feature_name": "Heather Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026361",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85007408255025463, 53.5884749209685154]
+          },
+          "properties": {
+            "atco_code": "450026361",
+            "bearing": 3,
+            "feature_name": "Heather Avenue",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026363",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84632485802481972, 53.5892611650563992]
+          },
+          "properties": {
+            "atco_code": "450026363",
+            "bearing": 3,
+            "feature_name": "Holmfirth Rd Derwent Rd (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026364",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84231724626644078, 53.5904334485172242]
+          },
+          "properties": {
+            "atco_code": "450026364",
+            "bearing": 1,
+            "feature_name": "Mill Bank Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026449",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85055175007060546, 53.5944167307490105]
+          },
+          "properties": {
+            "atco_code": "450026449",
+            "bearing": 2,
+            "feature_name": "Mean Lane (E bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026450",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85034042107881214, 53.5943625393225815]
+          },
+          "properties": {
+            "atco_code": "450026450",
+            "bearing": 6,
+            "feature_name": "Mean Lane (W bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026451",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84956662069632372, 53.5952873635476976]
+          },
+          "properties": {
+            "atco_code": "450026451",
+            "bearing": 7,
+            "feature_name": "Broadlands Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026452",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84944546456527048, 53.5953681063880722]
+          },
+          "properties": {
+            "atco_code": "450026452",
+            "bearing": 3,
+            "feature_name": "Broadlands Road (S bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026454",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85192199589045359, 53.5957486785418453]
+          },
+          "properties": {
+            "atco_code": "450026454",
+            "bearing": 3,
+            "feature_name": "Sunny Heys Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026458",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85506728538924381, 53.5949795117475105]
+          },
+          "properties": {
+            "atco_code": "450026458",
+            "bearing": 1,
+            "feature_name": "Lower Hey (E bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026459",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85474801137186907, 53.5955633624825083]
+          },
+          "properties": {
+            "atco_code": "450026459",
+            "bearing": 7,
+            "feature_name": "Sunny Heys West (N bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026460",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85450381345964921, 53.5962821262999469]
+          },
+          "properties": {
+            "atco_code": "450026460",
+            "bearing": 1,
+            "feature_name": "Sunny Heys Road (E bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026462",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85822060038226167, 53.5963045286815998]
+          },
+          "properties": {
+            "atco_code": "450026462",
+            "bearing": 1,
+            "feature_name": "Berry Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026463",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85870197649880509, 53.596943257458868]
+          },
+          "properties": {
+            "atco_code": "450026463",
+            "bearing": 7,
+            "feature_name": "Oak Avenue",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026464",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85950152825046233, 53.597321696679316]
+          },
+          "properties": {
+            "atco_code": "450026464",
+            "bearing": 5,
+            "feature_name": "Fern Avenue",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026508",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.86143230048216757, 53.598321622360956]
+          },
+          "properties": {
+            "atco_code": "450026508",
+            "bearing": 7,
+            "feature_name": "Westfield Avenue",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026509",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.86259445569272697, 53.5987274213308922]
+          },
+          "properties": {
+            "atco_code": "450026509",
+            "bearing": 6,
+            "feature_name": "Moor View Westfield Ave (after)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026510",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.86112170232572849, 53.5962629619498756]
+          },
+          "properties": {
+            "atco_code": "450026510",
+            "bearing": 4,
+            "feature_name": "Birmingham Lane Primary School (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026511",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85866675609022591, 53.5938962081385952]
+          },
+          "properties": {
+            "atco_code": "450026511",
+            "bearing": 2,
+            "feature_name": "Golcar Brow Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450026974",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84283441381029167, 53.5935710156681964]
+          },
+          "properties": {
+            "atco_code": "450026974",
+            "bearing": 1,
+            "feature_name": "Deacon Close (on)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450027854",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.8632596710660152, 53.5986113300693177]
+          },
+          "properties": {
+            "atco_code": "450027854",
+            "bearing": 3,
+            "feature_name": "Slaithwaite Road (S bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450029067",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84445341607025326, 53.5929079861656419]
+          },
+          "properties": {
+            "atco_code": "450029067",
+            "bearing": 7,
+            "feature_name": "Bishops Way (N bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450032107",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84850232001939352, 53.5886706973786033]
+          },
+          "properties": {
+            "atco_code": "450032107",
+            "bearing": 2,
+            "feature_name": "Calmlands Rd Windermere Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450032108",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84004629545439524, 53.5917337503642059]
+          },
+          "properties": {
+            "atco_code": "450032108",
+            "bearing": 2,
+            "feature_name": "Mill Bank Road Weavers Court",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450032109",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84446780172186298, 53.593105745694551]
+          },
+          "properties": {
+            "atco_code": "450032109",
+            "bearing": 2,
+            "feature_name": "Bishops Way Cardnial Close",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450032110",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.8496393354134022, 53.5918090118715753]
+          },
+          "properties": {
+            "atco_code": "450032110",
+            "bearing": 2,
+            "feature_name": "Clarke Ln Parkin Lane (SE bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH450032111",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.8523530204200358, 53.5978075107460867]
+          },
+          "properties": {
+            "atco_code": "450032111",
+            "bearing": 2,
+            "feature_name": "Helme Lane Highfield Crescent",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019197",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84417884220489037, 53.5936266897521065]
+          },
+          "properties": {
+            "atco_code": "450019197",
+            "bearing": 5,
+            "feature_name": "Huddersfield Rd Bishops Way",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019199",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84062411434944995, 53.5947725368525738]
+          },
+          "properties": {
+            "atco_code": "450019199",
+            "bearing": 5,
+            "feature_name": "Huddersfield Rd Scout HQ (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019203",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.83828860193608112, 53.5931066047294067]
+          },
+          "properties": {
+            "atco_code": "450019203",
+            "bearing": 0,
+            "feature_name": "Hall Park",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019208",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.847717626445053, 53.5926604818445682]
+          },
+          "properties": {
+            "atco_code": "450019208",
+            "bearing": 5,
+            "feature_name": "Huddersfield Rd Clifton Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019215",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.83734304542023508, 53.5954242959399281]
+          },
+          "properties": {
+            "atco_code": "450019215",
+            "bearing": 0,
+            "feature_name": "Meltham Mills Road Harewood Mount (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019231",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84977679299614994, 53.5913867366344476]
+          },
+          "properties": {
+            "atco_code": "450019231",
+            "bearing": 5,
+            "feature_name": "Parkin Lane Holmfirth Rd",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019232",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85122038394691568, 53.5933120063421811]
+          },
+          "properties": {
+            "atco_code": "450019232",
+            "bearing": 4,
+            "feature_name": "Morrisons Supermarket (S bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019233",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85577864027472383, 53.5946118472875526]
+          },
+          "properties": {
+            "atco_code": "450019233",
+            "bearing": 7,
+            "feature_name": "Slaithwaite Road Lower Hey",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019234",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85620058713026115, 53.5949359270524823]
+          },
+          "properties": {
+            "atco_code": "450019234",
+            "bearing": 3,
+            "feature_name": "Slaithwaite Road Lower Hey (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019237",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.86274677179190729, 53.5983500893486777]
+          },
+          "properties": {
+            "atco_code": "450019237",
+            "bearing": 3,
+            "feature_name": "Slaithwaite Road Moorview",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019272",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85571083916067647, 53.5967869169242306]
+          },
+          "properties": {
+            "atco_code": "450019272",
+            "bearing": 5,
+            "feature_name": "Helme Lane Sunny Heys Rd (at)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019274",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85223476238573048, 53.5970523550160181]
+          },
+          "properties": {
+            "atco_code": "450019274",
+            "bearing": 7,
+            "feature_name": "Broadlands Rd Helme Lane (before)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450019275",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85104448298950808, 53.5960891504585604]
+          },
+          "properties": {
+            "atco_code": "450019275",
+            "bearing": 7,
+            "feature_name": "Broadlands Rd Sunny Heys Road",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450023851",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.84911905707433832, 53.5936779123803859]
+          },
+          "properties": {
+            "atco_code": "450023851",
+            "bearing": 2,
+            "feature_name": "Morrisons Supermarket (entrance)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450023852",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85137293859523, 53.5928897480099451]
+          },
+          "properties": {
+            "atco_code": "450023852",
+            "bearing": 0,
+            "feature_name": "Morrisons Supermarket (N bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450029093",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85014369508637744, 53.594452177202669]
+          },
+          "properties": {
+            "atco_code": "450029093",
+            "bearing": 2,
+            "feature_name": "Mean Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85577864027472383, 53.5946118472875526],
+              [-1.85822060038226167, 53.5963045286815998],
+              [-1.85870197649880509, 53.596943257458868],
+              [-1.85950152825046233, 53.597321696679316],
+              [-1.86143230048216757, 53.598321622360956],
+              [-1.86259445569272697, 53.5987274213308922],
+              [-1.8632596710660152, 53.5986113300693177],
+              [-1.86274677179190729, 53.5983500893486777],
+              [-1.86112170232572849, 53.5962629619498756],
+              [-1.85866675609022591, 53.5938962081385952],
+              [-1.84911905707433832, 53.5936779123803859],
+              [-1.85122038394691568, 53.5933120063421811],
+              [-1.84977679299614994, 53.5913867366344476],
+              [-1.85192029176303063, 53.5918927285796443],
+              [-1.85343033697510351, 53.5921013024930346],
+              [-1.85581862159829325, 53.5917266758585171],
+              [-1.85675640506682105, 53.5913952289087945],
+              [-1.85665255834529885, 53.5908288473700765],
+              [-1.85736452169275479, 53.5902544449307427],
+              [-1.85956943051742485, 53.5904727493237658],
+              [-1.85965610647533963, 53.5916772722907098],
+              [-1.86223794796717934, 53.5921566237827705],
+              [-1.86445127038815817, 53.58976826269447],
+              [-1.85666057074222657, 53.5884469767011424],
+              [-1.85192397832440325, 53.5908321225499691],
+              [-1.84977679299614994, 53.5913867366344476],
+              [-1.85137293859523, 53.5928897480099451],
+              [-1.84911905707433832, 53.5936779123803859],
+              [-1.85055175007060546, 53.5944167307490105],
+              [-1.85014369508637744, 53.594452177202669],
+              [-1.84956662069632372, 53.5952873635476976],
+              [-1.85104448298950808, 53.5960891504585604],
+              [-1.85223476238573048, 53.5970523550160181],
+              [-1.8523530204200358, 53.5978075107460867],
+              [-1.85452684905430054, 53.5983853986826446],
+              [-1.85572369580832741, 53.5974520609499336],
+              [-1.85449951534848312, 53.5975404726727334],
+              [-1.85571083916067647, 53.5967869169242306],
+              [-1.85620058713026115, 53.5949359270524823],
+              [-1.85506728538924381, 53.5949795117475105],
+              [-1.85474801137186907, 53.5955633624825083],
+              [-1.85450381345964921, 53.5962821262999469],
+              [-1.85192199589045359, 53.5957486785418453],
+              [-1.84944546456527048, 53.5953681063880722],
+              [-1.85034042107881214, 53.5943625393225815],
+              [-1.84911905707433832, 53.5936779123803859],
+              [-1.85122038394691568, 53.5933120063421811],
+              [-1.84977679299614994, 53.5913867366344476],
+              [-1.84911582503482919, 53.5903253006306954],
+              [-1.84917946713418124, 53.5894175692675603],
+              [-1.85007408255025463, 53.5884749209685154],
+              [-1.84850232001939352, 53.5886706973786033],
+              [-1.84632485802481972, 53.5892611650563992],
+              [-1.84231724626644078, 53.5904334485172242],
+              [-1.84004629545439524, 53.5917337503642059],
+              [-1.83828860193608112, 53.5931066047294067],
+              [-1.83734304542023508, 53.5954242959399281],
+              [-1.84062411434944995, 53.5947725368525738],
+              [-1.84417884220489037, 53.5936266897521065],
+              [-1.84446780172186298, 53.593105745694551],
+              [-1.84283441381029167, 53.5935710156681964],
+              [-1.84445341607025326, 53.5929079861656419],
+              [-1.847717626445053, 53.5926604818445682],
+              [-1.8496393354134022, 53.5918090118715753],
+              [-1.84977679299614994, 53.5913867366344476]
+            ]
+          },
+          "properties": {
+            "feature_name": "Slaithwaite Road Lower Hey - Parkin Lane Holmfirth Rd",
+            "length_m": 10486.3701,
+            "route_shape": true,
+            "line": "LI49466",
+            "stops": [
+              "ST450019233",
+              "SH450026462",
+              "SH450026463",
+              "SH450026464",
+              "SH450026508",
+              "SH450026509",
+              "SH450027854",
+              "ST450019237",
+              "SH450026510",
+              "SH450026511",
+              "ST450023851",
+              "ST450019232",
+              "ST450019231",
+              "SH450026013",
+              "SH450026014",
+              "SH450026016",
+              "SH450026017",
+              "SH450026018",
+              "SH450026019",
+              "SH450026020",
+              "SH450026021",
+              "SH450026022",
+              "SH450026023",
+              "SH450026024",
+              "SH450026025",
+              "ST450019231",
+              "ST450023852",
+              "ST450023851",
+              "SH450026449",
+              "ST450029093",
+              "SH450026451",
+              "ST450019275",
+              "ST450019274",
+              "SH450032111",
+              "SH450026012",
+              "SH450026010",
+              "SH450026008",
+              "ST450019272",
+              "ST450019234",
+              "SH450026458",
+              "SH450026459",
+              "SH450026460",
+              "SH450026454",
+              "SH450026452",
+              "SH450026450",
+              "ST450023851",
+              "ST450019232",
+              "ST450019231",
+              "SH450026359",
+              "SH450026360",
+              "SH450026361",
+              "SH450032107",
+              "SH450026363",
+              "SH450026364",
+              "SH450032108",
+              "ST450019203",
+              "ST450019215",
+              "ST450019199",
+              "ST450019197",
+              "SH450032109",
+              "SH450026974",
+              "SH450029067",
+              "ST450019208",
+              "SH450032110",
+              "ST450019231"
+            ],
+            "timing_patterns": ["TP024ece493cf20106e24694132b6d1f9f4aa64701"],
+            "service_links": [
+              "SL35999b462132a7c2334cb37d46b5539cca1edd57",
+              "SLb19cb6ac20166eece486b2570369e0eaf1f6c17d",
+              "SL4df6542bd8c8b553fef109407bd0cec3003a6f35",
+              "SL5f07e59c7d6c836efc0029807b5255e0d21565ad",
+              "SLf634f092265a95b3504c3d144231d3417a427e5e",
+              "SL00d8f54e6865256f3648acaabf50ec9af814cc19",
+              "SL7a1f956c5c0c9d189fa9097803f72c7e1d40a9a5",
+              "SL884004eb47b42f9d856f12c6015c29ce09aba64f",
+              "SLb41a71e9749214fba479416a7b6329b4fd7952e6",
+              "SL5541606af81a0ea4de2186cafe41915d27c0e889",
+              "SL15837d07a818b5dab82ff7f290cab4d472904c0b",
+              "SL400344ccb3f363e43ddb9130f3d10cd0e76fb841",
+              "SLa46b1ce920f5a9a28e24179add08e4855afcf3c7",
+              "SL86d266ce9f28716faf200bc68a232594274455d1",
+              "SLf1571acacf07a7f7e0ab4949f355783f8c42a988",
+              "SL76c2e4aca1d7e372bd8b752fd022bb5d1cfb237b",
+              "SLc6c6495310c69e866339407f2840fff5939f3f91",
+              "SLe0c685338be1c3ebc9c137da20ab458bcc4f3da7",
+              "SL7f6cb4b222ce7e05df903ea744eaf141e9fc0ba7",
+              "SL11359ee7479b3488c7cb9d1ac86be2d87a260ec3",
+              "SLf075ccfb9d00c571212d0e788f37befb39c70b2e",
+              "SL8481b8434e2ae4f328da5e3ab2367c741f696471",
+              "SL69735be3ff20e50b43d56636d05ac489baf627ea",
+              "SL87a0ff6b1a57cd0760aaf1d2b408534c4a9a3c2d",
+              "SLaf6031990cc8364bc638ae828ba26c2416cd9734",
+              "SLad7ca5496b18c9f0e888a4ba73f8e0e2c5d65a58",
+              "SLe255177cf114830103ec0d8304b302f91011cd14",
+              "SL841911ebf2dae026e5c88a716d0560ad88fb94b7",
+              "SL22be028c96a6714078f00ef8a139aa56f72e2686",
+              "SLa6f51121cd274dc5d15c12b0d6f6523dd7da878b",
+              "SL9d977257f7aaa317e894f077e92685660915073c",
+              "SLa21a6593c0266b39b026fab0394df28ba238c4e1",
+              "SL0ad873e1b55ffbd5d2d1233e113b10495bd8e5d5",
+              "SLb0f2ce8a777ac6b3b4ea404e23d095d30edc8b0b",
+              "SL7fb93d66b60a895b4d0fcbddc6046edba2ac3e53",
+              "SL3d555840ab482d4836f0ddda77e732050dd03cbc",
+              "SL5ee0e3fa0ba847d431ed8e7416db2903d2f741aa",
+              "SLc008fd98c50d072a42189c42aa7dac0144415031",
+              "SL7de4dcc6cddfe9b6fbce58ab159417d205ae1957",
+              "SL16542c4aedb123a91b25d9a4fe5fe1f75724c9dc",
+              "SL93c4b2122757a6f102c6a4323d8f644853c2dff3",
+              "SLe3f3255367da774e68cf0760830e152378399c08",
+              "SLb8224aee0a077bb5cf2d8d620165c681fcc71ebc",
+              "SLc3391cde3e84e43f66c7211897dab8c66b9e7410",
+              "SL20b18c4f5c02c8cec9fbcc4e7a4936a0a6af936a",
+              "SL15837d07a818b5dab82ff7f290cab4d472904c0b",
+              "SL400344ccb3f363e43ddb9130f3d10cd0e76fb841",
+              "SLd4a51fa92c3d5866e2cf3009724c6c9f3338e215",
+              "SLbc4ccf21b0c4d5c44288c91bee8b51f85f1adc2b",
+              "SLde03131826966531763f8537cb9d01f26285c1ef",
+              "SLf7a827bef4f7830822a0e2719695f8257d27860f",
+              "SLf31e05ecb1c88d487cfe2d0444192e4ba399dc82",
+              "SLf44dffa9b9063aa050eb88cd90f63515709073e5",
+              "SL6fe5a9b7eaff1d68b11b4694003e58406f0eeaf8",
+              "SLf742125388bb9bfecf0f39432b119ccbd1b1e8db",
+              "SL16e018b459fc70bc75a849daf806707d564ed2ad",
+              "SL695ec54f3cf46813626d9d386b9aad0451f3b226",
+              "SL9270d24859e780a581f2f69d892b6250e1810bfc",
+              "SL4c5502d4538d7ca3f30435bf83ea7f4ca594f60c",
+              "SL169e15f9ea34a81c1ec8970ecc12689daa2dae59",
+              "SL55d2e91a80d8d556840ce229863f38db1a058140",
+              "SL895090f94af746cf54afc0f3b8c42e703545b4af",
+              "SL8a3c5242a5f3fc1facc951690f98c99b92364c05",
+              "SLe7f68a45eb7a731070d86e01350e7ff6e8eacb96"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL00d8f54e6865256f3648acaabf50ec9af814cc19",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.86259445569272697, 53.5987274213308922],
+              [-1.8632596710660152, 53.5986113300693177]
+            ]
+          },
+          "properties": {
+            "feature_name": "Moor View Westfield Ave (after)-Slaithwaite Road (S bound)",
+            "from_stop": "SH450026509",
+            "length_m": 45.8802795,
+            "route_shape": false,
+            "to_stop": "SH450027854",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL0ad873e1b55ffbd5d2d1233e113b10495bd8e5d5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85223476238573048, 53.5970523550160181],
+              [-1.8523530204200358, 53.5978075107460867]
+            ]
+          },
+          "properties": {
+            "feature_name": "Broadlands Rd Helme Lane (before)-Helme Lane Highfield Crescent",
+            "from_stop": "ST450019274",
+            "length_m": 84.3800888,
+            "route_shape": false,
+            "to_stop": "SH450032111",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL11359ee7479b3488c7cb9d1ac86be2d87a260ec3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85956943051742485, 53.5904727493237658],
+              [-1.85965610647533963, 53.5916772722907098]
+            ]
+          },
+          "properties": {
+            "feature_name": "Hanson Road-Matthew Grove (on)",
+            "from_stop": "SH450026020",
+            "length_m": 134.134262,
+            "route_shape": false,
+            "to_stop": "SH450026021",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL15837d07a818b5dab82ff7f290cab4d472904c0b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84911905707433832, 53.5936779123803859],
+              [-1.85122038394691568, 53.5933120063421811]
+            ]
+          },
+          "properties": {
+            "feature_name": "Morrisons Supermarket (entrance)-Morrisons Supermarket (S bound)",
+            "from_stop": "ST450023851",
+            "length_m": 144.92067,
+            "route_shape": false,
+            "to_stop": "ST450019232",
+            "service_patterns": [
+              "SP595237467fd4681617da24670973f98f3f84ff41",
+              "SPb3d6bdcf9477350ca82e5630b19a12c4653792cb",
+              "SP031880866fad7dc708e082b101cacc3db0c2f127",
+              "SP7af32012546ca730da39ac3b7a9e1dcadf1c7719",
+              "SP86fcc35326044141233cbba31e92efa998b2f56e",
+              "SPe63a1176d487c6d22eb773578ced4038846a0c2e",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4699cb52caa0a32364b289622532d0ccf66dd38f",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL16542c4aedb123a91b25d9a4fe5fe1f75724c9dc",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85506728538924381, 53.5949795117475105],
+              [-1.85474801137186907, 53.5955633624825083]
+            ]
+          },
+          "properties": {
+            "feature_name": "Lower Hey (E bound)-Sunny Heys West (N bound)",
+            "from_stop": "SH450026458",
+            "length_m": 68.3081284,
+            "route_shape": false,
+            "to_stop": "SH450026459",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL169e15f9ea34a81c1ec8970ecc12689daa2dae59",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84446780172186298, 53.593105745694551],
+              [-1.84283441381029167, 53.5935710156681964]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishops Way Cardnial Close-Deacon Close (on)",
+            "from_stop": "SH450032109",
+            "length_m": 119.866592,
+            "route_shape": false,
+            "to_stop": "SH450026974",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL16e018b459fc70bc75a849daf806707d564ed2ad",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.83828860193608112, 53.5931066047294067],
+              [-1.83734304542023508, 53.5954242959399281]
+            ]
+          },
+          "properties": {
+            "feature_name": "Hall Park-Meltham Mills Road Harewood Mount (adj)",
+            "from_stop": "ST450019203",
+            "length_m": 265.345062,
+            "route_shape": false,
+            "to_stop": "ST450019215",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP8b67d5299c8428c71ba3125f0e2e832d156ed8d3",
+              "SPaa20a48707c0e2f0fce45375e517d6161071162a",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL20b18c4f5c02c8cec9fbcc4e7a4936a0a6af936a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85034042107881214, 53.5943625393225815],
+              [-1.84911905707433832, 53.5936779123803859]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mean Lane (W bound)-Morrisons Supermarket (entrance)",
+            "from_stop": "SH450026450",
+            "length_m": 111.072052,
+            "route_shape": false,
+            "to_stop": "ST450023851",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL22be028c96a6714078f00ef8a139aa56f72e2686",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85055175007060546, 53.5944167307490105],
+              [-1.85014369508637744, 53.594452177202669]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mean Lane (E bound)-Mean Lane",
+            "from_stop": "SH450026449",
+            "length_m": 27.2946873,
+            "route_shape": false,
+            "to_stop": "ST450029093",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL35999b462132a7c2334cb37d46b5539cca1edd57",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85577864027472383, 53.5946118472875526],
+              [-1.85822060038226167, 53.5963045286815998]
+            ]
+          },
+          "properties": {
+            "feature_name": "Slaithwaite Road Lower Hey-Berry Road",
+            "from_stop": "ST450019233",
+            "length_m": 248.169296,
+            "route_shape": false,
+            "to_stop": "SH450026462",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3d555840ab482d4836f0ddda77e732050dd03cbc",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85572369580832741, 53.5974520609499336],
+              [-1.85449951534848312, 53.5975404726727334]
+            ]
+          },
+          "properties": {
+            "feature_name": "Highfield Avenue (E bound)-Highfield Road",
+            "from_stop": "SH450026010",
+            "length_m": 81.6149521,
+            "route_shape": false,
+            "to_stop": "SH450026008",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL400344ccb3f363e43ddb9130f3d10cd0e76fb841",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85122038394691568, 53.5933120063421811],
+              [-1.84977679299614994, 53.5913867366344476]
+            ]
+          },
+          "properties": {
+            "feature_name": "Morrisons Supermarket (S bound)-Parkin Lane Holmfirth Rd",
+            "from_stop": "ST450019232",
+            "length_m": 234.546371,
+            "route_shape": false,
+            "to_stop": "ST450019231",
+            "service_patterns": [
+              "SP595237467fd4681617da24670973f98f3f84ff41",
+              "SPb3d6bdcf9477350ca82e5630b19a12c4653792cb",
+              "SP031880866fad7dc708e082b101cacc3db0c2f127",
+              "SP7af32012546ca730da39ac3b7a9e1dcadf1c7719",
+              "SP86fcc35326044141233cbba31e92efa998b2f56e",
+              "SPe63a1176d487c6d22eb773578ced4038846a0c2e",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4c5502d4538d7ca3f30435bf83ea7f4ca594f60c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84417884220489037, 53.5936266897521065],
+              [-1.84446780172186298, 53.593105745694551]
+            ]
+          },
+          "properties": {
+            "feature_name": "Huddersfield Rd Bishops Way-Bishops Way Cardnial Close",
+            "from_stop": "ST450019197",
+            "length_m": 61.0327797,
+            "route_shape": false,
+            "to_stop": "SH450032109",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4df6542bd8c8b553fef109407bd0cec3003a6f35",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85870197649880509, 53.596943257458868],
+              [-1.85950152825046233, 53.597321696679316]
+            ]
+          },
+          "properties": {
+            "feature_name": "Oak Avenue-Fern Avenue",
+            "from_stop": "SH450026463",
+            "length_m": 67.6239624,
+            "route_shape": false,
+            "to_stop": "SH450026464",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5541606af81a0ea4de2186cafe41915d27c0e889",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85866675609022591, 53.5938962081385952],
+              [-1.84911905707433832, 53.5936779123803859]
+            ]
+          },
+          "properties": {
+            "feature_name": "Golcar Brow Road-Morrisons Supermarket (entrance)",
+            "from_stop": "SH450026511",
+            "length_m": 632.418396,
+            "route_shape": false,
+            "to_stop": "ST450023851",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL55d2e91a80d8d556840ce229863f38db1a058140",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84283441381029167, 53.5935710156681964],
+              [-1.84445341607025326, 53.5929079861656419]
+            ]
+          },
+          "properties": {
+            "feature_name": "Deacon Close (on)-Bishops Way (N bound)",
+            "from_stop": "SH450026974",
+            "length_m": 130.096115,
+            "route_shape": false,
+            "to_stop": "SH450029067",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5ee0e3fa0ba847d431ed8e7416db2903d2f741aa",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85449951534848312, 53.5975404726727334],
+              [-1.85571083916067647, 53.5967869169242306]
+            ]
+          },
+          "properties": {
+            "feature_name": "Highfield Road-Helme Lane Sunny Heys Rd (at)",
+            "from_stop": "SH450026008",
+            "length_m": 116,
+            "route_shape": false,
+            "to_stop": "ST450019272",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5f07e59c7d6c836efc0029807b5255e0d21565ad",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85950152825046233, 53.597321696679316],
+              [-1.86143230048216757, 53.598321622360956]
+            ]
+          },
+          "properties": {
+            "feature_name": "Fern Avenue-Westfield Avenue",
+            "from_stop": "SH450026464",
+            "length_m": 169.425507,
+            "route_shape": false,
+            "to_stop": "SH450026508",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL695ec54f3cf46813626d9d386b9aad0451f3b226",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.83734304542023508, 53.5954242959399281],
+              [-1.84062411434944995, 53.5947725368525738]
+            ]
+          },
+          "properties": {
+            "feature_name": "Meltham Mills Road Harewood Mount (adj)-Huddersfield Rd Scout HQ (opp)",
+            "from_stop": "ST450019215",
+            "length_m": 228.949783,
+            "route_shape": false,
+            "to_stop": "ST450019199",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP8b67d5299c8428c71ba3125f0e2e832d156ed8d3",
+              "SPaa20a48707c0e2f0fce45375e517d6161071162a",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL69735be3ff20e50b43d56636d05ac489baf627ea",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.86445127038815817, 53.58976826269447],
+              [-1.85666057074222657, 53.5884469767011424]
+            ]
+          },
+          "properties": {
+            "feature_name": "Leygards Lane-Wessenden Head Road (E bound)",
+            "from_stop": "SH450026023",
+            "length_m": 536.257385,
+            "route_shape": false,
+            "to_stop": "SH450026024",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6fe5a9b7eaff1d68b11b4694003e58406f0eeaf8",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84231724626644078, 53.5904334485172242],
+              [-1.84004629545439524, 53.5917337503642059]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mill Bank Road-Mill Bank Road Weavers Court",
+            "from_stop": "SH450026364",
+            "length_m": 208.626465,
+            "route_shape": false,
+            "to_stop": "SH450032108",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL76c2e4aca1d7e372bd8b752fd022bb5d1cfb237b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85581862159829325, 53.5917266758585171],
+              [-1.85675640506682105, 53.5913952289087945]
+            ]
+          },
+          "properties": {
+            "feature_name": "Matthew Lane Colders Ln (after)-Whingrove Avenue",
+            "from_stop": "SH450026016",
+            "length_m": 72.2011108,
+            "route_shape": false,
+            "to_stop": "SH450026017",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7a1f956c5c0c9d189fa9097803f72c7e1d40a9a5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.8632596710660152, 53.5986113300693177],
+              [-1.86274677179190729, 53.5983500893486777]
+            ]
+          },
+          "properties": {
+            "feature_name": "Slaithwaite Road (S bound)-Slaithwaite Road Moorview",
+            "from_stop": "SH450027854",
+            "length_m": 44.6878052,
+            "route_shape": false,
+            "to_stop": "ST450019237",
+            "service_patterns": [
+              "SP6f5be0d20c9617b972d2e3b89459ac572e797a13",
+              "SP235d9c30032ea005ce3b5e03fea2cf3f2af8ffb4",
+              "SP4699cb52caa0a32364b289622532d0ccf66dd38f",
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7de4dcc6cddfe9b6fbce58ab159417d205ae1957",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85620058713026115, 53.5949359270524823],
+              [-1.85506728538924381, 53.5949795117475105]
+            ]
+          },
+          "properties": {
+            "feature_name": "Slaithwaite Road Lower Hey (adj)-Lower Hey (E bound)",
+            "from_stop": "ST450019234",
+            "length_m": 75.166481,
+            "route_shape": false,
+            "to_stop": "SH450026458",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7f6cb4b222ce7e05df903ea744eaf141e9fc0ba7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85736452169275479, 53.5902544449307427],
+              [-1.85956943051742485, 53.5904727493237658]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bracewell Rd Popley Drive (at)-Hanson Road",
+            "from_stop": "SH450026019",
+            "length_m": 147.959457,
+            "route_shape": false,
+            "to_stop": "SH450026020",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7fb93d66b60a895b4d0fcbddc6046edba2ac3e53",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85452684905430054, 53.5983853986826446],
+              [-1.85572369580832741, 53.5974520609499336]
+            ]
+          },
+          "properties": {
+            "feature_name": "Highfield Crescent-Highfield Avenue (E bound)",
+            "from_stop": "SH450026012",
+            "length_m": 130.602448,
+            "route_shape": false,
+            "to_stop": "SH450026010",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL841911ebf2dae026e5c88a716d0560ad88fb94b7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84911905707433832, 53.5936779123803859],
+              [-1.85055175007060546, 53.5944167307490105]
+            ]
+          },
+          "properties": {
+            "feature_name": "Morrisons Supermarket (entrance)-Mean Lane (E bound)",
+            "from_stop": "ST450023851",
+            "length_m": 125.495018,
+            "route_shape": false,
+            "to_stop": "SH450026449",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8481b8434e2ae4f328da5e3ab2367c741f696471",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.86223794796717934, 53.5921566237827705],
+              [-1.86445127038815817, 53.58976826269447]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mill Moor Road (W bound)-Leygards Lane",
+            "from_stop": "SH450026022",
+            "length_m": 303.433685,
+            "route_shape": false,
+            "to_stop": "SH450026023",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL86d266ce9f28716faf200bc68a232594274455d1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85192029176303063, 53.5918927285796443],
+              [-1.85343033697510351, 53.5921013024930346]
+            ]
+          },
+          "properties": {
+            "feature_name": "Greens End Road-Colders Lane (on)",
+            "from_stop": "SH450026013",
+            "length_m": 102.610916,
+            "route_shape": false,
+            "to_stop": "SH450026014",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL87a0ff6b1a57cd0760aaf1d2b408534c4a9a3c2d",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85666057074222657, 53.5884469767011424],
+              [-1.85192397832440325, 53.5908321225499691]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wessenden Head Road (E bound)-Wessenden Head Road",
+            "from_stop": "SH450026024",
+            "length_m": 410.761475,
+            "route_shape": false,
+            "to_stop": "SH450026025",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL884004eb47b42f9d856f12c6015c29ce09aba64f",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.86274677179190729, 53.5983500893486777],
+              [-1.86112170232572849, 53.5962629619498756]
+            ]
+          },
+          "properties": {
+            "feature_name": "Slaithwaite Road Moorview-Birmingham Lane Primary School (opp)",
+            "from_stop": "ST450019237",
+            "length_m": 255.906235,
+            "route_shape": false,
+            "to_stop": "SH450026510",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL895090f94af746cf54afc0f3b8c42e703545b4af",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84445341607025326, 53.5929079861656419],
+              [-1.847717626445053, 53.5926604818445682]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishops Way (N bound)-Huddersfield Rd Clifton Lane",
+            "from_stop": "SH450029067",
+            "length_m": 217.807251,
+            "route_shape": false,
+            "to_stop": "ST450019208",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8a3c5242a5f3fc1facc951690f98c99b92364c05",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.847717626445053, 53.5926604818445682],
+              [-1.8496393354134022, 53.5918090118715753]
+            ]
+          },
+          "properties": {
+            "feature_name": "Huddersfield Rd Clifton Lane-Clarke Ln Parkin Lane (SE bound)",
+            "from_stop": "ST450019208",
+            "length_m": 158.600128,
+            "route_shape": false,
+            "to_stop": "SH450032110",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL9270d24859e780a581f2f69d892b6250e1810bfc",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84062411434944995, 53.5947725368525738],
+              [-1.84417884220489037, 53.5936266897521065]
+            ]
+          },
+          "properties": {
+            "feature_name": "Huddersfield Rd Scout HQ (opp)-Huddersfield Rd Bishops Way",
+            "from_stop": "ST450019199",
+            "length_m": 267.598572,
+            "route_shape": false,
+            "to_stop": "ST450019197",
+            "service_patterns": [
+              "SP3a1087423c89bc6882b764acb23a159124a4dd5c",
+              "SP6cbfab82fc6c94e59bc07808819085ea4a084fa2",
+              "SP669d04eb1f0f587b1135c50124247d0c6e2a48ab",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP8b67d5299c8428c71ba3125f0e2e832d156ed8d3",
+              "SPaa20a48707c0e2f0fce45375e517d6161071162a",
+              "SPd9ba42cde423176099cde8e39ed1313fa943c3c7",
+              "SPf3730b4de2af7f481a200a7aa2abaf38ac53c4a0",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL93c4b2122757a6f102c6a4323d8f644853c2dff3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85474801137186907, 53.5955633624825083],
+              [-1.85450381345964921, 53.5962821262999469]
+            ]
+          },
+          "properties": {
+            "feature_name": "Sunny Heys West (N bound)-Sunny Heys Road (E bound)",
+            "from_stop": "SH450026459",
+            "length_m": 81.5843124,
+            "route_shape": false,
+            "to_stop": "SH450026460",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL9d977257f7aaa317e894f077e92685660915073c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84956662069632372, 53.5952873635476976],
+              [-1.85104448298950808, 53.5960891504585604]
+            ]
+          },
+          "properties": {
+            "feature_name": "Broadlands Road-Broadlands Rd Sunny Heys Road",
+            "from_stop": "SH450026451",
+            "length_m": 132.382019,
+            "route_shape": false,
+            "to_stop": "ST450019275",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLa21a6593c0266b39b026fab0394df28ba238c4e1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85104448298950808, 53.5960891504585604],
+              [-1.85223476238573048, 53.5970523550160181]
+            ]
+          },
+          "properties": {
+            "feature_name": "Broadlands Rd Sunny Heys Road-Broadlands Rd Helme Lane (before)",
+            "from_stop": "ST450019275",
+            "length_m": 133.003754,
+            "route_shape": false,
+            "to_stop": "ST450019274",
+            "service_patterns": [
+              "SP7d092c12a28d591017743fa763df5ce44f3f7554",
+              "SPea969e0042748ae80914940fbe42a030883cb847",
+              "SP669d04eb1f0f587b1135c50124247d0c6e2a48ab",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP33ac60738bee2ca7a7bcef35c4bdc32e38ecba81",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLa46b1ce920f5a9a28e24179add08e4855afcf3c7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84977679299614994, 53.5913867366344476],
+              [-1.85192029176303063, 53.5918927285796443]
+            ]
+          },
+          "properties": {
+            "feature_name": "Parkin Lane Holmfirth Rd-Greens End Road",
+            "from_stop": "ST450019231",
+            "length_m": 152.643372,
+            "route_shape": false,
+            "to_stop": "SH450026013",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLa6f51121cd274dc5d15c12b0d6f6523dd7da878b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85014369508637744, 53.594452177202669],
+              [-1.84956662069632372, 53.5952873635476976]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mean Lane-Broadlands Road",
+            "from_stop": "ST450029093",
+            "length_m": 100.463921,
+            "route_shape": false,
+            "to_stop": "SH450026451",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLad7ca5496b18c9f0e888a4ba73f8e0e2c5d65a58",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84977679299614994, 53.5913867366344476],
+              [-1.85137293859523, 53.5928897480099451]
+            ]
+          },
+          "properties": {
+            "feature_name": "Parkin Lane Holmfirth Rd-Morrisons Supermarket (N bound)",
+            "from_stop": "ST450019231",
+            "length_m": 197.8004,
+            "route_shape": false,
+            "to_stop": "ST450023852",
+            "service_patterns": [
+              "SPb792920affcfb9a0825ce1b034bf93f02e0159c0",
+              "SPe358302d1902273287b2b270d3b6784b46bbb7c4",
+              "SPea7e408ddf16ce57d047bb1037f3db9acef1a0df",
+              "SP6b0cefb7814434740de2fb12ba47be8dd43ff9a3",
+              "SPf1e0bf73e5e5293e4f065b28e3ac4838c015259a",
+              "SP25ae27db9ff7b6896d1bb69c2bdc283db87f9fd9",
+              "SP41498e33daab164dc4495d718ab9dd493e9253d6",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLaf6031990cc8364bc638ae828ba26c2416cd9734",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85192397832440325, 53.5908321225499691],
+              [-1.84977679299614994, 53.5913867366344476]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wessenden Head Road-Parkin Lane Holmfirth Rd",
+            "from_stop": "SH450026025",
+            "length_m": 154.945145,
+            "route_shape": false,
+            "to_stop": "ST450019231",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLb0f2ce8a777ac6b3b4ea404e23d095d30edc8b0b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.8523530204200358, 53.5978075107460867],
+              [-1.85452684905430054, 53.5983853986826446]
+            ]
+          },
+          "properties": {
+            "feature_name": "Helme Lane Highfield Crescent-Highfield Crescent",
+            "from_stop": "SH450032111",
+            "length_m": 157.581726,
+            "route_shape": false,
+            "to_stop": "SH450026012",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLb19cb6ac20166eece486b2570369e0eaf1f6c17d",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85822060038226167, 53.5963045286815998],
+              [-1.85870197649880509, 53.596943257458868]
+            ]
+          },
+          "properties": {
+            "feature_name": "Berry Road-Oak Avenue",
+            "from_stop": "SH450026462",
+            "length_m": 77.8781128,
+            "route_shape": false,
+            "to_stop": "SH450026463",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLb41a71e9749214fba479416a7b6329b4fd7952e6",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.86112170232572849, 53.5962629619498756],
+              [-1.85866675609022591, 53.5938962081385952]
+            ]
+          },
+          "properties": {
+            "feature_name": "Birmingham Lane Primary School (opp)-Golcar Brow Road",
+            "from_stop": "SH450026510",
+            "length_m": 309.415588,
+            "route_shape": false,
+            "to_stop": "SH450026511",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLb8224aee0a077bb5cf2d8d620165c681fcc71ebc",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85192199589045359, 53.5957486785418453],
+              [-1.84944546456527048, 53.5953681063880722]
+            ]
+          },
+          "properties": {
+            "feature_name": "Sunny Heys Road-Broadlands Road (S bound)",
+            "from_stop": "SH450026454",
+            "length_m": 169.292648,
+            "route_shape": false,
+            "to_stop": "SH450026452",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLbc4ccf21b0c4d5c44288c91bee8b51f85f1adc2b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84911582503482919, 53.5903253006306954],
+              [-1.84917946713418124, 53.5894175692675603]
+            ]
+          },
+          "properties": {
+            "feature_name": "Tinker Lane-Heather Road",
+            "from_stop": "SH450026359",
+            "length_m": 101.079178,
+            "route_shape": false,
+            "to_stop": "SH450026360",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc008fd98c50d072a42189c42aa7dac0144415031",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85571083916067647, 53.5967869169242306],
+              [-1.85620058713026115, 53.5949359270524823]
+            ]
+          },
+          "properties": {
+            "feature_name": "Helme Lane Sunny Heys Rd (at)-Slaithwaite Road Lower Hey (adj)",
+            "from_stop": "ST450019272",
+            "length_m": 208.470627,
+            "route_shape": false,
+            "to_stop": "ST450019234",
+            "service_patterns": [
+              "SP7d092c12a28d591017743fa763df5ce44f3f7554",
+              "SPea969e0042748ae80914940fbe42a030883cb847",
+              "SPce8d59c523f93d3d68980a1157a8dcbebcb412b2",
+              "SP7af32012546ca730da39ac3b7a9e1dcadf1c7719",
+              "SP86fcc35326044141233cbba31e92efa998b2f56e",
+              "SPe63a1176d487c6d22eb773578ced4038846a0c2e",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP33ac60738bee2ca7a7bcef35c4bdc32e38ecba81",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc3391cde3e84e43f66c7211897dab8c66b9e7410",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84944546456527048, 53.5953681063880722],
+              [-1.85034042107881214, 53.5943625393225815]
+            ]
+          },
+          "properties": {
+            "feature_name": "Broadlands Road (S bound)-Mean Lane (W bound)",
+            "from_stop": "SH450026452",
+            "length_m": 126.58989,
+            "route_shape": false,
+            "to_stop": "SH450026450",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc6c6495310c69e866339407f2840fff5939f3f91",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85675640506682105, 53.5913952289087945],
+              [-1.85665255834529885, 53.5908288473700765]
+            ]
+          },
+          "properties": {
+            "feature_name": "Whingrove Avenue-Colders Drive (on)",
+            "from_stop": "SH450026017",
+            "length_m": 63.3876953,
+            "route_shape": false,
+            "to_stop": "SH450026018",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLd4a51fa92c3d5866e2cf3009724c6c9f3338e215",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84977679299614994, 53.5913867366344476],
+              [-1.84911582503482919, 53.5903253006306954]
+            ]
+          },
+          "properties": {
+            "feature_name": "Parkin Lane Holmfirth Rd-Tinker Lane",
+            "from_stop": "ST450019231",
+            "length_m": 125.936493,
+            "route_shape": false,
+            "to_stop": "SH450026359",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLde03131826966531763f8537cb9d01f26285c1ef",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84917946713418124, 53.5894175692675603],
+              [-1.85007408255025463, 53.5884749209685154]
+            ]
+          },
+          "properties": {
+            "feature_name": "Heather Road-Heather Avenue",
+            "from_stop": "SH450026360",
+            "length_m": 120.440857,
+            "route_shape": false,
+            "to_stop": "SH450026361",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe0c685338be1c3ebc9c137da20ab458bcc4f3da7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85665255834529885, 53.5908288473700765],
+              [-1.85736452169275479, 53.5902544449307427]
+            ]
+          },
+          "properties": {
+            "feature_name": "Colders Drive (on)-Bracewell Rd Popley Drive (at)",
+            "from_stop": "SH450026018",
+            "length_m": 79.4040298,
+            "route_shape": false,
+            "to_stop": "SH450026019",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe255177cf114830103ec0d8304b302f91011cd14",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85137293859523, 53.5928897480099451],
+              [-1.84911905707433832, 53.5936779123803859]
+            ]
+          },
+          "properties": {
+            "feature_name": "Morrisons Supermarket (N bound)-Morrisons Supermarket (entrance)",
+            "from_stop": "ST450023852",
+            "length_m": 173.046234,
+            "route_shape": false,
+            "to_stop": "ST450023851",
+            "service_patterns": [
+              "SPb792920affcfb9a0825ce1b034bf93f02e0159c0",
+              "SPe358302d1902273287b2b270d3b6784b46bbb7c4",
+              "SPea7e408ddf16ce57d047bb1037f3db9acef1a0df",
+              "SP6b0cefb7814434740de2fb12ba47be8dd43ff9a3",
+              "SPf1e0bf73e5e5293e4f065b28e3ac4838c015259a",
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SPaa20a48707c0e2f0fce45375e517d6161071162a",
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe3f3255367da774e68cf0760830e152378399c08",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85450381345964921, 53.5962821262999469],
+              [-1.85192199589045359, 53.5957486785418453]
+            ]
+          },
+          "properties": {
+            "feature_name": "Sunny Heys Road (E bound)-Sunny Heys Road",
+            "from_stop": "SH450026460",
+            "length_m": 180.892227,
+            "route_shape": false,
+            "to_stop": "SH450026454",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe7f68a45eb7a731070d86e01350e7ff6e8eacb96",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.8496393354134022, 53.5918090118715753],
+              [-1.84977679299614994, 53.5913867366344476]
+            ]
+          },
+          "properties": {
+            "feature_name": "Clarke Ln Parkin Lane (SE bound)-Parkin Lane Holmfirth Rd",
+            "from_stop": "SH450032110",
+            "length_m": 47.8539429,
+            "route_shape": false,
+            "to_stop": "ST450019231",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf075ccfb9d00c571212d0e788f37befb39c70b2e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85965610647533963, 53.5916772722907098],
+              [-1.86223794796717934, 53.5921566237827705]
+            ]
+          },
+          "properties": {
+            "feature_name": "Matthew Grove (on)-Mill Moor Road (W bound)",
+            "from_stop": "SH450026021",
+            "length_m": 179.025131,
+            "route_shape": false,
+            "to_stop": "SH450026022",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf1571acacf07a7f7e0ab4949f355783f8c42a988",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85343033697510351, 53.5921013024930346],
+              [-1.85581862159829325, 53.5917266758585171]
+            ]
+          },
+          "properties": {
+            "feature_name": "Colders Lane (on)-Matthew Lane Colders Ln (after)",
+            "from_stop": "SH450026014",
+            "length_m": 163.487,
+            "route_shape": false,
+            "to_stop": "SH450026016",
+            "service_patterns": ["SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf31e05ecb1c88d487cfe2d0444192e4ba399dc82",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84850232001939352, 53.5886706973786033],
+              [-1.84632485802481972, 53.5892611650563992]
+            ]
+          },
+          "properties": {
+            "feature_name": "Calmlands Rd Windermere Road-Holmfirth Rd Derwent Rd (opp)",
+            "from_stop": "SH450032107",
+            "length_m": 158.404541,
+            "route_shape": false,
+            "to_stop": "SH450026363",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf44dffa9b9063aa050eb88cd90f63515709073e5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84632485802481972, 53.5892611650563992],
+              [-1.84231724626644078, 53.5904334485172242]
+            ]
+          },
+          "properties": {
+            "feature_name": "Holmfirth Rd Derwent Rd (opp)-Mill Bank Road",
+            "from_stop": "SH450026363",
+            "length_m": 295.611237,
+            "route_shape": false,
+            "to_stop": "SH450026364",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf634f092265a95b3504c3d144231d3417a427e5e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.86143230048216757, 53.598321622360956],
+              [-1.86259445569272697, 53.5987274213308922]
+            ]
+          },
+          "properties": {
+            "feature_name": "Westfield Avenue-Moor View Westfield Ave (after)",
+            "from_stop": "SH450026508",
+            "length_m": 89.1852036,
+            "route_shape": false,
+            "to_stop": "SH450026509",
+            "service_patterns": [
+              "SP74d77888119e8c8c314683034d3959d5204d25ad",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf742125388bb9bfecf0f39432b119ccbd1b1e8db",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.84004629545439524, 53.5917337503642059],
+              [-1.83828860193608112, 53.5931066047294067]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mill Bank Road Weavers Court-Hall Park",
+            "from_stop": "SH450032108",
+            "length_m": 192.002609,
+            "route_shape": false,
+            "to_stop": "ST450019203",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf7a827bef4f7830822a0e2719695f8257d27860f",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85007408255025463, 53.5884749209685154],
+              [-1.84850232001939352, 53.5886706973786033]
+            ]
+          },
+          "properties": {
+            "feature_name": "Heather Avenue-Calmlands Rd Windermere Road",
+            "from_stop": "SH450026361",
+            "length_m": 106.30146,
+            "route_shape": false,
+            "to_stop": "SH450032107",
+            "service_patterns": [
+              "SP9a30da0e1eb5f375898a91345c2eb130cc7727d2",
+              "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI49466",
+        "name": "933:Slaithwaite Road Lower Hey - Parkin Lane Holmfirth Rd"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "service_pattern": "SP4ed090c0220c862a9f0dcac9e52780bc7bb42e1c",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 43,
+            "departure_time_secs": 43,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 248,
+            "speed": 20
+          },
+          {
+            "arrival_time_secs": 57,
+            "departure_time_secs": 57,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 326,
+            "speed": 20
+          },
+          {
+            "arrival_time_secs": 69,
+            "departure_time_secs": 69,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 393,
+            "speed": 20
+          },
+          {
+            "arrival_time_secs": 99,
+            "departure_time_secs": 99,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 563,
+            "speed": 20
+          },
+          {
+            "arrival_time_secs": 126,
+            "departure_time_secs": 126,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 652,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 140,
+            "departure_time_secs": 140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 698,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 154,
+            "departure_time_secs": 154,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 742,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 232,
+            "departure_time_secs": 232,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 998,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 326,
+            "departure_time_secs": 326,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 1308,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 519,
+            "departure_time_secs": 519,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 1940,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 639,
+            "departure_time_secs": 639,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2085,
+            "speed": 4
+          },
+          {
+            "arrival_time_secs": 759,
+            "departure_time_secs": 819,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 2320,
+            "speed": 7
+          },
+          {
+            "arrival_time_secs": 853,
+            "departure_time_secs": 853,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2472,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 875,
+            "departure_time_secs": 875,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2575,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 911,
+            "departure_time_secs": 911,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2738,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 927,
+            "departure_time_secs": 927,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2810,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 941,
+            "departure_time_secs": 941,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2874,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 958,
+            "departure_time_secs": 958,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2953,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 991,
+            "departure_time_secs": 991,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3101,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 1020,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3235,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 1059,
+            "departure_time_secs": 1059,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 3414,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 1179,
+            "departure_time_secs": 1179,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3718,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1299,
+            "departure_time_secs": 1299,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 4254,
+            "speed": 16
+          },
+          {
+            "arrival_time_secs": 1359,
+            "departure_time_secs": 1359,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 4665,
+            "speed": 24
+          },
+          {
+            "arrival_time_secs": 1419,
+            "departure_time_secs": 1479,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4820,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1539,
+            "departure_time_secs": 1539,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5018,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 1599,
+            "departure_time_secs": 1599,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 5191,
+            "speed": 10
+          },
+          {
+            "arrival_time_secs": 1649,
+            "departure_time_secs": 1649,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5316,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1660,
+            "departure_time_secs": 1660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5343,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1699,
+            "departure_time_secs": 1699,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5444,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1751,
+            "departure_time_secs": 1751,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5576,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1804,
+            "departure_time_secs": 1804,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5709,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1837,
+            "departure_time_secs": 1837,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5794,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1899,
+            "departure_time_secs": 1899,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 5951,
+            "speed": 9
+          },
+          {
+            "arrival_time_secs": 1940,
+            "departure_time_secs": 1940,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6082,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 1965,
+            "departure_time_secs": 1965,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6163,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2001,
+            "departure_time_secs": 2001,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6279,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2066,
+            "departure_time_secs": 2066,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6488,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2090,
+            "departure_time_secs": 2090,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6563,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2111,
+            "departure_time_secs": 2111,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6631,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2136,
+            "departure_time_secs": 2136,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6713,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2193,
+            "departure_time_secs": 2193,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6894,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2245,
+            "departure_time_secs": 2245,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7063,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2285,
+            "departure_time_secs": 2285,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7190,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2319,
+            "departure_time_secs": 2319,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7301,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2499,
+            "departure_time_secs": 2499,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7446,
+            "speed": 2
+          },
+          {
+            "arrival_time_secs": 2619,
+            "departure_time_secs": 2679,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7680,
+            "speed": 7
+          },
+          {
+            "arrival_time_secs": 2702,
+            "departure_time_secs": 2702,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7806,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2721,
+            "departure_time_secs": 2721,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7907,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2743,
+            "departure_time_secs": 2743,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8028,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2762,
+            "departure_time_secs": 2762,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8134,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2792,
+            "departure_time_secs": 2792,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8292,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2846,
+            "departure_time_secs": 2846,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8588,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2884,
+            "departure_time_secs": 2884,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8797,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2919,
+            "departure_time_secs": 2919,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 8989,
+            "speed": 19
+          },
+          {
+            "arrival_time_secs": 2983,
+            "departure_time_secs": 2983,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9254,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3038,
+            "departure_time_secs": 3038,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9483,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3102,
+            "departure_time_secs": 3102,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9751,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3117,
+            "departure_time_secs": 3117,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9812,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3146,
+            "departure_time_secs": 3146,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9932,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3177,
+            "departure_time_secs": 3177,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 10062,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3230,
+            "departure_time_secs": 3230,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 10279,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3268,
+            "departure_time_secs": 3268,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 10438,
+            "speed": 14
+          },
+          {
+            "arrival_time_secs": 3279,
+            "departure_time_secs": 3279,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 10486,
+            "speed": 14
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ8451618f8022fe377d6fe1eba7a45366a4968600",
+          "VJd06f71c3b7a9184e8309ea1ca701dbffba53c09c",
+          "VJ197c0f8f2a2029af7c7495057b8c8a405ea9a79e",
+          "VJ811b4a034b5e5c100a07d02d813e3336141272af",
+          "VJ3bed26b355217fd3e41c34eeba2052f22edaa84c",
+          "VJ0b68109ae5d949bf622f56201fd528896fc48692"
+        ]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0b68109ae5d949bf622f56201fd528896fc48692",
+        "timing_pattern": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "start": 54320,
+        "feature_name": "15:05:20 -- 933: VJ0b68109ae5d949bf622f56201fd528896fc48692",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-23",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-11-30",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-07",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-14",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-21",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-04",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-11",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ197c0f8f2a2029af7c7495057b8c8a405ea9a79e",
+        "timing_pattern": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "start": 43520,
+        "feature_name": "12:05:20 -- 933: VJ197c0f8f2a2029af7c7495057b8c8a405ea9a79e",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-23",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-11-30",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-07",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-14",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-21",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-04",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-11",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ3bed26b355217fd3e41c34eeba2052f22edaa84c",
+        "timing_pattern": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "start": 50720,
+        "feature_name": "14:05:20 -- 933: VJ3bed26b355217fd3e41c34eeba2052f22edaa84c",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-23",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-11-30",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-07",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-14",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-21",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-04",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-11",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ811b4a034b5e5c100a07d02d813e3336141272af",
+        "timing_pattern": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "start": 47120,
+        "feature_name": "13:05:20 -- 933: VJ811b4a034b5e5c100a07d02d813e3336141272af",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-23",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-11-30",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-07",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-14",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-21",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-04",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-11",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ8451618f8022fe377d6fe1eba7a45366a4968600",
+        "timing_pattern": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "start": 36320,
+        "feature_name": "10:05:20 -- 933: VJ8451618f8022fe377d6fe1eba7a45366a4968600",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-23",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-11-30",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-07",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-14",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-21",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-04",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-11",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJd06f71c3b7a9184e8309ea1ca701dbffba53c09c",
+        "timing_pattern": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+        "start": 39920,
+        "feature_name": "11:05:20 -- 933: VJd06f71c3b7a9184e8309ea1ca701dbffba53c09c",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-23",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-11-30",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-07",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-14",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-21",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-04",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-11",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-multiple",
+      "values": [
+        {
+          "id": "TP024ece493cf20106e24694132b6d1f9f4aa64701",
+          "warning_type": "timing-multiple",
+          "warning_id": 0,
+          "none": false,
+          "all": false,
+          "indexes": [12, 25, 47, 64]
+        }
+      ]
+    }
+  ]
+}

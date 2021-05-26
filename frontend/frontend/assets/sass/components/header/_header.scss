@@ -1,0 +1,52 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/header/header";
+
+/* Allows SignIn and MyAccount navigation link to be positioned to the right of the header */
+.govuk-header__navigation {
+  display: flex;
+}
+
+@media (min-width: 48.0625em) {
+  .js-enabled .govuk-header__navigation {
+    display: flex;
+  }
+}
+
+.account-menu__icon {
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+@mixin menu-arrow($arrow-direction) {
+  @include govuk-shape-arrow(
+    $direction: $arrow-direction,
+    $base: 10px,
+    $display: inline-block
+  );
+  content: "";
+  margin-left: govuk-spacing(1);
+}
+
+.bods-dropdown {
+  display: none;
+  @include govuk-font($size: 16);
+  color: govuk-colour("white");
+  background: none;
+
+  &::after {
+    @include menu-arrow($arrow-direction: down);
+  }
+
+  &.open {
+    &::after {
+      @include menu-arrow($arrow-direction: up);
+      border-bottom-color: govuk-colour("white");
+    }
+  }
+}
+
+.js-enabled {
+  .bods-dropdown {
+    display: block;
+  }
+}

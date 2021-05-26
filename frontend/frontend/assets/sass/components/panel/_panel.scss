@@ -1,0 +1,65 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/panel/panel";
+
+%app-panel--nofill {
+  background: unset;
+}
+
+.app-panel--error {
+  background: $govuk-error-colour;
+
+  .govuk-panel__title {
+    font-size: 2rem;
+    color: #fff;
+  }
+
+  .govuk-panel__body {
+    font-size: 1.5rem;
+  }
+}
+
+.app-panel--confirmation-nofill {
+  @include govuk-responsive-padding(4);
+  @include govuk-responsive-margin(6, "bottom");
+  text-align: left;
+  border: $govuk-border-width solid $govuk-confirm-colour;
+
+  .govuk-panel__title {
+    color: $govuk-confirm-colour;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .govuk-panel__body {
+    font-size: 1.375rem;
+  }
+}
+
+// DQS report panel
+.app-dqs-panel {
+  @extend .govuk-panel, %app-panel--nofill;
+
+  text-align: left;
+  border-color: govuk-colour("black");
+  @include govuk-responsive-padding(6);
+
+  &--error {
+    border-color: $govuk-error-colour;
+  }
+
+  &__body {
+    @extend .govuk-panel__body;
+    @include govuk-font($size: 19);
+  }
+
+  &__loading__progress {
+    display: flex;
+    align-items: center;
+    @include govuk-responsive-margin(4, "bottom");
+
+    > span {
+      color: $govuk-secondary-text-colour;
+      vertical-align: middle;
+    }
+  }
+}

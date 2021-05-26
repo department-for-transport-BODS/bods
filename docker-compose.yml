@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  django: &django # image: transit_odp_local_django
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+      - celeryworker
+      - celerybeat
+      - flower
+
+  postgres:
+    # image: transit_odp_production_postgres
+    restart: unless-stopped
+
+  redis:
+    image: redis:3.2
+    restart: unless-stopped
+
+  celeryworker:
+    <<: *django
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+      - clamav
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    restart: unless-stopped
+    command: /start-celeryflower
+    depends_on: []
+
+  clamav:
+    image: mkodockx/docker-clamav:alpine
+    ports:
+      - "3310:3310"
+    restart: unless-stopped
+    volumes:
+      - /srv/opt/clam/store:/store
+      - ./docker/local/clamav/clamd.conf:/etc/clamav/clamd.conf

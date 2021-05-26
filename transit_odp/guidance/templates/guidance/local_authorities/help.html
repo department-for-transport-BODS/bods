@@ -1,0 +1,28 @@
+{% extends "guidance/local_authorities/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+  <h1 data-qa="help-header" class="govuk-heading-l">{% trans 'How to get help' %}</h1>
+
+  <h2 data-qa="naptan-header" class="govuk-heading-l">
+    {% trans 'NaPTAN stop data support' %}
+  </h2>
+  <p class="govuk-body">
+    {% blocktrans %}
+    The DfT is offering a free service whereby local authorities can get in contact with
+    {% endblocktrans %}
+    <a href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
+    {% blocktrans %}
+    to request a spreadsheet that contains potential NaPTAN corrections for the
+    areas that you are responsible for.
+    {% endblocktrans %}
+  </p>
+
+
+  {% include "../snippets/timetable_suppliers.html" %}
+  {% include "../snippets/bus_location_suppliers.html" %}
+  {% include "../snippets/fares_suppliers.html" %}
+  {% include "../snippets/contact_details.html" %}
+
+{% endblock %}

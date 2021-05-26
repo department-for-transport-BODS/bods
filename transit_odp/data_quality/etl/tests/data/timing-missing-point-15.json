@@ -1,0 +1,4026 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:09:02",
+    "naptan_date": "Sun, 24 Nov 2019 04:30:30",
+    "sources": [
+      "",
+      "MERGED_MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-8-A-y08-1.xml",
+      "MERGED_whole_ea_20-9-A-y08-1.xml",
+      "MERGED_whole_ea_20-A-B-y08-1.xml",
+      "MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-D-_-y08-1.xml",
+      "MERGED_whole_ea_20-X8-_-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-8-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-A-B-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-B-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-1-A-y08-1.xml",
+      "whole_ea_20-101-_-y08-1.xml",
+      "whole_ea_20-11-_-y08-1.xml",
+      "whole_ea_20-110-A-y08-1.xml",
+      "whole_ea_20-114-B-y08-1.xml",
+      "whole_ea_20-117-C-y08-1.xml",
+      "whole_ea_20-117-_-y08-1.xml",
+      "whole_ea_20-12-A-y08-1.xml",
+      "whole_ea_20-12-D-y08-1.xml",
+      "whole_ea_20-125-_-y08-1.xml",
+      "whole_ea_20-127-_-y08-1.xml",
+      "whole_ea_20-129-_-y08-1.xml",
+      "whole_ea_20-13-_-y08-1.xml",
+      "whole_ea_20-132-_-y08-1.xml",
+      "whole_ea_20-13A-_-y08-1.xml",
+      "whole_ea_20-13B-_-y08-1.xml",
+      "whole_ea_20-13C-_-y08-1.xml",
+      "whole_ea_20-15-E-y08-1.xml",
+      "whole_ea_20-150-_-y08-1.xml",
+      "whole_ea_20-16A-_-y08-1.xml",
+      "whole_ea_20-18-A-y08-1.xml",
+      "whole_ea_20-18-_-y08-1.xml",
+      "whole_ea_20-19-A-y08-1.xml",
+      "whole_ea_20-19-_-y08-1.xml",
+      "whole_ea_20-199-_-y08-1.xml",
+      "whole_ea_20-1A-A-y08-1.xml",
+      "whole_ea_20-2-A-y08-1.xml",
+      "whole_ea_20-203-_-y08-1.xml",
+      "whole_ea_20-204-_-y08-1.xml",
+      "whole_ea_20-206-_-y08-1.xml",
+      "whole_ea_20-21-A-y08-1.xml",
+      "whole_ea_20-22-A-y08-1.xml",
+      "whole_ea_20-22-_-y08-1.xml",
+      "whole_ea_20-25-_-y08-1.xml",
+      "whole_ea_20-3-B-y08-1.xml",
+      "whole_ea_20-30-B-y08-1.xml",
+      "whole_ea_20-31-B-y08-1.xml",
+      "whole_ea_20-31-_-y08-1.xml",
+      "whole_ea_20-32-_-y08-1.xml",
+      "whole_ea_20-33-A-y08-1.xml",
+      "whole_ea_20-336-_-y08-1.xml",
+      "whole_ea_20-35-C-y08-1.xml",
+      "whole_ea_20-39-_-y08-1.xml",
+      "whole_ea_20-4-_-y08-1.xml",
+      "whole_ea_20-400-C-y08-1.xml",
+      "whole_ea_20-401-C-y08-1.xml",
+      "whole_ea_20-415-_-y08-1.xml",
+      "whole_ea_20-45A-A-y08-1.xml",
+      "whole_ea_20-46-A-y08-1.xml",
+      "whole_ea_20-46-C-y08-1.xml",
+      "whole_ea_20-46-D-y08-1.xml",
+      "whole_ea_20-46A-_-y08-1.xml",
+      "whole_ea_20-47-A-y08-1.xml",
+      "whole_ea_20-478-_-y08-1.xml",
+      "whole_ea_20-5-B-y08-1.xml",
+      "whole_ea_20-50-A-y08-1.xml",
+      "whole_ea_20-56-_-y08-1.xml",
+      "whole_ea_20-6-_-y08-1.xml",
+      "whole_ea_20-61-A-y08-1.xml",
+      "whole_ea_20-61X-_-y08-1.xml",
+      "whole_ea_20-63-A-y08-1.xml",
+      "whole_ea_20-65-A-y08-1.xml",
+      "whole_ea_20-66-B-y08-1.xml",
+      "whole_ea_20-66-_-y08-1.xml",
+      "whole_ea_20-68-_-y08-1.xml",
+      "whole_ea_20-7-A-y08-1.xml",
+      "whole_ea_20-75-A-y08-1.xml",
+      "whole_ea_20-7A-_-y08-1.xml",
+      "whole_ea_20-8-A-y08-1.xml",
+      "whole_ea_20-8-_-y08-1.xml",
+      "whole_ea_20-9-A-y08-1.xml",
+      "whole_ea_20-9-B-y08-1.xml",
+      "whole_ea_20-901-_-y08-1.xml",
+      "whole_ea_20-902-_-y08-1.xml",
+      "whole_ea_20-903-_-y08-1.xml",
+      "whole_ea_20-904-_-y08-1.xml",
+      "whole_ea_20-94-_-y08-1.xml",
+      "whole_ea_20-96-_-y08-1.xml",
+      "whole_ea_20-9B-_-y08-1.xml",
+      "whole_ea_20-A-B-y08-1.xml",
+      "whole_ea_20-B-A-y08-1.xml",
+      "whole_ea_20-C2-A-y08-1.xml",
+      "whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-H-_-y08-1.xml",
+      "whole_ea_20-PR1-_-y08-1.xml",
+      "whole_ea_20-PR2-_-y08-1.xml",
+      "whole_ea_20-PR3-_-y08-1.xml",
+      "whole_ea_20-PR4-_-y08-1.xml",
+      "whole_ea_20-PR5-_-y08-1.xml",
+      "whole_ea_20-R-_-y08-1.xml",
+      "whole_ea_20-RH2-_-y08-1.xml",
+      "whole_ea_20-RH3-_-y08-1.xml",
+      "whole_ea_20-RH5-_-y08-1.xml",
+      "whole_ea_20-U-_-y08-1.xml",
+      "whole_ea_20-X11-_-y08-1.xml",
+      "whole_ea_20-X13-_-y08-1.xml",
+      "whole_ea_20-X3-_-y08-1.xml",
+      "whole_ea_20-X9-_-y08-1.xml",
+      "whole_ea_20-ZIP-_-y08-1.xml",
+      "whole_suf_14-A14-_-y08-2.xml",
+      "whole_suf_5-312-_-y08-2.xml",
+      "whole_suf_7-16-_-y08-12.xml",
+      "whole_suf_7-16A-_-y08-10.xml"
+    ]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST9100ATTLBON",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.0223712660128137, 52.5145683033964588]
+          },
+          "properties": {
+            "atco_code": "9100ATTLBON",
+            "bearing": 8,
+            "feature_name": "Attleborough Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100AUDLEYE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.207331882627249914, 52.0044476895951391]
+          },
+          "properties": {
+            "atco_code": "9100AUDLEYE",
+            "bearing": 8,
+            "feature_name": "Audley End Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100BNDON",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.624755856499684903, 52.4540242384853954]
+          },
+          "properties": {
+            "atco_code": "9100BNDON",
+            "bearing": 8,
+            "feature_name": "Brandon Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100CAMBDGE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.137484664171875576, 52.1940786889398183]
+          },
+          "properties": {
+            "atco_code": "9100CAMBDGE",
+            "bearing": 8,
+            "feature_name": "Cambridge Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100CAMBNTH",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.158507483130683691, 52.2244937139195926]
+          },
+          "properties": {
+            "atco_code": "9100CAMBNTH",
+            "bearing": 8,
+            "feature_name": "Cambridge North Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100ELYY",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.26685123766873653, 52.3912442400031679]
+          },
+          "properties": {
+            "atco_code": "9100ELYY",
+            "bearing": 8,
+            "feature_name": "Ely Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100NRCH",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.3068437961739523, 52.6271764614797988]
+          },
+          "properties": {
+            "atco_code": "9100NRCH",
+            "bearing": 8,
+            "feature_name": "Norwich Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100STANAIR",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.260843160253528605, 51.8885969301635157]
+          },
+          "properties": {
+            "atco_code": "9100STANAIR",
+            "bearing": 8,
+            "feature_name": "Stansted Airport Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100THETFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.745098497075151078, 52.4191425832515492]
+          },
+          "properties": {
+            "atco_code": "9100THETFD",
+            "bearing": 8,
+            "feature_name": "Thetford Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100WTLESFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.165645877043863382, 52.1035981347474646]
+          },
+          "properties": {
+            "atco_code": "9100WTLESFD",
+            "bearing": 8,
+            "feature_name": "Whittlesford Parkway Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100WYMNDHM",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.11804822593129116, 52.5654338876883784]
+          },
+          "properties": {
+            "atco_code": "9100WYMNDHM",
+            "bearing": 8,
+            "feature_name": "Wymondham Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.3068437961739523, 52.6271764614797988],
+              [1.11804822593129116, 52.5654338876883784],
+              [1.0223712660128137, 52.5145683033964588],
+              [0.745098497075151078, 52.4191425832515492],
+              [0.624755856499684903, 52.4540242384853954],
+              [0.26685123766873653, 52.3912442400031679],
+              [0.158507483130683691, 52.2244937139195926],
+              [0.137484664171875576, 52.1940786889398183],
+              [0.165645877043863382, 52.1035981347474646],
+              [0.207331882627249914, 52.0044476895951391],
+              [0.260843160253528605, 51.8885969301635157]
+            ]
+          },
+          "properties": {
+            "feature_name": "Norwich - Stansted Airport",
+            "length_m": 137853.359,
+            "route_shape": true,
+            "line": "LI76576",
+            "stops": [
+              "ST9100NRCH",
+              "ST9100WYMNDHM",
+              "ST9100ATTLBON",
+              "ST9100THETFD",
+              "ST9100BNDON",
+              "ST9100ELYY",
+              "ST9100CAMBNTH",
+              "ST9100CAMBDGE",
+              "ST9100WTLESFD",
+              "ST9100AUDLEYE",
+              "ST9100STANAIR"
+            ],
+            "timing_patterns": [
+              "TP3aa50e258b3ccd0c9f4b961810c30289f10edcb3",
+              "TPc4f6ad6f81d153372d42d78e25c5c25a6cf63c8e",
+              "TP422f2760e923842710393034c3b8a4cbe314316d",
+              "TPc3f1cbe01570837f53348e5a56f4c856d144b5bb",
+              "TP3b4e91b676ffc8f28d2833cc9c7f82d4f98e0370",
+              "TPd029e016d48f1988166fa2af3a05f3df73300dda",
+              "TPdd5e3dee904c52f8598e1fd66ef649a8afaacf80",
+              "TP6150b1007e571453985446545fd6439767e8d07c",
+              "TPe5371962daea025ee76ea62d0665e7d6245cffbc",
+              "TP11a7f404073a87fe23ba93437c5837a3e9af3617",
+              "TPc36ed8420d637a65c9dd1870dba4059111b4b4e2",
+              "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+              "TPe8fd23f60714c1236550ce3abe16b05bc0e74132",
+              "TPf57a7a5ddce0580b07ac206bd29b8d7c696b952a",
+              "TP306c42e3faa346891ce169a74e778de1254ae2a4",
+              "TPd3acaa9260623ad5456f6f2295763ce50e79ba88",
+              "TP0aa5f078c24de93a8c139e449fbc06ec0cd5c95b",
+              "TP82cd5a93e6eebbcd74d3b33614e69805116e4c38",
+              "TP002866dab6411b403d8248025f84ee8a2d350b55",
+              "TPf86d6a5a32d5ec997b897fd617f5f8db10765dbc",
+              "TP0784bbf49f3faf38c289801cd846bf2f85bb9a27",
+              "TP17687360d8f7fe1e150f12e5abbade75b02cdb81",
+              "TP5344df9d2beb10cb8cf5f7484dd86d026373164d",
+              "TPc4dcb474984d0001cb920b8b346db30e931c2ab6",
+              "TP795279e4d2eb1bc1fdbd1e6fffdb0ecd7ba91b1f",
+              "TPf172817e90b16202de80007fe031e1329f2c7315",
+              "TP12bfd48e22144586135d1047bf85062a374eebbf"
+            ],
+            "service_links": [
+              "SLdd72aaf37a08283ed8bb5e20ee8293f460e58406",
+              "SL8f1c1531a9bb664df28ee78b021668ec1b3e95d5",
+              "SLab63ddceff248ed58ea98d8907fddd6c9ed03ab3",
+              "SL0fea7c9d3ac46bd9e0a42839eff82d254a6436e7",
+              "SL3040c252c23ec2338156ffa48c81bc02f80e44e2",
+              "SL1644e6a2e2bb331ed040b921a2786c3364422817",
+              "SL26855b7f73f57f827f070699b08fa746ed06697b",
+              "SL164c0b16a88a10ac2d66adb092e3c175f5750c13",
+              "SL06231448ddf97785c8e9a4c55573f1cee318ed41",
+              "SL620a7054e31ecb43fb59d08c861842d0f0810ed2"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL06231448ddf97785c8e9a4c55573f1cee318ed41",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.165645877043863382, 52.1035981347474646],
+              [0.207331882627249914, 52.0044476895951391]
+            ]
+          },
+          "properties": {
+            "feature_name": "Whittlesford Parkway Rail Station-Audley End Rail Station",
+            "from_stop": "ST9100WTLESFD",
+            "length_m": 11395.5996,
+            "route_shape": false,
+            "to_stop": "ST9100AUDLEYE",
+            "service_patterns": [
+              "SP9ffb583a91d00d37ee0c6ef488ada1b82c650eac",
+              "SP3ce0f5ead512c8d394a8ff5706e7062896552558",
+              "SP0df28537f767963f552ea9749e29e4ce473eee99",
+              "SP4962daf2df050fb2346cdd2650c4e4a977093ab8",
+              "SPcb80e9ac8c8d85ad1b5826eb7409ba49aa44c9b1",
+              "SPf0d1674d228e78d04edbc182bac514edb5a9759f",
+              "SPc60acab909148af76a19fc0ffcb7dd395ebc7368",
+              "SPb7293f382195fd5a98133f65f09437b82b6bac99",
+              "SP81597d6a100e8a156872d6fc1fa28b520d4c70db",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP77d4fe1fefa82c05fd27adc27dfac0bd5688959a",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SPa907179f7c7cc18378cee335abc82bc57413947d",
+              "SPb67be25303345d1cc8c7a93863e0126ad165237c",
+              "SPd9c146975e3f9d0b71e875bca53848e67cd36342",
+              "SP7cfac69f4bbe0d5b040d12217232dadf4a974272",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SP4533ae0bf712a74e8eeb1a295f6bb0eb3ff22e66",
+              "SPe447c1c5387629f52e4ee09e637c13953f2510c8",
+              "SP11b0df7de68f87575ed86fad2c95db88ef2b9b21",
+              "SP6fe5a9591763baf7c29e903eeecb4b9758db863b",
+              "SP95febf827a7fb9aad81a7f196fe3c703cbc32917",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP6d39447046691ef22bd8f3e5a1d9d8c656db9b4f",
+              "SPeeb9873ed26127e5d9c36cc99096cc49b96ab629"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL0fea7c9d3ac46bd9e0a42839eff82d254a6436e7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.745098497075151078, 52.4191425832515492],
+              [0.624755856499684903, 52.4540242384853954]
+            ]
+          },
+          "properties": {
+            "feature_name": "Thetford Rail Station-Brandon Rail Station",
+            "from_stop": "ST9100THETFD",
+            "length_m": 9058.30859,
+            "route_shape": false,
+            "to_stop": "ST9100BNDON",
+            "service_patterns": [
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP541fbaa5518086d74c09cb412400528482edab16",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SPd951ea912bd53fc518ab3297b761ae50e7bc688d",
+              "SP6e0af236149c8621abb66ca1f1afe81884c0865e",
+              "SPba21bfa13a57e7734b42166c80a03d2f0f5f5a4e",
+              "SP1d5c72a6e80e42273e41dfb12097bb7057c501b6",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP27572d2d5c7275525d3d2d7fde7af3c43c63ed33",
+              "SPab729f284ab53b43de25d098301b246696cf3ec4",
+              "SP69ec8742acd3933f4f30a0c6df4d870d4b3327a1",
+              "SP205953034e27951edd181002a440a9e6f47bb555",
+              "SP5354b783f6612c691fad9038e88a095e831a3220",
+              "SP3ac077df17f1d6f3421773163b6c4dbad9f6cae2",
+              "SPa181fd2daaae0dda1473c314d935e9e9974c8618",
+              "SPb6d6558f854492a533c5f8e1a4868e82c3472f29",
+              "SP9b81fdace82c7bddc016b49dcb4e8567d6986065",
+              "SPa6ae507e87e612717c6ac396b605c04e51bbd6a6",
+              "SP7be31c0f118a6e7437cbf2fe480c6cb541d485e0"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1644e6a2e2bb331ed040b921a2786c3364422817",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.26685123766873653, 52.3912442400031679],
+              [0.158507483130683691, 52.2244937139195926]
+            ]
+          },
+          "properties": {
+            "feature_name": "Ely Rail Station-Cambridge North Rail Station",
+            "from_stop": "ST9100ELYY",
+            "length_m": 19970.2695,
+            "route_shape": false,
+            "to_stop": "ST9100CAMBNTH",
+            "service_patterns": [
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SP4c38e6e5e4f5e2754fa4853466f4deff2c203634",
+              "SP5a0e340cc908c9741d0405d914dbe7ef27c009d6",
+              "SP866e6e3b7c0c2c5eb02e5a480b2e7a919201a5ee",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP541fbaa5518086d74c09cb412400528482edab16",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SP7bcf3362911f49b689e7127f11b23c61668023e2",
+              "SP69fbb3c28bb5281b60c8a44e6b8242b97970500d",
+              "SP5f723a8cb3a9779b7751bf9041034a95c8c5809d",
+              "SPf931766573613f3675a3e8e5a1004b74b5432b5b",
+              "SP22319f58ddac4e41c887e11e1fb79bc2a0993171",
+              "SP6e0af236149c8621abb66ca1f1afe81884c0865e",
+              "SPba21bfa13a57e7734b42166c80a03d2f0f5f5a4e",
+              "SP1d5c72a6e80e42273e41dfb12097bb7057c501b6",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SPb9b745efeb99d34ca8060dc3dbf08176d41f0e8b",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SPd2280f4163e75a25f19766bbe391fb6cd44701f5",
+              "SP1d41b1c1a2e0e09e8c5603d19060cc3774c964d9",
+              "SP7388b653e486dfa15c4ffb8bdb7726e983ee677a"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL164c0b16a88a10ac2d66adb092e3c175f5750c13",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.137484664171875576, 52.1940786889398183],
+              [0.165645877043863382, 52.1035981347474646]
+            ]
+          },
+          "properties": {
+            "feature_name": "Cambridge Rail Station-Whittlesford Parkway Rail Station",
+            "from_stop": "ST9100CAMBDGE",
+            "length_m": 10249.4219,
+            "route_shape": false,
+            "to_stop": "ST9100WTLESFD",
+            "service_patterns": [
+              "SP9ffb583a91d00d37ee0c6ef488ada1b82c650eac",
+              "SP3ce0f5ead512c8d394a8ff5706e7062896552558",
+              "SP0df28537f767963f552ea9749e29e4ce473eee99",
+              "SP4962daf2df050fb2346cdd2650c4e4a977093ab8",
+              "SPcb80e9ac8c8d85ad1b5826eb7409ba49aa44c9b1",
+              "SPf0d1674d228e78d04edbc182bac514edb5a9759f",
+              "SPc60acab909148af76a19fc0ffcb7dd395ebc7368",
+              "SP3ae53c5aee8c67752ffba55393cd5bb7007014f2",
+              "SP81597d6a100e8a156872d6fc1fa28b520d4c70db",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP77d4fe1fefa82c05fd27adc27dfac0bd5688959a",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SPa907179f7c7cc18378cee335abc82bc57413947d",
+              "SPb67be25303345d1cc8c7a93863e0126ad165237c",
+              "SPd9c146975e3f9d0b71e875bca53848e67cd36342",
+              "SP7cfac69f4bbe0d5b040d12217232dadf4a974272",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SP4533ae0bf712a74e8eeb1a295f6bb0eb3ff22e66",
+              "SPe447c1c5387629f52e4ee09e637c13953f2510c8",
+              "SP11b0df7de68f87575ed86fad2c95db88ef2b9b21",
+              "SP6fe5a9591763baf7c29e903eeecb4b9758db863b",
+              "SP95febf827a7fb9aad81a7f196fe3c703cbc32917",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP6d39447046691ef22bd8f3e5a1d9d8c656db9b4f",
+              "SPeeb9873ed26127e5d9c36cc99096cc49b96ab629"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL26855b7f73f57f827f070699b08fa746ed06697b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.158507483130683691, 52.2244937139195926],
+              [0.137484664171875576, 52.1940786889398183]
+            ]
+          },
+          "properties": {
+            "feature_name": "Cambridge North Rail Station-Cambridge Rail Station",
+            "from_stop": "ST9100CAMBNTH",
+            "length_m": 3676.34619,
+            "route_shape": false,
+            "to_stop": "ST9100CAMBDGE",
+            "service_patterns": [
+              "SP24ef35ab46ec098c05bcd5b0c45ce5ab569739c4",
+              "SP4ac63f4f790b7f568d58f10c6b868e2b0b48a55a",
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SPcb80e9ac8c8d85ad1b5826eb7409ba49aa44c9b1",
+              "SP4c38e6e5e4f5e2754fa4853466f4deff2c203634",
+              "SP1c2584f5d02b07a88c14c6dc3f3a148c1f983a56",
+              "SP593afc94c8236bac95603406e0a9ca1b03df4385",
+              "SPd1de6e70706dfd7f69962309a48d0a68166f12b2",
+              "SP5a0e340cc908c9741d0405d914dbe7ef27c009d6",
+              "SP8aaea9a2081a7802c70d826647dae331aaf805f6",
+              "SPab7119accd1be2022aa5ddc7be4b66b5d84478f4",
+              "SP866e6e3b7c0c2c5eb02e5a480b2e7a919201a5ee",
+              "SP01d033f14e5a14bfbd3941e04e68e38c4673e8a7",
+              "SP81597d6a100e8a156872d6fc1fa28b520d4c70db",
+              "SP17ee03c0d45dd72e3f3c1f5775c1c287d6a291b9",
+              "SP14492a45873992897a3a862da61cd03a8bc161e2",
+              "SP41fefc4cc277043dd439c2e67ce28e119530acde",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP9426be22220c08e9c7ce06368c58dd9675d86df8",
+              "SP9309133e5bd9289ce1a68415960b0a4868706c57",
+              "SP77d4fe1fefa82c05fd27adc27dfac0bd5688959a",
+              "SP541fbaa5518086d74c09cb412400528482edab16",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SP5ea7222787702ac7ed69efabfe801b908d55ba63",
+              "SPb67be25303345d1cc8c7a93863e0126ad165237c",
+              "SP7bcf3362911f49b689e7127f11b23c61668023e2",
+              "SP1ac5c92a630eae72ffaacea67b2e271ceffa5102",
+              "SP69fbb3c28bb5281b60c8a44e6b8242b97970500d",
+              "SP5f723a8cb3a9779b7751bf9041034a95c8c5809d",
+              "SPd8d44f1df210866e6be22b04c190a0f528f11dd8",
+              "SP012e135a4672d24ba97d823fc7af4889113db06a",
+              "SPf931766573613f3675a3e8e5a1004b74b5432b5b",
+              "SPe168a16245e7e95b999ecfbd84df8c1cfa633438",
+              "SP22319f58ddac4e41c887e11e1fb79bc2a0993171",
+              "SP7cfac69f4bbe0d5b040d12217232dadf4a974272",
+              "SPa3f5e4214c0ee999e890b9890e838210f0a3b2c3",
+              "SP6e0af236149c8621abb66ca1f1afe81884c0865e",
+              "SPba21bfa13a57e7734b42166c80a03d2f0f5f5a4e",
+              "SP1d5c72a6e80e42273e41dfb12097bb7057c501b6",
+              "SP79c97deb96d741350361dfd75b3d760224e88a1c",
+              "SP7093b81c0af69b1165ee5cca58e716bba02793ec",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SP75333667df3cfb2ccc2ba234fb5bb0492bd5ecb7",
+              "SPb9b745efeb99d34ca8060dc3dbf08176d41f0e8b",
+              "SP0a8a5f798eedb5d34a3b16d2ad442dcf4db69f9e",
+              "SP351b64e6fbd13f20a089dbecb1e9ced6e031e9da",
+              "SP95febf827a7fb9aad81a7f196fe3c703cbc32917",
+              "SP40260fde81551160eccc3d16d48c343960cfe4b0",
+              "SP5277f9b06aeb38dbb4aa81af6a91a8fb95771052",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP8908fc4c7b14fd9c0b24d590cb64f540fed32b6a",
+              "SP326f8943ab733e2b8bcea1fff92e86dabee893ff",
+              "SP99f282ed52b105d4bc00117e35e185f205dddf7c",
+              "SP9e5a20daa4a00c3ecc7ff998544dc2f376cccbbf",
+              "SPd2280f4163e75a25f19766bbe391fb6cd44701f5",
+              "SP059fb3248b265723de46617e52046df25f92a0a0",
+              "SP1d41b1c1a2e0e09e8c5603d19060cc3774c964d9",
+              "SPb20272963aef2269f7b8249b663d3df997902384",
+              "SPc53b7918d205a9ce0deb5ea592a377ceb494d919",
+              "SP7388b653e486dfa15c4ffb8bdb7726e983ee677a",
+              "SP572319a577dbbe2e327c0a1c2825b062b9a5e4c5",
+              "SP16f3cdeb145a04f68afdc06683eb598c8c9290a0"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3040c252c23ec2338156ffa48c81bc02f80e44e2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.624755856499684903, 52.4540242384853954],
+              [0.26685123766873653, 52.3912442400031679]
+            ]
+          },
+          "properties": {
+            "feature_name": "Brandon Rail Station-Ely Rail Station",
+            "from_stop": "ST9100BNDON",
+            "length_m": 25329.498,
+            "route_shape": false,
+            "to_stop": "ST9100ELYY",
+            "service_patterns": [
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SPd951ea912bd53fc518ab3297b761ae50e7bc688d",
+              "SP6e0af236149c8621abb66ca1f1afe81884c0865e",
+              "SPba21bfa13a57e7734b42166c80a03d2f0f5f5a4e",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP27572d2d5c7275525d3d2d7fde7af3c43c63ed33",
+              "SPab729f284ab53b43de25d098301b246696cf3ec4",
+              "SP69ec8742acd3933f4f30a0c6df4d870d4b3327a1",
+              "SP205953034e27951edd181002a440a9e6f47bb555",
+              "SP5354b783f6612c691fad9038e88a095e831a3220",
+              "SP3ac077df17f1d6f3421773163b6c4dbad9f6cae2",
+              "SPa181fd2daaae0dda1473c314d935e9e9974c8618",
+              "SPb6d6558f854492a533c5f8e1a4868e82c3472f29",
+              "SP9b81fdace82c7bddc016b49dcb4e8567d6986065",
+              "SPa6ae507e87e612717c6ac396b605c04e51bbd6a6",
+              "SP7be31c0f118a6e7437cbf2fe480c6cb541d485e0"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL620a7054e31ecb43fb59d08c861842d0f0810ed2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.207331882627249914, 52.0044476895951391],
+              [0.260843160253528605, 51.8885969301635157]
+            ]
+          },
+          "properties": {
+            "feature_name": "Audley End Rail Station-Stansted Airport Rail Station",
+            "from_stop": "ST9100AUDLEYE",
+            "length_m": 13403.8145,
+            "route_shape": false,
+            "to_stop": "ST9100STANAIR",
+            "service_patterns": [
+              "SP9ffb583a91d00d37ee0c6ef488ada1b82c650eac",
+              "SP0e9d12a7d68980430c419e3d7091d663a1d72cd4",
+              "SPf9031ac3820f633f0b400aaa38a39a15d4ba26de",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP77d4fe1fefa82c05fd27adc27dfac0bd5688959a",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SP8964d950970c145cf129a81cd0e67972fc4c2756",
+              "SPea1f2718d21c4f901f841de59ceee99364f43282",
+              "SP939f6b4c5cba8dfba5d6f36761e78d09b1b89996",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SPdd60c26e752aed62fbe3fbeda75b4d8e089b29c2",
+              "SP220484a33356f4df38c5845081fea53f83198aaa",
+              "SP6f0dc8193d86eba67a1c9b13a948c362e0829424",
+              "SP6dc79f14c4276ce2176dfd7c2733e72133524ff5",
+              "SP7b5b17c2e4c4c97f47f91341307943e79a7bfcdb",
+              "SPbbededac80fc6f86d151e5782bc22658376c1877",
+              "SPeac253b7de983bbef76735a585e05e32dca0ac24",
+              "SP4bd864641f36f7e6710f235fa6ee14be4a650248",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP3f75294641947e5e8d8a8f474a40ca12d38acb44",
+              "SP44fa9df42ad03be19a90aff1b341642a93dd029b",
+              "SP76272a2c0fddfa5389ba248da7658881783a14c8",
+              "SP04ff1dd27524fd9340a998bb5afe4f9848a89f42"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8f1c1531a9bb664df28ee78b021668ec1b3e95d5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.11804822593129116, 52.5654338876883784],
+              [1.0223712660128137, 52.5145683033964588]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wymondham Rail Station-Attleborough Rail Station",
+            "from_stop": "ST9100WYMNDHM",
+            "length_m": 8614.00879,
+            "route_shape": false,
+            "to_stop": "ST9100ATTLBON",
+            "service_patterns": [
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SP91a2db1c238f67451838e0f04ae23713ccd0490a",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP541fbaa5518086d74c09cb412400528482edab16",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SP47f066188ede9966507376e55f3b0bd68af38462",
+              "SPba21bfa13a57e7734b42166c80a03d2f0f5f5a4e",
+              "SP1d5c72a6e80e42273e41dfb12097bb7057c501b6",
+              "SP221a7fa99772b299419da9953b7a9ebf4875c328",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SPfdb7b438460b571890b9ad890bb0adb7b9088446",
+              "SP0b0ff4cd02c91042d96f2a3a9330ce48084b13b5"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLab63ddceff248ed58ea98d8907fddd6c9ed03ab3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.0223712660128137, 52.5145683033964588],
+              [0.745098497075151078, 52.4191425832515492]
+            ]
+          },
+          "properties": {
+            "feature_name": "Attleborough Rail Station-Thetford Rail Station",
+            "from_stop": "ST9100ATTLBON",
+            "length_m": 21631.8145,
+            "route_shape": false,
+            "to_stop": "ST9100THETFD",
+            "service_patterns": [
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SP91a2db1c238f67451838e0f04ae23713ccd0490a",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP541fbaa5518086d74c09cb412400528482edab16",
+              "SP47f066188ede9966507376e55f3b0bd68af38462",
+              "SP7bd07010a206fefd9b9639f8ee36c839732f37c7",
+              "SP6e0af236149c8621abb66ca1f1afe81884c0865e",
+              "SP1d5c72a6e80e42273e41dfb12097bb7057c501b6",
+              "SP221a7fa99772b299419da9953b7a9ebf4875c328",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SPf7a9a36c4748c877d8a8c65431c5192b6f95855f",
+              "SPfdb7b438460b571890b9ad890bb0adb7b9088446",
+              "SP981563407fe43d67aa74a45085213e6d6451da58",
+              "SP0b0ff4cd02c91042d96f2a3a9330ce48084b13b5"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLdd72aaf37a08283ed8bb5e20ee8293f460e58406",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.3068437961739523, 52.6271764614797988],
+              [1.11804822593129116, 52.5654338876883784]
+            ]
+          },
+          "properties": {
+            "feature_name": "Norwich Rail Station-Wymondham Rail Station",
+            "from_stop": "ST9100NRCH",
+            "length_m": 14524.2812,
+            "route_shape": false,
+            "to_stop": "ST9100WYMNDHM",
+            "service_patterns": [
+              "SP98eed01e72141e6dfd0618a1aa1076156dcfec35",
+              "SP91a2db1c238f67451838e0f04ae23713ccd0490a",
+              "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+              "SP541fbaa5518086d74c09cb412400528482edab16",
+              "SP05193280f28b9b5f0d4cd7c0ba1497ec112cec40",
+              "SP2798d4435822933fd340ba82db2146b013e97292",
+              "SP47f066188ede9966507376e55f3b0bd68af38462",
+              "SP6e0af236149c8621abb66ca1f1afe81884c0865e",
+              "SPba21bfa13a57e7734b42166c80a03d2f0f5f5a4e",
+              "SP1d5c72a6e80e42273e41dfb12097bb7057c501b6",
+              "SP221a7fa99772b299419da9953b7a9ebf4875c328",
+              "SP68ed9e3af3df8f3999f631cea4c694854d2fbf64",
+              "SP3041bd52d152e5d087da2cb7f80fc05f3c42e43f",
+              "SPfdb7b438460b571890b9ad890bb0adb7b9088446",
+              "SP3063636f5011d0ee7ab2ec3782513d1a52666813",
+              "SP0b0ff4cd02c91042d96f2a3a9330ce48084b13b5",
+              "SPa20e883d4ac7b1b154c3c0e21d13ce71fe7e9637",
+              "SP60bbafa89d44717335d9522537f8a5318304bc29"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI76576",
+        "name": "Norwich - Stansted Airport:Norwich - Stansted Airport"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP002866dab6411b403d8248025f84ee8a2d350b55",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14524,
+            "speed": 79
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 23138,
+            "speed": 86
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 44770,
+            "speed": 99
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 53828,
+            "speed": 77
+          },
+          {
+            "arrival_time_secs": 3600,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 79157,
+            "speed": 79
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 99128,
+            "speed": 99
+          },
+          {
+            "arrival_time_secs": 4680,
+            "departure_time_secs": 4800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 102804,
+            "speed": 36
+          },
+          {
+            "arrival_time_secs": 5280,
+            "departure_time_secs": 5340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 113053,
+            "speed": 76
+          },
+          {
+            "arrival_time_secs": 5820,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 124449,
+            "speed": 85
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 137853,
+            "speed": 42
+          }
+        ],
+        "vehicle_journeys": [
+          "VJa7641ad6f4ebda895f7f59091f751bfe2746035a",
+          "VJf9d498b4ff2a2546395bb661f8fa4ae0ec2dc34a"
+        ]
+      },
+      {
+        "id": "TP0784bbf49f3faf38c289801cd846bf2f85bb9a27",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4200,
+            "departure_time_secs": 4260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4560,
+            "departure_time_secs": 4620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5100,
+            "departure_time_secs": 5100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5580,
+            "departure_time_secs": 5580,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6600,
+            "departure_time_secs": 6600,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJd783c790d0d8c2aaa32568e71d1c5c0886b53bac"]
+      },
+      {
+        "id": "TP0aa5f078c24de93a8c139e449fbc06ec0cd5c95b",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 5940,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJd31d4e1a4e7aa12520c7422ffb84f7b79d569f1e"]
+      },
+      {
+        "id": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4380,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4680,
+            "departure_time_secs": 4920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5400,
+            "departure_time_secs": 5460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5940,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7320,
+            "departure_time_secs": 7320,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJfc1560654aa4ae2cadf91d681d9d556f5815cf43",
+          "VJdb01bc2c056b6a297154cb1fdd255f2611343ac4",
+          "VJ9108808ebd887edcafeb36d04de9535a7346bd49",
+          "VJf837ec0a47ab9d60ab80609ca1e031c2f3c28cd4",
+          "VJ85bdee94b0f44b6a8b2bdf9edffd55ee642548e3",
+          "VJ18cf08d8f41b7d1cd978da19dae5baa870db09db",
+          "VJ28462d95711a1250252d2248c27a8cbefe37fcc6",
+          "VJ429a87841eeede50922725353f260e0bb0900bc0"
+        ]
+      },
+      {
+        "id": "TP11a7f404073a87fe23ba93437c5837a3e9af3617",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4260,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ7529d9b0fe4132be10d36a3014433272023942fc"]
+      },
+      {
+        "id": "TP12bfd48e22144586135d1047bf85062a374eebbf",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4200,
+            "departure_time_secs": 4260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4560,
+            "departure_time_secs": 4620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5100,
+            "departure_time_secs": 5100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5580,
+            "departure_time_secs": 5580,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6660,
+            "departure_time_secs": 6660,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ28ffd56e4cd63509fdb668378de733df7dd3b4f4"]
+      },
+      {
+        "id": "TP17687360d8f7fe1e150f12e5abbade75b02cdb81",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3660,
+            "departure_time_secs": 3660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4380,
+            "departure_time_secs": 4440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4740,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5820,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ3d9e081137e5876986efccf33c4d538983b8310f"]
+      },
+      {
+        "id": "TP306c42e3faa346891ce169a74e778de1254ae2a4",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4380,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4860,
+            "departure_time_secs": 4920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5400,
+            "departure_time_secs": 5460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5940,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7320,
+            "departure_time_secs": 7320,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ8d193b23619c7ea341cbeefb715ebd153f285470"]
+      },
+      {
+        "id": "TP3aa50e258b3ccd0c9f4b961810c30289f10edcb3",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4800,
+            "departure_time_secs": 5040,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5520,
+            "departure_time_secs": 5520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6000,
+            "departure_time_secs": 6060,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJcd7825b6e5e378e15538b4a724209a7759fb6423"]
+      },
+      {
+        "id": "TP3b4e91b676ffc8f28d2833cc9c7f82d4f98e0370",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ8c1cb4941c6dd005ecdf2ba294bacac7e0a461a5",
+          "VJ824bf8619af91fe116b48818f74eea1457109dca",
+          "VJ869da52ecf8f9067b1ce82b06fa633017dd00aa7",
+          "VJ620f63cef8bd639a7d91ea0ac08f291b2c2ce30d"
+        ]
+      },
+      {
+        "id": "TP422f2760e923842710393034c3b8a4cbe314316d",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1140,
+            "departure_time_secs": 1200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1980,
+            "departure_time_secs": 2040,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2460,
+            "departure_time_secs": 2520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4800,
+            "departure_time_secs": 4920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5400,
+            "departure_time_secs": 5520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6000,
+            "departure_time_secs": 6060,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJb0531c240f692980c48e46d1fbbeb9e825c8c04a"]
+      },
+      {
+        "id": "TP5344df9d2beb10cb8cf5f7484dd86d026373164d",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4260,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5820,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ411bda91ac154fde060e019fa0f6d2113ea94cc1"]
+      },
+      {
+        "id": "TP6150b1007e571453985446545fd6439767e8d07c",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4440,
+            "departure_time_secs": 4440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4740,
+            "departure_time_secs": 4980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5460,
+            "departure_time_secs": 5520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6000,
+            "departure_time_secs": 6120,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7140,
+            "departure_time_secs": 7140,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJb68d34ffd0b90e56ad61c95c14c9447dd14eef67"]
+      },
+      {
+        "id": "TP795279e4d2eb1bc1fdbd1e6fffdb0ecd7ba91b1f",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4260,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4680,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5160,
+            "departure_time_secs": 5160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5640,
+            "departure_time_secs": 5640,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6660,
+            "departure_time_secs": 6660,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ853965f3496ede4614af5d39c8a5fe5595927644"]
+      },
+      {
+        "id": "TP82cd5a93e6eebbcd74d3b33614e69805116e4c38",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4260,
+            "departure_time_secs": 4260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5280,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 5940,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7440,
+            "departure_time_secs": 7440,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ6e18b8c26d8651b6a381e85e5ad7354cf3340d1f"]
+      },
+      {
+        "id": "TPc36ed8420d637a65c9dd1870dba4059111b4b4e2",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4800,
+            "departure_time_secs": 4920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5400,
+            "departure_time_secs": 5520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6000,
+            "departure_time_secs": 6060,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ327a01d4d69622d97df5d3ee70846f43183780af"]
+      },
+      {
+        "id": "TPc3f1cbe01570837f53348e5a56f4c856d144b5bb",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4260,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJd65ef078a1cd315b9ae9a13ed4e86aa4d6f86b89"]
+      },
+      {
+        "id": "TPc4dcb474984d0001cb920b8b346db30e931c2ab6",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4800,
+            "departure_time_secs": 4920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5400,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJd797dcdfeec42dfa9f4a07353b7d1047c92422b5"]
+      },
+      {
+        "id": "TPc4f6ad6f81d153372d42d78e25c5c25a6cf63c8e",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ1d3ba9ad597602c31e21da5002ebe6614bd4f4bf",
+          "VJ766f9bb3cdef165d522b4f5574bd709aaa87625c",
+          "VJ3149ae3d145e4b30e47c826320059aee3aadc336",
+          "VJ4519e5dfef4156ac51307837e02e6395280d0826"
+        ]
+      },
+      {
+        "id": "TPd029e016d48f1988166fa2af3a05f3df73300dda",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4200,
+            "departure_time_secs": 4260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4560,
+            "departure_time_secs": 4680,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5160,
+            "departure_time_secs": 5160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5640,
+            "departure_time_secs": 5700,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6660,
+            "departure_time_secs": 6660,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ046e3514f619e231c2153a12a8adae0b1c531cf3"]
+      },
+      {
+        "id": "TPd3acaa9260623ad5456f6f2295763ce50e79ba88",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4200,
+            "departure_time_secs": 4260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4560,
+            "departure_time_secs": 4620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5100,
+            "departure_time_secs": 5100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5580,
+            "departure_time_secs": 5640,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6660,
+            "departure_time_secs": 6660,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ1b0365b390a85f391515ab34681b6c66f641c40f",
+          "VJb73197cdc1212bcca6ccd2e63bef896f95674dc4",
+          "VJd72d898cfa27ad4aa8d907c15c2400cafdb834c1"
+        ]
+      },
+      {
+        "id": "TPdd5e3dee904c52f8598e1fd66ef649a8afaacf80",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3660,
+            "departure_time_secs": 3660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4380,
+            "departure_time_secs": 4440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4740,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 6000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ4e2b58012cbe17cf18c3ba01e9147a5d47cdb1ad"]
+      },
+      {
+        "id": "TPe5371962daea025ee76ea62d0665e7d6245cffbc",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4800,
+            "departure_time_secs": 4920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5400,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6960,
+            "departure_time_secs": 6960,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ1016ce1589c5ceae2f88da205770063bc11d1e50"]
+      },
+      {
+        "id": "TPe8fd23f60714c1236550ce3abe16b05bc0e74132",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5820,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ36eaad4a748a0055c03a06a1406559755ea9b634",
+          "VJ6df5107cb72b6b74a661644cb4f9da0fa8c0a5c8",
+          "VJ3f3bd3c3da921fc95fea4fe3e6bc8aa2190ea8a4",
+          "VJdf5803ac8c2cc78cd2b52d37af5332ef62c7aa31"
+        ]
+      },
+      {
+        "id": "TPf172817e90b16202de80007fe031e1329f2c7315",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3540,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4560,
+            "departure_time_secs": 4620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5100,
+            "departure_time_secs": 5100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5580,
+            "departure_time_secs": 5580,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 6660,
+            "departure_time_secs": 6660,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJcd3f4050b5d004e60d3e7e166725a6b1f3b216fe"]
+      },
+      {
+        "id": "TPf57a7a5ddce0580b07ac206bd29b8d7c696b952a",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5340,
+            "departure_time_secs": 5340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5820,
+            "departure_time_secs": 5880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ2a0bd0ddf850d96796f66a8a7139bd81180c1e9b",
+          "VJ42af362990e7f92aa9cb4b430f7fcf9b17214fbb",
+          "VJ597ac18781b38c70ce846ecdd36d6859d1e12de1",
+          "VJ6195f27210be7f7a9a072bb89fc9b2632bb29208"
+        ]
+      },
+      {
+        "id": "TPf86d6a5a32d5ec997b897fd617f5f8db10765dbc",
+        "service_pattern": "SP44bc3b7759d97a649410981944452a8a0b40e8b3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3600,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4680,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5280,
+            "departure_time_secs": 5400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 5880,
+            "departure_time_secs": 5940,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 7020,
+            "departure_time_secs": 7020,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ9d3ec84ed252031778e2a461fdc2f62136219ebe",
+          "VJd81e82f763d3d5288a2cfcf62740d776f662edae"
+        ]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ046e3514f619e231c2153a12a8adae0b1c531cf3",
+        "timing_pattern": "TPd029e016d48f1988166fa2af3a05f3df73300dda",
+        "start": 45180,
+        "feature_name": "12:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ1016ce1589c5ceae2f88da205770063bc11d1e50",
+        "timing_pattern": "TPe5371962daea025ee76ea62d0665e7d6245cffbc",
+        "start": 19620,
+        "feature_name": "05:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04"]
+      },
+      {
+        "id": "VJ18cf08d8f41b7d1cd978da19dae5baa870db09db",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 68580,
+        "feature_name": "19:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJ1b0365b390a85f391515ab34681b6c66f641c40f",
+        "timing_pattern": "TPd3acaa9260623ad5456f6f2295763ce50e79ba88",
+        "start": 30780,
+        "feature_name": "08:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJ1d3ba9ad597602c31e21da5002ebe6614bd4f4bf",
+        "timing_pattern": "TPc4f6ad6f81d153372d42d78e25c5c25a6cf63c8e",
+        "start": 30420,
+        "feature_name": "08:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-25",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ28462d95711a1250252d2248c27a8cbefe37fcc6",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 43380,
+        "feature_name": "12:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJ28ffd56e4cd63509fdb668378de733df7dd3b4f4",
+        "timing_pattern": "TP12bfd48e22144586135d1047bf85062a374eebbf",
+        "start": 45180,
+        "feature_name": "12:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-02-01"]
+      },
+      {
+        "id": "VJ2a0bd0ddf850d96796f66a8a7139bd81180c1e9b",
+        "timing_pattern": "TPf57a7a5ddce0580b07ac206bd29b8d7c696b952a",
+        "start": 30420,
+        "feature_name": "08:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ3149ae3d145e4b30e47c826320059aee3aadc336",
+        "timing_pattern": "TPc4f6ad6f81d153372d42d78e25c5c25a6cf63c8e",
+        "start": 48420,
+        "feature_name": "13:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ327a01d4d69622d97df5d3ee70846f43183780af",
+        "timing_pattern": "TPc36ed8420d637a65c9dd1870dba4059111b4b4e2",
+        "start": 19620,
+        "feature_name": "05:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2019-12-31"]
+      },
+      {
+        "id": "VJ36eaad4a748a0055c03a06a1406559755ea9b634",
+        "timing_pattern": "TPe8fd23f60714c1236550ce3abe16b05bc0e74132",
+        "start": 26820,
+        "feature_name": "07:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ3d9e081137e5876986efccf33c4d538983b8310f",
+        "timing_pattern": "TP17687360d8f7fe1e150f12e5abbade75b02cdb81",
+        "start": 52020,
+        "feature_name": "14:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ3f3bd3c3da921fc95fea4fe3e6bc8aa2190ea8a4",
+        "timing_pattern": "TPe8fd23f60714c1236550ce3abe16b05bc0e74132",
+        "start": 70020,
+        "feature_name": "19:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ411bda91ac154fde060e019fa0f6d2113ea94cc1",
+        "timing_pattern": "TP5344df9d2beb10cb8cf5f7484dd86d026373164d",
+        "start": 23220,
+        "feature_name": "06:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ429a87841eeede50922725353f260e0bb0900bc0",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 72180,
+        "feature_name": "20:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJ42af362990e7f92aa9cb4b430f7fcf9b17214fbb",
+        "timing_pattern": "TPf57a7a5ddce0580b07ac206bd29b8d7c696b952a",
+        "start": 41220,
+        "feature_name": "11:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ4519e5dfef4156ac51307837e02e6395280d0826",
+        "timing_pattern": "TPc4f6ad6f81d153372d42d78e25c5c25a6cf63c8e",
+        "start": 59220,
+        "feature_name": "16:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ4e2b58012cbe17cf18c3ba01e9147a5d47cdb1ad",
+        "timing_pattern": "TPdd5e3dee904c52f8598e1fd66ef649a8afaacf80",
+        "start": 52020,
+        "feature_name": "14:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ597ac18781b38c70ce846ecdd36d6859d1e12de1",
+        "timing_pattern": "TPf57a7a5ddce0580b07ac206bd29b8d7c696b952a",
+        "start": 59220,
+        "feature_name": "16:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ6195f27210be7f7a9a072bb89fc9b2632bb29208",
+        "timing_pattern": "TPf57a7a5ddce0580b07ac206bd29b8d7c696b952a",
+        "start": 48420,
+        "feature_name": "13:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ620f63cef8bd639a7d91ea0ac08f291b2c2ce30d",
+        "timing_pattern": "TP3b4e91b676ffc8f28d2833cc9c7f82d4f98e0370",
+        "start": 70020,
+        "feature_name": "19:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2019-12-21", "2019-12-28", "2020-02-08", "2020-02-15"]
+      },
+      {
+        "id": "VJ6df5107cb72b6b74a661644cb4f9da0fa8c0a5c8",
+        "timing_pattern": "TPe8fd23f60714c1236550ce3abe16b05bc0e74132",
+        "start": 66420,
+        "feature_name": "18:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJ6e18b8c26d8651b6a381e85e5ad7354cf3340d1f",
+        "timing_pattern": "TP82cd5a93e6eebbcd74d3b33614e69805116e4c38",
+        "start": 48420,
+        "feature_name": "13:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJ7529d9b0fe4132be10d36a3014433272023942fc",
+        "timing_pattern": "TP11a7f404073a87fe23ba93437c5837a3e9af3617",
+        "start": 23220,
+        "feature_name": "06:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2019-12-21", "2019-12-28", "2020-02-08", "2020-02-15"]
+      },
+      {
+        "id": "VJ766f9bb3cdef165d522b4f5574bd709aaa87625c",
+        "timing_pattern": "TPc4f6ad6f81d153372d42d78e25c5c25a6cf63c8e",
+        "start": 41220,
+        "feature_name": "11:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ824bf8619af91fe116b48818f74eea1457109dca",
+        "timing_pattern": "TP3b4e91b676ffc8f28d2833cc9c7f82d4f98e0370",
+        "start": 34020,
+        "feature_name": "09:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ853965f3496ede4614af5d39c8a5fe5595927644",
+        "timing_pattern": "TP795279e4d2eb1bc1fdbd1e6fffdb0ecd7ba91b1f",
+        "start": 45180,
+        "feature_name": "12:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-11"]
+      },
+      {
+        "id": "VJ85bdee94b0f44b6a8b2bdf9edffd55ee642548e3",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 64980,
+        "feature_name": "18:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJ869da52ecf8f9067b1ce82b06fa633017dd00aa7",
+        "timing_pattern": "TP3b4e91b676ffc8f28d2833cc9c7f82d4f98e0370",
+        "start": 66420,
+        "feature_name": "18:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ8c1cb4941c6dd005ecdf2ba294bacac7e0a461a5",
+        "timing_pattern": "TP3b4e91b676ffc8f28d2833cc9c7f82d4f98e0370",
+        "start": 26820,
+        "feature_name": "07:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2019-12-30",
+          "2019-12-31",
+          "2020-01-25",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJ8d193b23619c7ea341cbeefb715ebd153f285470",
+        "timing_pattern": "TP306c42e3faa346891ce169a74e778de1254ae2a4",
+        "start": 36180,
+        "feature_name": "10:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJ9108808ebd887edcafeb36d04de9535a7346bd49",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 57780,
+        "feature_name": "16:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJ9d3ec84ed252031778e2a461fdc2f62136219ebe",
+        "timing_pattern": "TPf86d6a5a32d5ec997b897fd617f5f8db10765dbc",
+        "start": 70020,
+        "feature_name": "19:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJa7641ad6f4ebda895f7f59091f751bfe2746035a",
+        "timing_pattern": "TP002866dab6411b403d8248025f84ee8a2d350b55",
+        "start": 55620,
+        "feature_name": "15:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJb0531c240f692980c48e46d1fbbeb9e825c8c04a",
+        "timing_pattern": "TP422f2760e923842710393034c3b8a4cbe314316d",
+        "start": 19620,
+        "feature_name": "05:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2019-12-30"]
+      },
+      {
+        "id": "VJb68d34ffd0b90e56ad61c95c14c9447dd14eef67",
+        "timing_pattern": "TP6150b1007e571453985446545fd6439767e8d07c",
+        "start": 69960,
+        "feature_name": "19:26:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2019-12-30", "2019-12-31"]
+      },
+      {
+        "id": "VJb73197cdc1212bcca6ccd2e63bef896f95674dc4",
+        "timing_pattern": "TPd3acaa9260623ad5456f6f2295763ce50e79ba88",
+        "start": 37980,
+        "feature_name": "10:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJcd3f4050b5d004e60d3e7e166725a6b1f3b216fe",
+        "timing_pattern": "TPf172817e90b16202de80007fe031e1329f2c7315",
+        "start": 45180,
+        "feature_name": "12:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-18"]
+      },
+      {
+        "id": "VJcd7825b6e5e378e15538b4a724209a7759fb6423",
+        "timing_pattern": "TP3aa50e258b3ccd0c9f4b961810c30289f10edcb3",
+        "start": 19620,
+        "feature_name": "05:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-21",
+          "2019-12-28",
+          "2020-01-25",
+          "2020-02-08",
+          "2020-02-15"
+        ]
+      },
+      {
+        "id": "VJd31d4e1a4e7aa12520c7422ffb84f7b79d569f1e",
+        "timing_pattern": "TP0aa5f078c24de93a8c139e449fbc06ec0cd5c95b",
+        "start": 41220,
+        "feature_name": "11:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJd65ef078a1cd315b9ae9a13ed4e86aa4d6f86b89",
+        "timing_pattern": "TPc3f1cbe01570837f53348e5a56f4c856d144b5bb",
+        "start": 23220,
+        "feature_name": "06:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2019-12-30", "2019-12-31"]
+      },
+      {
+        "id": "VJd72d898cfa27ad4aa8d907c15c2400cafdb834c1",
+        "timing_pattern": "TPd3acaa9260623ad5456f6f2295763ce50e79ba88",
+        "start": 45180,
+        "feature_name": "12:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJd783c790d0d8c2aaa32568e71d1c5c0886b53bac",
+        "timing_pattern": "TP0784bbf49f3faf38c289801cd846bf2f85bb9a27",
+        "start": 45180,
+        "feature_name": "12:33:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04"]
+      },
+      {
+        "id": "VJd797dcdfeec42dfa9f4a07353b7d1047c92422b5",
+        "timing_pattern": "TPc4dcb474984d0001cb920b8b346db30e931c2ab6",
+        "start": 19620,
+        "feature_name": "05:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJd81e82f763d3d5288a2cfcf62740d776f662edae",
+        "timing_pattern": "TPf86d6a5a32d5ec997b897fd617f5f8db10765dbc",
+        "start": 34020,
+        "feature_name": "09:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJdb01bc2c056b6a297154cb1fdd255f2611343ac4",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 50580,
+        "feature_name": "14:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJdf5803ac8c2cc78cd2b52d37af5332ef62c7aa31",
+        "timing_pattern": "TPe8fd23f60714c1236550ce3abe16b05bc0e74132",
+        "start": 34020,
+        "feature_name": "09:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": ["2020-01-04", "2020-01-11", "2020-01-18", "2020-02-01"]
+      },
+      {
+        "id": "VJf837ec0a47ab9d60ab80609ca1e031c2f3c28cd4",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 61380,
+        "feature_name": "17:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      },
+      {
+        "id": "VJf9d498b4ff2a2546395bb661f8fa4ae0ec2dc34a",
+        "timing_pattern": "TP002866dab6411b403d8248025f84ee8a2d350b55",
+        "start": 52020,
+        "feature_name": "14:27:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2019-12-27",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      },
+      {
+        "id": "VJfc1560654aa4ae2cadf91d681d9d556f5815cf43",
+        "timing_pattern": "TP0b9c81ca6a163aae6bbdc6cdd7ea2ec2ee6559cc",
+        "start": 46980,
+        "feature_name": "13:03:00 -- Norwich - Stansted Airport: Norwich to Stansted Airport",
+        "dates": [
+          "2019-12-15",
+          "2019-12-22",
+          "2019-12-29",
+          "2020-01-01",
+          "2020-02-09"
+        ]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-missing-point-15",
+      "values": [
+        {
+          "id": "TP002866dab6411b403d8248025f84ee8a2d350b55",
+          "warning_type": "timing-missing-point-15",
+          "warning_id": 0,
+          "missing_stop": "ST9100AUDLEYE",
+          "indexes": [9]
+        }
+      ]
+    }
+  ]
+}

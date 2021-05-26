@@ -1,0 +1,85 @@
+{% load i18n %}
+
+<table class="govuk-table dataset-property-table">
+  <tbody class="govuk-table__body">
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Data feed ID' %}</th>
+    <td class="govuk-table__cell dont-break-out">{{ object.dataset_id }}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between"><span class="govuk-!-padding-1 dont-break-out">{% trans properties.description %}</span>
+        <span style="text-align: right"><a class="govuk-link"
+           href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% trans 'Edit' %}</a>
+        </span> </div>
+    </td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Short description' %}</th>
+    <td class="govuk-table__cell dont-break-out">
+      <div class="flex-between">{% trans properties.short_description %}
+        <a class="govuk-link"
+           href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% trans 'Edit' %}</a>
+      </div>
+    </td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between">
+        {% include 'organisation/snippets/status_indicator.html' with status=properties.status %}
+      </div>
+    </td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+    <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'SIRI-VM version' %}</th>
+    <td class="govuk-table__cell">{{ properties.siri_version }}
+    </td>
+  </tr>
+
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'URL link' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans object.url_link %}</td>
+  </tr>
+
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Feed details last updated' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between">
+        <span>
+            {# Note we use last modified time rather than published_at since the revision won't be published yet #}
+            {{ properties.last_modified|date:"j M Y H:i" }} {% trans 'by ' %}
+          {{ properties.last_modified_user|default_if_none:'System' }}
+        </span>
+      </div>
+    </td>
+  </tr>
+
+
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Last automated update' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between">
+        <span>
+          {% if properties.last_server_update %}
+            {# Note we use last modified time rather than published_at since the revision won't be published yet #}
+            {{ properties.last_server_update|date:"j M Y H:i" }}
+          {% else %}
+            {% trans 'Unknown' %}
+          {% endif %}
+        </span>
+      </div>
+    </td>
+  </tr>
+
+  </tbody>
+</table>

@@ -1,0 +1,54 @@
+{% load crispy_forms_field %}
+{% load crispy_forms_govuk_tags %}
+
+{% if field.is_hidden %}
+    {% crispy_field field %}
+{% else %}
+  <div
+      {# id="div_{{ field.auto_id }}" - GB removing this as it should be optional #}
+      class="{% if wrapper_class %}{{ wrapper_class }}{% else %}govuk-form-group {% endif %} {% if field.errors and not suppress_form_group_error %} govuk-form-group--error{% endif %}">
+
+      {% if field|is_checkbox %}
+          {# A checkbox input has inline label and hint #}
+          {% include 'govuk/snippets/field_errors.html' %}
+          {% include 'govuk/layout/checkbox.html' %}
+      {% else %}
+
+        {% if field|is_checkboxselectmultiple or field|is_radioselect and not dont_use_label_as_legend%}
+            {# Render fieldset with legend #}
+            <fieldset class="govuk-fieldset"
+                {% if field.help_text %} aria-describedby="{{ field.auto_id }}-hint"{% endif %}>
+            {% include 'govuk/snippets/field_legend.html' %}
+        {% else %}
+            {# Render label #}
+            {% include 'govuk/snippets/field_label.html' %}
+        {% endif %}
+
+        {# Render form group hint #}
+        {% include 'govuk/snippets/field_hint.html' %}
+
+        {# Render form group errors #}
+        {% include 'govuk/snippets/field_errors.html' %}
+
+        {# Render input(s) #}
+        {% if field|is_radioselect %}
+            {# style standard radio select container #}
+            {% include 'govuk/layout/radioselect.html' %}
+        {% elif field|is_select %}
+            {# style select container #}
+            {% include 'govuk/layout/select.html' %}
+        {% elif field|is_checkboxselectmultiple %}
+            {# style multi checkbox container #}
+            {% include 'govuk/layout/checkboxmultiple.html' %}
+        {% else %}
+            {# render widget #}
+            {% include "govuk/widget.html" %}
+        {% endif %}
+
+        {# Close fieldset tag #}
+        {% if field|is_checkbox or field|is_checkboxselectmultiple or field|is_radioselect %}
+            </fieldset>
+        {% endif %}
+      {% endif %}
+  </div>
+{% endif %}

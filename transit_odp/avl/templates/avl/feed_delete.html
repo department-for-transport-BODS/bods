@@ -1,0 +1,57 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Delete data feed' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block backlink %}
+  {% url 'avl:revision-publish' pk1=pk1 pk=object.id host hosts.publish as backlink %}
+  {% include 'snippets/backlink.html' with url=backlink %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">
+        {% if object.live_revision %}
+          {% trans 'Would you like to cancel updating this data feed' %}
+        {% else %}
+          {% trans 'Would you like to delete this data feed?' %}
+        {% endif %}
+      </h1>
+      <p class="govuk-body-l">
+        {% if object.live_revision %}
+          {% blocktrans %}
+            Please confirm that you would like to cancel updating data feed
+          {% endblocktrans %}
+          "{{ revision_name }}"
+          {% blocktrans %}
+            . Any changes you have made so far will not be saved.
+          {% endblocktrans %}
+        {% else %}
+          {% blocktrans %}
+            Please confirm that you would like to delete data feed
+          {% endblocktrans %}
+          "{{ revision_name }}"
+          {% blocktrans %}
+            . Any changes you have made so far will not be saved.
+          {% endblocktrans %}
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% block inner %}
+    {% crispy form %}
+  {% endblock %}
+
+  {% block inner_secondary %}
+  {% endblock %}
+{% endblock %}

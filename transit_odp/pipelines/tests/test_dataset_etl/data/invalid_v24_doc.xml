@@ -1,0 +1,8 @@
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"
+              xsi:schemaLocation="http://www.transxchange.org.uk/ ../../TransXChange_registration.xsd" xml:lang="en"
+              CreationDateTime="2004-04-14T14:20:00-05:00" ModificationDateTime="2004-04-14T14:20:00-05:00"
+              Modification="new" RevisionNumber="0" FileName="linear.xml" SchemaVersion="2.4" MappingSystem="TOID"
+              LocationSystem="Grid" RegistrationDocument="true" DataSource="TxcHandcodedExamples">
+    <bogus></bogus>
+</TransXChange>

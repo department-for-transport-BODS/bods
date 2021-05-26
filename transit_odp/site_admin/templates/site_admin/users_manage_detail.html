@@ -1,0 +1,86 @@
+{% extends "site_admin/base.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'User details' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
+  {% breadcrumb_url object.organisation.name 'users:organisation-detail' pk=view.kwargs.pk1 host hosts.admin %}
+  {% breadcrumb_url 'User management' 'users:org-user-manage' pk=view.kwargs.pk %}
+  {% breadcrumb 'User detail' %}
+{% endblock %}
+
+{% block title_text %}{{ object.email }}{% endblock %}
+
+{% block inner %}
+  <h2 class="govuk-heading-m">{% trans 'User detail' %}</h2>
+  <table class="govuk-table manage-users-table">
+    <tbody class="govuk-table__body govuk-body-m">
+    <tr class="govuk-table__row govuk-body-m" style="border-top:1px solid #bfc1c3">
+      <td class="govuk-table__cell govuk-!-width-one-quarter">
+        <b>{% trans 'Status' %}</b>
+      </td>
+      <td class="govuk-table__cell">
+          {% if object.is_active %}
+              Active
+          {% else %}
+              Inactive
+          {% endif %}
+      </td>
+      <td class="govuk-table__cell"></td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-width-one-quarter">
+        <b>{% trans 'Username' %}</b>
+      </td>
+      <td class="govuk-table__cell">{{ object.username }}<td>
+      <td class="govuk-table__cell"></td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-width-one-quarter">
+        <b>{% trans 'User type' %}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <span class="dont-break-out">
+          {% trans object.pretty_account_name %}
+        </span>
+      </td>
+      <td class="govuk-table__cell"></td>
+    </tr>
+    </tbody>
+  </table>
+
+  {% if object.is_agent_user %}
+    <a class="govuk-button govuk-button--warning"
+      href="{% url 'users:org-remove-agent' pk=view.kwargs.pk pk1=view.kwargs.pk1 invite_id=invite.id host host.name %}"
+      role="button">
+      {% trans 'Remove' %}
+    </a>
+  {% else %}
+    {% if object.is_active %}
+      <div class="button-holder">
+        <a class="govuk-button govuk-button--secondary"
+          href="{% url 'users:manage-user-edit' pk=view.kwargs.pk pk1=view.kwargs.pk1 host host.name %}"
+          role="button">
+          {% trans 'Edit' %}
+        </a>
+        <a class="govuk-button govuk-button--warning"
+          href="{% url 'users:org-user-archive' pk=view.kwargs.pk pk1=view.kwargs.pk1 host host.name %}"
+          role="button">
+          {% trans 'Deactivate' %}
+        </a>
+      </div>
+    {% else %}
+      <a class="govuk-button"
+        href="{% url 'users:org-user-activate' pk=view.kwargs.pk pk1=view.kwargs.pk1 host host.name %}"
+        role="button">
+        {% trans 'Activate' %}
+      </a>
+    {% endif %}
+  {% endif %}
+{% endblock %}

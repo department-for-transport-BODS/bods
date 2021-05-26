@@ -1,0 +1,33 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: debug-statements
+      - id: file-contents-sorter
+        files: .gitignore
+
+  # Format files using black
+  - repo: https://github.com/psf/black
+    rev: 19.10b0
+    hooks:
+      - id: black
+
+  # PEP8 compliant import ordering
+  - repo: https://github.com/timothycrosley/isort
+    rev: 18ad293fc9d1852776afe35015a932b68d26fb14
+    hooks:
+      - id: isort
+        additional_dependencies: ["toml"]
+
+  # Format JavaScript/HTML/CSS/Markdown
+  - repo: https://github.com/prettier/prettier
+    rev: 1.19.1
+    hooks:
+      - id: prettier
+        exclude: templates

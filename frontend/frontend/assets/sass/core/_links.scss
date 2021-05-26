@@ -1,0 +1,16 @@
+@import "../variables";
+@import "govuk-frontend/govuk/core/links";
+
+.govuk-link--active {
+  &:link,
+  &:hover,
+  &:visited {
+    color: $govuk-header-link-active;
+  }
+
+  // When focussed, the text colour needs to be darker to ensure that colour
+  // contrast is still acceptable
+  &:focus {
+    color: $govuk-focus-text-colour;
+  }
+}

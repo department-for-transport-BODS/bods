@@ -1,0 +1,14 @@
+<root>
+    <books>
+        <book id="1">War and Peace</book>
+        <book id="2">Pride and Prejudice</book>
+    </books>
+    <authors>
+        <author id="3">Leo Tolstoy</author>
+        <author id="4">Jane Austen</author>
+        <author id="5">Stephen King</author>
+    </authors>
+    <countries>
+        <country id="6">UK</country>
+    </countries>
+</root>

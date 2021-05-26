@@ -1,0 +1,6 @@
+You have been been invited to publish on the Bus Open Data Service on behalf of {{ organisation }}. Follow the link to create an account. Once logged in, you can publish and update data. Your organisation has a legal obligation to provide up-to-date and accurate data for all the bus routes you run.
+
+{{ signup_link }}
+
+Kind regards,
+Bus Open Data Service

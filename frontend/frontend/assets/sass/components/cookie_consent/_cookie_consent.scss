@@ -1,0 +1,59 @@
+@import "../../variables";
+
+.cookie-banner {
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  padding: 10px 0;
+  background-color: #ffffff;
+  border: 2px solid #0b0c0c;
+  display: block;
+}
+
+.cookie-banner-message {
+  display: inline-block;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  color: #00823b;
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1.3157894737;
+}
+
+.cookie-banner-buttons-group {
+  font-size: 19px;
+  line-height: 1.3157894737;
+  display: inline-block;
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 400;
+
+  .cookie-banner-button-accept {
+    width: auto;
+    display: inline-block;
+  }
+
+  .cookie-banner-button-settings {
+    width: auto;
+    display: inline-block;
+  }
+
+  .cookie-button {
+    padding: 8px 10px;
+    border-color: #00823b;
+    color: #00823b;
+    background-color: #ffffff;
+    box-shadow: none;
+    display: inline-block;
+    width: auto;
+    vertical-align: baseline;
+    margin-right: 10px;
+  }
+}
+
+.cookie-banner-buttons:after {
+  content: "";
+  display: block;
+  clear: both;
+}

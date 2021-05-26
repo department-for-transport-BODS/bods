@@ -1,0 +1,23 @@
+// Override fontawesome webfonts folder to serve from 'fonts'
+$fa-font-path: "./fonts";
+
+@import "@fortawesome/fontawesome-free/scss/_variables.scss";
+
+// Include images from /assets/frontend/images and fonts from /assets/frontend/fonts
+$govuk-assets-path: "/assets/frontend/";
+
+@import "govuk-frontend/govuk/settings/all";
+
+$govuk-green-colour: #398373;
+//$govuk-blue-colour: #005ea5;
+$govuk-confirm-colour: #00823b; // this colour is also used in GovUK assets, e.g. $govuk-button-colour
+
+// TODO - this is to spec but does not follow GovUK guidelines as this colour should only be used for focused elements
+// see https://design-system.service.gov.uk/styles/colour/
+$govuk-warning-colour: #ffbf47;
+
+// Override GovUK colours
+//$govuk-link-colour: $govuk-green-colour;
+
+// override variable in component/header.scss
+$govuk-header-link-active: #1d8feb;

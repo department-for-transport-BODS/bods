@@ -1,0 +1,105 @@
+{% extends "guidance/developer/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+  <h1 data-qa="using-api-header" class="govuk-heading-l">{% trans 'Using the APIs' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
+  All data within the Bus Open Data Service can be queried and accessed via API calls.
+  A different API call is required for each type of data (timetables, bus location).
+  {% endblocktrans %}
+  </p>
+
+  <h1 data-qa="api-key-header" class="govuk-heading-l">{% trans 'API Key' %}</h1>
+
+  <p class="govuk-body">
+    {% trans 'Use of the APIs requires an API key which can be obtained from ' %}
+    <a class="govuk-link"
+       href="{% url 'users:settings' host hosts.data %}">
+      {% trans 'Account Settings.' %}
+    </a>
+    {% trans 'This key is linked to your account and should not be shared. If you have not already done so you will need to ' %}
+    <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">{% trans 'register' %}</a>
+    {% trans 'before you can access your API key.' %}
+  </p>
+
+
+  <h1 class="govuk-heading-l">{% trans 'Data updates' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
+    Data is updated and cached on the service. This is what is provided using the
+    API. You will need to cache the data to generate historical data.
+    {% endblocktrans %}
+  </p>
+
+  {% include "../snippets/data_updates_table.html" %}
+
+  <h3 class="govuk-heading-m">{% trans 'Timetables data' %}</h3>
+  <p class="govuk-body">
+    {% trans 'To access the metadata associated with an individual data set, use the following API call:' %}
+  </p>
+  <div class="dont-break-out"
+    style="background-color: #D8D6D6; text-align:left; vertical-align: middle; padding:20px 47px; font-size: 1.03rem">
+    {{ api_base }}dataset/[DATASET_ID]/?api_key=[API_KEY]
+  </div>
+  <p class="govuk-body govuk-!-margin-top-4">
+    {% trans 'where DATASET_ID is the id of the data set and API_KEY is your personal API key.' %}
+  <p>
+  <p class="govuk-body">
+      {% trans 'To search for data sets using the API, use the following API call:' %}
+  </p>
+  <div class="dont-break-out"
+    style="background-color: #D8D6D6; text-align:left; vertical-align: middle; padding:20px 47px; font-size: 1.03rem">
+     {{ api_base }}dataset/?[QUERY_PARAMS]&api_key=[API_KEY]
+  </div>
+  <p class="govuk-body govuk-!-margin-top-4">
+    {% trans 'where QUERY_PARAMS are the query parameters as defined in the API reference and API_KEY is your personal API key.' %}
+  </p>
+  <p class="govuk-body">{% trans 'Results are returned as JSON. For example,' %}</p>
+  <div
+    style="background-color: #D8D6D6; text-align:left; vertical-align: middle; padding:20px 47px; font-size: 1.03rem">
+    {% blocktrans %}
+      <br/>{<br/><br/>&emsp;
+      "id": 649,<br/><br/>&emsp;
+      "created": "2019-11-19T15:23:22.334498Z",<br/><br/>&emsp;
+      "modified": "2019-11-19T15:23:30.314457Z",<br/><br/>&emsp;
+      "operatorName": "Operatoe",<br/><br/>&emsp;
+      "noc": ["NOC1", "NOC2"],<br/><br/>&emsp;
+      "name": "Operator_Cambridge_1|Citi_20191029_102",<br/><br/>&emsp;
+      "description": "Line 1 services until Summer 2020",<br/><br/>&emsp;
+      "comment": "First publication",<br/><br/>&emsp;
+      "status": "published",<br/><br/>&emsp;
+      "url": "https://operator.com/MyData/Line1.xml",<br/><br/>&emsp;
+      "lines": ["1|Citi"],<br/><br/>&emsp;;
+      "firstStartDate": "2019-10-29T00:00:00Z",<br/><br/>&emsp;
+      "firstEndDate": "2020-05-01T00:00:00+01:00",<br/><br/>&emsp;
+      "lastEndDate": "2020-05-01T00:00:00+01:00",<br/><br/>&emsp;
+      "admin_areas": [{<br/>&emsp;&emsp;
+          "atco_code": "050",<br/>&emsp;&emsp;
+          "name": "Cambridgeshire"<br/>&emsp;&emsp;
+        },<br/>&emsp;&emsp;
+        {<br/>&emsp;&emsp;
+          "atco_code": "150",<br/>&emsp;&emsp;
+          "name": "Essex"<br/>&emsp;&emsp;
+        }],<br/><br/>&emsp;
+      "localities": [<br/>&emsp;&emsp;
+        {"gazetteer_id":"N0080359","name":"Addenbrooke's (Cambs)"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"N0061155","name":"Arbury (Cambs)"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"E0055326","name":"Cambridge (Cambs)"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"N0061157","name":"Cherry Hinton"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"N0061156","name":"Chesterton (Cambs)"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"E0043826","name":"Fulbourn"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"N0061158","name":"Kings Hedges"},<br/>&emsp;&emsp;
+        {"gazetteer_id":"E0044128","name":"Teversham"},<br/>&emsp;
+        }]<br/><br/>
+      }
+    {% endblocktrans %}
+  </div>
+  <p class="govuk-body govuk-!-margin-top-4 govuk-!-padding-bottom-5">
+    {% blocktrans %}
+      The url parameter provides a link to the published data.
+    {% endblocktrans %}
+  </p>
+
+{% endblock %}

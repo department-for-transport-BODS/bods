@@ -1,0 +1,1085 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:23:59",
+    "naptan_date": "",
+    "sources": ["Bods_import_warnings.xml", "Bods_sample_warnings.xml"]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST0500CCITY523",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.0847836512855499186, 52.210083098533218]
+          },
+          "properties": {
+            "atco_code": "0500CCITY523",
+            "bearing": 4,
+            "feature_name": "Philippa Fawcett Drive (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900G17120",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72593958312595386, 52.5837364947662209]
+          },
+          "properties": {
+            "atco_code": "2900G17120",
+            "bearing": 7,
+            "feature_name": "Avenue Road (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900G17122",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72449672463967207, 52.579437407258645]
+          },
+          "properties": {
+            "atco_code": "2900G17122",
+            "bearing": 1,
+            "feature_name": "Recreation Road (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900G1755",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.7207906406583775, 52.5789153291399103]
+          },
+          "properties": {
+            "atco_code": "2900G1755",
+            "bearing": 2,
+            "feature_name": "East Norfolk Sixth Form Centre (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900G1758",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72418311595502516, 52.5868769343065878]
+          },
+          "properties": {
+            "atco_code": "2900G1758",
+            "bearing": 0,
+            "feature_name": "Wheelwrights (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900Y03113",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72359087511922726, 52.600082179395379]
+          },
+          "properties": {
+            "atco_code": "2900Y03113",
+            "bearing": 7,
+            "feature_name": "Gordon Road (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900Y03116",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72501422853770636, 52.5935339470609264]
+          },
+          "properties": {
+            "atco_code": "2900Y03116",
+            "bearing": 0,
+            "feature_name": "Waveney Road (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900Y03117",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72523540430381539, 52.5959646804871568]
+          },
+          "properties": {
+            "atco_code": "2900Y03117",
+            "bearing": 0,
+            "feature_name": "Rumbold Arms (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST2900Y03165",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [1.72271441716109064, 52.6017648348904245]
+          },
+          "properties": {
+            "atco_code": "2900Y03165",
+            "bearing": 7,
+            "feature_name": "Anson Road (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100HAVRFDW",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-4.96023563731104655, 51.8026433068371048]
+          },
+          "properties": {
+            "atco_code": "9100HAVRFDW",
+            "bearing": 8,
+            "feature_name": "Haverfordwest Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-4.96023563731104655, 51.8026433068371048],
+              [1.72449672463967207, 52.579437407258645],
+              [1.72593958312595386, 52.5837364947662209],
+              [1.72418311595502516, 52.5868769343065878],
+              [1.7207906406583775, 52.5789153291399103],
+              [1.72449672463967207, 52.579437407258645],
+              [1.72593958312595386, 52.5837364947662209],
+              [1.72418311595502516, 52.5868769343065878],
+              [0.0847836512855499186, 52.210083098533218],
+              [1.72501422853770636, 52.5935339470609264],
+              [1.72523540430381539, 52.5959646804871568],
+              [1.72359087511922726, 52.600082179395379],
+              [1.72271441716109064, 52.6017648348904245],
+              [1.7207906406583775, 52.5789153291399103],
+              [1.72271441716109064, 52.6017648348904245],
+              [1.72359087511922726, 52.600082179395379],
+              [1.7207906406583775, 52.5789153291399103],
+              [1.72449672463967207, 52.579437407258645],
+              [1.72593958312595386, 52.5837364947662209],
+              [1.7207906406583775, 52.5789153291399103],
+              [1.72271441716109064, 52.6017648348904245]
+            ]
+          },
+          "properties": {
+            "feature_name": "Haverfordwest - Anson Road",
+            "length_m": 719139.875,
+            "route_shape": true,
+            "line": "LI0",
+            "stops": [
+              "ST9100HAVRFDW",
+              "ST2900G17122",
+              "ST2900G17120",
+              "ST2900G1758",
+              "ST2900G1755",
+              "ST2900G17122",
+              "ST2900G17120",
+              "ST2900G1758",
+              "ST0500CCITY523",
+              "ST2900Y03116",
+              "ST2900Y03117",
+              "ST2900Y03113",
+              "ST2900Y03165",
+              "ST2900G1755",
+              "ST2900Y03165",
+              "ST2900Y03113",
+              "ST2900G1755",
+              "ST2900G17122",
+              "ST2900G17120",
+              "ST2900G1755",
+              "ST2900Y03165"
+            ],
+            "timing_patterns": ["TP2", "TP7", "TP14"],
+            "service_links": [
+              "SL10",
+              "SL1",
+              "SL2",
+              "SL3",
+              "SL4",
+              "SL1",
+              "SL2",
+              "SL5",
+              "SL6",
+              "SL7",
+              "SL8",
+              "SL9",
+              "SL11",
+              "SL12",
+              "SL13",
+              "SL14",
+              "SL4",
+              "SL1",
+              "SL15",
+              "SL12"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72449672463967207, 52.579437407258645],
+              [1.72593958312595386, 52.5837364947662209]
+            ]
+          },
+          "properties": {
+            "feature_name": "Recreation Road (adj)-Avenue Road (opp)",
+            "from_stop": "ST2900G17122",
+            "length_m": 488.485413,
+            "route_shape": false,
+            "to_stop": "ST2900G17120",
+            "service_patterns": ["SP1", "SP2", "SP3", "SP6", "SP7"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL10",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-4.96023563731104655, 51.8026433068371048],
+              [1.72449672463967207, 52.579437407258645]
+            ]
+          },
+          "properties": {
+            "feature_name": "Haverfordwest Rail Station-Recreation Road (adj)",
+            "from_stop": "ST9100HAVRFDW",
+            "length_m": 464983.562,
+            "route_shape": false,
+            "to_stop": "ST2900G17122",
+            "service_patterns": ["SP2", "SP3", "SP6", "SP8"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL11",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72271441716109064, 52.6017648348904245],
+              [1.7207906406583775, 52.5789153291399103]
+            ]
+          },
+          "properties": {
+            "feature_name": "Anson Road (adj)-East Norfolk Sixth Form Centre (opp)",
+            "from_stop": "ST2900Y03165",
+            "length_m": 2547.00024,
+            "route_shape": false,
+            "to_stop": "ST2900G1755",
+            "service_patterns": ["SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL12",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.7207906406583775, 52.5789153291399103],
+              [1.72271441716109064, 52.6017648348904245]
+            ]
+          },
+          "properties": {
+            "feature_name": "East Norfolk Sixth Form Centre (opp)-Anson Road (adj)",
+            "from_stop": "ST2900G1755",
+            "length_m": 2547.00024,
+            "route_shape": false,
+            "to_stop": "ST2900Y03165",
+            "service_patterns": ["SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL13",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72271441716109064, 52.6017648348904245],
+              [1.72359087511922726, 52.600082179395379]
+            ]
+          },
+          "properties": {
+            "feature_name": "Anson Road (adj)-Gordon Road (adj)",
+            "from_stop": "ST2900Y03165",
+            "length_m": 196.512085,
+            "route_shape": false,
+            "to_stop": "ST2900Y03113",
+            "service_patterns": ["SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL14",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72359087511922726, 52.600082179395379],
+              [1.7207906406583775, 52.5789153291399103]
+            ]
+          },
+          "properties": {
+            "feature_name": "Gordon Road (adj)-East Norfolk Sixth Form Centre (opp)",
+            "from_stop": "ST2900Y03113",
+            "length_m": 2363.97827,
+            "route_shape": false,
+            "to_stop": "ST2900G1755",
+            "service_patterns": ["SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL15",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72593958312595386, 52.5837364947662209],
+              [1.7207906406583775, 52.5789153291399103]
+            ]
+          },
+          "properties": {
+            "feature_name": "Avenue Road (opp)-East Norfolk Sixth Form Centre (opp)",
+            "from_stop": "ST2900G17120",
+            "length_m": 640.27887,
+            "route_shape": false,
+            "to_stop": "ST2900G1755",
+            "service_patterns": ["SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72593958312595386, 52.5837364947662209],
+              [1.72418311595502516, 52.5868769343065878]
+            ]
+          },
+          "properties": {
+            "feature_name": "Avenue Road (opp)-Wheelwrights (opp)",
+            "from_stop": "ST2900G17120",
+            "length_m": 369.348083,
+            "route_shape": false,
+            "to_stop": "ST2900G1758",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72418311595502516, 52.5868769343065878],
+              [1.7207906406583775, 52.5789153291399103]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wheelwrights (opp)-East Norfolk Sixth Form Centre (opp)",
+            "from_stop": "ST2900G1758",
+            "length_m": 915.677368,
+            "route_shape": false,
+            "to_stop": "ST2900G1755",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.7207906406583775, 52.5789153291399103],
+              [1.72449672463967207, 52.579437407258645]
+            ]
+          },
+          "properties": {
+            "feature_name": "East Norfolk Sixth Form Centre (opp)-Recreation Road (adj)",
+            "from_stop": "ST2900G1755",
+            "length_m": 257.963165,
+            "route_shape": false,
+            "to_stop": "ST2900G17122",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72418311595502516, 52.5868769343065878],
+              [0.0847836512855499186, 52.210083098533218]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wheelwrights (opp)-Philippa Fawcett Drive (opp)",
+            "from_stop": "ST2900G1758",
+            "length_m": 119215.977,
+            "route_shape": false,
+            "to_stop": "ST0500CCITY523",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.0847836512855499186, 52.210083098533218],
+              [1.72501422853770636, 52.5935339470609264]
+            ]
+          },
+          "properties": {
+            "feature_name": "Philippa Fawcett Drive (opp)-Waveney Road (adj)",
+            "from_stop": "ST0500CCITY523",
+            "length_m": 119523.523,
+            "route_shape": false,
+            "to_stop": "ST2900Y03116",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72501422853770636, 52.5935339470609264],
+              [1.72523540430381539, 52.5959646804871568]
+            ]
+          },
+          "properties": {
+            "feature_name": "Waveney Road (adj)-Rumbold Arms (adj)",
+            "from_stop": "ST2900Y03116",
+            "length_m": 271.001831,
+            "route_shape": false,
+            "to_stop": "ST2900Y03117",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72523540430381539, 52.5959646804871568],
+              [1.72359087511922726, 52.600082179395379]
+            ]
+          },
+          "properties": {
+            "feature_name": "Rumbold Arms (adj)-Gordon Road (adj)",
+            "from_stop": "ST2900Y03117",
+            "length_m": 471.729797,
+            "route_shape": false,
+            "to_stop": "ST2900Y03113",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL9",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [1.72359087511922726, 52.600082179395379],
+              [1.72271441716109064, 52.6017648348904245]
+            ]
+          },
+          "properties": {
+            "feature_name": "Gordon Road (adj)-Anson Road (adj)",
+            "from_stop": "ST2900Y03113",
+            "length_m": 196.512085,
+            "route_shape": false,
+            "to_stop": "ST2900Y03165",
+            "service_patterns": ["SP1", "SP2", "SP3"]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI0",
+        "name": "6:Haverfordwest - Anson Road"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP14",
+        "service_pattern": "SP2",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 60,
+            "departure_time_secs": 180,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 420,
+            "departure_time_secs": 420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 540,
+            "departure_time_secs": 540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 600,
+            "departure_time_secs": 600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 720,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 900,
+            "departure_time_secs": 900,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 960,
+            "departure_time_secs": 960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1020,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1080,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1140,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1200,
+            "departure_time_secs": 1200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1260,
+            "departure_time_secs": 1260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1620,
+            "departure_time_secs": 1620,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ22"]
+      },
+      {
+        "id": "TP2",
+        "service_pattern": "SP2",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 60,
+            "departure_time_secs": 180,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 420,
+            "departure_time_secs": 420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 540,
+            "departure_time_secs": 540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 600,
+            "departure_time_secs": 600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 720,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 900,
+            "departure_time_secs": 900,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 960,
+            "departure_time_secs": 960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1020,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1080,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1140,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1200,
+            "departure_time_secs": 1200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1260,
+            "departure_time_secs": 1260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1620,
+            "departure_time_secs": 1620,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ2", "VJ11"]
+      },
+      {
+        "id": "TP7",
+        "service_pattern": "SP2",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 60,
+            "departure_time_secs": 180,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 420,
+            "departure_time_secs": 420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 540,
+            "departure_time_secs": 540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 600,
+            "departure_time_secs": 600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 660,
+            "departure_time_secs": 660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 720,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 900,
+            "departure_time_secs": 900,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 960,
+            "departure_time_secs": 960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1020,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1080,
+            "departure_time_secs": 1080,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1140,
+            "departure_time_secs": 1140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1200,
+            "departure_time_secs": 1200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1260,
+            "departure_time_secs": 1260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1740,
+            "departure_time_secs": 1740,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ12", "VJ14", "VJ16"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ11",
+        "timing_pattern": "TP2",
+        "start": 36240,
+        "feature_name": "10:04:00 -- 6: Haverfordwest to Great Yarmouth",
+        "dates": []
+      },
+      {
+        "id": "VJ12",
+        "timing_pattern": "TP7",
+        "start": 36300,
+        "feature_name": "10:05:00 -- 6: Haverfordwest to Great Yarmouth",
+        "dates": []
+      },
+      {
+        "id": "VJ14",
+        "timing_pattern": "TP7",
+        "start": 43740,
+        "feature_name": "12:09:00 -- 6: Haverfordwest to Great Yarmouth",
+        "dates": []
+      },
+      {
+        "id": "VJ16",
+        "timing_pattern": "TP7",
+        "start": 57900,
+        "feature_name": "16:05:00 -- 6: Haverfordwest to Great Yarmouth",
+        "dates": []
+      },
+      {
+        "id": "VJ2",
+        "timing_pattern": "TP2",
+        "start": 43440,
+        "feature_name": "12:04:00 -- 6: Haverfordwest to Great Yarmouth",
+        "dates": []
+      },
+      {
+        "id": "VJ22",
+        "timing_pattern": "TP14",
+        "start": 43440,
+        "feature_name": "12:04:00 -- 6: Haverfordwest to Great Yarmouth",
+        "dates": []
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "journey-date_range-backwards",
+      "values": [
+        {
+          "id": "VJ2",
+          "warning_type": "journey-date_range-backwards",
+          "warning_id": 0,
+          "start": "01/12/17",
+          "end": "09/12/16"
+        }
+      ]
+    }
+  ]
+}

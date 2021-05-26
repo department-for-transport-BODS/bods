@@ -1,0 +1,152 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/spacing";
+@import "govuk-frontend/govuk/helpers/colour";
+
+/* Pillbox */
+
+.search-pillbox {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: #f8f8f8;
+  width: inherit;
+  min-height: govuk-spacing(7);
+  padding: govuk-spacing(3);
+  border: 0;
+  margin: 0;
+
+  a {
+    text-decoration: none;
+  }
+
+  .pill-item {
+    border: solid 1px govuk-colour("dark-grey");
+    border-radius: 4px;
+    padding: govuk-spacing(1);
+    display: inline-flex;
+    justify-content: flex-start;
+
+    .pill-item__label {
+      padding: 5px;
+      color: govuk-colour("black");
+    }
+    .pill-item__image {
+      padding: 5px;
+      align-self: center;
+    }
+  }
+}
+
+.pillbox-break {
+  border-bottom-color: govuk-colour("black");
+  margin-bottom: govuk-spacing(3);
+}
+
+//.search-pillbox:first-child {
+//    font-weight: bold;
+//}
+
+/* search box */
+
+.searchbox {
+  @extend .govuk-input;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  width: 75%;
+  display: flex;
+
+  .searchbox__input {
+    vertical-align: middle;
+    border: none;
+    height: 90%;
+  }
+
+  .searchbox__input:focus {
+    outline: 3px solid govuk-colour("yellow");
+    outline-offset: 3px;
+  }
+
+  .searchbox__button {
+    box-sizing: border-box;
+    justify-content: flex-start;
+    /*position: relative;*/
+    /*right: 40px;*/
+    width: 40px;
+    height: 40px;
+    border: 0;
+    /*padding: 5px;*/
+
+    background-color: transparent;
+
+    &:focus {
+      // Based on govuk-focused-text
+      // When colours are overridden, for example when users have a dark mode,
+      // backgrounds and box-shadows disappear, so we need to ensure there's a
+      // transparent outline which will be set to a visible colour.
+
+      // Since Internet Explorer 8 does not support box-shadow, we want to force the
+      // user-agent outlines
+      @include govuk-not-ie8 {
+        outline: $govuk-focus-width solid transparent;
+      }
+      background-color: $govuk-focus-colour;
+      box-shadow: -2px -1px $govuk-focus-colour,
+        -1px -1px $govuk-focus-text-colour;
+    }
+
+    > img {
+      vertical-align: middle;
+    }
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .searchbox .searchbox__input-one-half {
+    width: calc(50% - 40px);
+  }
+
+  .searchbox .searchbox__input-full {
+    width: calc(100% - 40px);
+  }
+
+  .searchbox .searchbox__input-three-quarters {
+    width: calc(75% - 40px);
+  }
+}
+
+/* search results */
+
+.search-result__heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.125rem;
+
+  span {
+    white-space: pre;
+  }
+}
+
+.search-list__page-index {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 1rem;
+}
+
+.search-result__title {
+  display: inline-block;
+  margin-right: 1.375rem;
+  margin-bottom: 0; /* Note remove bottom margin from h3 tag as it doesn't collapse with metadata list */
+}
+
+.search-result__list {
+}
+
+.search-result {
+  margin-bottom: 3rem;
+}
+
+.search-empty-result {
+}

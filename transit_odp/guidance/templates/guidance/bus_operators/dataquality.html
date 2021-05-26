@@ -1,0 +1,95 @@
+
+
+{% extends "guidance/bus_operators/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+
+<h1 data-qa="data-quality-header" class="govuk-heading-l">{% trans 'Data quality' %}</h1>
+<table data-qa="requirements-table" class="govuk-table">
+  <thead data-qa="requirements-table-header" class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Data required</th>
+      <th scope="col" class="govuk-table__header">Data format required</th>
+      <th scope="col" class="govuk-table__header">Method</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr data-qa="timetable-row" class="govuk-table__row">
+      <td class="govuk-table__cell">Timetable</td>
+      <td class="govuk-table__cell">TransXChange Version 2.4 profile v1.1</td>
+      <td class="govuk-table__cell">
+        <p class="govuk-body">Validation against PTI 1.1 profile</p>
+        <p class="govuk-body">Data Quality report</p>
+      </td>
+    </tr>
+    <tr data-qa="bus-location-row" class="govuk-table__row">
+      <td class="govuk-table__cell">Bus location</td>
+      <td class="govuk-table__cell">SIRI-VM Version 2.0</td>
+      <td class="govuk-table__cell">Validation against schema</td>
+    </tr>
+    <tr data-qa="basic-fares-row" class="govuk-table__row">
+      <td class="govuk-table__cell">Basic fares</td>
+      <td class="govuk-table__cell">UK NeTEx 1.10</td>
+      <td class="govuk-table__cell">Validation against schema</td>
+    </tr>
+    <tr data-qa="complex-fares-row" class="govuk-table__row">
+      <td class="govuk-table__cell">Complex fares</td>
+      <td class="govuk-table__cell">UK NeTEx 1.10</td>
+      <td class="govuk-table__cell">Validation against schema</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="govuk-body">
+  {% blocktrans %}
+  Data quality checks are provided on the data supplied to the service to provide feedback on the data to help operators identify and understand issues within their data. The issues identified may prevent a data consumer using and sharing their data with passengers. High data quality is expected for all data published on the service. It reduces the barriers to entry for innovators and consumers when using bus open data. High quality data enables trust to be created between passengers and the public transport network.
+  {% endblocktrans %}
+</p>
+
+<h2 class="govuk-heading-m">Timetables data</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  TransXChange data undergoes two sets of checks. In the first validation stage,
+  it is checked that it adheres to the TxC 2.4 schema and the PTI profile v1.1.
+  The TxC 2.4 schema is the basic data standard mandated by DfT, and the PTI
+  profile v1.1 is an additional mandate for the TransxChange data that will be
+  expected from operators. The PTI profile 1.1 clarifies the standards even further,
+  making the industry unified with a common, unambiguous data standard. More
+  information on the differences between the TxC 2.4 schema and the PTI profile
+  v1.1 can be found
+  {% endblocktrans %}
+  <a class="govuk-link"
+    href="https://rtig.org.uk/news/bods-transxchange-profile-v11-released"
+    target="_blank">here</a>.
+</p>
+
+<p class="govuk-body">
+  {% blocktrans %}
+  From Monday 2nd August 2021, files non-compliant to the PTI profile 1.1 will be
+  rejected upon submission.
+  {% endblocktrans %}
+</p>
+
+<p class="govuk-body">
+  {% blocktrans %}
+  The feedback as a result of the validation check in the first step of upload is provided to the user which is to be shared with their respective software suppliers to enable them to provide robust data that fits the profile. In the second review step, a further data quality check is conducted which produces a report for operators. The report provides observations about operator’s data, highlighting common errors. Some observations are critical, meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as suggested improvements in their timetables data.
+  {% endblocktrans %}
+</p>
+
+<h2 class="govuk-heading-m">Bus location data</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  SIRI-VM data is taken into a central AVL system, where it harmonised to produce a consistent SIRI-VM 2.4 output of bus location data for open data consumers.
+  {% endblocktrans %}
+</p>
+
+<h2 class="govuk-heading-m">Fares data</h2>
+<p class="govuk-body">
+  {% blocktrans %}
+  NeTEx data is validated against their respective schemas, to check if it is in the expected format. As this format is new to the UK, more data quality checks may be enabled over time.
+  {% endblocktrans %}
+</p>
+
+{% endblock %}

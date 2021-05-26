@@ -1,0 +1,90 @@
+{% extends 'site_admin/base.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+{% load breadcrumbs %}
+{% load query_transform %}
+
+{% block title_tag %}
+  {{ title }}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url organisation.name 'users:organisation-detail' pk=organisation.id host hosts.admin %}
+  {% breadcrumb title %}
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">{{ title }}</h1>
+  {# There are multiple forms on this page, the search box and the filter controls, need to submit #}
+  {# both together so both form data persist when either form is submitted #}
+  <form method="get">
+    <div class="govuk-grid-row govuk-!-margin-top-8">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">{% trans 'Filter by' %}</h2>
+        {% crispy filter.form filter.form.helper %}
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <div>
+          <div class="search-list__heading">
+            {% if paginator.count > 0 %}
+              <span class="govuk-body">
+              {{ paginator.count }} {% trans 'results' %}
+              </span>
+            {% else %}
+              <h3 class="govuk-heading-m">
+              {% trans 'Sorry, no results found' %}
+              {% if q %}{% blocktrans %} for {{ q }}{% endblocktrans %}{% endif %}
+              </h3>
+            {% endif %}
+          </div>
+          <div class="govuk-body-s govuk-grid-row search-pillbox">
+            <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-3"><b>{{ pill_box_title }}</b></p>
+            {% for key, value in query_params.items %}
+            <a href="{% query_chop key %}">
+              <div class="pill-item">
+                <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}">
+                <span class="pill-item__label">{{ value }}</span>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+          <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break">
+          <div class="sort_container">
+            <div class="govuk-form-group">
+              <div class="select-wrapper">
+                <span class="govuk-body govuk-!-padding-right-2">Sort by</span>
+                <select class="nav-select"
+                        id="ordering"
+                        name="ordering"
+                        aria-label="Order by"
+                        onchange="this.form.submit()">
+                  <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>{% trans 'Last updated' %}</option>
+                  <option value="name" {% if ordering == "name" %}selected{% endif %}>{% trans 'Data set name A-Z' %}</option>
+                  <option value="-name" {% if ordering == "-name" %}selected{% endif %}>{% trans 'Data set name Z-A' %}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="search-result__list">
+          {% for item in object_list %}
+            {% if not forloop.first %}
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            {% endif %}
+            {% block table %}
+            {% include 'site_admin/organisation_dataset_list/search_result_timetables.html' %}
+            {% endblock %}
+          {% endfor %}
+          </div>
+          {% if paginator.count > 0 %}
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            {% include "snippets/pagination_centre.html" with page=page_obj paginator=paginator %}
+          {% endif %}
+          </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}

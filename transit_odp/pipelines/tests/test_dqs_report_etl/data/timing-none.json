@@ -1,0 +1,319 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:09:14",
+    "naptan_date": "Sun, 24 Nov 2019 04:30:30",
+    "sources": [
+      "",
+      "MERGED_MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-8-A-y08-1.xml",
+      "MERGED_whole_ea_20-9-A-y08-1.xml",
+      "MERGED_whole_ea_20-A-B-y08-1.xml",
+      "MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-D-_-y08-1.xml",
+      "MERGED_whole_ea_20-X8-_-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-8-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-A-B-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-B-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-1-A-y08-1.xml",
+      "whole_ea_20-101-_-y08-1.xml",
+      "whole_ea_20-11-_-y08-1.xml",
+      "whole_ea_20-110-A-y08-1.xml",
+      "whole_ea_20-114-B-y08-1.xml",
+      "whole_ea_20-117-C-y08-1.xml",
+      "whole_ea_20-117-_-y08-1.xml",
+      "whole_ea_20-12-A-y08-1.xml",
+      "whole_ea_20-12-D-y08-1.xml",
+      "whole_ea_20-125-_-y08-1.xml",
+      "whole_ea_20-127-_-y08-1.xml",
+      "whole_ea_20-129-_-y08-1.xml",
+      "whole_ea_20-13-_-y08-1.xml",
+      "whole_ea_20-132-_-y08-1.xml",
+      "whole_ea_20-13A-_-y08-1.xml",
+      "whole_ea_20-13B-_-y08-1.xml",
+      "whole_ea_20-13C-_-y08-1.xml",
+      "whole_ea_20-15-E-y08-1.xml",
+      "whole_ea_20-150-_-y08-1.xml",
+      "whole_ea_20-16A-_-y08-1.xml",
+      "whole_ea_20-18-A-y08-1.xml",
+      "whole_ea_20-18-_-y08-1.xml",
+      "whole_ea_20-19-A-y08-1.xml",
+      "whole_ea_20-19-_-y08-1.xml",
+      "whole_ea_20-199-_-y08-1.xml",
+      "whole_ea_20-1A-A-y08-1.xml",
+      "whole_ea_20-2-A-y08-1.xml",
+      "whole_ea_20-203-_-y08-1.xml",
+      "whole_ea_20-204-_-y08-1.xml",
+      "whole_ea_20-206-_-y08-1.xml",
+      "whole_ea_20-21-A-y08-1.xml",
+      "whole_ea_20-22-A-y08-1.xml",
+      "whole_ea_20-22-_-y08-1.xml",
+      "whole_ea_20-25-_-y08-1.xml",
+      "whole_ea_20-3-B-y08-1.xml",
+      "whole_ea_20-30-B-y08-1.xml",
+      "whole_ea_20-31-B-y08-1.xml",
+      "whole_ea_20-31-_-y08-1.xml",
+      "whole_ea_20-32-_-y08-1.xml",
+      "whole_ea_20-33-A-y08-1.xml",
+      "whole_ea_20-336-_-y08-1.xml",
+      "whole_ea_20-35-C-y08-1.xml",
+      "whole_ea_20-39-_-y08-1.xml",
+      "whole_ea_20-4-_-y08-1.xml",
+      "whole_ea_20-400-C-y08-1.xml",
+      "whole_ea_20-401-C-y08-1.xml",
+      "whole_ea_20-415-_-y08-1.xml",
+      "whole_ea_20-45A-A-y08-1.xml",
+      "whole_ea_20-46-A-y08-1.xml",
+      "whole_ea_20-46-C-y08-1.xml",
+      "whole_ea_20-46-D-y08-1.xml",
+      "whole_ea_20-46A-_-y08-1.xml",
+      "whole_ea_20-47-A-y08-1.xml",
+      "whole_ea_20-478-_-y08-1.xml",
+      "whole_ea_20-5-B-y08-1.xml",
+      "whole_ea_20-50-A-y08-1.xml",
+      "whole_ea_20-56-_-y08-1.xml",
+      "whole_ea_20-6-_-y08-1.xml",
+      "whole_ea_20-61-A-y08-1.xml",
+      "whole_ea_20-61X-_-y08-1.xml",
+      "whole_ea_20-63-A-y08-1.xml",
+      "whole_ea_20-65-A-y08-1.xml",
+      "whole_ea_20-66-B-y08-1.xml",
+      "whole_ea_20-66-_-y08-1.xml",
+      "whole_ea_20-68-_-y08-1.xml",
+      "whole_ea_20-7-A-y08-1.xml",
+      "whole_ea_20-75-A-y08-1.xml",
+      "whole_ea_20-7A-_-y08-1.xml",
+      "whole_ea_20-8-A-y08-1.xml",
+      "whole_ea_20-8-_-y08-1.xml",
+      "whole_ea_20-9-A-y08-1.xml",
+      "whole_ea_20-9-B-y08-1.xml",
+      "whole_ea_20-901-_-y08-1.xml",
+      "whole_ea_20-902-_-y08-1.xml",
+      "whole_ea_20-903-_-y08-1.xml",
+      "whole_ea_20-904-_-y08-1.xml",
+      "whole_ea_20-94-_-y08-1.xml",
+      "whole_ea_20-96-_-y08-1.xml",
+      "whole_ea_20-9B-_-y08-1.xml",
+      "whole_ea_20-A-B-y08-1.xml",
+      "whole_ea_20-B-A-y08-1.xml",
+      "whole_ea_20-C2-A-y08-1.xml",
+      "whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-H-_-y08-1.xml",
+      "whole_ea_20-PR1-_-y08-1.xml",
+      "whole_ea_20-PR2-_-y08-1.xml",
+      "whole_ea_20-PR3-_-y08-1.xml",
+      "whole_ea_20-PR4-_-y08-1.xml",
+      "whole_ea_20-PR5-_-y08-1.xml",
+      "whole_ea_20-R-_-y08-1.xml",
+      "whole_ea_20-RH2-_-y08-1.xml",
+      "whole_ea_20-RH3-_-y08-1.xml",
+      "whole_ea_20-RH5-_-y08-1.xml",
+      "whole_ea_20-U-_-y08-1.xml",
+      "whole_ea_20-X11-_-y08-1.xml",
+      "whole_ea_20-X13-_-y08-1.xml",
+      "whole_ea_20-X3-_-y08-1.xml",
+      "whole_ea_20-X9-_-y08-1.xml",
+      "whole_ea_20-ZIP-_-y08-1.xml",
+      "whole_suf_14-A14-_-y08-2.xml",
+      "whole_suf_5-312-_-y08-2.xml",
+      "whole_suf_7-16-_-y08-12.xml",
+      "whole_suf_7-16A-_-y08-10.xml"
+    ]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST9100CAMBDGE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.137484664171875576, 52.1940786889398183]
+          },
+          "properties": {
+            "atco_code": "9100CAMBDGE",
+            "bearing": 8,
+            "feature_name": "Cambridge Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100FNPK",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.106258825824422143, 51.5643025585374204]
+          },
+          "properties": {
+            "atco_code": "9100FNPK",
+            "bearing": 8,
+            "feature_name": "Finsbury Park Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP7ae7a32ee194d59cd852b42931a7eb89eb2e3fe7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.137484664171875576, 52.1940786889398183],
+              [-0.106258825824422143, 51.5643025585374204]
+            ]
+          },
+          "properties": {
+            "feature_name": "Cambridge - Finsbury Park",
+            "length_m": 72043.3594,
+            "route_shape": true,
+            "line": "LI3595",
+            "stops": ["ST9100CAMBDGE", "ST9100FNPK"],
+            "timing_patterns": [
+              "TP062a117d801b2450f8a92aa85a6d080c2040fae9",
+              "TP11505bc544e2214bd29348916b823e7433fcdd1d"
+            ],
+            "service_links": ["SL6e414856ef257bfd577ec0232426ec2f5beaebb2"]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL6e414856ef257bfd577ec0232426ec2f5beaebb2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.137484664171875576, 52.1940786889398183],
+              [-0.106258825824422143, 51.5643025585374204]
+            ]
+          },
+          "properties": {
+            "feature_name": "Cambridge Rail Station-Finsbury Park Rail Station",
+            "from_stop": "ST9100CAMBDGE",
+            "length_m": 72043.3594,
+            "route_shape": false,
+            "to_stop": "ST9100FNPK",
+            "service_patterns": [
+              "SP41fefc4cc277043dd439c2e67ce28e119530acde",
+              "SP9309133e5bd9289ce1a68415960b0a4868706c57",
+              "SPb9b745efeb99d34ca8060dc3dbf08176d41f0e8b",
+              "SP7ae7a32ee194d59cd852b42931a7eb89eb2e3fe7",
+              "SP572319a577dbbe2e327c0a1c2825b062b9a5e4c5"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI3595",
+        "name": "Cambridge - Finsbury Park:Cambridge - Finsbury Park"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP062a117d801b2450f8a92aa85a6d080c2040fae9",
+        "service_pattern": "SP7ae7a32ee194d59cd852b42931a7eb89eb2e3fe7",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 2760,
+            "departure_time_secs": 2760,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 72043,
+            "speed": 93
+          }
+        ],
+        "vehicle_journeys": ["VJ293f900be4d17f7228f0ac10cf89911da509c803"]
+      },
+      {
+        "id": "TP11505bc544e2214bd29348916b823e7433fcdd1d",
+        "service_pattern": "SP7ae7a32ee194d59cd852b42931a7eb89eb2e3fe7",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2580,
+            "departure_time_secs": 2580,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ22e85a216fd5149e5d4acad90115fc933264242e"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ22e85a216fd5149e5d4acad90115fc933264242e",
+        "timing_pattern": "TP11505bc544e2214bd29348916b823e7433fcdd1d",
+        "start": 30060,
+        "feature_name": "08:21:00 -- Cambridge - Finsbury Park: Cambridge to Finsbury Park",
+        "dates": ["2019-11-24"]
+      },
+      {
+        "id": "VJ293f900be4d17f7228f0ac10cf89911da509c803",
+        "timing_pattern": "TP062a117d801b2450f8a92aa85a6d080c2040fae9",
+        "start": 30060,
+        "feature_name": "08:21:00 -- Cambridge - Finsbury Park: Cambridge to Finsbury Park",
+        "dates": ["2019-12-01"]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-none",
+      "values": [
+        {
+          "id": "TP062a117d801b2450f8a92aa85a6d080c2040fae9",
+          "warning_type": "timing-none",
+          "warning_id": 0,
+          "none": true,
+          "all": false,
+          "indexes": []
+        }
+      ]
+    }
+  ]
+}

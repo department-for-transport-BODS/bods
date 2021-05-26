@@ -1,0 +1,6 @@
+Your email address has been used to register for an account on the Bus Open Data Service. Follow the link below to confirm your email address and create an account.
+
+{{ verify_link }}
+
+Kind regards,
+Bus Open Data Service

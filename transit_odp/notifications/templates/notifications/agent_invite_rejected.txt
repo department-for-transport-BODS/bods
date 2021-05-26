@@ -1,0 +1,8 @@
+Hello,
+
+This email is to confirm that you have rejected the request to become an agent on behalf of {{ organisation }} on the Bus Open Data Service.
+
+No further action is required from you on your end at this time.
+
+Kind regards,
+Bus Open Data Service

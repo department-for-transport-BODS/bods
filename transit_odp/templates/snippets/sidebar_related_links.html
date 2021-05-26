@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<div class="sidebar-related-links">
+  <h3 class="govuk-heading-m">
+    {% block heading %}
+    {% endblock %}
+  </h3>
+  <ul class="govuk-list">
+    {% block links %}
+      {% for link in links %}
+        <li>
+          <a class="govuk-link" href="{{ link.url }}">{% trans link.text %}</a>
+        </li>
+      {% endfor %}
+    {% endblock %}
+  </ul>
+</div>

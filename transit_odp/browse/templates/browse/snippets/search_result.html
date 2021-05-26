@@ -1,0 +1,60 @@
+{% load i18n %}
+
+<div class="search-result">
+  <div class="search-result__heading">
+    {% if  item.dataset_type == 1 %}
+    <a class='govuk-link' href="{% url 'feed-detail' pk=item.id host hosts.data %}">
+      {{ item.name }}
+    </a>
+    {% elif item.dataset_type == 2 %}
+    <a class='govuk-link' href="{% url 'avl-feed-detail' pk=item.id host hosts.data %}">
+      {{ item.name }}
+    </a>
+      {% elif item.dataset_type == 3 %}
+    <a class='govuk-link' href="{% url 'fares-feed-detail' pk=item.id host hosts.data %}">
+      {{ item.name }}
+    </a>
+    {% endif %}
+    {% include 'organisation/snippets/status_indicator.html' with status=item.status record=item %}
+  </div>
+  <ul class="key-value-list">
+    <li>
+      <span class="item__key">{% trans 'Data type:' %}</span>
+      <span class="item__value">
+        {% if  item.dataset_type == 1 %}
+          {% trans 'Timetables data' %}
+        {% elif  item.dataset_type == 2 %}
+          {% trans 'Bus location data' %}
+        {% elif  item.dataset_type == 3 %}
+          {% trans 'Fares data' %}
+        {% endif %}
+      </span>
+    </li>
+    <li>
+      <span class="item__key">{% trans 'Data set ID:' %}</span>
+      <span class="item__value">{{ item.id }}</span>
+    </li>
+    <li>
+      <span class="item__key">{% trans 'Publisher:' %}</span>
+      <span class="item__value">{{ item.organisation_name }}</span>
+    </li>
+    <li>
+      {% if  item.dataset_type == 1 %}
+        <span class="item__key">{% trans 'Last updated:' %}</span>
+        <span class="item__value">{{ item.modified|date:"j M Y" }}</span>
+        </li>
+        <li>
+        <span class="item__key">{% trans 'Timetable start date:' %}</span>
+        <span class="item__value">{{ item.first_service_start|date:"j M Y" }}</span>
+      {% elif item.dataset_type == 2 %}
+        <span class="item__key">{% trans 'Last automated update:' %}</span>
+        <span class="item__value">{{ item.avl_feed_last_checked|date:"j M Y H:i" }}</span>
+      {% elif item.dataset_type == 3 %}
+        <span class="item__key">{% trans 'Last updated:' %}</span>
+        <span class="item__value">{{ item.modified|date:"j M Y" }}</span>
+      {% endif %}
+      </li>
+  </ul>
+
+  <p class="govuk-body dont-break-out">{{ item.description }}</p>
+</div>

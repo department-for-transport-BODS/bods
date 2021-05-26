@@ -1,0 +1,21 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Sign up closed' %}
+{% endblock %}
+
+
+{% block head_title %}{% trans 'Sign Up Closed' %}{% endblock %}
+
+
+{% block inner %}
+  <p class="govuk-heading">{% trans "We are sorry, but the sign up is currently closed." %}</p>
+{% endblock %}
+
+
+{% block inner_secondary %}
+{% endblock %}

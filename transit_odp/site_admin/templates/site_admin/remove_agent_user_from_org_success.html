@@ -1,0 +1,33 @@
+{% extends "site_admin/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block title_tag %}
+  {% trans 'Agent has been removed' %}
+{% endblock %}
+
+{% block backlink %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+      <h1 class="govuk-heading-xl">{% trans 'Agent has been removed' %}</h1>
+      <p class="govuk-body">
+      {% trans 'Agent user'%}
+      <b>{{ object.agent.email }}</b>
+      {% trans 'has been removed and will no longer be able to act on behalf of ' %}
+      <b>{{object.organisation.name}}</b>.
+      </p>
+
+      <a href="{% url 'users:org-user-manage' pk=object.organisation.id host host.name %}"
+        role="button" draggable="false"
+        class="govuk-button govuk-!-margin-top-5" data-module="govuk-button">
+        Go back to user management
+      </a>
+  </div>
+{% endblock %}

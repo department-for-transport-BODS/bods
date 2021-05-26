@@ -1,0 +1,1552 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:09:49",
+    "naptan_date": "Sun, 24 Nov 2019 04:30:30",
+    "sources": ["MERGED_MERGED_whole_ea_20-B-A-y08-1.xml"]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST0500CCITY501",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.127230755286671021, 52.2067001725933721]
+          },
+          "properties": {
+            "atco_code": "0500CCITY501",
+            "bearing": 4,
+            "feature_name": "The Busway New Square (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500CCITY502",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.124362132817897111, 52.2027142785336338]
+          },
+          "properties": {
+            "atco_code": "0500CCITY502",
+            "bearing": 3,
+            "feature_name": "The Busway Regent Street (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500CCITY503",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.147121840560500344, 52.2300786940944093]
+          },
+          "properties": {
+            "atco_code": "0500CCITY503",
+            "bearing": 3,
+            "feature_name": "The Busway Science Park (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500CCITY505",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.136946392108539566, 52.2334734059131307]
+          },
+          "properties": {
+            "atco_code": "0500CCITY505",
+            "bearing": 3,
+            "feature_name": "The Busway Regional College (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500CCITY507",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.136319333774384155, 52.1932725042224064]
+          },
+          "properties": {
+            "atco_code": "0500CCITY507",
+            "bearing": 5,
+            "feature_name": "The Busway Railway Station (Stop 1)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500HHEMG002",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.0828944340233484789, 52.314550986246708]
+          },
+          "properties": {
+            "atco_code": "0500HHEMG002",
+            "bearing": 1,
+            "feature_name": "Greenfields (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500HHILT003",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.111864455536889507, 52.2802198694363298]
+          },
+          "properties": {
+            "atco_code": "0500HHILT003",
+            "bearing": 0,
+            "feature_name": "Scotts Crescent (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500HSTIV071",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.0656693523348031716, 52.3202856553573596]
+          },
+          "properties": {
+            "atco_code": "0500HSTIV071",
+            "bearing": 3,
+            "feature_name": "The Busway St Ives Park and Ride (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500HSTIV074",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.0712551427075924365, 52.3227597615852744]
+          },
+          "properties": {
+            "atco_code": "0500HSTIV074",
+            "bearing": 3,
+            "feature_name": "The Busway Station Road (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SBOXW001",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.025194935229071215, 52.2600455857337636]
+          },
+          "properties": {
+            "atco_code": "0500SBOXW001",
+            "bearing": 5,
+            "feature_name": "School Lane (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SBOXW004",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.0300003329497241268, 52.2584174366855265]
+          },
+          "properties": {
+            "atco_code": "0500SBOXW004",
+            "bearing": 5,
+            "feature_name": "Elsworth Road (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SELSW002",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.0740625800251920319, 52.2550351358064802]
+          },
+          "properties": {
+            "atco_code": "0500SELSW002",
+            "bearing": 6,
+            "feature_name": "Brockley Road (near)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SFEND005",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.0328253150408911315, 52.3078113690204631]
+          },
+          "properties": {
+            "atco_code": "0500SFEND005",
+            "bearing": 2,
+            "feature_name": "The Busway Fen Drayton Lakes (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SIMPI018",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.110725292773355244, 52.241669203368815]
+          },
+          "properties": {
+            "atco_code": "0500SIMPI018",
+            "bearing": 4,
+            "feature_name": "Pepys Terrace (near)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SLONN007",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.0548199951873425892, 52.291860014125966]
+          },
+          "properties": {
+            "atco_code": "0500SLONN007",
+            "bearing": 3,
+            "feature_name": "The Busway Longstanton Park & Ride (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SOAKI016",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.0775079927036378957, 52.2649545452991831]
+          },
+          "properties": {
+            "atco_code": "0500SOAKI016",
+            "bearing": 4,
+            "feature_name": "The Busway Oakington (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SORCH011",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.129161532124818068, 52.2354393487683453]
+          },
+          "properties": {
+            "atco_code": "0500SORCH011",
+            "bearing": 1,
+            "feature_name": "The Busway Orchard Park East (N-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SORCH013",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.118936946050058626, 52.2320175666643465]
+          },
+          "properties": {
+            "atco_code": "0500SORCH013",
+            "bearing": 2,
+            "feature_name": "The Busway Orchard Park West (E-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST0500SSWAV020",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.000211037051495173786, 52.3061956015047542]
+          },
+          "properties": {
+            "atco_code": "0500SSWAV020",
+            "bearing": 3,
+            "feature_name": "The Busway Swavesey (S-bound)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.025194935229071215, 52.2600455857337636],
+              [-0.0300003329497241268, 52.2584174366855265],
+              [-0.0740625800251920319, 52.2550351358064802],
+              [-0.111864455536889507, 52.2802198694363298],
+              [-0.0828944340233484789, 52.314550986246708],
+              [-0.0712551427075924365, 52.3227597615852744],
+              [-0.0656693523348031716, 52.3202856553573596],
+              [-0.0328253150408911315, 52.3078113690204631],
+              [0.000211037051495173786, 52.3061956015047542],
+              [0.0548199951873425892, 52.291860014125966],
+              [0.0775079927036378957, 52.2649545452991831],
+              [0.110725292773355244, 52.241669203368815],
+              [0.118936946050058626, 52.2320175666643465],
+              [0.129161532124818068, 52.2354393487683453],
+              [0.136946392108539566, 52.2334734059131307],
+              [0.147121840560500344, 52.2300786940944093],
+              [0.127230755286671021, 52.2067001725933721],
+              [0.124362132817897111, 52.2027142785336338],
+              [0.136319333774384155, 52.1932725042224064]
+            ]
+          },
+          "properties": {
+            "feature_name": "Boxworth - Cambridge",
+            "length_m": 37078.9883,
+            "route_shape": true,
+            "line": "LI62871",
+            "stops": [
+              "ST0500SBOXW001",
+              "ST0500SBOXW004",
+              "ST0500SELSW002",
+              "ST0500HHILT003",
+              "ST0500HHEMG002",
+              "ST0500HSTIV074",
+              "ST0500HSTIV071",
+              "ST0500SFEND005",
+              "ST0500SSWAV020",
+              "ST0500SLONN007",
+              "ST0500SOAKI016",
+              "ST0500SIMPI018",
+              "ST0500SORCH013",
+              "ST0500SORCH011",
+              "ST0500CCITY505",
+              "ST0500CCITY503",
+              "ST0500CCITY501",
+              "ST0500CCITY502",
+              "ST0500CCITY507"
+            ],
+            "timing_patterns": ["TP156977a4bacbfff8c8a3008646bc78c915968af9"],
+            "service_links": [
+              "SL54b90ec39574f5047e3a4f15651788bbd5fd7c18",
+              "SLcd134d2798fa27217215a25153c1fb2ea75d2567",
+              "SL39d024e8308be66e5a867b8c0fa128b07f6a9ab8",
+              "SL6ea5560618fc6f753a770142fae9f6315206ea71",
+              "SL3a577c96de13f26976c71f8e13933670b54489f7",
+              "SLabc6d3a0c6560cda9340f749b88d83392ee7dd5e",
+              "SLc2add9c6284a77ccb2ed4ace7bfec1c50fb45ba5",
+              "SLf07e4ed935bbbc34a4795928a3e290e8ed46509e",
+              "SL39fed2a18b9fc5d7fa00f1a90dfff539429f1d01",
+              "SL81860409309586ad7210059883a7c88ab4764ce0",
+              "SLbdf6c1cbbb938a65375bf081cfcd61cd34e34487",
+              "SL88b556ed92019704b05e4ef0500e0028f9b5ae59",
+              "SL0297e4f83da42bd29cc06a305419a334c214c069",
+              "SLe76fba629d8d76f6c9ee3e9575d147f8fef95276",
+              "SL1f729aeda0d640c6f11219871bc4d4751a84f0c2",
+              "SL0cce770ce3e7c2e713bd7f7d2e727fb95bf77d80",
+              "SL1844a38ed5f303071edf04c66f573b9fcfebb74a",
+              "SL4c97b9daeb257e5c84334f2d0c9b8d3d01148bbb"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0712551427075924365, 52.3227597615852744],
+              [-0.0656693523348031716, 52.3202856553573596],
+              [-0.0328253150408911315, 52.3078113690204631],
+              [0.000211037051495173786, 52.3061956015047542],
+              [0.0548199951873425892, 52.291860014125966],
+              [0.0775079927036378957, 52.2649545452991831],
+              [0.110725292773355244, 52.241669203368815],
+              [0.118936946050058626, 52.2320175666643465],
+              [0.129161532124818068, 52.2354393487683453],
+              [0.136946392108539566, 52.2334734059131307],
+              [0.147121840560500344, 52.2300786940944093],
+              [0.127230755286671021, 52.2067001725933721],
+              [0.124362132817897111, 52.2027142785336338]
+            ]
+          },
+          "properties": {
+            "feature_name": "St Ives - Cambridge",
+            "length_m": 23022.4922,
+            "route_shape": true,
+            "line": "LI62871",
+            "stops": [
+              "ST0500HSTIV074",
+              "ST0500HSTIV071",
+              "ST0500SFEND005",
+              "ST0500SSWAV020",
+              "ST0500SLONN007",
+              "ST0500SOAKI016",
+              "ST0500SIMPI018",
+              "ST0500SORCH013",
+              "ST0500SORCH011",
+              "ST0500CCITY505",
+              "ST0500CCITY503",
+              "ST0500CCITY501",
+              "ST0500CCITY502"
+            ],
+            "timing_patterns": ["TP0a29a9bf9c9206a0d0aa3e51343e5b62369a693c"],
+            "service_links": [
+              "SLabc6d3a0c6560cda9340f749b88d83392ee7dd5e",
+              "SLc2add9c6284a77ccb2ed4ace7bfec1c50fb45ba5",
+              "SLf07e4ed935bbbc34a4795928a3e290e8ed46509e",
+              "SL39fed2a18b9fc5d7fa00f1a90dfff539429f1d01",
+              "SL81860409309586ad7210059883a7c88ab4764ce0",
+              "SLbdf6c1cbbb938a65375bf081cfcd61cd34e34487",
+              "SL88b556ed92019704b05e4ef0500e0028f9b5ae59",
+              "SL0297e4f83da42bd29cc06a305419a334c214c069",
+              "SLe76fba629d8d76f6c9ee3e9575d147f8fef95276",
+              "SL1f729aeda0d640c6f11219871bc4d4751a84f0c2",
+              "SL0cce770ce3e7c2e713bd7f7d2e727fb95bf77d80",
+              "SL1844a38ed5f303071edf04c66f573b9fcfebb74a"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL0297e4f83da42bd29cc06a305419a334c214c069",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.118936946050058626, 52.2320175666643465],
+              [0.129161532124818068, 52.2354393487683453]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Orchard Park West (E-bound)-The Busway Orchard Park East (N-bound)",
+            "from_stop": "ST0500SORCH013",
+            "length_m": 795.468445,
+            "route_shape": false,
+            "to_stop": "ST0500SORCH011",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL0cce770ce3e7c2e713bd7f7d2e727fb95bf77d80",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.147121840560500344, 52.2300786940944093],
+              [0.127230755286671021, 52.2067001725933721]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Science Park (S-bound)-The Busway New Square (adj)",
+            "from_stop": "ST0500CCITY503",
+            "length_m": 2934.8125,
+            "route_shape": false,
+            "to_stop": "ST0500CCITY501",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1844a38ed5f303071edf04c66f573b9fcfebb74a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.127230755286671021, 52.2067001725933721],
+              [0.124362132817897111, 52.2027142785336338]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway New Square (adj)-The Busway Regent Street (adj)",
+            "from_stop": "ST0500CCITY501",
+            "length_m": 484.860809,
+            "route_shape": false,
+            "to_stop": "ST0500CCITY502",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1f729aeda0d640c6f11219871bc4d4751a84f0c2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.136946392108539566, 52.2334734059131307],
+              [0.147121840560500344, 52.2300786940944093]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Regional College (S-bound)-The Busway Science Park (S-bound)",
+            "from_stop": "ST0500CCITY505",
+            "length_m": 791.128967,
+            "route_shape": false,
+            "to_stop": "ST0500CCITY503",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL39d024e8308be66e5a867b8c0fa128b07f6a9ab8",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0740625800251920319, 52.2550351358064802],
+              [-0.111864455536889507, 52.2802198694363298]
+            ]
+          },
+          "properties": {
+            "feature_name": "Brockley Road (near)-Scotts Crescent (opp)",
+            "from_stop": "ST0500SELSW002",
+            "length_m": 3808.89722,
+            "route_shape": false,
+            "to_stop": "ST0500HHILT003",
+            "service_patterns": [
+              "SPfe6c6b3c587ea81f21d7a9c729b404a424970d33",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SPfa205f9965a33b7b711a795f2cb63d81c133b78c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL39fed2a18b9fc5d7fa00f1a90dfff539429f1d01",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.000211037051495173786, 52.3061956015047542],
+              [0.0548199951873425892, 52.291860014125966]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Swavesey (S-bound)-The Busway Longstanton Park & Ride (S-bound)",
+            "from_stop": "ST0500SSWAV020",
+            "length_m": 4051.90381,
+            "route_shape": false,
+            "to_stop": "ST0500SLONN007",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPc59454358c3d6f7435a1d76cd4f3d1768fcf5c99",
+              "SP4838fb145e406df9d8b7a4f1475a1f2d3b15b83e",
+              "SPf16c004bf4eb229913aec1de74ed412415f914d2",
+              "SP3fb9bff5905cf437deef9471f5cc540ec7381a2c",
+              "SP2d5b2a46b4efe1be9865e15738e355aac682b5c7",
+              "SP67d0f11fd9553daf2ebc699af52b9cecda72458d",
+              "SPc5baa238c69fd4b6753250e5a1387c48ae665e76",
+              "SP8984b74c56583cc9dd4649c8a154b8bb7a657d64",
+              "SP82d2a5c2f1cf61963324edfd1c1f871c4ce0db82",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SP8db38f877425080e98fc53952815e137f4e6f0d2",
+              "SP63d17f5c782bc7ee3d8ed929bf314a6acb803ffa",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba",
+              "SPa81d75d2564ef950fec56af6bd5738c4bc8b6a68",
+              "SP4a7553c9d1d547072a297389e318cfc8cd098967",
+              "SPaa95e8247cdc3ce4d9ca0a7472b862d589b39bad",
+              "SPe014f4ed36dd24a3fa60142de05893ac7d2eebb7",
+              "SP6eda4a3e2c3c4bafdc05ed80c96a99bb6083a0af",
+              "SP6d8757c23d1e07717ed6daac3636debc8c68d124",
+              "SPecb0ea3043e31eeedcf71339546a1bdea4c6d8b0",
+              "SP24cf93e2c7f5c7ab0ad6e29a765567401f49e2b0",
+              "SPcf045d12e0973bf3a5f8006af4248ee820f79881"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3a577c96de13f26976c71f8e13933670b54489f7",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0828944340233484789, 52.314550986246708],
+              [-0.0712551427075924365, 52.3227597615852744]
+            ]
+          },
+          "properties": {
+            "feature_name": "Greenfields (opp)-The Busway Station Road (S-bound)",
+            "from_stop": "ST0500HHEMG002",
+            "length_m": 1209.84167,
+            "route_shape": false,
+            "to_stop": "ST0500HSTIV074",
+            "service_patterns": ["SP02e55ebb74c568165273163cb6c1b20797374bd9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4c97b9daeb257e5c84334f2d0c9b8d3d01148bbb",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.124362132817897111, 52.2027142785336338],
+              [0.136319333774384155, 52.1932725042224064]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Regent Street (adj)-The Busway Railway Station (Stop 1)",
+            "from_stop": "ST0500CCITY502",
+            "length_m": 1331.08228,
+            "route_shape": false,
+            "to_stop": "ST0500CCITY507",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL54b90ec39574f5047e3a4f15651788bbd5fd7c18",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.025194935229071215, 52.2600455857337636],
+              [-0.0300003329497241268, 52.2584174366855265]
+            ]
+          },
+          "properties": {
+            "feature_name": "School Lane (opp)-Elsworth Road (opp)",
+            "from_stop": "ST0500SBOXW001",
+            "length_m": 374.738586,
+            "route_shape": false,
+            "to_stop": "ST0500SBOXW004",
+            "service_patterns": [
+              "SPfe6c6b3c587ea81f21d7a9c729b404a424970d33",
+              "SP3cfa4b16fd8fe07b707575ebc10c4fb43ba9c2f1",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SPfa205f9965a33b7b711a795f2cb63d81c133b78c",
+              "SPe4772cf4785665e315eb4a7691a22b3a3855fef5"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6ea5560618fc6f753a770142fae9f6315206ea71",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.111864455536889507, 52.2802198694363298],
+              [-0.0828944340233484789, 52.314550986246708]
+            ]
+          },
+          "properties": {
+            "feature_name": "Scotts Crescent (opp)-Greenfields (opp)",
+            "from_stop": "ST0500HHILT003",
+            "length_m": 4300.29346,
+            "route_shape": false,
+            "to_stop": "ST0500HHEMG002",
+            "service_patterns": ["SP02e55ebb74c568165273163cb6c1b20797374bd9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL81860409309586ad7210059883a7c88ab4764ce0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.0548199951873425892, 52.291860014125966],
+              [0.0775079927036378957, 52.2649545452991831]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Longstanton Park & Ride (S-bound)-The Busway Oakington (S-bound)",
+            "from_stop": "ST0500SLONN007",
+            "length_m": 3370.07324,
+            "route_shape": false,
+            "to_stop": "ST0500SOAKI016",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPc59454358c3d6f7435a1d76cd4f3d1768fcf5c99",
+              "SP4838fb145e406df9d8b7a4f1475a1f2d3b15b83e",
+              "SPf16c004bf4eb229913aec1de74ed412415f914d2",
+              "SP3fb9bff5905cf437deef9471f5cc540ec7381a2c",
+              "SP2d5b2a46b4efe1be9865e15738e355aac682b5c7",
+              "SP67d0f11fd9553daf2ebc699af52b9cecda72458d",
+              "SPc5baa238c69fd4b6753250e5a1387c48ae665e76",
+              "SP8984b74c56583cc9dd4649c8a154b8bb7a657d64",
+              "SP82d2a5c2f1cf61963324edfd1c1f871c4ce0db82",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SP8db38f877425080e98fc53952815e137f4e6f0d2",
+              "SP63d17f5c782bc7ee3d8ed929bf314a6acb803ffa",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba",
+              "SPa81d75d2564ef950fec56af6bd5738c4bc8b6a68",
+              "SP4a7553c9d1d547072a297389e318cfc8cd098967",
+              "SPaa95e8247cdc3ce4d9ca0a7472b862d589b39bad",
+              "SPe014f4ed36dd24a3fa60142de05893ac7d2eebb7",
+              "SP6eda4a3e2c3c4bafdc05ed80c96a99bb6083a0af",
+              "SP6d8757c23d1e07717ed6daac3636debc8c68d124",
+              "SPecb0ea3043e31eeedcf71339546a1bdea4c6d8b0",
+              "SP24cf93e2c7f5c7ab0ad6e29a765567401f49e2b0",
+              "SPcf045d12e0973bf3a5f8006af4248ee820f79881"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL88b556ed92019704b05e4ef0500e0028f9b5ae59",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.110725292773355244, 52.241669203368815],
+              [0.118936946050058626, 52.2320175666643465]
+            ]
+          },
+          "properties": {
+            "feature_name": "Pepys Terrace (near)-The Busway Orchard Park West (E-bound)",
+            "from_stop": "ST0500SIMPI018",
+            "length_m": 1211.49207,
+            "route_shape": false,
+            "to_stop": "ST0500SORCH013",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLabc6d3a0c6560cda9340f749b88d83392ee7dd5e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0712551427075924365, 52.3227597615852744],
+              [-0.0656693523348031716, 52.3202856553573596]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Station Road (S-bound)-The Busway St Ives Park and Ride (S-bound)",
+            "from_stop": "ST0500HSTIV074",
+            "length_m": 469.860626,
+            "route_shape": false,
+            "to_stop": "ST0500HSTIV071",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPc59454358c3d6f7435a1d76cd4f3d1768fcf5c99",
+              "SP4838fb145e406df9d8b7a4f1475a1f2d3b15b83e",
+              "SPf16c004bf4eb229913aec1de74ed412415f914d2",
+              "SP3fb9bff5905cf437deef9471f5cc540ec7381a2c",
+              "SP2d5b2a46b4efe1be9865e15738e355aac682b5c7",
+              "SP67d0f11fd9553daf2ebc699af52b9cecda72458d",
+              "SPc5baa238c69fd4b6753250e5a1387c48ae665e76",
+              "SP8984b74c56583cc9dd4649c8a154b8bb7a657d64",
+              "SP82d2a5c2f1cf61963324edfd1c1f871c4ce0db82",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SP8db38f877425080e98fc53952815e137f4e6f0d2",
+              "SP63d17f5c782bc7ee3d8ed929bf314a6acb803ffa",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba",
+              "SPa81d75d2564ef950fec56af6bd5738c4bc8b6a68",
+              "SP4a7553c9d1d547072a297389e318cfc8cd098967",
+              "SPaa95e8247cdc3ce4d9ca0a7472b862d589b39bad",
+              "SPe014f4ed36dd24a3fa60142de05893ac7d2eebb7",
+              "SP6eda4a3e2c3c4bafdc05ed80c96a99bb6083a0af",
+              "SP6d8757c23d1e07717ed6daac3636debc8c68d124",
+              "SPecb0ea3043e31eeedcf71339546a1bdea4c6d8b0",
+              "SP24cf93e2c7f5c7ab0ad6e29a765567401f49e2b0",
+              "SPcf045d12e0973bf3a5f8006af4248ee820f79881"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLbdf6c1cbbb938a65375bf081cfcd61cd34e34487",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.0775079927036378957, 52.2649545452991831],
+              [0.110725292773355244, 52.241669203368815]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Oakington (S-bound)-Pepys Terrace (near)",
+            "from_stop": "ST0500SOAKI016",
+            "length_m": 3443.1875,
+            "route_shape": false,
+            "to_stop": "ST0500SIMPI018",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPc59454358c3d6f7435a1d76cd4f3d1768fcf5c99",
+              "SP4838fb145e406df9d8b7a4f1475a1f2d3b15b83e",
+              "SPf16c004bf4eb229913aec1de74ed412415f914d2",
+              "SP3fb9bff5905cf437deef9471f5cc540ec7381a2c",
+              "SP2d5b2a46b4efe1be9865e15738e355aac682b5c7",
+              "SP67d0f11fd9553daf2ebc699af52b9cecda72458d",
+              "SPc5baa238c69fd4b6753250e5a1387c48ae665e76",
+              "SP8984b74c56583cc9dd4649c8a154b8bb7a657d64",
+              "SP82d2a5c2f1cf61963324edfd1c1f871c4ce0db82",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SP8db38f877425080e98fc53952815e137f4e6f0d2",
+              "SP63d17f5c782bc7ee3d8ed929bf314a6acb803ffa",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba",
+              "SPa81d75d2564ef950fec56af6bd5738c4bc8b6a68",
+              "SP4a7553c9d1d547072a297389e318cfc8cd098967",
+              "SPaa95e8247cdc3ce4d9ca0a7472b862d589b39bad",
+              "SPe014f4ed36dd24a3fa60142de05893ac7d2eebb7",
+              "SP6eda4a3e2c3c4bafdc05ed80c96a99bb6083a0af",
+              "SP6d8757c23d1e07717ed6daac3636debc8c68d124",
+              "SPecb0ea3043e31eeedcf71339546a1bdea4c6d8b0",
+              "SP24cf93e2c7f5c7ab0ad6e29a765567401f49e2b0",
+              "SPcf045d12e0973bf3a5f8006af4248ee820f79881"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc2add9c6284a77ccb2ed4ace7bfec1c50fb45ba5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0656693523348031716, 52.3202856553573596],
+              [-0.0328253150408911315, 52.3078113690204631]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway St Ives Park and Ride (S-bound)-The Busway Fen Drayton Lakes (S-bound)",
+            "from_stop": "ST0500HSTIV071",
+            "length_m": 2634.59766,
+            "route_shape": false,
+            "to_stop": "ST0500SFEND005",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPc59454358c3d6f7435a1d76cd4f3d1768fcf5c99",
+              "SP4838fb145e406df9d8b7a4f1475a1f2d3b15b83e",
+              "SPf16c004bf4eb229913aec1de74ed412415f914d2",
+              "SP3fb9bff5905cf437deef9471f5cc540ec7381a2c",
+              "SP2d5b2a46b4efe1be9865e15738e355aac682b5c7",
+              "SP67d0f11fd9553daf2ebc699af52b9cecda72458d",
+              "SPc5baa238c69fd4b6753250e5a1387c48ae665e76",
+              "SP8984b74c56583cc9dd4649c8a154b8bb7a657d64",
+              "SP82d2a5c2f1cf61963324edfd1c1f871c4ce0db82",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SP8db38f877425080e98fc53952815e137f4e6f0d2",
+              "SP63d17f5c782bc7ee3d8ed929bf314a6acb803ffa",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba",
+              "SPa81d75d2564ef950fec56af6bd5738c4bc8b6a68",
+              "SP4a7553c9d1d547072a297389e318cfc8cd098967",
+              "SPaa95e8247cdc3ce4d9ca0a7472b862d589b39bad",
+              "SPe014f4ed36dd24a3fa60142de05893ac7d2eebb7",
+              "SP6eda4a3e2c3c4bafdc05ed80c96a99bb6083a0af",
+              "SP6d8757c23d1e07717ed6daac3636debc8c68d124",
+              "SPecb0ea3043e31eeedcf71339546a1bdea4c6d8b0",
+              "SP24cf93e2c7f5c7ab0ad6e29a765567401f49e2b0",
+              "SPcf045d12e0973bf3a5f8006af4248ee820f79881"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLcd134d2798fa27217215a25153c1fb2ea75d2567",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0300003329497241268, 52.2584174366855265],
+              [-0.0740625800251920319, 52.2550351358064802]
+            ]
+          },
+          "properties": {
+            "feature_name": "Elsworth Road (opp)-Brockley Road (near)",
+            "from_stop": "ST0500SBOXW004",
+            "length_m": 3031.64282,
+            "route_shape": false,
+            "to_stop": "ST0500SELSW002",
+            "service_patterns": ["SP02e55ebb74c568165273163cb6c1b20797374bd9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe76fba629d8d76f6c9ee3e9575d147f8fef95276",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.129161532124818068, 52.2354393487683453],
+              [0.136946392108539566, 52.2334734059131307]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Orchard Park East (N-bound)-The Busway Regional College (S-bound)",
+            "from_stop": "ST0500SORCH011",
+            "length_m": 575.024353,
+            "route_shape": false,
+            "to_stop": "ST0500CCITY505",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SPc9cd4a7d2a48f570013c730c07f5d80117bbc416",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SPd77e23a5af6d1014885e5d3f2efb3d56d23a754a",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf07e4ed935bbbc34a4795928a3e290e8ed46509e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.0328253150408911315, 52.3078113690204631],
+              [0.000211037051495173786, 52.3061956015047542]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Busway Fen Drayton Lakes (S-bound)-The Busway Swavesey (S-bound)",
+            "from_stop": "ST0500SFEND005",
+            "length_m": 2260.08252,
+            "route_shape": false,
+            "to_stop": "ST0500SSWAV020",
+            "service_patterns": [
+              "SPff66cfd7061cebbaf0cd5e180170247e352f75b2",
+              "SP10b8c53d83603372a5407353a31027a79df0962f",
+              "SP67f91d5b9e8576e0c0f3d8ff49f2681ee0b000aa",
+              "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+              "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+              "SP521fc9331a2de2a2ba6f840093a7628bb1543834",
+              "SP263a900c6f524f5cabfb48e2b87457a89b1fe2e1",
+              "SPbf850b5f4c5df0e116a43815d7cabed033db5013",
+              "SP188daf2f9cafcf8f592adbb6793c5bc3d229bdda",
+              "SP44575d4595c63dc764baaa2014efabee013b0968",
+              "SPaf9ec05c0724b20f6ba34932f5b82c6a8cff7b07",
+              "SP7cd23f95072fdfe8c89b2871dee0253f9383ea38",
+              "SPc59454358c3d6f7435a1d76cd4f3d1768fcf5c99",
+              "SP4838fb145e406df9d8b7a4f1475a1f2d3b15b83e",
+              "SPf16c004bf4eb229913aec1de74ed412415f914d2",
+              "SP3fb9bff5905cf437deef9471f5cc540ec7381a2c",
+              "SP2d5b2a46b4efe1be9865e15738e355aac682b5c7",
+              "SP67d0f11fd9553daf2ebc699af52b9cecda72458d",
+              "SPc5baa238c69fd4b6753250e5a1387c48ae665e76",
+              "SP8984b74c56583cc9dd4649c8a154b8bb7a657d64",
+              "SP82d2a5c2f1cf61963324edfd1c1f871c4ce0db82",
+              "SPbf02d071548f6029bdd26cff74314ef5a81781f4",
+              "SP25cc353dd65dcbaf17edf27b056f5abbc4f7a937",
+              "SP5e5842738dfaf8da8d41f8291cf5c3141467ce15",
+              "SP2796ce58b7c1849a7aec923104f811b4bc0c815e",
+              "SP6e2fa63392239eb4c9b9823a5a8fb39c0dad6398",
+              "SP8db38f877425080e98fc53952815e137f4e6f0d2",
+              "SP63d17f5c782bc7ee3d8ed929bf314a6acb803ffa",
+              "SPd2cdbe3bdcd77a759875b94bb4fdf222490f89ba",
+              "SPa81d75d2564ef950fec56af6bd5738c4bc8b6a68",
+              "SP4a7553c9d1d547072a297389e318cfc8cd098967",
+              "SPaa95e8247cdc3ce4d9ca0a7472b862d589b39bad",
+              "SPe014f4ed36dd24a3fa60142de05893ac7d2eebb7",
+              "SP6eda4a3e2c3c4bafdc05ed80c96a99bb6083a0af",
+              "SP6d8757c23d1e07717ed6daac3636debc8c68d124",
+              "SPecb0ea3043e31eeedcf71339546a1bdea4c6d8b0",
+              "SP24cf93e2c7f5c7ab0ad6e29a765567401f49e2b0",
+              "SPcf045d12e0973bf3a5f8006af4248ee820f79881"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI62871",
+        "name": "A:Royston - Parkhall Road"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP0a29a9bf9c9206a0d0aa3e51343e5b62369a693c",
+        "service_pattern": "SP12c9fd040cfec6dca3fcc52559a2328481ed75dc",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 180,
+            "departure_time_secs": 180,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 300,
+            "departure_time_secs": 300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1020,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1260,
+            "departure_time_secs": 1260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1380,
+            "departure_time_secs": 1380,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1500,
+            "departure_time_secs": 1500,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2340,
+            "departure_time_secs": 2340,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ5d56f1dd7000b48793c03626ff29fea1d2f3a253"]
+      },
+      {
+        "id": "TP156977a4bacbfff8c8a3008646bc78c915968af9",
+        "service_pattern": "SP02e55ebb74c568165273163cb6c1b20797374bd9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 33,
+            "departure_time_secs": 33,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 300,
+            "departure_time_secs": 300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1380,
+            "departure_time_secs": 1380,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1680,
+            "departure_time_secs": 1680,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1860,
+            "departure_time_secs": 1860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1980,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2460,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2700,
+            "departure_time_secs": 2700,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2940,
+            "departure_time_secs": 2940,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3000,
+            "departure_time_secs": 3000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3060,
+            "departure_time_secs": 3060,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3120,
+            "departure_time_secs": 3120,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3180,
+            "departure_time_secs": 3180,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 3840,
+            "departure_time_secs": 3840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4020,
+            "departure_time_secs": 4020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 4620,
+            "departure_time_secs": 4620,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ70d5a8f4d11b9491435862fe5da74916e8b1bba0"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ5d56f1dd7000b48793c03626ff29fea1d2f3a253",
+        "timing_pattern": "TP0a29a9bf9c9206a0d0aa3e51343e5b62369a693c",
+        "start": 25620,
+        "feature_name": "07:07:00 -- A: St Ives to Cambridge",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ70d5a8f4d11b9491435862fe5da74916e8b1bba0",
+        "timing_pattern": "TP156977a4bacbfff8c8a3008646bc78c915968af9",
+        "start": 23940,
+        "feature_name": "06:39:00 -- A: Boxworth to Cambridge",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "journey-partial-timing-overlap",
+      "values": [
+        {
+          "id": "VJ5d56f1dd7000b48793c03626ff29fea1d2f3a253",
+          "warning_type": "journey-partial-timing-overlap",
+          "conflict": "VJ70d5a8f4d11b9491435862fe5da74916e8b1bba0",
+          "stops": [
+            "ST0500CCITY501",
+            "ST0500CCITY502",
+            "ST0500CCITY503",
+            "ST0500CCITY505",
+            "ST0500HSTIV071",
+            "ST0500HSTIV074",
+            "ST0500SFEND005",
+            "ST0500SIMPI018",
+            "ST0500SLONN007",
+            "ST0500SOAKI016",
+            "ST0500SORCH011",
+            "ST0500SORCH013",
+            "ST0500SSWAV020"
+          ]
+        }
+      ]
+    }
+  ]
+}

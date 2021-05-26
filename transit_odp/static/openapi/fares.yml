@@ -1,0 +1,83 @@
+swagger: "2.0"
+info:
+  description:
+    '<span class="govuk-body-m">You can use the interactive documentation
+    to customise your API </br>response using the available query parameters.
+    If you are registered and </br>logged in, you will be given a full response.
+    Otherwise you will be given </br>an example response.</span>
+    <p><a class="govuk-link" href="/guidance/requirements/?section=Using the API">
+    View developer documentation</a></p>
+    <p><a class="govuk-link" href="/catalogue/">Download data catalogue</a></p>
+    '
+  title: Fares data API
+  version: ""
+basePath: "/api/v1/fares"
+paths:
+  /dataset:
+    get:
+      tags:
+        - Data set
+      description: Returns all published datafeed
+      parameters:
+        - in: query
+          name: noc
+          type: string
+          description:
+            Operators can operate using a single National Operator Codes (NOC)
+            or have multiple NOC associated with it. Download
+            <a href="/catalogue/">data catalogue</a> to see
+            the relationship between operators and NOC within the service. Input a
+            comma separated list of NOC to limit results to the operators associated
+            with the NOC provided.
+
+        - in: query
+          name: status
+          type: array
+          items:
+            type: string
+            enum:
+              - published
+              - expired
+              - inactive
+          collectionFormat: multi
+          description: Limit results to data sets with the specified status
+            string, accepted values are published, inactive, expired
+
+        - in: query
+          name: boundingBox
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: number
+          description: >
+            Limit results to fares data sets that contain information for the area within the rectangular boundingBox you set using co-ordinates</br></br>
+            [minLatitude, maxLatitude, minLongitude, maxLongitude]
+
+      responses:
+        200:
+          description: Successfully retrieved all datasets
+        400:
+          description: Invalid data supplied
+
+  /dataset/{datasetID}:
+    get:
+      tags:
+        - Data set
+      summary: Find dataset by ID
+      description: Returns a single dataset
+      parameters:
+        - name: datasetID
+          in: path
+          description: ID of dataset to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: successful operation
+
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Dataset not found

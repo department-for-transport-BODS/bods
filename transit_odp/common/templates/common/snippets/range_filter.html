@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load relative_url %}
+
+{# Snippet which displays a list of '|' deliminated values used for filtering #}
+{# Takes 'ranges' which is a list of dicts with keys 'filter_value', 'display_value', disabled#}
+{# e.g. [{'filter_value': 'a-f', 'display_value': 'A-F', 'disabled': False}, ...] #}
+
+{# The name of the query param defaults to 'range' #}
+{% with query_param=query_param|default:"range" current_range=current_range|default:"current_range" %}
+
+  {% with params=request.GET.urlencode %}
+    <ul class="range-filter">
+      {% for range in range_filters %}
+        <li>
+          {% if range.disabled %}
+            <span>{% trans range.display %}</span>
+          {% else %}
+            <a
+              class="govuk-link govuk-link--no-visited-state {% if current_range == range.filter %} govuk-!-font-weight-bold{% endif %}"
+              href="{% relative_url range.filter query_param params %}">
+              {% trans range.display %}
+            </a>
+            </li>
+          {% endif %}
+      {% endfor %}
+    </ul>
+  {% endwith %}
+
+{% endwith %}

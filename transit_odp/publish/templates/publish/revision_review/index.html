@@ -1,0 +1,65 @@
+{% extends "page.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+{% load publish_stepper %}
+
+{% block title_tag %}
+  {% if loading %}
+  {% trans "Validating data set"%}
+  {% else %}
+  {% if error %}{% trans 'Error: ' %}{% endif %}
+  {% trans 'Review and publish' %}
+  {% endif %}
+{% endblock %}
+
+{# Breadcrumb #}
+{% block breadcrumb %}
+  <div class="govuk-breadcrumbs">
+  {% stepper %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  {% if not loading %}
+    {# Page Heading Section #}
+    {% include 'publish/revision_review/page_heading.html' %}
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    {# Main Section #}
+    <div class="govuk-grid-column-two-thirds">
+      {% if loading %}
+        {# Loading Progress #}
+        {% include 'publish/revision_review/loading.html' %}
+      {% elif object.error_code == "SCHEMA_ERROR"%}
+        {% include 'publish/revision_review/schema_error.html' %}
+      {% elif error %}
+        {% include 'publish/revision_review/error_panel.html' %}
+      {% else %}
+        {% include 'publish/revision_review/success_content.html' %}
+      {% endif %}
+    </div>
+    {# Related Links #}
+    <div class="govuk-grid-column-one-third">
+      {% include 'publish/revision_review/related_links.html' %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  {% if loading %}
+    <script>
+      BODSFrontend.getProgress({{ object.dataset_id }});
+    </script>
+  {% elif not error %}
+    <script>
+      {# Initialise map #}
+      BODSFrontend.initMap("{{ api_root }}", {{  object.id }});
+    </script>
+    {# TODO - this needs tidying up. Let the JS change the DOM #}
+  {% endif %}
+{% endblock %}

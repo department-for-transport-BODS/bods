@@ -1,0 +1,48 @@
+{% extends "base_success.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% if object.is_active %}
+    {% trans 'User activated' %}
+  {% else %}
+    {% trans 'User deactivated' %}
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block title_text %}
+  {% if object.is_active %}
+    {% trans 'User has been activated' %}
+  {% else %}
+    {% trans 'User has been deactivated' %}
+  {% endif %}
+{% endblock %}
+
+{% block body_text %}
+  {% blocktrans %}
+    User
+  {% endblocktrans %}
+  {{ object.username }}
+  {% if object.is_active %}
+    {% blocktrans %}
+       has been activated and will have access to the Bus Open Data Service.
+    {% endblocktrans %}
+  {% else %}
+    {% blocktrans %}
+       has been deactivated and will no longer have access to the Bus Open Data Service.
+    {% endblocktrans %}
+  {% endif %}
+{% endblock %}
+
+{% block button_href %}
+    {% url 'users:manage' pk=object.organisation.id host hosts.publish %}
+{% endblock %}
+
+{% block button_text %}
+    {% trans 'Go back to user management' %}
+{% endblock %}

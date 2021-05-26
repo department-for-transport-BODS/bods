@@ -1,0 +1,12 @@
+Hello,
+
+The below SIRI-VM data feed is no longer sending data to the Bus Open Data Service.
+
+{{ data_feed_name }} - {{ data_feed_id }}
+
+This data set will be marked as unavailable to developers until the SIRI-VM service is resumed. This may be expected if services are not currently running for your operator, if this is the case then no action is required.
+
+You can opt out of this notification from here {{ settings_link }}.
+
+Kind regards,
+Bus Open Data Service

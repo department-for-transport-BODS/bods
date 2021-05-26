@@ -1,0 +1,76 @@
+{% extends 'page.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load hosts %}
+
+{% block title_tag %}
+    {% trans 'Bus Open Data Service' %}
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+      <div>
+        <h1 class="govuk-heading-xl">{% trans 'Bus Open Data Service' %}</h1>
+        <h2 class="govuk-heading-m">{% trans 'Publish bus open data' %}</h2>
+        <p class="govuk-body">
+            {% trans 'This service is for bus operators running commercial bus services in England, and local authorities acting on behalf of bus operators.' %}
+        </p>
+        <ul class="govuk-list">
+          <li class="govuk-!-margin-bottom-4">
+            <a href="{% url 'home' host hosts.publish %}" class="govuk-link-bold">
+                {% trans 'Publish bus open data' %}
+            </a>
+          </li>
+          <li class="govuk-!-margin-bottom-4">
+            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}" class="govuk-link-bold">
+                {% trans 'View bus operator requirements' %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'guidance:support-local_authorities' host hosts.publish %}" class="govuk-link-bold">
+                {% trans 'View local authority requirements' %}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="govuk-!-margin-top-8">
+        <h2 class="govuk-heading-m">{% trans 'Find bus open data' %}</h2>
+        <p class="govuk-body">
+            {% trans 'This service is for anyone interested in using bus open data for the purpose of data analysis or building products and services.' %}
+        </p>
+        <ul class="govuk-list">
+          <li class="govuk-!-margin-bottom-4">
+            <a href="{% url 'home' host hosts.data %}" class="govuk-link-bold">
+                {% trans 'Find bus open data' %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'guidance:support-developer' host hosts.data %}" class="govuk-link-bold">
+                {% trans 'How to use bus open data' %}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
+      <h2 class="govuk-heading-m">{% trans 'Public information' %}</h2>
+      <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-4">
+          <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
+             target="_blank">{% trans 'About Bus Open Data Service' %}</a>
+        </li>
+        <li>
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us' %}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

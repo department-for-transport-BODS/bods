@@ -1,0 +1,558 @@
+<!--
+ TRANSXCHANGE EXAMPLE: Linear route
+Created: Tom White, Kizoom, 15 April 2004,
+    Based on Sample Timetables supplied by Matt Francis, AIM, 23 January 2004.
+
+(C) Crown Copyright 2004-2010
+
+2010.03.03 TXC 2.4
+	PTIC-003 Add examples of multiple classifications
+    PTIC-032 Add Dynamic Vias to StopUsage
+
+2004.04.16 TXC 2.4
+    Updated : Kizoom, 16 April 2004
+-->
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd" xml:lang="en" CreationDateTime="2004-04-14T14:20:00-05:00" ModificationDateTime="2004-04-14T14:20:00-05:00" Modification="new" RevisionNumber="0" FileName="eye.xml" SchemaVersion="2.4" RegistrationDocument="true">
+<!--
+ =============STOPS======================================
+-->
+<StopPoints>
+<!--   Stop - Dotheboy     4=D   -->
+<StopPoint CreationDateTime="2004-04-14T14:20:00-05:00">
+<AtcoCode>5530000004</AtcoCode>
+<Descriptor>
+<CommonName xml:lang="en">Dotheboy's Academy</CommonName>
+<Landmark>Dotheboy's</Landmark>
+<Street xml:lang="en">School Street</Street>
+</Descriptor>
+<AlternativeDescriptors>
+<Descriptor CreationDateTime="2004-04-14T14:20:00-05:00">
+<CommonName xml:lang="cy">Dotheboy Ysgol</CommonName>
+<Landmark>Dotheboy's Ysgol</Landmark>
+<Street xml:lang="cy">Ysgol Stryd.</Street>
+</Descriptor>
+</AlternativeDescriptors>
+<Place>
+<NptgLocalityRef>E0039203</NptgLocalityRef>
+<Location>
+<Easting>523500</Easting>
+<Northing>178970</Northing>
+</Location>
+</Place>
+<StopClassification>
+<StopType>BCT</StopType>
+<OnStreet>
+<Bus>
+<BusStopType>CUS</BusStopType>
+<TimingStatus>OTH</TimingStatus>
+<MarkedPoint>
+<Bearing>
+<CompassPoint>N</CompassPoint>
+</Bearing>
+</MarkedPoint>
+</Bus>
+</OnStreet>
+</StopClassification>
+<AdministrativeAreaRef>553</AdministrativeAreaRef>
+</StopPoint>
+<!--   Stop - Edge      5=E  -->
+<StopPoint CreationDateTime="2004-04-14T14:20:00-05:00">
+<AtcoCode>5530000005</AtcoCode>
+<Descriptor>
+<CommonName xml:lang="en">Edge</CommonName>
+<Landmark>High Street</Landmark>
+<Street xml:lang="en">High Street</Street>
+</Descriptor>
+<AlternativeDescriptors>
+<Descriptor CreationDateTime="2004-04-14T14:20:00-05:00">
+<CommonName xml:lang="cy">Ymyl</CommonName>
+<Landmark>High Stryd</Landmark>
+<Street xml:lang="cy">High Stryd.</Street>
+</Descriptor>
+</AlternativeDescriptors>
+<Place>
+<NptgLocalityRef>E0039203</NptgLocalityRef>
+<Location>
+<Easting>523400</Easting>
+<Northing>178800</Northing>
+</Location>
+</Place>
+<StopClassification>
+<StopType>BCT</StopType>
+<OnStreet>
+<Bus>
+<BusStopType>MKD</BusStopType>
+<TimingStatus>PTP</TimingStatus>
+<MarkedPoint>
+<Bearing>
+<CompassPoint>E</CompassPoint>
+</Bearing>
+</MarkedPoint>
+</Bus>
+</OnStreet>
+</StopClassification>
+<AdministrativeAreaRef>553</AdministrativeAreaRef>
+</StopPoint>
+<!--   Stop - Framham      6 = F  -->
+<StopPoint CreationDateTime="2004-04-14T14:20:00-05:00">
+<AtcoCode>5530000006</AtcoCode>
+<Descriptor>
+<CommonName xml:lang="en">Framham</CommonName>
+<Landmark>Framham Centre</Landmark>
+<Street xml:lang="en">Ness Street</Street>
+</Descriptor>
+<AlternativeDescriptors>
+<Descriptor CreationDateTime="2004-04-14T14:20:00-05:00">
+<CommonName xml:lang="cy">Llanpentre</CommonName>
+<Landmark>Llanpentre Town Hall</Landmark>
+<Street xml:lang="cy">Ness Stryd.</Street>
+</Descriptor>
+</AlternativeDescriptors>
+<Place>
+<NptgLocalityRef>E0039203</NptgLocalityRef>
+<Location>
+<Easting>523400</Easting>
+<Northing>178600</Northing>
+</Location>
+</Place>
+<StopClassification>
+<StopType>BCT</StopType>
+<OnStreet>
+<Bus>
+<BusStopType>MKD</BusStopType>
+<TimingStatus>PTP</TimingStatus>
+<MarkedPoint>
+<Bearing>
+<CompassPoint>N</CompassPoint>
+</Bearing>
+</MarkedPoint>
+</Bus>
+</OnStreet>
+</StopClassification>
+<AdministrativeAreaRef>553</AdministrativeAreaRef>
+</StopPoint>
+<!--   Stop - Ash      1=A  -->
+<AnnotatedStopPointRef>
+<StopPointRef>5530000001</StopPointRef>
+<CommonName>Ash</CommonName>
+<LocalityName>Llarreggub</LocalityName>
+</AnnotatedStopPointRef>
+<!--   Stop - Barchester      2=B  -->
+<AnnotatedStopPointRef>
+<StopPointRef>5530000002</StopPointRef>
+<CommonName>Barchester</CommonName>
+<LocalityName>Llarreggub</LocalityName>
+</AnnotatedStopPointRef>
+<!--   Stop - Crumly       3=C  -->
+<AnnotatedStopPointRef>
+<StopPointRef>5530000003</StopPointRef>
+<CommonName>Crumly</CommonName>
+<LocalityName>Llarreggub</LocalityName>
+</AnnotatedStopPointRef>
+</StopPoints>
+<!--
+ ============= Route SECTIONS======================================
+-->
+<!--  Route Section 1 A to B     -->
+<RouteSections>
+<RouteSection id="RS1">
+<!--  Stop A to Stop B  -->
+<RouteLink id="RL1">
+<From>
+<StopPointRef>5530000001</StopPointRef>
+</From>
+<To>
+<StopPointRef>5530000002</StopPointRef>
+</To>
+<Distance>1000</Distance>
+<Direction>outbound</Direction>
+</RouteLink>
+</RouteSection>
+<!--  Route Section 2:   B - C - E      -->
+<RouteSection id="RS2">
+<!--  Stop B to Stop C -->
+<RouteLink id="RL2">
+<From>
+<StopPointRef>5530000002</StopPointRef>
+</From>
+<To>
+<StopPointRef>5530000003</StopPointRef>
+</To>
+<Distance>2000</Distance>
+<Direction>outbound</Direction>
+</RouteLink>
+<!--  Stop C to Stop E -->
+<RouteLink id="RL3">
+<From>
+<StopPointRef>5530000003</StopPointRef>
+</From>
+<To>
+<StopPointRef>5530000005</StopPointRef>
+</To>
+<Distance>3000</Distance>
+<Direction>outbound</Direction>
+</RouteLink>
+</RouteSection>
+<!--  Route Section 3:  B - D - E      -->
+<RouteSection id="RS3">
+<!--  Stop B to Stop D -->
+<RouteLink id="RL5">
+<From>
+<StopPointRef>5530000002</StopPointRef>
+</From>
+<To>
+<StopPointRef>5530000004</StopPointRef>
+</To>
+<Distance>5000</Distance>
+<Direction>outbound</Direction>
+</RouteLink>
+<!--  Stop D to Stop E -->
+<RouteLink id="RL6">
+<From>
+<StopPointRef>5530000004</StopPointRef>
+</From>
+<To>
+<StopPointRef>5530000005</StopPointRef>
+</To>
+<Distance>6000</Distance>
+<Direction>outbound</Direction>
+</RouteLink>
+</RouteSection>
+<!--  Route Section 4:  E - F      -->
+<RouteSection id="RS4">
+<!--  Stop E to Stop F -->
+<RouteLink id="RL4">
+<From>
+<StopPointRef>5530000005</StopPointRef>
+</From>
+<To>
+<StopPointRef>5530000006</StopPointRef>
+</To>
+<Distance>400</Distance>
+<Direction>outbound</Direction>
+</RouteLink>
+</RouteSection>
+</RouteSections>
+<!--
+ =============ROUTES======================================
+-->
+<Routes>
+<!--  Route 1:  A-B-C- E - F      -->
+<Route id="R1">
+<Description xml:lang="en">Ash to Framham, Via Crumley </Description>
+<RouteSectionRef>RS1</RouteSectionRef>
+<RouteSectionRef>RS2</RouteSectionRef>
+<RouteSectionRef>RS4</RouteSectionRef>
+</Route>
+<!--  Route 2:  A-B-D- E - F      -->
+<Route id="R2">
+<Description xml:lang="en">Ash to Framham, Via Dotheboys </Description>
+<RouteSectionRef>RS1</RouteSectionRef>
+<RouteSectionRef>RS3</RouteSectionRef>
+<RouteSectionRef>RS4</RouteSectionRef>
+</Route>
+</Routes>
+<!--
+ =============JOURNEY PATTERN SECTIONS========================
+-->
+<JourneyPatternSections>
+<!--  Journey Pattern Section 1:  A - B      -->
+<JourneyPatternSection id="JPS1">
+<!--  Stop A to Stop B  -->
+<JourneyPatternTimingLink id="JPTL1">
+<From SequenceNumber="1">
+<Activity>pickUp</Activity>
+<StopPointRef>5530000001</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</From>
+<To SequenceNumber="2">
+<StopPointRef>5530000002</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</To>
+<RouteLinkRef>RL1</RouteLinkRef>
+<RunTime>PT10M</RunTime>
+</JourneyPatternTimingLink>
+</JourneyPatternSection>
+<!--  Journey Pattern Section 2:  B -C-E      -->
+<JourneyPatternSection id="JPS2">
+<!--  Stop B to Stop C -->
+<JourneyPatternTimingLink id="JPTL2">
+<From SequenceNumber="2">
+<StopPointRef>5530000002</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</From>
+<To SequenceNumber="3">
+<StopPointRef>5530000003</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</To>
+<RouteLinkRef>RL2</RouteLinkRef>
+<RunTime>PT2M</RunTime>
+</JourneyPatternTimingLink>
+<!--  Stop C to Stop E  -->
+<JourneyPatternTimingLink id="JPTL3">
+<From SequenceNumber="3">
+<DynamicDestinationDisplay xml:lang="en">Framham </DynamicDestinationDisplay>
+<Vias>
+<Via>Edge</Via>
+</Vias>
+<StopPointRef>5530000003</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</From>
+<To SequenceNumber="5">
+<StopPointRef>5530000005</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</To>
+<RouteLinkRef>RL3</RouteLinkRef>
+<RunTime>PT3M</RunTime>
+</JourneyPatternTimingLink>
+</JourneyPatternSection>
+<!--  Journey Pattern Section 3:  B - D -E      -->
+<JourneyPatternSection id="JPS3">
+<!--  Stop B to Stop D -->
+<JourneyPatternTimingLink id="JPTL5">
+<From SequenceNumber="2">
+<StopPointRef>5530000002</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</From>
+<To SequenceNumber="4">
+<StopPointRef>5530000004</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</To>
+<RouteLinkRef>RL5</RouteLinkRef>
+<RunTime>PT5M</RunTime>
+</JourneyPatternTimingLink>
+<!--  Stop D to Stop E  -->
+<JourneyPatternTimingLink id="JPTL6">
+<From SequenceNumber="4">
+<DynamicDestinationDisplay xml:lang="en">Framham </DynamicDestinationDisplay>
+<Vias>
+<Via>Edge</Via>
+</Vias>
+<StopPointRef>5530000004</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</From>
+<To SequenceNumber="5">
+<StopPointRef>5530000005</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</To>
+<RouteLinkRef>RL6</RouteLinkRef>
+<RunTime>PT6M</RunTime>
+</JourneyPatternTimingLink>
+</JourneyPatternSection>
+<!--  Journey Pattern Section 4:  E - F      -->
+<JourneyPatternSection id="JPS4">
+<!--  Stop E to Stop F -->
+<JourneyPatternTimingLink id="JPTL4">
+<From SequenceNumber="5">
+<!--  1 minute wait at E  -->
+<WaitTime>PT1M</WaitTime>
+<DynamicDestinationDisplay xml:lang="en">Framham</DynamicDestinationDisplay>
+<Vias>
+<None/>
+</Vias>
+<StopPointRef>5530000005</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</From>
+<To SequenceNumber="6">
+<Activity>setDown</Activity>
+<StopPointRef>5530000006</StopPointRef>
+<TimingStatus>PTP</TimingStatus>
+</To>
+<RouteLinkRef>RL4</RouteLinkRef>
+<RunTime>PT4M</RunTime>
+</JourneyPatternTimingLink>
+</JourneyPatternSection>
+</JourneyPatternSections>
+<!--  =============OPERATORS  ========================   -->
+<Operators>
+<LicensedOperator id="O1">
+<OperatorShortName>Dai Larid</OperatorShortName>
+<OperatorNameOnLicence>Dai Larid Buses</OperatorNameOnLicence>
+<LicenceNumber>AB1234568</LicenceNumber>
+<LicenceClassification>standardNational</LicenceClassification>
+<EnquiryTelephoneNumber>
+<TelNationalNumber>0456123456</TelNationalNumber>
+</EnquiryTelephoneNumber>
+<ContactTelephoneNumber>
+<TelNationalNumber>0456123457</TelNationalNumber>
+</ContactTelephoneNumber>
+<OperatorAddresses>
+<CorrespondenceAddress>
+<apd:Line>Llarreggub</apd:Line>
+<apd:Line>Merthr Tydfil</apd:Line>
+<apd:PostCode>MT1V 3PH</apd:PostCode>
+</CorrespondenceAddress>
+</OperatorAddresses>
+<EmailAddress>info@dailarid.co.uk</EmailAddress>
+</LicensedOperator>
+</Operators>
+<!--  =============SERVICES========================   -->
+<Services>
+<Service>
+<ServiceCode>SV1</ServiceCode>
+<Lines>
+<Line id="LN1">
+<LineName xml:lang="en">1C</LineName>
+</Line>
+<Line id="LN2">
+<LineName xml:lang="en">1D</LineName>
+</Line>
+</Lines>
+<OperatingPeriod>
+<StartDate>2004-03-01</StartDate>
+<EndDate>2024-09-13</EndDate>
+</OperatingPeriod>
+<OperatingProfile>
+<RegularDayType>
+<DaysOfWeek>
+<MondayToSunday/>
+</DaysOfWeek>
+</RegularDayType>
+</OperatingProfile>
+<ServiceClassification>
+<NormalStopping/>
+<HailAndRide/>
+<Flexible/>
+<ExcursionOrTour>
+<MaxDepartures>22</MaxDepartures>
+</ExcursionOrTour>
+<SchoolOrWorks/>
+<RuralService/>
+<OtherService>
+<Description>Custom Classification</Description>
+</OtherService>
+</ServiceClassification>
+<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+<StopRequirements>
+<NewStops>
+<StopPointRef>5530000006</StopPointRef>
+<Note>Framham stop</Note>
+<StopPointRef>5530000005</StopPointRef>
+<StopPointRef>5530000004</StopPointRef>
+</NewStops>
+</StopRequirements>
+<Description>
+Ash to Framham outbound services. Summer timetable. Services go daily via either Crumley or Dotheboys.
+</Description>
+<SchematicMap>eye.gif</SchematicMap>
+<StandardService>
+<Origin xml:lang="en">Ash</Origin>
+<Destination xml:lang="en">Framham</Destination>
+<UseAllStopPoints>false</UseAllStopPoints>
+<JourneyPattern id="JP1">
+<Direction>outbound</Direction>
+<Operational>
+<Block>
+<Description xml:lang="en">To be run by red team </Description>
+<BlockNumber>275</BlockNumber>
+</Block>
+</Operational>
+<Description xml:lang="en">Ash - Barchester - Crumly - Edge - Framham </Description>
+<RouteRef>R1</RouteRef>
+<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+<JourneyPatternSectionRefs>JPS2</JourneyPatternSectionRefs>
+<JourneyPatternSectionRefs>JPS4</JourneyPatternSectionRefs>
+</JourneyPattern>
+<JourneyPattern id="JP2">
+<Direction>outbound</Direction>
+<Description xml:lang="en">Ash - Barchester - Dotheboys - Edge - Framham </Description>
+<RouteRef>R2</RouteRef>
+<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+<JourneyPatternSectionRefs>JPS3</JourneyPatternSectionRefs>
+<JourneyPatternSectionRefs>JPS4</JourneyPatternSectionRefs>
+</JourneyPattern>
+</StandardService>
+</Service>
+</Services>
+<!--
+ =============VEHICLE JOURNEYS========================
+-->
+<VehicleJourneys>
+<!--
+ Journey 1: 10:00 Ash - Barchester - Crumly - Edge - Framham F
+-->
+<VehicleJourney>
+<VehicleJourneyCode>VJ1</VehicleJourneyCode>
+<ServiceRef>SV1</ServiceRef>
+<LineRef>LN1</LineRef>
+<JourneyPatternRef>JP1</JourneyPatternRef>
+<DepartureTime>10:00:00</DepartureTime>
+<VehicleJourneyTimingLink id="VJTL01">
+<JourneyPatternTimingLinkRef>JPTL1</JourneyPatternTimingLinkRef>
+<From>
+<DynamicDestinationDisplay xml:lang="en">Framham, Via Crumly</DynamicDestinationDisplay>
+<Vias>
+<Via>Crumley</Via>
+<Via>Edge</Via>
+</Vias>
+</From>
+</VehicleJourneyTimingLink>
+</VehicleJourney>
+<!--
+ Journey 2: 11:00 Ash - Barchester - Dotheboy's - Edge - Framham F
+-->
+<VehicleJourney>
+<VehicleJourneyCode>VJ2</VehicleJourneyCode>
+<ServiceRef>SV1</ServiceRef>
+<LineRef>LN2</LineRef>
+<JourneyPatternRef>JP2</JourneyPatternRef>
+<DepartureTime>11:00:00</DepartureTime>
+<VehicleJourneyTimingLink id="VJTL11">
+<JourneyPatternTimingLinkRef>JPTL1</JourneyPatternTimingLinkRef>
+<From>
+<DynamicDestinationDisplay xml:lang="en">Framham, Via Dotheboy's</DynamicDestinationDisplay>
+<Vias>
+<Via>Dotheboy's</Via>
+<Via>Edge</Via>
+</Vias>
+</From>
+</VehicleJourneyTimingLink>
+<!--  E to F JLast link is slower  -->
+<VehicleJourneyTimingLink id="VJTL14">
+<JourneyPatternTimingLinkRef>JPTL4</JourneyPatternTimingLinkRef>
+<RunTime>PT6M</RunTime>
+</VehicleJourneyTimingLink>
+</VehicleJourney>
+</VehicleJourneys>
+<!--  =============REGISTRATIONS========================   -->
+<Registrations>
+<Registration>
+<ServiceRef>SV1</ServiceRef>
+<SubmissionDate>2004-03-04</SubmissionDate>
+<VosaRegistrationNumber>
+<TanCode>PB</TanCode>
+<LicenceNumber>1234567</LicenceNumber>
+<RegistrationNumber>002</RegistrationNumber>
+</VosaRegistrationNumber>
+<ApplicationClassification>new</ApplicationClassification>
+<VariationNumber>1</VariationNumber>
+<SubmissionAuthor>
+<Position>Operations Director</Position>
+<Title>Mr</Title>
+<Forename>Adam</Forename>
+<Surname>Smith</Surname>
+</SubmissionAuthor>
+<TrafficAreas>
+<TrafficArea>
+<TrafficAreaName>Western</TrafficAreaName>
+</TrafficArea>
+</TrafficAreas>
+<CirculatedAuthorities>
+<CirculatedAuthority>
+<AuthorityName>Norfolk</AuthorityName>
+</CirculatedAuthority>
+</CirculatedAuthorities>
+<SubsidyDetails>
+<NoSubsidy/>
+</SubsidyDetails>
+</Registration>
+</Registrations>
+<SupportingDocuments>
+<SupportingDocument>
+<DocumentUri>index.html</DocumentUri>
+</SupportingDocument>
+<SupportingDocument>
+<DocumentUri>eye.png</DocumentUri>
+</SupportingDocument>
+</SupportingDocuments>
+</TransXChange>

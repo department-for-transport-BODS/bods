@@ -1,0 +1,20 @@
+@import "../../variables";
+
+.invite-error {
+  color: $govuk-error-colour;
+}
+
+.invite-error::after {
+  // Red ticks look weird so make them black
+  border-color: govuk-colour("black");
+}
+
+th.govuk-checkboxes--small .govuk-checkboxes__item {
+  // I dont understand why this is necessary
+  // but if its not included the title checkbox hangs too low
+  top: -10px;
+}
+
+.organisation_name_cell {
+  width: 25%;
+}

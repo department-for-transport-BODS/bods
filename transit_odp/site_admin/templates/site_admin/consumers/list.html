@@ -1,0 +1,39 @@
+{% extends "site_admin/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+{% block title_tag %}
+  {% trans 'Data consumers' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Data consumers' %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <h1 class="govuk-heading-xl">Data consumers</h1>
+    </div>
+    <div class="govuk-grid-row">
+      <h2 class="govuk-heading-m">View and manage data consumers</h2>
+      <div class="govuk-grid-column-one-quarter">
+        <h2 class="govuk-heading-m">Filter by</h2>
+        {% if filter %}
+          <form method="get">
+            {{ filter.form | crispy }}
+            <input class="govuk-button" type="submit" value="Apply filter">
+          </form>
+        {% endif %}
+      </div>
+      <div class="govuk-grid-column-three-quarters">
+        {% render_table table %}
+      </div>
+    </div>
+</div>
+{% endblock %}

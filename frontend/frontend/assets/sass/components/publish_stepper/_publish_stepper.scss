@@ -1,0 +1,34 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/all";
+
+.publish-stepper {
+  @include govuk-font($size: 19);
+  @include govuk-text-colour;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid $govuk-border-colour;
+
+  .publish-stepper__item {
+    display: inline-flex;
+    margin-right: govuk-spacing(3);
+    padding-bottom: govuk-spacing(2);
+  }
+
+  .publish-stepper__item--previous {
+    color: $govuk-link-colour;
+  }
+
+  .publish-stepper__item--next {
+    color: $govuk-secondary-text-colour;
+  }
+
+  .publish-stepper__item--selected {
+    $bottom-margin-size: govuk-spacing(1);
+    color: $govuk-link-active-colour;
+    font-weight: bold;
+    font-size: 1.25rem;
+    border-bottom: $bottom-margin-size solid black;
+    padding-bottom: govuk-spacing(2) - $bottom-margin-size;
+  }
+}

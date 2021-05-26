@@ -1,0 +1,4 @@
+You have deleted an unpublished data set {{ feed_name }} (Data set ID: {{ feed_id }}) in the Bus Open Data Service. So long as you have provided up-to-date and accurate data for all of the bus routes you run, no further action is required from you at this point.
+
+Kind regards,
+Bus Open Data Service

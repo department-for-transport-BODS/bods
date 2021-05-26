@@ -1,0 +1,8 @@
+The following dataset has been updated on the Bus Open Data Service.
+
+Dataset: {{ feed_name }}
+Operator: {{ operator_name }}
+Updated: {{ updated_time }}
+
+Kind Regards,
+The Bus Open Data Team

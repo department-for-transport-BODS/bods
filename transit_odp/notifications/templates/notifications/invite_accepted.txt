@@ -1,0 +1,4 @@
+Your team member {{ name }} at {{ organisation }} has accepted your invitation to join the Bus Open Data Service. You are receiving this email because you asked us to notify when team members accept your invitation. No further action is required from you at this point.
+
+Kind regards,
+Bus Open Data Service

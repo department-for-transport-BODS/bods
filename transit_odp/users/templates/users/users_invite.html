@@ -1,0 +1,35 @@
+{% extends "users/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+  {% trans 'Invite new user' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block backlink %}
+  {% url 'users:manage' pk=user.organisation.id host host.name as backlink_url %}
+  {% include 'snippets/backlink.html' with url=backlink_url%}
+{% endblock %}
+
+{% block title_text %}{% trans 'Invite new user' %}{% endblock %}
+
+{% block subtitle_text %}
+  <p class="govuk-body-m">
+  {% blocktrans %}
+    Send an email invite to a new user so they can publish and update data sets
+  {% endblocktrans %}
+  </p>
+{% endblock %}
+
+{% block inner %}
+  {% crispy form %}
+{% endblock %}
+
+{% block inner_secondary %}
+{% endblock %}

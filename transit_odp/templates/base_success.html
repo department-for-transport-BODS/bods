@@ -1,0 +1,35 @@
+{% extends "page.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load breadcrumbs %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% block title_section %}
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
+            {% block title_text %}
+            {% endblock %}
+        </h1>
+      {% endblock %}
+
+      {# If the design doesn't have body text, include an empty body_section in the inheriting template. This ensures correct spacing #}
+      {% block body_section %}
+        <p class="govuk-body-m govuk-!-margin-top-7">
+          {% block body_text %}
+          {% endblock %}
+        </p>
+      {% endblock %}
+
+      {% block done_button %}
+        <a role="button" class="govuk-button" href="{% block button_href %}{% endblock %}">
+          {% block button_text %}{% endblock %}
+        </a>
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

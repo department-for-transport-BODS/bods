@@ -1,0 +1,28 @@
+{% load crispy_forms_field %}
+{% load l10n %}
+
+{# This is the input template which is rendered within the field.html template  #}
+
+<div class="govuk-checkboxes{% if small_boxes %} govuk-checkboxes--small{% endif %}">
+  <div class="govuk-checkboxes__item">
+    {# render checkbox input with built-in widget #}
+    {# Note - see CRISPY_CLASS_CONVERTERS in config/settings/base.py #}
+    {# see https://docs.djangoproject.com/en/dev/ref/forms/widgets/#checkboxinput #}
+    {% include "govuk/widget.html" %}
+
+    {% if field.label %}
+      {% if hyperlink_label %}
+          {# using label tag causes checkbox to be checked when clicking the link #}
+          <span class="govuk-label govuk-checkboxes__label govuk-!-padding-top-0" for="{{ field.id_for_label }}">
+            {{ field.label|safe }}
+          </span>
+      {% else %}
+        <label for="{{ field.id_for_label }}" class="govuk-label govuk-checkboxes__label">
+          {{ field.label|safe }}
+        </label>
+      {% endif %}
+    {% endif %}
+
+    {% include 'govuk/snippets/field_hint.html' with extra_hint_classes='govuk-checkboxes__hint' %}
+  </div>
+</div>

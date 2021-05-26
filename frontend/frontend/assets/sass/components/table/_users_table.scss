@@ -1,0 +1,44 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/all";
+@import "govuk-frontend/govuk/components/table/table";
+
+.manage-users-table {
+  @include govuk-font($size: 19);
+  margin-bottom: govuk-spacing(9);
+
+  .manage-users-table__caption {
+    @include govuk-font($size: 24, $weight: bold);
+  }
+
+  .manage-users-table__key {
+    font-weight: bold;
+  }
+
+  .manage-users-table__value {
+    display: table-cell;
+  }
+  .left {
+    text-align: start;
+  }
+  .right {
+    text-align: end;
+  }
+
+  .manage-users-table__change {
+    @extend .govuk-link;
+    text-decoration-line: none;
+  }
+}
+
+.organisation-table__actions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+
+  > li {
+    margin: 0;
+    padding: 0;
+  }
+}

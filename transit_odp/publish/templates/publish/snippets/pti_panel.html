@@ -1,0 +1,57 @@
+{% load i18n %}
+
+<section>
+  <div class="app-dqs-panel">
+    <div class="app-dqs-panel__body">
+      <div class="app-dqs-panel__success">
+        {% if has_pti_observations or object.error_code == "SCHEMA_ERROR" %}
+          <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
+          <p class="govuk-body">
+            {% blocktrans %}
+              The validation report checks for compliance against the mandated
+              TxC 2.4 v1.1 profile.
+            {% endblocktrans %}
+          </p>
+          <p class="govuk-body">
+            <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
+          </p>
+
+          {% if object.error_code == "SCHEMA_ERROR" %}
+           <p class="govuk-body">
+            {% blocktrans %}
+              The timetables data supplied is non-compliant and cannot be submitted to
+              BODS as per the
+            {% endblocktrans %}
+            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
+               class="govuk-link">
+              {% trans "guidance." %}
+            </a>
+            {% blocktrans %}
+              To pass the validation please address all outstanding issues in the
+              validation report.
+            {% endblocktrans %}
+          </p>
+          {% else %}
+          <p class="govuk-body">
+            {% blocktrans %}
+              The timetables data supplied is non-compliant. It does not meet
+              the data format required as specified in the
+            {% endblocktrans %}
+            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
+               class="govuk-link">
+              {% trans "guidance" %}
+            </a>
+            {% blocktrans %}
+              and from 2nd August 2021 it will be rejected from BODS. To pass the
+              validation please address all outstanding issues in the
+              validation report.
+            {% endblocktrans %}
+          </p>
+          {% endif %}
+        {% else %}
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">3a Validation check - Passed</h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

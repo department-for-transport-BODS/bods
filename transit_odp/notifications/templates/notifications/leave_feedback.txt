@@ -1,0 +1,8 @@
+A user has left some feedback on data you have published in the Bus Open Data Service.
+
+Dataset: {{ dataset_name }}
+User: {{ user_email }}
+Feedback: {{ feedback }}
+
+Kind regards,
+Bus Open Data Service

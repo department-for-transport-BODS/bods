@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<div class="govuk-phase-banner">
+  <p class="govuk-phase-banner__content"><strong class="govuk-tag govuk-phase-banner__content__tag ">
+    {% trans "beta" %}
+    {#        {% version %}#}
+  </strong>
+    <span class="govuk-phase-banner__text">
+          {% url 'contact' host hosts.root as support %}
+      {% blocktrans %}
+        This is a new service – your
+        <a class="govuk-link" href="{{ support }}">feedback</a> will help us to improve it.
+      {% endblocktrans %}
+        </span>
+  </p>
+</div>

@@ -1,0 +1,14 @@
+{% extends "error_base.html" %}
+
+{% load i18n %}
+
+{% block title_tag %}{% trans 'Forbidden (403)' %}{% endblock %}
+
+{% block content_heading %}{% trans 'Forbidden (403)' %}{% endblock %}
+
+{% block content_body %}
+  <p class="govuk-body">
+    {% trans 'Forbidden request. If the problem persists feel free to ' %}
+      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">contact Bus open data support line</a>.
+  </p>
+{% endblock %}

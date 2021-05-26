@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.transxchange.org.uk/
+../../TransXChange_general.xsd" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en" CreationDateTime="2004-06-07T14:20:00-05:00" ModificationDateTime="2007-01-21T14:20:00-05:00" Modification="revise" RevisionNumber="3" FileName="circular.xml" SchemaVersion="2.4" LocationSystem="WGS84" RegistrationDocument="false" DataSource="TxcHandcodedExamples">
+	<ServiceCalendars>
+		<ServiceCalendar>
+			<CalendarPeriod>
+				<StartDate>2010-01-01</StartDate>
+				<EndDate>2011-01-31</EndDate>
+			</CalendarPeriod>
+			<OperatingDays>
+				<!--======= Operating Days ==========-->
+				<OperatingDay>
+					<Date>2010-12-24</Date>
+					<StartTime>00:00:00</StartTime>
+					<Duration>PT20H</Duration>
+					<ServiceDayAssignment>
+						<Description>Monday To Friday  Service</Description>
+						<Holiday>
+							<HolidayName>
+								<ChristmasEve/>
+							</HolidayName>
+						</Holiday>
+						<DayTypeRef>day_01</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-25</Date>
+					<ServiceDayAssignment>
+						<Description>No Service</Description>
+						<Holiday>
+							<HolidayName>
+								<ChristmasDay/>
+							</HolidayName>
+						</Holiday>
+						<NoService/>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-26</Date>
+					<ServiceDayAssignment>
+						<Description>Bank Holiday Service</Description>
+						<Holiday>
+							<HolidayName>
+								<BoxingDay/>
+							</HolidayName>
+						</Holiday>
+						<DayTypeRef>day_04</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-27</Date>
+					<ServiceDayAssignment>
+						<Description> SundayService</Description>
+						<DayTypeRef>day_03</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-28</Date>
+					<ServiceDayAssignment>
+						<Description> Special Service</Description>
+						<VehicleJourneyRefs>
+							<VehicleJourneyRef>VJ1</VehicleJourneyRef>
+							<VehicleJourneyRef>VJ3</VehicleJourneyRef>
+						</VehicleJourneyRefs>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-29</Date>
+					<ServiceDayAssignment>
+						<Description> Saturday Service</Description>
+						<DayTypeRef>day_02</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-30</Date>
+					<ServiceDayAssignment>
+						<Description> Saturday Service</Description>
+						<DayTypeRef>day_02</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2010-12-31</Date>
+					<StartTime>00:00:00</StartTime>
+					<Duration>PT12H</Duration>
+					<ServiceDayAssignment>
+						<Description> Saturday Service, finish before noon</Description>
+						<Holiday>
+							<HolidayName>
+								<NewYearsEve/>
+							</HolidayName>
+						</Holiday>
+						<DayTypeRef>day_02</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+				<OperatingDay>
+					<Date>2011-01-01</Date>
+					<StartTime>10:00:00</StartTime>
+					<Duration>PT23H</Duration>
+					<ServiceDayAssignment>
+						<Description> Saturday Service, start after 10:00</Description>
+						<Holiday>
+							<HolidayName>
+								<NewYearsDay/>
+							</HolidayName>
+						</Holiday>
+						<DayTypeRef>day_02</DayTypeRef>
+					</ServiceDayAssignment>
+				</OperatingDay>
+			</OperatingDays>
+			<!--======= Day Types ==========-->
+			<DayTypes>
+				<DayType id="day_01">
+					<Name>Monday to Friday Service</Name>
+					<RegularDayType>
+						<DaysOfWeek>
+							<MondayToFriday/>
+						</DaysOfWeek>
+					</RegularDayType>
+				</DayType>
+				<DayType id="day_02">
+					<Name>Saturday Service</Name>
+					<RegularDayType>
+						<DaysOfWeek>
+							<Saturday/>
+						</DaysOfWeek>
+					</RegularDayType>
+				</DayType>
+				<DayType id="day_03">
+					<Name>Sunday Service</Name>
+					<RegularDayType>
+						<DaysOfWeek>
+							<Sunday/>
+						</DaysOfWeek>
+					</RegularDayType>
+				</DayType>
+				<DayType id="day_04">
+					<Name>Bank Holiday Service</Name>
+					<RegularDayType>
+						<HolidaysOnly/>
+					</RegularDayType>
+					<BankHolidayOperation>
+						<DaysOfOperation>
+							<AllBankHolidays/>
+						</DaysOfOperation>
+					</BankHolidayOperation>
+				</DayType>
+			</DayTypes>
+		</ServiceCalendar>
+	</ServiceCalendars>
+	<StopPoints>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000001</StopPointRef>
+			<CommonName>Bus Station</CommonName>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000002</StopPointRef>
+			<CommonName>High St</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000003</StopPointRef>
+			<CommonName>Market St</CommonName>
+			<Indicator>before</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000004</StopPointRef>
+			<CommonName>School</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000005</StopPointRef>
+			<CommonName>Hospital</CommonName>
+			<Indicator>opposite</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000006</StopPointRef>
+			<CommonName>Library</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000026</StopPointRef>
+			<CommonName>Library</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000027</StopPointRef>
+			<CommonName>Library</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000028</StopPointRef>
+			<CommonName>Library</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+	</StopPoints>
+	<RouteSections>
+		<RouteSection id="RS1">
+			<!-- Bus Station to High St -->
+			<RouteLink id="RL1">
+				<From>
+					<StopPointRef>9990000001</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000002</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+			<!-- High St to Market St -->
+			<RouteLink id="RL2">
+				<From>
+					<StopPointRef>9990000002</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000003</StopPointRef>
+				</To>
+				<Distance>500</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+			<!-- Market St to School -->
+			<RouteLink id="RL3">
+				<From>
+					<StopPointRef>9990000003</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000004</StopPointRef>
+				</To>
+				<Distance>2000</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+			<!-- School to Hospital -->
+			<RouteLink id="RL4">
+				<From>
+					<StopPointRef>9990000004</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000005</StopPointRef>
+				</To>
+				<Distance>1500</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+			<!-- Hospital to Library -->
+			<RouteLink id="RL5">
+				<From>
+					<StopPointRef>9990000005</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000006</StopPointRef>
+				</To>
+				<Distance>1500</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+			<!-- Library to Bus Station -->
+			<RouteLink id="RL6">
+				<From>
+					<StopPointRef>9990000006</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000001</StopPointRef>
+				</To>
+				<Distance>1500</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+		</RouteSection>
+	</RouteSections>
+	<Routes>
+		<Route id="R1">
+			<Description xml:lang="en">Bus Station - High Street - Hospital - Bus Station</Description>
+			<RouteSectionRef>RS1</RouteSectionRef>
+		</Route>
+	</Routes>
+	<JourneyPatternSections>
+		<!--  ==JP Section  ==================================================== -->
+		<JourneyPatternSection id="JPS1">
+			<!-- Bus Station to High St -->
+			<JourneyPatternTimingLink id="JPTL1">
+				<DutyCrewCode>CRW1</DutyCrewCode>
+				<From>
+					<DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
+					<StopPointRef>9990000001</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+					<FareStageNumber>001</FareStageNumber>
+					<FareStage>true</FareStage>
+				</From>
+				<To>
+					<StopPointRef>9990000002</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL1</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT3M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- High St to Market St -->
+			<JourneyPatternTimingLink id="JPTL2">
+				<From>
+					<StopPointRef>9990000002</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>9990000003</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL2</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT4M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Market St to School -->
+			<JourneyPatternTimingLink id="JPTL3">
+				<From>
+					<StopPointRef>9990000003</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+					<FareStageNumber>002</FareStageNumber>
+					<FareStage>true</FareStage>
+				</From>
+				<To>
+					<StopPointRef>9990000004</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL3</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT13M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- School to Hospital -->
+			<JourneyPatternTimingLink id="JPTL4">
+				<From>
+					<StopPointRef>9990000004</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<DynamicDestinationDisplay>Bus Station</DynamicDestinationDisplay>
+					<StopPointRef>9990000005</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL4</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT9M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Hospital to Library -->
+			<JourneyPatternTimingLink id="JPTL5">
+				<From>
+					<StopPointRef>9990000005</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+					<FareStageNumber>003</FareStageNumber>
+					<FareStage>true</FareStage>
+				</From>
+				<To>
+					<StopPointRef>9990000006</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL5</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT19M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Library to Bus Station -->
+			<JourneyPatternTimingLink id="JPTL6">
+				<From>
+					<StopPointRef>9990000006</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>9990000001</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL6</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT12M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+		<JourneyPatternSection id="JPS2">
+			<!-- Bus Station to High St -->
+			<JourneyPatternTimingLink id="JPTL11">
+				<DutyCrewCode>CRW1</DutyCrewCode>
+				<From>
+					<DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
+					<StopPointRef>9990000026</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+					<FareStageNumber>001</FareStageNumber>
+					<FareStage>true</FareStage>
+				</From>
+				<To>
+					<StopPointRef>9990000027</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL1</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT3M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- High St to Market St -->
+			<JourneyPatternTimingLink id="JPTL12">
+				<From>
+					<StopPointRef>9990000027</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>9990000028</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL2</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT4M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+	</JourneyPatternSections>
+	<Operators>
+		<Operator id="O1">
+			<NationalOperatorCode>Amphi</NationalOperatorCode>
+			<OperatorShortName>Amphisbaena</OperatorShortName>
+			<OperatorNameOnLicence>Amphisbaena Buses</OperatorNameOnLicence>
+			<Garages>
+				<Garage>
+					<GarageCode>GW1</GarageCode>
+					<GarageName xml:lang="en-us">Bus Station Garage</GarageName>
+					<Location>
+						<Longitude>0.000</Longitude>
+						<Latitude>52.000</Latitude>
+					</Location>
+				</Garage>
+			</Garages>
+		</Operator>
+	</Operators>
+	<Services>
+		<!--  ==Service SV1 ============================================= -->
+		<Service>
+			<ServiceCode>S1</ServiceCode>
+			<Lines>
+				<Line id="L1">
+					<LineName>1</LineName>
+				</Line>
+				<Line id="L1N">
+					<LineName>1 Night</LineName>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2004-01-01</StartDate>
+				<EndDate>2004-06-13</EndDate>
+			</OperatingPeriod>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<MondayToSunday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<ServiceClassification>
+				<NormalStopping/>
+			</ServiceClassification>
+			<TicketMachineServiceCode>TiKCSV1</TicketMachineServiceCode>
+			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+			<StopRequirements>
+				<NoNewStopsRequired/>
+			</StopRequirements>
+			<Description>Tweeham Hospital Circular route. Runs every day round Tweeham city centre.</Description>
+			<SchematicMap>circular.gif</SchematicMap>
+			<StandardService>
+				<Origin>Bus Station</Origin>
+				<Destination>Bus Station</Destination>
+				<Vias>
+					<Via>High Street </Via>
+					<Via>St Trinian's School </Via>
+					<Via>Bethlehem Hospital</Via>
+					<Via>Central Library</Via>
+				</Vias>
+				<UseAllStopPoints>false</UseAllStopPoints>
+				<!--  ==JP 1 ================================================================================= -->
+				<JourneyPattern id="JP1">
+					<Direction>clockwise</Direction>
+					<Operational>
+						<Block>
+							<Description>Short workign fro first trip of day. Change over at station</Description>
+							<BlockNumber>12</BlockNumber>
+							<Note>Use different board if short running.</Note>
+						</Block>
+						<VehicleType>
+							<VehicleTypeCode>BendyBus</VehicleTypeCode>
+							<Description>Big, red and exploding</Description>
+							<VehicleEquipment>
+								<PassengerInfoEquipment>
+									<PassengerInfo>nextStopIndicator </PassengerInfo>
+									<PassengerInfo>stopAnnouncements</PassengerInfo>
+									<AccessibilityInfo>visualDisplays</AccessibilityInfo>
+									<AccessibilityInfo>audioInformation</AccessibilityInfo>
+								</PassengerInfoEquipment>
+								<AccessVehicleEquipment>
+									<LowFloor>true</LowFloor>
+									<NumberOfSteps>1</NumberOfSteps>
+									<BoardingHeight>0.50</BoardingHeight>
+									<AutomaticDoors>true</AutomaticDoors>
+								</AccessVehicleEquipment>
+								<WheelchairVehicleEquipment>
+									<NumberOfWheelChairAreas>3</NumberOfWheelChairAreas>
+									<WidthOfAccessArea>1.0</WidthOfAccessArea>
+									<HeightOfAccessArea>2.0</HeightOfAccessArea>
+									<WheelchairTurningCircle>2.0</WheelchairTurningCircle>
+								</WheelchairVehicleEquipment>
+							</VehicleEquipment>
+						</VehicleType>
+						<TicketMachine>
+							<JourneyCode>Tickjrn21</JourneyCode>
+							<Direction>inbound</Direction>
+						</TicketMachine>
+					</Operational>
+					<RouteRef>R1</RouteRef>
+					<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+				</JourneyPattern>
+				<JourneyPattern id="JP2">
+					<Direction>clockwise</Direction>
+					<Operational>
+						<Block>
+							<Description>Short working from first trip of day. Change over at station</Description>
+							<BlockNumber>12</BlockNumber>
+							<Note>Use different board if short running.</Note>
+						</Block>
+						<VehicleType>
+							<VehicleTypeCode>BendyBus</VehicleTypeCode>
+							<Description>Big, red and exploding</Description>
+							<VehicleEquipment>
+								<PassengerInfoEquipment>
+									<PassengerInfo>nextStopIndicator </PassengerInfo>
+									<PassengerInfo>stopAnnouncements</PassengerInfo>
+									<AccessibilityInfo>visualDisplays</AccessibilityInfo>
+									<AccessibilityInfo>audioInformation</AccessibilityInfo>
+								</PassengerInfoEquipment>
+								<AccessVehicleEquipment>
+									<LowFloor>true</LowFloor>
+									<NumberOfSteps>1</NumberOfSteps>
+									<BoardingHeight>0.50</BoardingHeight>
+									<AutomaticDoors>true</AutomaticDoors>
+								</AccessVehicleEquipment>
+								<WheelchairVehicleEquipment>
+									<NumberOfWheelChairAreas>3</NumberOfWheelChairAreas>
+									<WidthOfAccessArea>1.0</WidthOfAccessArea>
+									<HeightOfAccessArea>2.0</HeightOfAccessArea>
+									<WheelchairTurningCircle>2.0</WheelchairTurningCircle>
+								</WheelchairVehicleEquipment>
+							</VehicleEquipment>
+						</VehicleType>
+						<TicketMachine>
+							<JourneyCode>Tickjrn21</JourneyCode>
+							<Direction>inbound</Direction>
+						</TicketMachine>
+					</Operational>
+					<RouteRef>R1</RouteRef>
+					<JourneyPatternSectionRefs>JPS2</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+			<Direction>clockwise</Direction>
+		</Service>
+	</Services>
+	<VehicleJourneys>
+		<!--  ===   Start at Market St============ ======================= -->
+		<VehicleJourney>
+			<OperatingProfile>
+				<RegularDayType>
+					<!-- This is aactaull part of the Monday to friday service but journey starts before  mindight so runs 	   Sun  mornign but not Sat  morning -->
+					<DaysOfWeek>
+						<MondayToFriday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ_A</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+      <!-- L1N and JP2 -->
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP2</JourneyPatternRef>
+			<DepartureTime>23:55:00</DepartureTime>
+			<DepartureDayShift>-1</DepartureDayShift>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ 1 ===== MTWTFSS-->
+			<VehicleJourneyCode>VJ1</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1</LineRef>
+			<JourneyPatternRef>JP1</JourneyPatternRef>
+			<StartDeadRun>
+				<PositioningLink>
+					<RunTime>PT20M</RunTime>
+					<From>
+						<GarageRef>GW1</GarageRef>
+					</From>
+					<DutyCrewRef>234</DutyCrewRef>
+					<Track>
+						<Mapping>
+							<Location>
+								<Easting>442914</Easting>
+								<Northing>295186</Northing>
+							</Location>
+							<Location>
+								<Easting>442920</Easting>
+								<Northing>95165</Northing>
+							</Location>
+						</Mapping>
+					</Track>
+				</PositioningLink>
+				<ShortWorking>
+					<JourneyPatternTimingLinkRef>JPTL5</JourneyPatternTimingLinkRef>
+				</ShortWorking>
+			</StartDeadRun>
+			<DepartureTime>10:29:00</DepartureTime>
+			<VehicleJourneyTimingLink id="VJTL5">
+				<JourneyPatternTimingLinkRef>JPTL5</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pickUp</Activity>
+				</From>
+			</VehicleJourneyTimingLink>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ 2 =====  MTWTF -->
+			<Operational>
+				<Block>
+					<Description>X11</Description>
+					<BlockNumber>X11</BlockNumber>
+				</Block>
+				<VehicleType>
+					<VehicleTypeCode>MN</VehicleTypeCode>
+					<Description>Minibus</Description>
+				</VehicleType>
+				<OperationalVariants>
+					<OperationalVariant>
+						<DayTypeRef>day_01</DayTypeRef>
+						<Block>
+							<Description>X11</Description>
+							<BlockNumber>X11</BlockNumber>
+						</Block>
+						<VehicleType>
+							<VehicleTypeCode>MN</VehicleTypeCode>
+							<Description>Minibus</Description>
+						</VehicleType>
+						<TicketMachine>
+							<TicketMachineServiceCode>212</TicketMachineServiceCode>
+							<Direction>outbound</Direction>
+						</TicketMachine>
+					</OperationalVariant>
+					<OperationalVariant>
+						<OperationalProfile>
+							<RegularDayType>
+								<HolidaysOnly/>
+							</RegularDayType>
+						</OperationalProfile>
+						<Block>
+							<Description>X11</Description>
+							<BlockNumber>X11</BlockNumber>
+						</Block>
+						<VehicleType>
+							<VehicleTypeCode>MN</VehicleTypeCode>
+							<Description>Minibus</Description>
+						</VehicleType>
+						<TicketMachine>
+							<TicketMachineServiceCode>212</TicketMachineServiceCode>
+							<Direction>outbound</Direction>
+						</TicketMachine>
+					</OperationalVariant>
+				</OperationalVariants>
+			</Operational>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<MondayToFriday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ2</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1</LineRef>
+			<JourneyPatternRef>JP1</JourneyPatternRef>
+			<DepartureTime>11:00:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===V3===== MTWTF  -->
+			<VehicleJourneyCode>VJ3</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1</LineRef>
+			<VehicleJourneyRef>VJ2</VehicleJourneyRef>
+			<DepartureTime>12:00:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ 4 =====  MTW-FSS-->
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<NotThursday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ4</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1</LineRef>
+			<VehicleJourneyRef>VJ2</VehicleJourneyRef>
+			<DepartureTime>13:00:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ 5 =====  MTWTFSS-->
+			<Operational>
+				<Block>
+					<Description>Bus Station - High Street - Market - School - Hospital</Description>
+					<BlockNumber>14</BlockNumber>
+					<Note>Different board for short running.</Note>
+				</Block>
+			</Operational>
+			<VehicleJourneyCode>VJ5</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1</LineRef>
+			<JourneyPatternRef>JP1</JourneyPatternRef>
+			<EndDeadRun>
+				<PositioningLink>
+					<RunTime>PT15M</RunTime>
+					<To>
+						<GarageRef>GW1</GarageRef>
+					</To>
+				</PositioningLink>
+				<ShortWorking>
+					<JourneyPatternTimingLinkRef>JPTL4</JourneyPatternTimingLinkRef>
+				</ShortWorking>
+			</EndDeadRun>
+			<DepartureTime>14:00:00</DepartureTime>
+			<VehicleJourneyTimingLink id="VJTL1">
+				<DutyCrewCode>CRW1</DutyCrewCode>
+				<JourneyPatternTimingLinkRef>JPTL1</JourneyPatternTimingLinkRef>
+				<From>
+					<DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
+				</From>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL4">
+				<JourneyPatternTimingLinkRef>JPTL4</JourneyPatternTimingLinkRef>
+				<From>
+					<DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
+				</From>
+				<To>
+					<Activity>setDown</Activity>
+					<DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
+				</To>
+			</VehicleJourneyTimingLink>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ6  Weekday Night ===== MTWTF-->
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<MondayToFriday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ6</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP2</JourneyPatternRef>
+			<DepartureTime>22:30:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ7 weekday  night==  MTWTF-->
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<MondayToFriday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ7</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP2</JourneyPatternRef>
+			<DepartureTime>23:30:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJ8 SS  night== -->
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<Saturday/>
+						<Sunday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ8</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP2</JourneyPatternRef>
+			<DepartureTime>22:30:00</DepartureTime>
+		</VehicleJourney>
+		<!--  ===VJA ====SS=Night======================================================== -->
+		<VehicleJourney>
+			<!--  ===VJB  early morning MF == -->
+			<Operational>
+				<VehicleType>
+					<VehicleTypeCode>aaaaa</VehicleTypeCode>
+					<Description>Old</Description>
+					<VehicleEquipment>
+						<AccessVehicleEquipment>
+							<LowFloor>false</LowFloor>
+						</AccessVehicleEquipment>
+					</VehicleEquipment>
+				</VehicleType>
+			</Operational>
+			<OperatingProfile>
+				<RegularDayType>
+					<!-- This is aactaull part of the Monday to friday service but journey starts past mindight so runs 	   Sat mornign but not monday morning -->
+					<DaysOfWeek>
+						<MondayToFriday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ_B</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP2</JourneyPatternRef>
+			<DepartureTime>00:10:00</DepartureTime>
+			<DepartureDayShift>+1</DepartureDayShift>
+		</VehicleJourney>
+		<VehicleJourney>
+			<!--  ===VJC    early morning  == -->
+			<OperatingProfile>
+				<RegularDayType>
+					<!-- This is aactaull part of the Monday to friday service but journey starts past mindight so runs 	   Sat mornign but not monday morning -->
+					<DaysOfWeek>
+						<Friday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ_C</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP2</JourneyPatternRef>
+			<!-- This groups the journey as a    mondaytoFriday servicce. It also adds a footnote to indicate that the time is a differnt day. day -->
+			<DepartureTime>00:20:00</DepartureTime>
+			<DepartureDayShift>+1</DepartureDayShift>
+		</VehicleJourney>
+	</VehicleJourneys>
+	<SupportingDocuments>
+		<SupportingDocument>
+			<DocumentUri>index.html</DocumentUri>
+		</SupportingDocument>
+		<SupportingDocument>
+			<DocumentUri>SampleTimetables.doc</DocumentUri>
+		</SupportingDocument>
+	</SupportingDocuments>
+</TransXChange>

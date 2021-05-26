@@ -1,0 +1,4769 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:13:23",
+    "naptan_date": "Tue, 12 Nov 2019 08:00:36",
+    "sources": [
+      "MERGED_MERGED_schedules_SVRYNCO022.xml",
+      "MERGED_MERGED_schedules_SVRYNEO023.xml",
+      "MERGED_schedules_SVRYNBO022.xml",
+      "MERGED_schedules_SVRYNDO023.xml",
+      "TERMINAL_LOOP_FIRST_PART",
+      "TERMINAL_LOOP_FIRST_PART_schedules_SVRYNFO003.xml",
+      "TERMINAL_LOOP_FIRST_PART_schedules_SVRYWAO933.xml",
+      "TERMINAL_LOOP_SECOND_PART",
+      "TERMINAL_LOOP_SECOND_PART_schedules_SVRYNFO003.xml",
+      "TERMINAL_LOOP_SECOND_PART_schedules_SVRYWAO933.xml",
+      "schedules_SVRYEACB03.xml",
+      "schedules_SVRYEAGT00.xml",
+      "schedules_SVRYEAO004.xml",
+      "schedules_SVRYEAO005A.xml",
+      "schedules_SVRYEAO006.xml",
+      "schedules_SVRYEAO012.xml",
+      "schedules_SVRYEAO014.xml",
+      "schedules_SVRYEAO045A.xml",
+      "schedules_SVRYEAO075.xml",
+      "schedules_SVRYEAO076.xml",
+      "schedules_SVRYEAO077.xml",
+      "schedules_SVRYEAO079.xml",
+      "schedules_SVRYEAO106.xml",
+      "schedules_SVRYEAO106S.xml",
+      "schedules_SVRYEAO121C.xml",
+      "schedules_SVRYEAO121S.xml",
+      "schedules_SVRYEAO122.xml",
+      "schedules_SVRYEAO122B.xml",
+      "schedules_SVRYEAO123.xml",
+      "schedules_SVRYEAO142.xml",
+      "schedules_SVRYEAO143.xml",
+      "schedules_SVRYEAO155.xml",
+      "schedules_SVRYEAO155A.xml",
+      "schedules_SVRYEAO155B.xml",
+      "schedules_SVRYEAO197.xml",
+      "schedules_SVRYEAO240.xml",
+      "schedules_SVRYEAO242.xml",
+      "schedules_SVRYEAO243.xml",
+      "schedules_SVRYEAO520.xml",
+      "schedules_SVRYEAO521.xml",
+      "schedules_SVRYEAO550.xml",
+      "schedules_SVRYEAO921.xml",
+      "schedules_SVRYEAO922.xml",
+      "schedules_SVRYEAO923.xml",
+      "schedules_SVRYEAO925.xml",
+      "schedules_SVRYEAO926.xml",
+      "schedules_SVRYEAO929.xml",
+      "schedules_SVRYEAO930.xml",
+      "schedules_SVRYEAO933.xml",
+      "schedules_SVRYEAO934.xml",
+      "schedules_SVRYEAO935.xml",
+      "schedules_SVRYEAO936.xml",
+      "schedules_SVRYEAO937.xml",
+      "schedules_SVRYEAO940.xml",
+      "schedules_SVRYEAO941.xml",
+      "schedules_SVRYEAO942.xml",
+      "schedules_SVRYEAO943.xml",
+      "schedules_SVRYEAX055.xml",
+      "schedules_SVRYEBGT00.xml",
+      "schedules_SVRYEBO080.xml",
+      "schedules_SVRYEBO129.xml",
+      "schedules_SVRYEBO131.xml",
+      "schedules_SVRYEBO136.xml",
+      "schedules_SVRYEBO142.xml",
+      "schedules_SVRYEBO173.xml",
+      "schedules_SVRYEBO183.xml",
+      "schedules_SVRYEBO199.xml",
+      "schedules_SVRYEBO361.xml",
+      "schedules_SVRYEBO522.xml",
+      "schedules_SVRYEBO530.xml",
+      "schedules_SVRYEBO747.xml",
+      "schedules_SVRYEBO920.xml",
+      "schedules_SVRYECGT00.xml",
+      "schedules_SVRYECO003.xml",
+      "schedules_SVRYECO006.xml",
+      "schedules_SVRYECO071.xml",
+      "schedules_SVRYECO088.xml",
+      "schedules_SVRYECO130.xml",
+      "schedules_SVRYECO196.xml",
+      "schedules_SVRYECO198.xml",
+      "schedules_SVRYECO246.xml",
+      "schedules_SVRYECO358.xml",
+      "schedules_SVRYECO360.xml",
+      "schedules_SVRYECO504.xml",
+      "schedules_SVRYEDO018.xml",
+      "schedules_SVRYEDO046.xml",
+      "schedules_SVRYEDO135.xml",
+      "schedules_SVRYEDO195.xml",
+      "schedules_SVRYEDX046.xml",
+      "schedules_SVRYEEO001.xml",
+      "schedules_SVRYEEO005.xml",
+      "schedules_SVRYEEO045.xml",
+      "schedules_SVRYEEO180.xml",
+      "schedules_SVRYEFO078.xml",
+      "schedules_SVRYEGO002.xml",
+      "schedules_SVRYEGO005.xml",
+      "schedules_SVRYEGO277.xml",
+      "schedules_SVRYEHX047.xml",
+      "schedules_SVRYEIO124.xml",
+      "schedules_SVRYELO121.xml",
+      "schedules_SVRYHAAM01.xml",
+      "schedules_SVRYHAAM02.xml",
+      "schedules_SVRYHAO001W.xml",
+      "schedules_SVRYHAO002.xml",
+      "schedules_SVRYHAO002S.xml",
+      "schedules_SVRYHAO003.xml",
+      "schedules_SVRYHAO004.xml",
+      "schedules_SVRYHAO004A.xml",
+      "schedules_SVRYHAO005.xml",
+      "schedules_SVRYHAO006.xml",
+      "schedules_SVRYHAO008.xml",
+      "schedules_SVRYHAO008X.xml",
+      "schedules_SVRYHAO010X.xml",
+      "schedules_SVRYHAO011A.xml",
+      "schedules_SVRYHAO012.xml",
+      "schedules_SVRYHAO012A.xml",
+      "schedules_SVRYHAO020.xml",
+      "schedules_SVRYHAO021.xml",
+      "schedules_SVRYHAO022.xml",
+      "schedules_SVRYHAO033.xml",
+      "schedules_SVRYHAO034.xml",
+      "schedules_SVRYHAO034C.xml",
+      "schedules_SVRYHAO044.xml",
+      "schedules_SVRYHAO044A.xml",
+      "schedules_SVRYHAO050.xml",
+      "schedules_SVRYHAO056.xml",
+      "schedules_SVRYHAO057.xml",
+      "schedules_SVRYHAO063.xml",
+      "schedules_SVRYHAO063C.xml",
+      "schedules_SVRYHAO066.xml",
+      "schedules_SVRYHAO066B.xml",
+      "schedules_SVRYHAO070.xml",
+      "schedules_SVRYHAO081.xml",
+      "schedules_SVRYHAO082.xml",
+      "schedules_SVRYHAO083.xml",
+      "schedules_SVRYHAO084.xml",
+      "schedules_SVRYHAO085.xml",
+      "schedules_SVRYHAO104.xml",
+      "schedules_SVRYHAO105.xml",
+      "schedules_SVRYHAO152.xml",
+      "schedules_SVRYHAO153.xml",
+      "schedules_SVRYHAO154.xml",
+      "schedules_SVRYHAO250.xml",
+      "schedules_SVRYHAO677.xml",
+      "schedules_SVRYHAO924.xml",
+      "schedules_SVRYHAO927.xml",
+      "schedules_SVRYHAO928.xml",
+      "schedules_SVRYHAO931.xml",
+      "schedules_SVRYHAO932.xml",
+      "schedules_SVRYHAO938.xml",
+      "schedules_SVRYHAU005.xml",
+      "schedules_SVRYHBO003B.xml",
+      "schedules_SVRYHBO007A.xml",
+      "schedules_SVRYHBO008A.xml",
+      "schedules_SVRYHBO009.xml",
+      "schedules_SVRYHBO009A.xml",
+      "schedules_SVRYHBO010A.xml",
+      "schedules_SVRYHBO035.xml",
+      "schedules_SVRYHBO035A.xml",
+      "schedules_SVRYHBO103.xml",
+      "schedules_SVRYHBO151.xml",
+      "schedules_SVRYHCN002.xml",
+      "schedules_SVRYHCO007.xml",
+      "schedules_SVRYHCO010.xml",
+      "schedules_SVRYHCO011.xml",
+      "schedules_SVRYHCO044C.xml",
+      "schedules_SVRYHCO107.xml",
+      "schedules_SVRYHDO003A.xml",
+      "schedules_SVRYHDO014.xml",
+      "schedules_SVRYHDO051.xml",
+      "schedules_SVRYHFO001.xml",
+      "schedules_SVRYHGO016.xml",
+      "schedules_SVRYHGO350.xml",
+      "schedules_SVRYNAC000.xml",
+      "schedules_SVRYNAF001.xml",
+      "schedules_SVRYNAF002.xml",
+      "schedules_SVRYNAF005.xml",
+      "schedules_SVRYNAJKM0.xml",
+      "schedules_SVRYNAO001A.xml",
+      "schedules_SVRYNAO001B.xml",
+      "schedules_SVRYNAO001C.xml",
+      "schedules_SVRYNAO001D.xml",
+      "schedules_SVRYNAO001N.xml",
+      "schedules_SVRYNAO002A.xml",
+      "schedules_SVRYNAO002B.xml",
+      "schedules_SVRYNAO004.xml",
+      "schedules_SVRYNAO004A.xml",
+      "schedules_SVRYNAO006.xml",
+      "schedules_SVRYNAO009A.xml",
+      "schedules_SVRYNAO020.xml",
+      "schedules_SVRYNAO030X.xml",
+      "schedules_SVRYNAO034.xml",
+      "schedules_SVRYNAO042.xml",
+      "schedules_SVRYNAO044.xml",
+      "schedules_SVRYNAO054.xml",
+      "schedules_SVRYNAO060.xml",
+      "schedules_SVRYNAO070.xml",
+      "schedules_SVRYNAO072A.xml",
+      "schedules_SVRYNAO072B.xml",
+      "schedules_SVRYNAO073.xml",
+      "schedules_SVRYNAO074B.xml",
+      "schedules_SVRYNAO080.xml",
+      "schedules_SVRYNAO081.xml",
+      "schedules_SVRYNAO089.xml",
+      "schedules_SVRYNAO119.xml",
+      "schedules_SVRYNAO128.xml",
+      "schedules_SVRYNAO138.xml",
+      "schedules_SVRYNAO138A.xml",
+      "schedules_SVRYNAO139.xml",
+      "schedules_SVRYNAO144.xml",
+      "schedules_SVRYNAO159.xml",
+      "schedules_SVRYNAO175.xml",
+      "schedules_SVRYNAO176.xml",
+      "schedules_SVRYNAO182.xml",
+      "schedules_SVRYNAO184.xml",
+      "schedules_SVRYNAO185.xml",
+      "schedules_SVRYNAO187.xml",
+      "schedules_SVRYNAO333.xml",
+      "schedules_SVRYNAO415.xml",
+      "schedules_SVRYNAO469R.xml",
+      "schedules_SVRYNAO495.xml",
+      "schedules_SVRYNAO555.xml",
+      "schedules_SVRYNAO581.xml",
+      "schedules_SVRYNAO616.xml",
+      "schedules_SVRYNAO620H.xml",
+      "schedules_SVRYNAO634.xml",
+      "schedules_SVRYNAO777.xml",
+      "schedules_SVRYNAO777S.xml",
+      "schedules_SVRYNAO780H.xml",
+      "schedules_SVRYNAO781H.xml",
+      "schedules_SVRYNAO856.xml",
+      "schedules_SVRYNAO975.xml",
+      "schedules_SVRYNAR001.xml",
+      "schedules_SVRYNAR001A.xml",
+      "schedules_SVRYNAR002.xml",
+      "schedules_SVRYNAR003A.xml",
+      "schedules_SVRYNAR004.xml",
+      "schedules_SVRYNAS036.xml",
+      "schedules_SVRYNAT001.xml",
+      "schedules_SVRYNAT002.xml",
+      "schedules_SVRYNAX006.xml",
+      "schedules_SVRYNAX006A.xml",
+      "schedules_SVRYNAX008.xml",
+      "schedules_SVRYNAX011.xml",
+      "schedules_SVRYNAX012.xml",
+      "schedules_SVRYNAX026.xml",
+      "schedules_SVRYNAX027.xml",
+      "schedules_SVRYNAX079.xml",
+      "schedules_SVRYNBE000.xml",
+      "schedules_SVRYNBM009.xml",
+      "schedules_SVRYNBO001.xml",
+      "schedules_SVRYNBO007.xml",
+      "schedules_SVRYNBO007A.xml",
+      "schedules_SVRYNBO008A.xml",
+      "schedules_SVRYNBO009.xml",
+      "schedules_SVRYNBO010.xml",
+      "schedules_SVRYNBO016.xml",
+      "schedules_SVRYNBO016A.xml",
+      "schedules_SVRYNBO022.xml",
+      "schedules_SVRYNBO030S.xml",
+      "schedules_SVRYNBO030X.xml",
+      "schedules_SVRYNBO031B.xml",
+      "schedules_SVRYNBO037.xml",
+      "schedules_SVRYNBO040.xml",
+      "schedules_SVRYNBO053.xml",
+      "schedules_SVRYNBO055.xml",
+      "schedules_SVRYNBO060A.xml",
+      "schedules_SVRYNBO074A.xml",
+      "schedules_SVRYNBO079.xml",
+      "schedules_SVRYNBO095.xml",
+      "schedules_SVRYNBO113.xml",
+      "schedules_SVRYNBO115.xml",
+      "schedules_SVRYNBO128.xml",
+      "schedules_SVRYNBO150.xml",
+      "schedules_SVRYNBO173.xml",
+      "schedules_SVRYNBO174.xml",
+      "schedules_SVRYNBO190.xml",
+      "schedules_SVRYNBO194.xml",
+      "schedules_SVRYNBO211.xml",
+      "schedules_SVRYNBO441.xml",
+      "schedules_SVRYNBO486.xml",
+      "schedules_SVRYNBO488.xml",
+      "schedules_SVRYNBO580.xml",
+      "schedules_SVRYNBX001.xml",
+      "schedules_SVRYNBX004.xml",
+      "schedules_SVRYNCO001.xml",
+      "schedules_SVRYNCO004.xml",
+      "schedules_SVRYNCO005.xml",
+      "schedules_SVRYNCO006.xml",
+      "schedules_SVRYNCO007.xml",
+      "schedules_SVRYNCO012.xml",
+      "schedules_SVRYNCO014.xml",
+      "schedules_SVRYNCO021.xml",
+      "schedules_SVRYNCO022.xml",
+      "schedules_SVRYNCO024.xml",
+      "schedules_SVRYNCO028A.xml",
+      "schedules_SVRYNCO030.xml",
+      "schedules_SVRYNCO031A.xml",
+      "schedules_SVRYNCO032.xml",
+      "schedules_SVRYNCO059.xml",
+      "schedules_SVRYNCO072.xml",
+      "schedules_SVRYNCO136.xml",
+      "schedules_SVRYNCO155.xml",
+      "schedules_SVRYNCO156.xml",
+      "schedules_SVRYNCO193.xml",
+      "schedules_SVRYNCO210.xml",
+      "schedules_SVRYNCO400.xml",
+      "schedules_SVRYNCO401.xml",
+      "schedules_SVRYNCO496.xml",
+      "schedules_SVRYNCR001.xml",
+      "schedules_SVRYNCR002.xml",
+      "schedules_SVRYNCR003.xml",
+      "schedules_SVRYNCX004.xml",
+      "schedules_SVRYNDO006.xml",
+      "schedules_SVRYNDO007.xml",
+      "schedules_SVRYNDO011.xml",
+      "schedules_SVRYNDO029.xml",
+      "schedules_SVRYNDO030.xml",
+      "schedules_SVRYNDO072.xml",
+      "schedules_SVRYNDO073.xml",
+      "schedules_SVRYNDO075.xml",
+      "schedules_SVRYNDO147.xml",
+      "schedules_SVRYNDO170.xml",
+      "schedules_SVRYNDO492.xml",
+      "schedules_SVRYNDO493.xml",
+      "schedules_SVRYNDO494.xml",
+      "schedules_SVRYNEO001.xml",
+      "schedules_SVRYNEO002.xml",
+      "schedules_SVRYNEO003.xml",
+      "schedules_SVRYNEO011.xml",
+      "schedules_SVRYNEO029.xml",
+      "schedules_SVRYNEO153.xml",
+      "schedules_SVRYNEX093.xml",
+      "schedules_SVRYNFO003.xml",
+      "schedules_SVRYNFO004.xml",
+      "schedules_SVRYNFO031X.xml",
+      "schedules_SVRYNFX093.xml",
+      "schedules_SVRYNGO171.xml",
+      "schedules_SVRYNHO008.xml",
+      "schedules_SVRYSAA002.xml",
+      "schedules_SVRYSAB000.xml",
+      "schedules_SVRYSAD000.xml",
+      "schedules_SVRYSAM057.xml",
+      "schedules_SVRYSAO016.xml",
+      "schedules_SVRYSAO021A.xml",
+      "schedules_SVRYSAO022C.xml",
+      "schedules_SVRYSAO022X.xml",
+      "schedules_SVRYSAO028C.xml",
+      "schedules_SVRYSAO037S.xml",
+      "schedules_SVRYSAO050A.xml",
+      "schedules_SVRYSAO050B.xml",
+      "schedules_SVRYSAO051.xml",
+      "schedules_SVRYSAO053A.xml",
+      "schedules_SVRYSAO054.xml",
+      "schedules_SVRYSAO055.xml",
+      "schedules_SVRYSAO057C.xml",
+      "schedules_SVRYSAO057F.xml",
+      "schedules_SVRYSAO058F.xml",
+      "schedules_SVRYSAO064.xml",
+      "schedules_SVRYSAO064A.xml",
+      "schedules_SVRYSAO067A.xml",
+      "schedules_SVRYSAO067B.xml",
+      "schedules_SVRYSAO067C.xml",
+      "schedules_SVRYSAO071.xml",
+      "schedules_SVRYSAO071A.xml",
+      "schedules_SVRYSAO073X.xml",
+      "schedules_SVRYSAO075.xml",
+      "schedules_SVRYSAO076.xml",
+      "schedules_SVRYSAO081.xml",
+      "schedules_SVRYSAO082.xml",
+      "schedules_SVRYSAO083B.xml",
+      "schedules_SVRYSAO084B.xml",
+      "schedules_SVRYSAO086A.xml",
+      "schedules_SVRYSAO087.xml",
+      "schedules_SVRYSAO087B.xml",
+      "schedules_SVRYSAO093A.xml",
+      "schedules_SVRYSAO094B.xml",
+      "schedules_SVRYSAO095.xml",
+      "schedules_SVRYSAO095A.xml",
+      "schedules_SVRYSAO097.xml",
+      "schedules_SVRYSAO098.xml",
+      "schedules_SVRYSAO115.xml",
+      "schedules_SVRYSAO130.xml",
+      "schedules_SVRYSAO138.xml",
+      "schedules_SVRYSAO139.xml",
+      "schedules_SVRYSAO200.xml",
+      "schedules_SVRYSAO208.xml",
+      "schedules_SVRYSAO218A.xml",
+      "schedules_SVRYSAO219.xml",
+      "schedules_SVRYSAO219A.xml",
+      "schedules_SVRYSAO220.xml",
+      "schedules_SVRYSAO226.xml",
+      "schedules_SVRYSAO345.xml",
+      "schedules_SVRYSAO353.xml",
+      "schedules_SVRYSAO399.xml",
+      "schedules_SVRYSAO409.xml",
+      "schedules_SVRYSAO474.xml",
+      "schedules_SVRYSAO482A.xml",
+      "schedules_SVRYSAO488.xml",
+      "schedules_SVRYSAO490.xml",
+      "schedules_SVRYSAO499.xml",
+      "schedules_SVRYSAO595.xml",
+      "schedules_SVRYSAO718.xml",
+      "schedules_SVRYSAO720.xml",
+      "schedules_SVRYSAO725.xml",
+      "schedules_SVRYSAO752.xml",
+      "schedules_SVRYSAO775.xml",
+      "schedules_SVRYSAO798.xml",
+      "schedules_SVRYSAP000.xml",
+      "schedules_SVRYSAR002.xml",
+      "schedules_SVRYSAS001A.xml",
+      "schedules_SVRYSAT000.xml",
+      "schedules_SVRYSAX001.xml",
+      "schedules_SVRYSAX054.xml",
+      "schedules_SVRYSAX074.xml",
+      "schedules_SVRYSBD001.xml",
+      "schedules_SVRYSBI004.xml",
+      "schedules_SVRYSBO006.xml",
+      "schedules_SVRYSBO007A.xml",
+      "schedules_SVRYSBO008A.xml",
+      "schedules_SVRYSBO009A.xml",
+      "schedules_SVRYSBO011.xml",
+      "schedules_SVRYSBO012.xml",
+      "schedules_SVRYSBO015.xml",
+      "schedules_SVRYSBO015A.xml",
+      "schedules_SVRYSBO018A.xml",
+      "schedules_SVRYSBO020.xml",
+      "schedules_SVRYSBO021.xml",
+      "schedules_SVRYSBO022A.xml",
+      "schedules_SVRYSBO024A.xml",
+      "schedules_SVRYSBO027B.xml",
+      "schedules_SVRYSBO028A.xml",
+      "schedules_SVRYSBO030A.xml",
+      "schedules_SVRYSBO038A.xml",
+      "schedules_SVRYSBO041A.xml",
+      "schedules_SVRYSBO050B.xml",
+      "schedules_SVRYSBO051A.xml",
+      "schedules_SVRYSBO052A.xml",
+      "schedules_SVRYSBO058C.xml",
+      "schedules_SVRYSBO065.xml",
+      "schedules_SVRYSBO066.xml",
+      "schedules_SVRYSBO072X.xml",
+      "schedules_SVRYSBO073A.xml",
+      "schedules_SVRYSBO083A.xml",
+      "schedules_SVRYSBO084A.xml",
+      "schedules_SVRYSBO087A.xml",
+      "schedules_SVRYSBO093.xml",
+      "schedules_SVRYSBO094A.xml",
+      "schedules_SVRYSBO095.xml",
+      "schedules_SVRYSBO095A.xml",
+      "schedules_SVRYSBO099.xml",
+      "schedules_SVRYSBO110.xml",
+      "schedules_SVRYSBO113.xml",
+      "schedules_SVRYSBO114.xml",
+      "schedules_SVRYSBO120.xml",
+      "schedules_SVRYSBO124.xml",
+      "schedules_SVRYSBO125.xml",
+      "schedules_SVRYSBO135.xml",
+      "schedules_SVRYSBO135A.xml",
+      "schedules_SVRYSBO136.xml",
+      "schedules_SVRYSBO137.xml",
+      "schedules_SVRYSBO140.xml",
+      "schedules_SVRYSBO141.xml",
+      "schedules_SVRYSBO142.xml",
+      "schedules_SVRYSBO204.xml",
+      "schedules_SVRYSBO205.xml",
+      "schedules_SVRYSBO208.xml",
+      "schedules_SVRYSBO222.xml",
+      "schedules_SVRYSBO272.xml",
+      "schedules_SVRYSBO273.xml",
+      "schedules_SVRYSBO275.xml",
+      "schedules_SVRYSBO415.xml",
+      "schedules_SVRYSBO428.xml",
+      "schedules_SVRYSBO441.xml",
+      "schedules_SVRYSBO456.xml",
+      "schedules_SVRYSBO541.xml",
+      "schedules_SVRYSBO627.xml",
+      "schedules_SVRYSBO639.xml",
+      "schedules_SVRYSBO649.xml",
+      "schedules_SVRYSBO730.xml",
+      "schedules_SVRYSBO731.xml",
+      "schedules_SVRYSBO762.xml",
+      "schedules_SVRYSBO763.xml",
+      "schedules_SVRYSBO764.xml",
+      "schedules_SVRYSBO781.xml",
+      "schedules_SVRYSBO782.xml",
+      "schedules_SVRYSBO784.xml",
+      "schedules_SVRYSBO786.xml",
+      "schedules_SVRYSBO790.xml",
+      "schedules_SVRYSBO952.xml",
+      "schedules_SVRYSBT006.xml",
+      "schedules_SVRYSBX002.xml",
+      "schedules_SVRYSBX005.xml",
+      "schedules_SVRYSBX007.xml",
+      "schedules_SVRYSBX008.xml",
+      "schedules_SVRYSBX010.xml",
+      "schedules_SVRYSBX017.xml",
+      "schedules_SVRYSBX020.xml",
+      "schedules_SVRYSBX045.xml",
+      "schedules_SVRYSBX054.xml",
+      "schedules_SVRYSBX055.xml",
+      "schedules_SVRYSCH001.xml",
+      "schedules_SVRYSCO001.xml",
+      "schedules_SVRYSCO010.xml",
+      "schedules_SVRYSCO014.xml",
+      "schedules_SVRYSCO019A.xml",
+      "schedules_SVRYSCO020.xml",
+      "schedules_SVRYSCO027.xml",
+      "schedules_SVRYSCO027A.xml",
+      "schedules_SVRYSCO029A.xml",
+      "schedules_SVRYSCO032.xml",
+      "schedules_SVRYSCO050.xml",
+      "schedules_SVRYSCO050A.xml",
+      "schedules_SVRYSCO051A.xml",
+      "schedules_SVRYSCO057.xml",
+      "schedules_SVRYSCO059.xml",
+      "schedules_SVRYSCO059A.xml",
+      "schedules_SVRYSCO065A.xml",
+      "schedules_SVRYSCO066A.xml",
+      "schedules_SVRYSCO067.xml",
+      "schedules_SVRYSCO070A.xml",
+      "schedules_SVRYSCO074A.xml",
+      "schedules_SVRYSCO076A.xml",
+      "schedules_SVRYSCO082.xml",
+      "schedules_SVRYSCO084.xml",
+      "schedules_SVRYSCO086.xml",
+      "schedules_SVRYSCO094A.xml",
+      "schedules_SVRYSCO096A.xml",
+      "schedules_SVRYSCO107.xml",
+      "schedules_SVRYSCO116.xml",
+      "schedules_SVRYSCO120.xml",
+      "schedules_SVRYSCO126.xml",
+      "schedules_SVRYSCO134.xml",
+      "schedules_SVRYSCO136.xml",
+      "schedules_SVRYSCO138.xml",
+      "schedules_SVRYSCO216.xml",
+      "schedules_SVRYSCO218.xml",
+      "schedules_SVRYSCO221.xml",
+      "schedules_SVRYSCO272.xml",
+      "schedules_SVRYSCO291.xml",
+      "schedules_SVRYSCO405.xml",
+      "schedules_SVRYSCO419.xml",
+      "schedules_SVRYSCO429.xml",
+      "schedules_SVRYSCO450.xml",
+      "schedules_SVRYSCO489.xml",
+      "schedules_SVRYSCO492.xml",
+      "schedules_SVRYSCO521.xml",
+      "schedules_SVRYSCO523.xml",
+      "schedules_SVRYSCO540.xml",
+      "schedules_SVRYSCO552.xml",
+      "schedules_SVRYSCO637.xml",
+      "schedules_SVRYSCO648.xml",
+      "schedules_SVRYSCO655.xml",
+      "schedules_SVRYSCO710.xml",
+      "schedules_SVRYSCO728.xml",
+      "schedules_SVRYSCO751.xml",
+      "schedules_SVRYSCO779.xml",
+      "schedules_SVRYSCO780.xml",
+      "schedules_SVRYSCO783.xml",
+      "schedules_SVRYSCO785.xml",
+      "schedules_SVRYSCP000.xml",
+      "schedules_SVRYSCS001.xml",
+      "schedules_SVRYSCX019.xml",
+      "schedules_SVRYSCX078.xml",
+      "schedules_SVRYSCY000.xml",
+      "schedules_SVRYSDA001.xml",
+      "schedules_SVRYSDM092.xml",
+      "schedules_SVRYSDO006.xml",
+      "schedules_SVRYSDO018.xml",
+      "schedules_SVRYSDO019.xml",
+      "schedules_SVRYSDO025A.xml",
+      "schedules_SVRYSDO026A.xml",
+      "schedules_SVRYSDO028.xml",
+      "schedules_SVRYSDO030.xml",
+      "schedules_SVRYSDO035A.xml",
+      "schedules_SVRYSDO036.xml",
+      "schedules_SVRYSDO043.xml",
+      "schedules_SVRYSDO044.xml",
+      "schedules_SVRYSDO050.xml",
+      "schedules_SVRYSDO051.xml",
+      "schedules_SVRYSDO056.xml",
+      "schedules_SVRYSDO081.xml",
+      "schedules_SVRYSDO086.xml",
+      "schedules_SVRYSDO088.xml",
+      "schedules_SVRYSDO098.xml",
+      "schedules_SVRYSDO218.xml",
+      "schedules_SVRYSDO236.xml",
+      "schedules_SVRYSDO257.xml",
+      "schedules_SVRYSDO271.xml",
+      "schedules_SVRYSDO273.xml",
+      "schedules_SVRYSDO350.xml",
+      "schedules_SVRYSDO408.xml",
+      "schedules_SVRYSDO409.xml",
+      "schedules_SVRYSDO419.xml",
+      "schedules_SVRYSDO449.xml",
+      "schedules_SVRYSDO457.xml",
+      "schedules_SVRYSDO479.xml",
+      "schedules_SVRYSDO488.xml",
+      "schedules_SVRYSDO522.xml",
+      "schedules_SVRYSDO614.xml",
+      "schedules_SVRYSDO616.xml",
+      "schedules_SVRYSDO637.xml",
+      "schedules_SVRYSDO665.xml",
+      "schedules_SVRYSDO723.xml",
+      "schedules_SVRYSDO765.xml",
+      "schedules_SVRYSDX006.xml",
+      "schedules_SVRYSDX010.xml",
+      "schedules_SVRYSEA001.xml",
+      "schedules_SVRYSEO005.xml",
+      "schedules_SVRYSEO010A.xml",
+      "schedules_SVRYSEO011A.xml",
+      "schedules_SVRYSEO021.xml",
+      "schedules_SVRYSEO022.xml",
+      "schedules_SVRYSEO023A.xml",
+      "schedules_SVRYSEO028.xml",
+      "schedules_SVRYSEO029A.xml",
+      "schedules_SVRYSEO036.xml",
+      "schedules_SVRYSEO041.xml",
+      "schedules_SVRYSEO055.xml",
+      "schedules_SVRYSEO057A.xml",
+      "schedules_SVRYSEO071.xml",
+      "schedules_SVRYSEO083.xml",
+      "schedules_SVRYSEO086.xml",
+      "schedules_SVRYSEO097.xml",
+      "schedules_SVRYSEO128.xml",
+      "schedules_SVRYSEO181.xml",
+      "schedules_SVRYSEO203.xml",
+      "schedules_SVRYSEO215.xml",
+      "schedules_SVRYSEO252.xml",
+      "schedules_SVRYSEO271.xml",
+      "schedules_SVRYSEO409.xml",
+      "schedules_SVRYSEO416.xml",
+      "schedules_SVRYSEO455.xml",
+      "schedules_SVRYSEO456.xml",
+      "schedules_SVRYSEO457.xml",
+      "schedules_SVRYSEO466.xml",
+      "schedules_SVRYSEO482.xml",
+      "schedules_SVRYSEO490.xml",
+      "schedules_SVRYSEO638.xml",
+      "schedules_SVRYSEO689.xml",
+      "schedules_SVRYSEO760.xml",
+      "schedules_SVRYSEP001.xml",
+      "schedules_SVRYSES001.xml",
+      "schedules_SVRYSFM017.xml",
+      "schedules_SVRYSFO008A.xml",
+      "schedules_SVRYSFO010A.xml",
+      "schedules_SVRYSFO011.xml",
+      "schedules_SVRYSFO019.xml",
+      "schedules_SVRYSFO026.xml",
+      "schedules_SVRYSFO058A.xml",
+      "schedules_SVRYSFO061.xml",
+      "schedules_SVRYSFO062.xml",
+      "schedules_SVRYSFO072A.xml",
+      "schedules_SVRYSFO083.xml",
+      "schedules_SVRYSFO094.xml",
+      "schedules_SVRYSFO201.xml",
+      "schedules_SVRYSFO218.xml",
+      "schedules_SVRYSFO274.xml",
+      "schedules_SVRYSFO447.xml",
+      "schedules_SVRYSFO458.xml",
+      "schedules_SVRYSFO481.xml",
+      "schedules_SVRYSFO482.xml",
+      "schedules_SVRYSFO485.xml",
+      "schedules_SVRYSFO491.xml",
+      "schedules_SVRYSFO662.xml",
+      "schedules_SVRYSFO664.xml",
+      "schedules_SVRYSFO766.xml",
+      "schedules_SVRYSFO777.xml",
+      "schedules_SVRYSGO026.xml",
+      "schedules_SVRYSGO038.xml",
+      "schedules_SVRYSGO043.xml",
+      "schedules_SVRYSGO049.xml",
+      "schedules_SVRYSGO058.xml",
+      "schedules_SVRYSGO066.xml",
+      "schedules_SVRYSGO096.xml",
+      "schedules_SVRYSGO129.xml",
+      "schedules_SVRYSGO274.xml",
+      "schedules_SVRYSGO401.xml",
+      "schedules_SVRYSGO412.xml",
+      "schedules_SVRYSGO478.xml",
+      "schedules_SVRYSGO481.xml",
+      "schedules_SVRYSGO619.xml",
+      "schedules_SVRYSGO638.xml",
+      "schedules_SVRYSGO668.xml",
+      "schedules_SVRYSGO688.xml",
+      "schedules_SVRYSGO690.xml",
+      "schedules_SVRYSHO001.xml",
+      "schedules_SVRYSHO002.xml",
+      "schedules_SVRYSHO009.xml",
+      "schedules_SVRYSHO010.xml",
+      "schedules_SVRYSHO020.xml",
+      "schedules_SVRYSHO022.xml",
+      "schedules_SVRYSHO024.xml",
+      "schedules_SVRYSHO026.xml",
+      "schedules_SVRYSHO027.xml",
+      "schedules_SVRYSHO032.xml",
+      "schedules_SVRYSHO037.xml",
+      "schedules_SVRYSHO041.xml",
+      "schedules_SVRYSHO056.xml",
+      "schedules_SVRYSHO057.xml",
+      "schedules_SVRYSHO123.xml",
+      "schedules_SVRYSHO777.xml",
+      "schedules_SVRYSHX030.xml",
+      "schedules_SVRYSIO001.xml",
+      "schedules_SVRYSIO009.xml",
+      "schedules_SVRYSIO023.xml",
+      "schedules_SVRYSIO027.xml",
+      "schedules_SVRYSIO029.xml",
+      "schedules_SVRYSIO044.xml",
+      "schedules_SVRYSIO052.xml",
+      "schedules_SVRYSIO074.xml",
+      "schedules_SVRYSIO410.xml",
+      "schedules_SVRYSIO412.xml",
+      "schedules_SVRYSIO483.xml",
+      "schedules_SVRYSJO007.xml",
+      "schedules_SVRYSJO008.xml",
+      "schedules_SVRYSJO018.xml",
+      "schedules_SVRYSJO025.xml",
+      "schedules_SVRYSJO044.xml",
+      "schedules_SVRYSJO052.xml",
+      "schedules_SVRYSJO057.xml",
+      "schedules_SVRYSJO065.xml",
+      "schedules_SVRYSJO070.xml",
+      "schedules_SVRYSJO073.xml",
+      "schedules_SVRYSJO074.xml",
+      "schedules_SVRYSJO408.xml",
+      "schedules_SVRYSKO004.xml",
+      "schedules_SVRYSKO025.xml",
+      "schedules_SVRYSKO053.xml",
+      "schedules_SVRYSKO070.xml",
+      "schedules_SVRYSKO072.xml",
+      "schedules_SVRYSKO073.xml",
+      "schedules_SVRYSKO407.xml",
+      "schedules_SVRYSKO422.xml",
+      "schedules_SVRYSLO007.xml",
+      "schedules_SVRYSLO024.xml",
+      "schedules_SVRYSLO029.xml",
+      "schedules_SVRYSLO073.xml",
+      "schedules_SVRYSMO004.xml",
+      "schedules_SVRYSMO029.xml",
+      "schedules_SVRYSMO491.xml",
+      "schedules_SVRYSNO008.xml",
+      "schedules_SVRYSNO025.xml",
+      "schedules_SVRYSNO420.xml",
+      "schedules_SVRYSNO491.xml",
+      "schedules_SVRYSOO025.xml",
+      "schedules_SVRYSPO072.xml",
+      "schedules_SVRYSQO072.xml",
+      "schedules_SVRYWAA043.xml",
+      "schedules_SVRYWAA099.xml",
+      "schedules_SVRYWAB001.xml",
+      "schedules_SVRYWAB002.xml",
+      "schedules_SVRYWAB003.xml",
+      "schedules_SVRYWAC025.xml",
+      "schedules_SVRYWAC035.xml",
+      "schedules_SVRYWAC039.xml",
+      "schedules_SVRYWAC040.xml",
+      "schedules_SVRYWAC048.xml",
+      "schedules_SVRYWAC068.xml",
+      "schedules_SVRYWAC0A1.xml",
+      "schedules_SVRYWAC0A2.xml",
+      "schedules_SVRYWAC0M3.xml",
+      "schedules_SVRYWAD0TBB.xml",
+      "schedules_SVRYWAE003.xml",
+      "schedules_SVRYWAE005.xml",
+      "schedules_SVRYWAE007.xml",
+      "schedules_SVRYWAE0H1.xml",
+      "schedules_SVRYWAE0H3.xml",
+      "schedules_SVRYWAF0LXX.xml",
+      "schedules_SVRYWAF0TBB.xml",
+      "schedules_SVRYWAH001.xml",
+      "schedules_SVRYWAH002.xml",
+      "schedules_SVRYWAH003.xml",
+      "schedules_SVRYWAH005.xml",
+      "schedules_SVRYWAH006.xml",
+      "schedules_SVRYWAH007.xml",
+      "schedules_SVRYWAH0A1.xml",
+      "schedules_SVRYWAH0A2.xml",
+      "schedules_SVRYWAH0G1.xml",
+      "schedules_SVRYWAH0SBB.xml",
+      "schedules_SVRYWAJ0F1.xml",
+      "schedules_SVRYWAK001.xml",
+      "schedules_SVRYWAK002.xml",
+      "schedules_SVRYWAK003.xml",
+      "schedules_SVRYWAK005.xml",
+      "schedules_SVRYWAK007.xml",
+      "schedules_SVRYWAK008.xml",
+      "schedules_SVRYWAK009.xml",
+      "schedules_SVRYWAK010.xml",
+      "schedules_SVRYWAK012.xml",
+      "schedules_SVRYWAK013.xml",
+      "schedules_SVRYWAK015.xml",
+      "schedules_SVRYWAK016.xml",
+      "schedules_SVRYWAK017.xml",
+      "schedules_SVRYWAK019.xml",
+      "schedules_SVRYWAK0M1.xml",
+      "schedules_SVRYWAK0M2.xml",
+      "schedules_SVRYWAK20AA.xml",
+      "schedules_SVRYWAK20BB.xml",
+      "schedules_SVRYWAL0TUU.xml",
+      "schedules_SVRYWAM000U.xml",
+      "schedules_SVRYWAM002.xml",
+      "schedules_SVRYWAM003.xml",
+      "schedules_SVRYWAM004.xml",
+      "schedules_SVRYWAM0G1.xml",
+      "schedules_SVRYWAM0L1.xml",
+      "schedules_SVRYWAM0L2.xml",
+      "schedules_SVRYWAN001.xml",
+      "schedules_SVRYWAN009.xml",
+      "schedules_SVRYWAN010.xml",
+      "schedules_SVRYWAN066.xml",
+      "schedules_SVRYWAO001.xml",
+      "schedules_SVRYWAO001A.xml",
+      "schedules_SVRYWAO001B.xml",
+      "schedules_SVRYWAO002.xml",
+      "schedules_SVRYWAO002A.xml",
+      "schedules_SVRYWAO003.xml",
+      "schedules_SVRYWAO003A.xml",
+      "schedules_SVRYWAO004.xml",
+      "schedules_SVRYWAO004G.xml",
+      "schedules_SVRYWAO005.xml",
+      "schedules_SVRYWAO005A.xml",
+      "schedules_SVRYWAO006.xml",
+      "schedules_SVRYWAO007.xml",
+      "schedules_SVRYWAO007A.xml",
+      "schedules_SVRYWAO007S.xml",
+      "schedules_SVRYWAO008.xml",
+      "schedules_SVRYWAO009.xml",
+      "schedules_SVRYWAO009A.xml",
+      "schedules_SVRYWAO010.xml",
+      "schedules_SVRYWAO010A.xml",
+      "schedules_SVRYWAO011.xml",
+      "schedules_SVRYWAO011A.xml",
+      "schedules_SVRYWAO011S.xml",
+      "schedules_SVRYWAO012.xml",
+      "schedules_SVRYWAO013.xml",
+      "schedules_SVRYWAO013A.xml",
+      "schedules_SVRYWAO014.xml",
+      "schedules_SVRYWAO015.xml",
+      "schedules_SVRYWAO016.xml",
+      "schedules_SVRYWAO016A.xml",
+      "schedules_SVRYWAO018X.xml",
+      "schedules_SVRYWAO019.xml",
+      "schedules_SVRYWAO019A.xml",
+      "schedules_SVRYWAO019M.xml",
+      "schedules_SVRYWAO019X.xml",
+      "schedules_SVRYWAO020.xml",
+      "schedules_SVRYWAO020A.xml",
+      "schedules_SVRYWAO021.xml",
+      "schedules_SVRYWAO022.xml",
+      "schedules_SVRYWAO023.xml",
+      "schedules_SVRYWAO024.xml",
+      "schedules_SVRYWAO025.xml",
+      "schedules_SVRYWAO026.xml",
+      "schedules_SVRYWAO027.xml",
+      "schedules_SVRYWAO028.xml",
+      "schedules_SVRYWAO029B.xml",
+      "schedules_SVRYWAO030.xml",
+      "schedules_SVRYWAO031.xml",
+      "schedules_SVRYWAO032.xml",
+      "schedules_SVRYWAO033.xml",
+      "schedules_SVRYWAO034.xml",
+      "schedules_SVRYWAO035.xml",
+      "schedules_SVRYWAO036.xml",
+      "schedules_SVRYWAO036A.xml",
+      "schedules_SVRYWAO036B.xml",
+      "schedules_SVRYWAO039.xml",
+      "schedules_SVRYWAO040.xml",
+      "schedules_SVRYWAO042.xml",
+      "schedules_SVRYWAO047.xml",
+      "schedules_SVRYWAO048.xml",
+      "schedules_SVRYWAO048A.xml",
+      "schedules_SVRYWAO049.xml",
+      "schedules_SVRYWAO050.xml",
+      "schedules_SVRYWAO050A.xml",
+      "schedules_SVRYWAO051.xml",
+      "schedules_SVRYWAO052.xml",
+      "schedules_SVRYWAO054.xml",
+      "schedules_SVRYWAO055.xml",
+      "schedules_SVRYWAO055C.xml",
+      "schedules_SVRYWAO056.xml",
+      "schedules_SVRYWAO059.xml",
+      "schedules_SVRYWAO060.xml",
+      "schedules_SVRYWAO061.xml",
+      "schedules_SVRYWAO061A.xml",
+      "schedules_SVRYWAO062.xml",
+      "schedules_SVRYWAO064.xml",
+      "schedules_SVRYWAO065.xml",
+      "schedules_SVRYWAO066.xml",
+      "schedules_SVRYWAO066A.xml",
+      "schedules_SVRYWAO066X.xml",
+      "schedules_SVRYWAO067.xml",
+      "schedules_SVRYWAO071.xml",
+      "schedules_SVRYWAO072.xml",
+      "schedules_SVRYWAO074.xml",
+      "schedules_SVRYWAO074A.xml",
+      "schedules_SVRYWAO075.xml",
+      "schedules_SVRYWAO077.xml",
+      "schedules_SVRYWAO078A.xml",
+      "schedules_SVRYWAO080.xml",
+      "schedules_SVRYWAO081.xml",
+      "schedules_SVRYWAO081A.xml",
+      "schedules_SVRYWAO083.xml",
+      "schedules_SVRYWAO083A.xml",
+      "schedules_SVRYWAO084.xml",
+      "schedules_SVRYWAO084A.xml",
+      "schedules_SVRYWAO086.xml",
+      "schedules_SVRYWAO087.xml",
+      "schedules_SVRYWAO091.xml",
+      "schedules_SVRYWAO0G1.xml",
+      "schedules_SVRYWAO0G2.xml",
+      "schedules_SVRYWAO0G3.xml",
+      "schedules_SVRYWAO0G4.xml",
+      "schedules_SVRYWAO100.xml",
+      "schedules_SVRYWAO101.xml",
+      "schedules_SVRYWAO102.xml",
+      "schedules_SVRYWAO103.xml",
+      "schedules_SVRYWAO104.xml",
+      "schedules_SVRYWAO105.xml",
+      "schedules_SVRYWAO107.xml",
+      "schedules_SVRYWAO108.xml",
+      "schedules_SVRYWAO109.xml",
+      "schedules_SVRYWAO110.xml",
+      "schedules_SVRYWAO110S.xml",
+      "schedules_SVRYWAO111.xml",
+      "schedules_SVRYWAO112.xml",
+      "schedules_SVRYWAO113.xml",
+      "schedules_SVRYWAO116.xml",
+      "schedules_SVRYWAO117.xml",
+      "schedules_SVRYWAO118.xml",
+      "schedules_SVRYWAO118A.xml",
+      "schedules_SVRYWAO118S.xml",
+      "schedules_SVRYWAO119.xml",
+      "schedules_SVRYWAO120.xml",
+      "schedules_SVRYWAO125.xml",
+      "schedules_SVRYWAO126.xml",
+      "schedules_SVRYWAO127.xml",
+      "schedules_SVRYWAO128.xml",
+      "schedules_SVRYWAO128A.xml",
+      "schedules_SVRYWAO144.xml",
+      "schedules_SVRYWAO146.xml",
+      "schedules_SVRYWAO147.xml",
+      "schedules_SVRYWAO147A.xml",
+      "schedules_SVRYWAO148.xml",
+      "schedules_SVRYWAO148A.xml",
+      "schedules_SVRYWAO149.xml",
+      "schedules_SVRYWAO153.xml",
+      "schedules_SVRYWAO154.xml",
+      "schedules_SVRYWAO156.xml",
+      "schedules_SVRYWAO159.xml",
+      "schedules_SVRYWAO163.xml",
+      "schedules_SVRYWAO166.xml",
+      "schedules_SVRYWAO167.xml",
+      "schedules_SVRYWAO168.xml",
+      "schedules_SVRYWAO173A.xml",
+      "schedules_SVRYWAO174.xml",
+      "schedules_SVRYWAO174A.xml",
+      "schedules_SVRYWAO175.xml",
+      "schedules_SVRYWAO175A.xml",
+      "schedules_SVRYWAO177.xml",
+      "schedules_SVRYWAO181.xml",
+      "schedules_SVRYWAO183.xml",
+      "schedules_SVRYWAO184.xml",
+      "schedules_SVRYWAO185.xml",
+      "schedules_SVRYWAO186.xml",
+      "schedules_SVRYWAO187.xml",
+      "schedules_SVRYWAO188.xml",
+      "schedules_SVRYWAO189.xml",
+      "schedules_SVRYWAO195.xml",
+      "schedules_SVRYWAO196.xml",
+      "schedules_SVRYWAO197.xml",
+      "schedules_SVRYWAO200.xml",
+      "schedules_SVRYWAO201.xml",
+      "schedules_SVRYWAO201A.xml",
+      "schedules_SVRYWAO202.xml",
+      "schedules_SVRYWAO203.xml",
+      "schedules_SVRYWAO205.xml",
+      "schedules_SVRYWAO212.xml",
+      "schedules_SVRYWAO212A.xml",
+      "schedules_SVRYWAO213.xml",
+      "schedules_SVRYWAO223.xml",
+      "schedules_SVRYWAO226.xml",
+      "schedules_SVRYWAO228.xml",
+      "schedules_SVRYWAO229.xml",
+      "schedules_SVRYWAO231.xml",
+      "schedules_SVRYWAO232.xml",
+      "schedules_SVRYWAO233.xml",
+      "schedules_SVRYWAO241.xml",
+      "schedules_SVRYWAO249.xml",
+      "schedules_SVRYWAO254.xml",
+      "schedules_SVRYWAO254A.xml",
+      "schedules_SVRYWAO255.xml",
+      "schedules_SVRYWAO256.xml",
+      "schedules_SVRYWAO257.xml",
+      "schedules_SVRYWAO257A.xml",
+      "schedules_SVRYWAO258.xml",
+      "schedules_SVRYWAO259.xml",
+      "schedules_SVRYWAO261.xml",
+      "schedules_SVRYWAO262.xml",
+      "schedules_SVRYWAO263.xml",
+      "schedules_SVRYWAO268.xml",
+      "schedules_SVRYWAO271.xml",
+      "schedules_SVRYWAO280.xml",
+      "schedules_SVRYWAO281.xml",
+      "schedules_SVRYWAO283.xml",
+      "schedules_SVRYWAO301.xml",
+      "schedules_SVRYWAO302.xml",
+      "schedules_SVRYWAO303.xml",
+      "schedules_SVRYWAO304.xml",
+      "schedules_SVRYWAO306.xml",
+      "schedules_SVRYWAO308.xml",
+      "schedules_SVRYWAO309.xml",
+      "schedules_SVRYWAO310.xml",
+      "schedules_SVRYWAO314.xml",
+      "schedules_SVRYWAO316.xml",
+      "schedules_SVRYWAO317.xml",
+      "schedules_SVRYWAO319.xml",
+      "schedules_SVRYWAO321.xml",
+      "schedules_SVRYWAO323.xml",
+      "schedules_SVRYWAO324.xml",
+      "schedules_SVRYWAO327.xml",
+      "schedules_SVRYWAO327A.xml",
+      "schedules_SVRYWAO328.xml",
+      "schedules_SVRYWAO335.xml",
+      "schedules_SVRYWAO341.xml",
+      "schedules_SVRYWAO342.xml",
+      "schedules_SVRYWAO343.xml",
+      "schedules_SVRYWAO349.xml",
+      "schedules_SVRYWAO351.xml",
+      "schedules_SVRYWAO352.xml",
+      "schedules_SVRYWAO354.xml",
+      "schedules_SVRYWAO355.xml",
+      "schedules_SVRYWAO356.xml",
+      "schedules_SVRYWAO357.xml",
+      "schedules_SVRYWAO358.xml",
+      "schedules_SVRYWAO359.xml",
+      "schedules_SVRYWAO360.xml",
+      "schedules_SVRYWAO363.xml",
+      "schedules_SVRYWAO370.xml",
+      "schedules_SVRYWAO371.xml",
+      "schedules_SVRYWAO372.xml",
+      "schedules_SVRYWAO374.xml",
+      "schedules_SVRYWAO375.xml",
+      "schedules_SVRYWAO377.xml",
+      "schedules_SVRYWAO378.xml",
+      "schedules_SVRYWAO384.xml",
+      "schedules_SVRYWAO385.xml",
+      "schedules_SVRYWAO387.xml",
+      "schedules_SVRYWAO388.xml",
+      "schedules_SVRYWAO389.xml",
+      "schedules_SVRYWAO393.xml",
+      "schedules_SVRYWAO394.xml",
+      "schedules_SVRYWAO395.xml",
+      "schedules_SVRYWAO396.xml",
+      "schedules_SVRYWAO397.xml",
+      "schedules_SVRYWAO398.xml",
+      "schedules_SVRYWAO399.xml",
+      "schedules_SVRYWAO402.xml",
+      "schedules_SVRYWAO403.xml",
+      "schedules_SVRYWAO406.xml",
+      "schedules_SVRYWAO407.xml",
+      "schedules_SVRYWAO410.xml",
+      "schedules_SVRYWAO411.xml",
+      "schedules_SVRYWAO412.xml",
+      "schedules_SVRYWAO420.xml",
+      "schedules_SVRYWAO425.xml",
+      "schedules_SVRYWAO425A.xml",
+      "schedules_SVRYWAO427.xml",
+      "schedules_SVRYWAO435.xml",
+      "schedules_SVRYWAO436.xml",
+      "schedules_SVRYWAO436A.xml",
+      "schedules_SVRYWAO437.xml",
+      "schedules_SVRYWAO437A.xml",
+      "schedules_SVRYWAO440.xml",
+      "schedules_SVRYWAO444.xml",
+      "schedules_SVRYWAO446.xml",
+      "schedules_SVRYWAO476.xml",
+      "schedules_SVRYWAO485.xml",
+      "schedules_SVRYWAO493.xml",
+      "schedules_SVRYWAO496.xml",
+      "schedules_SVRYWAO497.xml",
+      "schedules_SVRYWAO499.xml",
+      "schedules_SVRYWAO500.xml",
+      "schedules_SVRYWAO501.xml",
+      "schedules_SVRYWAO503.xml",
+      "schedules_SVRYWAO504.xml",
+      "schedules_SVRYWAO508.xml",
+      "schedules_SVRYWAO510.xml",
+      "schedules_SVRYWAO512.xml",
+      "schedules_SVRYWAO521.xml",
+      "schedules_SVRYWAO522.xml",
+      "schedules_SVRYWAO523.xml",
+      "schedules_SVRYWAO525.xml",
+      "schedules_SVRYWAO526.xml",
+      "schedules_SVRYWAO527.xml",
+      "schedules_SVRYWAO532.xml",
+      "schedules_SVRYWAO533.xml",
+      "schedules_SVRYWAO534.xml",
+      "schedules_SVRYWAO535.xml",
+      "schedules_SVRYWAO536.xml",
+      "schedules_SVRYWAO537.xml",
+      "schedules_SVRYWAO539.xml",
+      "schedules_SVRYWAO541.xml",
+      "schedules_SVRYWAO542.xml",
+      "schedules_SVRYWAO546.xml",
+      "schedules_SVRYWAO547.xml",
+      "schedules_SVRYWAO548.xml",
+      "schedules_SVRYWAO549.xml",
+      "schedules_SVRYWAO555.xml",
+      "schedules_SVRYWAO560.xml",
+      "schedules_SVRYWAO561.xml",
+      "schedules_SVRYWAO562.xml",
+      "schedules_SVRYWAO563.xml",
+      "schedules_SVRYWAO563A.xml",
+      "schedules_SVRYWAO564.xml",
+      "schedules_SVRYWAO571.xml",
+      "schedules_SVRYWAO574.xml",
+      "schedules_SVRYWAO576.xml",
+      "schedules_SVRYWAO577.xml",
+      "schedules_SVRYWAO579.xml",
+      "schedules_SVRYWAO589.xml",
+      "schedules_SVRYWAO590.xml",
+      "schedules_SVRYWAO592.xml",
+      "schedules_SVRYWAO594.xml",
+      "schedules_SVRYWAO595.xml",
+      "schedules_SVRYWAO596.xml",
+      "schedules_SVRYWAO597.xml",
+      "schedules_SVRYWAO598.xml",
+      "schedules_SVRYWAO599.xml",
+      "schedules_SVRYWAO600.xml",
+      "schedules_SVRYWAO605.xml",
+      "schedules_SVRYWAO606.xml",
+      "schedules_SVRYWAO607.xml",
+      "schedules_SVRYWAO608.xml",
+      "schedules_SVRYWAO610.xml",
+      "schedules_SVRYWAO611.xml",
+      "schedules_SVRYWAO612.xml",
+      "schedules_SVRYWAO613.xml",
+      "schedules_SVRYWAO614.xml",
+      "schedules_SVRYWAO615.xml",
+      "schedules_SVRYWAO616.xml",
+      "schedules_SVRYWAO617.xml",
+      "schedules_SVRYWAO618.xml",
+      "schedules_SVRYWAO619.xml",
+      "schedules_SVRYWAO620.xml",
+      "schedules_SVRYWAO621.xml",
+      "schedules_SVRYWAO622.xml",
+      "schedules_SVRYWAO624A.xml",
+      "schedules_SVRYWAO626.xml",
+      "schedules_SVRYWAO629.xml",
+      "schedules_SVRYWAO630.xml",
+      "schedules_SVRYWAO633.xml",
+      "schedules_SVRYWAO634.xml",
+      "schedules_SVRYWAO635.xml",
+      "schedules_SVRYWAO636.xml",
+      "schedules_SVRYWAO637.xml",
+      "schedules_SVRYWAO640.xml",
+      "schedules_SVRYWAO641.xml",
+      "schedules_SVRYWAO643.xml",
+      "schedules_SVRYWAO644.xml",
+      "schedules_SVRYWAO645.xml",
+      "schedules_SVRYWAO649.xml",
+      "schedules_SVRYWAO653.xml",
+      "schedules_SVRYWAO656.xml",
+      "schedules_SVRYWAO658.xml",
+      "schedules_SVRYWAO660.xml",
+      "schedules_SVRYWAO662.xml",
+      "schedules_SVRYWAO671.xml",
+      "schedules_SVRYWAO675.xml",
+      "schedules_SVRYWAO676.xml",
+      "schedules_SVRYWAO677.xml",
+      "schedules_SVRYWAO678.xml",
+      "schedules_SVRYWAO679.xml",
+      "schedules_SVRYWAO680.xml",
+      "schedules_SVRYWAO681.xml",
+      "schedules_SVRYWAO682.xml",
+      "schedules_SVRYWAO686.xml",
+      "schedules_SVRYWAO687.xml",
+      "schedules_SVRYWAO688.xml",
+      "schedules_SVRYWAO700.xml",
+      "schedules_SVRYWAO737.xml",
+      "schedules_SVRYWAO747.xml",
+      "schedules_SVRYWAO757.xml",
+      "schedules_SVRYWAO781.xml",
+      "schedules_SVRYWAO821.xml",
+      "schedules_SVRYWAO840.xml",
+      "schedules_SVRYWAO843.xml",
+      "schedules_SVRYWAO862.xml",
+      "schedules_SVRYWAO873.xml",
+      "schedules_SVRYWAO874.xml",
+      "schedules_SVRYWAO884.xml",
+      "schedules_SVRYWAO900.xml",
+      "schedules_SVRYWAO901.xml",
+      "schedules_SVRYWAO902.xml",
+      "schedules_SVRYWAO903.xml",
+      "schedules_SVRYWAO911.xml",
+      "schedules_SVRYWAO923.xml",
+      "schedules_SVRYWAO933.xml",
+      "schedules_SVRYWAO936.xml",
+      "schedules_SVRYWAO937.xml",
+      "schedules_SVRYWAO938.xml",
+      "schedules_SVRYWAO940.xml",
+      "schedules_SVRYWAO948.xml",
+      "schedules_SVRYWAO962.xml",
+      "schedules_SVRYWAO963.xml",
+      "schedules_SVRYWAO964.xml",
+      "schedules_SVRYWAO965.xml",
+      "schedules_SVRYWAO966.xml",
+      "schedules_SVRYWAP0R1.xml",
+      "schedules_SVRYWAP0R2.xml",
+      "schedules_SVRYWAR007.xml",
+      "schedules_SVRYWAS0W1.xml",
+      "schedules_SVRYWAST11.xml",
+      "schedules_SVRYWAT001.xml",
+      "schedules_SVRYWAT002.xml",
+      "schedules_SVRYWAT003.xml",
+      "schedules_SVRYWAT004.xml",
+      "schedules_SVRYWAT006.xml",
+      "schedules_SVRYWAT008.xml",
+      "schedules_SVRYWAT0K1.xml",
+      "schedules_SVRYWAT0K2.xml",
+      "schedules_SVRYWAW0A1.xml",
+      "schedules_SVRYWAW0A2.xml",
+      "schedules_SVRYWAW0CBB.xml",
+      "schedules_SVRYWAW0M1.xml",
+      "schedules_SVRYWAW0M2.xml",
+      "schedules_SVRYWAX004.xml",
+      "schedules_SVRYWAX006.xml",
+      "schedules_SVRYWAX007.xml",
+      "schedules_SVRYWAX010.xml",
+      "schedules_SVRYWAX011.xml",
+      "schedules_SVRYWAX014.xml",
+      "schedules_SVRYWAX017.xml",
+      "schedules_SVRYWAX022.xml",
+      "schedules_SVRYWAX025.xml",
+      "schedules_SVRYWAX026.xml",
+      "schedules_SVRYWAX027.xml",
+      "schedules_SVRYWAX032.xml",
+      "schedules_SVRYWAX036.xml",
+      "schedules_SVRYWAX041.xml",
+      "schedules_SVRYWAX049.xml",
+      "schedules_SVRYWAX052.xml",
+      "schedules_SVRYWAX056.xml",
+      "schedules_SVRYWAX058.xml",
+      "schedules_SVRYWAX060.xml",
+      "schedules_SVRYWAX062.xml",
+      "schedules_SVRYWAX063.xml",
+      "schedules_SVRYWAX064.xml",
+      "schedules_SVRYWAX070.xml",
+      "schedules_SVRYWAX084.xml",
+      "schedules_SVRYWAX085.xml",
+      "schedules_SVRYWAX098.xml",
+      "schedules_SVRYWAX099.xml",
+      "schedules_SVRYWAZ0APP.xml",
+      "schedules_SVRYWBK017.xml",
+      "schedules_SVRYWBO001.xml",
+      "schedules_SVRYWBO002.xml",
+      "schedules_SVRYWBO003.xml",
+      "schedules_SVRYWBO003A.xml",
+      "schedules_SVRYWBO004.xml",
+      "schedules_SVRYWBO005.xml",
+      "schedules_SVRYWBO006.xml",
+      "schedules_SVRYWBO007.xml",
+      "schedules_SVRYWBO008.xml",
+      "schedules_SVRYWBO009.xml",
+      "schedules_SVRYWBO010.xml",
+      "schedules_SVRYWBO011.xml",
+      "schedules_SVRYWBO012.xml",
+      "schedules_SVRYWBO013.xml",
+      "schedules_SVRYWBO014.xml",
+      "schedules_SVRYWBO016.xml",
+      "schedules_SVRYWBO019.xml",
+      "schedules_SVRYWBO020.xml",
+      "schedules_SVRYWBO021.xml",
+      "schedules_SVRYWBO022.xml",
+      "schedules_SVRYWBO024.xml",
+      "schedules_SVRYWBO026.xml",
+      "schedules_SVRYWBO027.xml",
+      "schedules_SVRYWBO036.xml",
+      "schedules_SVRYWBO062.xml",
+      "schedules_SVRYWBO064.xml",
+      "schedules_SVRYWBO066.xml",
+      "schedules_SVRYWBO074A.xml",
+      "schedules_SVRYWBO084.xml",
+      "schedules_SVRYWBO126.xml",
+      "schedules_SVRYWBO159.xml",
+      "schedules_SVRYWBO183.xml",
+      "schedules_SVRYWBO184.xml",
+      "schedules_SVRYWBO200.xml",
+      "schedules_SVRYWBO205.xml",
+      "schedules_SVRYWBO231.xml",
+      "schedules_SVRYWBO232.xml",
+      "schedules_SVRYWBO256.xml",
+      "schedules_SVRYWBO262.xml",
+      "schedules_SVRYWBO323.xml",
+      "schedules_SVRYWBO324.xml",
+      "schedules_SVRYWBO342.xml",
+      "schedules_SVRYWBO356.xml",
+      "schedules_SVRYWBO358.xml",
+      "schedules_SVRYWBO370.xml",
+      "schedules_SVRYWBO371.xml",
+      "schedules_SVRYWBO412.xml",
+      "schedules_SVRYWBO537.xml",
+      "schedules_SVRYWBO560.xml",
+      "schedules_SVRYWBO571.xml",
+      "schedules_SVRYWBO574.xml",
+      "schedules_SVRYWBO579.xml",
+      "schedules_SVRYWBO630.xml",
+      "schedules_SVRYWBO633.xml",
+      "schedules_SVRYWBO680.xml",
+      "schedules_SVRYWBX007.xml",
+      "schedules_SVRYWBX011.xml",
+      "schedules_SVRYWBX049.xml",
+      "schedules_SVRYWCO007.xml",
+      "schedules_SVRYWCO009.xml",
+      "schedules_SVRYWCO019.xml",
+      "schedules_SVRYWCO021.xml",
+      "schedules_SVRYWCO183.xml",
+      "schedules_SVRYWCO200.xml",
+      "schedules_SVRYWCO633.xml",
+      "schedules_SVRYWDO007.xml"
+    ]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST370050048",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.48348072770303707, 53.5563762883610579]
+          },
+          "properties": {
+            "atco_code": "370050048",
+            "bearing": 0,
+            "feature_name": "Church Street (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050050",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.48537392057979845, 53.5583528826816746]
+          },
+          "properties": {
+            "atco_code": "370050050",
+            "bearing": 0,
+            "feature_name": "Western Street (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050052",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.48734699483971755, 53.5599792369766163]
+          },
+          "properties": {
+            "atco_code": "370050052",
+            "bearing": 7,
+            "feature_name": "Kensington Road (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050054",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.49158398656362001, 53.5629364605852984]
+          },
+          "properties": {
+            "atco_code": "370050054",
+            "bearing": 7,
+            "feature_name": "Salisbury Street (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050056",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.4941728519479982, 53.5636035492359142]
+          },
+          "properties": {
+            "atco_code": "370050056",
+            "bearing": 7,
+            "feature_name": "Greenfoot Lane (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050059",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.5024088146783654, 53.5655345182197564]
+          },
+          "properties": {
+            "atco_code": "370050059",
+            "bearing": 7,
+            "feature_name": "Innovation Way (Adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050060",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.50599667851341801, 53.5660167313163385]
+          },
+          "properties": {
+            "atco_code": "370050060",
+            "bearing": 2,
+            "feature_name": "Ripley Grove (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050062",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.5095197083423213, 53.5655817563948631]
+          },
+          "properties": {
+            "atco_code": "370050062",
+            "bearing": 6,
+            "feature_name": "Dayhouse Way (nr)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050064",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.51287370851074576, 53.5653976669407044]
+          },
+          "properties": {
+            "atco_code": "370050064",
+            "bearing": 6,
+            "feature_name": "Wilbrook Rise (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050082",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.52809903246183509, 53.5675797182884921]
+          },
+          "properties": {
+            "atco_code": "370050082",
+            "bearing": 6,
+            "feature_name": "Longley Close (nr)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370050447",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.54619787990246427, 53.568071987803755]
+          },
+          "properties": {
+            "atco_code": "370050447",
+            "bearing": 6,
+            "feature_name": "Cawthorne Basin (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370051046",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.57749806184431529, 53.5651482050335801]
+          },
+          "properties": {
+            "atco_code": "370051046",
+            "bearing": 5,
+            "feature_name": "Tivy Dale Drive (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370051165",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.57495949421008952, 53.5668649511112349]
+          },
+          "properties": {
+            "atco_code": "370051165",
+            "bearing": 6,
+            "feature_name": "Tivy Dale Close (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370055007",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.49903981303622214, 53.5644239238061743]
+          },
+          "properties": {
+            "atco_code": "370055007",
+            "bearing": 6,
+            "feature_name": "Rowland Road (Adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370055049",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.53185465163512347, 53.5679539471229802]
+          },
+          "properties": {
+            "atco_code": "370055049",
+            "bearing": 6,
+            "feature_name": "Higham Common Road (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370055053",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.48310386817401607, 53.553848920074266]
+          },
+          "properties": {
+            "atco_code": "370055053",
+            "bearing": 6,
+            "feature_name": "Shambles Street (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370055063",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.4809728525518997, 53.5528330208110503]
+          },
+          "properties": {
+            "atco_code": "370055063",
+            "bearing": 5,
+            "feature_name": "Market Hill (nr)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370055075",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.52018075094163563, 53.5667933242675005]
+          },
+          "properties": {
+            "atco_code": "370055075",
+            "bearing": 6,
+            "feature_name": "Claycliffe Avenue (nr)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST370055485",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.5342990901712823, 53.5681072741031343]
+          },
+          "properties": {
+            "atco_code": "370055485",
+            "bearing": 6,
+            "feature_name": "Barugh Lane (nr)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450017217",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.70697164450040062, 53.5752681306210476]
+          },
+          "properties": {
+            "atco_code": "450017217",
+            "bearing": 7,
+            "feature_name": "Sovereign Inn Penistone Road (after)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450017219",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.71034230412508359, 53.5814782247199304]
+          },
+          "properties": {
+            "atco_code": "450017219",
+            "bearing": 0,
+            "feature_name": "Lane Head Rd Cliffe Rd (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020819",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.65650690572968329, 53.5727703045729129]
+          },
+          "properties": {
+            "atco_code": "450020819",
+            "bearing": 6,
+            "feature_name": "Wakefield Rd Wesley Terrace",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020821",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.66054533738910814, 53.5719548804052081]
+          },
+          "properties": {
+            "atco_code": "450020821",
+            "bearing": 5,
+            "feature_name": "Railway Station (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020824",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.67141460545281229, 53.5704032151610221]
+          },
+          "properties": {
+            "atco_code": "450020824",
+            "bearing": 6,
+            "feature_name": "Rockwood House (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020825",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.68026051377762475, 53.5727640812584198]
+          },
+          "properties": {
+            "atco_code": "450020825",
+            "bearing": 7,
+            "feature_name": "Barnsley Road Eunice Ln (stop)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020828",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.68720702298202396, 53.5747957746291306]
+          },
+          "properties": {
+            "atco_code": "450020828",
+            "bearing": 6,
+            "feature_name": "The Star Inn (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020842",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.69573252482401582, 53.5757524857748635]
+          },
+          "properties": {
+            "atco_code": "450020842",
+            "bearing": 6,
+            "feature_name": "Barnsley Road Jane Well (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020850",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.64683660965849921, 53.5698300176824702]
+          },
+          "properties": {
+            "atco_code": "450020850",
+            "bearing": 6,
+            "feature_name": "Miller Hill Barnsley Road (stop)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020882",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.72287555167798256, 53.5773013207757529]
+          },
+          "properties": {
+            "atco_code": "450020882",
+            "bearing": 1,
+            "feature_name": "Marsh Lane Row Gate (stop)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020884",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.71699720592724869, 53.5823659696431136]
+          },
+          "properties": {
+            "atco_code": "450020884",
+            "bearing": 5,
+            "feature_name": "Marsh Lane Marsh Court (at)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020886",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.7293025652166929, 53.5735948486384572]
+          },
+          "properties": {
+            "atco_code": "450020886",
+            "bearing": 5,
+            "feature_name": "Penistone Rd Gate Foot Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020888",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.74466355614861057, 53.5730622518052684]
+          },
+          "properties": {
+            "atco_code": "450020888",
+            "bearing": 6,
+            "feature_name": "Penistone Rd Hollin House Lane (stop)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450020889",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.75103046647432214, 53.5740283847971028]
+          },
+          "properties": {
+            "atco_code": "450020889",
+            "bearing": 6,
+            "feature_name": "Penistone Rd Church Street",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450022002",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.77187864384822014, 53.5808919024563579]
+          },
+          "properties": {
+            "atco_code": "450022002",
+            "bearing": 7,
+            "feature_name": "New Mill Rd Rosegarth Avenue",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450022005",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.7688636085664291, 53.5798434983880512]
+          },
+          "properties": {
+            "atco_code": "450022005",
+            "bearing": 7,
+            "feature_name": "New Mill Rd Robert Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450022006",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.76310042175231718, 53.5787177217211195]
+          },
+          "properties": {
+            "atco_code": "450022006",
+            "bearing": 6,
+            "feature_name": "Holmfirth Rd Kirkroyds Lane (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450022010",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.75657416819746359, 53.5763946830640947]
+          },
+          "properties": {
+            "atco_code": "450022010",
+            "bearing": 7,
+            "feature_name": "Holmfirth Road Greenhill Bank Rd (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450023667",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.71011497297333004, 53.5838056377479077]
+          },
+          "properties": {
+            "atco_code": "450023667",
+            "bearing": 5,
+            "feature_name": "Marsh Lane Library (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450023944",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.75848251080338303, 53.5780883314179732]
+          },
+          "properties": {
+            "atco_code": "450023944",
+            "bearing": 7,
+            "feature_name": "Holmfirth Rd Moorcroft Park Dr (at)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450024109",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.78358277214624827, 53.5722308728117156]
+          },
+          "properties": {
+            "atco_code": "450024109",
+            "bearing": 5,
+            "feature_name": "Station Rd Bridge Lane (opp)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450024376",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.77631154824789195, 53.5794621116924716]
+          },
+          "properties": {
+            "atco_code": "450024376",
+            "bearing": 5,
+            "feature_name": "New Mill Rd Bank Lane (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450024806",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.69117368073348562, 53.5754891629009009]
+          },
+          "properties": {
+            "atco_code": "450024806",
+            "bearing": 6,
+            "feature_name": "Barnsley Road Rowgate",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450025339",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.78636979186611322, 53.5705370717270526]
+          },
+          "properties": {
+            "atco_code": "450025339",
+            "bearing": 8,
+            "feature_name": "Bus Station (Stand B)",
+            "synthetic": false,
+            "type": "BCS"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450025625",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.65442026393168784, 53.5731058650559149]
+          },
+          "properties": {
+            "atco_code": "450025625",
+            "bearing": 7,
+            "feature_name": "Miller Hill Wakefield Road (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450028643",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.76574151809870039, 53.5790644574782533]
+          },
+          "properties": {
+            "atco_code": "450028643",
+            "bearing": 6,
+            "feature_name": "New Mill Rd Bromley Avenue (adj)",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450028938",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.78113730686319105, 53.5750038231289949]
+          },
+          "properties": {
+            "atco_code": "450028938",
+            "bearing": 5,
+            "feature_name": "Station Road Town End Rd",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450051025",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.65046886529110726, 53.5724921995102292]
+          },
+          "properties": {
+            "atco_code": "450051025",
+            "bearing": 7,
+            "feature_name": "Miller Hill Revel Garth",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450051037",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.72621579877602804, 53.5745495903925217]
+          },
+          "properties": {
+            "atco_code": "450051037",
+            "bearing": 5,
+            "feature_name": "Penistone Rd Marsh Lane",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450051039",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.71992310984788643, 53.5807279830015162]
+          },
+          "properties": {
+            "atco_code": "450051039",
+            "bearing": 5,
+            "feature_name": "Marsh Lane Long Close Ln",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST450051040",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.71407591398085435, 53.5832848346206134]
+          },
+          "properties": {
+            "atco_code": "450051040",
+            "bearing": 6,
+            "feature_name": "Marsh Lane Cliffe Rd",
+            "synthetic": false,
+            "type": "BCT"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP039b48f8a342af3c1b00274426553664422928ca",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.4809728525518997, 53.5528330208110503],
+              [-1.48310386817401607, 53.553848920074266],
+              [-1.48348072770303707, 53.5563762883610579],
+              [-1.48537392057979845, 53.5583528826816746],
+              [-1.48734699483971755, 53.5599792369766163],
+              [-1.49158398656362001, 53.5629364605852984],
+              [-1.4941728519479982, 53.5636035492359142],
+              [-1.49903981303622214, 53.5644239238061743],
+              [-1.5024088146783654, 53.5655345182197564],
+              [-1.50599667851341801, 53.5660167313163385],
+              [-1.5095197083423213, 53.5655817563948631],
+              [-1.51287370851074576, 53.5653976669407044],
+              [-1.52018075094163563, 53.5667933242675005],
+              [-1.52809903246183509, 53.5675797182884921],
+              [-1.53185465163512347, 53.5679539471229802],
+              [-1.5342990901712823, 53.5681072741031343],
+              [-1.54619787990246427, 53.568071987803755],
+              [-1.57495949421008952, 53.5668649511112349],
+              [-1.57749806184431529, 53.5651482050335801],
+              [-1.64683660965849921, 53.5698300176824702],
+              [-1.65046886529110726, 53.5724921995102292],
+              [-1.65442026393168784, 53.5731058650559149],
+              [-1.65650690572968329, 53.5727703045729129],
+              [-1.66054533738910814, 53.5719548804052081],
+              [-1.67141460545281229, 53.5704032151610221],
+              [-1.68026051377762475, 53.5727640812584198],
+              [-1.68720702298202396, 53.5747957746291306],
+              [-1.69117368073348562, 53.5754891629009009],
+              [-1.69573252482401582, 53.5757524857748635],
+              [-1.70697164450040062, 53.5752681306210476],
+              [-1.71034230412508359, 53.5814782247199304],
+              [-1.71011497297333004, 53.5838056377479077],
+              [-1.71407591398085435, 53.5832848346206134],
+              [-1.71699720592724869, 53.5823659696431136],
+              [-1.71992310984788643, 53.5807279830015162],
+              [-1.72287555167798256, 53.5773013207757529],
+              [-1.72621579877602804, 53.5745495903925217],
+              [-1.7293025652166929, 53.5735948486384572],
+              [-1.74466355614861057, 53.5730622518052684],
+              [-1.75103046647432214, 53.5740283847971028],
+              [-1.75657416819746359, 53.5763946830640947],
+              [-1.75848251080338303, 53.5780883314179732],
+              [-1.76310042175231718, 53.5787177217211195],
+              [-1.76574151809870039, 53.5790644574782533],
+              [-1.7688636085664291, 53.5798434983880512],
+              [-1.77187864384822014, 53.5808919024563579],
+              [-1.77631154824789195, 53.5794621116924716],
+              [-1.78113730686319105, 53.5750038231289949],
+              [-1.78358277214624827, 53.5722308728117156],
+              [-1.78636979186611322, 53.5705370717270526]
+            ]
+          },
+          "properties": {
+            "feature_name": "Barnsley Town Centre - Holmfirth",
+            "length_m": 23570.2891,
+            "route_shape": true,
+            "line": "LI78522",
+            "stops": [
+              "ST370055063",
+              "ST370055053",
+              "ST370050048",
+              "ST370050050",
+              "ST370050052",
+              "ST370050054",
+              "ST370050056",
+              "ST370055007",
+              "ST370050059",
+              "ST370050060",
+              "ST370050062",
+              "ST370050064",
+              "ST370055075",
+              "ST370050082",
+              "ST370055049",
+              "ST370055485",
+              "ST370050447",
+              "ST370051165",
+              "ST370051046",
+              "ST450020850",
+              "ST450051025",
+              "ST450025625",
+              "ST450020819",
+              "ST450020821",
+              "ST450020824",
+              "ST450020825",
+              "ST450020828",
+              "ST450024806",
+              "ST450020842",
+              "ST450017217",
+              "ST450017219",
+              "ST450023667",
+              "ST450051040",
+              "ST450020884",
+              "ST450051039",
+              "ST450020882",
+              "ST450051037",
+              "ST450020886",
+              "ST450020888",
+              "ST450020889",
+              "ST450022010",
+              "ST450023944",
+              "ST450022006",
+              "ST450028643",
+              "ST450022005",
+              "ST450022002",
+              "ST450024376",
+              "ST450028938",
+              "ST450024109",
+              "ST450025339"
+            ],
+            "timing_patterns": [
+              "TP132b5c8cbcc5980141e37cdf131b453a8a6ff318",
+              "TP8df9b1ba245f9d97526c650cdb86744d2e04ce9e"
+            ],
+            "service_links": [
+              "SLd0bacf9b84c1050128e4c658ba5d9bd36a881dda",
+              "SLe00b04c70e05134497a1dcdc87b4e4083c8bd030",
+              "SLfe2e56acb58af1afe9c0b60782d6d410a73397f9",
+              "SLc06b8e8036d76e703092e5d7d511990e976b6f2d",
+              "SL16fe885f9474c7192d8e6a7edd11ab09d81cb280",
+              "SL75c98f2b3f7d016a3881e1b09e962f8542889ddd",
+              "SL621704654d55b0c113e9002ff8def3c5b4de0f0a",
+              "SLe93a20f3e3bced57c7d0fcb0b927f4afb6caa9ae",
+              "SLd69a5191443c391dd586b75358ea11a2afbdc623",
+              "SLef867d91ab0fba8288d70a5ecc6c9f72b32cd258",
+              "SLcfacd358b923fa51520adf26ff8dc3009d45520b",
+              "SLe505f2ef2ed97b3051841b8933e03e724c233ace",
+              "SLd5285670091aed27598461eae3d410d48f904fc2",
+              "SLce4c49856c0dcfa762d5d92b15de1fa1ca445855",
+              "SL386e9dd65f4d7d94f5fbf2f2ecc9366eb519bc90",
+              "SLf7a3c12e71b97c81a42ea5b5ac56e9abda921a14",
+              "SL5b1b6f6e6834314ee5bbac9102064736e026ff56",
+              "SL6ba1d446dbdd2f81631417a6a1e8b5be6d07fe1f",
+              "SL69a8a11ca38f6c991f2e0e15434ef102e25211fa",
+              "SLaf09841431af04817257ccb84fbbcf308f44e89e",
+              "SLca20e77b74d93b0523e250d487d940678dac7c73",
+              "SL709eca640016041741f9e0fda1393a8dba93d5bd",
+              "SL5446543d4a9418d22ec855e8e85b4ea06ad5e363",
+              "SL00893b2b274c7bfe5d88fb9f3edfee4fd65f1e02",
+              "SL7e786fd22e56447f8ef3aea56387f544dcfd403a",
+              "SL9259b287448c066f10461293a9c46dba0c4ccf63",
+              "SL4a8aa263c93660148d1c6bd37cc47e906e222f58",
+              "SL3cea14a57b4e3aa4da6500f78c8ae6518b93f5d0",
+              "SL486d9ee6a7e8b3cb11d384f6c800a4b7bf495da5",
+              "SL6ec439260faa407afa77299dd6e89fde3b91218e",
+              "SLc55a142aa202465c7c75feee25386e712238bb90",
+              "SL5d0f1208f009201b92ffbcc028082c4ecfe94e01",
+              "SL0836d21403faa78e137a14c89d1326ff5bad20ac",
+              "SL383cf5ddf10027e5d71dca44f2b7b5ca56984c5c",
+              "SL12f26962fdb1a11e9d782eb07b39d61e47a3e1c6",
+              "SLe0def914733421177a3b149ac377bef3ce815f29",
+              "SL1491d1cc77116368d9151cde1e443009e4e1e770",
+              "SL6bd59f84e0ad70dfa2ac0f6c59574f36734754e3",
+              "SLb646368c99ceb604deed9068e7cb46886b2bc866",
+              "SL8ce07f1ee80cd7f47ecffdc2aeaa0a7f530bd36e",
+              "SL267ac7b2cecaed2d7948dc05f2145325d8c17d8d",
+              "SL9703c9a592c84d2bfddf3d3c811a25a881d41500",
+              "SL3d3bb8678d66b7172014eea17d48da080baa6652",
+              "SLc907e9efb07175b48b8c27d9fdcd24e0d84febd4",
+              "SLac67939194e05d3185fb45eef8b1f265968f9949",
+              "SL8670f99cc5f640e6fec8261777224998d566e9dd",
+              "SL68fdf42198e14deef0df71dfe842bd4cdead75f9",
+              "SL057ec5001db5ffc7bad0ae8c15516de81f3106d3",
+              "SLe9b693eb606172a8247106bd05044e82555a7bac"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL00893b2b274c7bfe5d88fb9f3edfee4fd65f1e02",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.66054533738910814, 53.5719548804052081],
+              [-1.67141460545281229, 53.5704032151610221]
+            ]
+          },
+          "properties": {
+            "feature_name": "Railway Station (opp)-Rockwood House (opp)",
+            "from_stop": "ST450020821",
+            "length_m": 740.227661,
+            "route_shape": false,
+            "to_stop": "ST450020824",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL057ec5001db5ffc7bad0ae8c15516de81f3106d3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.78113730686319105, 53.5750038231289949],
+              [-1.78358277214624827, 53.5722308728117156]
+            ]
+          },
+          "properties": {
+            "feature_name": "Station Road Town End Rd-Station Rd Bridge Lane (opp)",
+            "from_stop": "ST450028938",
+            "length_m": 348.427887,
+            "route_shape": false,
+            "to_stop": "ST450024109",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SPd65bca8c6e56b67ed7c6269680365c2ae2fca095",
+              "SP68e1c6ae0bca8115b694a948701acf82622aaf19",
+              "SPb3a62d5431db29e95e1b7e6d05e66f0985aa673b",
+              "SPe2589823c6d51d79580a5f4de90ae137bf1c9426",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPd681922923896f762c78264993794485ab15786e",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL0836d21403faa78e137a14c89d1326ff5bad20ac",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.71407591398085435, 53.5832848346206134],
+              [-1.71699720592724869, 53.5823659696431136]
+            ]
+          },
+          "properties": {
+            "feature_name": "Marsh Lane Cliffe Rd-Marsh Lane Marsh Court (at)",
+            "from_stop": "ST450051040",
+            "length_m": 218.764709,
+            "route_shape": false,
+            "to_stop": "ST450020884",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP21162ae730db5269f1953285e8e384952babb751",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP90d0b2057667f5bd279fd80761df714206c61a43",
+              "SPab1adcd3ea576046f238f10f5368cc34b2af9a33",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL12f26962fdb1a11e9d782eb07b39d61e47a3e1c6",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.71992310984788643, 53.5807279830015162],
+              [-1.72287555167798256, 53.5773013207757529]
+            ]
+          },
+          "properties": {
+            "feature_name": "Marsh Lane Long Close Ln-Marsh Lane Row Gate (stop)",
+            "from_stop": "ST450051039",
+            "length_m": 428.439026,
+            "route_shape": false,
+            "to_stop": "ST450020882",
+            "service_patterns": ["SP039b48f8a342af3c1b00274426553664422928ca"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1491d1cc77116368d9151cde1e443009e4e1e770",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.72621579877602804, 53.5745495903925217],
+              [-1.7293025652166929, 53.5735948486384572]
+            ]
+          },
+          "properties": {
+            "feature_name": "Penistone Rd Marsh Lane-Penistone Rd Gate Foot Lane",
+            "from_stop": "ST450051037",
+            "length_m": 230.358414,
+            "route_shape": false,
+            "to_stop": "ST450020886",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL16fe885f9474c7192d8e6a7edd11ab09d81cb280",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.48734699483971755, 53.5599792369766163],
+              [-1.49158398656362001, 53.5629364605852984]
+            ]
+          },
+          "properties": {
+            "feature_name": "Kensington Road (adj)-Salisbury Street (adj)",
+            "from_stop": "ST370050052",
+            "length_m": 432.45578,
+            "route_shape": false,
+            "to_stop": "ST370050054",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL267ac7b2cecaed2d7948dc05f2145325d8c17d8d",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.75657416819746359, 53.5763946830640947],
+              [-1.75848251080338303, 53.5780883314179732]
+            ]
+          },
+          "properties": {
+            "feature_name": "Holmfirth Road Greenhill Bank Rd (adj)-Holmfirth Rd Moorcroft Park Dr (at)",
+            "from_stop": "ST450022010",
+            "length_m": 226.876617,
+            "route_shape": false,
+            "to_stop": "ST450023944",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP80ad4bb33452002e804ad889d670bc3bdadd7045",
+              "SP8763413e9512553234517d177053929e135acdb5",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced",
+              "SP35124e3e4233a0a7c0412bd13b98e432bd3235b9"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL383cf5ddf10027e5d71dca44f2b7b5ca56984c5c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.71699720592724869, 53.5823659696431136],
+              [-1.71992310984788643, 53.5807279830015162]
+            ]
+          },
+          "properties": {
+            "feature_name": "Marsh Lane Marsh Court (at)-Marsh Lane Long Close Ln",
+            "from_stop": "ST450020884",
+            "length_m": 265.966156,
+            "route_shape": false,
+            "to_stop": "ST450051039",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP21162ae730db5269f1953285e8e384952babb751",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP90d0b2057667f5bd279fd80761df714206c61a43",
+              "SPab1adcd3ea576046f238f10f5368cc34b2af9a33",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL386e9dd65f4d7d94f5fbf2f2ecc9366eb519bc90",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.53185465163512347, 53.5679539471229802],
+              [-1.5342990901712823, 53.5681072741031343]
+            ]
+          },
+          "properties": {
+            "feature_name": "Higham Common Road (opp)-Barugh Lane (nr)",
+            "from_stop": "ST370055049",
+            "length_m": 162.788208,
+            "route_shape": false,
+            "to_stop": "ST370055485",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3cea14a57b4e3aa4da6500f78c8ae6518b93f5d0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.69117368073348562, 53.5754891629009009],
+              [-1.69573252482401582, 53.5757524857748635]
+            ]
+          },
+          "properties": {
+            "feature_name": "Barnsley Road Rowgate-Barnsley Road Jane Well (opp)",
+            "from_stop": "ST450024806",
+            "length_m": 303.295227,
+            "route_shape": false,
+            "to_stop": "ST450020842",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SPd3384e42df0c064c2c98db09c35819dc45c6b7f5",
+              "SPbf4dddb4375f07d69af68f98f66e08bfd304155c",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3d3bb8678d66b7172014eea17d48da080baa6652",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.76310042175231718, 53.5787177217211195],
+              [-1.76574151809870039, 53.5790644574782533]
+            ]
+          },
+          "properties": {
+            "feature_name": "Holmfirth Rd Kirkroyds Lane (adj)-New Mill Rd Bromley Avenue (adj)",
+            "from_stop": "ST450022006",
+            "length_m": 179.078201,
+            "route_shape": false,
+            "to_stop": "ST450028643",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP80ad4bb33452002e804ad889d670bc3bdadd7045",
+              "SP8763413e9512553234517d177053929e135acdb5",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced",
+              "SP35124e3e4233a0a7c0412bd13b98e432bd3235b9"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL486d9ee6a7e8b3cb11d384f6c800a4b7bf495da5",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.69573252482401582, 53.5757524857748635],
+              [-1.70697164450040062, 53.5752681306210476]
+            ]
+          },
+          "properties": {
+            "feature_name": "Barnsley Road Jane Well (opp)-Sovereign Inn Penistone Road (after)",
+            "from_stop": "ST450020842",
+            "length_m": 746.180298,
+            "route_shape": false,
+            "to_stop": "ST450017217",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL4a8aa263c93660148d1c6bd37cc47e906e222f58",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.68720702298202396, 53.5747957746291306],
+              [-1.69117368073348562, 53.5754891629009009]
+            ]
+          },
+          "properties": {
+            "feature_name": "The Star Inn (adj)-Barnsley Road Rowgate",
+            "from_stop": "ST450020828",
+            "length_m": 273.760834,
+            "route_shape": false,
+            "to_stop": "ST450024806",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SPd3384e42df0c064c2c98db09c35819dc45c6b7f5",
+              "SPbf4dddb4375f07d69af68f98f66e08bfd304155c",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5446543d4a9418d22ec855e8e85b4ea06ad5e363",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.65650690572968329, 53.5727703045729129],
+              [-1.66054533738910814, 53.5719548804052081]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wakefield Rd Wesley Terrace-Railway Station (opp)",
+            "from_stop": "ST450020819",
+            "length_m": 282.405731,
+            "route_shape": false,
+            "to_stop": "ST450020821",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP386eebf5dbf9868bf91394ca31a06f17a9185f04",
+              "SP90d0b2057667f5bd279fd80761df714206c61a43",
+              "SPab1adcd3ea576046f238f10f5368cc34b2af9a33",
+              "SP8a0ed3661da0507be5eb855df149b3e075936d75",
+              "SP93de06d8d83ba964c996c215bbea05e654da56c1",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5b1b6f6e6834314ee5bbac9102064736e026ff56",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.54619787990246427, 53.568071987803755],
+              [-1.57495949421008952, 53.5668649511112349]
+            ]
+          },
+          "properties": {
+            "feature_name": "Cawthorne Basin (adj)-Tivy Dale Close (adj)",
+            "from_stop": "ST370050447",
+            "length_m": 1909.58948,
+            "route_shape": false,
+            "to_stop": "ST370051165",
+            "service_patterns": ["SP039b48f8a342af3c1b00274426553664422928ca"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5d0f1208f009201b92ffbcc028082c4ecfe94e01",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.71011497297333004, 53.5838056377479077],
+              [-1.71407591398085435, 53.5832848346206134]
+            ]
+          },
+          "properties": {
+            "feature_name": "Marsh Lane Library (opp)-Marsh Lane Cliffe Rd",
+            "from_stop": "ST450023667",
+            "length_m": 268.560974,
+            "route_shape": false,
+            "to_stop": "ST450051040",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP21162ae730db5269f1953285e8e384952babb751",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP90d0b2057667f5bd279fd80761df714206c61a43",
+              "SPab1adcd3ea576046f238f10f5368cc34b2af9a33",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL621704654d55b0c113e9002ff8def3c5b4de0f0a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.4941728519479982, 53.5636035492359142],
+              [-1.49903981303622214, 53.5644239238061743]
+            ]
+          },
+          "properties": {
+            "feature_name": "Greenfoot Lane (adj)-Rowland Road (Adj)",
+            "from_stop": "ST370050056",
+            "length_m": 335.037323,
+            "route_shape": false,
+            "to_stop": "ST370055007",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL68fdf42198e14deef0df71dfe842bd4cdead75f9",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.77631154824789195, 53.5794621116924716],
+              [-1.78113730686319105, 53.5750038231289949]
+            ]
+          },
+          "properties": {
+            "feature_name": "New Mill Rd Bank Lane (adj)-Station Road Town End Rd",
+            "from_stop": "ST450024376",
+            "length_m": 590.027954,
+            "route_shape": false,
+            "to_stop": "ST450028938",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP68e1c6ae0bca8115b694a948701acf82622aaf19",
+              "SPb3a62d5431db29e95e1b7e6d05e66f0985aa673b",
+              "SPe2589823c6d51d79580a5f4de90ae137bf1c9426",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPd681922923896f762c78264993794485ab15786e",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL69a8a11ca38f6c991f2e0e15434ef102e25211fa",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.57749806184431529, 53.5651482050335801],
+              [-1.64683660965849921, 53.5698300176824702]
+            ]
+          },
+          "properties": {
+            "feature_name": "Tivy Dale Drive (opp)-Miller Hill Barnsley Road (stop)",
+            "from_stop": "ST370051046",
+            "length_m": 4621.69238,
+            "route_shape": false,
+            "to_stop": "ST450020850",
+            "service_patterns": ["SP039b48f8a342af3c1b00274426553664422928ca"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6ba1d446dbdd2f81631417a6a1e8b5be6d07fe1f",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.57495949421008952, 53.5668649511112349],
+              [-1.57749806184431529, 53.5651482050335801]
+            ]
+          },
+          "properties": {
+            "feature_name": "Tivy Dale Close (adj)-Tivy Dale Drive (opp)",
+            "from_stop": "ST370051165",
+            "length_m": 254.46611,
+            "route_shape": false,
+            "to_stop": "ST370051046",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP86a74dc22e8ed7e322f4b8375224f80e11cc5292"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6bd59f84e0ad70dfa2ac0f6c59574f36734754e3",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.7293025652166929, 53.5735948486384572],
+              [-1.74466355614861057, 53.5730622518052684]
+            ]
+          },
+          "properties": {
+            "feature_name": "Penistone Rd Gate Foot Lane-Penistone Rd Hollin House Lane (stop)",
+            "from_stop": "ST450020886",
+            "length_m": 1018.94946,
+            "route_shape": false,
+            "to_stop": "ST450020888",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6ec439260faa407afa77299dd6e89fde3b91218e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.70697164450040062, 53.5752681306210476],
+              [-1.71034230412508359, 53.5814782247199304]
+            ]
+          },
+          "properties": {
+            "feature_name": "Sovereign Inn Penistone Road (after)-Lane Head Rd Cliffe Rd (adj)",
+            "from_stop": "ST450017217",
+            "length_m": 726.068848,
+            "route_shape": false,
+            "to_stop": "ST450017219",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP21162ae730db5269f1953285e8e384952babb751",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL709eca640016041741f9e0fda1393a8dba93d5bd",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.65442026393168784, 53.5731058650559149],
+              [-1.65650690572968329, 53.5727703045729129]
+            ]
+          },
+          "properties": {
+            "feature_name": "Miller Hill Wakefield Road (adj)-Wakefield Rd Wesley Terrace",
+            "from_stop": "ST450025625",
+            "length_m": 143.136292,
+            "route_shape": false,
+            "to_stop": "ST450020819",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP386eebf5dbf9868bf91394ca31a06f17a9185f04"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL75c98f2b3f7d016a3881e1b09e962f8542889ddd",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.49158398656362001, 53.5629364605852984],
+              [-1.4941728519479982, 53.5636035492359142]
+            ]
+          },
+          "properties": {
+            "feature_name": "Salisbury Street (adj)-Greenfoot Lane (adj)",
+            "from_stop": "ST370050054",
+            "length_m": 186.850204,
+            "route_shape": false,
+            "to_stop": "ST370050056",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7e786fd22e56447f8ef3aea56387f544dcfd403a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.67141460545281229, 53.5704032151610221],
+              [-1.68026051377762475, 53.5727640812584198]
+            ]
+          },
+          "properties": {
+            "feature_name": "Rockwood House (opp)-Barnsley Road Eunice Ln (stop)",
+            "from_stop": "ST450020824",
+            "length_m": 642.003906,
+            "route_shape": false,
+            "to_stop": "ST450020825",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8670f99cc5f640e6fec8261777224998d566e9dd",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.77187864384822014, 53.5808919024563579],
+              [-1.77631154824789195, 53.5794621116924716]
+            ]
+          },
+          "properties": {
+            "feature_name": "New Mill Rd Rosegarth Avenue-New Mill Rd Bank Lane (adj)",
+            "from_stop": "ST450022002",
+            "length_m": 333.839783,
+            "route_shape": false,
+            "to_stop": "ST450024376",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP68e1c6ae0bca8115b694a948701acf82622aaf19",
+              "SPb3a62d5431db29e95e1b7e6d05e66f0985aa673b",
+              "SPe2589823c6d51d79580a5f4de90ae137bf1c9426",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPd681922923896f762c78264993794485ab15786e",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8ce07f1ee80cd7f47ecffdc2aeaa0a7f530bd36e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.75103046647432214, 53.5740283847971028],
+              [-1.75657416819746359, 53.5763946830640947]
+            ]
+          },
+          "properties": {
+            "feature_name": "Penistone Rd Church Street-Holmfirth Road Greenhill Bank Rd (adj)",
+            "from_stop": "ST450020889",
+            "length_m": 451.738861,
+            "route_shape": false,
+            "to_stop": "ST450022010",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL9259b287448c066f10461293a9c46dba0c4ccf63",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.68026051377762475, 53.5727640812584198],
+              [-1.68720702298202396, 53.5747957746291306]
+            ]
+          },
+          "properties": {
+            "feature_name": "Barnsley Road Eunice Ln (stop)-The Star Inn (adj)",
+            "from_stop": "ST450020825",
+            "length_m": 512.539734,
+            "route_shape": false,
+            "to_stop": "ST450020828",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL9703c9a592c84d2bfddf3d3c811a25a881d41500",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.75848251080338303, 53.5780883314179732],
+              [-1.76310042175231718, 53.5787177217211195]
+            ]
+          },
+          "properties": {
+            "feature_name": "Holmfirth Rd Moorcroft Park Dr (at)-Holmfirth Rd Kirkroyds Lane (adj)",
+            "from_stop": "ST450023944",
+            "length_m": 313.682953,
+            "route_shape": false,
+            "to_stop": "ST450022006",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP80ad4bb33452002e804ad889d670bc3bdadd7045",
+              "SP8763413e9512553234517d177053929e135acdb5",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced",
+              "SP35124e3e4233a0a7c0412bd13b98e432bd3235b9"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLac67939194e05d3185fb45eef8b1f265968f9949",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.7688636085664291, 53.5798434983880512],
+              [-1.77187864384822014, 53.5808919024563579]
+            ]
+          },
+          "properties": {
+            "feature_name": "New Mill Rd Robert Lane-New Mill Rd Rosegarth Avenue",
+            "from_stop": "ST450022005",
+            "length_m": 231.205536,
+            "route_shape": false,
+            "to_stop": "ST450022002",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLaf09841431af04817257ccb84fbbcf308f44e89e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.64683660965849921, 53.5698300176824702],
+              [-1.65046886529110726, 53.5724921995102292]
+            ]
+          },
+          "properties": {
+            "feature_name": "Miller Hill Barnsley Road (stop)-Miller Hill Revel Garth",
+            "from_stop": "ST450020850",
+            "length_m": 381.561279,
+            "route_shape": false,
+            "to_stop": "ST450051025",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP386eebf5dbf9868bf91394ca31a06f17a9185f04"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLb646368c99ceb604deed9068e7cb46886b2bc866",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.74466355614861057, 53.5730622518052684],
+              [-1.75103046647432214, 53.5740283847971028]
+            ]
+          },
+          "properties": {
+            "feature_name": "Penistone Rd Hollin House Lane (stop)-Penistone Rd Church Street",
+            "from_stop": "ST450020888",
+            "length_m": 435.109192,
+            "route_shape": false,
+            "to_stop": "ST450020889",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc06b8e8036d76e703092e5d7d511990e976b6f2d",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.48537392057979845, 53.5583528826816746],
+              [-1.48734699483971755, 53.5599792369766163]
+            ]
+          },
+          "properties": {
+            "feature_name": "Western Street (adj)-Kensington Road (adj)",
+            "from_stop": "ST370050050",
+            "length_m": 223.212906,
+            "route_shape": false,
+            "to_stop": "ST370050052",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc55a142aa202465c7c75feee25386e712238bb90",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.71034230412508359, 53.5814782247199304],
+              [-1.71011497297333004, 53.5838056377479077]
+            ]
+          },
+          "properties": {
+            "feature_name": "Lane Head Rd Cliffe Rd (adj)-Marsh Lane Library (opp)",
+            "from_stop": "ST450017219",
+            "length_m": 259.378113,
+            "route_shape": false,
+            "to_stop": "ST450023667",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP1667c68f6ae2cb189a63f291956276fdd5b69a93",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc907e9efb07175b48b8c27d9fdcd24e0d84febd4",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.76574151809870039, 53.5790644574782533],
+              [-1.7688636085664291, 53.5798434983880512]
+            ]
+          },
+          "properties": {
+            "feature_name": "New Mill Rd Bromley Avenue (adj)-New Mill Rd Robert Lane",
+            "from_stop": "ST450028643",
+            "length_m": 224.153961,
+            "route_shape": false,
+            "to_stop": "ST450022005",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP80ad4bb33452002e804ad889d670bc3bdadd7045",
+              "SP8763413e9512553234517d177053929e135acdb5",
+              "SP0387330c6a097c7d27b3574e16390dc2b01b8b88",
+              "SPd1d15c73c60319dc876e8933e2b4cb728c751efb",
+              "SPc08a357e2c54ed822fd2c5feb9294a1cbf8a7582",
+              "SPdfa97c4b37722c50f80e68fe8166f07774313195",
+              "SPf6f3e4ac43cd22ad0bc0928df9df8af1211e1728",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced",
+              "SP35124e3e4233a0a7c0412bd13b98e432bd3235b9"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLca20e77b74d93b0523e250d487d940678dac7c73",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.65046886529110726, 53.5724921995102292],
+              [-1.65442026393168784, 53.5731058650559149]
+            ]
+          },
+          "properties": {
+            "feature_name": "Miller Hill Revel Garth-Miller Hill Wakefield Road (adj)",
+            "from_stop": "ST450051025",
+            "length_m": 270.431152,
+            "route_shape": false,
+            "to_stop": "ST450025625",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP8c53e6e11bb086cc96fed0271d5f5ba6e93c1e49",
+              "SP386eebf5dbf9868bf91394ca31a06f17a9185f04"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLce4c49856c0dcfa762d5d92b15de1fa1ca445855",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.52809903246183509, 53.5675797182884921],
+              [-1.53185465163512347, 53.5679539471229802]
+            ]
+          },
+          "properties": {
+            "feature_name": "Longley Close (nr)-Higham Common Road (opp)",
+            "from_stop": "ST370050082",
+            "length_m": 252.192383,
+            "route_shape": false,
+            "to_stop": "ST370055049",
+            "service_patterns": [
+              "SPc09e45ff89f5a94f22c738860c860b81b671448a",
+              "SP0469678461a33ab5aac84a65d9a91319afda9f68",
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPf0013d97dfb3e5329451f9604bc05bb956aa35c3",
+              "SP1ee22cc268d98a78030320b30c3a3e8e488d0e08",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SP1d533c537e457eec9f308cf36db86c718b25c5a5",
+              "SPea8e2367c83d0b5a369fa0011520bf930057b118",
+              "SP69183567437f3371cead81144fbfda64af17b82e",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLcfacd358b923fa51520adf26ff8dc3009d45520b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.5095197083423213, 53.5655817563948631],
+              [-1.51287370851074576, 53.5653976669407044]
+            ]
+          },
+          "properties": {
+            "feature_name": "Dayhouse Way (nr)-Wilbrook Rise (adj)",
+            "from_stop": "ST370050062",
+            "length_m": 223.087433,
+            "route_shape": false,
+            "to_stop": "ST370050064",
+            "service_patterns": [
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLd0bacf9b84c1050128e4c658ba5d9bd36a881dda",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.4809728525518997, 53.5528330208110503],
+              [-1.48310386817401607, 53.553848920074266]
+            ]
+          },
+          "properties": {
+            "feature_name": "Market Hill (nr)-Shambles Street (adj)",
+            "from_stop": "ST370055063",
+            "length_m": 180.853531,
+            "route_shape": false,
+            "to_stop": "ST370055053",
+            "service_patterns": [
+              "SPc09e45ff89f5a94f22c738860c860b81b671448a",
+              "SP0469678461a33ab5aac84a65d9a91319afda9f68",
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPf0013d97dfb3e5329451f9604bc05bb956aa35c3",
+              "SP1ee22cc268d98a78030320b30c3a3e8e488d0e08",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP1d533c537e457eec9f308cf36db86c718b25c5a5",
+              "SPea8e2367c83d0b5a369fa0011520bf930057b118",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLd5285670091aed27598461eae3d410d48f904fc2",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.52018075094163563, 53.5667933242675005],
+              [-1.52809903246183509, 53.5675797182884921]
+            ]
+          },
+          "properties": {
+            "feature_name": "Claycliffe Avenue (nr)-Longley Close (nr)",
+            "from_stop": "ST370055075",
+            "length_m": 531.677551,
+            "route_shape": false,
+            "to_stop": "ST370050082",
+            "service_patterns": [
+              "SPc09e45ff89f5a94f22c738860c860b81b671448a",
+              "SP0469678461a33ab5aac84a65d9a91319afda9f68",
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPf0013d97dfb3e5329451f9604bc05bb956aa35c3",
+              "SP1ee22cc268d98a78030320b30c3a3e8e488d0e08",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP1d533c537e457eec9f308cf36db86c718b25c5a5",
+              "SPea8e2367c83d0b5a369fa0011520bf930057b118",
+              "SP69183567437f3371cead81144fbfda64af17b82e",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLd69a5191443c391dd586b75358ea11a2afbdc623",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.5024088146783654, 53.5655345182197564],
+              [-1.50599667851341801, 53.5660167313163385]
+            ]
+          },
+          "properties": {
+            "feature_name": "Innovation Way (Adj)-Ripley Grove (adj)",
+            "from_stop": "ST370050059",
+            "length_m": 243.614456,
+            "route_shape": false,
+            "to_stop": "ST370050060",
+            "service_patterns": [
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe00b04c70e05134497a1dcdc87b4e4083c8bd030",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.48310386817401607, 53.553848920074266],
+              [-1.48348072770303707, 53.5563762883610579]
+            ]
+          },
+          "properties": {
+            "feature_name": "Shambles Street (adj)-Church Street (adj)",
+            "from_stop": "ST370055053",
+            "length_m": 282.294159,
+            "route_shape": false,
+            "to_stop": "ST370050048",
+            "service_patterns": [
+              "SPc09e45ff89f5a94f22c738860c860b81b671448a",
+              "SP0469678461a33ab5aac84a65d9a91319afda9f68",
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPd1a0a03c2fa83105dfe3b2faa313ba01bc93737f",
+              "SPf0013d97dfb3e5329451f9604bc05bb956aa35c3",
+              "SP1ee22cc268d98a78030320b30c3a3e8e488d0e08",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP1d533c537e457eec9f308cf36db86c718b25c5a5",
+              "SPea8e2367c83d0b5a369fa0011520bf930057b118",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d",
+              "SP8ffbd4249e88a3e008fd75bba025ac3a9717670a"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe0def914733421177a3b149ac377bef3ce815f29",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.72287555167798256, 53.5773013207757529],
+              [-1.72621579877602804, 53.5745495903925217]
+            ]
+          },
+          "properties": {
+            "feature_name": "Marsh Lane Row Gate (stop)-Penistone Rd Marsh Lane",
+            "from_stop": "ST450020882",
+            "length_m": 377.689026,
+            "route_shape": false,
+            "to_stop": "ST450051037",
+            "service_patterns": ["SP039b48f8a342af3c1b00274426553664422928ca"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe505f2ef2ed97b3051841b8933e03e724c233ace",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.51287370851074576, 53.5653976669407044],
+              [-1.52018075094163563, 53.5667933242675005]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wilbrook Rise (adj)-Claycliffe Avenue (nr)",
+            "from_stop": "ST370050064",
+            "length_m": 508.260773,
+            "route_shape": false,
+            "to_stop": "ST370055075",
+            "service_patterns": [
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe93a20f3e3bced57c7d0fcb0b927f4afb6caa9ae",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.49903981303622214, 53.5644239238061743],
+              [-1.5024088146783654, 53.5655345182197564]
+            ]
+          },
+          "properties": {
+            "feature_name": "Rowland Road (Adj)-Innovation Way (Adj)",
+            "from_stop": "ST370055007",
+            "length_m": 255.068619,
+            "route_shape": false,
+            "to_stop": "ST370050059",
+            "service_patterns": [
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe9b693eb606172a8247106bd05044e82555a7bac",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.78358277214624827, 53.5722308728117156],
+              [-1.78636979186611322, 53.5705370717270526]
+            ]
+          },
+          "properties": {
+            "feature_name": "Station Rd Bridge Lane (opp)-Bus Station (Stand B)",
+            "from_stop": "ST450024109",
+            "length_m": 263.774536,
+            "route_shape": false,
+            "to_stop": "ST450025339",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP4678d3b6cc836cc7df2e041a6e9a10ba4275e89f",
+              "SP68e1c6ae0bca8115b694a948701acf82622aaf19",
+              "SPb3a62d5431db29e95e1b7e6d05e66f0985aa673b",
+              "SPe2589823c6d51d79580a5f4de90ae137bf1c9426",
+              "SP7470bac8ee86482f3501322bc95fb79c7a2aeaa4",
+              "SP8d3853c1935073c72cd92ef7bc457b7614f3ddd1",
+              "SP845c18b2edbca7aa90cb4bef313b75eacf3f6b9e",
+              "SP9ba198ddce672b51b4ac0955c1c2a7ff828b2eb2",
+              "SP815fde23abe2ecf557eacb01b43cfcc657e5844b",
+              "SP280370ffb0a8634f96cac88f63f1353ac0c8621d",
+              "SP7847d7059acd9cc17afcc6ad31bbdfbbd14466fe",
+              "SP109544e7dd25b07e3c33fe73264f58f7e08b8d01",
+              "SPd4163adc33b3c21f23a5a3223228b7e4d972e298",
+              "SPe7f859f18a911b7fc39bae84af939ef32e461ced"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLef867d91ab0fba8288d70a5ecc6c9f72b32cd258",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.50599667851341801, 53.5660167313163385],
+              [-1.5095197083423213, 53.5655817563948631]
+            ]
+          },
+          "properties": {
+            "feature_name": "Ripley Grove (adj)-Dayhouse Way (nr)",
+            "from_stop": "ST370050060",
+            "length_m": 238.304428,
+            "route_shape": false,
+            "to_stop": "ST370050062",
+            "service_patterns": [
+              "SP2d3e2c642b2a9aa763ae0d812b063f0a4a499fb8",
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SP1faaa19d0d222b448d679df82f24aeaa981a3577",
+              "SPd94e4084a9d68eeceac02ae9393b63c665b9aad8",
+              "SPba769f34d709fb86ef1385e924e14549977043de",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf7a3c12e71b97c81a42ea5b5ac56e9abda921a14",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.5342990901712823, 53.5681072741031343],
+              [-1.54619787990246427, 53.568071987803755]
+            ]
+          },
+          "properties": {
+            "feature_name": "Barugh Lane (nr)-Cawthorne Basin (adj)",
+            "from_stop": "ST370055485",
+            "length_m": 788.051392,
+            "route_shape": false,
+            "to_stop": "ST370050447",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SPcfba1c8e0b9e41808028206b17db6f9523f935f6",
+              "SP6654f5d6e6a991e2a0cc0c6100229d1690aca838"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLfe2e56acb58af1afe9c0b60782d6d410a73397f9",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.48348072770303707, 53.5563762883610579],
+              [-1.48537392057979845, 53.5583528826816746]
+            ]
+          },
+          "properties": {
+            "feature_name": "Church Street (adj)-Western Street (adj)",
+            "from_stop": "ST370050048",
+            "length_m": 253.160034,
+            "route_shape": false,
+            "to_stop": "ST370050050",
+            "service_patterns": [
+              "SP039b48f8a342af3c1b00274426553664422928ca",
+              "SPe67da2509d1a9ad33cd3eb1747e196320853a30b",
+              "SP163b375c523280d6a4953cbbcab0483df1b16f04",
+              "SP6a09372ea1e2ee1d86be559c32da78a866452d36",
+              "SPa45085af93058e8f21119598e067c0356bb8ab0d"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI78522",
+        "name": "353:Holmfirth - Barnsley Town Centre"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP132b5c8cbcc5980141e37cdf131b453a8a6ff318",
+        "service_pattern": "SP039b48f8a342af3c1b00274426553664422928ca",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 28,
+            "departure_time_secs": 28,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 180,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 73,
+            "departure_time_secs": 73,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 463,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 113,
+            "departure_time_secs": 113,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 716,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 148,
+            "departure_time_secs": 148,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 939,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 217,
+            "departure_time_secs": 217,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 1371,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 246,
+            "departure_time_secs": 246,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 1558,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 300,
+            "departure_time_secs": 300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 1893,
+            "speed": 22
+          },
+          {
+            "arrival_time_secs": 333,
+            "departure_time_secs": 333,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2148,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 366,
+            "departure_time_secs": 366,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2392,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 398,
+            "departure_time_secs": 398,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2630,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 427,
+            "departure_time_secs": 427,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2853,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 495,
+            "departure_time_secs": 495,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3362,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 566,
+            "departure_time_secs": 566,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3893,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 600,
+            "departure_time_secs": 600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4146,
+            "speed": 27
+          },
+          {
+            "arrival_time_secs": 612,
+            "departure_time_secs": 612,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 4308,
+            "speed": 46
+          },
+          {
+            "arrival_time_secs": 673,
+            "departure_time_secs": 673,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5096,
+            "speed": 46
+          },
+          {
+            "arrival_time_secs": 820,
+            "departure_time_secs": 820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7006,
+            "speed": 46
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7260,
+            "speed": 46
+          },
+          {
+            "arrival_time_secs": 1260,
+            "departure_time_secs": 1260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 11882,
+            "speed": 39
+          },
+          {
+            "arrival_time_secs": 1295,
+            "departure_time_secs": 1295,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 12264,
+            "speed": 39
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12534,
+            "speed": 39
+          },
+          {
+            "arrival_time_secs": 1334,
+            "departure_time_secs": 1334,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 12677,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1364,
+            "departure_time_secs": 1364,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 12960,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 13700,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1506,
+            "departure_time_secs": 1506,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 14342,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1560,
+            "departure_time_secs": 1560,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14854,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1588,
+            "departure_time_secs": 1588,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 15128,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1619,
+            "departure_time_secs": 1619,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 15432,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1697,
+            "departure_time_secs": 1697,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 16178,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1773,
+            "departure_time_secs": 1773,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 16904,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 17163,
+            "speed": 34
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 17432,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 17650,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 17916,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 18345,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 18723,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 18953,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 19972,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 20407,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 20859,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 21086,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 21399,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 21578,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 1860,
+            "departure_time_secs": 1860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 21803,
+            "speed": 13
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 22034,
+            "speed": 13
+          },
+          {
+            "arrival_time_secs": 1980,
+            "departure_time_secs": 1980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 22368,
+            "speed": 20
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 22958,
+            "speed": 11
+          },
+          {
+            "arrival_time_secs": 2280,
+            "departure_time_secs": 2280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 23306,
+            "speed": 10
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2400,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 23570,
+            "speed": 7
+          }
+        ],
+        "vehicle_journeys": ["VJ205af8f4638ab66012001ff941d4a5b2d4166d5e"]
+      },
+      {
+        "id": "TP8df9b1ba245f9d97526c650cdb86744d2e04ce9e",
+        "service_pattern": "SP039b48f8a342af3c1b00274426553664422928ca",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 28,
+            "departure_time_secs": 28,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 73,
+            "departure_time_secs": 73,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 113,
+            "departure_time_secs": 113,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 148,
+            "departure_time_secs": 148,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 217,
+            "departure_time_secs": 217,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 246,
+            "departure_time_secs": 246,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 300,
+            "departure_time_secs": 300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 333,
+            "departure_time_secs": 333,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 366,
+            "departure_time_secs": 366,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 398,
+            "departure_time_secs": 398,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 427,
+            "departure_time_secs": 427,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 495,
+            "departure_time_secs": 495,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 566,
+            "departure_time_secs": 566,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 600,
+            "departure_time_secs": 600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 612,
+            "departure_time_secs": 612,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 673,
+            "departure_time_secs": 673,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 820,
+            "departure_time_secs": 820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 840,
+            "departure_time_secs": 840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1260,
+            "departure_time_secs": 1260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1295,
+            "departure_time_secs": 1295,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1334,
+            "departure_time_secs": 1334,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1364,
+            "departure_time_secs": 1364,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1506,
+            "departure_time_secs": 1506,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1560,
+            "departure_time_secs": 1560,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1588,
+            "departure_time_secs": 1588,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1619,
+            "departure_time_secs": 1619,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1697,
+            "departure_time_secs": 1697,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1773,
+            "departure_time_secs": 1773,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1821,
+            "departure_time_secs": 1821,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1839,
+            "departure_time_secs": 1839,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1861,
+            "departure_time_secs": 1861,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1896,
+            "departure_time_secs": 1896,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1927,
+            "departure_time_secs": 1927,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1945,
+            "departure_time_secs": 1945,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2029,
+            "departure_time_secs": 2029,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2064,
+            "departure_time_secs": 2064,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2101,
+            "departure_time_secs": 2101,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2119,
+            "departure_time_secs": 2119,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2145,
+            "departure_time_secs": 2145,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2187,
+            "departure_time_secs": 2187,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2214,
+            "departure_time_secs": 2214,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2255,
+            "departure_time_secs": 2255,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2326,
+            "departure_time_secs": 2326,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2368,
+            "departure_time_secs": 2368,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2400,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": [
+          "VJ381a75af2e35f5a16cde4d116c39b31c16785736",
+          "VJ9600d282e29853e4585139b4e668755896e922fd"
+        ]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ205af8f4638ab66012001ff941d4a5b2d4166d5e",
+        "timing_pattern": "TP132b5c8cbcc5980141e37cdf131b453a8a6ff318",
+        "start": 38400,
+        "feature_name": "10:40:00 -- 353: Barnsley Town Centre to Holmfirth",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ381a75af2e35f5a16cde4d116c39b31c16785736",
+        "timing_pattern": "TP8df9b1ba245f9d97526c650cdb86744d2e04ce9e",
+        "start": 44700,
+        "feature_name": "12:25:00 -- 353: Barnsley Town Centre to Holmfirth",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      },
+      {
+        "id": "VJ9600d282e29853e4585139b4e668755896e922fd",
+        "timing_pattern": "TP8df9b1ba245f9d97526c650cdb86744d2e04ce9e",
+        "start": 51900,
+        "feature_name": "14:25:00 -- 353: Barnsley Town Centre to Holmfirth",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13",
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16"
+        ]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-fast",
+      "values": [
+        {
+          "id": "TP132b5c8cbcc5980141e37cdf131b453a8a6ff318",
+          "warning_type": "timing-fast",
+          "warning_id": 0,
+          "indexes": [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43],
+          "entities": [
+            "SL0836d21403faa78e137a14c89d1326ff5bad20ac",
+            "SL12f26962fdb1a11e9d782eb07b39d61e47a3e1c6",
+            "SL1491d1cc77116368d9151cde1e443009e4e1e770",
+            "SL267ac7b2cecaed2d7948dc05f2145325d8c17d8d",
+            "SL383cf5ddf10027e5d71dca44f2b7b5ca56984c5c",
+            "SL3d3bb8678d66b7172014eea17d48da080baa6652",
+            "SL5d0f1208f009201b92ffbcc028082c4ecfe94e01",
+            "SL6bd59f84e0ad70dfa2ac0f6c59574f36734754e3",
+            "SL8ce07f1ee80cd7f47ecffdc2aeaa0a7f530bd36e",
+            "SL9703c9a592c84d2bfddf3d3c811a25a881d41500",
+            "SLb646368c99ceb604deed9068e7cb46886b2bc866",
+            "SLe0def914733421177a3b149ac377bef3ce815f29"
+          ]
+        }
+      ]
+    }
+  ]
+}

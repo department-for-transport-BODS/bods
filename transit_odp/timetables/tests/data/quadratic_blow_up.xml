@@ -1,0 +1,4 @@
+<!DOCTYPE bomb [
+<!ENTITY a "xxxxxxx... a couple of ten thousand chars">
+]>
+<bomb>&a;&a;&a;... repeat</bomb>

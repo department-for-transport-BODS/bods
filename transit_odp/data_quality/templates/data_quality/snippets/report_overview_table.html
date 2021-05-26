@@ -1,0 +1,55 @@
+{% load i18n %}
+
+<div class="govuk-tabs" data-module="govuk-tabs">
+  <h2 class="govuk-tabs__title">
+    Contents
+  </h2>
+  <ul class="govuk-tabs__list">
+{% for level, data in warning_data.items %}
+    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+      <a class="govuk-tabs__tab" href="#{{ level }}">
+        {{ level }}
+      </a>
+    </li>
+{% endfor %}
+  </ul>
+
+{% for level_title, level_data in warning_data.items %}
+<div class="govuk-tabs__panel" id={{ level_title }}>
+  <h2 class="govuk-heading-l">{{ level_title }} observations ({{ level_data.count }})</h2>
+  <p class="govuk-body">{{level_data.intro}}</p>
+{% for category_title, category_data in level_data.categories.items %}
+  {% if category_data.count %}
+  <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-!-font-size-24">
+      {{ category_title }} ({{ category_data.count }})
+    </caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+          {% trans "Number of observations" %}
+        </th>
+        <th scope="col" class="govuk-table__header">
+          {% trans "Observation category" %}
+        </th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    {% for item in category_data.warnings %}
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-table__cell">{{ item.count }}</td>
+        <td class="govuk-table__cell govuk-table__cell">
+          <a class="govuk-link"
+            href="{% url item.warning.list_url_name pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id %}">
+            {{ item.warning.title }}
+          </a>
+        </td >
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endfor %}
+</div>

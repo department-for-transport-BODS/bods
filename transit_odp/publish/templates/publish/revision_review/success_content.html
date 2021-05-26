@@ -1,0 +1,23 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{# DQS Report Section #}
+{% include "publish/snippets/pti_panel.html" %}
+{% include "publish/snippets/dqs_review_panel.html" %}
+
+{# Preview Section #}
+<div id="preview-section">
+  <h2 class="govuk-heading-l dont-break-out">
+      {{ object.name }}
+  </h2>
+
+    {% include 'publish/snippets/dataset_map.html' %}
+    {% include 'publish/revision_review/property_table.html' %}
+
+  <div class="btn-group-justified">
+    <a role="button" class="govuk-button govuk-button--secondary"
+       href="{% url 'revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
+        {{ _('Delete data') }}
+    </a>
+  </div>
+</div>

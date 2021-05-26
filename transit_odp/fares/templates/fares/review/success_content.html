@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{# Preview Section #}
+<div id="preview-section">
+  {# Publish form #}
+  <div class="govuk-!-margin-bottom-6">
+    {% crispy form %}
+  </div>
+
+  <h2 class="govuk-heading-l dont-break-out">
+    {{ object.name }}
+  </h2>
+  {% include 'publish/snippets/dataset_map.html' %}
+  {% include 'fares/review/property_table.html' %}
+
+  <div class="btn-group-justified">
+    <a role="button" class="govuk-button govuk-button--secondary"
+       href="{% url 'fares:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
+      {{ _('Delete data set') }}
+    </a>
+  </div>
+</div>

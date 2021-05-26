@@ -1,0 +1,17 @@
+{% extends "account/signup.html" %}
+
+{% load i18n %}
+
+{% block inner %}
+  <p class=govuk-body>
+    {% trans "To get an account please email" %}
+    <a href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
+    {% trans "stating the bus operator’s name and email that needs to be invited. " %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    If you are an agent, please request the operator to invite you as a agent user,
+    which they can do by logging in, going to my account and choosing user management.
+    {% endblocktrans %}
+  </p>
+{% endblock %}

@@ -1,0 +1,92 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/media-queries";
+@import "govuk-frontend/govuk/helpers/typography";
+@import "govuk-frontend/govuk/settings/typography-responsive";
+
+.api-doc {
+  $api-doc-blue: map-get($govuk-colours, "blue");
+  $api-doc-grey: map-get($govuk-colours, "grey-4");
+  font-size: 1rem;
+  // Adding a border all the way round is awkward due to shared borders with the tabs and panel
+  //border: 2px solid $govuk-border-colour;
+
+  .govuk-tabs__panel {
+    background-color: $api-doc-grey;
+  }
+
+  .code-snippet {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .code_snippet_box {
+    @include govuk-responsive-margin(0, "bottom");
+    padding: govuk-spacing(6) govuk-spacing(4);
+    border: 1px solid #d6d6d6;
+  }
+
+  .code-snippet__url {
+    margin-bottom: govuk-spacing(3);
+    font-weight: bold;
+    @include govuk-font($size: 19);
+  }
+
+  .code-snippet__example {
+    background-color: inherit;
+    border: 0;
+    width: 100%;
+    padding: 0.9375rem;
+    height: 8.5rem;
+    @include govuk-font($size: 16);
+  }
+
+  .code-snippet__link {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    @include govuk-font($size: 19);
+  }
+
+  // Below the breakpoint it will look like the default tab component
+  // see https://design-system.service.gov.uk/components/tabs/
+  @include mq($from: tablet) {
+    .govuk-tabs__tab {
+      margin: 5px;
+      //padding-top: 5px;
+      vertical-align: middle;
+      color: $api-doc-blue;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .govuk-tabs__tab--selected {
+      $tab-border: 2px solid $api-doc-blue;
+      margin: 0;
+      background-color: $api-doc-grey;
+      border-top: $tab-border;
+      border-bottom: $tab-border;
+    }
+
+    .govuk-tabs__panel h2 {
+      display: none;
+    }
+
+    .code-snippet {
+      flex-direction: row;
+    }
+
+    .code-snippet__url {
+      margin-bottom: 0;
+    }
+
+    .code-snippet__button {
+      margin-left: 2.5rem;
+      width: auto;
+    }
+  }
+}
+
+// Not sure if code above is used but this is to trim the extra padding on the swagger docs
+#swagger-ui .wrapper {
+  padding: 0;
+}

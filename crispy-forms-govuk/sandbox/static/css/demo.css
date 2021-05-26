@@ -1,0 +1,59 @@
+.demo-side-nav {
+}
+
+.demo-side-nav .govuk-list {
+  list-style: none;
+  margin: 0;
+}
+
+.demo-side-nav .govuk-list li {
+  margin: 0;
+}
+
+.demo-side-nav .govuk-list .govuk-link {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  display: block;
+}
+
+.demo-side-nav .govuk-list .govuk-link[disabled] {
+  color: #6f777b;
+}
+
+.demo-side-nav .govuk-list .govuk-link:hover[disabled],
+.demo-side-nav .govuk-list .govuk-link:active[disabled] {
+  outline: unset;
+  background-color: unset;
+}
+
+.demo-side-nav .govuk-list .govuk-link:hover:not([disabled]),
+.demo-side-nav .govuk-list .govuk-link:active:not([disabled]),
+.demo-side-nav .govuk-list .govuk-link.demo-list--active:not([disabled]) {
+  border-left: 4px solid #2b8cc4;
+  padding-left: calc(1rem - 4px);
+}
+
+.demo-side-nav .govuk-list.demo-list--active {
+  background-color: #f8f8f8;
+}
+
+.flexfill {
+  flex: 1;
+}
+
+/* Allows Design System navigation link to be positioned to the right of the header */
+.govuk-header__navigation {
+  display: flex;
+}
+
+@media (min-width: 48.0625em) {
+  .js-enabled .govuk-header__navigation {
+    display: flex;
+  }
+}
+
+.component-wrapper {
+  border: 1px solid #bfc1c3;
+  padding: 2rem;
+}

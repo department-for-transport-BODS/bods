@@ -1,0 +1,6 @@
+Hello,
+
+This email is to confirm that you have removed {{ agent_organisation }} as your agent on the Bus Open Data Service. No further action is required on your end.
+
+Kind regards,
+Bus Open Data Service

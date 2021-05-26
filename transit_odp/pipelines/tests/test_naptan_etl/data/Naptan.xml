@@ -1,0 +1,95 @@
+<NaPTAN xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.naptan.org.uk/"
+        CreationDateTime="2019-11-18T20:13:00" ModificationDateTime="2019-11-18T20:13:00" Modification="revise"
+        RevisionNumber="0" FileName="Naptan.xml" SchemaVersion="2.1"
+        xsi:schemaLocation="http://www.naptan.org.uk/ http://www.naptan.org.uk/schema/2.1/NaPTAN.xsd">
+    <StopPoints>
+        <StopPoint CreationDateTime="2019-11-12T13:31:31" ModificationDateTime="2018-07-12T15:54:56" Modification="new"
+                   RevisionNumber="12" Status="active">
+            <AtcoCode>010000001</AtcoCode>
+            <NaptanCode>bstpgit</NaptanCode>
+            <Descriptor>
+                <CommonName>Cassell Road</CommonName>
+                <Street>Downend Road</Street>
+                <Indicator>SW-bound</Indicator>
+            </Descriptor>
+            <Place>
+                <NptgLocalityRef>E0035604</NptgLocalityRef>
+                <LocalityCentre>0</LocalityCentre>
+                <Location>
+                    <Translation>
+                        <GridType>UKOS</GridType>
+                        <Easting>364196</Easting>
+                        <Northing>176280</Northing>
+                        <Longitude>-2.51701423067</Longitude>
+                        <Latitude>51.4843326109</Latitude>
+                    </Translation>
+                </Location>
+            </Place>
+            <StopClassification>
+                <StopType>BCT</StopType>
+                <OnStreet>
+                    <Bus>
+                        <BusStopType>MKD</BusStopType>
+                        <TimingStatus>OTH</TimingStatus>
+                        <MarkedPoint>
+                            <Bearing>
+                                <CompassPoint>SW</CompassPoint>
+                                <Degrees>225</Degrees>
+                            </Bearing>
+                        </MarkedPoint>
+                    </Bus>
+                </OnStreet>
+            </StopClassification>
+            <AdministrativeAreaRef>009</AdministrativeAreaRef>
+            <PlusbusZones>
+                <PlusbusZoneRef CreationDateTime="2014-09-16T15:06:33" ModificationDateTime="2014-01-28T14:23:10"
+                                Modification="new" RevisionNumber="6" Status="active">BRSTLTM
+                </PlusbusZoneRef>
+            </PlusbusZones>
+        </StopPoint>
+        <StopPoint CreationDateTime="2019-11-12T13:31:31" ModificationDateTime="2018-07-18T13:19:34" Modification="new"
+                   RevisionNumber="55" Status="active">
+            <AtcoCode>010000002</AtcoCode>
+            <NaptanCode>bstpata</NaptanCode>
+            <Descriptor>
+                <CommonName>The Centre</CommonName>
+                <Street>Broad Quay</Street>
+                <Indicator>C4</Indicator>
+            </Descriptor>
+            <Place>
+                <NptgLocalityRef>N0076879</NptgLocalityRef>
+                <LocalityCentre>0</LocalityCentre>
+                <Location>
+                    <Translation>
+                        <GridType>UKOS</GridType>
+                        <Easting>358596</Easting>
+                        <Northing>172845</Northing>
+                        <Longitude>-2.59725334008</Longitude>
+                        <Latitude>51.45306504329</Latitude>
+                    </Translation>
+                </Location>
+            </Place>
+            <StopClassification>
+                <StopType>BCT</StopType>
+                <OnStreet>
+                    <Bus>
+                        <BusStopType>MKD</BusStopType>
+                        <TimingStatus>OTH</TimingStatus>
+                        <MarkedPoint>
+                            <Bearing>
+                                <CompassPoint>N</CompassPoint>
+                                <Degrees>0</Degrees>
+                            </Bearing>
+                        </MarkedPoint>
+                    </Bus>
+                </OnStreet>
+            </StopClassification>
+            <AdministrativeAreaRef>009</AdministrativeAreaRef>
+            <PlusbusZones>
+                <PlusbusZoneRef CreationDateTime="2014-09-16T15:06:33" ModificationDateTime="2014-09-11T14:11:40"
+                                Modification="new" RevisionNumber="9" Status="active">BRSTLTM
+                </PlusbusZoneRef>
+            </PlusbusZones>
+        </StopPoint>
+    </StopPoints>
+</NaPTAN>

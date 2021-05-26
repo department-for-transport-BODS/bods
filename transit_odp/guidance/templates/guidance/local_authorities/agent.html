@@ -1,0 +1,29 @@
+{% extends "guidance/local_authorities/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+  <h1 data-qa="agent-header" class="govuk-heading-l">{% trans 'Being an Agent' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
+    Agents agreeing to publish data must provide and maintain it as prescribed in
+    the
+    {% endblocktrans %}
+    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+      operator requirements.
+    </a>
+    {% blocktrans %}
+    Local transport authorities may wish to provide
+    agency services as a bureau service for multiple operators.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    Find out more information about being an
+    {% endblocktrans %}
+    <a
+      href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=agents">
+      agent</a>.
+  </p>
+
+{% endblock %}

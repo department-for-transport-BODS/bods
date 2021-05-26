@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.transxchange.org.uk/
+http://www.transxchange.org.uk/schema/2.4/TransXChange_registration.xsd" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en" CreationDateTime="2004-06-09T14:20:00-05:00" ModificationDateTime="2004-06-09T14:20:00-05:00" Modification="new" RevisionNumber="0" FileName="linear.xml" SchemaVersion="2.4" MappingSystem="TOID" LocationSystem="Grid" RegistrationDocument="true">
+	<!-- ===NPTG Localities ====================================================== -->
+	<NptgLocalities>
+		<AnnotatedNptgLocalityRef>
+			<NptgLocalityRef>E0000004</NptgLocalityRef>
+			<LocalityName>Suborn</LocalityName>
+		</AnnotatedNptgLocalityRef>
+	</NptgLocalities>
+	<!-- ===STOP POINTS ====================================================== -->
+	<StopPoints>
+		<StopPoint CreationDateTime="2004-06-09T14:20:00-05:00">
+			<AtcoCode>260010966</AtcoCode>
+			<Descriptor>
+				<CommonName>Suborn Bus Station</CommonName>
+				<Landmark>Bus Station</Landmark>
+				<Street>High Street</Street>
+			</Descriptor>
+			<Place>
+				<NptgLocalityRef>E0000004</NptgLocalityRef>
+				<Location>
+					<Easting>442914</Easting>
+					<Northing>295186</Northing>
+				</Location>
+			</Place>
+			<StopClassification>
+				<StopType>BCT</StopType>
+				<OnStreet>
+					<Bus>
+						<BusStopType>MKD</BusStopType>
+						<TimingStatus>PTP</TimingStatus>
+						<MarkedPoint>
+							<DefaultWaitTime>PT0M</DefaultWaitTime>
+							<Bearing>
+								<CompassPoint>N</CompassPoint>
+							</Bearing>
+						</MarkedPoint>
+					</Bus>
+				</OnStreet>
+			</StopClassification>
+			<StopAreas>
+				<StopAreaRef>060G000001</StopAreaRef>
+			</StopAreas>
+			<AdministrativeAreaRef>060</AdministrativeAreaRef>
+		</StopPoint>
+		<AnnotatedStopPointRef>
+			<StopPointRef>260010967</StopPointRef>
+			<CommonName>Garden Village Shops</CommonName>
+			<Indicator>o/s</Indicator>
+			<LocalityName>Suborn</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>260010374</StopPointRef>
+			<CommonName>Plough</CommonName>
+			<Indicator>o/s</Indicator>
+			<LocalityName>Robridge</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>260070132</StopPointRef>
+			<CommonName>Red Lion</CommonName>
+			<LocalityName>Barford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>260010944</StopPointRef>
+			<CommonName>Golden Lion</CommonName>
+			<LocalityName>Egham</LocalityName>
+		</AnnotatedStopPointRef>
+	</StopPoints>
+	<StopAreas>
+		<StopArea CreationDateTime="2004-06-09T14:20:00-05:00">
+			<StopAreaCode>060G000001</StopAreaCode>
+			<Name>Suborn Bus Station</Name>
+			<AdministrativeAreaRef>060</AdministrativeAreaRef>
+			<StopAreaType>GPBS</StopAreaType>
+			<Location>
+				<Easting>443965</Easting>
+				<Northing>295151</Northing>
+			</Location>
+		</StopArea>
+	</StopAreas>
+	<!-- ===ROUTES ====================================================== -->
+	<RouteSections>
+		<RouteSection id="rs_1">
+			<RouteLink id="rl_1">
+				<From>
+					<StopPointRef>260010966</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>260010967</StopPointRef>
+				</To>
+				<Distance>5573</Distance>
+				<Direction>outbound</Direction>
+				<Track>
+					<Mapping>
+						<Location id="g_1">
+							<Easting>442914</Easting>
+							<Northing>295186</Northing>
+						</Location>
+						<Location id="g_2">
+							<Easting>442950</Easting>
+							<Northing>295121</Northing>
+						</Location>
+						<Location id="g_3">
+							<Easting>443000</Easting>
+							<Northing>295100</Northing>
+						</Location>
+						<Location id="g_4">
+							<Easting>443012</Easting>
+							<Northing>295090</Northing>
+						</Location>
+					</Mapping>
+					<MapSystemReference MappingSystem="TOID">06756201</MapSystemReference>
+					<Instructions>
+						<Feature>
+							<LocationRef>g_1</LocationRef>
+							<FeatureType>legOrigin</FeatureType>
+							<RelativeBearing>straightAhead</RelativeBearing>
+							<RoadNumber>A57</RoadNumber>
+						</Feature>
+					</Instructions>
+				</Track>
+			</RouteLink>
+			<RouteLink id="rl_2">
+				<From>
+					<StopPointRef>260010967</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>260010374</StopPointRef>
+				</To>
+				<Distance>4512</Distance>
+				<Direction>outbound</Direction>
+				<Track>
+					<Mapping>
+						<Location id="g_4">
+							<Easting>443012</Easting>
+							<Northing>295090</Northing>
+						</Location>
+						<Location id="g_5">
+							<Easting>443165</Easting>
+							<Northing>295300</Northing>
+						</Location>
+						<Location id="g_6">
+							<Easting>443285</Easting>
+							<Northing>295191</Northing>
+						</Location>
+					</Mapping>
+					<MapSystemReference MappingSystem="TOID">06756234</MapSystemReference>
+					<Instructions>
+						<Feature>
+							<LocationRef>g_4</LocationRef>
+							<FeatureType>legOrigin</FeatureType>
+							<RelativeBearing>straightAhead</RelativeBearing>
+							<RoadNumber>A57</RoadNumber>
+						</Feature>
+					</Instructions>
+				</Track>
+				<Track>
+					<Mapping>
+						<Location id="g_6">
+							<Easting>443012</Easting>
+							<Northing>295090</Northing>
+						</Location>
+						<Location id="g_7">
+							<Easting>443185</Easting>
+							<Northing>295150</Northing>
+						</Location>
+						<Location id="g_8">
+							<Easting>443285</Easting>
+							<Northing>295191</Northing>
+						</Location>
+					</Mapping>
+					<MapSystemReference MappingSystem="TOID">06756235</MapSystemReference>
+					<Instructions>
+						<Feature>
+							<LocationRef>g_6</LocationRef>
+							<FeatureType>junction</FeatureType>
+							<RelativeBearing>straightAhead</RelativeBearing>
+							<RoadNumber>B256</RoadNumber>
+						</Feature>
+					</Instructions>
+				</Track>
+			</RouteLink>
+			<RouteLink id="rl_3">
+				<From>
+					<StopPointRef>260010374</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>260070132</StopPointRef>
+				</To>
+				<Distance>6046</Distance>
+				<Direction>outbound</Direction>
+				<Track>
+					<Mapping>
+						<Location id="g_8">
+							<Easting>443285</Easting>
+							<Northing>295191</Northing>
+						</Location>
+						<Location id="g_9">
+							<Easting>443385</Easting>
+							<Northing>295100</Northing>
+						</Location>
+						<Location id="g_10">
+							<Easting>443485</Easting>
+							<Northing>295000</Northing>
+						</Location>
+						<Location id="g_11">
+							<Easting>443593</Easting>
+							<Northing>294980</Northing>
+						</Location>
+						<Location id="g_12">
+							<Easting>443693</Easting>
+							<Northing>294958</Northing>
+						</Location>
+					</Mapping>
+				</Track>
+			</RouteLink>
+			<RouteLink id="rl_4">
+				<From>
+					<StopPointRef>260070132</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>260010944</StopPointRef>
+				</To>
+				<Distance>2520</Distance>
+				<Direction>outbound</Direction>
+				<Track>
+					<Mapping>
+						<Location id="g_12">
+							<Easting>443693</Easting>
+							<Northing>294958</Northing>
+						</Location>
+						<Location id="g_13">
+							<Easting>443765</Easting>
+							<Northing>295000</Northing>
+						</Location>
+						<Location id="g_14">
+							<Easting>443965</Easting>
+							<Northing>295151</Northing>
+						</Location>
+					</Mapping>
+					<MapSystemReference MappingSystem="TOID">06756236</MapSystemReference>
+				</Track>
+			</RouteLink>
+		</RouteSection>
+	</RouteSections>
+	<Routes>
+		<Route id="6750">
+			<Description xml:lang="en">Suborn, Bus Station to Egham, Golden Lion</Description>
+			<RouteSectionRef>rs_1</RouteSectionRef>
+		</Route>
+	</Routes>
+	<!-- ===JOURNEY PATTERN SECTIONS========================================== -->
+	<JourneyPatternSections>
+		<!-- outbound -->
+		<JourneyPatternSection id="js_1">
+			<JourneyPatternTimingLink id="jptl_1">
+				<From>
+					<Activity>pickUp</Activity>
+					<StopPointRef>260010966</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>260010967</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_1</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT20M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="jptl_2">
+				<From>
+					<StopPointRef>260010967</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>260010374</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_2</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT20M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="jptl_3">
+				<From>
+					<StopPointRef>260010374</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>260070132</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_3</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT10M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="jptl_4">
+				<From>
+					<StopPointRef>260070132</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<Activity>setDown</Activity>
+					<StopPointRef>260010944</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_4</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT10M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+		<!-- outbound -->
+		<JourneyPatternSection id="js_r1">
+			<JourneyPatternTimingLink id="jptl_r1">
+				<From>
+					<StopPointRef>260010944</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<Activity>setDown</Activity>
+					<StopPointRef>260070132</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_4</RouteLinkRef>
+				<Direction>inbound</Direction>
+				<RunTime>PT10M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="jptl_r2">
+				<From>
+					<StopPointRef>260070132</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>260010374</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_3</RouteLinkRef>
+				<Direction>inbound</Direction>
+				<RunTime>PT10M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="jptl_r3">
+				<From>
+					<StopPointRef>260010374</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>260010967</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_2</RouteLinkRef>
+				<Direction>inbound</Direction>
+				<RunTime>PT20M</RunTime>
+			</JourneyPatternTimingLink>
+			<JourneyPatternTimingLink id="jptl_r4">
+				<From>
+					<Activity>pickUp</Activity>
+					<StopPointRef>260010967</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To>
+					<StopPointRef>260010966</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>rl_1</RouteLinkRef>
+				<Direction>inbound</Direction>
+				<RunTime>PT20M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+	</JourneyPatternSections>
+	<!-- ===OPERATORS ====================================================== -->
+	<Operators>
+		<Operator id="O1" CreationDateTime="2003-06-09T14:20:00-05:00" ModificationDateTime="2004-05-09T14:20:00-05:00" Modification="revise" RevisionNumber="2">
+			<NationalOperatorCode>ABC</NationalOperatorCode>
+			<OperatorShortName>ABC Buses</OperatorShortName>
+			<OperatorNameOnLicence>ABC Buses and Services</OperatorNameOnLicence>
+			<LicenceNumber>AB1234567</LicenceNumber>
+			<LicenceClassification>standardNational</LicenceClassification>
+			<EnquiryTelephoneNumber>
+				<TelNationalNumber>0207123456</TelNationalNumber>
+			</EnquiryTelephoneNumber>
+			<ContactTelephoneNumber>
+				<TelNationalNumber>0207654321</TelNationalNumber>
+			</ContactTelephoneNumber>
+			<OperatorAddresses>
+				<CorrespondenceAddress>
+					<apd:Line>45 City Road</apd:Line>
+					<apd:Line>Second Floor</apd:Line>
+					<apd:Line>Pent House</apd:Line>
+					<apd:Line>London</apd:Line>
+					<apd:PostCode>EC1V 3PH</apd:PostCode>
+				</CorrespondenceAddress>
+				<MiscellaneousAddress>
+					<apd:Line>12 Hamlet Avenue</apd:Line>
+					<apd:Line>35th Floor</apd:Line>
+					<apd:Line>Bodlington</apd:Line>
+					<apd:Line>Exeter</apd:Line>
+					<apd:PostCode>EX8 7TR</apd:PostCode>
+				</MiscellaneousAddress>
+			</OperatorAddresses>
+			<EmailAddress>enquiries@ABCBuses.com</EmailAddress>
+		</Operator>
+	</Operators>
+	<!-- ===SERVICES ====================================================== -->
+	<Services>
+		<Service>
+			<ServiceCode>FIN50</ServiceCode>
+			<Lines>
+				<Line id="ABC:FIN50:L1 Night:summer">
+					<LineName>L1 Night</LineName>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2004-09-22</StartDate>
+			</OperatingPeriod>
+			<ServiceClassification>
+				<NormalStopping/>
+			</ServiceClassification>
+			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+			<ServiceHasMirror>true</ServiceHasMirror>
+			<StopRequirements>
+				<NewStops>
+					<StopPointRef>260010966</StopPointRef>
+				</NewStops>
+			</StopRequirements>
+			<Description>The Suborn to Egham two way service runs Mondays to Fridays all year round, every 20 minutes.</Description>
+			<SchematicMap>linear.gif</SchematicMap>
+			<StandardService>
+				<Origin>Suborn</Origin>
+				<Destination>Egham</Destination>
+				<UseAllStopPoints>true</UseAllStopPoints>
+				<JourneyPattern id="jp_1">
+					<DestinationDisplay>Egham, Golden Lion</DestinationDisplay>
+					<Direction>outbound</Direction>
+					<RouteRef>6750</RouteRef>
+					<JourneyPatternSectionRefs>js_1</JourneyPatternSectionRefs>
+				</JourneyPattern>
+				<JourneyPattern id="jp_r1">
+					<DestinationDisplay>Suborn, Bus Station</DestinationDisplay>
+					<Direction>inbound</Direction>
+					<RouteRef>6750</RouteRef>
+					<JourneyPatternSectionRefs>js_r1</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+		</Service>
+	</Services>
+	<!-- ===JOUNEYS====================================================== -->
+	<VehicleJourneys>
+		<!-- Outbound -->
+		<VehicleJourney>
+			<VehicleJourneyCode>vj_1</VehicleJourneyCode>
+			<ServiceRef>FIN50</ServiceRef>
+			<LineRef>l_1</LineRef>
+			<JourneyPatternRef>jp_1</JourneyPatternRef>
+			<DepartureTime>07:00:00</DepartureTime>
+			<Frequency>
+				<EndTime>18:30:00</EndTime>
+				<Interval>
+					<ScheduledFrequency>PT20M</ScheduledFrequency>
+				</Interval>
+				<FrequentService>true</FrequentService>
+			</Frequency>
+		</VehicleJourney>
+		<VehicleJourney>
+			<VehicleJourneyCode>vj_2</VehicleJourneyCode>
+			<ServiceRef>FIN50</ServiceRef>
+			<LineRef>l_1</LineRef>
+			<VehicleJourneyRef>vj_1</VehicleJourneyRef>
+			<DepartureTime>19:00:00</DepartureTime>
+		</VehicleJourney>
+		<!--Inbound -->
+		<VehicleJourney>
+				 <Description>Outbound Frequent Service from Suborn To Egham</Description>
+			<VehicleJourneyCode>vj_r1</VehicleJourneyCode>
+			<ServiceRef>FIN50</ServiceRef>
+			<LineRef>l_1</LineRef>
+			<JourneyPatternRef>jp_r1</JourneyPatternRef>
+			<DepartureTime>07:30:00</DepartureTime>
+			<Frequency>
+				<EndTime>19:30:00</EndTime>
+				<Interval>
+					<ScheduledFrequency>PT07M</ScheduledFrequency>
+					<MinimumFrequency>PT09M</MinimumFrequency>
+					<MaximumFrequency>PT03M</MaximumFrequency>
+
+				</Interval>
+				<FrequentService>true</FrequentService>
+			</Frequency>
+		</VehicleJourney>
+		<VehicleJourney>
+		 <Description>Last daily service from Suborn To Egham</Description>
+			<VehicleJourneyCode>vj_r2</VehicleJourneyCode>
+			<ServiceRef>FIN50</ServiceRef>
+			<LineRef>l_1</LineRef>
+			<VehicleJourneyRef>vj_r1</VehicleJourneyRef>
+			<DepartureTime>20:00:00</DepartureTime>
+		</VehicleJourney>
+	</VehicleJourneys>
+	<!-- ===REGISTRATION====================================================== -->
+	<Registrations>
+		<Registration>
+			<ServiceRef>FIN50</ServiceRef>
+			<SubmissionDate>2004-03-04</SubmissionDate>
+			<VosaRegistrationNumber>
+				<TanCode>PB</TanCode>
+				<LicenceNumber>1234567</LicenceNumber>
+				<RegistrationNumber>001</RegistrationNumber>
+			</VosaRegistrationNumber>
+			<ApplicationClassification>new</ApplicationClassification>
+			<VariationNumber>1</VariationNumber>
+			<SubmissionAuthor>
+				<Position>Operations Director</Position>
+				<Title>Mr</Title>
+				<Forename>Adam</Forename>
+				<Surname>Smith</Surname>
+			</SubmissionAuthor>
+			<TrafficAreas>
+				<TrafficArea>
+					<TrafficAreaName>Western</TrafficAreaName>
+				</TrafficArea>
+			</TrafficAreas>
+			<CirculatedAuthorities>
+				<CirculatedAuthority>
+					<AuthorityName>Bristol</AuthorityName>
+				</CirculatedAuthority>
+			</CirculatedAuthorities>
+			<SubsidyDetails>
+				<NoSubsidy/>
+			</SubsidyDetails>
+		</Registration>
+	</Registrations>
+	<SupportingDocuments>
+		<SupportingDocument>
+			<DocumentUri>index.html</DocumentUri>
+		</SupportingDocument>
+	</SupportingDocuments>
+</TransXChange>

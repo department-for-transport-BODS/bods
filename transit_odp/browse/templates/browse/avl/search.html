@@ -1,0 +1,47 @@
+{% extends 'browse/base.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Browse Bus location' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+  {% breadcrumb 'Bus location' %}
+{% endblock %}
+
+{% block content %}
+  {# There are multiple forms on this page, the search box and the filter controls, need to submit #}
+  {# both together so both form data persist when either form is submitted #}
+  <form action="{% url 'avl-search' host hosts.data %}" method="get">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">{% trans 'Browse location data results for' %}</h1>
+        {% include 'snippets/search_control.html' with search_size='full' %}
+        </div>
+        <div class="govuk-grid-column-one-quarter govuk-!-padding-top-9">
+          <p class="govuk-body">
+            <a class="govuk-link" href="{% url 'api:avlopenapi' host hosts.data %}">
+          {% trans 'Access interactive API' %}
+      </a>
+          </p>
+        </div>
+
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-top-8">
+      <div class="govuk-grid-column-one-third">
+        <h3 class="govuk-heading-m">{% trans 'Filter by' %}</h3>
+        {% crispy filter.form filter.form.helper %}
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        {% include 'browse/snippets/search_list.html' with items=object_list ordering=ordering %}
+      </div>
+    </div>
+  </form>
+{% endblock %}

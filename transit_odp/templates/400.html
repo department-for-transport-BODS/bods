@@ -1,0 +1,16 @@
+{% extends "error_base.html" %}
+
+{% load i18n %}
+
+{% block title_tag %}{% trans 'Bad Request (400)' %}{% endblock %}
+
+{% block content_heading %}{% trans 'Bad Request (400)' %}{% endblock %}
+{% url 'contact' host hosts.root as support %}
+{% block content_body %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      Bad request. If the problem persists feel free to
+      <a class="govuk-link" href="{{ support }}">contact Bus open data support line</a>.
+    {% endblocktrans %}
+  </p>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "site_admin/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Organisation management' %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+  {% if form.errors %}
+  <div class="govuk-error-summary govuk-!-width-one-half"
+       aria-labelledby="error-summary-title"
+       role="alert"
+       tabindex="-1"
+       data-module="govuk-error-summary">
+
+    <h2 class="govuk-error-summary__title" id="error-summary-title">
+      {% trans "There is a problem" %}
+    </h2>
+    <div class="govuk-error-summary__body">
+      <ul class="govuk-list govuk-error-summary__list">
+        {% for error in form.non_field_errors %}
+          <li class="app-error-summary__item">
+            {{ error }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+    <div class="govuk-grid-row">
+      <h1 class="govuk-heading-xl">{% trans "Organisation management" %}</h1>
+      <h2 class="govuk-heading-m">{% trans 'Add new organisation' %}</h2>
+      <p class="govuk-body">
+        {% blocktrans %}
+          Send an email invite to the organisation to invite them to the bus
+          open data service
+        {% endblocktrans %}
+      </p>
+      <a class="govuk-button govuk-!-margin-right-5" href="{% url 'users:organisation-new' host hosts.admin %}"
+        role="button">
+        {% trans "Add new organisation" %}
+      </a>
+      <button class="govuk-button" type="submit" form="bulk-resend-invites">
+        {% trans "Resend invitation to selected" %}
+      </button>
+    </div>
+  <main class="govuk-main-wrapper">
+    <div class="govuk-grid-row">
+      <h2 class="govuk-heading-m">View and manage organisations</h2>
+      <div class="govuk-grid-column-one-quarter">
+        <h2 class="govuk-heading-m">Filter by</h2>
+        {% if filter %}
+          <form method="get">
+            {{ filter.form | crispy }}
+            <input class="govuk-button" type="submit" value="Apply filter">
+          </form>
+        {% endif %}
+      </div>
+      <div class="govuk-grid-column-three-quarters">
+        <form id="bulk-resend-invites">
+          <input type="hidden" name="bulk_invite" value="true">
+          <div {% if form.errors %}class="govuk-form-group--error"{% endif %}>
+            {% render_table table %}
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+{% endblock %}

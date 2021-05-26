@@ -1,0 +1,1661 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:09:37",
+    "naptan_date": "Sun, 24 Nov 2019 04:30:30",
+    "sources": [
+      "",
+      "MERGED_MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-8-A-y08-1.xml",
+      "MERGED_whole_ea_20-9-A-y08-1.xml",
+      "MERGED_whole_ea_20-A-B-y08-1.xml",
+      "MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-D-_-y08-1.xml",
+      "MERGED_whole_ea_20-X8-_-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-8-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-A-B-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-B-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-1-A-y08-1.xml",
+      "whole_ea_20-101-_-y08-1.xml",
+      "whole_ea_20-11-_-y08-1.xml",
+      "whole_ea_20-110-A-y08-1.xml",
+      "whole_ea_20-114-B-y08-1.xml",
+      "whole_ea_20-117-C-y08-1.xml",
+      "whole_ea_20-117-_-y08-1.xml",
+      "whole_ea_20-12-A-y08-1.xml",
+      "whole_ea_20-12-D-y08-1.xml",
+      "whole_ea_20-125-_-y08-1.xml",
+      "whole_ea_20-127-_-y08-1.xml",
+      "whole_ea_20-129-_-y08-1.xml",
+      "whole_ea_20-13-_-y08-1.xml",
+      "whole_ea_20-132-_-y08-1.xml",
+      "whole_ea_20-13A-_-y08-1.xml",
+      "whole_ea_20-13B-_-y08-1.xml",
+      "whole_ea_20-13C-_-y08-1.xml",
+      "whole_ea_20-15-E-y08-1.xml",
+      "whole_ea_20-150-_-y08-1.xml",
+      "whole_ea_20-16A-_-y08-1.xml",
+      "whole_ea_20-18-A-y08-1.xml",
+      "whole_ea_20-18-_-y08-1.xml",
+      "whole_ea_20-19-A-y08-1.xml",
+      "whole_ea_20-19-_-y08-1.xml",
+      "whole_ea_20-199-_-y08-1.xml",
+      "whole_ea_20-1A-A-y08-1.xml",
+      "whole_ea_20-2-A-y08-1.xml",
+      "whole_ea_20-203-_-y08-1.xml",
+      "whole_ea_20-204-_-y08-1.xml",
+      "whole_ea_20-206-_-y08-1.xml",
+      "whole_ea_20-21-A-y08-1.xml",
+      "whole_ea_20-22-A-y08-1.xml",
+      "whole_ea_20-22-_-y08-1.xml",
+      "whole_ea_20-25-_-y08-1.xml",
+      "whole_ea_20-3-B-y08-1.xml",
+      "whole_ea_20-30-B-y08-1.xml",
+      "whole_ea_20-31-B-y08-1.xml",
+      "whole_ea_20-31-_-y08-1.xml",
+      "whole_ea_20-32-_-y08-1.xml",
+      "whole_ea_20-33-A-y08-1.xml",
+      "whole_ea_20-336-_-y08-1.xml",
+      "whole_ea_20-35-C-y08-1.xml",
+      "whole_ea_20-39-_-y08-1.xml",
+      "whole_ea_20-4-_-y08-1.xml",
+      "whole_ea_20-400-C-y08-1.xml",
+      "whole_ea_20-401-C-y08-1.xml",
+      "whole_ea_20-415-_-y08-1.xml",
+      "whole_ea_20-45A-A-y08-1.xml",
+      "whole_ea_20-46-A-y08-1.xml",
+      "whole_ea_20-46-C-y08-1.xml",
+      "whole_ea_20-46-D-y08-1.xml",
+      "whole_ea_20-46A-_-y08-1.xml",
+      "whole_ea_20-47-A-y08-1.xml",
+      "whole_ea_20-478-_-y08-1.xml",
+      "whole_ea_20-5-B-y08-1.xml",
+      "whole_ea_20-50-A-y08-1.xml",
+      "whole_ea_20-56-_-y08-1.xml",
+      "whole_ea_20-6-_-y08-1.xml",
+      "whole_ea_20-61-A-y08-1.xml",
+      "whole_ea_20-61X-_-y08-1.xml",
+      "whole_ea_20-63-A-y08-1.xml",
+      "whole_ea_20-65-A-y08-1.xml",
+      "whole_ea_20-66-B-y08-1.xml",
+      "whole_ea_20-66-_-y08-1.xml",
+      "whole_ea_20-68-_-y08-1.xml",
+      "whole_ea_20-7-A-y08-1.xml",
+      "whole_ea_20-75-A-y08-1.xml",
+      "whole_ea_20-7A-_-y08-1.xml",
+      "whole_ea_20-8-A-y08-1.xml",
+      "whole_ea_20-8-_-y08-1.xml",
+      "whole_ea_20-9-A-y08-1.xml",
+      "whole_ea_20-9-B-y08-1.xml",
+      "whole_ea_20-901-_-y08-1.xml",
+      "whole_ea_20-902-_-y08-1.xml",
+      "whole_ea_20-903-_-y08-1.xml",
+      "whole_ea_20-904-_-y08-1.xml",
+      "whole_ea_20-94-_-y08-1.xml",
+      "whole_ea_20-96-_-y08-1.xml",
+      "whole_ea_20-9B-_-y08-1.xml",
+      "whole_ea_20-A-B-y08-1.xml",
+      "whole_ea_20-B-A-y08-1.xml",
+      "whole_ea_20-C2-A-y08-1.xml",
+      "whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-H-_-y08-1.xml",
+      "whole_ea_20-PR1-_-y08-1.xml",
+      "whole_ea_20-PR2-_-y08-1.xml",
+      "whole_ea_20-PR3-_-y08-1.xml",
+      "whole_ea_20-PR4-_-y08-1.xml",
+      "whole_ea_20-PR5-_-y08-1.xml",
+      "whole_ea_20-R-_-y08-1.xml",
+      "whole_ea_20-RH2-_-y08-1.xml",
+      "whole_ea_20-RH3-_-y08-1.xml",
+      "whole_ea_20-RH5-_-y08-1.xml",
+      "whole_ea_20-U-_-y08-1.xml",
+      "whole_ea_20-X11-_-y08-1.xml",
+      "whole_ea_20-X13-_-y08-1.xml",
+      "whole_ea_20-X3-_-y08-1.xml",
+      "whole_ea_20-X9-_-y08-1.xml",
+      "whole_ea_20-ZIP-_-y08-1.xml",
+      "whole_suf_14-A14-_-y08-2.xml",
+      "whole_suf_5-312-_-y08-2.xml",
+      "whole_suf_7-16-_-y08-12.xml",
+      "whole_suf_7-16A-_-y08-10.xml"
+    ]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST9100BRADIN",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.74959901987132271, 53.7910884691167297]
+          },
+          "properties": {
+            "atco_code": "9100BRADIN",
+            "bearing": 8,
+            "feature_name": "Bradford Interchange Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100BRHOUSE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.77944087743685087, 53.6982108893615973]
+          },
+          "properties": {
+            "atco_code": "9100BRHOUSE",
+            "bearing": 8,
+            "feature_name": "Brighouse Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100CAMBDGE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.137484664171875576, 52.1940786889398183]
+          },
+          "properties": {
+            "atco_code": "9100CAMBDGE",
+            "bearing": 8,
+            "feature_name": "Cambridge Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100DONC",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.13984752075612539, 53.5221679284877823]
+          },
+          "properties": {
+            "atco_code": "9100DONC",
+            "bearing": 8,
+            "feature_name": "Doncaster Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100EGLSCLF",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.34944913381404796, 54.5294418161955718]
+          },
+          "properties": {
+            "atco_code": "9100EGLSCLF",
+            "bearing": 8,
+            "feature_name": "Eaglescliffe Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100ELYY",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.26685123766873653, 52.3912442400031679]
+          },
+          "properties": {
+            "atco_code": "9100ELYY",
+            "bearing": 8,
+            "feature_name": "Ely Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100HITCHIN",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.263456276211321005, 51.9532882131143765]
+          },
+          "properties": {
+            "atco_code": "9100HITCHIN",
+            "bearing": 8,
+            "feature_name": "Hitchin Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100HLFX",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.85357658034096762, 53.7209740118899575]
+          },
+          "properties": {
+            "atco_code": "9100HLFX",
+            "bearing": 8,
+            "feature_name": "Halifax Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100HRTLEPL",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.2073306356986353, 54.6867644416703556]
+          },
+          "properties": {
+            "atco_code": "9100HRTLEPL",
+            "bearing": 8,
+            "feature_name": "Hartlepool Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100KNGX",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.122900120599912191, 51.530883661752803]
+          },
+          "properties": {
+            "atco_code": "9100KNGX",
+            "bearing": 8,
+            "feature_name": "London Kings Cross Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100LOWMOOR",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.75340723079068028, 53.749940396404952]
+          },
+          "properties": {
+            "atco_code": "9100LOWMOOR",
+            "bearing": 8,
+            "feature_name": "Low Moor Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100MIRFILD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.69254770582181013, 53.6714142371363394]
+          },
+          "properties": {
+            "atco_code": "9100MIRFILD",
+            "bearing": 8,
+            "feature_name": "Mirfield Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100NLRTN",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.44128232929989908, 54.3330824800558005]
+          },
+          "properties": {
+            "atco_code": "9100NLRTN",
+            "bearing": 8,
+            "feature_name": "Northallerton Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100PBRO",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.249862338202943901, 52.5745735187174859]
+          },
+          "properties": {
+            "atco_code": "9100PBRO",
+            "bearing": 8,
+            "feature_name": "Peterborough Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100SNDRLND",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.38231791260063663, 54.9053461462185837]
+          },
+          "properties": {
+            "atco_code": "9100SNDRLND",
+            "bearing": 8,
+            "feature_name": "Sunderland Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100THIRSK",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.37259630601447746, 54.2282229981653572]
+          },
+          "properties": {
+            "atco_code": "9100THIRSK",
+            "bearing": 8,
+            "feature_name": "Thirsk Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100WKFLDKG",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.4885724876365769, 53.6786734601361033]
+          },
+          "properties": {
+            "atco_code": "9100WKFLDKG",
+            "bearing": 8,
+            "feature_name": "Wakefield Kirkgate Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100YORK",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.09270883962396059, 53.9579353276157576]
+          },
+          "properties": {
+            "atco_code": "9100YORK",
+            "bearing": 8,
+            "feature_name": "York Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.122900120599912191, 51.530883661752803],
+              [-0.263456276211321005, 51.9532882131143765],
+              [0.137484664171875576, 52.1940786889398183],
+              [-0.249862338202943901, 52.5745735187174859],
+              [-1.13984752075612539, 53.5221679284877823],
+              [-1.4885724876365769, 53.6786734601361033],
+              [-1.69254770582181013, 53.6714142371363394],
+              [-1.77944087743685087, 53.6982108893615973],
+              [-1.85357658034096762, 53.7209740118899575],
+              [-1.75340723079068028, 53.749940396404952],
+              [-1.74959901987132271, 53.7910884691167297]
+            ]
+          },
+          "properties": {
+            "feature_name": "London Kings Cross - Bradford Interchange",
+            "length_m": 323695.625,
+            "route_shape": true,
+            "line": "LI802",
+            "stops": [
+              "ST9100KNGX",
+              "ST9100HITCHIN",
+              "ST9100CAMBDGE",
+              "ST9100PBRO",
+              "ST9100DONC",
+              "ST9100WKFLDKG",
+              "ST9100MIRFILD",
+              "ST9100BRHOUSE",
+              "ST9100HLFX",
+              "ST9100LOWMOOR",
+              "ST9100BRADIN"
+            ],
+            "timing_patterns": [
+              "TP1ad88d1835e4f8c633db56e46dfe065bcaa38d94",
+              "TP4c4604e2e663106d6182ce8549ea1e304221c80d",
+              "TP51ada246cabaaedfc85023bfa2d1dbc08769b08d"
+            ],
+            "service_links": [
+              "SL126f869b52ce1f9ec70b7c89ff88cecdde348b06",
+              "SLd190a26057be1db990e5f6c4038fbb9286f936fa",
+              "SL005b3c9d9ce8c688040ba4ee6baae14502b9d623",
+              "SL5974d51260e2ec09c6855ed88486b03523fab002",
+              "SL217cefb4a80376ead17dd733405d57411d14842b",
+              "SL193cb1cb68c1c7decb1611536ed83690aee1a70c",
+              "SLfe102f1aa2b5f0d2af09153f1d7e8ded4a8ebf38",
+              "SL3504371a9d0fb2480811621b480dcd80186c2d65",
+              "SLc0413f53af18dd86f216c841b5c8a904bfb85dcc",
+              "SL0dec54d4c44e77d19763068bd92166cf46121a8c"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.122900120599912191, 51.530883661752803],
+              [-0.263456276211321005, 51.9532882131143765],
+              [0.137484664171875576, 52.1940786889398183],
+              [-0.249862338202943901, 52.5745735187174859],
+              [-1.09270883962396059, 53.9579353276157576],
+              [-1.37259630601447746, 54.2282229981653572],
+              [-1.44128232929989908, 54.3330824800558005],
+              [-1.34944913381404796, 54.5294418161955718],
+              [-1.2073306356986353, 54.6867644416703556],
+              [-1.38231791260063663, 54.9053461462185837]
+            ]
+          },
+          "properties": {
+            "feature_name": "London Kings Cross - Sunderland",
+            "length_m": 417012.094,
+            "route_shape": true,
+            "line": "LI803",
+            "stops": [
+              "ST9100KNGX",
+              "ST9100HITCHIN",
+              "ST9100CAMBDGE",
+              "ST9100PBRO",
+              "ST9100YORK",
+              "ST9100THIRSK",
+              "ST9100NLRTN",
+              "ST9100EGLSCLF",
+              "ST9100HRTLEPL",
+              "ST9100SNDRLND"
+            ],
+            "timing_patterns": [
+              "TP8521ab51243c94de04c9666e7bf3726858a80b11",
+              "TPa7cc2a11c19f7c38f70d9a1c69aaca7ff56f1d4a",
+              "TP2c12417cc78d23a2b2e94a3320607fba1a0b1286",
+              "TP676f75f870267adf56b35b21cead3f0b801bab88",
+              "TPe5ea7239433aa7bc691f36e18678345176cdc9af",
+              "TP2052f04cea948cf71b3b31c6817f42dd58edae4d"
+            ],
+            "service_links": [
+              "SL126f869b52ce1f9ec70b7c89ff88cecdde348b06",
+              "SLd190a26057be1db990e5f6c4038fbb9286f936fa",
+              "SL005b3c9d9ce8c688040ba4ee6baae14502b9d623",
+              "SL24235ecd3780114955f3c4bed5c936d273c65d30",
+              "SL8adeeadab33abb5b53266a4d9d5d156ae09b4b8a",
+              "SL8a2859de77c9baae04a8ed3853811502e0364f38",
+              "SL583e1f32aef95bb29dac1676261dc6046fa7fb97",
+              "SL5e1880230e0b7d2275758c17ff848a3b51f5db1c",
+              "SL73df271ea1d5727396c11f231ba6c3158c48d398"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL005b3c9d9ce8c688040ba4ee6baae14502b9d623",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.137484664171875576, 52.1940786889398183],
+              [-0.249862338202943901, 52.5745735187174859]
+            ]
+          },
+          "properties": {
+            "feature_name": "Cambridge Rail Station-Peterborough Rail Station",
+            "from_stop": "ST9100CAMBDGE",
+            "length_m": 49872.9922,
+            "route_shape": false,
+            "to_stop": "ST9100PBRO",
+            "service_patterns": [
+              "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+              "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL0dec54d4c44e77d19763068bd92166cf46121a8c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.75340723079068028, 53.749940396404952],
+              [-1.74959901987132271, 53.7910884691167297]
+            ]
+          },
+          "properties": {
+            "feature_name": "Low Moor Rail Station-Bradford Interchange Rail Station",
+            "from_stop": "ST9100LOWMOOR",
+            "length_m": 4585.02637,
+            "route_shape": false,
+            "to_stop": "ST9100BRADIN",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL126f869b52ce1f9ec70b7c89ff88cecdde348b06",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.122900120599912191, 51.530883661752803],
+              [-0.263456276211321005, 51.9532882131143765]
+            ]
+          },
+          "properties": {
+            "feature_name": "London Kings Cross Rail Station-Hitchin Rail Station",
+            "from_stop": "ST9100KNGX",
+            "length_m": 47980.8125,
+            "route_shape": false,
+            "to_stop": "ST9100HITCHIN",
+            "service_patterns": [
+              "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+              "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL193cb1cb68c1c7decb1611536ed83690aee1a70c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.4885724876365769, 53.6786734601361033],
+              [-1.69254770582181013, 53.6714142371363394]
+            ]
+          },
+          "properties": {
+            "feature_name": "Wakefield Kirkgate Rail Station-Mirfield Rail Station",
+            "from_stop": "ST9100WKFLDKG",
+            "length_m": 13499.042,
+            "route_shape": false,
+            "to_stop": "ST9100MIRFILD",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL217cefb4a80376ead17dd733405d57411d14842b",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.13984752075612539, 53.5221679284877823],
+              [-1.4885724876365769, 53.6786734601361033]
+            ]
+          },
+          "properties": {
+            "feature_name": "Doncaster Rail Station-Wakefield Kirkgate Rail Station",
+            "from_stop": "ST9100DONC",
+            "length_m": 28910.6582,
+            "route_shape": false,
+            "to_stop": "ST9100WKFLDKG",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL24235ecd3780114955f3c4bed5c936d273c65d30",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.249862338202943901, 52.5745735187174859],
+              [-1.09270883962396059, 53.9579353276157576]
+            ]
+          },
+          "properties": {
+            "feature_name": "Peterborough Rail Station-York Rail Station",
+            "from_stop": "ST9100PBRO",
+            "length_m": 163858.203,
+            "route_shape": false,
+            "to_stop": "ST9100YORK",
+            "service_patterns": ["SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL3504371a9d0fb2480811621b480dcd80186c2d65",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.77944087743685087, 53.6982108893615973],
+              [-1.85357658034096762, 53.7209740118899575]
+            ]
+          },
+          "properties": {
+            "feature_name": "Brighouse Rail Station-Halifax Rail Station",
+            "from_stop": "ST9100BRHOUSE",
+            "length_m": 5510.02734,
+            "route_shape": false,
+            "to_stop": "ST9100HLFX",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL583e1f32aef95bb29dac1676261dc6046fa7fb97",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.44128232929989908, 54.3330824800558005],
+              [-1.34944913381404796, 54.5294418161955718]
+            ]
+          },
+          "properties": {
+            "feature_name": "Northallerton Rail Station-Eaglescliffe Rail Station",
+            "from_stop": "ST9100NLRTN",
+            "length_m": 22647.3594,
+            "route_shape": false,
+            "to_stop": "ST9100EGLSCLF",
+            "service_patterns": ["SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5974d51260e2ec09c6855ed88486b03523fab002",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.249862338202943901, 52.5745735187174859],
+              [-1.13984752075612539, 53.5221679284877823]
+            ]
+          },
+          "properties": {
+            "feature_name": "Peterborough Rail Station-Doncaster Rail Station",
+            "from_stop": "ST9100PBRO",
+            "length_m": 121137.508,
+            "route_shape": false,
+            "to_stop": "ST9100DONC",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL5e1880230e0b7d2275758c17ff848a3b51f5db1c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.34944913381404796, 54.5294418161955718],
+              [-1.2073306356986353, 54.6867644416703556]
+            ]
+          },
+          "properties": {
+            "feature_name": "Eaglescliffe Rail Station-Hartlepool Rail Station",
+            "from_stop": "ST9100EGLSCLF",
+            "length_m": 19767.6504,
+            "route_shape": false,
+            "to_stop": "ST9100HRTLEPL",
+            "service_patterns": ["SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL73df271ea1d5727396c11f231ba6c3158c48d398",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.2073306356986353, 54.6867644416703556],
+              [-1.38231791260063663, 54.9053461462185837]
+            ]
+          },
+          "properties": {
+            "feature_name": "Hartlepool Rail Station-Sunderland Rail Station",
+            "from_stop": "ST9100HRTLEPL",
+            "length_m": 26800.3574,
+            "route_shape": false,
+            "to_stop": "ST9100SNDRLND",
+            "service_patterns": ["SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8a2859de77c9baae04a8ed3853811502e0364f38",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.37259630601447746, 54.2282229981653572],
+              [-1.44128232929989908, 54.3330824800558005]
+            ]
+          },
+          "properties": {
+            "feature_name": "Thirsk Rail Station-Northallerton Rail Station",
+            "from_stop": "ST9100THIRSK",
+            "length_m": 12495.6709,
+            "route_shape": false,
+            "to_stop": "ST9100NLRTN",
+            "service_patterns": ["SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL8adeeadab33abb5b53266a4d9d5d156ae09b4b8a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.09270883962396059, 53.9579353276157576],
+              [-1.37259630601447746, 54.2282229981653572]
+            ]
+          },
+          "properties": {
+            "feature_name": "York Rail Station-Thirsk Rail Station",
+            "from_stop": "ST9100YORK",
+            "length_m": 35208.582,
+            "route_shape": false,
+            "to_stop": "ST9100THIRSK",
+            "service_patterns": ["SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc0413f53af18dd86f216c841b5c8a904bfb85dcc",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.85357658034096762, 53.7209740118899575],
+              [-1.75340723079068028, 53.749940396404952]
+            ]
+          },
+          "properties": {
+            "feature_name": "Halifax Rail Station-Low Moor Rail Station",
+            "from_stop": "ST9100HLFX",
+            "length_m": 7351.93066,
+            "route_shape": false,
+            "to_stop": "ST9100LOWMOOR",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLd190a26057be1db990e5f6c4038fbb9286f936fa",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.263456276211321005, 51.9532882131143765],
+              [0.137484664171875576, 52.1940786889398183]
+            ]
+          },
+          "properties": {
+            "feature_name": "Hitchin Rail Station-Cambridge Rail Station",
+            "from_stop": "ST9100HITCHIN",
+            "length_m": 38380.4609,
+            "route_shape": false,
+            "to_stop": "ST9100CAMBDGE",
+            "service_patterns": [
+              "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+              "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLfe102f1aa2b5f0d2af09153f1d7e8ded4a8ebf38",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.69254770582181013, 53.6714142371363394],
+              [-1.77944087743685087, 53.6982108893615973]
+            ]
+          },
+          "properties": {
+            "feature_name": "Mirfield Rail Station-Brighouse Rail Station",
+            "from_stop": "ST9100MIRFILD",
+            "length_m": 6467.15527,
+            "route_shape": false,
+            "to_stop": "ST9100BRHOUSE",
+            "service_patterns": ["SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1"]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI802",
+        "name": "Bradford Interchange - London Kings Cross:London Kings Cross - Bradford Interchange"
+      },
+      {
+        "id": "LI803",
+        "name": "Sunderland - London Kings Cross:London Kings Cross - Sunderland"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP1ad88d1835e4f8c633db56e46dfe065bcaa38d94",
+        "service_pattern": "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1290,
+            "departure_time_secs": 1380,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3150,
+            "departure_time_secs": 3720,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 6810,
+            "departure_time_secs": 6930,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 9660,
+            "departure_time_secs": 9960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 11940,
+            "departure_time_secs": 12300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13140,
+            "departure_time_secs": 13380,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14040,
+            "departure_time_secs": 14280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15240,
+            "departure_time_secs": 15360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15780,
+            "departure_time_secs": 15960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 16500,
+            "departure_time_secs": 16500,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ0cfac265d763d513e659a506f4b3a24f12181829"]
+      },
+      {
+        "id": "TP2052f04cea948cf71b3b31c6817f42dd58edae4d",
+        "service_pattern": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1560,
+            "departure_time_secs": 1650,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3780,
+            "departure_time_secs": 4080,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 7110,
+            "departure_time_secs": 7350,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 11340,
+            "departure_time_secs": 11880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 12780,
+            "departure_time_secs": 12840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13560,
+            "departure_time_secs": 13620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14760,
+            "departure_time_secs": 14820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15900,
+            "departure_time_secs": 15960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 17700,
+            "departure_time_secs": 17700,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ7deb71366b07710316d63ad568b8edd3bdcc85b8"]
+      },
+      {
+        "id": "TP2c12417cc78d23a2b2e94a3320607fba1a0b1286",
+        "service_pattern": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1680,
+            "departure_time_secs": 1770,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3810,
+            "departure_time_secs": 4230,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 7350,
+            "departure_time_secs": 7470,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 11280,
+            "departure_time_secs": 11760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13140,
+            "departure_time_secs": 13200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13680,
+            "departure_time_secs": 13740,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14640,
+            "departure_time_secs": 14700,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15900,
+            "departure_time_secs": 15960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 17640,
+            "departure_time_secs": 17640,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJb7c5cb63901ddf785c9062fb9b522058a62e3dcb"]
+      },
+      {
+        "id": "TP4c4604e2e663106d6182ce8549ea1e304221c80d",
+        "service_pattern": "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1290,
+            "departure_time_secs": 1350,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3210,
+            "departure_time_secs": 3780,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 6870,
+            "departure_time_secs": 6990,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 9720,
+            "departure_time_secs": 10020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 12000,
+            "departure_time_secs": 12360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13200,
+            "departure_time_secs": 13440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14100,
+            "departure_time_secs": 14340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15240,
+            "departure_time_secs": 15420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15840,
+            "departure_time_secs": 16020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 16500,
+            "departure_time_secs": 16500,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ67414066285d042c0fea1db7f13219035ab0a4c9"]
+      },
+      {
+        "id": "TP51ada246cabaaedfc85023bfa2d1dbc08769b08d",
+        "service_pattern": "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1470,
+            "departure_time_secs": 1560,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3270,
+            "departure_time_secs": 3840,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 6930,
+            "departure_time_secs": 7050,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 9780,
+            "departure_time_secs": 10080,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 12060,
+            "departure_time_secs": 12420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13260,
+            "departure_time_secs": 13500,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14160,
+            "departure_time_secs": 14400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15360,
+            "departure_time_secs": 15480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15900,
+            "departure_time_secs": 16080,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 16560,
+            "departure_time_secs": 16560,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJb7f34598c10ed9e0314aa5d7cf601e0237c51ae7"]
+      },
+      {
+        "id": "TP676f75f870267adf56b35b21cead3f0b801bab88",
+        "service_pattern": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1650,
+            "departure_time_secs": 1710,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3780,
+            "departure_time_secs": 4080,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 7230,
+            "departure_time_secs": 7620,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 11760,
+            "departure_time_secs": 11880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 12840,
+            "departure_time_secs": 12840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13560,
+            "departure_time_secs": 13620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14760,
+            "departure_time_secs": 14820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15900,
+            "departure_time_secs": 15960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 17700,
+            "departure_time_secs": 17700,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ421c6f7349b4412e00fd2fcf9d72704533b2cd0a"]
+      },
+      {
+        "id": "TP8521ab51243c94de04c9666e7bf3726858a80b11",
+        "service_pattern": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1650,
+            "departure_time_secs": 1710,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3780,
+            "departure_time_secs": 4080,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 7290,
+            "departure_time_secs": 7620,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 11760,
+            "departure_time_secs": 11880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 12840,
+            "departure_time_secs": 12840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13560,
+            "departure_time_secs": 13620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14760,
+            "departure_time_secs": 14820,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15900,
+            "departure_time_secs": 15960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 17700,
+            "departure_time_secs": 17700,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ8106c7a15b65a42f16c3984b2a8bd2170f3b1c6b"]
+      },
+      {
+        "id": "TPa7cc2a11c19f7c38f70d9a1c69aaca7ff56f1d4a",
+        "service_pattern": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1560,
+            "departure_time_secs": 1770,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3780,
+            "departure_time_secs": 4320,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 7530,
+            "departure_time_secs": 7650,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 11460,
+            "departure_time_secs": 11760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13140,
+            "departure_time_secs": 13200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13680,
+            "departure_time_secs": 13740,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14640,
+            "departure_time_secs": 14700,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15900,
+            "departure_time_secs": 15960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 17640,
+            "departure_time_secs": 17640,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ3b2810ac69f4d520650fd4be685f0cf58557c73e"]
+      },
+      {
+        "id": "TPe5ea7239433aa7bc691f36e18678345176cdc9af",
+        "service_pattern": "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1380,
+            "departure_time_secs": 1590,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3600,
+            "departure_time_secs": 4140,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 7350,
+            "departure_time_secs": 7470,
+            "pickup_allowed": false,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 11280,
+            "departure_time_secs": 11580,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 12960,
+            "departure_time_secs": 13020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 13500,
+            "departure_time_secs": 13560,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 14460,
+            "departure_time_secs": 14520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 15720,
+            "departure_time_secs": 15780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 17460,
+            "departure_time_secs": 17460,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ67731d6eb45497414e8c676fb087d77b5f2142de"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0cfac265d763d513e659a506f4b3a24f12181829",
+        "timing_pattern": "TP1ad88d1835e4f8c633db56e46dfe065bcaa38d94",
+        "start": 50820,
+        "feature_name": "14:07:00 -- Bradford Interchange - London Kings Cross: Kings Cross to Bradford",
+        "dates": ["2020-01-11"]
+      },
+      {
+        "id": "VJ3b2810ac69f4d520650fd4be685f0cf58557c73e",
+        "timing_pattern": "TPa7cc2a11c19f7c38f70d9a1c69aaca7ff56f1d4a",
+        "start": 43020,
+        "feature_name": "11:57:00 -- Sunderland - London Kings Cross: Kings Cross to Sunderland",
+        "dates": ["2020-01-11"]
+      },
+      {
+        "id": "VJ421c6f7349b4412e00fd2fcf9d72704533b2cd0a",
+        "timing_pattern": "TP676f75f870267adf56b35b21cead3f0b801bab88",
+        "start": 53760,
+        "feature_name": "14:56:00 -- Sunderland - London Kings Cross: Kings Cross to Sunderland",
+        "dates": ["2020-01-11"]
+      },
+      {
+        "id": "VJ67414066285d042c0fea1db7f13219035ab0a4c9",
+        "timing_pattern": "TP4c4604e2e663106d6182ce8549ea1e304221c80d",
+        "start": 50760,
+        "feature_name": "14:06:00 -- Bradford Interchange - London Kings Cross: Kings Cross to Bradford",
+        "dates": ["2020-01-04"]
+      },
+      {
+        "id": "VJ67731d6eb45497414e8c676fb087d77b5f2142de",
+        "timing_pattern": "TPe5ea7239433aa7bc691f36e18678345176cdc9af",
+        "start": 43200,
+        "feature_name": "12:00:00 -- Sunderland - London Kings Cross: Kings Cross to Sunderland",
+        "dates": ["2020-01-18"]
+      },
+      {
+        "id": "VJ7deb71366b07710316d63ad568b8edd3bdcc85b8",
+        "timing_pattern": "TP2052f04cea948cf71b3b31c6817f42dd58edae4d",
+        "start": 53760,
+        "feature_name": "14:56:00 -- Sunderland - London Kings Cross: Kings Cross to Sunderland",
+        "dates": ["2020-01-18"]
+      },
+      {
+        "id": "VJ8106c7a15b65a42f16c3984b2a8bd2170f3b1c6b",
+        "timing_pattern": "TP8521ab51243c94de04c9666e7bf3726858a80b11",
+        "start": 53760,
+        "feature_name": "14:56:00 -- Sunderland - London Kings Cross: Kings Cross to Sunderland",
+        "dates": ["2020-01-04"]
+      },
+      {
+        "id": "VJb7c5cb63901ddf785c9062fb9b522058a62e3dcb",
+        "timing_pattern": "TP2c12417cc78d23a2b2e94a3320607fba1a0b1286",
+        "start": 43020,
+        "feature_name": "11:57:00 -- Sunderland - London Kings Cross: Kings Cross to Sunderland",
+        "dates": ["2020-01-04"]
+      },
+      {
+        "id": "VJb7f34598c10ed9e0314aa5d7cf601e0237c51ae7",
+        "timing_pattern": "TP51ada246cabaaedfc85023bfa2d1dbc08769b08d",
+        "start": 50700,
+        "feature_name": "14:05:00 -- Bradford Interchange - London Kings Cross: Kings Cross to Bradford",
+        "dates": ["2020-01-18"]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "service-link-missing-stops",
+      "values": [
+        {
+          "id": "SL005b3c9d9ce8c688040ba4ee6baae14502b9d623",
+          "warning_type": "service-link-missing-stops",
+          "warning_id": 0,
+          "from_stop": "ST9100CAMBDGE",
+          "to_stop": "ST9100PBRO",
+          "stops": ["ST9100ELYY"],
+          "service_patterns": [
+            "SP63ff84e79f81a1a3db623e5b7f697917b5bfa6b1",
+            "SPf3b816dbc6fbc3a5d47516956386d11d9e9ffce9"
+          ]
+        }
+      ]
+    }
+  ]
+}

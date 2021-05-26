@@ -1,0 +1,12 @@
+@import "../variables";
+@import "govuk-frontend/govuk/core/section-break";
+
+.govuk-section-break--s {
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+.govuk-section-break--xs {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}

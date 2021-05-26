@@ -1,0 +1,29 @@
+{% extends 'page.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+{% load crispy_forms_tags %}
+
+{% block title_tag %}
+  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+  {% trans 'Provide feedback' %}
+{% endblock %}
+
+{# Breadcrumb #}
+{% block breadcrumb %}
+    {# No breadcrumb #}
+{% endblock %}
+
+{# Backlink #}
+{% block backlink %}
+    {% include 'snippets/backlink.html' with url=back_url  %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% crispy form form.helper %}
+    </div>
+  </div>
+{% endblock %}

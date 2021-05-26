@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+# Exported strings & generated translation templates
+# JS dependencies
+# Packaging
+# SASS
+# Settings
+# Site media
+# Swap files
+# Temp files
+# Tests
+# This is the static directory containing the compiled source to install into the Django app
+# Unit test / coverage reports
+# logs
+# sqlite DB
+# virtualenv
+*.db
+*.egg-info
+*.pot
+*.py[cod]
+*.sw[po]
+*~
+.cache
+.coverage
+.pytest_cache
+.sass-cache
+.tox
+.venv
+.~lock*
+/data/
+/sandbox/settings/local.py
+__pycache__/
+build
+coverage.xml
+db.sqlite3
+dist
+frontend/static
+htmlcov/
+node_modules
+nosetests.xml
+venv
+yarn-error.log

@@ -1,0 +1,11 @@
+This notification confirms that the following timetable/fares/AVL dataset has been successfully published on the Bus Open Data Service.
+
+Dataset: {{ feed_name }}
+Dataset ID: {{ feed_id }}
+Short Description: {{ feed_short_description }}
+Published: {{ published_time }}
+Comments: {{ comments }}
+Link to dataset: {{ link }}
+
+Kind Regards,
+The Bus Open Data Team

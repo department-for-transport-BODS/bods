@@ -1,0 +1,30 @@
+@import "../../variables";
+
+/* TODO reference Gov.UK spacing scale, see https://design-system.service.gov.uk/styles/spacing/#spacing-on-custom-components*/
+.feed-stat {
+  display: inline-block;
+  min-width: 8rem;
+  /*font-family: nta, Arial, sans-serif;*/
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+.feed-stat__list {
+  width: 100%;
+  padding: 1rem;
+}
+
+.feed-stat__label {
+  display: block;
+  color: #000000;
+}
+
+.feed-stat__value {
+  display: block;
+  color: #000000;
+  font-size: 3rem;
+}
+
+.feed-stat__value--l {
+  font-size: 5rem;
+}

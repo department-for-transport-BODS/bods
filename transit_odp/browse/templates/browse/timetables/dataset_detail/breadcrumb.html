@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load breadcrumbs %}
+
+
+{% if host.name == hosts.data %}
+    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+  {% breadcrumb_url 'Timetable data' 'search' host hosts.data %}
+{% elif host.name == hosts.publish %}
+    {% breadcrumb_url 'Your data sets' 'feed-list' pk1=pk1 host hosts.publish %}
+{% endif %}
+{% if object.name|length > 20 %}
+    {% with feed_name=object.name|slice:":19"|add:"..." %}
+        {% breadcrumb feed_name %}
+    {% endwith %}
+{% else %}
+    {% with feed_name=object.name %}
+        {% breadcrumb feed_name %}
+    {% endwith %}
+{% endif %}

@@ -1,0 +1,45 @@
+stages:
+  - test
+
+# UTILITIES
+
+# Adds timestamps to log output. Also works with Alpine
+.logging: &logging |-
+  use_printf=`printf "%(true)T\n" -1 2>/dev/null` || use_printf=false
+  use_awk=`awk 'BEGIN{print(strftime("true"));}'` || use_awk=false
+  echo "logging: use_printf=$use_printf; use_awk=$use_awk"
+  if $use_printf ; then
+      logging_pipe=/tmp/$$.logging
+      mkfifo $logging_pipe
+      (set +x;while read -r line;do printf "[%(%Y/%m/%d %H:%M:%S)T] %s\n" -1 "$line";done) <$logging_pipe&
+      exec >$logging_pipe 2>&1
+      rm $logging_pipe
+    elif $use_awk ; then
+      logging_pipe=/tmp/$$.logging
+      mkfifo $logging_pipe
+      awk '{printf("[%s] %s\n",strftime("%Y/%m/%d %H:%M:%S"),$0);}' <$logging_pipe&
+      exec >$logging_pipe 2>&1
+      rm $logging_pipe
+    else
+      echo "Can't setup timestamped logging."
+    fi
+  echo "logging: Started."
+
+before_script:
+  - *logging
+
+test-crispy_forms_govuk:
+  stage: test
+  image: python:3.9
+  before_script:
+    - *logging
+    - cd crispy-forms-govuk
+    - make install
+  script:
+    - make tests
+  only:
+    # Task only runs in MRs containing changes to crispy-forms-govuk project
+    refs:
+      - merge_requests
+    changes:
+      - crispy-forms-govuk/**/*

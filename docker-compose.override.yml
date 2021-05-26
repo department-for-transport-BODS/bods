@@ -1,0 +1,80 @@
+version: "3"
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+      args:
+        - UID=${UID:?UID not set. Add to .env or export using `UID=$(id -u)`}
+        - GID=${GID:?GID not set. Add to .env or export using `GID=$(id -g)`}
+    command: /start
+    depends_on:
+      - mailhog
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/frontend/node_modules
+         # data volume to prevent node_modules being hidden by the bind mount above
+         # However, this may cause problems as described here: https://stackoverflow.com/a/32785014/5221078
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    extra_hosts:
+      - "www.bods.local:127.0.0.1"
+      - "data.bods.local:127.0.0.1"
+      - "publish.bods.local:127.0.0.1"
+      - "admin.bods.local:127.0.0.1"
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/production/postgres/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+      - local_postgres_data_backups:/backups
+    ports:
+      - "54325:5432"
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  celeryworker:
+    <<: *django
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    ports:
+      - "5555:5555"
+    command: /start-celeryflower
+
+  cavl:
+    build:
+      context: ./docker/local/cavl_server/
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./docker/local/cavl_server/:/usr/src/app/
+    ports:
+      - "8033:8033"

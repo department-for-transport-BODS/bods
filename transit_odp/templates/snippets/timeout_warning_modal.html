@@ -1,0 +1,27 @@
+{% load settings %}
+
+{% if request.user.is_authenticated %}
+  {# only include dialog if we have a logged in user #}
+  <dialog class="govuk-timeout-warning dialog"
+          data-module="timeout-warning"
+          data-timeout="{% session_cookie_age %}"
+          data-timeout-window="30"
+          role="dialog"
+          aria-live="polite"
+  >
+    <h1 id="dialog-title" class="govuk-heading-l">
+      Timeout warning
+    </h1>
+    <p class="govuk-body">
+      Your session will expire soon. Click Refresh session for more time.
+    </p>
+    <button type="button"
+            class="govuk-button dialog-refresh"
+    >Refresh session
+    </button>
+    <button type="button"
+            class="govuk-button govuk-button--secondary dialog-cancel"
+    >Ignore
+    </button>
+  </dialog>
+{% endif %}

@@ -1,0 +1,34 @@
+{% extends "base_success.html" %}
+
+{% load i18n %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block title_tag %}
+  {% trans 'Organisation invited' %}
+{% endblock %}
+
+{% block title_text %}
+  {% trans 'Invite new organisation' %}
+{% endblock %}
+
+{% block body_text %}
+    {% blocktrans %}
+        An email invite has been sent
+    {% endblocktrans %}
+    {% if invite_email %}
+        to
+        {{ invite_email }}.
+    {% else %}
+        .
+    {% endif %}
+{% endblock %}
+
+{% block button_href %}
+    {% url 'users:organisation-manage' host hosts.admin %}
+{% endblock %}
+
+{% block button_text %}
+    {% trans 'Go back to organisation management' %}
+{% endblock %}

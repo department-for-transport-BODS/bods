@@ -1,0 +1,84 @@
+version: "3"
+
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_caddy: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./docker/production/django/Dockerfile
+    command: /gunicorn
+    depends_on:
+      - mailhog
+    env_file:
+      - .env-prod
+  #    environment:
+  #      - DJANGO_SETTINGS_MODULE=config.settings.production
+  #      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:?DJANGO_ALLOWED_HOSTS not set.}
+  #      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY not set.}
+  #      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:?DJANGO_ALLOWED_HOSTS not set.}
+  #      - POSTGRES_HOST=${POSTGRES_HOST:?POSTGRES_HOST not set.}
+  #      - POSTGRES_PORT=${POSTGRES_PORT:?POSTGRES_PORT not set.}
+  #      - POSTGRES_DB=${POSTGRES_DB:?POSTGRES_DB not set.}
+  #      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER not set.}
+  #      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set.}
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/production/postgres/Dockerfile
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - .env-prod
+  #    environment:
+  #      - POSTGRES_HOST=${POSTGRES_HOST:?POSTGRES_HOST not set.}
+  #      - POSTGRES_PORT=${POSTGRES_PORT:?POSTGRES_PORT not set.}
+  #      - POSTGRES_DB=${POSTGRES_DB:?POSTGRES_DB not set.}
+  #      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER not set.}
+  #      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set.}
+
+  # TODO - replace with production mailserver
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "8025:8025"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/production/nginx/Dockerfile
+    depends_on:
+      - django
+    ports:
+      - "0.0.0.0:5000:80"
+  #    - "443:443"
+
+  redis:
+    image: redis:3.2
+
+  celeryworker:
+    <<: *django
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    ports:
+      - "5555:5555"
+    command: /start-celeryflower

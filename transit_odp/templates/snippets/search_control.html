@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load static %}
+
+{% with search_size=search_size|default:"one-half" %}
+<div class="govuk-form-group searchbox">
+  {# Note there must not be any whitespace/line breaks between input and button elements #}
+  {% if hint %}
+    <span id="searchbar-hint" class="govuk-hint">
+    {% trans 'Start by entering operator, route or county name' %}
+  </span>
+  {% endif %}
+  <label for="q" class="hide-using-position">Search</label>
+  <button class="searchbox__button" type="submit">
+    <img src="{% static 'frontend/images/icon-search.png' %}" alt="search icon">
+  </button>
+  <input
+    class="searchbox__input searchbox__input-{{ search_size }}"
+    id="search"
+    name="q"
+    aria-label="Search"
+    type="text"
+    value="{{ q|default_if_none:'' }}"
+    {% if hint %}aria-describedby="searchbar-hint"{% endif %}>
+
+</div>
+  <span class="govuk-hint govuk-!-padding-top-3">{% trans 'Search for keywords in the title or description' %}</span>
+
+{% endwith %}

@@ -1,0 +1,39 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+{% load hosts %}
+
+{% block title_tag %}
+  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+  {% trans 'Create account' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Sign in' 'account_login' %}
+  {% breadcrumb 'Create account' %}
+{% endblock %}
+
+{% block head_title %}
+  {% trans 'Create account' %}
+{% endblock %}
+
+{% block inner %}
+  <p class="govuk-body-m">
+    {% blocktrans %}
+    You can create a data consumer account by entering your details below.
+    If you need a publishing account please go to
+    {% endblocktrans %}
+    <a class="govuk-link" href="{% host_url 'account_signup' host 'publish' %}">
+      create account
+    </a>.
+  </p>
+  {% crispy form %}
+{% endblock %}
+
+
+{% block inner_secondary %}
+  {% include 'account/snippets/already_have_an_account.html' %}
+{% endblock %}

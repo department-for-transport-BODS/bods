@@ -1,0 +1,15 @@
+{% extends 'snippets/sidebar_related_links.html' %}
+
+{% load i18n %}
+
+{% block heading %}
+  {% trans "Don't have an account?" %}
+{% endblock %}
+
+{% block links %}
+  <li>
+    <a class="govuk-link" href="{% url 'account_signup' host host.name %}">
+      {% trans 'Create account' %}
+    </a>
+  </li>
+{% endblock %}

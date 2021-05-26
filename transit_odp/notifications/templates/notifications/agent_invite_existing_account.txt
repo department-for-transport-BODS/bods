@@ -1,0 +1,10 @@
+Hello,
+
+{{ organisation }} has invited you to act as an agent on behalf of them on the Bus Open Data Service. Please go to ‘My Account’ section on your Bus Open Data account in order to respond to their request.
+
+Please ensure you have regular communications with your operators who you are acting on behalf of as agents. We also recommend that you have contracts agreed with them external to the Bus Open Data platform as the legal obligation to publish still lies with your operator.
+
+{{ agent_invite_link }}
+
+Kind regards,
+Bus Open Data Service

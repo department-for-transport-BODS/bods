@@ -1,0 +1,26 @@
+{% extends "guidance/developer/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+  <h1 data-qa="overview-header" class="govuk-heading-l">{% trans 'Overview' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
+      The Bus Open Data Service provides <b>timetables, bus location, and fares data for local bus
+      services across England.</b>
+    {% endblocktrans %}
+  <p>
+  <p class="govuk-body">
+    {% blocktrans %}
+      The Bus Services Act 2017 requires all operators of local bus services in England to provide
+      this information. The transition period is from 2020-2021.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body govuk-!-padding-bottom-5">
+    {% blocktrans %}
+      The Bus Open Data Service is freely available for anyone to use, providing a single location to
+      discover and access data. As well as provide feedback to data publishers. You do not need
+      a license to use the data.
+    {% endblocktrans %}
+  </p>
+{% endblock %}

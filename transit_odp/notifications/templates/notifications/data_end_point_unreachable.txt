@@ -1,0 +1,5 @@
+Hello,
+
+The Bus Open Data Service cannot access the {{ feed_name }} (Dataset ID: {{ feed_id }}) timetable/fares/AVL bus data indexed in the Bus Open Data Service and hosted at the URL (web link) you provided. We will attempt to access the data again in a few minutes. If we are able to access it then, you will receive another email confirming this. If we are unable to access it after multiple attempts, we will send you an expiry notice. No action is required from you at this point.
+Kind regards,
+Bus Open Data Service

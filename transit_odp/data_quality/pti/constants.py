@@ -1,0 +1,21 @@
+OPERATION_DAYS = ("DaysOfOperation", "DaysOfNonOperation")
+BANK_HOLIDAYS = [
+    "StAndrewsDay",
+    "StAndrewsDayHoliday",
+    "ChristmasEve",
+    "NewYearsEve",
+    "ChristmasDay",
+    "ChristmasDayHoliday",
+    "BoxingDay",
+    "BoxingDayHoliday",
+    "NewYearsDay",
+    "NewYearsDayHoliday",
+    "Jan2ndScotland",
+    "Jan2ndScotlandHoliday",
+    "GoodFriday",
+    "EasterMonday",
+    "MayDay",
+    "SpringBank",
+    "LateSummerBankHolidayNotScotland",
+    "AugustBankHolidayScotland",
+]

@@ -1,0 +1,33 @@
+{% extends "users/base.html" %}
+
+ This is the 'My Account' page
+
+{% load static %}
+{% load i18n %}
+
+{% block title_tag %}
+  {% trans 'Invitation expired' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-body govuk-!-padding-5">
+    <p class="govuk-body">
+      {% trans 'This invitation link has already been accepted or has expired. ' %}</p>
+    <p class="govuk-body">
+      {% blocktrans %}
+      Please request a new invitation by asking your organisation
+        admin to resend the invitation from the user management section, or by
+        {% endblocktrans %}
+      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'contacting us.' %}</a> </p>
+    {% blocktrans %}
+        Once a new invitation is sent please accept the invite within 72 hours of receiving it.
+      {% endblocktrans %}
+    </div>
+  </div>
+{%  endblock %}

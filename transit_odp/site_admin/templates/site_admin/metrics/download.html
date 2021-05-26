@@ -1,0 +1,46 @@
+{% extends "site_admin/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Download BODS automated metrics' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Automated exports' %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Download BODS automated metrics</h1>
+
+        <h2 class="govuk-heading-m">API usage metrics</h2>
+        <p class="govuk-body">
+          This download provides a time-series excel export of the different metrics used
+          to track the usage of the BODS consumer API for all the different types of data.
+        </p>
+        <p class="govuk-body">
+            Download BODS API usage metric
+        </p>
+
+        <h2 class="govuk-heading-m">Automated export metrics</h2>
+        <p class="govuk-body">
+          This download provides data on the different operational level metrics used to
+          track on BODS including details on operators and their data uploads.
+        </p>
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
+            Download BODS automated metrics
+          </a>
+        </p>
+      </div>
+      <div class="govuk-grid-column-one-third">
+      </div>
+    </div>
+</div>
+{% endblock %}

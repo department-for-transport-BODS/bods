@@ -1,0 +1,109 @@
+{% extends "publish/feed_form.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block breadcrumb.content %}
+  {% breadcrumb_url root_site.name 'home' host hosts.root %}
+  {% breadcrumb_url site.name 'home' host host.name %}
+  {% breadcrumb_url 'Your data sets' 'feed-list' pk1=pk1 host hosts.publish %}
+
+  {% if object.name|length > 20 %}
+    {% with feed_name=object.name|slice:":19"|add:"..." %}
+      {% breadcrumb_url feed_name 'feed-detail' object.dataset.pk pk1=pk1 host hosts.publish %}
+    {% endwith %}
+  {% else %}
+    {% breadcrumb_url object.name 'feed-detail' object.dataset.pk pk1=pk1 host hosts.publish %}
+  {% endif %}
+
+  {% breadcrumb 'Update data set' %}
+{% endblock %}
+
+{% block backlink %}
+  {% url 'feed-detail' pk=object.dataset.id pk1=pk1 host hosts.publish as backlink_url %}
+  {% include 'snippets/backlink.html' with url=backlink_url %}
+{% endblock %}
+
+{% block inner %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ wizard.form.media }}
+    {{ wizard.management_form }}
+    {{ wizard.form }}
+    {{ form.non_field_errors }}
+
+    {% if form.errors %}
+      <span id="{{ form.comment.id }}-error" class="govuk-error-message">
+                                      {{ form.comment.errors }}
+                                    </span>
+    {% endif %}
+
+    <div class="govuk-grid-row govuk-!-padding-left-3">
+      <ul class="wizard-unordered-list govuk-list dont-break-out">
+        <li class="wizard-list-item">
+          <div class="wizard-step-div">
+
+            <h4 class="div__heading">{% trans '1. Describe your data set' %}</h4>
+
+            <p class="wizard-paragraph">
+              {{ form.description.value }}
+            </p>
+          </div>
+
+          <div class="wizard-change-div">
+            <button type="submit" name="wizard_goto_step" value="description"
+                    class="govuk-button govuk-button--link align-right govuk-!-font-size-14">
+              {% trans 'Change this' %} </button>
+          </div>
+        </li>
+        <li class="wizard-list-item">
+          <div class="wizard-step-div">
+
+            <h4 class="div__heading">{% trans '2. Choose how you want to publish your data' %}</h4>
+
+            <p class="wizard-paragraph">
+
+              {% if form.instance.url_link %}
+
+                {% trans 'Upload data to Bus Open Data service:<br/>' %}{{ form.instance.url_link }}
+              {% elif form.instance.upload_file %}
+
+                {% trans 'Upload data to Bus Open Data service:<br/>' %}{{ form.instance.upload_file }}
+              {% endif %}
+            </p>
+          </div>
+
+          <div class="wizard-change-div">
+            <button type="submit" name="wizard_goto_step" value="upload"
+                    class="govuk-button govuk-button--link align-right govuk-!-font-size-14">
+              {% trans 'Change this' %} </button>
+          </div>
+        </li>
+      </ul>
+
+      <div class="govuk-grid-row">
+        <hr class="govuk-section-break govuk-section-break--s govuk-section-break">
+        <div class="govuk-grid-column-one-third">
+          {% if data_updated %}
+            <button type="submit" name="wizard_goto_step" value="final" class="govuk-button">
+              {% trans 'Next step' %}
+            </button>
+            {{ wizard.form }}
+          {% endif %}
+          {% if object.status != "expired" %}
+          <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}">
+            {{ _('Archive this data set') }}
+          </a>
+          {% endif %}
+          <hr class="govuk-section-break govuk-section-break--xl govuk-section-break">
+        </div>
+        <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}">
+      </div>
+  </form>
+  {% block inner_secondary %}
+
+  {% endblock %}
+
+{% endblock %}

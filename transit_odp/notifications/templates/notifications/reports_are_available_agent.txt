@@ -1,0 +1,13 @@
+This notification confirms that the Validation report and Data quality report for the following timetable dataset is now available to view.
+
+Please ensure all validation errors in your validation report (if you have any) are fixed before 2nd August, 2021. We also highly recommend that you try to fix all observations in your Data quality report which are deemed as ‘critical observations’.
+
+Operator: {{ organisation }}
+Dataset: {{ feed_name }}
+Dataset ID: {{ feed_id }}
+Short Description: {{ feed_short_description }}
+Comments: {{ comments }}
+Link to dataset: {{ link }}
+
+Kind Regards,
+The Bus Open Data Team

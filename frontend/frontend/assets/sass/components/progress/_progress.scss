@@ -1,0 +1,62 @@
+@import "../../variables";
+
+.center {
+  border-radius: 50%;
+  height: 50px;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  width: 18px;
+}
+
+.pie-progress {
+  height: 18px;
+  //width: 18px;
+}
+
+.pie-progress .progress-percent {
+  color: #006435; /* color of progress percentage */
+  font-size: 18px; /* font size of progress percentage */
+  left: 50%;
+  //position: absolute;
+  top: 50%;
+}
+
+.pie-progress .progress-text {
+  color: #000000; /* color of progress text */
+  font-size: 18px; /* font size of progress text */
+  left: 50%;
+  //position: absolute;
+  top: 50%;
+}
+
+.progress-bar-outer {
+  width: 100%;
+  background-color: #005ea5;
+}
+
+.progress-bar-inner {
+  width: 0%;
+  height: 30px;
+  background: repeating-linear-gradient(
+    45deg,
+    #000000,
+    #000000 10px,
+    #ffffff 10px,
+    #ffffff 20px
+  );
+  background-color: #ffffff;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+
+.progress-bar-text {
+  width: 4rem;
+  height: 2.56rem;
+  font-size: 2.23rem;
+  font-weight: bold;
+  color: #ffffff;
+  align-content: center;
+}

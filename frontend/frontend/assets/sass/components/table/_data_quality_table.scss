@@ -1,0 +1,18 @@
+@import "govuk-frontend/govuk/components/table/table";
+@import "../../variables";
+
+tr.effected {
+  color: map-get($govuk-colours, "red");
+}
+
+.timing_pattern_boxed {
+  border: govuk-spacing(1) solid black;
+  margin-bottom: govuk-spacing(5);
+
+  &__group {
+    padding-top: govuk-spacing(3);
+    padding-right: govuk-spacing(3);
+    padding-left: govuk-spacing(3);
+    padding-bottom: 0;
+  }
+}

@@ -1,0 +1,19 @@
+{% extends "page.html" %}
+
+
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        {% block sidebar %}
+            {% include 'demo/snippets/sidebar.html' %}
+        {% endblock %}
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+        {% block secondary %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

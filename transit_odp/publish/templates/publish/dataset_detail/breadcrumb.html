@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% if host.name == hosts.data %}
+    {% breadcrumb_url 'Browse' 'catalogue' host hosts.data %}
+    {% breadcrumb_url 'All operator data sets' 'feed-list' host hosts.data %}
+{% elif host.name == hosts.publish %}
+  {% if user.is_agent_user %}
+    {% breadcrumb_url 'Operator Dashboard' 'select-org' host host.name %}
+  {% endif %}
+
+  {% if feature.avl or feature.fares %}
+    {% breadcrumb_url 'Choose data type' 'select-data' pk1=pk1 host host.name %}
+  {% endif %}
+  {% breadcrumb_url 'Your data sets' 'feed-list' pk1=pk1 host hosts.publish %}
+{% endif %}
+{% if object.name|length > 20 %}
+    {% with feed_name=object.name|slice:":19"|add:"..." %}
+        {% breadcrumb feed_name %}
+    {% endwith %}
+{% else %}
+    {% with feed_name=object.name %}
+        {% breadcrumb feed_name %}
+    {% endwith %}
+{% endif %}

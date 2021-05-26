@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  TRANSXCHANGE EXAMPLE: Lollipop
+Created: Nick Knowles , Kizoom, 15 April 2004
+(C) Crown Copyrigh  2004-2010
+
+Based on Sample Timetables supplied by Matt Francis, AIM, 23 January 2004.
+
+2010.02.16  v2.4
+    PTIC-037 Add DutyCrew code to positioning Link
+    PTIC-o67 Allow ServiceCode to be a string. Note that & will have to be escaped
+   eg <ServiceCode>S!&S2</ServiceCode>
+ ==><ServiceCode>S1S2</ServiceCode>
+
+2010.01.31 Add frequency Service
+
+2007 01 29
+     Add more complex day types to test list valdiation
+
+-->
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.transxchange.org.uk/
+../../TransXChange_general.xsd" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en" CreationDateTime="2004-04-14T14:20:00-05:00" ModificationDateTime="2004-04-14T14:20:00-05:00" Modification="new" RevisionNumber="0" FileName="lollipop.xml" SchemaVersion="2.4" RegistrationDocument="false">
+	<StopPoints>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000001</StopPointRef>
+			<CommonName>Bus Station</CommonName>
+			<Indicator>Opposite</Indicator>
+			<LocalityName>Flamford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000002</StopPointRef>
+			<CommonName>High St</CommonName>
+			<LocalityName>Flamford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000004</StopPointRef>
+			<CommonName>School</CommonName>
+			<Indicator>Opposite</Indicator>
+			<LocalityName>Pulford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000007</StopPointRef>
+			<CommonName>Exchange</CommonName>
+			<Indicator>Opposite</Indicator>
+			<LocalityName>Pulford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000008</StopPointRef>
+			<CommonName>Robridge</CommonName>
+			<Indicator>Adjacent</Indicator>
+			<LocalityName>Robridge</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000009</StopPointRef>
+			<CommonName>Marford</CommonName>
+			<Indicator>Adjacent</Indicator>
+			<LocalityName>Marford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000010</StopPointRef>
+			<CommonName>Barford</CommonName>
+			<LocalityName>Marford</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000011</StopPointRef>
+			<CommonName>Egham</CommonName>
+			<LocalityName>Egham</LocalityName>
+		</AnnotatedStopPointRef>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000012</StopPointRef>
+			<CommonName>Pulford</CommonName>
+			<LocalityName>Pulford</LocalityName>
+		</AnnotatedStopPointRef>
+	</StopPoints>
+	<!-- ===ROUTE SECTIONS ====================================================== -->
+	<RouteSections>
+		<!-- SECTION 1:  Bus Station to Pulford -->
+		<RouteSection id="RS1">
+			<!-- Bus Station to High St -->
+			<RouteLink id="RL1">
+				<From>
+					<StopPointRef>9990000001</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000002</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+			<!-- High St to Robridge-->
+			<RouteLink id="RL2">
+				<From>
+					<StopPointRef>9990000002</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000008</StopPointRef>
+				</To>
+				<Distance>500</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+			<!-- Robridgeto Barford -->
+			<RouteLink id="RL3">
+				<From>
+					<StopPointRef>9990000008</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000010</StopPointRef>
+				</To>
+				<Distance>2000</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+			<!-- Barford to Egham -->
+			<RouteLink id="RL4">
+				<From>
+					<StopPointRef>9990000010</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000011</StopPointRef>
+				</To>
+				<Distance>1500</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+			<!-- Egham to Pulford -->
+			<RouteLink id="RL5">
+				<From>
+					<StopPointRef>9990000011</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000012</StopPointRef>
+				</To>
+				<Distance>1500</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+		</RouteSection>
+		<!--SECTION 2: Pulford  to School =========  -->
+		<RouteSection id="RS2">
+			<!-- Pulford to Exchange -->
+			<RouteLink id="RL6">
+				<From>
+					<StopPointRef>9990000012</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000007</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+			<!-- Exchange to School -->
+			<RouteLink id="RL7">
+				<From>
+					<StopPointRef>9990000007</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000004</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+		</RouteSection>
+		<!--SECTION 3: Pulford  to Exchange =========  -->
+		<RouteSection id="RS3">
+			<!-- Pulford to School -->
+			<RouteLink id="RL8">
+				<From>
+					<StopPointRef>9990000012</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000004</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+			<!-- School to Exchange -->
+			<RouteLink id="RL9">
+				<From>
+					<StopPointRef>9990000004</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000007</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>outbound</Direction>
+			</RouteLink>
+		</RouteSection>
+	</RouteSections>
+	<Routes>
+		<!-- SECTION 1:  Bus Station to Pulford -->
+		<!--SECTION 2: Pulford  to School =========  -->
+		<Route id="R1">
+			<Description xml:lang="en">Exchange then School</Description>
+			<RouteSectionRef>RS1</RouteSectionRef>
+			<RouteSectionRef>RS2</RouteSectionRef>
+		</Route>
+		<Route id="R2">
+			<!-- SECTION 1:  Bus Station to Pulford -->
+			<!--SECTION 3: Pulford  to Exchange =========  -->
+			<Description xml:lang="en">School then Exchange</Description>
+			<RouteSectionRef>RS1</RouteSectionRef>
+			<RouteSectionRef>RS3</RouteSectionRef>
+		</Route>
+	</Routes>
+	<!-- ===JOURNEY PATTERN SECTIONS ====================================================== -->
+	<JourneyPatternSections>
+		<JourneyPatternSection id="JPS1">
+			<!-- Bus Station to High St -->
+			<JourneyPatternTimingLink id="JPTL1">
+				<From SequenceNumber="1">
+					<Activity>pickUp</Activity>
+					<StopPointRef>9990000001</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="2">
+					<StopPointRef>9990000002</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL1</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT6M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- High St to Robridge-->
+			<JourneyPatternTimingLink id="JPTL2">
+				<From SequenceNumber="2">
+					<StopPointRef>9990000002</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="3">
+					<StopPointRef>9990000008</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL2</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT5M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Robridgeto Barford -->
+			<JourneyPatternTimingLink id="JPTL3">
+				<From SequenceNumber="3">
+					<StopPointRef>9990000008</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="4">
+					<StopPointRef>9990000010</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL3</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT2M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Barford to Egham -->
+			<JourneyPatternTimingLink id="JPTL4">
+				<From SequenceNumber="4">
+					<!-- 1 minute wait at Barford -->
+					<WaitTime>PT1M</WaitTime>
+					<StopPointRef>9990000010</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="5">
+					<StopPointRef>9990000011</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL4</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT3M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Egham to Pulford -->
+			<JourneyPatternTimingLink id="JPTL5">
+				<From SequenceNumber="5">
+					<StopPointRef>9990000011</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="6">
+					<Activity>pass</Activity>
+					<StopPointRef>9990000012</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL5</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT3M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+		<JourneyPatternSection id="JPS2">
+			<!-- Pulford  to Exchange -->
+			<JourneyPatternTimingLink id="JPTL6">
+				<From SequenceNumber="6">
+					<Activity>pass</Activity>
+					<StopPointRef>9990000012</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="7">
+					<StopPointRef>9990000007</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL6</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT17M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- Exchange to School -->
+			<JourneyPatternTimingLink id="JPTL7">
+				<From SequenceNumber="7">
+					<StopPointRef>9990000007</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="8">
+					<Activity>setDown</Activity>
+					<StopPointRef>9990000004</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL7</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT1M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+		<JourneyPatternSection id="JPS3">
+			<!-- Pulford  to School -->
+			<JourneyPatternTimingLink id="JPTL8">
+				<From SequenceNumber="6">
+					<Activity>pass</Activity>
+					<StopPointRef>9990000012</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="8">
+					<Activity>setDown</Activity>
+					<StopPointRef>9990000004</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL8</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT16M</RunTime>
+			</JourneyPatternTimingLink>
+			<!-- School to Exchange -->
+			<JourneyPatternTimingLink id="JPTL9">
+				<From SequenceNumber="8">
+					<Activity>setDown</Activity>
+					<StopPointRef>9990000004</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</From>
+				<To SequenceNumber="9">
+					<Activity>setDown</Activity>
+					<StopPointRef>9990000007</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL9</RouteLinkRef>
+				<Direction>outbound</Direction>
+				<RunTime>PT1M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+	</JourneyPatternSections>
+	<!-- ===OPERATORS ====================================================== -->
+	<Operators>
+		<Operator id="O1">
+			<NationalOperatorCode>ACO</NationalOperatorCode>
+			<OperatorCode>ACO</OperatorCode>
+			<OperatorShortName>ACO Buses</OperatorShortName>
+			<OperatorNameOnLicence>Ancient Crowded Omnibuses Ltd.</OperatorNameOnLicence>
+			<LicenceNumber>AC1234567</LicenceNumber>
+			<LicenceClassification>standardNational</LicenceClassification>
+			<EnquiryTelephoneNumber>
+				<TelNationalNumber>020712346</TelNationalNumber>
+			</EnquiryTelephoneNumber>
+			<ContactTelephoneNumber>
+				<TelNationalNumber>0207666543</TelNationalNumber>
+			</ContactTelephoneNumber>
+			<EmailAddress>enquiries@acobuses.co.uk</EmailAddress>
+		</Operator>
+		<Operator id="O2">
+			<NationalOperatorCode>RED</NationalOperatorCode>
+			<OperatorCode>RED22</OperatorCode>
+			<OperatorShortName>RED</OperatorShortName>
+			<OperatorNameOnLicence>Big Red Buses</OperatorNameOnLicence>
+			<EmailAddress>info@bigredbuses.co.uk</EmailAddress>
+		</Operator>
+	</Operators>
+	<!-- ===SERVICES ====================================================== -->
+	<Services>
+		<Service>
+			<ServiceCode>S1S2</ServiceCode>
+			<Lines>
+				<Line id="L1">
+					<LineName>1A</LineName>
+				</Line>
+				<Line id="L2">
+					<LineName>1B</LineName>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2004-01-01</StartDate>
+				<EndDate>2005-06-13</EndDate>
+			</OperatingPeriod>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<MondayToSaturday/>
+					</DaysOfWeek>
+				</RegularDayType>
+				<BankHolidayOperation>
+					<DaysOfOperation>
+						<Jan2ndScotland/>
+						<StAndrewsDay/>
+						<MayDay/>
+						<EasterMonday/>
+						<SpringBank/>
+						<AugustBankHolidayScotland/>
+						<ChristmasDayHoliday/>
+						<BoxingDayHoliday/>
+						<ChristmasEve/>
+					</DaysOfOperation>
+					<DaysOfNonOperation>
+						<ChristmasDay/>
+						<BoxingDay/>
+						<GoodFriday/>
+						<NewYearsDay/>
+						<NewYearsDayHoliday/>
+						<NewYearsEve/>
+					</DaysOfNonOperation>
+				</BankHolidayOperation>
+			</OperatingProfile>
+			<JourneyGroupings>
+				<OutboundJourneyGroupings>
+					<HolidaysOnlyJourneyGrouping>
+						<Description>Special S1 </Description>
+						<Notes>
+							<Note>
+								<NoteCode>N1</NoteCode>
+								<NoteText>This service runs only on specified bank holidays 2020-01-01</NoteText>
+							</Note>
+						</Notes>
+						<Contents>
+							<ByOperationalProfile/>
+						</Contents>
+					</HolidaysOnlyJourneyGrouping>
+				</OutboundJourneyGroupings>
+			</JourneyGroupings>
+			<ServiceClassification>
+				<NormalStopping/>
+			</ServiceClassification>
+			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+			<StopRequirements>
+				<NoNewStopsRequired/>
+			</StopRequirements>
+			<Description>Flamford Bus Station to Pulford Exchange outbound , with alternate routings via school (1B) and Exchange (1A).  Monday to Saturday, excluding all Bank Holidays. There is a special timetable on ceratin Bank holidays</Description>
+			<SchematicMap>lollipop.gif</SchematicMap>
+			<StandardService>
+				<Origin>Bus Station</Origin>
+				<Destination>Exchange</Destination>
+				<Vias>
+					<Via>Barford</Via>
+					<Via>School</Via>
+				</Vias>
+				<UseAllStopPoints>false</UseAllStopPoints>
+				<JourneyPattern id="JP1">
+					<Direction>outbound</Direction>
+					<LayoverPoint id="lay_1">
+						<Duration>PT16M</Duration>
+						<Name>Parking Lot</Name>
+						<Location>
+							<Easting>442914</Easting>
+							<Northing>295186</Northing>
+						</Location>
+						<MinimumDuration>PT10M</MinimumDuration>
+					</LayoverPoint>
+					<LayoverPoint id="lay_2">
+						<Duration>PT20M</Duration>
+						<Name>Side Road</Name>
+					</LayoverPoint>
+					<RouteRef>R1</RouteRef>
+					<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+					<JourneyPatternSectionRefs>JPS2</JourneyPatternSectionRefs>
+				</JourneyPattern>
+				<JourneyPattern id="JP2">
+					<Direction>outbound</Direction>
+					<RouteRef>R2</RouteRef>
+					<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+					<JourneyPatternSectionRefs>JPS3</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+		</Service>
+		<Service>
+			<ServiceCode>S2</ServiceCode>
+			<Lines>
+				<Line id="L3">
+					<LineName>1B</LineName>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2004-01-01</StartDate>
+				<EndDate>2004-06-13</EndDate>
+			</OperatingPeriod>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<MondayToSunday/>
+					</DaysOfWeek>
+				</RegularDayType>
+				<SpecialDaysOperation>
+					<DaysOfOperation>
+						<DateRange>
+							<StartDate>2004-06-01</StartDate>
+							<EndDate>2004-06-01</EndDate>
+						</DateRange>
+					</DaysOfOperation>
+					<DaysOfNonOperation>
+						<DateRange>
+							<StartDate>2004-06-02</StartDate>
+							<EndDate>2004-06-02</EndDate>
+						</DateRange>
+					</DaysOfNonOperation>
+				</SpecialDaysOperation>
+				<BankHolidayOperation>
+					<DaysOfNonOperation>
+						<Christmas/>
+					</DaysOfNonOperation>
+				</BankHolidayOperation>
+			</OperatingProfile>
+			<JourneyGroupings>
+				<OutboundJourneyGroupings>
+					<MondayToFridayJourneyGrouping>
+						<Description>Service S2 </Description>
+						<Contents>
+							<ByOperationalProfile/>
+						</Contents>
+					</MondayToFridayJourneyGrouping>
+				</OutboundJourneyGroupings>
+			</JourneyGroupings>
+			<ServiceClassification>
+				<NormalStopping/>
+			</ServiceClassification>
+			<RegisteredOperatorRef>O2</RegisteredOperatorRef>
+			<StopRequirements>
+				<NoNewStopsRequired/>
+			</StopRequirements>
+			<!-- SECTION 1:  Bus Station to Pulford -->
+			<!--SECTION 2: Pulford  to School =========  -->
+			<!--SECTION 3: Pulford  to Exchange =========  -->
+			<Description>Flamford Bus Station to Pulford Exchange outbound,  via school (1B). Additonal service provided by RED Buses.  Monday to Sunday, excluding  Christmas Day and Boxing Day.</Description>
+			<StandardService>
+				<Origin>Bus Station</Origin>
+				<Destination>Exchange</Destination>
+				<Vias>
+					<Via>School</Via>
+				</Vias>
+				<UseAllStopPoints>false</UseAllStopPoints>
+				<JourneyPattern id="JP3">
+					<Direction>outbound</Direction>
+					<RouteRef>R2</RouteRef>
+					<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+					<JourneyPatternSectionRefs>JPS3</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+		</Service>
+	</Services>
+	<!-- ===Journeys ====================================================== -->
+	<VehicleJourneys>
+		<VehicleJourney>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<Monday/>
+						<Wednesday/>
+						<Friday/>
+						<Sunday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ1</VehicleJourneyCode>
+			<ServiceRef>S1S2</ServiceRef>
+			<LineRef>L2</LineRef>
+			<JourneyPatternRef>JP1</JourneyPatternRef>
+			<DepartureTime>15:55:00</DepartureTime>
+			<VehicleJourneyTimingLink id="VJTL01">
+				<JourneyPatternTimingLinkRef>JPTL1</JourneyPatternTimingLinkRef>
+				<To>
+					<Activity>pass</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL02">
+				<JourneyPatternTimingLinkRef>JPTL2</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pass</Activity>
+				</From>
+				<To>
+					<Activity>pass</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL03">
+				<JourneyPatternTimingLinkRef>JPTL3</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pass</Activity>
+				</From>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL06">
+				<JourneyPatternTimingLinkRef>JPTL6</JourneyPatternTimingLinkRef>
+				<To>
+					<Activity>setDown</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+		</VehicleJourney>
+		<VehicleJourney>
+			<VehicleJourneyCode>VJ2</VehicleJourneyCode>
+			<ServiceRef>S1S2</ServiceRef>
+			<LineRef>L1</LineRef>
+			<JourneyPatternRef>JP1</JourneyPatternRef>
+			<DepartureTime>16:15:00</DepartureTime>
+			<Frequency>
+				<EndTime>16:15:00</EndTime>
+				<PartialFrequency/>
+			</Frequency>
+			<VehicleJourneyTimingLink id="VJTL11">
+				<JourneyPatternTimingLinkRef>JPTL1</JourneyPatternTimingLinkRef>
+				<To>
+					<Activity>pass</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL12">
+				<JourneyPatternTimingLinkRef>JPTL2</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pass</Activity>
+				</From>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL14">
+				<JourneyPatternTimingLinkRef>JPTL4</JourneyPatternTimingLinkRef>
+				<To>
+					<Activity>pass</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL15">
+				<JourneyPatternTimingLinkRef>JPTL5</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pass</Activity>
+					<Interval>
+						<ScheduledFrequency>PT2M</ScheduledFrequency>
+					</Interval>
+				</From>
+				<To>
+					<Activity>pass</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL16">
+				<JourneyPatternTimingLinkRef>JPTL6</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pass</Activity>
+					<Interval>
+						<ScheduledFrequency>PT2M</ScheduledFrequency>
+					</Interval>
+				</From>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL17">
+				<JourneyPatternTimingLinkRef>JPTL7</JourneyPatternTimingLinkRef>
+			</VehicleJourneyTimingLink>
+		</VehicleJourney>
+		<VehicleJourney>
+			<VehicleJourneyCode>VJ3</VehicleJourneyCode>
+			<ServiceRef>S1S2</ServiceRef>
+			<LineRef>L2</LineRef>
+			<VehicleJourneyRef>VJ1</VehicleJourneyRef>
+			<DepartureTime>16:35:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<VehicleJourneyCode>VJ4</VehicleJourneyCode>
+			<ServiceRef>S2</ServiceRef>
+			<LineRef>L3</LineRef>
+			<JourneyPatternRef>JP3</JourneyPatternRef>
+			<DepartureTime>16:40:00</DepartureTime>
+			<VehicleJourneyTimingLink id="VJTL31">
+				<JourneyPatternTimingLinkRef>JPTL1</JourneyPatternTimingLinkRef>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL32">
+				<JourneyPatternTimingLinkRef>JPTL2</JourneyPatternTimingLinkRef>
+				<To>
+					<Activity>pass</Activity>
+				</To>
+			</VehicleJourneyTimingLink>
+			<VehicleJourneyTimingLink id="VJTL33">
+				<JourneyPatternTimingLinkRef>JPTL3</JourneyPatternTimingLinkRef>
+				<From>
+					<Activity>pass</Activity>
+				</From>
+			</VehicleJourneyTimingLink>
+		</VehicleJourney>
+		<VehicleJourney>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek>
+						<Monday/>
+						<Wednesday/>
+						<Friday/>
+						<Sunday/>
+					</DaysOfWeek>
+				</RegularDayType>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ5</VehicleJourneyCode>
+			<ServiceRef>S1S2</ServiceRef>
+			<LineRef>L2</LineRef>
+			<VehicleJourneyRef>VJ1</VehicleJourneyRef>
+			<DepartureTime>16:55:00</DepartureTime>
+		</VehicleJourney>
+		<VehicleJourney>
+			<OperatingProfile>
+				<RegularDayType>
+					<HolidaysOnly/>
+				</RegularDayType>
+				<BankHolidayOperation>
+					<DaysOfOperation>
+						<ChristmasDay/>
+						<BoxingDay/>
+						<GoodFriday/>
+						<NewYearsDay/>
+						<NewYearsDayHoliday/>
+						<NewYearsEve/>
+					</DaysOfOperation>
+				</BankHolidayOperation>
+			</OperatingProfile>
+			<VehicleJourneyCode>VJ6</VehicleJourneyCode>
+			<ServiceRef>S1S2</ServiceRef>
+			<LineRef>L2</LineRef>
+			<VehicleJourneyRef>VJ1</VehicleJourneyRef>
+			<DepartureTime>16:35:00</DepartureTime>
+		</VehicleJourney>
+	</VehicleJourneys>
+</TransXChange>

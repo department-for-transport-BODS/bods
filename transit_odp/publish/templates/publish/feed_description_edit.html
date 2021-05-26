@@ -1,0 +1,31 @@
+{% extends "publish/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Your data sets' 'feed-list' pk1=pk1 host hosts.publish %}
+  {% if is_live %}
+  {% breadcrumb_url revision_name 'feed-detail' pk1=pk1 pk=object.dataset_id host hosts.publish %}
+  {% else %}
+    {% if is_revision_update %}
+      {% breadcrumb_url revision_name 'revision-update-publish' pk1=pk1 pk=object.dataset_id host hosts.publish %}
+      {% else %}
+      {% breadcrumb_url revision_name 'revision-publish' pk1=pk1 pk=object.dataset_id host hosts.publish %}
+      {% endif %}
+  {% endif %}
+  {% breadcrumb "Edit description" %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+      <div class="component-wrapper">
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

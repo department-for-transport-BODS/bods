@@ -1,0 +1,133 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/table/table";
+
+$govuk-table-border: 1px solid $govuk-border-colour;
+
+.custom_govuk_table {
+  @extend .govuk-table;
+
+  // Invert table borders to rendered at the top of each row. This is cumbersome but is necessary to be able
+  // to remove the border between two rows to make them look like a single row, e.g. the changelog table
+  .govuk-table__header,
+  .govuk-table__cell {
+    font-size: 18px;
+    border-top: $govuk-table-border;
+    border-bottom: 0;
+    word-break: break-word;
+  }
+
+  .govuk-table__row:last-child {
+    .govuk-table__header,
+    .govuk-table__cell {
+      font-size: 18px;
+      // Put border back on the bottom
+      border-bottom: $govuk-table-border;
+    }
+  }
+
+  .govuk-table__row:first-child {
+    .govuk-table__header,
+    .govuk-table__cell {
+      font-size: 18px;
+      // Remove border from the top
+      border-top: 0;
+    }
+  }
+
+  .govuk-table__row + .govuk-table__row--error {
+    // Remove the border from the error row so it looks like a single row with the row above
+    // Note - its impossible to select the previous element in CSS, otherwise we could have avoided flipping the borders
+    .govuk-table__header,
+    .govuk-table__cell {
+      font-size: 18px;
+      border-top: 0;
+      padding-top: 0; // Also remove padding to position closer to above row
+    }
+  }
+
+  .column-header-link {
+    color: $govuk-link-colour;
+    font-size: 18px;
+    font-weight: normal;
+    text-decoration: none;
+
+    &:focus {
+      @include govuk-focused-text;
+    }
+  }
+
+  .row-header {
+    font-size: 18px;
+    color: $govuk-input-border-colour;
+    font-weight: normal;
+  }
+
+  .disabled {
+    color: #000000;
+    opacity: 0.5;
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .right-justify {
+    text-align: right;
+  }
+
+  /* Show the up / down triangle only if asc / desc present */
+  .order-up,
+  .order-down {
+    display: none;
+  }
+
+  .asc,
+  .desc {
+    a {
+      font-weight: bold;
+    }
+  }
+
+  .asc .order-up,
+  .desc .order-down {
+    display: inline;
+  }
+}
+
+/* pagination */
+
+.pagination-controls {
+  display: flex;
+  justify-content: stretch;
+  flex-wrap: wrap;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+ul.pagination {
+  display: inline-block;
+  padding: 0;
+  margin: -3px 0 0 0;
+  font-size: 1.1875rem;
+  line-height: 1.31579;
+
+  li {
+    display: inline;
+
+    a {
+      /*color: #398373;*/
+      float: left;
+      padding: 4px 8px;
+    }
+
+    a.noclick {
+      text-decoration: none;
+      cursor: default;
+      color: black;
+    }
+
+    .fas {
+      font-size: 10px;
+    }
+  }
+}

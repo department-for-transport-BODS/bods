@@ -1,0 +1,1075 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:09:25",
+    "naptan_date": "Sun, 24 Nov 2019 04:30:30",
+    "sources": [
+      "",
+      "MERGED_MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-8-A-y08-1.xml",
+      "MERGED_whole_ea_20-9-A-y08-1.xml",
+      "MERGED_whole_ea_20-A-B-y08-1.xml",
+      "MERGED_whole_ea_20-B-A-y08-1.xml",
+      "MERGED_whole_ea_20-D-_-y08-1.xml",
+      "MERGED_whole_ea_20-X8-_-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-8-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-A-B-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-B-A-y08-1.xml",
+      "REMAINDER_AFTER_MERGE_whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-1-A-y08-1.xml",
+      "whole_ea_20-101-_-y08-1.xml",
+      "whole_ea_20-11-_-y08-1.xml",
+      "whole_ea_20-110-A-y08-1.xml",
+      "whole_ea_20-114-B-y08-1.xml",
+      "whole_ea_20-117-C-y08-1.xml",
+      "whole_ea_20-117-_-y08-1.xml",
+      "whole_ea_20-12-A-y08-1.xml",
+      "whole_ea_20-12-D-y08-1.xml",
+      "whole_ea_20-125-_-y08-1.xml",
+      "whole_ea_20-127-_-y08-1.xml",
+      "whole_ea_20-129-_-y08-1.xml",
+      "whole_ea_20-13-_-y08-1.xml",
+      "whole_ea_20-132-_-y08-1.xml",
+      "whole_ea_20-13A-_-y08-1.xml",
+      "whole_ea_20-13B-_-y08-1.xml",
+      "whole_ea_20-13C-_-y08-1.xml",
+      "whole_ea_20-15-E-y08-1.xml",
+      "whole_ea_20-150-_-y08-1.xml",
+      "whole_ea_20-16A-_-y08-1.xml",
+      "whole_ea_20-18-A-y08-1.xml",
+      "whole_ea_20-18-_-y08-1.xml",
+      "whole_ea_20-19-A-y08-1.xml",
+      "whole_ea_20-19-_-y08-1.xml",
+      "whole_ea_20-199-_-y08-1.xml",
+      "whole_ea_20-1A-A-y08-1.xml",
+      "whole_ea_20-2-A-y08-1.xml",
+      "whole_ea_20-203-_-y08-1.xml",
+      "whole_ea_20-204-_-y08-1.xml",
+      "whole_ea_20-206-_-y08-1.xml",
+      "whole_ea_20-21-A-y08-1.xml",
+      "whole_ea_20-22-A-y08-1.xml",
+      "whole_ea_20-22-_-y08-1.xml",
+      "whole_ea_20-25-_-y08-1.xml",
+      "whole_ea_20-3-B-y08-1.xml",
+      "whole_ea_20-30-B-y08-1.xml",
+      "whole_ea_20-31-B-y08-1.xml",
+      "whole_ea_20-31-_-y08-1.xml",
+      "whole_ea_20-32-_-y08-1.xml",
+      "whole_ea_20-33-A-y08-1.xml",
+      "whole_ea_20-336-_-y08-1.xml",
+      "whole_ea_20-35-C-y08-1.xml",
+      "whole_ea_20-39-_-y08-1.xml",
+      "whole_ea_20-4-_-y08-1.xml",
+      "whole_ea_20-400-C-y08-1.xml",
+      "whole_ea_20-401-C-y08-1.xml",
+      "whole_ea_20-415-_-y08-1.xml",
+      "whole_ea_20-45A-A-y08-1.xml",
+      "whole_ea_20-46-A-y08-1.xml",
+      "whole_ea_20-46-C-y08-1.xml",
+      "whole_ea_20-46-D-y08-1.xml",
+      "whole_ea_20-46A-_-y08-1.xml",
+      "whole_ea_20-47-A-y08-1.xml",
+      "whole_ea_20-478-_-y08-1.xml",
+      "whole_ea_20-5-B-y08-1.xml",
+      "whole_ea_20-50-A-y08-1.xml",
+      "whole_ea_20-56-_-y08-1.xml",
+      "whole_ea_20-6-_-y08-1.xml",
+      "whole_ea_20-61-A-y08-1.xml",
+      "whole_ea_20-61X-_-y08-1.xml",
+      "whole_ea_20-63-A-y08-1.xml",
+      "whole_ea_20-65-A-y08-1.xml",
+      "whole_ea_20-66-B-y08-1.xml",
+      "whole_ea_20-66-_-y08-1.xml",
+      "whole_ea_20-68-_-y08-1.xml",
+      "whole_ea_20-7-A-y08-1.xml",
+      "whole_ea_20-75-A-y08-1.xml",
+      "whole_ea_20-7A-_-y08-1.xml",
+      "whole_ea_20-8-A-y08-1.xml",
+      "whole_ea_20-8-_-y08-1.xml",
+      "whole_ea_20-9-A-y08-1.xml",
+      "whole_ea_20-9-B-y08-1.xml",
+      "whole_ea_20-901-_-y08-1.xml",
+      "whole_ea_20-902-_-y08-1.xml",
+      "whole_ea_20-903-_-y08-1.xml",
+      "whole_ea_20-904-_-y08-1.xml",
+      "whole_ea_20-94-_-y08-1.xml",
+      "whole_ea_20-96-_-y08-1.xml",
+      "whole_ea_20-9B-_-y08-1.xml",
+      "whole_ea_20-A-B-y08-1.xml",
+      "whole_ea_20-B-A-y08-1.xml",
+      "whole_ea_20-C2-A-y08-1.xml",
+      "whole_ea_20-D-_-y08-1.xml",
+      "whole_ea_20-H-_-y08-1.xml",
+      "whole_ea_20-PR1-_-y08-1.xml",
+      "whole_ea_20-PR2-_-y08-1.xml",
+      "whole_ea_20-PR3-_-y08-1.xml",
+      "whole_ea_20-PR4-_-y08-1.xml",
+      "whole_ea_20-PR5-_-y08-1.xml",
+      "whole_ea_20-R-_-y08-1.xml",
+      "whole_ea_20-RH2-_-y08-1.xml",
+      "whole_ea_20-RH3-_-y08-1.xml",
+      "whole_ea_20-RH5-_-y08-1.xml",
+      "whole_ea_20-U-_-y08-1.xml",
+      "whole_ea_20-X11-_-y08-1.xml",
+      "whole_ea_20-X13-_-y08-1.xml",
+      "whole_ea_20-X3-_-y08-1.xml",
+      "whole_ea_20-X9-_-y08-1.xml",
+      "whole_ea_20-ZIP-_-y08-1.xml",
+      "whole_suf_14-A14-_-y08-2.xml",
+      "whole_suf_5-312-_-y08-2.xml",
+      "whole_suf_7-16-_-y08-12.xml",
+      "whole_suf_7-16A-_-y08-10.xml"
+    ]
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST9100AUDLEYE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.207331882627249914, 52.0044476895951391]
+          },
+          "properties": {
+            "atco_code": "9100AUDLEYE",
+            "bearing": 8,
+            "feature_name": "Audley End Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100BSHPSFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.164920440356703779, 51.8666973073751691]
+          },
+          "properties": {
+            "atco_code": "9100BSHPSFD",
+            "bearing": 8,
+            "feature_name": "Bishops Stortford Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100CAMBDGE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.137484664171875576, 52.1940786889398183]
+          },
+          "properties": {
+            "atco_code": "9100CAMBDGE",
+            "bearing": 8,
+            "feature_name": "Cambridge Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100ELSENHM",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.228097234348376532, 51.9205519093724419]
+          },
+          "properties": {
+            "atco_code": "9100ELSENHM",
+            "bearing": 8,
+            "feature_name": "Elsenham Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100GTCHSFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.193549042922378595, 52.0598200588908142]
+          },
+          "properties": {
+            "atco_code": "9100GTCHSFD",
+            "bearing": 8,
+            "feature_name": "Great Chesterford Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100NEWPRTE",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.215166598060114039, 51.9798767907021997]
+          },
+          "properties": {
+            "atco_code": "9100NEWPRTE",
+            "bearing": 8,
+            "feature_name": "Newport (Essex) Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100SHELFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.140009525757714692, 52.148837986386205]
+          },
+          "properties": {
+            "atco_code": "9100SHELFD",
+            "bearing": 8,
+            "feature_name": "Shelford (Cambs) Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100STANMFC",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.199807823393543221, 51.9014446247132568]
+          },
+          "properties": {
+            "atco_code": "9100STANMFC",
+            "bearing": 8,
+            "feature_name": "Stansted Mountfitchet Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100WTLESFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.165645877043863382, 52.1035981347474646]
+          },
+          "properties": {
+            "atco_code": "9100WTLESFD",
+            "bearing": 8,
+            "feature_name": "Whittlesford Parkway Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.164920440356703779, 51.8666973073751691],
+              [0.199807823393543221, 51.9014446247132568],
+              [0.228097234348376532, 51.9205519093724419],
+              [0.215166598060114039, 51.9798767907021997],
+              [0.207331882627249914, 52.0044476895951391],
+              [0.193549042922378595, 52.0598200588908142],
+              [0.165645877043863382, 52.1035981347474646],
+              [0.140009525757714692, 52.148837986386205],
+              [0.137484664171875576, 52.1940786889398183]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishops Stortford - Cambridge",
+            "length_m": 38711.6758,
+            "route_shape": true,
+            "line": "LI55414",
+            "stops": [
+              "ST9100BSHPSFD",
+              "ST9100STANMFC",
+              "ST9100ELSENHM",
+              "ST9100NEWPRTE",
+              "ST9100AUDLEYE",
+              "ST9100GTCHSFD",
+              "ST9100WTLESFD",
+              "ST9100SHELFD",
+              "ST9100CAMBDGE"
+            ],
+            "timing_patterns": [
+              "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+              "TP21302ce9b695b5744bd885a3a1d7986d25c7ae61"
+            ],
+            "service_links": [
+              "SLc7c36e03da00cdc20ae25928fa115ccef48b6e2f",
+              "SLf57115863724de47bb87cc8b2f8a9d95aab5a60e",
+              "SL6f9f45e31c40063e14c164173b5e2c49bb6eb286",
+              "SL82ea2584b9fe989515bcb0ad4863785720df733a",
+              "SL7b1472b042b60aa0c278a4064fbfcef7d1021d6c",
+              "SLe284efc34fd274e3daf2051af08a9496f85b9782",
+              "SLed38cfd5eac072e75f64d98c3f9a3863473f1de0",
+              "SL139cff6ca30c352eb6c58bb4ca80d703c206056c"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL139cff6ca30c352eb6c58bb4ca80d703c206056c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.140009525757714692, 52.148837986386205],
+              [0.137484664171875576, 52.1940786889398183]
+            ]
+          },
+          "properties": {
+            "feature_name": "Shelford (Cambs) Rail Station-Cambridge Rail Station",
+            "from_stop": "ST9100SHELFD",
+            "length_m": 5036.24023,
+            "route_shape": false,
+            "to_stop": "ST9100CAMBDGE",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SPa1d8cfddbe65ca17b717a28a6caceaf99454bd11",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7a3eae8a07d50496a7e131795b05e90d6da16880",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SP7e9b6de54d820d96ce0b67e3358dcab43d2ef8fb",
+              "SP3e5a0c08cc15e6504552776872a3374185df0805",
+              "SPce2e1948132ebedf1af61a208ad93f2ded86ed2e",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SPdbea96a2a89657c097e8bb7d3e832e222206c024",
+              "SP4bd0ecc91190e0fb4a62f3d82a0263b824b24aba",
+              "SPe3888d344a56c2971f31baf7e06d6932f641f032",
+              "SP8af92ee78149b094bd2c58e6fa3684fc7c2a4c83",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SPbb8a6b6f6d27e02429b0feef107df4c867576f8a",
+              "SP7c62b3e2c655546631c06c165e31ed0f35747306",
+              "SP069b86a1dc975c1e1481d4a4919dc860b74a37cc",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP94ca44d4e47be9be7671032dc449f98e9cbe3112",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP04fe115d7a083d5db8523036472ebb6bd3eb62de",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SP4d737b85f8f78f5c547658535a9ffa2675339265",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL6f9f45e31c40063e14c164173b5e2c49bb6eb286",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.228097234348376532, 51.9205519093724419],
+              [0.215166598060114039, 51.9798767907021997]
+            ]
+          },
+          "properties": {
+            "feature_name": "Elsenham Rail Station-Newport (Essex) Rail Station",
+            "from_stop": "ST9100ELSENHM",
+            "length_m": 6659.80469,
+            "route_shape": false,
+            "to_stop": "ST9100NEWPRTE",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SPa1d8cfddbe65ca17b717a28a6caceaf99454bd11",
+              "SPd8d22a8b8a41f8f8d5c34c918583be0483c688b5",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SPa921b7194a5d8dfa01230eb1cd990c098eea92ad",
+              "SP3e5a0c08cc15e6504552776872a3374185df0805",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP3690c2b44116a598f7a643131e95e462ea32c458",
+              "SP640512d9db6cbf83c294e04cd4a5890e111de686",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SP78eb10e91ac18974c8af0e74e52cfe2ff21ca6d8",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SP55a24acfeff4d475403ac473a0605fa9bf3545ba",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SP6f61da144c34332fdcb2fc29fffe5d3a8ebb2fd6",
+              "SP0b158da0db04f9ce49d5960782b67b9fedd0bafe",
+              "SP8731f80b9ed5ef6f3c6872965a2f2cdfa7aa2963",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP57e35468c4930bb96ad4394af9e37bc73af0d720",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPf40dd455db27adf67a9d3c21347938758bf0a1fa",
+              "SP44e9b33b7fe37e886d34e1541bdee71d5ecb742e",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP9ba9a168bee0d9d0f0ac59479e13ab635d5e1a7b",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SP1ceb3c81f4b2260a853552b9917b86511b4b2581",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL7b1472b042b60aa0c278a4064fbfcef7d1021d6c",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.207331882627249914, 52.0044476895951391],
+              [0.193549042922378595, 52.0598200588908142]
+            ]
+          },
+          "properties": {
+            "feature_name": "Audley End Rail Station-Great Chesterford Rail Station",
+            "from_stop": "ST9100AUDLEYE",
+            "length_m": 6232.66113,
+            "route_shape": false,
+            "to_stop": "ST9100GTCHSFD",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SPa1d8cfddbe65ca17b717a28a6caceaf99454bd11",
+              "SPd8d22a8b8a41f8f8d5c34c918583be0483c688b5",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SPa921b7194a5d8dfa01230eb1cd990c098eea92ad",
+              "SP3e5a0c08cc15e6504552776872a3374185df0805",
+              "SPc0e48a873428e2b4b85587ad1e37826a6390bff5",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP3690c2b44116a598f7a643131e95e462ea32c458",
+              "SP640512d9db6cbf83c294e04cd4a5890e111de686",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SP78eb10e91ac18974c8af0e74e52cfe2ff21ca6d8",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SP55a24acfeff4d475403ac473a0605fa9bf3545ba",
+              "SPe3888d344a56c2971f31baf7e06d6932f641f032",
+              "SP8af92ee78149b094bd2c58e6fa3684fc7c2a4c83",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SP6f61da144c34332fdcb2fc29fffe5d3a8ebb2fd6",
+              "SP0b158da0db04f9ce49d5960782b67b9fedd0bafe",
+              "SP8731f80b9ed5ef6f3c6872965a2f2cdfa7aa2963",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP57e35468c4930bb96ad4394af9e37bc73af0d720",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe1514bdd1539cd6538c632999f25bb38560c9868",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPf40dd455db27adf67a9d3c21347938758bf0a1fa",
+              "SP44e9b33b7fe37e886d34e1541bdee71d5ecb742e",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP9ba9a168bee0d9d0f0ac59479e13ab635d5e1a7b",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SP1ceb3c81f4b2260a853552b9917b86511b4b2581",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL82ea2584b9fe989515bcb0ad4863785720df733a",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.215166598060114039, 51.9798767907021997],
+              [0.207331882627249914, 52.0044476895951391]
+            ]
+          },
+          "properties": {
+            "feature_name": "Newport (Essex) Rail Station-Audley End Rail Station",
+            "from_stop": "ST9100NEWPRTE",
+            "length_m": 2786.08984,
+            "route_shape": false,
+            "to_stop": "ST9100AUDLEYE",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SPa1d8cfddbe65ca17b717a28a6caceaf99454bd11",
+              "SPd8d22a8b8a41f8f8d5c34c918583be0483c688b5",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SPa921b7194a5d8dfa01230eb1cd990c098eea92ad",
+              "SP3e5a0c08cc15e6504552776872a3374185df0805",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP3690c2b44116a598f7a643131e95e462ea32c458",
+              "SP640512d9db6cbf83c294e04cd4a5890e111de686",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SP78eb10e91ac18974c8af0e74e52cfe2ff21ca6d8",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SP55a24acfeff4d475403ac473a0605fa9bf3545ba",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SP6f61da144c34332fdcb2fc29fffe5d3a8ebb2fd6",
+              "SP0b158da0db04f9ce49d5960782b67b9fedd0bafe",
+              "SP8731f80b9ed5ef6f3c6872965a2f2cdfa7aa2963",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP57e35468c4930bb96ad4394af9e37bc73af0d720",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPf40dd455db27adf67a9d3c21347938758bf0a1fa",
+              "SP44e9b33b7fe37e886d34e1541bdee71d5ecb742e",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP9ba9a168bee0d9d0f0ac59479e13ab635d5e1a7b",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SP1ceb3c81f4b2260a853552b9917b86511b4b2581",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLc7c36e03da00cdc20ae25928fa115ccef48b6e2f",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.164920440356703779, 51.8666973073751691],
+              [0.199807823393543221, 51.9014446247132568]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishops Stortford Rail Station-Stansted Mountfitchet Rail Station",
+            "from_stop": "ST9100BSHPSFD",
+            "length_m": 4551.18896,
+            "route_shape": false,
+            "to_stop": "ST9100STANMFC",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SPc82909121d98730b95da98779e6ba62dd813caa3",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP3690c2b44116a598f7a643131e95e462ea32c458",
+              "SP640512d9db6cbf83c294e04cd4a5890e111de686",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SP78eb10e91ac18974c8af0e74e52cfe2ff21ca6d8",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SP55a24acfeff4d475403ac473a0605fa9bf3545ba",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SP6f61da144c34332fdcb2fc29fffe5d3a8ebb2fd6",
+              "SP0b158da0db04f9ce49d5960782b67b9fedd0bafe",
+              "SP8731f80b9ed5ef6f3c6872965a2f2cdfa7aa2963",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP57e35468c4930bb96ad4394af9e37bc73af0d720",
+              "SPe13bb259898afc5ebf7910f8fe79499d1b5ad51b",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPf40dd455db27adf67a9d3c21347938758bf0a1fa",
+              "SP44e9b33b7fe37e886d34e1541bdee71d5ecb742e",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP9ba9a168bee0d9d0f0ac59479e13ab635d5e1a7b",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SP1ceb3c81f4b2260a853552b9917b86511b4b2581",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLe284efc34fd274e3daf2051af08a9496f85b9782",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.193549042922378595, 52.0598200588908142],
+              [0.165645877043863382, 52.1035981347474646]
+            ]
+          },
+          "properties": {
+            "feature_name": "Great Chesterford Rail Station-Whittlesford Parkway Rail Station",
+            "from_stop": "ST9100GTCHSFD",
+            "length_m": 5232.69385,
+            "route_shape": false,
+            "to_stop": "ST9100WTLESFD",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SPa1d8cfddbe65ca17b717a28a6caceaf99454bd11",
+              "SPd8d22a8b8a41f8f8d5c34c918583be0483c688b5",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SPa921b7194a5d8dfa01230eb1cd990c098eea92ad",
+              "SP3e5a0c08cc15e6504552776872a3374185df0805",
+              "SPc0e48a873428e2b4b85587ad1e37826a6390bff5",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP3690c2b44116a598f7a643131e95e462ea32c458",
+              "SP640512d9db6cbf83c294e04cd4a5890e111de686",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SP78eb10e91ac18974c8af0e74e52cfe2ff21ca6d8",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SP55a24acfeff4d475403ac473a0605fa9bf3545ba",
+              "SPe3888d344a56c2971f31baf7e06d6932f641f032",
+              "SP8af92ee78149b094bd2c58e6fa3684fc7c2a4c83",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SP6f61da144c34332fdcb2fc29fffe5d3a8ebb2fd6",
+              "SP0b158da0db04f9ce49d5960782b67b9fedd0bafe",
+              "SP8731f80b9ed5ef6f3c6872965a2f2cdfa7aa2963",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP57e35468c4930bb96ad4394af9e37bc73af0d720",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe1514bdd1539cd6538c632999f25bb38560c9868",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPf40dd455db27adf67a9d3c21347938758bf0a1fa",
+              "SP44e9b33b7fe37e886d34e1541bdee71d5ecb742e",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP9ba9a168bee0d9d0f0ac59479e13ab635d5e1a7b",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SP1ceb3c81f4b2260a853552b9917b86511b4b2581",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLed38cfd5eac072e75f64d98c3f9a3863473f1de0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.165645877043863382, 52.1035981347474646],
+              [0.140009525757714692, 52.148837986386205]
+            ]
+          },
+          "properties": {
+            "feature_name": "Whittlesford Parkway Rail Station-Shelford (Cambs) Rail Station",
+            "from_stop": "ST9100WTLESFD",
+            "length_m": 5330.63379,
+            "route_shape": false,
+            "to_stop": "ST9100SHELFD",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SPa1d8cfddbe65ca17b717a28a6caceaf99454bd11",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7a3eae8a07d50496a7e131795b05e90d6da16880",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SP7e9b6de54d820d96ce0b67e3358dcab43d2ef8fb",
+              "SP3e5a0c08cc15e6504552776872a3374185df0805",
+              "SPce2e1948132ebedf1af61a208ad93f2ded86ed2e",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SPdbea96a2a89657c097e8bb7d3e832e222206c024",
+              "SP4bd0ecc91190e0fb4a62f3d82a0263b824b24aba",
+              "SPe3888d344a56c2971f31baf7e06d6932f641f032",
+              "SP8af92ee78149b094bd2c58e6fa3684fc7c2a4c83",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SPbb8a6b6f6d27e02429b0feef107df4c867576f8a",
+              "SP7c62b3e2c655546631c06c165e31ed0f35747306",
+              "SP069b86a1dc975c1e1481d4a4919dc860b74a37cc",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP94ca44d4e47be9be7671032dc449f98e9cbe3112",
+              "SP666456d01da555241f1267718521517d4c66470c",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPffa7f94e2a688d72c1d5adaa475fbd21e3f37f1c",
+              "SP04fe115d7a083d5db8523036472ebb6bd3eb62de",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SP4d737b85f8f78f5c547658535a9ffa2675339265",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf57115863724de47bb87cc8b2f8a9d95aab5a60e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.199807823393543221, 51.9014446247132568],
+              [0.228097234348376532, 51.9205519093724419]
+            ]
+          },
+          "properties": {
+            "feature_name": "Stansted Mountfitchet Rail Station-Elsenham Rail Station",
+            "from_stop": "ST9100STANMFC",
+            "length_m": 2882.36304,
+            "route_shape": false,
+            "to_stop": "ST9100ELSENHM",
+            "service_patterns": [
+              "SPd8b48625c5f6932ade6fd221f10231428fbda4df",
+              "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+              "SP7b6a9999ff879d9f876b77e61cc9a354d8b44134",
+              "SP1f09e8ee9a0eb9b4594fae614d9b0fb75beefd79",
+              "SP5078572b671f25606b263073d6a87bc8f11ec49e",
+              "SP3690c2b44116a598f7a643131e95e462ea32c458",
+              "SP640512d9db6cbf83c294e04cd4a5890e111de686",
+              "SP96c88eb2ecfe96a32227e8fbbd98021dd08088e1",
+              "SPe27234ffdec7fe70b579ab3244c37c16d820c6fb",
+              "SP2f14fc28bb55e35023a6e4ac998a7d86b189cc79",
+              "SPbc3078481fb0d62747458f09852d518fc653c230",
+              "SP78eb10e91ac18974c8af0e74e52cfe2ff21ca6d8",
+              "SPf8a11c82e0143571800d997abebe13e140ffb407",
+              "SP55a24acfeff4d475403ac473a0605fa9bf3545ba",
+              "SP52ba9763d9094b642a246f4229cb0375665cdb05",
+              "SP6f61da144c34332fdcb2fc29fffe5d3a8ebb2fd6",
+              "SP0b158da0db04f9ce49d5960782b67b9fedd0bafe",
+              "SP8731f80b9ed5ef6f3c6872965a2f2cdfa7aa2963",
+              "SPb43f2f312c9ae5a2b2a425af8c7fbb91d126684a",
+              "SP57e35468c4930bb96ad4394af9e37bc73af0d720",
+              "SPe383f8c99099b16a930a0c349109ac0b644b25ea",
+              "SP8978a852049156b199cfe23596ce83499dfe8377",
+              "SP34acc029e2655824e938dc0cf0bc39b3406dc29d",
+              "SP3b4c342bbb1521086a889f232a1747b7adc44329",
+              "SPf40dd455db27adf67a9d3c21347938758bf0a1fa",
+              "SP44e9b33b7fe37e886d34e1541bdee71d5ecb742e",
+              "SP9ba9a168bee0d9d0f0ac59479e13ab635d5e1a7b",
+              "SP9c2d51f436978ddbb967d7623e276c3632b3c518",
+              "SP74812d2b8aa5d40d3c426943642c6517e5a6dfcc",
+              "SPa7832ba0750ed59c79a273e0772b396a8d2cbc5c",
+              "SPa231eaa8dac1051a3b16da7a3160ae48d69a3594",
+              "SP69fe5b14a62455d79d0dc134ca3182bd6a0cc1f0",
+              "SP1ceb3c81f4b2260a853552b9917b86511b4b2581",
+              "SPc00c3d6729654600200fcfe809bb1b931f9d4337"
+            ]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI55414",
+        "name": "Bishops Stortford - Cambridge:Cambridge - Bishops Stortford"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+        "service_pattern": "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 240,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4551,
+            "speed": 68
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7433,
+            "speed": 43
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14093,
+            "speed": 79
+          },
+          {
+            "arrival_time_secs": 960,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 16879,
+            "speed": 55
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 23112,
+            "speed": 74
+          },
+          {
+            "arrival_time_secs": 1560,
+            "departure_time_secs": 1620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 28344,
+            "speed": 78
+          },
+          {
+            "arrival_time_secs": 1860,
+            "departure_time_secs": 1860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 33675,
+            "speed": 79
+          },
+          {
+            "arrival_time_secs": 2340,
+            "departure_time_secs": 2340,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 38711,
+            "speed": 37
+          }
+        ],
+        "vehicle_journeys": ["VJ0e512c30f55fa2b449c8d8f1e2c0fa7a23b8e355"]
+      },
+      {
+        "id": "TP21302ce9b695b5744bd885a3a1d7986d25c7ae61",
+        "service_pattern": "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 240,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 960,
+            "departure_time_secs": 1020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1560,
+            "departure_time_secs": 1620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1860,
+            "departure_time_secs": 1860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2400,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": false
+          }
+        ],
+        "vehicle_journeys": ["VJ6f129c10d78cb45abc825423130096f775eeb629"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0e512c30f55fa2b449c8d8f1e2c0fa7a23b8e355",
+        "timing_pattern": "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+        "start": 21540,
+        "feature_name": "05:59:00 -- Bishops Stortford - Cambridge: Bishops Stortford to Cambridge",
+        "dates": [
+          "2019-11-18",
+          "2019-11-19",
+          "2019-11-20",
+          "2019-11-21",
+          "2019-11-22",
+          "2019-11-25",
+          "2019-11-26",
+          "2019-11-27",
+          "2019-11-28",
+          "2019-11-29",
+          "2019-12-02",
+          "2019-12-03",
+          "2019-12-04",
+          "2019-12-05",
+          "2019-12-06",
+          "2019-12-09",
+          "2019-12-10",
+          "2019-12-11",
+          "2019-12-12",
+          "2019-12-13"
+        ]
+      },
+      {
+        "id": "VJ6f129c10d78cb45abc825423130096f775eeb629",
+        "timing_pattern": "TP21302ce9b695b5744bd885a3a1d7986d25c7ae61",
+        "start": 21540,
+        "feature_name": "05:59:00 -- Bishops Stortford - Cambridge: Bishops Stortford to Cambridge",
+        "dates": [
+          "2019-12-16",
+          "2019-12-17",
+          "2019-12-18",
+          "2019-12-19",
+          "2019-12-20",
+          "2019-12-23",
+          "2019-12-24",
+          "2020-01-02",
+          "2020-01-03",
+          "2020-01-06",
+          "2020-01-07",
+          "2020-01-08",
+          "2020-01-09",
+          "2020-01-10",
+          "2020-01-13",
+          "2020-01-14",
+          "2020-01-15",
+          "2020-01-16",
+          "2020-01-17",
+          "2020-01-20",
+          "2020-01-21",
+          "2020-01-22",
+          "2020-01-23",
+          "2020-01-24",
+          "2020-01-27",
+          "2020-01-28",
+          "2020-01-29",
+          "2020-01-30",
+          "2020-01-31",
+          "2020-02-03",
+          "2020-02-04",
+          "2020-02-05",
+          "2020-02-06",
+          "2020-02-07",
+          "2020-02-10",
+          "2020-02-11",
+          "2020-02-12",
+          "2020-02-13"
+        ]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-first",
+      "values": [
+        {
+          "id": "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+          "warning_type": "timing-first",
+          "warning_id": 0,
+          "none": false,
+          "all": false,
+          "indexes": [0]
+        }
+      ]
+    }
+  ]
+}

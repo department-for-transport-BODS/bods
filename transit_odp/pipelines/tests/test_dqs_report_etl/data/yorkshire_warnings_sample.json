@@ -1,0 +1,2484 @@
+{
+  "warnings": [
+    {
+      "warning_type": "service-link-missing-stops",
+      "values": [
+        {
+          "id": "SL1011",
+          "warning_id": 0,
+          "stop0": "ST2200YEA00276",
+          "stop1": "ST2200YEA00271",
+          "stops": ["ST2200YEA00274"],
+          "service_patterns": []
+        },
+        {
+          "id": "SL1012",
+          "warning_id": 1,
+          "stop0": "ST2200YEA00271",
+          "stop1": "ST2200YEA00269",
+          "stops": ["ST2200YEA11757"],
+          "service_patterns": []
+        },
+        {
+          "id": "SL10122",
+          "warning_id": 2,
+          "stop0": "ST370050405",
+          "stop1": "ST370056046",
+          "stops": ["ST370050406"],
+          "service_patterns": []
+        },
+        {
+          "id": "SL1014",
+          "warning_id": 3,
+          "stop0": "ST2200YEA11714",
+          "stop1": "ST2200YEA00256",
+          "stops": ["ST2200YEA00254"],
+          "service_patterns": []
+        },
+        {
+          "id": "SL1018",
+          "warning_id": 4,
+          "stop0": "ST2200YEA11714",
+          "stop1": "ST2200YEA11690",
+          "stops": ["ST2200YEA00254"],
+          "service_patterns": []
+        }
+      ],
+      "count": 1551
+    },
+    {
+      "warning_type": "timing-missing-point-15",
+      "values": [
+        {
+          "id": "TP10029",
+          "warning_id": 1551,
+          "indexes": [0],
+          "entities": ["ST3290YYA03588"]
+        },
+        {
+          "id": "TP10030",
+          "warning_id": 1552,
+          "indexes": [24],
+          "entities": ["ST3290YYA00136"]
+        },
+        {
+          "id": "TP10031",
+          "warning_id": 1553,
+          "indexes": [24],
+          "entities": ["ST3290YYA00136"]
+        },
+        {
+          "id": "TP10032",
+          "warning_id": 1554,
+          "indexes": [24],
+          "entities": ["ST3290YYA00136"]
+        },
+        {
+          "id": "TP10033",
+          "warning_id": 1555,
+          "indexes": [24],
+          "entities": ["ST3290YYA00136"]
+        }
+      ],
+      "count": 5026
+    },
+    {
+      "warning_type": "timing-missing-point",
+      "values": [
+        {
+          "id": "TP10585",
+          "warning_id": 1737,
+          "indexes": [21],
+          "entities": ["ST450011013"]
+        },
+        {
+          "id": "TP10586",
+          "warning_id": 1739,
+          "indexes": [21],
+          "entities": ["ST450011013"]
+        },
+        {
+          "id": "TP10587",
+          "warning_id": 1741,
+          "indexes": [21],
+          "entities": ["ST450011013"]
+        },
+        {
+          "id": "TP10588",
+          "warning_id": 1743,
+          "indexes": [21],
+          "entities": ["ST450011013"]
+        },
+        {
+          "id": "TP10589",
+          "warning_id": 1745,
+          "indexes": [21],
+          "entities": ["ST450011013"]
+        }
+      ],
+      "count": 207
+    },
+    {
+      "warning_type": "timing-multiple",
+      "values": [
+        {
+          "id": "TP11540",
+          "warning_id": 2355,
+          "indexes": [0, 20, 74, 89]
+        },
+        {
+          "id": "TP20304",
+          "warning_id": 4820,
+          "indexes": [0, 13, 26, 47, 592, 11, 28, 45]
+        },
+        {
+          "id": "TP8211",
+          "warning_id": 6433,
+          "indexes": [0, 45, 47, 56]
+        }
+      ],
+      "count": 3
+    },
+    {
+      "warning_type": "timing-last",
+      "values": [
+        {
+          "id": "TP14489",
+          "warning_id": 3558,
+          "indexes": [28]
+        }
+      ],
+      "count": 1
+    },
+    {
+      "warning_type": "timing-fast-link",
+      "values": [
+        {
+          "id": "TP1554",
+          "warning_id": 3666,
+          "indexes": [12, 13],
+          "entities": ["SL6234"]
+        },
+        {
+          "id": "TP1554",
+          "warning_id": 3667,
+          "indexes": [13, 14],
+          "entities": ["SL6235"]
+        },
+        {
+          "id": "TP319",
+          "warning_id": 5752,
+          "indexes": [13, 14],
+          "entities": ["SL2149"]
+        },
+        {
+          "id": "TP398",
+          "warning_id": 5818,
+          "indexes": [16, 17],
+          "entities": ["SL2149"]
+        },
+        {
+          "id": "TP399",
+          "warning_id": 5820,
+          "indexes": [13, 14],
+          "entities": ["SL2149"]
+        }
+      ],
+      "count": 5
+    },
+    {
+      "warning_type": "timing-fast",
+      "values": [
+        {
+          "id": "TP1554",
+          "warning_id": 3668,
+          "indexes": [15, 14, 13, 12, 11, 10, 9, 8, 7],
+          "entities": [
+            "SL6215",
+            "SL6216",
+            "SL6217",
+            "SL6218",
+            "SL6219",
+            "SL6234",
+            "SL6235",
+            "SL6236"
+          ]
+        },
+        {
+          "id": "TP2116",
+          "warning_id": 5259,
+          "indexes": [18, 17, 16, 15, 14, 13, 12, 11, 10],
+          "entities": [
+            "SL9039",
+            "SL6911",
+            "SL6912",
+            "SL5235",
+            "SL5236",
+            "SL5237",
+            "SL5238",
+            "SL5239"
+          ]
+        },
+        {
+          "id": "TP319",
+          "warning_id": 5751,
+          "indexes": [14, 13],
+          "entities": ["SL2149"]
+        },
+        {
+          "id": "TP3314",
+          "warning_id": 5770,
+          "indexes": [43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31],
+          "entities": [
+            "SL12944",
+            "SL12945",
+            "SL12946",
+            "SL12947",
+            "SL12948",
+            "SL12949",
+            "SL12950",
+            "SL12951",
+            "SL12952",
+            "SL12953",
+            "SL12954",
+            "SL12955"
+          ]
+        },
+        {
+          "id": "TP398",
+          "warning_id": 5817,
+          "indexes": [17, 16],
+          "entities": ["SL2149"]
+        }
+      ],
+      "count": 8
+    },
+    {
+      "warning_type": "timing-slow",
+      "values": [
+        {
+          "id": "TP1629",
+          "warning_id": 4052,
+          "indexes": [1, 0],
+          "entities": ["SL6710"]
+        },
+        {
+          "id": "TP1630",
+          "warning_id": 4055,
+          "indexes": [1, 0],
+          "entities": ["SL6710"]
+        },
+        {
+          "id": "TP20244",
+          "warning_id": 4816,
+          "indexes": [59, 58, 57],
+          "entities": ["SL7512", "SL8673"]
+        },
+        {
+          "id": "TP2121",
+          "warning_id": 5276,
+          "indexes": [1, 0],
+          "entities": ["SL6710"]
+        },
+        {
+          "id": "TP2123",
+          "warning_id": 5282,
+          "indexes": [1, 0],
+          "entities": ["SL6710"]
+        }
+      ],
+      "count": 10
+    },
+    {
+      "warning_type": "timing-slow-link",
+      "values": [
+        {
+          "id": "TP1629",
+          "warning_id": 4053,
+          "indexes": [0, 1],
+          "entities": ["SL6710"]
+        },
+        {
+          "id": "TP1630",
+          "warning_id": 4056,
+          "indexes": [0, 1],
+          "entities": ["SL6710"]
+        },
+        {
+          "id": "TP20244",
+          "warning_id": 4815,
+          "indexes": [57, 58],
+          "entities": ["SL7512"]
+        },
+        {
+          "id": "TP20244",
+          "warning_id": 4817,
+          "indexes": [58, 59],
+          "entities": ["SL8673"]
+        },
+        {
+          "id": "TP2121",
+          "warning_id": 5277,
+          "indexes": [0, 1],
+          "entities": ["SL6710"]
+        }
+      ],
+      "count": 10
+    },
+    {
+      "warning_type": "journeys-without-headsign",
+      "values": [
+        {
+          "id": "VJ0",
+          "warning_id": 6821
+        },
+        {
+          "id": "VJ1",
+          "warning_id": 6822
+        },
+        {
+          "id": "VJ10",
+          "warning_id": 6823
+        },
+        {
+          "id": "VJ100",
+          "warning_id": 6824
+        },
+        {
+          "id": "VJ1000",
+          "warning_id": 6825
+        }
+      ],
+      "count": 87735
+    },
+    {
+      "warning_type": "journey-duplicate",
+      "values": [
+        {
+          "id": "VJ10030",
+          "warning_id": 6859,
+          "duplicate": "VJ10031"
+        },
+        {
+          "id": "VJ10031",
+          "warning_id": 6861,
+          "duplicate": "VJ10030"
+        },
+        {
+          "id": "VJ10902",
+          "warning_id": 7835,
+          "duplicate": "VJ10903"
+        },
+        {
+          "id": "VJ10903",
+          "warning_id": 7837,
+          "duplicate": "VJ10902"
+        },
+        {
+          "id": "VJ10904",
+          "warning_id": 7839,
+          "duplicate": "VJ10905"
+        }
+      ],
+      "count": 126
+    },
+    {
+      "warning_type": "journey-conflict",
+      "values": [
+        {
+          "id": "VJ10410",
+          "warning_id": 7283,
+          "conflict": "VJ10411",
+          "stops": [
+            "ST3200YNA01279",
+            "ST3200YNA01277",
+            "ST3200YNA01275",
+            "ST3200YNA01273",
+            "ST3200YNA01272",
+            "ST3200YNA01270",
+            "ST3200YNA01267",
+            "ST3200YNA01265",
+            "ST3200YNA01262",
+            "ST3200YNA01259",
+            "ST3200YNA01052",
+            "ST3200YNA01050",
+            "ST3200YNA01254",
+            "ST3200YNA01253",
+            "ST3200YNA01252",
+            "ST3200YNA01249",
+            "ST3200YNA01247",
+            "ST3200YNA01245",
+            "ST3200YNA01224",
+            "ST3200YNB00628",
+            "ST3200YNA01195",
+            "ST3200YNA01169",
+            "ST3200YNA01194",
+            "ST3200YNA01160"
+          ]
+        },
+        {
+          "id": "VJ10411",
+          "warning_id": 7285,
+          "conflict": "VJ10410",
+          "stops": [
+            "ST3200YNA01279",
+            "ST3200YNA01277",
+            "ST3200YNA01275",
+            "ST3200YNA01273",
+            "ST3200YNA01272",
+            "ST3200YNA01270",
+            "ST3200YNA01267",
+            "ST3200YNA01265",
+            "ST3200YNA01262",
+            "ST3200YNA01259",
+            "ST3200YNA01052",
+            "ST3200YNA01050",
+            "ST3200YNA01254",
+            "ST3200YNA01253",
+            "ST3200YNA01252",
+            "ST3200YNA01249",
+            "ST3200YNA01247",
+            "ST3200YNA01245",
+            "ST3200YNA01224",
+            "ST3200YNB00628",
+            "ST3200YNA01195",
+            "ST3200YNA01169",
+            "ST3200YNA01194",
+            "ST3200YNA01160"
+          ]
+        },
+        {
+          "id": "VJ10412",
+          "warning_id": 7287,
+          "conflict": "VJ10413",
+          "stops": [
+            "ST3200YNA01279",
+            "ST3200YNA01277",
+            "ST3200YNA01275",
+            "ST3200YNA01273",
+            "ST3200YNA01272",
+            "ST3200YNA01270",
+            "ST3200YNA01267",
+            "ST3200YNA01265",
+            "ST3200YNA01262",
+            "ST3200YNA01259",
+            "ST3200YNA01052",
+            "ST3200YNA01050",
+            "ST3200YNA01254",
+            "ST3200YNA01253",
+            "ST3200YNA01252",
+            "ST3200YNA01249",
+            "ST3200YNA01247",
+            "ST3200YNA01245",
+            "ST3200YNA01224",
+            "ST3200YNB00628",
+            "ST3200YNA01195",
+            "ST3200YNA01169",
+            "ST3200YNA01194",
+            "ST3200YNA01160"
+          ]
+        },
+        {
+          "id": "VJ10413",
+          "warning_id": 7289,
+          "conflict": "VJ10412",
+          "stops": [
+            "ST3200YNA01279",
+            "ST3200YNA01277",
+            "ST3200YNA01275",
+            "ST3200YNA01273",
+            "ST3200YNA01272",
+            "ST3200YNA01270",
+            "ST3200YNA01267",
+            "ST3200YNA01265",
+            "ST3200YNA01262",
+            "ST3200YNA01259",
+            "ST3200YNA01052",
+            "ST3200YNA01050",
+            "ST3200YNA01254",
+            "ST3200YNA01253",
+            "ST3200YNA01252",
+            "ST3200YNA01249",
+            "ST3200YNA01247",
+            "ST3200YNA01245",
+            "ST3200YNA01224",
+            "ST3200YNB00628",
+            "ST3200YNA01195",
+            "ST3200YNA01169",
+            "ST3200YNA01194",
+            "ST3200YNA01160"
+          ]
+        },
+        {
+          "id": "VJ10496",
+          "warning_id": 7381,
+          "conflict": "VJ24285",
+          "stops": [
+            "ST3200YNA00002",
+            "ST3200YNA00006",
+            "ST3200YNA00007",
+            "ST3200YNA00009",
+            "ST3200YNA00011",
+            "ST3200YNA00013",
+            "ST3200YNA00015",
+            "ST3200YNA00017",
+            "ST3200YNA00018",
+            "ST3200YNA00016",
+            "ST3200YNA00014",
+            "ST3200YNA00012",
+            "ST3200YNA00010",
+            "ST3200YNA00037",
+            "ST3200YNA00038",
+            "ST3200YNA00116",
+            "ST3200YNA00117",
+            "ST3200YNA00122",
+            "ST3200YNA00123",
+            "ST3200YNA00125",
+            "ST3200YNA00128",
+            "ST3200YNA00127",
+            "ST3200YNA00126",
+            "ST3200YNA00124",
+            "ST3200YNA00131",
+            "ST3200YNA00134",
+            "ST3200YNA00058",
+            "ST3200YNA96788",
+            "ST3200YNA00300",
+            "ST3200YNA00085",
+            "ST3200YNA00083",
+            "ST3200YNA00081",
+            "ST3200YNA00079",
+            "ST3200YNA00077",
+            "ST3200YNA00062",
+            "ST3200YNA00091",
+            "ST3200YNA00095",
+            "ST3200YNA00096",
+            "ST3200YNA00098",
+            "ST3200YNA00100",
+            "ST3200YNA00102",
+            "ST2200YEA01194",
+            "ST2200YEA01196",
+            "ST2200YEA01195",
+            "ST2200YEA11721",
+            "ST2200YEA01191",
+            "ST2200YEA01187",
+            "ST2200YEA00679",
+            "ST2200YEA00681",
+            "ST2200YEA01188",
+            "ST3200YNA00165",
+            "ST3200YNA00167",
+            "ST3200YNA00169",
+            "ST3200YNA00170",
+            "ST3200YNA00209",
+            "ST3200YNA00211",
+            "ST3200YNA00213",
+            "ST3200YNA00215",
+            "ST3200YNA00217",
+            "ST3200YNA00219",
+            "ST370040090",
+            "ST370045499",
+            "ST370045252",
+            "ST370041262",
+            "ST370045555",
+            "ST370045503",
+            "ST370045501",
+            "ST370040080",
+            "ST370045949",
+            "ST370045253",
+            "ST370045255",
+            "ST370045254",
+            "ST370045250",
+            "ST370045909",
+            "ST370045497",
+            "ST370040093",
+            "ST370040094",
+            "ST370040042",
+            "ST370040620",
+            "ST370040619",
+            "ST370040618",
+            "ST370040097"
+          ]
+        }
+      ],
+      "count": 294
+    }
+  ],
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SF3300BA1208",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-0.9706243803394525, 53.41378299601995]
+          },
+          "properties": {
+            "atco_code": "3300BA1208",
+            "bearing": 8,
+            "feature_name": "Demand Responsive Area",
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH100000015715",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.4019352054897944, 53.27820178006187]
+          },
+          "properties": {
+            "atco_code": "100000015715",
+            "bearing": 0,
+            "feature_name": "Highland Road (N-bound)",
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH100000018871",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.283252855001833, 53.286035679595024]
+          },
+          "properties": {
+            "atco_code": "100000018871",
+            "bearing": 3,
+            "feature_name": "Slayley View Road (SE-bound)",
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH1000DBSV5995",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.2832543639039438, 53.28594580528597]
+          },
+          "properties": {
+            "atco_code": "1000DBSV5995",
+            "bearing": 7,
+            "feature_name": "Slayley View Road (NW-bound)",
+            "type": "BCT"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SH1000DNWH2121",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-1.4018453504182187, 53.27819234083807]
+          },
+          "properties": {
+            "atco_code": "1000DNWH2121",
+            "bearing": 4,
+            "feature_name": "Highland Road (S-bound)",
+            "type": "BCT"
+          }
+        }
+      ],
+      "count": 34045
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SL0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.25335960189894313, 53.77906826890169],
+              [-0.24827484141007053, 53.77871544099881]
+            ]
+          },
+          "properties": {
+            "feature_name": "ASDA Bilton (opp)-Bilton Main Road (22000974)",
+            "from_stop": "ST2290YHA00783",
+            "length_m": 337.427032,
+            "route_shape": false,
+            "to_stop": "ST2200YEA00974"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.24827484141007053, 53.77871544099881],
+              [-0.24181294021831237, 53.778270301526]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bilton Main Road (22000974)-Bilton Main Road (22000972)",
+            "from_stop": "ST2200YEA00974",
+            "length_m": 428.777344,
+            "route_shape": false,
+            "to_stop": "ST2200YEA00972"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL10",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.19765240944517662, 53.750188708194834],
+              [-0.19718722492071575, 53.74405102556192]
+            ]
+          },
+          "properties": {
+            "feature_name": "Preston Station Road (22000887)-Hedon Station Lane (22000889)",
+            "from_stop": "ST2200YEA00887",
+            "length_m": 683.687073,
+            "route_shape": false,
+            "to_stop": "ST2200YEA00889"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL100",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.19905178485262712, 54.085628782786415],
+              [-0.19538904056124, 54.08512447730826]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bridlington Quay Road (22000494)-Bridlington Quay Road (22000492)",
+            "from_stop": "ST2200YEA00494",
+            "length_m": 246.13208,
+            "route_shape": false,
+            "to_stop": "ST2200YEA00492"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SL1000",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.589720242689602, 53.75636822154186],
+              [-0.5761900760445264, 53.75233392994]
+            ]
+          },
+          "properties": {
+            "feature_name": "Nr Ellerker Ring Beck Ln (22001635)-Brantingham Village (22000284)",
+            "from_stop": "ST2200YEA01635",
+            "length_m": 998.780273,
+            "route_shape": false,
+            "to_stop": "ST2200YEA00284"
+          }
+        }
+      ],
+      "count": 43134
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP0",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.25335960189894313, 53.77906826890169],
+              [-0.24827484141007053, 53.77871544099881],
+              [-0.24181294021831237, 53.778270301526],
+              [-0.2374981299446002, 53.779105870367324],
+              [-0.234048852448647, 53.779927067685016],
+              [-0.22989128997968783, 53.779542166438134],
+              [-0.22793148037141758, 53.77814688169975],
+              [-0.20054776108556793, 53.75767530198325],
+              [-0.19827558710591608, 53.75476461904935],
+              [-0.1981383438790096, 53.75300965305065],
+              [-0.19765240944517662, 53.750188708194834],
+              [-0.19718722492071575, 53.74405102556192],
+              [-0.19588392176647054, 53.74119979384307],
+              [-0.19578029947273284, 53.73866325692471],
+              [-0.18787271124363536, 53.739200186671994],
+              [-0.10826494412019419, 53.76357202401586],
+              [-0.07093521076368704, 53.763723642969225],
+              [-0.04405637080910888, 53.755107958143476]
+            ]
+          },
+          "properties": {
+            "feature_name": "Fleet Estate - Roos",
+            "length_m": 17770.3477,
+            "route_shape": false,
+            "id": "SP0",
+            "line": "LI0",
+            "stops": [
+              "ST2290YHA00783",
+              "ST2200YEA00974",
+              "ST2200YEA00972",
+              "ST2200YEA00970",
+              "ST2200YEA00968",
+              "ST2200YEA00966",
+              "ST2200YEA00964",
+              "ST2200YEA00943",
+              "ST2200YEA11669",
+              "ST2200YEA00885",
+              "ST2200YEA00887",
+              "ST2200YEA00889",
+              "ST2200YEA00890",
+              "ST2200YEA00308",
+              "ST2200YEA00893",
+              "ST2200YEA00705",
+              "ST2200YEZ01320",
+              "ST2200YEA00708"
+            ],
+            "timing_patterns": ["TP0"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SP1",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.04405637080910888, 53.755107958143476],
+              [-0.04177960215643125, 53.75448649224154],
+              [-0.04241107367916556, 53.75428105033996],
+              [-0.0706533334532601, 53.76358426793316],
+              [-0.10360367870080398, 53.76297701740055],
+              [-0.10825341671712117, 53.76349093753154],
+              [-0.1463379780730222, 53.75134790527706],
+              [-0.1958955098812117, 53.739159401554566],
+              [-0.19834067356324284, 53.739420910971745],
+              [-0.198945001012038, 53.740535674095064],
+              [-0.1990556891568625, 53.743620658954164],
+              [-0.1974486617406224, 53.74821699347959],
+              [-0.19800057021458894, 53.75091308402166],
+              [-0.19835994591712838, 53.75314782231126],
+              [-0.20036701948614485, 53.75693547153656],
+              [-0.20183768120386103, 53.76014871614948],
+              [-0.22973918242719055, 53.77918934691781],
+              [-0.2318135113887995, 53.780028966667835],
+              [-0.2361369159749925, 53.7793555292315],
+              [-0.24018139370462274, 53.77845311814376],
+              [-0.2442912194756223, 53.778162785952816],
+              [-0.24667643542559506, 53.77846735527549],
+              [-0.2539559891849804, 53.778960096075146]
+            ]
+          },
+          "properties": {
+            "feature_name": "Roos - Bilton",
+            "length_m": 18212.0176,
+            "route_shape": false,
+            "id": "SP1",
+            "line": "LI0",
+            "stops": [
+              "ST2200YEA00708",
+              "ST2200YEA11898",
+              "ST2200YEA11899",
+              "ST2200YEZ01321",
+              "ST2200YEA00707",
+              "ST2200YEA00706",
+              "ST2200YEA11843",
+              "ST2200YEA00307",
+              "ST2200YEA00020",
+              "ST2200YEA00891",
+              "ST2200YEA11823",
+              "ST2200YEA00888",
+              "ST2200YEA00886",
+              "ST2200YEA00884",
+              "ST2200YEA00944",
+              "ST2200YEA00963",
+              "ST2200YEA00965",
+              "ST2200YEA00967",
+              "ST2200YEA00969",
+              "ST2200YEA00971",
+              "ST2200YEA00973",
+              "ST2200YEA11699",
+              "ST2200YEA01554"
+            ],
+            "timing_patterns": ["TP1"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SP10",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.18924959472677252, 54.08391764001249],
+              [-0.18914173719362898, 54.082531729839644],
+              [-0.19157160770814796, 54.08184915829624],
+              [-0.19341553132411282, 54.081984719736965],
+              [-0.19247166723486578, 54.083300900212556],
+              [-0.19607503166759527, 54.085170717090456],
+              [-0.1995556039294833, 54.085645309342574],
+              [-0.20245888382237376, 54.08745051698937],
+              [-0.2034141539624927, 54.08869625038704],
+              [-0.20437267936588463, 54.09199147779846],
+              [-0.203027680724046, 54.094452321228296],
+              [-0.19889824697128364, 54.095523192571015],
+              [-0.19965112771543617, 54.09720637582296],
+              [-0.2009279854314401, 54.1023311111554],
+              [-0.1990694387627208, 54.103570746596574],
+              [-0.19655682787917633, 54.10401852937689],
+              [-0.19575303835309618, 54.100689604670706],
+              [-0.19507459571964086, 54.0983513296005],
+              [-0.19884062021980548, 54.09544143089155],
+              [-0.20307378176146354, 54.09409345687928],
+              [-0.20438941473837713, 54.09266588966674],
+              [-0.20366579383975117, 54.08994945418659],
+              [-0.20187735249475663, 54.08710924356286],
+              [-0.19905178485262712, 54.085628782786415],
+              [-0.19538904056124, 54.08512447730826],
+              [-0.19285614911354132, 54.08430443910982],
+              [-0.18979961788433863, 54.083925914517664]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bridlington BS (Bay B1) - Bridlington BS Arrive (22001251)",
+            "length_m": 6739.46387,
+            "route_shape": false,
+            "id": "SP10",
+            "line": "LI3",
+            "stops": [
+              "ST2200YEA11929",
+              "ST2200YEA01636",
+              "ST2200YEA01629",
+              "ST2200YEA00418",
+              "ST2200YEA00033",
+              "ST2200YEA00493",
+              "ST2200YEA00495",
+              "ST2200YEA00497",
+              "ST2200YEA00498",
+              "ST2200YEA00473",
+              "ST2200YEA00464",
+              "ST2200YEA00463",
+              "ST2200YEA00442",
+              "ST2200YEA01572",
+              "ST2200YEA01571",
+              "ST2200YEA00445",
+              "ST2200YEA01108",
+              "ST2200YEA00446",
+              "ST2200YEA00462",
+              "ST2200YEA00465",
+              "ST2200YEA11682",
+              "ST2200YEA01659",
+              "ST2200YEA00496",
+              "ST2200YEA00494",
+              "ST2200YEA00492",
+              "ST2200YEA01628",
+              "ST2200YEZ01251"
+            ],
+            "timing_patterns": ["TP11"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SP100",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-0.198945001012038, 53.740535674095064],
+              [-0.1990556891568625, 53.743620658954164],
+              [-0.1974486617406224, 53.74821699347959],
+              [-0.19800057021458894, 53.75091308402166],
+              [-0.19835994591712838, 53.75314782231126],
+              [-0.20036701948614485, 53.75693547153656],
+              [-0.2014847671883501, 53.76024230427757],
+              [-0.19067245852625267, 53.79191920304992],
+              [-0.21788996184952095, 53.78160270949363],
+              [-0.22501832732569726, 53.78064771248283],
+              [-0.2318135113887995, 53.780028966667835],
+              [-0.2361369159749925, 53.7793555292315],
+              [-0.24018139370462274, 53.77845311814376],
+              [-0.2442912194756223, 53.778162785952816],
+              [-0.24667643542559506, 53.77846735527549],
+              [-0.2539559891849804, 53.778960096075146],
+              [-0.2581116519769585, 53.77866096693749],
+              [-0.2599658880537169, 53.78043175908861],
+              [-0.25888703119532036, 53.78266336159595],
+              [-0.25515145951078916, 53.79405211241816],
+              [-0.24577146646708567, 53.79981210129841],
+              [-0.26388640530170954, 53.83805422654164],
+              [-0.2671349924737498, 53.839620315757756],
+              [-0.26886403332399256, 53.84081384653769],
+              [-0.27133643370981136, 53.84241357271474],
+              [-0.28201101360307673, 53.855304327910986],
+              [-0.2875166300457479, 53.863086606047645],
+              [-0.2881935545181336, 53.864013142290545],
+              [-0.28978628818071667, 53.86597747206727],
+              [-0.34378176577575276, 53.869682567850134],
+              [-0.37354728336071064, 53.86457047116095],
+              [-0.4047088498503708, 53.85893931900014],
+              [-0.4195732234588863, 53.85265502028977],
+              [-0.4243995356816373, 53.84963535969127],
+              [-0.42713061310756717, 53.84774760359215],
+              [-0.4307016879901684, 53.84534043871251],
+              [-0.4318006695052337, 53.843997509925444]
+            ]
+          },
+          "properties": {
+            "feature_name": "Hedon - Beverley",
+            "length_m": 31561.6172,
+            "route_shape": false,
+            "id": "SP100",
+            "line": "LI26",
+            "stops": [
+              "ST2200YEA00891",
+              "ST2200YEA11823",
+              "ST2200YEA00888",
+              "ST2200YEA00886",
+              "ST2200YEA00884",
+              "ST2200YEA00944",
+              "ST2200YEA00946",
+              "ST2200YEA00960",
+              "ST2200YEA00957",
+              "ST2200YEA00956",
+              "ST2200YEA00967",
+              "ST2200YEA00969",
+              "ST2200YEA00971",
+              "ST2200YEA00973",
+              "ST2200YEA11699",
+              "ST2200YEA01554",
+              "ST2290YHA00780",
+              "ST2290YHA00436",
+              "ST2290YHA00437",
+              "ST2200YEA00979",
+              "ST2200YEA00413",
+              "ST2200YEA00748",
+              "ST2200YEA00207",
+              "ST2200YEA00754",
+              "ST2200YEA00752",
+              "ST2200YEA11661",
+              "ST2200YEA11660",
+              "ST2200YEA00209",
+              "ST2200YEA00749",
+              "ST2200YEA00868",
+              "ST2200YEA00867",
+              "ST2200YEA00620",
+              "ST2200YEA00622",
+              "ST2200YEA00073",
+              "ST2200YEA00076",
+              "ST2200YEA01631",
+              "ST2200YEZ01250"
+            ],
+            "timing_patterns": ["TP175"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SP1000",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [-1.5384547828894313, 53.994335092651724],
+              [-1.5344641675957371, 53.992450270823895],
+              [-1.5300253614701653, 53.99247795009971],
+              [-1.5238015631378112, 53.9938825333451],
+              [-1.5183698680207307, 53.995343908567804],
+              [-1.5146408409745715, 53.99595808149338],
+              [-1.5093848884993328, 53.99669175232182],
+              [-1.5061915059719464, 53.99713706852511],
+              [-1.5036398862664846, 53.99748608233622],
+              [-1.499444002789355, 53.998834840119116],
+              [-1.4971784983582983, 54.000748777453275],
+              [-1.4941127539664938, 54.003216553712214],
+              [-1.4903099156682924, 54.00479134081548],
+              [-1.481691249322478, 54.00711830008178],
+              [-1.4754924875717805, 54.008655334290395],
+              [-1.4735292777322655, 54.010669021338245],
+              [-1.4698363989671195, 54.0106797860009],
+              [-1.4653249575273732, 54.00788261075181],
+              [-1.465479947070756, 54.00769455491032],
+              [-1.463763723995171, 54.00707575652909],
+              [-1.455848698175843, 54.005611209882225],
+              [-1.4514053633639468, 54.00355084107924],
+              [-1.4508207935046096, 54.00159784282854],
+              [-1.4482790963726146, 53.99998640970398],
+              [-1.445052568957039, 53.99941434320446]
+            ]
+          },
+          "properties": {
+            "feature_name": "Harrogate - Calcutt",
+            "length_m": 7415.20947,
+            "route_shape": false,
+            "id": "SP1000",
+            "line": "LI245",
+            "stops": [
+              "ST3200YNA05003",
+              "ST3200YND10680",
+              "ST3200YND10690",
+              "ST3200YND10700",
+              "ST3200YND10710",
+              "ST3200YND10720",
+              "ST3200YND10730",
+              "ST3200YND10740",
+              "ST3200YND10750",
+              "ST3200YNE04351",
+              "ST3200YND10770",
+              "ST3200YND10780",
+              "ST3200YND10790",
+              "ST3200YND10800",
+              "ST3200YND10840",
+              "ST3200YNA96389",
+              "ST3200YND10820",
+              "ST3200YND57180",
+              "ST3200YND10828",
+              "ST3200YND78000",
+              "ST3200YNA96422",
+              "ST3200YND56970",
+              "ST3200YND78020",
+              "ST3200YND78030",
+              "ST3200YND78040"
+            ],
+            "timing_patterns": ["TP1800", "TP1801"]
+          }
+        }
+      ],
+      "count": 5369
+    },
+    "timing_patterns": [
+      {
+        "id": "TP0",
+        "service_pattern": "SP0",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 30,
+            "departure_time_secs": 30,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 67,
+            "departure_time_secs": 67,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 93,
+            "departure_time_secs": 93,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 114,
+            "departure_time_secs": 114,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 140,
+            "departure_time_secs": 140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 157,
+            "departure_time_secs": 157,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 420,
+            "departure_time_secs": 420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 497,
+            "departure_time_secs": 497,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 540,
+            "departure_time_secs": 540,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 645,
+            "departure_time_secs": 645,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 900,
+            "departure_time_secs": 900,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1118,
+            "departure_time_secs": 1118,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1423,
+            "departure_time_secs": 1423,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2280,
+            "departure_time_secs": 2280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2721,
+            "departure_time_secs": 2721,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 3120,
+            "departure_time_secs": 3120,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ0"]
+      },
+      {
+        "id": "TP1",
+        "service_pattern": "SP1",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 32,
+            "departure_time_secs": 32,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 64,
+            "departure_time_secs": 64,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 486,
+            "departure_time_secs": 486,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 780,
+            "departure_time_secs": 780,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 900,
+            "departure_time_secs": 900,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1287,
+            "departure_time_secs": 1287,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1860,
+            "departure_time_secs": 1860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 1893,
+            "departure_time_secs": 1893,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2067,
+            "departure_time_secs": 2067,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2174,
+            "departure_time_secs": 2174,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2239,
+            "departure_time_secs": 2239,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2280,
+            "departure_time_secs": 2280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true
+          },
+          {
+            "arrival_time_secs": 2431,
+            "departure_time_secs": 2431,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2670,
+            "departure_time_secs": 2670,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2686,
+            "departure_time_secs": 2686,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2700,
+            "departure_time_secs": 2700,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2733,
+            "departure_time_secs": 2733,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2766,
+            "departure_time_secs": 2766,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2779,
+            "departure_time_secs": 2779,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false
+          },
+          {
+            "arrival_time_secs": 2820,
+            "departure_time_secs": 2820,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true
+          }
+        ],
+        "vehicle_journeys": ["VJ1"]
+      },
+      {
+        "id": "TP2",
+        "service_pattern": "SP2",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 393,
+            "departure_time_secs": 393,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 509,
+            "speed": 4.66369295
+          },
+          {
+            "arrival_time_secs": 529,
+            "departure_time_secs": 529,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 762,
+            "speed": 6.69503021
+          },
+          {
+            "arrival_time_secs": 572,
+            "departure_time_secs": 572,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 853,
+            "speed": 7.63689518
+          },
+          {
+            "arrival_time_secs": 739,
+            "departure_time_secs": 739,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 1308,
+            "speed": 9.80651665
+          },
+          {
+            "arrival_time_secs": 1070,
+            "departure_time_secs": 1070,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2164,
+            "speed": 9.31511497
+          },
+          {
+            "arrival_time_secs": 1200,
+            "departure_time_secs": 1200,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 2511,
+            "speed": 9.60279369
+          },
+          {
+            "arrival_time_secs": 1320,
+            "departure_time_secs": 1320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 3205,
+            "speed": 20.8306313
+          },
+          {
+            "arrival_time_secs": 1440,
+            "departure_time_secs": 1440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 3692,
+            "speed": 14.6050406
+          },
+          {
+            "arrival_time_secs": 1562,
+            "departure_time_secs": 1562,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 4039,
+            "speed": 10.2285376
+          },
+          {
+            "arrival_time_secs": 1620,
+            "departure_time_secs": 1620,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4240,
+            "speed": 12.4820862
+          },
+          {
+            "arrival_time_secs": 1663,
+            "departure_time_secs": 1663,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 4453,
+            "speed": 17.8502312
+          },
+          {
+            "arrival_time_secs": 1860,
+            "departure_time_secs": 1860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 5570,
+            "speed": 20.4046745
+          },
+          {
+            "arrival_time_secs": 2400,
+            "departure_time_secs": 2400,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 6063,
+            "speed": 3.2859838
+          },
+          {
+            "arrival_time_secs": 2520,
+            "departure_time_secs": 2520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 6392,
+            "speed": 9.89117813
+          },
+          {
+            "arrival_time_secs": 2640,
+            "departure_time_secs": 2640,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 6644,
+            "speed": 7.54689312
+          },
+          {
+            "arrival_time_secs": 2665,
+            "departure_time_secs": 2665,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6825,
+            "speed": 26.1496925
+          },
+          {
+            "arrival_time_secs": 2760,
+            "departure_time_secs": 2760,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7386,
+            "speed": 21.2348557
+          },
+          {
+            "arrival_time_secs": 2880,
+            "departure_time_secs": 2880,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7808,
+            "speed": 12.6706944
+          },
+          {
+            "arrival_time_secs": 2925,
+            "departure_time_secs": 2925,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 7970,
+            "speed": 12.9454241
+          },
+          {
+            "arrival_time_secs": 3031,
+            "departure_time_secs": 3031,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8287,
+            "speed": 10.7786436
+          },
+          {
+            "arrival_time_secs": 3120,
+            "departure_time_secs": 3120,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 8520,
+            "speed": 9.39347935
+          },
+          {
+            "arrival_time_secs": 3420,
+            "departure_time_secs": 3420,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 8969,
+            "speed": 5.39036465
+          },
+          {
+            "arrival_time_secs": 3499,
+            "departure_time_secs": 3499,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9310,
+            "speed": 15.5719395
+          },
+          {
+            "arrival_time_secs": 3560,
+            "departure_time_secs": 3560,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9633,
+            "speed": 19.0144405
+          },
+          {
+            "arrival_time_secs": 3720,
+            "departure_time_secs": 3720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 10262,
+            "speed": 14.159133
+          },
+          {
+            "arrival_time_secs": 3960,
+            "departure_time_secs": 3960,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 11097,
+            "speed": 12.520401
+          },
+          {
+            "arrival_time_secs": 4140,
+            "departure_time_secs": 4140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12028,
+            "speed": 18.6267433
+          },
+          {
+            "arrival_time_secs": 4260,
+            "departure_time_secs": 4260,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12337,
+            "speed": 9.27310658
+          },
+          {
+            "arrival_time_secs": 4380,
+            "departure_time_secs": 4380,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12563,
+            "speed": 6.781394
+          },
+          {
+            "arrival_time_secs": 4500,
+            "departure_time_secs": 4500,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12710,
+            "speed": 4.39456463
+          }
+        ],
+        "vehicle_journeys": ["VJ2", "VJ13"]
+      },
+      {
+        "id": "TP3",
+        "service_pattern": "SP3",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 162,
+            "departure_time_secs": 162,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 334,
+            "speed": 7.42381811
+          },
+          {
+            "arrival_time_secs": 600,
+            "departure_time_secs": 600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 1244,
+            "speed": 7.48540926
+          },
+          {
+            "arrival_time_secs": 993,
+            "departure_time_secs": 993,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 1753,
+            "speed": 4.66369295
+          },
+          {
+            "arrival_time_secs": 1129,
+            "departure_time_secs": 1129,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2006,
+            "speed": 6.69503021
+          },
+          {
+            "arrival_time_secs": 1172,
+            "departure_time_secs": 1172,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2098,
+            "speed": 7.63689518
+          },
+          {
+            "arrival_time_secs": 1339,
+            "departure_time_secs": 1339,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2552,
+            "speed": 9.80651665
+          },
+          {
+            "arrival_time_secs": 1670,
+            "departure_time_secs": 1670,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3409,
+            "speed": 9.31511497
+          },
+          {
+            "arrival_time_secs": 1800,
+            "departure_time_secs": 1800,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 3756,
+            "speed": 9.60279369
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4450,
+            "speed": 20.8306313
+          },
+          {
+            "arrival_time_secs": 2040,
+            "departure_time_secs": 2040,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4937,
+            "speed": 14.6050406
+          },
+          {
+            "arrival_time_secs": 2162,
+            "departure_time_secs": 2162,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5284,
+            "speed": 10.2285376
+          },
+          {
+            "arrival_time_secs": 2220,
+            "departure_time_secs": 2220,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 5485,
+            "speed": 12.4820862
+          },
+          {
+            "arrival_time_secs": 2263,
+            "departure_time_secs": 2263,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5698,
+            "speed": 17.8502312
+          },
+          {
+            "arrival_time_secs": 2460,
+            "departure_time_secs": 2460,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 6814,
+            "speed": 20.4046745
+          },
+          {
+            "arrival_time_secs": 3000,
+            "departure_time_secs": 3000,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7307,
+            "speed": 3.2859838
+          },
+          {
+            "arrival_time_secs": 3180,
+            "departure_time_secs": 3180,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7637,
+            "speed": 6.5941186
+          },
+          {
+            "arrival_time_secs": 3300,
+            "departure_time_secs": 3300,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7889,
+            "speed": 7.54689312
+          },
+          {
+            "arrival_time_secs": 3312,
+            "departure_time_secs": 3312,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8070,
+            "speed": 54.4778633
+          },
+          {
+            "arrival_time_secs": 3360,
+            "departure_time_secs": 3360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 8631,
+            "speed": 42.02742
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 9053,
+            "speed": 12.6706944
+          },
+          {
+            "arrival_time_secs": 3520,
+            "departure_time_secs": 3520,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9215,
+            "speed": 14.5631571
+          },
+          {
+            "arrival_time_secs": 3605,
+            "departure_time_secs": 3605,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9420,
+            "speed": 8.70646954
+          },
+          {
+            "arrival_time_secs": 3660,
+            "departure_time_secs": 3660,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 9615,
+            "speed": 12.7317619
+          },
+          {
+            "arrival_time_secs": 3840,
+            "departure_time_secs": 3840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 10197,
+            "speed": 11.6476955
+          },
+          {
+            "arrival_time_secs": 4020,
+            "departure_time_secs": 4020,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 10523,
+            "speed": 6.51303244
+          },
+          {
+            "arrival_time_secs": 4099,
+            "departure_time_secs": 4099,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 10865,
+            "speed": 15.5718908
+          },
+          {
+            "arrival_time_secs": 4320,
+            "departure_time_secs": 4320,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 11798,
+            "speed": 15.202383
+          },
+          {
+            "arrival_time_secs": 4560,
+            "departure_time_secs": 4560,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12633,
+            "speed": 12.520401
+          },
+          {
+            "arrival_time_secs": 4740,
+            "departure_time_secs": 4740,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 13564,
+            "speed": 18.6267433
+          },
+          {
+            "arrival_time_secs": 4860,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 13873,
+            "speed": 9.27310658
+          },
+          {
+            "arrival_time_secs": 4980,
+            "departure_time_secs": 4980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14099,
+            "speed": 6.781394
+          },
+          {
+            "arrival_time_secs": 5100,
+            "departure_time_secs": 5100,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14246,
+            "speed": 4.39456463
+          }
+        ],
+        "vehicle_journeys": ["VJ3", "VJ14"]
+      },
+      {
+        "id": "TP4",
+        "service_pattern": "SP4",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": true,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 120,
+            "departure_time_secs": 120,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 342,
+            "speed": 10.2884254
+          },
+          {
+            "arrival_time_secs": 282,
+            "departure_time_secs": 282,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 677,
+            "speed": 7.42381811
+          },
+          {
+            "arrival_time_secs": 720,
+            "departure_time_secs": 720,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 1587,
+            "speed": 7.48540926
+          },
+          {
+            "arrival_time_secs": 1113,
+            "departure_time_secs": 1113,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2096,
+            "speed": 4.66369295
+          },
+          {
+            "arrival_time_secs": 1249,
+            "departure_time_secs": 1249,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2349,
+            "speed": 6.69503021
+          },
+          {
+            "arrival_time_secs": 1292,
+            "departure_time_secs": 1292,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2441,
+            "speed": 7.63689518
+          },
+          {
+            "arrival_time_secs": 1459,
+            "departure_time_secs": 1459,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 2895,
+            "speed": 9.80651665
+          },
+          {
+            "arrival_time_secs": 1790,
+            "departure_time_secs": 1790,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 3752,
+            "speed": 9.31511497
+          },
+          {
+            "arrival_time_secs": 1920,
+            "departure_time_secs": 1920,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4099,
+            "speed": 9.60279369
+          },
+          {
+            "arrival_time_secs": 2040,
+            "departure_time_secs": 2040,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4793,
+            "speed": 20.8306313
+          },
+          {
+            "arrival_time_secs": 2160,
+            "departure_time_secs": 2160,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 5280,
+            "speed": 14.6050406
+          },
+          {
+            "arrival_time_secs": 2282,
+            "departure_time_secs": 2282,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 5626,
+            "speed": 10.2285376
+          },
+          {
+            "arrival_time_secs": 2340,
+            "departure_time_secs": 2340,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 5828,
+            "speed": 12.4820862
+          },
+          {
+            "arrival_time_secs": 2383,
+            "departure_time_secs": 2383,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 6041,
+            "speed": 17.8502312
+          },
+          {
+            "arrival_time_secs": 2580,
+            "departure_time_secs": 2580,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7157,
+            "speed": 20.4046745
+          },
+          {
+            "arrival_time_secs": 3120,
+            "departure_time_secs": 3120,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7650,
+            "speed": 3.2859838
+          },
+          {
+            "arrival_time_secs": 3240,
+            "departure_time_secs": 3240,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7980,
+            "speed": 9.89117813
+          },
+          {
+            "arrival_time_secs": 3360,
+            "departure_time_secs": 3360,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 8232,
+            "speed": 7.54689312
+          },
+          {
+            "arrival_time_secs": 3385,
+            "departure_time_secs": 3385,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 8413,
+            "speed": 26.1496925
+          },
+          {
+            "arrival_time_secs": 3480,
+            "departure_time_secs": 3480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 8974,
+            "speed": 21.2348557
+          },
+          {
+            "arrival_time_secs": 3600,
+            "departure_time_secs": 3600,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 9396,
+            "speed": 12.6706944
+          },
+          {
+            "arrival_time_secs": 3645,
+            "departure_time_secs": 3645,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9558,
+            "speed": 12.9454241
+          },
+          {
+            "arrival_time_secs": 3751,
+            "departure_time_secs": 3751,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 9875,
+            "speed": 10.7786436
+          },
+          {
+            "arrival_time_secs": 3840,
+            "departure_time_secs": 3840,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 10107,
+            "speed": 9.39347935
+          },
+          {
+            "arrival_time_secs": 4140,
+            "departure_time_secs": 4140,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 10556,
+            "speed": 5.39036465
+          },
+          {
+            "arrival_time_secs": 4219,
+            "departure_time_secs": 4219,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 10898,
+            "speed": 15.5719395
+          },
+          {
+            "arrival_time_secs": 4280,
+            "departure_time_secs": 4280,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": false,
+            "distance": 11220,
+            "speed": 19.0143642
+          },
+          {
+            "arrival_time_secs": 4440,
+            "departure_time_secs": 4440,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 11850,
+            "speed": 14.1591549
+          },
+          {
+            "arrival_time_secs": 4680,
+            "departure_time_secs": 4680,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 12684,
+            "speed": 12.520401
+          },
+          {
+            "arrival_time_secs": 4860,
+            "departure_time_secs": 4860,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 13616,
+            "speed": 18.6267433
+          },
+          {
+            "arrival_time_secs": 4980,
+            "departure_time_secs": 4980,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 13925,
+            "speed": 9.27310658
+          },
+          {
+            "arrival_time_secs": 5100,
+            "departure_time_secs": 5100,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14151,
+            "speed": 6.781394
+          },
+          {
+            "arrival_time_secs": 5220,
+            "departure_time_secs": 5220,
+            "pickup_allowed": false,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 14297,
+            "speed": 4.39456463
+          }
+        ],
+        "vehicle_journeys": ["VJ4", "VJ15"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0",
+        "timing_pattern": "TP0",
+        "start": 42300,
+        "feature_name": "11:45:00 -- CB3: Fleet Estate to Roos",
+        "dates": [1, 3, 8, 10, 15, 17, 22, 24, 29],
+        "source": 0,
+        "source_id": "1"
+      },
+      {
+        "id": "VJ1",
+        "timing_pattern": "TP1",
+        "start": 34500,
+        "feature_name": "09:35:00 -- CB3: Roos to Bilton",
+        "dates": [1, 3, 8, 10, 15, 17, 22, 24, 29],
+        "source": 0,
+        "source_id": "2"
+      },
+      {
+        "id": "VJ2",
+        "timing_pattern": "TP2",
+        "start": 31200,
+        "feature_name": "08:40:00 -- GT: Old Goole to Goole",
+        "dates": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          9,
+          10,
+          13,
+          14,
+          15,
+          16,
+          17,
+          20,
+          21,
+          22,
+          23,
+          24,
+          27,
+          28,
+          29
+        ],
+        "source": 1,
+        "source_id": "3"
+      },
+      {
+        "id": "VJ3",
+        "timing_pattern": "TP3",
+        "start": 33300,
+        "feature_name": "09:15:00 -- GT: Goole to Goole",
+        "dates": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          9,
+          10,
+          13,
+          14,
+          15,
+          16,
+          17,
+          20,
+          21,
+          22,
+          23,
+          24,
+          27,
+          28,
+          29
+        ],
+        "source": 1,
+        "source_id": "4"
+      },
+      {
+        "id": "VJ4",
+        "timing_pattern": "TP4",
+        "start": 35880,
+        "feature_name": "09:58:00 -- GT: Goole to Goole",
+        "dates": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          9,
+          10,
+          13,
+          14,
+          15,
+          16,
+          17,
+          20,
+          21,
+          22,
+          23,
+          24,
+          27,
+          28,
+          29
+        ],
+        "source": 1,
+        "source_id": "5"
+      }
+    ],
+    "lines": [
+      {
+        "id": "LI0",
+        "name": "CB3:Roos - Bilton"
+      },
+      {
+        "id": "LI1",
+        "name": "GT:Goole - Old Goole"
+      },
+      {
+        "id": "LI2",
+        "name": "4:Boroughbridge - Skelton on Ure"
+      },
+      {
+        "id": "LI3",
+        "name": "5A:Strensall - Acomb"
+      },
+      {
+        "id": "LI4",
+        "name": "6:Minskip - Bishopton"
+      }
+    ]
+  }
+}

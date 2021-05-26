@@ -1,0 +1,28 @@
+{% extends "error_base.html" %}
+
+{% load i18n %}
+
+{% block title_tag %}{% trans 'Page not found' %}{% endblock %}
+
+{% block content_heading %}{% trans 'Page not found' %}{% endblock %}
+
+{% block content_body %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      If you typed the web address, check it is correct.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+      If you pasted the web address, check you copied the entire address.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% url 'contact' host hosts.root as support %}
+    {% blocktrans %}
+      If the web address is correct or you selected a link or button,
+      <a class="govuk-link" href="{{ support }}">contact Bus open data support line</a> if you need
+      to speak to someone about this service.
+    {% endblocktrans %}
+  </p>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load static %}
+{% load i18n %}
+{% load cookie_consent_tags %}
+{% load parse_dictionary %}
+
+<!DOCTYPE html>
+<html lang="en" class="govuk-template ">
+
+<head>
+  <meta charset="utf-8"/>
+    {% cookielaw_banner %}
+  <title>
+      {% block title_tag %}
+          {% trans 'Bus Open Data Service' %}
+      {% endblock %}
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c0c"/>
+
+  <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="{% static 'frontend/images/favicon.ico' %}"
+        type="image/x-icon"/>
+  <link rel="mask-icon" href="{% static 'frontend/images/govuk-mask-icon.svg' %}" color="#0b0c0c">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'frontend/images/govuk-apple-touch-icon-180x180.png' %}">
+  <link rel="apple-touch-icon" sizes="167x167" href="{% static 'frontend/images/govuk-apple-touch-icon-167x167.png' %}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{% static 'frontend/images/govuk-apple-touch-icon-152x152.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'frontend/images/govuk-apple-touch-icon.png' %}">
+
+    {% block styles %}
+      <link href="{% static 'frontend/app.css' %}" rel="stylesheet">
+    {% endblock %}
+
+  <meta property="og:image" content="{% static 'frontend/images/govuk-opengraph-image.png' %}">
+    {% block extra_head %}
+    {% endblock %}
+</head>
+
+{% block body %}
+  <body class="govuk-template__body ">
+
+  <script>
+      document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+  </script>
+
+  {% block skiplink %}
+    <div id="skip-main-link">
+      <a href="#main-content"
+         class="govuk-skip-link"
+         onclick="BODSFrontend.Cookielaw.skipToMain();">
+        {% trans 'Skip to main content' %}
+      </a>
+    </div>
+  {% endblock %}
+
+  {% block page %}{% endblock %}
+
+  {% block scripts %}
+    <script src="{% static 'frontend/bundle.js' %}"></script>
+    <script>BODSFrontend.initAll({{ js_bundle_init|safe }})</script>
+
+      {% if not request.COOKIES.keys|get_value_from_dict:'cookie_policy' %}
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+
+            gtag('js', new Date());
+            gtag('config', '{{ GOOGLE_ANALYTICS_KEY }}');
+        </script>
+        {% else %}
+          <script>
+            var gtag_id = '{{ GOOGLE_ANALYTICS_KEY }}';
+            window['ga-disable-' + gtag_id] = true;
+          </script>
+      {% endif %}
+  {% endblock %}
+
+  </body>
+{% endblock %}
+</html>

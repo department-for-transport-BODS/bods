@@ -1,0 +1,27 @@
+{% extends "guidance/local_authorities/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+  <h1 class="govuk-heading-xl">{% trans 'Promoting the digital channel' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
+      The new Bus Open Data Service makes it easier than ever before to
+      submit information digitally - see the
+    {% endblocktrans %}
+    <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=Overview">operator guidance</a>
+    {% blocktrans %}
+      . It includes links to low cost software for small operators to produce digital timetable
+      information, as well as a free public spreadsheet template for small operators to use.
+      Please emphasise to small operators in your area that the digital channel will be
+      cheaper, easier and faster for them than posting in paper forms. You may wish to
+      include this recommendation in letters and emails that you send to bus operators
+      in your area, including hyperlinks to the new service.
+    {% endblocktrans %}
+
+  </p>
+
+{% url 'guidance:support-local_authorities' host hosts.publish as url %}
+{% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+{% include '../snippets/next.html' with url=url next_page=next_page %}
+{% endblock %}
