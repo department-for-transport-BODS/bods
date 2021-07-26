@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import List
 
 from .properties import (
@@ -66,6 +67,14 @@ class Timing:
     distance: int = None
     speed: int = None
 
+    @property
+    def arrival(self):
+        return timedelta(seconds=self.arrival_time_secs)
+
+    @property
+    def departure(self):
+        return timedelta(seconds=self.departure_time_secs)
+
 
 @dataclass
 class TimingPattern:
@@ -93,3 +102,15 @@ class VehicleJourney:
     feature_name: str
     headsign: str
     dates: List[str]
+
+    @property
+    def start_time(self) -> datetime.time:
+        """
+        Return the `start` seconds as a datetime.time object.
+        """
+        date_time = datetime.min + timedelta(seconds=self.start)
+        return date_time.time()
+
+    @property
+    def datetime_dates(self) -> List[datetime.date]:
+        return [datetime.fromisoformat(d).date() for d in self.dates]

@@ -29,15 +29,23 @@
             published
           {% endif %}
         </h1>
-{#        <div class="govuk-panel__body" style="font-size: larger">#}
-{#          {% blocktrans %}#}
-{#            We are now processing the data you have provided.<br/>#}
-{#            You can check the status on your data sets page.#}
-{#          {% endblocktrans %}#}
-{#        </div>#}
       </div>
       <p class="govuk-body-m">
-        {% trans 'We have sent you a confirmation email.' %}
+      {% if is_pti_compliant %}
+        {% blocktrans %}
+        We have sent you a confirmation email.
+        {% endblocktrans %}
+      {% else %}
+        {% blocktrans %}
+        We have sent you a confirmation email. However please note that after
+        {% endblocktrans %}
+        {{ pti_enforced_date|date:"jS F Y" }},
+        {% blocktrans %}
+        BODS won't be accepting any files which are not TransxChange PTI profile
+        v1.1 compliant. Please contact your scheduling supplier to update your data.
+        {% endblocktrans %}
+      {% endif %}
+
       </p>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
       <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
@@ -45,13 +53,16 @@
         {% blocktrans %}
           You can view the data set on your
         {% endblocktrans %}
-        <a class="govuk-link" href={% url 'feed-list' pk1=pk1 host hosts.publish %}>{% trans 'data sets page.' %}</a>
+        <a class="govuk-link"
+          href={% url 'feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>
+          {% trans 'data sets page.' %}</a>
         {% blocktrans %}
           or by clicking the button below. The data will now be live for everyone else to see.
         {% endblocktrans %}
       </p>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
-      <a role="button" class="govuk-button" href="{% url 'feed-detail' pk1=pk1 pk=pk host hosts.publish %}">
+      <a role="button" class="govuk-button"
+        href="{% url 'feed-detail' pk1=view.kwargs.pk1 pk=view.kwargs.pk host hosts.publish %}">
         {% trans 'View published data set' %}
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>

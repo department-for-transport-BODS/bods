@@ -1,16 +1,26 @@
+from typing import List, Optional
+
 from django.contrib.postgres.fields import JSONField
+from django.core.files.base import File
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.db.models import Q
+from django.http.response import FileResponse
 from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
 
+from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.models.managers import DataQualityReportManager
 from transit_odp.data_quality.pti.models import Violation
+from transit_odp.data_quality.pti.report import PTIReport
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.timetables.transxchange import TXCSchemaViolation
 
+PTI_REPORT_FILENAME = "pti_observations.csv"
+
 
 class DataQualityReport(models.Model):
+    score = models.FloatField(_("Data quality score"), default=0.0)
     created = CreationDateTimeField(_("created"))
     revision = models.ForeignKey(
         DatasetRevision,
@@ -23,6 +33,12 @@ class DataQualityReport(models.Model):
     class Meta:
         get_latest_by = "created"
         ordering = ("-created",)
+        constraints = [
+            models.CheckConstraint(
+                name="dq_score_must_be_between_0_and_1",
+                check=Q(score__gte=0.0) & Q(score__lte=1.0),
+            )
+        ]
 
     def __str__(self):
         return (
@@ -32,6 +48,12 @@ class DataQualityReport(models.Model):
             f"revision={self.revision_id}, "
             f"file={self.file.name})"
         )
+
+    def to_report(self):
+        """
+        Returns a pure python Report object.
+        """
+        return Report(self.file)
 
     objects = DataQualityReportManager()
 
@@ -51,6 +73,49 @@ class DataQualityReportSummary(models.Model):
             f"report={self.report_id}, "
             f"data={self.data})"
         )
+
+
+class PTIValidationResult(models.Model):
+    revision = models.OneToOneField(
+        DatasetRevision,
+        on_delete=models.CASCADE,
+        related_name="pti_result",
+        help_text=_("The revision being validated."),
+    )
+    count = models.IntegerField(help_text=_("Number of PTI violations."))
+    report = models.FileField(validators=[FileExtensionValidator([".zip"])])
+    created = CreationDateTimeField(_("created"))
+
+    @property
+    def is_compliant(self):
+        return self.count == 0
+
+    def to_http_response(self) -> Optional[FileResponse]:
+        org_id = self.revision.dataset.organisation_id
+        zip_filename = f"validation_{org_id}_{self.revision.dataset_id}.zip"
+        self.report.seek(0)
+        response = FileResponse(self.report.open("rb"), as_attachment=True)
+        response["Content-Disposition"] = f"attachment; filename={zip_filename}"
+        return response
+
+    @classmethod
+    def from_pti_violations(
+        cls, revision: DatasetRevision, violations: List[Violation]
+    ):
+        """
+        Creates a PTIValidationResult from a DatasetRevision and a list of Violations.
+
+        Args:
+            revision (DatasetRevision): The revision containing the violations.
+            violations (List[Violation]): The violations that a revision has.
+        """
+        results = PTIReport(filename=PTI_REPORT_FILENAME)
+        for violation in violations:
+            results.write_violation(violation=violation)
+
+        zip_filename = f"pti_validation_revision_{revision.id}.zip"
+        report = File(results.to_zip_as_bytes(), name=zip_filename)
+        return cls(revision_id=revision.id, count=len(violations), report=report)
 
 
 class PTIObservation(models.Model):

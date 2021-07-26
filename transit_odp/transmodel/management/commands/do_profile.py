@@ -41,7 +41,4 @@ class Command(BaseCommand):
             parser.index_feed()
 
         df = pd.DataFrame(connection.queries)
-        print(df.head(20))
-        print(f"Number of queries {df.shape[0]}")
-
         df.to_csv("connection_queries.csv", index=False)

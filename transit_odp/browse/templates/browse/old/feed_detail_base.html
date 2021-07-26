@@ -268,7 +268,7 @@
   {% endif %}
   {% if feed_status == 'processing' %}
     <script>
-      BODSFrontend.getProgress({{ object.id }} );
+      new BODSFrontend.ProgressIndicator({{ object.dataset_id }});
     </script>
   {% endif %}
 {% endblock %}

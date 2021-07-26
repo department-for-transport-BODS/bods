@@ -1,33 +1,45 @@
 {% load i18n %}
 
-<div class="govuk-panel govuk-panel--confirmation" style="background-color: #2b8cc4;">
+<div
+  class="govuk-panel govuk-panel--confirmation"
+  style="background-color: #2b8cc4"
+>
   <h1 class="govuk-panel__title govuk-!-font-size-36">
-      {% trans 'Validating data sets' %}
+    {% trans 'Validating data sets' %}
   </h1>
   <div class="govuk-panel__body govuk-!-font-size-19">
     <div style="padding-bottom: 1rem">
-        {% blocktrans %}
-          Once successfully processed, the data set will be published, <br/>
-          and you will be able to view the details here
-        {% endblocktrans %}</div>
-    <div id="progressOuterDiv"
-            {#                         class="progress-bar-outer"#}
-         style=" width: 100%; background-color: #005ea5;"
+      {% blocktrans %} Once successfully processed, the data set will be
+      published, <br />
+      and you will be able to view the details here {% endblocktrans %}
+    </div>
+    <div
+      id="progressOuterDiv"
+      style="width: 100%; background-color: #005ea5"
     >
-      <div id="progressInnerDiv"
-              {#                              class="progress-bar-inner"#}
-           style="width: 0%;  height: 30px;  background-color: #ffffff; text-align: center;  line-height: 30px;  color: white;"
-      >
-
-      </div>
-
+      <div
+        id="progressInnerDiv"
+        style="
+          width: 0%;
+          height: 30px;
+          background-color: #ffffff;
+          text-align: center;
+          line-height: 30px;
+          color: white;
+        "
+      ></div>
     </div>
     <span
-            {#                      class="progress-bar-text"#}
-            style="width: 70px; height: 41px; font-size: 36px; font-weight: bold; color: #ffffff; align-content: center"
-            id="progressSpan">
-                  </span>
-
-
+      style="
+        width: 70px;
+        height: 41px;
+        font-size: 36px;
+        font-weight: bold;
+        color: #ffffff;
+        align-content: center;
+      "
+      id="progressSpan"
+    >
+    </span>
   </div>
 </div>

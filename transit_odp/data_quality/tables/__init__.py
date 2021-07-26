@@ -25,7 +25,6 @@ from .fast_link import FastLinkWarningTimingTable, FastLinkWarningVehicleTable
 from .fast_timings import FastTimingWarningTimingTable, FastTimingWarningVehicleTable
 from .incorrect_noc import IncorrectNOCListTable
 from .journey_overlap import JourneyOverlapWarningTimingTable
-from .missing_headsign import MissingHeadsignWarningTimingTable
 from .pickup_and_drop_off import (
     FirstStopDropOffOnlyDetail,
     FirstStopDropOffOnlyVehicleTable,
@@ -85,7 +84,6 @@ __all__ = [
     "LastStopPickUpOnlyDetail",
     "LastStopPickUpOnlyListTable",
     "LastStopPickUpOnlyVehicleTable",
-    "MissingHeadsignWarningTimingTable",
     "MissingStopWarningDetailTable",
     "MissingStopWarningVehicleTable",
     "PickUpDropOffListTable",

@@ -1,0 +1,93 @@
+{% extends "guidance/developer/base.html" %}
+
+{% load i18n %}
+
+{% block extra_content %}
+<h1 data-qa="api-ref-header" class="govuk-heading-l">{% trans 'Maintaining quality data' %}</h1>
+<p class="govuk-body">
+    {% blocktrans %}
+    The Bus Open Data Service is committed to ensuring the most
+    robust quality of data is available on BODS. As of such we take
+    special care in ensuring that high data quality is maintained
+    through various ways as outlined below.
+    {% endblocktrans %}
+</p>
+<h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Timetables data' %}</h2>
+<h3 data-qa="all-data-header" class="govuk-heading-m">{% trans 'BODS Compliant data' %}</h3>
+<p class="govuk-body">
+    {% blocktrans %}
+    Currently for timetables data, BODS mandates that all publishers
+    produce timetables data in TransXChange 2.4 v1.1 PTI
+    profile. This profile is an extension of general schema and makes
+    certain fields mandatory, whilst clarifying the specific use of
+    some other fields in TransXChange. The full PTI profile can be
+    found here:
+    <br/>
+    <a class="govuk-link"
+       href="{{ pti_link_on_bods }}"
+       target="_blank">{{ pti_link_on_bods }}
+    </a>
+    {% endblocktrans %}
+</p>
+<p class="govuk-body">
+    {% blocktrans %}
+    The timetables data which is the above approved version is known
+    as 'BODS Compliant data' and is flagged as such in different
+    parts of the Find Bus Open Data Service (including Browse,
+    Download all, Data Catalogue and the API).
+    {% endblocktrans %}
+</p>
+
+<h3 data-qa="all-data-header" class="govuk-heading-m">{% trans 'Data Quality reports and scoring' %}</h3>
+<p class="govuk-body">
+    {% blocktrans %}
+    Additionally, beyond the BODS Compliant tagging, BODS also does
+    data quality checks which include key data-quality observations
+    that would adversely impact the passenger experience, if
+    unaddressed. The full list of checks can be found
+    {% endblocktrans %}
+    <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-definitions' host hosts.publish %}" target="_blank">{% trans 'here' %}</a>.
+</p>
+
+<p class="govuk-body">
+    {% blocktrans %}
+    BODS also generates a data quality score which can be seen as
+    flagged in different parts of the Find Bus Open Data
+    Service (including Browse, Changelog, Download all, Data
+    Catalogue, and the API). The mechanism which the BODS algorithm
+    uses to generate a data quality score can be found
+    {% endblocktrans %}
+    <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-score-description' host hosts.publish %}" target="_blank">{% trans 'here' %}</a>.
+</p>
+
+<h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Fares data' %}</h2>
+<p class="govuk-body">
+    {% blocktrans %}
+    BODS will deliver new additions to the service to ensure
+    publishers can perform data quality checks for fares data by the
+    end of 2021.  The updates on this should be available to
+    consumers via the Find Bus Open data site very
+    soon. Please
+    {% endblocktrans %}
+    <a class="govuk-link dont-break-out" href="{% url 'contact' %}" target="_blank">{% trans 'contact us' %}</a>
+    {% blocktrans %}
+    for any further queries on this.
+    {% endblocktrans %}
+</p>
+
+<h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Bus location data' %}</h2>
+<p class="govuk-body">
+    {% blocktrans %}
+    BODS will deliver new additions to the service to ensure
+    publishers can perform data quality checks for bus location data by the
+    end of 2021.  The updates on this should be available to
+    consumers via the Find Bus Open data site very
+    soon. Please
+    {% endblocktrans %}
+    <a class="govuk-link dont-break-out" href="{% url 'contact' %}" target="_blank">{% trans 'contact us' %}</a>
+    {% blocktrans %}
+    for any further queries on this.
+    {% endblocktrans %}
+
+</p>
+{% endblock %}

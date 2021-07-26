@@ -21,11 +21,6 @@ class Command(BaseCommand):
         with transaction.atomic():
             service_patterns = ServicePattern.objects.all()
             for index, service_pattern in enumerate(service_patterns):
-                print(
-                    "Fixing ServicePattern %d of %d"
-                    % (index + 1, service_patterns.count())
-                )
-
                 # We need the existing list of ServicePatternStops. These are
                 # the objects being fixed.
                 stops = ServicePatternStop.objects.filter(

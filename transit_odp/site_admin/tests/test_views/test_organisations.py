@@ -5,11 +5,7 @@ from django.contrib.auth import get_user_model
 from django_hosts.resolvers import reverse
 
 import config.hosts
-from transit_odp.organisation.factories import (
-    DatasetFactory,
-    OperatorCodeFactory,
-    OrganisationFactory,
-)
+from transit_odp.organisation.factories import OperatorCodeFactory, OrganisationFactory
 from transit_odp.organisation.models import Organisation
 from transit_odp.site_admin.views import (
     OrganisationArchiveView,
@@ -243,14 +239,6 @@ class TestOrganisationDetailView:
         assert "site_admin/organisation_detail.html" in [
             t.name for t in response.templates
         ]
-
-    def test_queryset_has_dataset_count(self):
-        organisation = OrganisationFactory.create()
-        DatasetFactory.create(organisation=organisation)
-        view = OrganisationDetailView()
-        qs = view.get_queryset()
-        assert list(qs) == [organisation]
-        assert qs.first().published_dataset_count == 1
 
 
 class TestOrganisationEditView:

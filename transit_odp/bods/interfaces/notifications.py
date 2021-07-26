@@ -600,3 +600,19 @@ class INotifications(Protocol):
             contact_email: email address of datasets key contact
         """
         ...
+
+    def send_custom_email(
+        self,
+        template: str,
+        subject: str,
+        body: str,
+        contact_email: str,
+    ):
+        """Sends a custom email.
+        Args:
+            template: template id for email
+            subject: subject of email
+            body: body of email
+            contact_email: email address of datasets key contact
+        """
+        ...

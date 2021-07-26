@@ -1,16 +1,12 @@
 from django.conf import settings
-from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
 from django_hosts import reverse
 
 import config.hosts
-from transit_odp.data_quality.constants import OBSERVATIONS
 from transit_odp.data_quality.report_summary import Summary
-from transit_odp.data_quality.scoring import (
-    DataQualityCalculator,
-    DataQualityRAG,
-    DQScoreException,
-)
+from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
@@ -24,13 +20,13 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 
 class BaseTimetableReviewView(ReviewBaseView):
     def get_form_class(self):
-        if self.object.pti_observations.count() > 0:
+        if not self.object.is_pti_compliant():
             return RevisionPublishFormViolations
         return super().get_form_class()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if self.object.pti_observations.count() > 0:
+        if not self.object.is_pti_compliant():
             label = DATA_QUALITY_WITH_VIOLATIONS_LABEL
         else:
             label = DATA_QUALITY_LABEL
@@ -59,28 +55,22 @@ class BaseTimetableReviewView(ReviewBaseView):
         revision = self.get_object()
         tasks = revision.data_quality_tasks
         loading = self.is_loading()
+
         context.update(
             {
                 "loading": loading,
                 "current_step": "upload" if loading else "review",
                 "admin_areas": revision.admin_area_names,
                 "api_root": api_root,
-                "has_pti_observations": self.object.pti_observations.count() > 0,
+                "has_pti_observations": not revision.is_pti_compliant(),
                 "dq_status": tasks.get_latest_status(),
                 "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
+                "pti_enforced_date": settings.PTI_ENFORCED_DATE,
             }
         )
         if context["dq_status"] == DatasetETLTaskResult.SUCCESS:
             report = tasks.latest().report
-            score_observations = [o for o in OBSERVATIONS if o.model and o.weighting]
-            calculator = DataQualityCalculator(score_observations)
-
-            try:
-                score = calculator.calculate(report_id=report.id)
-            except DQScoreException:
-                rag = None
-            else:
-                rag = DataQualityRAG.from_score(score)
+            rag = get_data_quality_rag(report)
 
             context.update(
                 {
@@ -138,12 +128,22 @@ class UpdateRevisionPublishView(BaseTimetableReviewView):
         )
 
 
-class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
+class RevisionPublishSuccessView(OrgUserViewMixin, DetailView):
     template_name = "publish/revision_publish_success.html"
+    model = Dataset
+
+    def get_queryset(self):
+        return super().get_queryset().add_is_live_pti_compliant()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"update": False})
+        context.update(
+            {
+                "update": False,
+                "pti_enforced_date": settings.PTI_ENFORCED_DATE,
+                "is_pti_compliant": self.get_object().is_pti_compliant,
+            }
+        )
         return context
 
 

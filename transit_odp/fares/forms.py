@@ -10,6 +10,10 @@ from django_hosts.resolvers import reverse
 import config.hosts
 from transit_odp.common.contants import DEFAULT_ERROR_SUMMARY
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.publish.constants import (
+    DUPLICATE_COMMENT_ERROR_MESSAGE,
+    REQUIRED_COMMENT_ERROR_MESSAGE,
+)
 from transit_odp.publish.forms import (
     CANCEL_PUBLISH_BUTTON,
     CANCEL_UPDATE_BUTTON,
@@ -120,7 +124,10 @@ class FaresFeedCommentForm(GOVUKModelForm):
             {"placeholder": "", "class": "govuk-!-width-three-quarters"}
         )
         comment.error_messages.update(
-            {"required": _("Enter a comment in the box below")}
+            {
+                "required": _(REQUIRED_COMMENT_ERROR_MESSAGE),
+                "duplicate": _(DUPLICATE_COMMENT_ERROR_MESSAGE),
+            }
         )
 
     def get_layout(self):
@@ -134,7 +141,7 @@ class FaresFeedCommentForm(GOVUKModelForm):
             self.add_error(
                 "comment",
                 ValidationError(
-                    self.fields["comment"].error_messages["required"], code="required"
+                    self.fields["comment"].error_messages["duplicate"], code="required"
                 ),
             )
         return cleaned_data

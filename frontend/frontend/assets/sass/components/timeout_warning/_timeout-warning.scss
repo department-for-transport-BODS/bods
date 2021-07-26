@@ -8,6 +8,15 @@
 
   // To do: allow this to be customised
   max-width: 500px;
+  z-index: 2;
+  background-color: #f9f9f9;
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin: auto;
+  border-style: solid;
+  border-width: initial;
+  border-color: initial;
 
   .govuk-button {
     margin: 0 govuk-spacing(2) govuk-spacing(3) 0;
@@ -15,24 +24,23 @@
       margin-bottom: govuk-spacing(0);
     }
   }
+}
 
-  &[open] {
-    display: block;
+.disable-scroll {
+  margin: 0;
+  height: 100vh;
+  overflow-y: hidden;
+}
 
-    $backdrop-colour: rgba(0, 0, 0, 0.8);
-
-    // Backdrop styles for browsers with native support
-    & + .backdrop {
-      background: $backdrop-colour;
-    }
-
-    // Backdrop styles for browsers using
-    // Keep these two backdrop styles separate - Safari didn't
-    // work when combined
-    &::backdrop {
-      background: $backdrop-colour;
-    }
-  }
+#dialog-overlay {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1;
 }
 
 // Stop background scrolling while dialog open.

@@ -6,12 +6,7 @@ from django.template.loader import get_template
 from django.utils.html import format_html
 from django.utils.timezone import now
 
-from transit_odp.data_quality.constants import OBSERVATIONS
-from transit_odp.data_quality.scoring import (
-    DataQualityCalculator,
-    DataQualityRAG,
-    DQScoreException,
-)
+from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.publish.tables import DatasetRevisionTable
 
@@ -44,15 +39,7 @@ class TimetableChangelogTable(DatasetRevisionTable):
             # task is probably stuck in pending state
             return format_html("Not available")
 
-        score_observations = [o for o in OBSERVATIONS if o.model and o.weighting]
-        calculator = DataQualityCalculator(score_observations)
-        try:
-            score = calculator.calculate(report_id=report.id)
-        except DQScoreException:
-            rag = None
-        else:
-            rag = DataQualityRAG.from_score(score)
-
+        rag = get_data_quality_rag(report)
         if rag:
             template = get_template(snippet)
             return template.render({"rag": rag})

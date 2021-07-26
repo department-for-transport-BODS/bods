@@ -1425,6 +1425,7 @@
         "timing_pattern": "TP0a29a9bf9c9206a0d0aa3e51343e5b62369a693c",
         "start": 25620,
         "feature_name": "07:07:00 -- A: St Ives to Cambridge",
+        "headsign": "St Ives",
         "dates": [
           "2019-11-18",
           "2019-11-19",
@@ -1471,6 +1472,7 @@
         "timing_pattern": "TP156977a4bacbfff8c8a3008646bc78c915968af9",
         "start": 23940,
         "feature_name": "06:39:00 -- A: Boxworth to Cambridge",
+        "headsign": "St Ives",
         "dates": [
           "2019-11-18",
           "2019-11-19",

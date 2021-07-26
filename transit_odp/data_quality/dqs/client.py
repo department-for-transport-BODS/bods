@@ -6,10 +6,10 @@ import tempfile
 import uuid
 from typing import BinaryIO, Optional
 
-import attr
 import requests
 from django.conf import settings
 from django.core.files import File
+from pydantic import BaseModel
 from tenacity import (
     before_log,
     retry,
@@ -27,30 +27,20 @@ STATUS_FAILURE = 1
 STATUS_STARTING = -1
 
 
-@attr.s(auto_attribs=True)
-class DQSUploadUrlRes(object):
+class DQSUploadUrlRes(BaseModel):
     uuid: uuid.UUID
     presigned_url: str
 
 
-@attr.s(auto_attribs=True)
-class DQSStatusRes(object):
+class DQSStatusRes(BaseModel):
     uuid: uuid.UUID
-    job_exitcode: int = attr.ib(converter=int)
+    job_exitcode: int
     job_status: str
 
 
-class DQSClient(object):
-    url: str
-    upload_url: str
-    status_url: str
-    download_url: str
-
+class DQSClient:
     def __init__(self):
         self.url = settings.DQS_URL
-        self.upload_url = f"{self.url}/uploadurl"
-        self.status_url = f"{self.url}/status"
-        self.download_url = f"{self.url}/downloadurl"
 
     def upload(self, f: File) -> Optional[uuid.UUID]:
         """Upload the File `f` to DQS for processing returning the task_id UUID"""
@@ -72,29 +62,28 @@ class DQSClient(object):
     )
     def get_status(self, task_id: uuid.UUID) -> DQSStatusRes:
         """Fetches the status of the processing job with task id `task_id`"""
+        url = f"{self.url}/status"
         try:
-            r = requests.get(self.status_url, params={"uuid": task_id}, timeout=60)
-            r.raise_for_status()
-            data = r.json()
-            return DQSStatusRes(**data)
+            response = requests.get(url, params={"uuid": task_id}, timeout=60)
+            response.raise_for_status()
+            data = response.json()
         except requests.Timeout as e:
-            logger.exception(f"The request '{r.url}' timed out.")
+            logger.exception(f"The request {url} timed out.")
             raise PipelineException from e
         except requests.exceptions.HTTPError as e:
-            logger.exception(
-                f"The request '{r.url}' returned status code {r.status_code}."
-            )
+            logger.exception(f"Request to {url!r} resulted in HTTPError.", exc_info=e)
             raise PipelineException from e
-        except (json.decoder.JSONDecodeError, TypeError):
-            logger.exception(f"The request '{r.url}' returned malformed JSON.")
-            raise
+        except (json.decoder.JSONDecodeError, TypeError) as e:
+            logger.exception(f"The request {url!r} returned malformed JSON.")
+            raise PipelineException from e
+        else:
+            return DQSStatusRes(**data)
 
     def download(self, task_id: uuid.UUID) -> bytes:
         """Download the report from DQS for job task_id UUID"""
 
         presigned_url = self._get_download_url(task_id)
         f_uncompressed = io.BytesIO()
-
         with io.BytesIO() as tmp:
             self._download_file(presigned_url, f=tmp)
             tmp.seek(0)
@@ -109,23 +98,23 @@ class DQSClient(object):
     )
     def _get_upload_url(self, filename: str) -> DQSUploadUrlRes:
         """Get pre-signed URL from DQS to upload dataset"""
+
+        url = f"{self.url}/uploadurl"
         try:
-            r = requests.get(self.upload_url, params={"filename": filename}, timeout=60)
+            r = requests.get(url, params={"filename": filename}, timeout=60)
             r.raise_for_status()
             data = r.json()
+        except requests.Timeout as exc_info:
+            logger.exception(f"The request {url!r} timed out.", exc_info=exc_info)
+            raise PipelineException from exc_info
+        except requests.exceptions.HTTPError as exc_info:
+            logger.exception(f"Request {url!r} returned HTTPError.", exc_info=exc_info)
+            raise PipelineException from exc_info
+        except (json.decoder.JSONDecodeError, TypeError) as exc_info:
+            logger.exception(f"The request {url!r} returned malformed JSON.")
+            raise PipelineException from exc_info
+        else:
             return DQSUploadUrlRes(**data)
-
-        except requests.Timeout as e:
-            logger.exception(f"The request '{r.url}' timed out.")
-            raise PipelineException from e
-        except requests.exceptions.HTTPError as e:
-            logger.exception(
-                f"The request '{r.url}' returned status code {r.status_code}."
-            )
-            raise PipelineException from e
-        except (json.decoder.JSONDecodeError, TypeError):
-            logger.exception(f"The request '{r.url}' returned malformed JSON.")
-            raise
 
     @retry(
         reraise=True,
@@ -135,26 +124,26 @@ class DQSClient(object):
     )
     def _get_download_url(self, task_id: uuid.UUID) -> str:
         """Get pre-signed URL from DQS to download report"""
+        url = f"{self.url}/downloadurl"
+        params = {"uuid": task_id}
         try:
             r = requests.get(
-                self.download_url,
-                params={"uuid": task_id},
+                url,
+                params=params,
                 timeout=60,
             )
             r.raise_for_status()
             data = r.json()
             return data["presigned_url"]
         except requests.Timeout as e:
-            logger.exception(f"The request '{r.url}' timed out.")
+            logger.exception(f"The request {url!r} timed out.")
             raise PipelineException from e
         except requests.exceptions.HTTPError as e:
-            logger.exception(
-                f"The request '{r.url}' returned status code {r.status_code}."
-            )
+            logger.exception(f"Request to {url!r} resulted in a HTTPError.")
             raise PipelineException from e
-        except (json.decoder.JSONDecodeError, KeyError):
-            logger.exception(f"The request '{r.url}' returned malformed JSON.")
-            raise
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            logger.exception(f"The request {url!r} returned malformed JSON.")
+            raise PipelineException from e
 
     @retry(
         reraise=True,
@@ -162,24 +151,22 @@ class DQSClient(object):
         stop=stop_after_delay(300),
         before=before_log(logger, logging.DEBUG),
     )
-    def _upload_file(self, upload_url: str, f: BinaryIO):
+    def _upload_file(self, url: str, f: BinaryIO):
         """Uploads f to the specified upload_url
 
-        upload_url is the dynamically generated, pre-signed url to DQS' S3 bucket
+        url is the dynamically generated, pre-signed url to DQS' S3 bucket
         """
         try:
-            r = requests.put(upload_url, data=f, timeout=60)
-            r.raise_for_status()
-            return r
-
+            response = requests.put(url, data=f, timeout=60)
+            response.raise_for_status()
         except requests.Timeout as e:
-            logger.exception(f"The request '{r.url}' timed out.")
+            logger.exception(f"The request {url!r} timed out.")
             raise PipelineException from e
         except requests.exceptions.HTTPError as e:
-            logger.exception(
-                f"The request '{r.url}' returned status code {r.status_code}."
-            )
+            logger.exception(f"Request to {url!r} returned HTTPError.")
             raise PipelineException from e
+        else:
+            return response
 
     @retry(
         reraise=True,
@@ -187,24 +174,22 @@ class DQSClient(object):
         stop=stop_after_delay(300),  # the pre-signed url expires after 5 minutes
         before=before_log(logger, logging.DEBUG),
     )
-    def _download_file(self, download_url: str, f: BinaryIO) -> bool:
-        """Downloads report at `download_url` and write content to `f`
+    def _download_file(self, url: str, f: BinaryIO) -> bool:
+        """Downloads report at `url` and write content to `f`
 
-        download_url is the dynamically generated, pre-signed url to DQS' S3 bucket
+        url is the dynamically generated, pre-signed url to DQS' S3 bucket
         """
         try:
-            r = requests.get(download_url, timeout=60)
-            r.raise_for_status()
-            f.write(r.content)
-            return r.ok
+            response = requests.get(url, timeout=60)
+            response.raise_for_status()
+            f.write(response.content)
+            return response.ok
 
         except requests.Timeout as e:
-            logger.exception(f"The request '{r.url}' timed out.")
+            logger.exception(f"The request {url!r} timed out.")
             raise PipelineException from e
         except requests.exceptions.HTTPError as e:
-            logger.exception(
-                f"The request '{r.url}' returned status code {r.status_code}."
-            )
+            logger.exception(f"The request {url!r} returned status code.")
             raise PipelineException from e
 
     def _compress_file(self, fin: File, fout: BinaryIO) -> None:

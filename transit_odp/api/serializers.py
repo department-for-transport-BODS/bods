@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from transit_odp.data_quality.scoring import DataQualityRAG
 from transit_odp.naptan.models import AdminArea, Locality
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
@@ -120,6 +121,25 @@ class DatasetSerializer(serializers.Serializer):
     )
     adminAreas = AdminAreaSerializer(many=True, source="live_revision.admin_areas")
     localities = LocalitySerializer(many=True, source="live_revision.localities")
+
+    dqScore = serializers.SerializerMethodField("get_score")
+    dqRag = serializers.SerializerMethodField("get_RAG")
+    bodsCompliance = serializers.SerializerMethodField("get_bods_compliance")
+
+    def get_score(self, feed):
+        value = feed.score if feed.score else 0
+        return f"{value*100:.1f}%"
+
+    def get_RAG(self, feed):
+        value = feed.score
+        if value:
+            return DataQualityRAG.from_score(value).rag_level
+        return "unavailable"
+
+    def get_bods_compliance(self, feed):
+        if not feed.is_after_pti_compliance_date:
+            return None
+        return feed.is_pti_compliant
 
     def get_lines(self, feed):
         line_names_set = set()

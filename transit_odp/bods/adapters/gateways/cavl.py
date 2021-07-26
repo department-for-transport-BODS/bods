@@ -1,6 +1,5 @@
 import json
 import logging
-from pprint import pprint
 from typing import List, Sequence
 
 import cavl_client
@@ -41,8 +40,7 @@ class CAVLService(ICAVLService):
 
         try:
             # Adds a new feed
-            api_response = api_instance.add_feed(body)
-            pprint(api_response)
+            api_instance.add_feed(body)
         except (ApiException, Exception):
             logger.exception("Exception when calling FeedApi->add_feed")
             # return False
@@ -74,21 +72,6 @@ class CAVLService(ICAVLService):
     def get_feed(self, feed_id) -> AVLFeed:
         pass
 
-    #     # create configuration
-    #     configuration = self._get_configuration()
-    #
-    #     # create an instance of the API class
-    #     api_instance = self._get_feed_api(configuration)
-    #
-    #     try:
-    #         # Gets a feed by ID
-    #         api_response = api_instance.get_feed(feed_id)
-    #         pprint(api_response)
-    #     except (ApiException, Exception) as e:
-    #         logger.exception("Exception when calling FeedApi->get_feed")
-    #         raise
-    #     return
-    #
     def get_feeds(self) -> Sequence[AVLFeed]:
         configuration = self._get_configuration()
         api_instance = self._get_feed_api(configuration)

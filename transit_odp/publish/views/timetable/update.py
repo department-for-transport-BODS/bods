@@ -1,6 +1,6 @@
 from typing import List, Tuple, Type
 
-import config.hosts
+from django.conf import settings
 from django.db import transaction
 from django.forms import Form
 from django.http import Http404, HttpResponseRedirect
@@ -9,23 +9,38 @@ from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
 
-from transit_odp.organisation.constants import FeedStatus
+import config.hosts
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import (
     FeedCommentForm,
     FeedPublishCancelForm,
     FeedUploadForm,
 )
-from transit_odp.publish.views.base import BaseTemplateView, FeedWizardBaseView
+from transit_odp.publish.views.base import (
+    BaseDetailView,
+    BaseTemplateView,
+    FeedWizardBaseView,
+)
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
-class RevisionUpdateSuccessView(OrgUserViewMixin, BaseTemplateView):
+class RevisionUpdateSuccessView(OrgUserViewMixin, BaseDetailView):
     template_name = "publish/revision_publish_success.html"
+    model = Dataset
+
+    def get_queryset(self):
+        return super().get_queryset().add_is_live_pti_compliant()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"update": True, "pk1": self.kwargs["pk1"]})
+        context.update(
+            {
+                "update": True,
+                "pti_enforced_date": settings.PTI_ENFORCED_DATE,
+                "is_pti_compliant": self.get_object().is_pti_compliant,
+                "pk1": self.kwargs["pk1"],
+            }
+        )
         return context
 
 
@@ -98,11 +113,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         self.object = self.get_object()
         self.object.comment = None
 
-        # prevent user from trying to update dataset with existing draft, regardless of
-        # how they got to this page
-        if self.object.dataset.revisions.filter(
-            status__in=[FeedStatus.draft.value, FeedStatus.success.value]
-        ).exists():
+        if self.object.dataset.revisions.get_draft().exists():
             return redirect(
                 "feed-draft-exists",
                 pk=self.object.dataset_id,

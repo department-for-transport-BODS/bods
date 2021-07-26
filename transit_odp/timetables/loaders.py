@@ -3,6 +3,7 @@ import pandas as pd
 from celery.utils.log import get_task_logger
 from django.db.models import Q
 
+from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_df_from_queryset,
@@ -40,10 +41,20 @@ class TransXChangeDataLoader:
         self.service_link_cache = service_link_cache
 
     def load(self, revision, start_time):
-        logger.info(f"[TransXChangeDataLoader] Loading revision {revision.id}")
+        adapter = get_dataset_adapter_from_revision(logger, revision)
+        adapter.info("Loading TransXChange data set.")
+
+        adapter.info("Loading services.")
         services = self.load_services(revision)
+        adapter.info("Finished loading services.")
+
+        adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
+        adapter.info("Finished loading service patterns.")
+
+        adapter.info("Producing ETLReport.")
         report = self.produce_report(revision, start_time)
+        adapter.info("Finished producing ETLReport.")
 
         if report.line_count == 0:
             raise exceptions.PipelineException(
@@ -53,11 +64,8 @@ class TransXChangeDataLoader:
         return report
 
     def produce_report(self, revision, start_time) -> ETLReport:
-        logger.info("[TransXChangeDataLoader] Producing ETLReport")
         loaded_services = list(self.service_cache.values())
-
         report = ETLReport()
-
         report.import_datetime = start_time
 
         # Expiration dates
@@ -91,8 +99,6 @@ class TransXChangeDataLoader:
             revision,
         )
 
-        logger.info("[TransXChangeDataLoader] Finished produce_report")
-
         return report
 
     def load_services(self, revision):
@@ -100,8 +106,6 @@ class TransXChangeDataLoader:
         # reset index so we can match up bulk created objects.
         # The bulk created objects should have the same order
         # as the services dataframe
-        logger.info("[TransXChangeDataLoader] Starting load_services")
-
         services = self.transformed.services
         services.reset_index(inplace=True)
         service_objs = list(df_to_services(revision, services))
@@ -114,13 +118,10 @@ class TransXChangeDataLoader:
         # Update cache with created services
         self.service_cache.update({service.id: service for service in created})
 
-        logger.info("[TransXChangeDataLoader] Finished load_services")
         return services
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""
-        logger.info("[TransXChangeDataLoader] Starting load_service_links")
-
         service_link_cache = self.service_link_cache
         service_links_refs = set(service_links.index)
         cached_service_links = set(service_link_cache.index)
@@ -149,7 +150,6 @@ class TransXChangeDataLoader:
             # Select missing service_links from input data
             missing = service_links.loc[sorted(missing_links)]
 
-            logger.info("[TransXChangeDataLoader] Creating ServiceLinks")
             service_link_objs = list(df_to_service_links(missing))
             created = create_service_link_df_from_queryset(
                 ServiceLink.objects.bulk_create(
@@ -164,16 +164,14 @@ class TransXChangeDataLoader:
 
         # Return updated services links referenced in doc rather than entire cache
         service_links = service_link_cache.loc[sorted(service_links_refs)]
-
-        logger.info("[TransXChangeDataLoader] Finished load_service_links")
         return service_links
 
     def load_service_patterns(self, services, revision):
-        logger.info("[TransXChangeDataLoader] Starting load_service_patterns")
+        adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         service_patterns = self.transformed.service_patterns
         service_pattern_stops = self.transformed.service_pattern_stops
 
-        logger.info("[TransXChangeDataLoader] Bulk creating ServicePatterns")
+        adapter.info("Bulk creating service patterns.")
         service_pattern_objs = df_to_service_patterns(revision, service_patterns)
         created = ServicePattern.objects.bulk_create(
             service_pattern_objs, batch_size=BATCH_SIZE
@@ -201,22 +199,22 @@ class TransXChangeDataLoader:
         # self.add_service_pattern_to_service_links(service_pattern_to_service_links)
 
         # Create ServicePatternStops and add to ServicePattern
-        logger.info("[TransXChangeDataLoader] Creating ServicePatternStops")
+        adapter.info("Creating service pattern stops.")
         add_service_pattern_to_service_pattern_stops(
             service_pattern_stops, service_patterns
         )
 
         # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
         # ServicePattern
-        logger.info("[TransXChangeDataLoader] Adding Localities")
+        adapter.info("Adding localities.")
         add_service_pattern_to_localities(service_patterns)
 
-        logger.info("[TransXChangeDataLoader] Adding AdminAreas")
+        adapter.info("Adding administrative areas.")
         add_service_pattern_to_admin_area(service_patterns)
 
         # Add ServicePatterns to Service
-        logger.info("[TransXChangeDataLoader] Adding Service associations")
+        adapter.info("Adding service associations.")
         add_service_associations(services, service_patterns)
 
-        logger.info("[TransXChangeDataLoader] Finished load_service_patterns")
+        adapter.info("Finished loading service patterns.")
         return service_patterns

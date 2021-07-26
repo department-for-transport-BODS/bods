@@ -1,13 +1,13 @@
 import logging
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel
 from stories import Failure, Result, Success, arguments, story
 
 from transit_odp.bods.domain import events
-from transit_odp.bods.domain.entities import AVLPublication, Publisher
+from transit_odp.bods.domain.entities import AgentUser, AVLPublication, Publisher
 from transit_odp.bods.interfaces.notifications import INotifications
 from transit_odp.bods.interfaces.unit_of_work import IUnitOfWork
 from transit_odp.organisation.constants import AVLFeedStatus
@@ -89,7 +89,7 @@ class Context(BaseModel):
 
     # State
     publication: Optional[AVLPublication]
-    user: Optional[Publisher]
+    user: Optional[Union[Publisher, AgentUser]]
 
 
 @SendAVLFeedPublisherDownNotification.story.failures

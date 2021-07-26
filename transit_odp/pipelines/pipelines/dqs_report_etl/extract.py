@@ -4,6 +4,7 @@ from typing import Dict
 
 import pandas as pd
 
+from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.models import DataQualityReport
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.pipelines.dqs_report_etl.config import (
@@ -19,18 +20,16 @@ from transit_odp.pipelines.pipelines.dqs_report_etl.utils import load_geojson
 
 logger = logging.getLogger(__name__)
 
-LOGGER_PREFIX = "[DQS] "
-
 
 def run(report_id: int) -> ExtractedData:
-    _prefix = LOGGER_PREFIX + f"Report {report_id} => "
-    logger.info(_prefix + "Beginning DQS extraction.")
     report = get_report(report_id)
-    logger.info(_prefix + "Getting report from database.")
+    adapter = get_dataset_adapter_from_revision(logger, report.revision)
+    adapter.info("Beginning DQS extraction.")
+    adapter.info("Retrieving JSON report.")
     data = get_report_json(report)
-    logger.info(_prefix + "Extracting model data from report.")
+    adapter.info("Extracting model data from report.")
     model = extract_model(data)
-    logger.info(_prefix + "Extracting warnings from report.")
+    adapter.info("Extracting warnings from report.")
     warnings = extract_warnings(report, data)
     return ExtractedData(report=report, model=model, warnings=warnings)
 

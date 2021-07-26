@@ -6,11 +6,7 @@ from django.views.generic.base import RedirectView, View
 from transit_odp.data_quality.constants import OBSERVATIONS
 from transit_odp.data_quality.csv import ObservationCSV
 from transit_odp.data_quality.models import DataQualityReport
-from transit_odp.data_quality.scoring import (
-    DataQualityCalculator,
-    DataQualityRAG,
-    DQScoreException,
-)
+from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 from ..report_summary import Summary
@@ -37,7 +33,7 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
         return super().get_redirect_url(*args, **kwargs)
 
 
-class ReportOverviewView(OrgUserViewMixin, DetailView):
+class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
     model = DataQualityReport
@@ -56,17 +52,7 @@ class ReportOverviewView(OrgUserViewMixin, DetailView):
         context = super().get_context_data(**kwargs)
         report = self.get_object()
         summary = Summary.from_report_summary(report.summary)
-
-        score_observations = [o for o in OBSERVATIONS if o.model and o.weighting]
-        calculator = DataQualityCalculator(score_observations)
-
-        try:
-            score = calculator.calculate(report_id=report.id)
-        except DQScoreException:
-            rag = None
-        else:
-            rag = DataQualityRAG.from_score(score)
-
+        rag = get_data_quality_rag(report)
         context.update(
             {
                 "title": report.revision.name,
@@ -78,7 +64,7 @@ class ReportOverviewView(OrgUserViewMixin, DetailView):
         return context
 
 
-class ReportCSVDownloadView(OrgUserViewMixin, View):
+class ReportCSVDownloadView(View):
     model = DataQualityReport
     pk_url_kwarg = "report_id"
 

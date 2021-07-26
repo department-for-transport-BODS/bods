@@ -26,6 +26,8 @@ valid_parameters = [
     "search",
     "api_key",
     "format",
+    "dqRag",
+    "bodsCompliance",
 ]
 
 

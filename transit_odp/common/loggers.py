@@ -17,3 +17,19 @@ class PipelineAdapter(LoggerAdapter):
         )
         msg = prefix + msg
         return msg, kwargs
+
+
+class MonitoringLoggerContext(LoggerContext):
+    class_name = "Dataset"
+    component_name = "DatasetMonitoring"
+
+
+class DatasetPipelineLoggerContext(LoggerContext):
+    class_name = "Dataset"
+    component_name = "TimetablePipeline"
+
+
+def get_dataset_adapter_from_revision(logger, revision) -> PipelineAdapter:
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
+    adapter = PipelineAdapter(logger, {"context": context})
+    return adapter

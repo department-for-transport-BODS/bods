@@ -432,8 +432,6 @@ def transform_timing_pattern_stops(
                     "pickup_allowed",
                     "setdown_allowed",
                     "timing_point",
-                    # "distance",
-                    # "speed",
                 ],
             ),
         )
@@ -479,18 +477,20 @@ def transform_timing_pattern_stops(
     # missing above is expressed in 'ito_ids', convert to known SP ids
     missing_tp_ids = timing_patterns.loc[missing, "id"]
 
-    # note we are doing a 'partial' select on the first level of the multiindex
-    tps = timing_pattern_stops.loc[missing_tp_ids]
+    if not missing_tp_ids.empty:
+        # note we are doing a 'partial' select on the first level of the multiindex
+        tps = timing_pattern_stops.loc[missing_tp_ids]
 
-    # convert 'arrival_time_secs' and 'departure_time_secs' into durations.
-    # We only do this on the cut of the DF we need to bulk insert to save performance
-    tps["arrival"] = tps["arrival_time_secs"].apply(
-        lambda x: datetime.timedelta(seconds=x)
-    )
-    tps["departure"] = tps["departure_time_secs"].apply(
-        lambda x: datetime.timedelta(seconds=x)
-    )
-    created = bulk_create_timing_pattern_stops(tps)
+        # convert 'arrival_time_secs' and 'departure_time_secs' into durations.
+        tps["arrival"] = tps["arrival_time_secs"].apply(
+            lambda x: datetime.timedelta(seconds=x)
+        )
+        tps["departure"] = tps["departure_time_secs"].apply(
+            lambda x: datetime.timedelta(seconds=x)
+        )
+        created = bulk_create_timing_pattern_stops(tps)
+    else:
+        created = []
 
     # Create map of TPS DB ids
     id_map = pd.DataFrame(

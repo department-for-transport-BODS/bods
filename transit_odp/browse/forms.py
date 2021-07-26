@@ -42,6 +42,12 @@ class TimetableSearchFilterForm(GOVUKForm):
         ),
         required=False,
     )
+
+    is_pti_compliant = forms.NullBooleanField(
+        required=False,
+        label=_("BODS compliance"),
+    )
+
     start = forms.CharField(
         required=False,
         label=_("Timetable start date after"),
@@ -54,12 +60,21 @@ class TimetableSearchFilterForm(GOVUKForm):
         # Change field labels
         self.fields["area"].label_from_instance = lambda obj: obj.name
         self.fields["organisation"].label_from_instance = lambda obj: obj.name
+        is_pti_compliant = self.fields["is_pti_compliant"]
+        is_pti_compliant.label_from_instance = (
+            lambda obj: "PTI compliant" if obj else "Not PTI compliant"
+        )
+        # Use a boolean field and change the widget to get type conversion for free
+        is_pti_compliant.widget = forms.Select(
+            choices=((None, "All"), (True, "Yes"), (False, "No"))
+        )
 
     def get_layout(self):
         return Layout(
             Field("area", css_class="govuk-!-width-full"),
             Field("organisation", css_class="govuk-!-width-full"),
             Field("status", css_class="govuk-!-width-full"),
+            Field("is_pti_compliant", css_class="govuk-!-width-full"),
             Field("start", css_class="govuk-!-width-full"),
             ButtonSubmit("submitform", "submit", content=_("Apply filter")),
         )

@@ -13,7 +13,6 @@ from transit_odp.data_quality.tables.lines import (
     LineWarningDetailTable,
 )
 from transit_odp.data_quality.views.base import JourneyListBaseView
-from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
 class LineExpiredListView(JourneyListBaseView):
@@ -44,7 +43,7 @@ class LineMissingBlockIDListView(JourneyListBaseView):
         return context
 
 
-class LineMissingBlockIDDetailView(OrgUserViewMixin, DetailView):
+class LineMissingBlockIDDetailView(DetailView):
     template_name = "data_quality/line_detail.html"
     pk_url_kwarg = "warning_pk"
 

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.12.1] - 2021-07-15
+
+- [BODP-4166](https://itoworld.atlassian.net/browse/BODP-4166) Dataset with critical observations has 100% DQ score
+- [BODP-4163](https://itoworld.atlassian.net/browse/BODP-4163) Multiple "Data set reports are now available" emails are being sent a minute apart
+- [BODP-4164](https://itoworld.atlassian.net/browse/BODP-4164) Update email content for PTI date in Gov.notify
+- [BODP-4073](https://itoworld.atlassian.net/browse/BODP-4073) Make the date in PTI report and UI driven by an environment variable
+- [BODP-4162](https://itoworld.atlassian.net/browse/BODP-4162) Success update of dataset page - Missing PTI Date for Not Compliant Data
+- [BODP-4155](https://itoworld.atlassian.net/browse/BODP-4155) Success publish of timetable dataset page - Missing paragraph
+- [BODP-4074](https://itoworld.atlassian.net/browse/BODP-4074) Test - BODP-4073 - Make the date in PTI report and UI driven by an environment variable
+
+## [1.11.2] - 2021-06-22
+
+- Added Django admin screen for setting revisions into an error state
+- Added periodic task to log stuck revisions to the log file
+
+## [1.11.1] - 2021-06-16
+
+- Added smaller batching to PTIObservation creation
+
 ## [1.11.0] - 2021-05-27
 
 - [BODP-3857](https://itoworld.atlassian.net/browse/BODP-3857) Fares error emails are incorrect

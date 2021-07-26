@@ -80,75 +80,26 @@ IncorrectNocObservation = Observation(
     weighting=0.12,
     check_basis=CheckBasis.data_set,
 )
-MissingNOCCode = Observation(
-    title="Missing National Operator Code (NOC)",
-    text=(
-        "A National Operator Code (NOC) should be used in the OperatorRef field within "
-        "the data. A NOC is considered to be missing if the OperatorRef field is "
-        "empty."
-        "</br></br>"
-        "Operators can find their organisation’s NOC by browsing the Traveline NOC "
-        "database here:"
-        "</br></br>" + _TRAVEL_LINE_ANCHOR + "</br></br>"
-        "Operators can assign a NOC to their account on this service by going to "
-        "the top right hand corner of the screen, to My account, and choosing "
-        "Organisation profile from the dropdown."
-    ),
-    model=models.MissingNOCWarning,
-    list_url_name="dq:missing-noc-list",
-    level=Level.critical,
-    category=Category.data_set,
-    impacts=(
-        "The NOC is used by consumers to know which operator is running the service, "
-        "and to match their data across data types. This ability improves the "
-        "quality of information available to passengers. "
-    ),
-    weighting=0.12,
-    check_basis=CheckBasis.data_set,
-)
-SchemaNotTXC24 = Observation(
-    title="Schema is not TransXChange 2.4",
-    text=(
-        "The data provided does not align to the TransXChange 2.4 schema required to "
-        "be published in accordance with the Bus Services Act 2017. The data "
-        "provided is "
-        "TransXChange 2.1. Operators should update their data formats to 2.4 "
-        "immediately. The TransXChange 2.4 schema is described in the following link: "
-        "</br></br>" + _TRANSXCHANGE_ANCHOR
-    ),
-    impacts=(
-        "The data set provided does not conform to the legally required data standard: "
-        "TransXchange 2.4 schema. The 2.1 format is less useful to consumers, as it "
-        "describes services using an older data format. Some consumers may not be able "
-        "to process this data, reducing the ability for it to be used effectively."
-    ),
-    model=models.SchemaNotTXC24Warning,
-    list_url_name="dq:not-schema-txc-24",
-    level=Level.critical,
-    category=Category.data_set,
-    weighting=0.12,
-    check_basis=CheckBasis.data_set,
-)
 MissingBlockNumber = Observation(
-    title="Missing Block Number",
+    title="Missing block number",
     text=(
-        "This observation identifies if the service is valid in the next week, "
-        "and when it is valid it contains block numbers. "
-        "The block number needs to be the same as the corresponding object in the bus "
-        "location data field 'BlockRef'."
+        "This observation highlights missing valid block numbers for services "
+        "which are beginning in 7 days time. "
+        "The block number needs to be the same as the "
+        "corresponding object in the bus location data field ‘BlockRef’. "
         "</br></br>"
-        "Block number is also known as bus workings number, most frequently populated "
-        "using running board information. "
-        "It's a unique identifier or code (usually a simple number) that is used for "
-        "all the journeys an individual bus is scheduled to work. "
+        "Block number is also known as bus workings number, most frequently "
+        "populated using running board information. "
+        "It’s a unique identifier or code (usually a simple number) that "
+        "is used for all the journeys an individual bus is scheduled to work. "
         "</br></br>"
-        "If an operator does not have a documented running board, they can create one "
-        "by allocating each of their vehicles a 'code'. "
-        "For each of the journeys operated by the same vehicle, the journey should be "
-        "given a consistent identifier as the input for both the TransXChange "
-        "(Block number) and SIRI-VM (Block ref). "
-        "For example, Vehicle 1, could have block number = 1 allocated to all the "
-        "journeys that will be completed by vehicle 1."
+        "If an operator does not have a documented running board, they can "
+        "create one by allocating each of their vehicles a ‘code’. "
+        "For each of the journeys operated by the same vehicle, the journey "
+        "should be given a consistent identifier as the input for "
+        "both the TransXChange (Block number) and SIRI-VM (Block ref). "
+        "For example, Vehicle 1, could have block number = 1 allocated to all "
+        "the journeys that will be completed by vehicle 1."
     ),
     impacts=(
         "This is a key piece of information for consumers to use in order to match "
@@ -162,7 +113,7 @@ MissingBlockNumber = Observation(
     list_url_name="dq:line-missing-block-id-list",
     level=Level.critical,
     category=Category.data_set,
-    weighting=0.07,
+    weighting=0.12,
     check_basis=CheckBasis.lines,
 )
 
@@ -196,7 +147,7 @@ StopNotInNaptanObservation = Observation(
     list_url_name="dq:stop-missing-naptan-list",
     level=Level.critical,
     category=Category.stops,
-    weighting=0.07,
+    weighting=0.12,
     check_basis=CheckBasis.stops,
 )
 FirstStopSetDownOnlyObservation = Observation(
@@ -216,7 +167,7 @@ FirstStopSetDownOnlyObservation = Observation(
     list_url_name="dq:first-stop-set-down-only-list",
     category=Category.stops,
     level=Level.critical,
-    weighting=0.07,
+    weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
 LastStopPickUpOnlyObservation = Observation(
@@ -237,7 +188,7 @@ LastStopPickUpOnlyObservation = Observation(
     list_url_name="dq:last-stop-pick-up-only-list",
     level=Level.critical,
     category=Category.stops,
-    weighting=0.07,
+    weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
 MissingStopsObservation = Observation(
@@ -322,7 +273,7 @@ IncorrectStopTypeObservation = Observation(
         "LCB": "Lift or Cable Car Access Area",
         "LPL": "Lift or Cable Car Platform",
     },
-    weighting=0.04,
+    weighting=0.10,
     check_basis=CheckBasis.stops,
 )
 FirstStopNotTimingPointObservation = Observation(
@@ -404,7 +355,7 @@ FastTimingPointObservation = Observation(
     list_url_name="dq:fast-timings-list",
     level=Level.critical,
     category=Category.timing,
-    weighting=0.04,
+    weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
 SlowTimingPointObservation = Observation(
@@ -548,26 +499,6 @@ JourneyOverlapObservation = Observation(
     level=Level.advisory,
     category=Category.journey,
 )
-MissingHeadsignObservation = Observation(
-    title="Missing destination display",
-    text=(
-        "This observation identifies any journeys that do not have a "
-        "destination display "
-        "defined. Destination display is the name of a destination to which the bus "
-        "ultimately goes and is fixed for the whole journey. "
-    ),
-    impacts=(
-        "The destination display is used by consumers to enhance the data they can "
-        "provide to consumers and as a check when matching across data types. This "
-        "checking ability improves the quality of information available to passengers. "
-    ),
-    model=models.JourneyWithoutHeadsignWarning,
-    list_url_name="dq:missing-headsign-list",
-    level=Level.critical,
-    category=Category.journey,
-    weighting=0.04,
-    check_basis=CheckBasis.vehicle_journeys,
-)
 ExpiredLines = Observation(
     title="Expired lines",
     text=(
@@ -598,13 +529,13 @@ OBSERVATIONS = (
     LastStopNotTimingPointObservation,
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
-    MissingHeadsignObservation,
-    MissingNOCCode,
     MissingStopsObservation,
     NoTimingPointFor15MinutesObservation,
-    SchemaNotTXC24,
     SlowLinkObservation,
     SlowTimingPointObservation,
     StopNotInNaptanObservation,
     StopsRepeatedObservation,
 )
+
+
+WEIGHTED_OBSERVATIONS = [o for o in OBSERVATIONS if o.model and o.weighting]

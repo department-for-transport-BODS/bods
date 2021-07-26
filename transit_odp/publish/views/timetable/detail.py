@@ -3,13 +3,8 @@ from django_hosts import reverse
 
 import config.hosts
 from transit_odp.common.enums import FeedErrorSeverity
-from transit_odp.data_quality.constants import OBSERVATIONS
 from transit_odp.data_quality.models.report import DataQualityReport
-from transit_odp.data_quality.scoring import (
-    DataQualityCalculator,
-    DataQualityRAG,
-    DQScoreException,
-)
+from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.base import BaseDetailView
@@ -31,6 +26,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             .get_published()
             .add_admin_area_names()
             .add_live_data()
+            .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
 
@@ -58,25 +54,16 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["status"] = status
         kwargs["severe_errors"] = severe_errors
         kwargs["show_pti"] = (
-            live_revision.modified.date() >= settings.PTI_START_DATE.date()
+            live_revision.created.date() >= settings.PTI_START_DATE.date()
         )
-        kwargs["pti_count"] = live_revision.pti_observations.count()
+        kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
 
         try:
             report = live_revision.report.latest()
         except DataQualityReport.DoesNotExist:
             return kwargs
 
-        score_observations = [o for o in OBSERVATIONS if o.model and o.weighting]
-        calculator = DataQualityCalculator(score_observations)
-        try:
-            score = calculator.calculate(report_id=report.id)
-        except DQScoreException:
-            rag = None
-        else:
-            rag = DataQualityRAG.from_score(score)
-
         kwargs["report_id"] = report.id
-        kwargs["dq_score"] = rag
+        kwargs["dq_score"] = get_data_quality_rag(report)
 
         return kwargs

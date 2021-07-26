@@ -88,7 +88,7 @@ class TestDQSClientAPI:
 
         # Assert
         mocked_get.assert_called_once_with(
-            dqs_client.status_url, params={"uuid": task_id}, timeout=60
+            dqs_client.url + "/status", params={"uuid": task_id}, timeout=60
         )
 
         assert isinstance(data, DQSStatusRes)
@@ -193,7 +193,9 @@ class TestDQSClient:
 
         # Assert
         mocked_get.assert_called_once_with(
-            dqs_client.upload_url, params={"filename": "testdata.tar.gz"}, timeout=60
+            dqs_client.url + "/uploadurl",
+            params={"filename": "testdata.tar.gz"},
+            timeout=60,
         )
 
         assert isinstance(data, DQSUploadUrlRes)
@@ -234,7 +236,7 @@ class TestDQSClient:
         result = dqs_client._get_download_url(task_id=task_id)
 
         mocked_get.assert_called_once_with(
-            dqs_client.download_url,
+            dqs_client.url + "/downloadurl",
             params={"uuid": task_id},
             timeout=60,
         )

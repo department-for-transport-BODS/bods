@@ -877,3 +877,20 @@ class NotificationBase(INotifications):
             comments=comments,
             link=draft_link,
         )
+
+    @validate_arguments
+    def send_custom_email(
+        self,
+        template: str,
+        subject: str,
+        body: str,
+        contact_email: str,
+    ):
+        logger.debug(f"sending custom email with template id: {template}")
+
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            body=body,
+        )

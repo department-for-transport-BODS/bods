@@ -95,6 +95,15 @@ class XMLElement:
         except NoElement:
             return None
 
+    def get_text_or_default(
+        self, xpath: Union[str, List[str], Tuple[str]], default: str = ""
+    ) -> str:
+        element = self.get_element_or_none(xpath)
+        if element is None:
+            return default
+        else:
+            return element.text
+
     def _make_xpath(self, xpath) -> str:
         if isinstance(xpath, (list, tuple)):
             xpath = "/".join(xpath)

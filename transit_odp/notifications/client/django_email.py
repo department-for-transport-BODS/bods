@@ -110,4 +110,7 @@ class DjangoNotifier(NotificationBase):
             "OPERATOR_NOC_CHANGED": "notifications/operator_noc_changed.txt",
             "REPORTS_AVAILABLE": "notifications/reports_are_available.txt",
             "AGENT_REPORTS_AVAILABLE": "notifications/reports_are_available_agent.txt",
+            "DATASET_NO_LONGER_COMPLIANT": (
+                "notifications/dataset_no_longer_compliant.txt"
+            ),
         }

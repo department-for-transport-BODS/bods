@@ -1,12 +1,15 @@
 from datetime import datetime, timedelta
 
+import faker
 import pytest
 import pytz
+from django.test import override_settings
 from django.utils.timezone import now
 from django_hosts import reverse
 from freezegun import freeze_time
 
 from config import hosts
+from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import (
     AVLType,
@@ -20,13 +23,18 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
-from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
+from transit_odp.pipelines.factories import (
+    DatasetETLTaskResultFactory,
+    RemoteDatasetHealthCheckCountFactory,
+)
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.transmodel.factories import ServicePatternFactory
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
+
+FAKER = faker.Faker()
 
 
 class TestOrganisationQuerySet:
@@ -460,3 +468,263 @@ class TestDatasetRevisionQuerySet:
         DatasetRevisionFactory()
         actual = DatasetRevision.objects.add_error_code().first()
         assert actual.error_code == ""
+
+    def test_is_pti_compliant_is_annotated(self):
+        datasets = DatasetFactory.create_batch(7)
+        non_compliant_datasets = datasets[:3]
+        for dataset in non_compliant_datasets:
+            PTIObservationFactory(revision=dataset.live_revision)
+
+        queryset = Dataset.objects.add_is_live_pti_compliant()
+        assert queryset.filter(is_pti_compliant=True).count() == 4
+        non_compliant_qs = queryset.filter(is_pti_compliant=False)
+        assert non_compliant_qs.count() == 3
+        assert list(non_compliant_qs.order_by("id").values_list("id", flat=True)) == [
+            dataset.id for dataset in non_compliant_datasets
+        ]
+
+    def test_old_pti_compliant(self):
+        datasets = DatasetFactory.create_batch(6)
+        for dataset in datasets[:3]:
+            dataset.live_revision.created = datetime(2000, 1, 1)
+            dataset.live_revision.save()
+
+        queryset = Dataset.objects.add_is_live_pti_compliant()
+        old_datasets = queryset.filter(is_after_pti_compliance_date=False)
+        assert old_datasets.count() == 3
+
+
+def test_organisation_get_remote_dataset():
+    expected_count = 4
+    DatasetRevisionFactory.create_batch(
+        expected_count, is_published=True, url_link=FAKER.uri()
+    )
+    DatasetRevisionFactory(is_published=False, url_link=FAKER.uri())
+    DatasetRevisionFactory(is_published=True, url_link="")
+    datasets = Dataset.objects.get_active_remote_datasets()
+    assert datasets.count() == expected_count
+
+
+def test_organisation_get_remote_timetables():
+    expected_count = 4
+    DatasetRevisionFactory.create_batch(
+        expected_count,
+        dataset__dataset_type=TimetableType,
+        is_published=True,
+        url_link=FAKER.uri(),
+    )
+    DatasetRevisionFactory(
+        dataset__dataset_type=FaresType, is_published=True, url_link=FAKER.uri()
+    )
+    DatasetRevisionFactory(is_published=False, url_link=FAKER.uri())
+    DatasetRevisionFactory(is_published=True, url_link="")
+    datasets = Dataset.objects.get_remote_timetables()
+    assert datasets.count() == expected_count
+
+
+def test_organisation_get_remote_fares():
+    expected_count = 4
+    DatasetRevisionFactory.create_batch(
+        expected_count,
+        dataset__dataset_type=FaresType,
+        is_published=True,
+        url_link=FAKER.uri(),
+    )
+    DatasetRevisionFactory(
+        dataset__dataset_type=TimetableType, is_published=True, url_link=FAKER.uri()
+    )
+    DatasetRevisionFactory(is_published=False, url_link=FAKER.uri())
+    DatasetRevisionFactory(is_published=True, url_link="")
+    datasets = Dataset.objects.get_remote_fares()
+    assert datasets.count() == expected_count
+
+
+def test_organisation_get_available_remote_timetables():
+    expected_count = 4
+    DatasetRevisionFactory.create_batch(
+        expected_count,
+        dataset__dataset_type=TimetableType,
+        is_published=True,
+        url_link=FAKER.uri(),
+    )
+    RemoteDatasetHealthCheckCountFactory.create_batch(
+        3,
+        count=2,
+        revision__dataset__dataset_type=TimetableType,
+        revision__is_published=True,
+        revision__url_link=FAKER.uri(),
+    )
+
+    datasets = Dataset.objects.get_available_remote_timetables()
+    assert datasets.count() == expected_count
+
+
+@pytest.mark.parametrize(
+    ("dataset_type", "func"),
+    [
+        (FaresType, "get_available_remote_fares"),
+        (TimetableType, "get_available_remote_timetables"),
+    ],
+)
+def test_organisation_get_available_remote(dataset_type, func):
+    available_count = 4
+    DatasetRevisionFactory.create_batch(
+        available_count,
+        dataset__dataset_type=dataset_type,
+        is_published=True,
+        url_link=FAKER.uri(),
+    )
+    unavailable_count = 3
+    RemoteDatasetHealthCheckCountFactory.create_batch(
+        unavailable_count,
+        count=2,
+        revision__dataset__dataset_type=dataset_type,
+        revision__is_published=True,
+        revision__url_link=FAKER.uri(),
+    )
+
+    datasets = getattr(Dataset.objects, func)()
+    assert datasets.count() == available_count
+
+
+@pytest.mark.parametrize(
+    ("dataset_type", "func"),
+    [
+        (FaresType, "get_unavailable_remote_fares"),
+        (TimetableType, "get_unavailable_remote_timetables"),
+    ],
+)
+def test_organisation_get_unavailable_remote(dataset_type, func):
+    available_count = 4
+    DatasetRevisionFactory.create_batch(
+        available_count,
+        dataset__dataset_type=dataset_type,
+        is_published=True,
+        url_link=FAKER.uri(),
+    )
+    unavailable_count = 3
+    RemoteDatasetHealthCheckCountFactory.create_batch(
+        unavailable_count,
+        count=2,
+        revision__dataset__dataset_type=dataset_type,
+        revision__is_published=True,
+        revision__url_link=FAKER.uri(),
+    )
+
+    datasets = getattr(Dataset.objects, func)()
+    assert datasets.count() == unavailable_count
+
+
+@override_settings(PTI_START_DATE=datetime(2021, 4, 1))
+def test_get_compliant_timetables_all_compliant():
+    compliant_datasets = 5
+    DatasetRevisionFactory.create_batch(
+        compliant_datasets,
+        dataset__dataset_type=TimetableType,
+        is_published=True,
+        url_link=FAKER.uri(),
+        created=datetime(2021, 5, 1, tzinfo=pytz.utc),
+    )
+    datasets = Dataset.objects.get_compliant_timetables()
+    assert datasets.count() == compliant_datasets
+
+
+@override_settings(PTI_START_DATE=datetime(2021, 4, 1))
+def test_get_compliant_timetables_mixed():
+    compliant_datasets_count = 5
+    DatasetRevisionFactory.create_batch(
+        compliant_datasets_count,
+        dataset__dataset_type=TimetableType,
+        is_published=True,
+        url_link=FAKER.uri(),
+        created=datetime(2021, 5, 1, tzinfo=pytz.utc),
+    )
+
+    pre_pti_datasets = 2
+    DatasetRevisionFactory.create_batch(
+        pre_pti_datasets,
+        dataset__dataset_type=TimetableType,
+        is_published=True,
+        url_link=FAKER.uri(),
+        created=datetime(2021, 3, 1, tzinfo=pytz.utc),
+    )
+
+    non_compliant_datasets_count = 3
+    for _ in range(non_compliant_datasets_count):
+        revision = DatasetRevisionFactory(
+            dataset__dataset_type=TimetableType, is_published=True, url_link=FAKER.uri()
+        )
+        PTIObservationFactory(revision=revision)
+
+    all_datasets = Dataset.objects.all()
+    total_dataset_count = (
+        compliant_datasets_count + non_compliant_datasets_count + pre_pti_datasets
+    )
+    assert all_datasets.count() == total_dataset_count
+
+    datasets = Dataset.objects.get_compliant_timetables()
+    assert datasets.count() == compliant_datasets_count
+
+
+def test_add_latest_task_progress_status():
+    """
+    Given a revision with multiple DatasetETLTaskResults
+    When calling add_latest_task_status and add_latest_task_progress
+    Then the revision should be annotated with the status and progress of the
+    latest DatasetETLTaskResult (i.e. the one with the largest created datetime)
+    """
+    revision = DatasetRevisionFactory()
+    for days in range(4, 1):
+        created = now() - timedelta(days=days)
+        DatasetETLTaskResultFactory(
+            revision=revision,
+            progress=100,
+            status=DatasetETLTaskResult.SUCCESS,
+            created=created,
+        )
+    DatasetETLTaskResultFactory(
+        revision=revision,
+        progress=45,
+        status=DatasetETLTaskResult.PENDING,
+        created=now(),
+    )
+
+    revisions = (
+        DatasetRevision.objects.add_latest_task_progress().add_latest_task_status()
+    )
+
+    assert revisions.last().latest_task_progress == 45
+    assert revisions.last().latest_task_status == DatasetETLTaskResult.PENDING
+
+
+def test_get_stuck_timetables():
+    """
+    Given a set of revisions in the "stuck" and "unstuck" state.
+    When calling the get_stuck_revisions queryset method.
+    Then only return timetables that are stuck (i.e. `latest_task_progress` less
+    than 99%, `latest_task_status` not SUCCESS/FAILURE and `created` over a day ago.)
+    """
+    created = datetime(2021, 1, 1, 12, 12, 12, tzinfo=pytz.utc)
+    success_revision = DatasetRevisionFactory(
+        dataset__dataset_type=TimetableType, created=created
+    )
+    DatasetETLTaskResultFactory(
+        revision=success_revision, progress=100, status=DatasetETLTaskResult.SUCCESS
+    )
+    failed_revision = DatasetRevisionFactory(
+        dataset__dataset_type=TimetableType, created=created
+    )
+    DatasetETLTaskResultFactory(
+        revision=failed_revision, progress=30, status=DatasetETLTaskResult.FAILURE
+    )
+    stuck_revision = DatasetRevisionFactory(
+        dataset__dataset_type=TimetableType, created=created
+    )
+    DatasetETLTaskResultFactory(
+        revision=stuck_revision, progress=35, status=DatasetETLTaskResult.PENDING
+    )
+
+    stuck_revisions = DatasetRevision.objects.get_stuck_revisions()
+
+    assert stuck_revisions.count() == 1
+    assert stuck_revisions.last() == stuck_revision

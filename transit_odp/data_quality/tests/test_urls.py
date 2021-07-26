@@ -1,11 +1,11 @@
 from typing import NamedTuple
 
-import config.hosts
 from django.conf import settings
 from django.urls import resolve
 from django.views import View
 from django_hosts.resolvers import reverse
 
+import config.hosts
 from transit_odp.data_quality import views
 
 
@@ -321,14 +321,6 @@ class TestMissingStopWarningUrls(WarningUrlsTestBase):
     list_view = views.MissingStopListView
     detail_url_name = "dq:missing-stops-detail"
     detail_view = views.MissingStopDetailView
-
-
-class TestMissingHeadsignWarningUrls(WarningUrlsTestBase):
-    url_segment = "missing-destination-display"
-    list_url_name = "dq:missing-headsign-list"
-    list_view = views.MissingHeadsignListView
-    detail_url_name = "dq:missing-headsign-detail"
-    detail_view = views.MissingHeadsignDetailView
 
 
 class TestJourneyOverlapWarningUrls(WarningUrlsTestBase):

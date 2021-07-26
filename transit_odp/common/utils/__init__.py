@@ -1,3 +1,4 @@
+import math
 from urllib.parse import parse_qs, urlencode
 
 
@@ -7,3 +8,7 @@ def remove_query_string_param(query_string: str, key: str) -> str:
     query_params.pop(key, None)
     query_string = urlencode(query_params, doseq=True)
     return query_string
+
+
+def round_down(value: float):
+    return math.floor(value * 100.0) / 100.0

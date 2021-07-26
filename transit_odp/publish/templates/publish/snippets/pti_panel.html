@@ -41,10 +41,11 @@
                class="govuk-link">
               {% trans "guidance" %}
             </a>
+              {% trans "and from" %}
+              {{ pti_enforced_date|date:"jS F Y" }}
             {% blocktrans %}
-              and from 2nd August 2021 it will be rejected from BODS. To pass the
-              validation please address all outstanding issues in the
-              validation report.
+              it will be rejected from BODS. To pass the validation please address all
+              outstanding issues in the validation report.
             {% endblocktrans %}
           </p>
           {% endif %}

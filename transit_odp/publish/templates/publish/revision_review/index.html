@@ -53,7 +53,7 @@
   {{ block.super }}
   {% if loading %}
     <script>
-      BODSFrontend.getProgress({{ object.dataset_id }});
+      new BODSFrontend.ProgressIndicator({{ object.dataset_id }});
     </script>
   {% elif not error %}
     <script>

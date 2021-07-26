@@ -1,8 +1,8 @@
 import io
 from abc import abstractmethod
-from collections import namedtuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
+from django.conf import settings
 from django.db.models import CharField, Value
 from django.db.models.expressions import Case, When
 from django.db.models.functions import Concat
@@ -11,23 +11,21 @@ from django.views.generic.detail import DetailView
 
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.data_quality.models import PTIObservation, SchemaViolation
+from transit_odp.data_quality.pti.constants import (
+    IMPORTANT_NOTE,
+    NO_REF,
+    REF_PREFIX,
+    REF_SUFFIX,
+    REF_URL,
+)
 from transit_odp.organisation.models import Dataset
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
-IMPORTANT_NOTE = (
-    "Data containing this observation will be rejected by "
-    "BODS after 2nd August, 2021"
-)
 TXC_NOTE = (
     "You need to update your data to 2.4 TxC schema in order to upload data to BODS."
 )
-TXC_URL = "http://naptan.dft.gov.uk/transxchange/schema/schemas.htm"
+TXC_URL = "http://naptan.dft.gov.uk/transxchange/schema/schemas.html"
 TXC_REF = f"Please refer to the 2.4 TxC schema document: {TXC_URL}"
-
-REF_URL = "https://rtig.org.uk/news/bods-transxchange-profile-v11-released"
-REF_PREFIX = "Please refer to section "
-REF_SUFFIX = " in the BODS PTI profile v1.1 document: "
-NO_REF = "Please refer to the BODS PTI profile v1.1 document: "
 
 
 class TXCSchemaCSV(CSVBuilder):
@@ -90,7 +88,7 @@ class PTICSV(CSVBuilder):
         return qs
 
 
-class BaseViolationsCSVFileView(OrgUserViewMixin, DetailView):
+class BaseViolationsCSVFileView(DetailView):
     """
     Download the pti observations csv file.
     """
@@ -101,36 +99,61 @@ class BaseViolationsCSVFileView(OrgUserViewMixin, DetailView):
     def get_revision(self):
         pass
 
-    def render_to_response(self, *args, **kwargs):
+    def render_txc_report(self, *args, **kwargs):
         dataset = self.get_object()
         org_id = dataset.organisation_id
         revision = self.get_revision()
+
         buffer_ = io.BytesIO()
-
         zip_filename = f"validation_{org_id}_{dataset.id}.zip"
-        CSVs = namedtuple("CSVs", "filename,Builder")
-        files = (
-            CSVs("pti_observations.csv", PTICSV),
-            CSVs("txc_observations.csv", TXCSchemaCSV),
-        )
-
         with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
-            for filename, Builder in files:
-                builder = Builder(revision_id=revision.id)
-                output = builder.to_string()
-                if builder.count() > 0:
-                    zin.writestr(filename, output)
+            builder = TXCSchemaCSV(revision_id=revision.id)
+            output = builder.to_string()
+            if builder.count() > 0:
+                zin.writestr("txc_observations.csv", output)
 
         buffer_.seek(0)
         response = FileResponse(buffer_)
         response["Content-Disposition"] = f"attachment; filename={zip_filename}"
         return response
 
+    def render_pti_observations(self, *args, **kwargs):
+        dataset = self.get_object()
+        org_id = dataset.organisation_id
+        revision = self.get_revision()
+
+        buffer_ = io.BytesIO()
+        zip_filename = f"validation_{org_id}_{dataset.id}.zip"
+        with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
+            builder = PTICSV(revision_id=revision.id)
+            output = builder.to_string()
+            if builder.count() > 0:
+                zin.writestr("pti_observations.csv", output)
+
+        buffer_.seek(0)
+        response = FileResponse(buffer_)
+        response["Content-Disposition"] = f"attachment; filename={zip_filename}"
+        return response
+
+    def render_pti_result_report(self, *args, **kwargs):
+        revision = self.get_revision()
+        return revision.pti_result.to_http_response()
+
+    def render_to_response(self, *args, **kwargs):
+        revision = self.get_revision()
+
+        if revision.pti_observations.count() > 0:
+            return self.render_pti_observations(*args, **kwargs)
+        elif revision.has_pti_result and not revision.pti_result.is_compliant:
+            return self.render_pti_result_report(*args, **kwargs)
+        else:
+            return self.render_txc_report(*args, **kwargs)
+
     def get(self, *args, **kwargs):
         return self.render_to_response()
 
 
-class ReviewViolationsCSVFileView(BaseViolationsCSVFileView):
+class ReviewViolationsCSVFileView(OrgUserViewMixin, BaseViolationsCSVFileView):
     def get_revision(self):
         dataset = self.get_object()
         revision = dataset.revisions.get_draft().first()

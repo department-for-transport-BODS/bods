@@ -2,12 +2,12 @@ import celery
 from django.db import transaction
 from django.dispatch import receiver
 
+from transit_odp.data_quality.tasks import task_dqs_download, task_dqs_report_etl
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.receivers import logger
 from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.pipelines.signals import dataset_changed, dataset_etl, dqs_report_etl
-from transit_odp.pipelines.tasks import task_dqs_download, task_dqs_report_etl
 from transit_odp.timetables.tasks import task_dataset_pipeline
 
 

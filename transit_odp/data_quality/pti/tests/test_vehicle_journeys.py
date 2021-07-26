@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from transit_odp.data_quality.pti.constants import BANK_HOLIDAYS
+from transit_odp.data_quality.pti.constants import BANK_HOLIDAYS, SCOTTISH_BANK_HOLIDAYS
 from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
@@ -54,8 +54,9 @@ def test_days_of_week(days, expected):
 @pytest.mark.parametrize(
     ("shift", "expected"),
     [
-        ("+1", True),
+        ("1", True),
         ("", True),
+        ("+1", False),
         ("+2", False),
         ("-1", False),
         ("-2", False),
@@ -301,6 +302,38 @@ def test_bank_holidays_split_duplicates_false():
     txc = TXCFile(xml)
     is_valid = pti.is_valid(txc)
     assert not is_valid
+
+
+def test_bank_holidays_scottish_holidays_true():
+    day_type = """
+    <DayType id="day_04">
+        <Name>Bank Holiday Service</Name>
+        <RegularDayType>
+            <HolidaysOnly/>
+        </RegularDayType>
+        <BankHolidayOperation>
+        <DaysOfOperation>
+        {0}
+        </DaysOfOperation>
+        </BankHolidayOperation>
+    </DayType>
+    """
+
+    days_of_operation = "\n".join(
+        "<{0}/>".format(d) for d in BANK_HOLIDAYS + SCOTTISH_BANK_HOLIDAYS
+    )
+    xml = day_type.format(days_of_operation)
+
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+
+    txc = TXCFile(xml)
+    is_valid = pti.is_valid(txc)
+    assert is_valid
 
 
 @pytest.mark.parametrize(

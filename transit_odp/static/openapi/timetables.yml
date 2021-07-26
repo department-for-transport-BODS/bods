@@ -102,6 +102,23 @@ paths:
             Limit results to data sets with services with start dates before this date.<br/>
             String formatted as YYYY-MM-DDTHH:MM:SS
 
+        - in: query
+          name: dqRag
+          type: array
+          items:
+            type: string
+            enum:
+              - red
+              - amber
+              - green
+          collectionFormat: multi
+          description: Limit results to data sets with the specified String.<br/>
+
+        - in: query
+          name: bodsCompliance
+          type: boolean
+          description: Limit results to data sets with the specified boolean value.<br/>
+
       responses:
         200:
           description: Successfully retrieved all datasets

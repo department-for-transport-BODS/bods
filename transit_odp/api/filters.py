@@ -2,6 +2,7 @@ from django.db.models import Q
 from django_filters import rest_framework as filters
 
 from transit_odp.common.utils.date_validator import validate
+from transit_odp.data_quality.scoring import AMBER_THRESHOLD, GREEN_THRESHOLD
 from transit_odp.organisation.models import Dataset, Organisation
 
 STATUS_CHOICE = (
@@ -19,6 +20,11 @@ class DatasetSearchFilterSet(filters.FilterSet):
     startDateEnd = filters.CharFilter(method="feed_start_date_end_filter")
     endDateStart = filters.CharFilter(method="feed_end_date_start_filter")
     endDateEnd = filters.CharFilter(method="feed_end_date_end_filter")
+    dqRag = filters.ChoiceFilter(
+        method="rag_filter",
+        choices=(("red", "red"), ("amber", "amber"), ("green", "green")),
+    )
+    bodsCompliance = filters.BooleanFilter(field_name="is_pti_compliant")
 
     def noc_filter(self, queryset, name, value):
         if value:
@@ -80,6 +86,17 @@ class DatasetSearchFilterSet(filters.FilterSet):
                     Q(live_revision__last_expiring_service__lte=value)
                     | Q(live_revision__last_expiring_service__isnull=True)
                 )
+        return queryset
+
+    def rag_filter(self, queryset, name, value):
+        query_map = {
+            "green": Q(score__gte=GREEN_THRESHOLD),
+            "amber": Q(score__lt=GREEN_THRESHOLD, score__gt=AMBER_THRESHOLD),
+            "red": Q(score__gt=0, score__lte=AMBER_THRESHOLD),
+        }
+        if value:
+            queryset = queryset.filter(query_map[value])
+
         return queryset
 
 

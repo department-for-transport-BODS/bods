@@ -60,11 +60,21 @@ class NeTExDocumentsExtractor:
 
     @property
     def valid_from(self):
-        return min(doc.get_earliest_tariff_from_date() for doc in self.documents)
+        try:
+            min_date = min(
+                doc.get_earliest_tariff_from_date() for doc in self.documents
+            )
+        except TypeError:
+            return None
+        return min_date
 
     @property
     def valid_to(self):
-        return max(doc.get_latest_tariff_to_date() for doc in self.documents)
+        try:
+            max_date = max(doc.get_latest_tariff_to_date() for doc in self.documents)
+        except TypeError:
+            return None
+        return max_date
 
     @property
     def stop_point_refs(self):

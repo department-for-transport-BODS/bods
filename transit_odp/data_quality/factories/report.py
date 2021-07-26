@@ -13,7 +13,7 @@ class PTIObservationFactory(DjangoModelFactory):
     revision = factory.SubFactory(DatasetRevisionFactory)
     filename = "file.xml"
     line = 1
-    details = "This should be happening."
+    details = "This should not be happening."
     element = "Element"
     category = "Accessibility Information"
     reference = "2.4.3"

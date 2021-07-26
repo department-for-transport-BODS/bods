@@ -13,7 +13,7 @@
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
-  {% with object.name as breadcrumb_title %}
+  {% with properties.name as breadcrumb_title %}
     {% breadcrumb breadcrumb_title %}
   {% endwith %}
 
@@ -27,7 +27,7 @@
     <div class="govuk-grid-column-three-quarters">
 
       <h1 class="govuk-heading-xl">
-        {{ object.name }}
+        {{ properties.name }}
       </h1>
       <table class="govuk-table manage-users-table">
         <caption class="govuk-table__caption manage-users-table__caption">{% trans 'Organisation detail' %}</caption>
@@ -64,11 +64,11 @@
         {% endfor %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell manage-users-table__key">{% trans 'Date added to BODS' %}</td>
-          <td colspan="2" class="govuk-table__cell">{{ object.created|date:"d M Y" }}</td>
+          <td colspan="2" class="govuk-table__cell">{{ properties.date_added|date:"d M Y" }}</td>
         </tr>
         <tr class="govuk-table__row">
           <td class="govuk-table__cell manage-users-table__key">{% trans 'Last active' %}</td>
-          <td colspan="2" class="govuk-table__cell">{{ object.last_active|date:"d M Y" }}</td>
+          <td colspan="2" class="govuk-table__cell">{{ properties.last_active|date:"d M Y" }}</td>
         </tr>
         {% for agent in properties.agents %}
         <tr class="govuk-table__row">
@@ -134,12 +134,12 @@
     </div>
   </div>
   <div class="btn-group-justified">
-    {% if not object.registration_complete %}
+    {% if not properties.registration_complete %}
       <a role="button" class="govuk-button govuk-button--secondary app-!-mr-sm-4"
          href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">
         {% trans 'Edit' %}
       </a>
-    {% elif object.is_active %}
+    {% elif properties.is_active %}
       <a role="button" class="govuk-button govuk-button--secondary app-!-mr-sm-4"
          href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">
         {% trans 'Edit' %}

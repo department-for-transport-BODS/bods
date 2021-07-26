@@ -1,6 +1,6 @@
 import os
 
-from transit_odp.common.utils.ip_helper import GetHostname, GetIpAddress
+from transit_odp.common.utils.ip_helper import get_hostname, get_ip_address
 
 from .base import *  # noqa
 from .base import ALLOWED_HOSTS, INSTALLED_APPS, MIDDLEWARE, TEMPLATES, env
@@ -28,8 +28,8 @@ SECRET_KEY = env(
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
     "*",
-    GetHostname(),
-    GetIpAddress(),
+    get_hostname(),
+    get_ip_address(),
     "localhost",
     "0.0.0.0",
     "127.0.0.1",
@@ -129,4 +129,8 @@ SHELL_PLUS_IMPORTS = [
         "OrgAdminType, OrgStaffType"
     ),
     "from datetime import datetime, timedelta",
+    (
+        "from transit_odp.organisation.constants import TimetableType, FaresType, "
+        "AVLType"
+    ),
 ]

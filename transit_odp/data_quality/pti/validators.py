@@ -14,7 +14,6 @@ from transit_odp.data_quality.pti.functions import (
     contains_date,
     has_name,
     has_prohibited_chars,
-    has_unique_links,
     is_member_of,
     regex,
     strip,
@@ -384,7 +383,6 @@ class PTIValidator:
         self.register_function("has_destination_display", has_destination_display)
         self.register_function("has_name", has_name)
         self.register_function("has_prohibited_chars", has_prohibited_chars)
-        self.register_function("has_unique_links", has_unique_links)
         self.register_function("in", is_member_of)
         self.register_function("regex", regex)
         self.register_function("strip", strip)

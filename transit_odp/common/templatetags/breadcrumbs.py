@@ -1,9 +1,13 @@
+import logging
+
 from django import template
 from django.template import Node, Variable, VariableDoesNotExist
 from django.utils.encoding import smart_text
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 from django_hosts.templatetags.hosts import host_url
+
+logger = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -89,7 +93,7 @@ class BreadcrumbNode(Node):
             try:
                 url = self.url.resolve(context)
             except VariableDoesNotExist:
-                print("URL does not exist", self.url)
+                logger.error(f"URL {self.url} does not exist.")
                 url = None
 
         return create_crumb(title, url)

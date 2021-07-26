@@ -1,0 +1,10 @@
+Hello,
+
+The following timetable data set(s) published on the Bus Open Data Service is no longer compliant as BODS doesn’t accept TransxChange 2.1 files anymore.
+
+Please make sure to look at the validation report and work with your respective timetables scheduling supplier to update your data fully to TransxChange 2.4 v1.1 of the PTI profile.
+
+{{ body }}
+
+Kind Regards,
+The Bus Open Data Team

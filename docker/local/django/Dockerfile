@@ -10,8 +10,8 @@ WORKDIR /app
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && apk update \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v1.13/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v1.13/community \
             --no-cache \
             pkgconfig \
             autoconf \
@@ -20,6 +20,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             nasm \
             build-base \
             gdal-dev \
+            gdal \
             libffi-dev \
             libxml2-dev \
             libxslt-dev \
@@ -29,7 +30,6 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             zlib-dev \
             postgresql-dev \
             poppler \
-            gdal \
             nodejs \
             npm \
             binutils \

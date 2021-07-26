@@ -31,6 +31,7 @@ from transit_odp.organisation.mixins import (
 )
 from transit_odp.organisation.querysets import DatasetRevisionQuerySet
 from transit_odp.pipelines.signals import dataset_etl
+from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.users.models import User
 
 logger = logging.getLogger(__name__)
@@ -85,7 +86,9 @@ class Dataset(TimeStampedModel):
     _live_revision: Optional[DatasetRevisionQuerySet]
 
     organisation = models.ForeignKey(
-        Organisation, on_delete=models.CASCADE, help_text="Bus portal organisation."
+        Organisation,
+        on_delete=models.CASCADE,
+        help_text="Bus portal organisation.",
     )
 
     live_revision = models.OneToOneField(
@@ -352,6 +355,19 @@ class DatasetRevision(
 
         return retry_count
 
+    @property
+    def has_pti_result(self):
+        return hasattr(self, "pti_result")
+
+    def is_pti_compliant(self):
+        """
+        Returns if a DatasetRevision is PTI compliant.
+        """
+        if self.has_pti_result:
+            return self.pti_result.is_compliant
+
+        return self.pti_observations.count() == 0
+
     def publish(self, user=None):
         """Publish the revision"""
         if not self.is_published:
@@ -529,13 +545,16 @@ class TXCFileAttributes(models.Model):
     revision = models.ForeignKey(
         DatasetRevision, on_delete=models.CASCADE, related_name="txc_file_attributes"
     )
-    schema_version = models.CharField(max_length=10)
-    revision_number = models.IntegerField()
-    modification = models.CharField(max_length=28)
-    creation_datetime = models.DateTimeField()
-    modificaton_datetime = models.DateTimeField()
-    filename = models.CharField(max_length=512)
-    service_code = models.CharField(max_length=100)
+    schema_version = models.CharField(_("TransXChange Schema Version"), max_length=10)
+    revision_number = models.IntegerField(_("File Revision Number"))
+    modification = models.CharField(_("Modification"), max_length=28)
+    creation_datetime = models.DateTimeField(_("File Creation Datetime"))
+    modificaton_datetime = models.DateTimeField(_("File Modification Datetime"))
+    filename = models.CharField(_("Filename"), max_length=512)
+    service_code = models.CharField(_("Service Code"), max_length=100)
+    national_operator_code = models.CharField(
+        _("National Operator Code"), max_length=100
+    )
 
     def __str__(self):
         return (
@@ -546,18 +565,20 @@ class TXCFileAttributes(models.Model):
             f"creation_datetime={self.creation_datetime.isoformat()}, "
             f"modificaton_datetime={self.modificaton_datetime.isoformat()}, "
             f"filename={self.filename!r}, "
-            f"service_code={self.service_code!r}"
+            f"service_code={self.service_code!r}, "
+            f"national_operator_code={self.national_operator_code!r}"
         )
 
     @classmethod
-    def from_txc_header(cls, header, revision_id: int):
+    def from_txc_file(cls, txc_file: TXCFile, revision_id: int):
         return cls(
             revision_id=revision_id,
-            schema_version=header.schema_version,
-            modification=header.modification,
-            revision_number=header.revision_number,
-            creation_datetime=header.creation_datetime,
-            modificaton_datetime=header.modificaton_datetime,
-            filename=header.filename,
-            service_code=header.service_code,
+            schema_version=txc_file.header.schema_version,
+            modification=txc_file.header.modification,
+            revision_number=txc_file.header.revision_number,
+            creation_datetime=txc_file.header.creation_datetime,
+            modificaton_datetime=txc_file.header.modificaton_datetime,
+            filename=txc_file.header.filename,
+            service_code=txc_file.service_code,
+            national_operator_code=txc_file.operator.national_operator_code,
         )

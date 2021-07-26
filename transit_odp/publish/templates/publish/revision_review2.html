@@ -371,7 +371,7 @@
     {% endif %}
     {% if object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
       <script>
-          BODSFrontend.getProgress({{ object.dataset_id }});
+        new BODSFrontend.ProgressIndicator({{ object.dataset_id }});
       </script>
     {% endif %}
 {% endblock %}

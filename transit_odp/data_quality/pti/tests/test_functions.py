@@ -3,16 +3,19 @@ from unittest.mock import Mock
 import pytest
 from dateutil import parser
 from freezegun import freeze_time
+from lxml import etree
 from lxml.etree import Element
 
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
     contains_date,
+    has_name,
     has_prohibited_chars,
     is_member_of,
     today,
 )
+from transit_odp.data_quality.pti.tests.constants import TXC_END, TXC_START
 
 
 @pytest.mark.parametrize(
@@ -120,3 +123,39 @@ def test_contains_date(value, expected):
     context = Mock()
     actual = contains_date(context, value)
     assert actual == expected
+
+
+def test_has_name_false():
+    context = Mock()
+    s = TXC_START + "<Sunday />" + TXC_END
+    doc = etree.fromstring(s.encode("utf-8"))
+    sunday = doc.getchildren()
+    actual = has_name(context, sunday, "Monday", "Tuesday")
+    assert not actual
+
+
+def test_has_name_false_not_list():
+    context = Mock()
+    s = TXC_START + "<Sunday />" + TXC_END
+    doc = etree.fromstring(s.encode("utf-8"))
+    sunday = doc.getchildren()[0]
+    actual = has_name(context, sunday, "Monday", "Tuesday")
+    assert not actual
+
+
+def test_has_name_true():
+    context = Mock()
+    s = TXC_START + "<Sunday />" + TXC_END
+    doc = etree.fromstring(s.encode("utf-8"))
+    sunday = doc.getchildren()
+    actual = has_name(context, sunday, "Sunday", "Monday")
+    assert actual
+
+
+def test_has_name_true_not_list():
+    context = Mock()
+    s = TXC_START + "<Sunday />" + TXC_END
+    doc = etree.fromstring(s.encode("utf-8"))
+    sunday = doc.getchildren()[0]
+    actual = has_name(context, sunday, "Sunday", "Monday")
+    assert actual

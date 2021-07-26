@@ -39,8 +39,6 @@ BATCH_SIZE = 100000
 def run(
     report: DataQualityReport, model: TransformedModel, warnings: ExtractedWarnings
 ):
-    logger.info("[DQS] Transforming warnings")
-
     transform_service_link_missing_stops(
         report, model, warnings.service_link_missing_stops
     )

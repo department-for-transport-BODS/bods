@@ -1,4 +1,4 @@
-from typing import NewType, Optional
+from typing import List, NewType, Optional
 
 from pydantic import BaseModel
 
@@ -25,6 +25,12 @@ class User(BaseModel):
 
 class Publisher(User):
     organisation_id: OrganisationId
+    is_admin: bool  # has addition privileges to invite
+    notify_avl_unavailable: bool
+
+
+class AgentUser(User):
+    organisation_ids: List[OrganisationId]
     is_admin: bool  # has addition privileges to invite
     notify_avl_unavailable: bool
 

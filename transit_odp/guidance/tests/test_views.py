@@ -180,8 +180,14 @@ class TestDeveloperReqView:
             (
                 "dataformats",
                 "apireference",
-                "help",
+                "maintainingqualitydata",
                 "guidance/developer/data_formats.html",
+            ),
+            (
+                "maintainingqualitydata",
+                "dataformats",
+                "help",
+                "guidance/developer/maintaining_quality_data.html",
             ),
         ],
     )
@@ -213,7 +219,7 @@ class TestDeveloperReqView:
         assert response.status_code == 200
         assert response.template_name == "guidance/developer/help.html"
         assert response.context_data["current_section"].name == "help"
-        assert response.context_data["prev_section"].name == "dataformats"
+        assert response.context_data["prev_section"].name == "maintainingqualitydata"
         assert response.context_data["next_section"] is None
 
     def test_incorrect_section(self, client_factory):

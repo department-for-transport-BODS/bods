@@ -1,4 +1,3 @@
-import config.hosts
 import django_tables2 as tables
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html, format_html_join
@@ -6,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django_hosts.resolvers import reverse
 
+import config.hosts
 from transit_odp.common.tables import GovUkTable
 from transit_odp.organisation.models import DatasetSubscription, Organisation
 
@@ -47,7 +47,9 @@ class OrganisationTable(GovUkTable):
         verbose_name="Name", attrs={"td": {"class": "organisation_name_cell"}}
     )
     registration_complete = tables.Column(verbose_name="Status")
-    invite_sent = tables.Column(verbose_name="Date invited")
+    invite_sent = tables.Column(
+        verbose_name="Date invited", order_by=("registration_complete", "invite_sent")
+    )
     last_active = tables.Column(verbose_name="Last active")
     resend_invites = GovUKCheckBoxColumn(
         empty_values=(),

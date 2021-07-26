@@ -1,34 +1,43 @@
-import zipfile
 from logging import getLogger
 
 import celery
+import pytz
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.db.models.query_utils import Q
 from django.utils import timezone
 
-from transit_odp.common.loggers import PipelineAdapter
-from transit_odp.data_quality.models import PTIObservation, SchemaViolation
+from transit_odp.common.loggers import (
+    MonitoringLoggerContext,
+    PipelineAdapter,
+    get_dataset_adapter_from_revision,
+)
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PTIValidationResult
 from transit_odp.data_quality.tasks import upload_dataset_to_dqs
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
-from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
+from transit_odp.organisation.constants import FeedStatus, TimetableType
+from transit_odp.organisation.models import (
+    Dataset,
+    DatasetRevision,
+    Organisation,
+    TXCFileAttributes,
+)
+from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
+from transit_odp.timetables.constants import PTI_COMMENT, TXC_21
+from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.timetables.etl import TransXChangePipeline
-from transit_odp.timetables.loggers import RevisionLoggerContext, TaskLoggerContext
-from transit_odp.timetables.transxchange import (
-    TransXChangeDatasetParser,
-    TransXChangeDocument,
-    TransXChangeZip,
+from transit_odp.timetables.notifications import (
+    send_data_no_longer_compliant_notification,
 )
-from transit_odp.timetables.updaters import TimetableUpdater
-from transit_odp.timetables.utils import (
-    get_available_remote_timetables,
-    get_pti_validator,
-    get_unavailable_remote_timetables,
-)
+from transit_odp.timetables.transxchange import TransXChangeDatasetParser
+from transit_odp.timetables.updaters import reprocess_live_revision
+from transit_odp.timetables.utils import get_pti_validator
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     TimetableFileValidator,
@@ -41,20 +50,30 @@ from transit_odp.validate import (
     ValidationException,
 )
 
+BATCH_SIZE = 10000
+
 logger = getLogger(__name__)
+
+BATCH_SIZE = 25_000
 
 
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
-    context = RevisionLoggerContext(object_id=revision_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-    adapter.info("Starting timetables pipeline.")
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
     except DatasetRevision.DoesNotExist as e:
-        adapter.exception("Object does not exist.")
         raise e
     else:
+        adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+        adapter.info("Starting timetables pipeline.")
+
+        # 'Update data' flow allows validation to occur multiple times
+        # lets just delete any 'old' observations.
+        revision.schema_violations.all().delete()
+        # TODO remove once pti observations have been transitioned to pti results
+        revision.pti_observations.all().delete()
+        PTIValidationResult.objects.filter(revision_id=revision.id).delete()
+
         with transaction.atomic():
             # TODO - refactor pipeline state to DatasetETLTaskResult
             # (then no need for transaction here)
@@ -66,31 +85,32 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
                 task_id=self.request.id,
             )
 
+        adapter.info(f"Dataset {revision.dataset_id} - task {task.id}")
+        args = (task.id,)
         jobs = [
-            task_dataset_download.s(task.id),
-            task_scan_timetables.s(task.id),
-            task_dataset_validate.s(task.id),
-            task_extract_txc_file_data.s(task.id),
-            task_pti_validation.s(task.id),
-            task_dqs_upload.s(task.id),
-            task_dataset_etl.s(task.id),
-            task_dataset_etl_finalise.s(task.id),
+            task_dataset_download.signature(args),
+            task_scan_timetables.signature(args),
+            task_dataset_validate.signature(args),
+            task_extract_txc_file_data.signature(args),
+            task_pti_validation.signature(args),
+            task_dqs_upload.signature(args),
+            task_dataset_etl.signature(args),
+            task_dataset_etl_finalise.signature(args),
         ]
 
         if do_publish:
-            jobs.append(task_publish_revision.si(revision_id))
+            jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
 
         workflow = celery.chain(*jobs)
         return workflow.delay(revision.id)
 
 
 def download_timetable(task_id):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Downloading data.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Downloading data.")
     if revision.url_link:
         adapter.info(f"Downloading timetables file from {revision.url_link}.")
         now = timezone.now().strftime(DT_FORMAT)
@@ -98,31 +118,33 @@ def download_timetable(task_id):
             downloader = DataDownloader(revision.url_link)
             response = downloader.get()
         except DownloadException as exc:
-            logger.error(exc.message, exc_info=True)
+            adapter.error(exc.message, exc_info=True)
             task.to_error("dataset_download", task.SYSTEM_ERROR)
             raise PipelineException(exc.message) from exc
         else:
             adapter.info("Timetables file downloaded successfully.")
             name = f"remote_dataset_{revision.dataset.id}_{now}.{response.filetype}"
             file_ = ContentFile(response.content, name=name)
-    else:
-        file_ = revision.upload_file
+            revision.upload_file = file_
+            revision.save()
+            revision.refresh_from_db()
 
-    revision.upload_file = file_
-    revision.save()
-    revision.refresh_from_db()
+    if not revision.upload_file:
+        message = f"DatasetRevision {revision.id} doesn't contain a file."
+        adapter.error(message, exc_info=True)
+        task.to_error("dataset_download", task.SYSTEM_ERROR)
+        raise PipelineException(message=message)
+
     task.update_progress(10)
     return revision
 
 
 def run_scan_timetables(task_id: int):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Scanning file for viruses.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Scanning file for viruses.")
     try:
         scanner = FileScanner(settings.CLAMAV_HOST, settings.CLAMAV_PORT)
         scanner.scan(revision.upload_file)
@@ -146,13 +168,11 @@ def run_scan_timetables(task_id: int):
 
 
 def run_timetable_file_check(task_id: int):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Starting timetable file check.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting timetable file check.")
     try:
         validator = TimetableFileValidator(revision=revision)
         validator.validate()
@@ -177,19 +197,14 @@ def run_timetable_file_check(task_id: int):
 
 
 def run_timetable_txc_schema_validation(task_id: int):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-    adapter.info("Starting timetable schema validation.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
-    # 'Update data' flow allows validation to occur multiple times
-    # lets just delete any 'old' observations.
-    revision.schema_violations.all().delete()
-    revision.pti_observations.all().delete()
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting timetable schema validation.")
 
     try:
-        adapter.info("Checking for violations.")
+        adapter.info("Checking for TXC schema violations.")
         validator = DatasetTXCValidator()
         violations = validator.get_violations(revision=revision)
     except Exception as exc:
@@ -206,7 +221,9 @@ def run_timetable_txc_schema_validation(task_id: int):
                 SchemaViolation.from_violation(revision_id=revision.id, violation=v)
                 for v in violations
             ]
-            SchemaViolation.objects.bulk_create(schema_violations)
+            SchemaViolation.objects.bulk_create(
+                schema_violations, batch_size=BATCH_SIZE
+            )
 
             message = "TransXChange schema issues found."
             task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
@@ -220,65 +237,27 @@ def run_timetable_txc_schema_validation(task_id: int):
     return revision
 
 
-# TODO delete this function once schema violations are implemented
-def validate_timetable(task_id: int):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Starting validation pipeline.")
-    task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
-
-    if not revision.upload_file:
-        task.to_error("dataset_validate", task.SYSTEM_ERROR)
-        message = f"DatasetRevision {revision.id} doesn't contain a file."
-        logger.error(message, exc_info=True)
-        raise PipelineException(message)
-
-    file_ = revision.upload_file
-    try:
-        if zipfile.is_zipfile(file_):
-            adapter.info("Validating timetables zip file.")
-            with TransXChangeZip(file_) as zip_:
-                zip_.validate()
-        else:
-            adapter.info("Validating timetable TransXChange file.")
-            TransXChangeDocument(file_)
-    except ValidationException as exc:
-        logger.error(exc.message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
-        task.additional_info = exc.message
-        task.save()
-        raise PipelineException(exc.message) from exc
-
-    task.update_progress(50)
-    revision.save()
-    adapter.info("Validation complete.")
-    return revision
-
-
 def run_txc_file_attribute_extraction(task_id: int):
     """
     Index the attributes and service code of every individual file in a dataset.
     """
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Extracting TXC attributes from individual files.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Extracting TXC attributes from individual files.")
     try:
         # If we're in the update flow lets clear out "old" files.
         revision.txc_file_attributes.all().delete()
         parser = TransXChangeDatasetParser(revision.upload_file)
-        headers = parser.get_file_headers()
+        files = [TXCFile.from_txc_document(doc) for doc in parser.get_documents()]
+
         attributes = [
-            TXCFileAttributes.from_txc_header(header=header, revision_id=revision.id)
-            for header in headers
+            TXCFileAttributes.from_txc_file(txc_file=f, revision_id=revision.id)
+            for f in files
         ]
-        TXCFileAttributes.objects.bulk_create(attributes)
-        adapter.info(f"Attributes extracted from {len(headers)} files.")
+        TXCFileAttributes.objects.bulk_create(attributes, batch_size=BATCH_SIZE)
+        adapter.info(f"Attributes extracted from {len(attributes)} files.")
     except Exception as exc:
         message = "An unexpected exception has occurred."
         adapter.error(str(exc), exc_info=True)
@@ -287,62 +266,14 @@ def run_txc_file_attribute_extraction(task_id: int):
         task.save()
         raise PipelineException(message) from exc
 
-
-def run_pti_validation(task_id: int):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Starting PTI Profile validation.")
-    task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
-
-    try:
-        # 'Update data' flow allows validation to occur multiple times
-        # lets just delete any 'old' observations.
-        revision.pti_observations.all().delete()
-
-        pti = get_pti_validator()
-        violations = pti.get_violations(revision=revision)
-
-        revision_validator = TXCRevisionValidator(revision)
-        violations += revision_validator.get_violations()
-
-        adapter.info(f"{len(violations)} violations found.")
-        observations = [
-            PTIObservation.from_violation(revision_id=revision.id, violation=v)
-            for v in violations
-        ]
-        PTIObservation.objects.bulk_create(observations)
-
-    except ValidationException as exc:
-        message = "PTI Validation failed."
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-    except Exception as exc:
-        message = "An unexpected exception has occurred."
-        adapter.error(str(exc), exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-
-    task.update_progress(50)
-    revision.save()
-    adapter.info("Finished PTI Profile validation.")
-    return revision
+    task.update_progress(45)
 
 
 def run_timetable_etl_pipeline(task_id):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Starting ETL pipeline task.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting ETL pipeline task.")
     try:
         task.update_progress(60)
         pipeline = TransXChangePipeline(revision)
@@ -366,12 +297,11 @@ def run_timetable_etl_pipeline(task_id):
 
 
 def finalise_timetable_pipeline(task_id):
-    context = TaskLoggerContext(object_id=task_id)
-    adapter = PipelineAdapter(logger, {"context": context})
-
-    adapter.info("Finialising ETL pipeline.")
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Finalising Timetable.")
     with transaction.atomic():
         task.to_success()
         task.update_progress(100)
@@ -424,7 +354,48 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
 
 @shared_task()
 def task_pti_validation(revision_id: int, task_id: int):
-    run_pti_validation(task_id)
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+
+    # 'Update data' flow allows validation to occur multiple times
+    # lets just delete any 'old' observations.
+    # TODO remove once pti observations have been transitioned to pti results
+    revision.pti_observations.all().delete()
+    PTIValidationResult.objects.filter(revision_id=revision.id).delete()
+
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting PTI Profile validation.")
+    try:
+        with transaction.atomic():
+            pti = get_pti_validator()
+            violations = pti.get_violations(revision=revision)
+            revision_validator = TXCRevisionValidator(revision)
+            violations += revision_validator.get_violations()
+
+            PTIValidationResult.from_pti_violations(
+                revision=revision, violations=violations
+            ).save()
+
+            adapter.info(f"{len(violations)} violations found.")
+            task.update_progress(50)
+            revision.save()
+
+    except ValidationException as exc:
+        message = "PTI Validation failed."
+        adapter.error(message, exc_info=True)
+        task.to_error("dataset_validate", exc.code)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message) from exc
+    except Exception as exc:
+        message = str(exc)
+        adapter.error(message, exc_info=True)
+        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message) from exc
+
+    adapter.info("Finished PTI Profile validation.")
     return revision_id
 
 
@@ -465,29 +436,124 @@ def task_publish_revision(revision_id: int):
 
 @shared_task(ignore_errors=True)
 def task_update_remote_timetables():
-    timetables = get_available_remote_timetables()
-    logger.info(
-        f"[TimetableMonitoring] Checking {timetables.count()} datasets for update."
-    )
+    timetables = Dataset.objects.get_available_remote_timetables()
+    context = MonitoringLoggerContext(object_id=0)
+    adapter = PipelineAdapter(logger, {"context": context})
+    count = timetables.count()
+    adapter.info(f"{count} datasets to check.")
     for timetable in timetables:
-        _prefix = f"[TimetableMonitoring] Dataset {timetable.id} => "
-        logger.info(_prefix + "Checking for update.")
-        try:
-            updater = TimetableUpdater(timetable, task_dataset_pipeline)
-            updater.update()
-        except Exception:
-            message = f"{_prefix} Failed to update timetable."
-            logger.error(message, exc_info=True)
+        update_dataset(timetable, task_dataset_pipeline)
 
 
 @shared_task(ignore_result=True)
 def task_retry_unavailable_timetables():
-    timetables = get_unavailable_remote_timetables()
-    logger.info(
-        f"[TimetableMonitoring] Checking {timetables.count()} datasets for update."
-    )
+    timetables = Dataset.objects.get_unavailable_remote_timetables()
+    context = MonitoringLoggerContext(object_id=-1)
+    adapter = PipelineAdapter(logger, {"context": context})
+    count = timetables.count()
+    adapter.info(f"{count} datasets to check.")
     for timetable in timetables:
-        _prefix = f"[TimetableMonitoring] Dataset {timetable.id} => "
-        logger.info(_prefix + "Checking for update.")
-        updater = TimetableUpdater(timetable, task_dataset_pipeline)
-        updater.update()
+        update_dataset(timetable, task_dataset_pipeline)
+
+
+@shared_task
+def task_deactivate_txc_2_1():
+    organisations = Organisation.objects.get_organisations_with_txc21_datasets()
+    count = organisations.count()
+    logger.info(f"{count} organisations with active txc 2.1 datasets to deactivate")
+    for organisation in organisations:
+        deactivate_txc21_published_datasets(organisation)
+        error_txc21_draft_datasets(organisation)
+
+
+def deactivate_txc21_published_datasets(organisation: Organisation):
+    published_datasets = organisation.dataset_set.select_related(
+        "live_revision"
+    ).filter(
+        live_revision__transxchange_version__contains=TXC_21,
+        live_revision__status=FeedStatus.live.value,
+        live_revision__is_published=True,
+    )
+    count = published_datasets.count()
+    logger.info(
+        f"Organisation {organisation.id} has {count} "
+        f"published txc 2.1 datasets to deactivate"
+    )
+
+    for dataset in published_datasets:
+        live_revision: DatasetRevision = dataset.live_revision
+        live_revision.to_inactive()
+        live_revision.save()
+        dataset.revisions.exclude(id=live_revision.id).filter(
+            is_published=False
+        ).delete()
+
+    if organisation.key_contact and count > 0:
+        send_data_no_longer_compliant_notification(
+            organisation.key_contact.email, published_datasets
+        )
+
+
+def error_txc21_draft_datasets(organisation: Organisation):
+    draft_datasets = organisation.dataset_set.prefetch_related("revisions").filter(
+        revisions__transxchange_version__contains=TXC_21,
+        live_revision__isnull=True,
+        revisions__is_published=False,
+        revisions__status=FeedStatus.success.value,
+    )
+    count = draft_datasets.count()
+    logger.info(
+        f"Organisation {organisation.id} has {count} "
+        f"draft txc 2.1 datasets to deactivate"
+    )
+    for dataset in draft_datasets:
+        draft_revision: DatasetRevision = dataset.revisions.latest()
+        draft_revision.status = FeedStatus.error.value
+        draft_revision.save()
+        task = draft_revision.etl_results.order_by("-id").first()
+        if not task:
+            # Every revision should have a task but dont break if it doesnt
+            continue
+
+        task.status = DatasetETLTaskResult.FAILURE
+        task.task_name_failed = "automatic deactivate of txc 2.1"
+        task.error_code = DatasetETLTaskResult.SCHEMA_ERROR
+        task.additional_info = "TransXChange schema issues found."
+        task.save()
+
+        SchemaViolation.objects.create(
+            revision=draft_revision,
+            filename=draft_revision.upload_file.name,
+            line=0,
+            details=(
+                "One of the TxC files is using version 2.1 which is now unsupported"
+            ),
+        )
+
+
+@shared_task(ignore_result=True)
+def task_reprocess_file_based_datasets():
+    pti_start_date = settings.PTI_START_DATE.replace(tzinfo=pytz.utc)
+    before_pti = Q(live_revision__created__lt=pti_start_date)
+    timetables = (
+        Dataset.objects.get_active(dataset_type=TimetableType)
+        .add_errored_draft_flag()
+        .filter(before_pti)
+        .exclude(has_errored_draft=True)
+        .order_by("organisation_id", "created")
+    )
+    logger.info(f"DatasetETL => {timetables.count()} Timetables to update.")
+    for timetable in timetables[:5]:
+        reprocess_live_revision(
+            dataset=timetable,
+            comment=PTI_COMMENT,
+            pipeline_task=task_dataset_pipeline,
+        )
+
+
+@shared_task()
+def task_log_stuck_revisions():
+    revisions = DatasetRevision.objects.get_stuck_revisions().order_by("created")
+    logger.info(f"There are {revisions.count()} revisions stuck in processing.")
+    for revision in revisions:
+        logger.info(f"Dataset {revision.dataset_id} => Revision is stuck.")

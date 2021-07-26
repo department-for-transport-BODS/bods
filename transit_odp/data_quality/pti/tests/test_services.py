@@ -51,34 +51,6 @@ def test_start_date_provisional(no_of_services, expected):
 
 
 @pytest.mark.parametrize(
-    ("activity", "expected"),
-    [
-        ("change", True),
-        ("through", True),
-        ("split", False),
-        ("join", False),
-        ("transferOnly", False),
-    ],
-)
-def test_interchange_activity_values(activity, expected):
-    interchange = "<InterchangeActivity>{}</InterchangeActivity>".format(activity)
-    xml = "<VehicleJourneyInterchange>{}</VehicleJourneyInterchange>".format(
-        interchange
-    )
-    OBSERVATION_ID = 27
-    schema = Schema.from_path(PTI_PATH)
-    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
-
-    schema = SchemaFactory(observations=observations)
-    json_file = JSONFile(schema.json())
-    pti = PTIValidator(json_file)
-
-    txc = TXCFile(xml)
-    is_valid = pti.is_valid(txc)
-    assert is_valid == expected
-
-
-@pytest.mark.parametrize(
     ("journey_ids", "expected"),
     [
         (["JP1", "JP2"], True),
@@ -212,6 +184,7 @@ def test_line_description_false():
         ("PF0000459:", False),
         ("PF0000459:ABC", True),
         ("PD1073423:4", True),
+        ("UZ000WNCT:GTT32", True),
     ],
 )
 def test_service_code_format(service_code, expected):

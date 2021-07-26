@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from transit_odp.data_quality.constants import (
-    OBSERVATIONS,
+    WEIGHTED_OBSERVATIONS,
     BackwardDateRangeObservation,
     BackwardsTimingObservation,
     CheckBasis,
@@ -13,9 +13,6 @@ from transit_odp.data_quality.constants import (
     IncorrectStopTypeObservation,
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
-    MissingHeadsignObservation,
-    MissingNOCCode,
-    SchemaNotTXC24,
     StopNotInNaptanObservation,
 )
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
@@ -24,10 +21,7 @@ from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
-    JourneyWithoutHeadsignWarningFactory,
     LineMissingBlockIDWarningFactory,
-    MissingNOCWarningFactory,
-    SchemaNotTXC24WarningFactory,
     StopMissingNaptanWarningFactory,
     TimingBackwardsWarningFactory,
     TimingDropOffWarningFactory,
@@ -45,7 +39,6 @@ from transit_odp.data_quality.scoring import (
 
 pytestmark = pytest.mark.django_db
 
-WEIGHTED_OBSERVATIONS = [o for o in OBSERVATIONS if o.weighting]
 DQ_COUNTS = DataQualityCounts(
     data_set=1, timing_patterns=15, stops=40, vehicle_journeys=120, lines=2
 )
@@ -63,7 +56,7 @@ def score_contribution(warning_count: int, check_basis_count: int, weighting: fl
 def test_weightings_add_to_one():
     total_weighting = sum(o.weighting for o in WEIGHTED_OBSERVATIONS)
     expected_score = 1.0
-    assert len(WEIGHTED_OBSERVATIONS) == 12
+    assert len(WEIGHTED_OBSERVATIONS) == 9
     assert pytest.approx(total_weighting, SCORE_TOLERANCE) == expected_score
 
 
@@ -87,8 +80,6 @@ def test_score_calculation_with_data_set_component(from_report_id):
 
     Possible warnings:
         IncorrectNOCWarning
-        MissingNOCWarning
-        SchemaNotTXC24Warning
     """
     report = DataQualityReportFactory()
     expected_score = sum(
@@ -103,15 +94,7 @@ def test_score_calculation_with_data_set_component(from_report_id):
     incorrect_weight = IncorrectNocObservation.weighting
     incorrect_score = score_contribution(1, data_set_count, incorrect_weight)
 
-    MissingNOCWarningFactory.create_batch(0, report=report)
-    missing_weight = MissingNOCCode.weighting
-    missing_score = score_contribution(0, data_set_count, missing_weight)
-
-    SchemaNotTXC24WarningFactory(report=report)
-    schema_weight = SchemaNotTXC24.weighting
-    schema_score = score_contribution(1, data_set_count, schema_weight)
-
-    expected_score += incorrect_score + missing_score + schema_score
+    expected_score += incorrect_score
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
@@ -247,13 +230,6 @@ def test_score_calculation_vehicle_journeys_component(from_report_id):
         if not o.check_basis == CheckBasis.vehicle_journeys
     )
 
-    headsign_count = 35
-    headsign_weight = MissingHeadsignObservation.weighting
-    JourneyWithoutHeadsignWarningFactory.create_batch(headsign_count, report=report)
-    headsign_score = score_contribution(
-        headsign_count, vehicle_journeys, headsign_weight
-    )
-
     backwards_count = 4
     backwards_weight = BackwardDateRangeObservation.weighting
     JourneyDateRangeBackwardsWarningFactory.create_batch(backwards_count, report=report)
@@ -261,7 +237,7 @@ def test_score_calculation_vehicle_journeys_component(from_report_id):
         backwards_count, vehicle_journeys, backwards_weight
     )
 
-    expected_score += headsign_score + backwards_score
+    expected_score += backwards_score
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
@@ -302,10 +278,10 @@ def test_data_quality_rag(score, expected):
     [
         (1.0, GREEN),
         (1.000000002, GREEN),
-        (0.996, GREEN),
+        (0.996, AMBER),
         (0.995, AMBER),
         (0.91, AMBER),
-        (0.905, AMBER),
+        (0.905, RED),
         (0.904, RED),
         (0.901, RED),
         (0.9, RED),

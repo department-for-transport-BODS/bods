@@ -3,7 +3,13 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
-from transit_odp.data_quality.constants import CheckBasis, Observation
+from transit_odp.common.utils import round_down
+from transit_odp.data_quality.constants import (
+    WEIGHTED_OBSERVATIONS,
+    CheckBasis,
+    Observation,
+)
+from transit_odp.data_quality.models.report import DataQualityReport
 from transit_odp.data_quality.models.transmodel import TimingPattern, VehicleJourney
 from transit_odp.data_quality.models.warnings import DataQualityWarningBase
 from transit_odp.organisation.models import DatasetRevision
@@ -15,6 +21,9 @@ INDICATOR_RED = "error"
 AMBER = "amber"
 RED = "red"
 GREEN = "green"
+
+GREEN_THRESHOLD = 1.0
+AMBER_THRESHOLD = 0.9
 
 
 class DQScoreException(Exception):
@@ -29,10 +38,10 @@ class DataQualityRAG:
 
     @classmethod
     def from_score(cls, score: float):
-        score = round(score, 2)
-        if score >= 1.0:
+        score = round_down(score)
+        if score >= GREEN_THRESHOLD:
             return cls(score=score, rag_level=GREEN, css_indicator=INDICATOR_GREEN)
-        elif score > 0.9:
+        elif score > AMBER_THRESHOLD:
             return cls(score=score, rag_level=AMBER, css_indicator=INDICATOR_AMBER)
         else:
             return cls(score=score, rag_level=RED, css_indicator=INDICATOR_RED)
@@ -135,3 +144,21 @@ class DataQualityCalculator:
         except Exception as e:
             raise DQScoreException from e
         return round(total, 5)
+
+
+def get_data_quality_rag(report: DataQualityReport):
+    # Required for transition to saving dq score in the database
+    if report.score > 0.0:
+        return DataQualityRAG.from_score(report.score)
+
+    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
+    try:
+        score = calculator.calculate(report_id=report.id)
+    except DQScoreException:
+        rag = None
+    else:
+        report.score = score
+        report.save()
+        rag = DataQualityRAG.from_score(score)
+
+    return rag

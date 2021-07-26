@@ -4,6 +4,16 @@ from typing import Dict, List
 
 from pydantic import BaseModel
 
+from transit_odp.data_quality.pti.constants import (
+    IMPORTANT_NOTE,
+    NO_REF,
+    REF_PREFIX,
+    REF_SUFFIX,
+    REF_URL,
+)
+
+GENERAL_REF = NO_REF + REF_URL
+
 
 class Rule(BaseModel):
     test: str
@@ -41,3 +51,19 @@ class Violation(BaseModel):
     filename: str
     name: str
     observation: Observation
+
+    def to_bods_csv(self):
+        if self.observation.reference != "0":
+            ref = REF_PREFIX + self.observation.reference + REF_SUFFIX + REF_URL
+        else:
+            ref = GENERAL_REF
+
+        return [
+            self.filename,
+            self.line,
+            self.name,
+            self.observation.category,
+            self.observation.details,
+            ref,
+            IMPORTANT_NOTE,
+        ]

@@ -1,51 +1,55 @@
-var $ = require("jquery");
+import HttpClient from "./http-client";
 
 const INTERVAL_LENGTH = 1000;
+const PENDING = "pending";
 
-const move = width => {
-  let elem = document.getElementById("progressInnerDiv");
-  elem.style.width = width + "%";
-  // elem.setAttribute('aria-valuenow', width);
-  // elem.innerText = width + '%';
-  let para_elem = document.getElementById("progressSpan");
-  para_elem.innerText = width + "%";
-};
+export class ProgressIndicator {
+  constructor(datasetId) {
+    this.datasetProgressUrl = `/dataset/${datasetId}/progress/`;
+    this.httpClient = new HttpClient();
+    this.progressBar = document.getElementById("progressInnerDiv");
+    this.progressText = document.getElementById("progressSpan");
+    this.interval = null;
+    this.previousProgressValue = null;
+    // Run get progress once before setting interval (prevents initial load at unknown progress %).
+    this.getProgress();
+    this.pollProgress();
+  }
 
-const getProgress = datasetId => {
-  const url = `/dataset/${datasetId}/progress/`;
-  let interval;
+  pollProgress() {
+    this.interval = setInterval(() => this.getProgress(), INTERVAL_LENGTH);
+  }
 
-  const poll = url =>
-    $.ajax({
-      type: "GET",
-      url: url,
-      headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0"
-      },
-      // data: {
-      //     task_id : task_id,
-      // },
-      success: response => {
-        let progress = response["progress"];
-        // console.log('progress: ' + progress);
-        move(progress);
-        if (progress === 100) {
-          clearInterval(interval);
-          // refresh the page after progress is 100
-          window.location.reload(false);
+  getProgress() {
+    this.httpClient
+      .get(this.datasetProgressUrl)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        const progressValue = responseJson["progress"];
+        const statusValue = responseJson["status"];
+        // An update to the DOM is only required if the progress value is different from previous check.
+        if (progressValue !== this.previousProgressValue) {
+          this.updateProgressIndicator(progressValue);
         }
-      },
-      complete: (jqXHR, response) => {
-        if (jqXHR.status !== 200) {
-          clearInterval(interval);
-          // request.abort();
+        if (progressValue === 100) {
+          clearInterval(this.interval);
+          if (statusValue !== PENDING) {
+            // If progress is 100 and dataset has successfully been uploaded,
+            // stop polling and trigger reload
+            window.location.reload();
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        clearInterval(this.interval);
+        throw new Error(error);
+      });
+  }
 
-  interval = setInterval(poll, INTERVAL_LENGTH, url);
-};
-
-module.exports = getProgress;
+  updateProgressIndicator(progressValue) {
+    // Update the progress bar width and label text with percentage completion.
+    this.previousProgressValue = progressValue;
+    this.progressBar.style.width = `${progressValue}%`;
+    this.progressText.innerText = `${progressValue}%`;
+  }
+}

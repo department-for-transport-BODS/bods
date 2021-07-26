@@ -68,17 +68,6 @@ class IncorrectNOCQuerySet(models.QuerySet):
         )
 
 
-class MissingNOCQuerySet(models.QuerySet):
-    def add_message(self):
-        return self.annotate(
-            message=Value(
-                "The National Operator Code(s) (NOC) were not present in "
-                "the uploaded data set",
-                output_field=CharField(),
-            ),
-        )
-
-
 class JourneyStopInappropriateQuerySet(models.QuerySet):
     def add_line(self):
         return self.annotate(line=Min("stop__service_patterns__service__name"))

@@ -26,8 +26,6 @@ from transit_odp.data_quality.models.warnings import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     LineMissingBlockIDWarning,
-    MissingNOCWarning,
-    SchemaNotTXC24Warning,
     SlowLinkWarning,
     SlowTimingWarning,
     StopMissingNaptanWarning,
@@ -235,16 +233,6 @@ class TimingMissingPointWarningFactory(TimingPatternTimingWarningBaseFactory):
     )
 
 
-class SchemaNotTXC24WarningFactory(DjangoModelFactory):
-    class Meta:
-        model = SchemaNotTXC24Warning
-
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-    schema = "2.1"
-
-
 class JourneyWithoutHeadsignWarningFactory(DjangoModelFactory):
     class Meta:
         model = JourneyWithoutHeadsignWarning
@@ -284,15 +272,6 @@ class IncorrectNOCWarningFactory(DjangoModelFactory):
         model = IncorrectNOCWarning
 
     noc = factory.fuzzy.FuzzyText(length=4)
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-
-
-class MissingNOCWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = MissingNOCWarning
-
     report = factory.SubFactory(
         DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
     )

@@ -13,7 +13,7 @@ from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.notifications import (
     send_endpoint_validation_error_notification,
 )
-from transit_odp.pipelines import managers, signals
+from transit_odp.pipelines import managers
 
 logger = logging.getLogger(__name__)
 
@@ -220,22 +220,19 @@ class DataQualityTask(TaskResult):
     objects = managers.DataQualityTaskManager()
 
     def __str__(self):
-        return f"DataQualityTask(id={self.id}, task_id={self.task_id})"
+        return f"DataQualityTask(id={self.id!r}, task_id={self.task_id!r})"
 
     def success(self, message: str):
         logger.info(f"{self} is done")
         if self.status != self.SUCCESS:
             self.status = self.SUCCESS
             self.message = message
-            self.save()
-            signals.dqs_report_etl.send(self, task=self)
 
     def failure(self, message: str):
         logger.info(f"{self} has failed with reason: {message}")
         if self.status != self.FAILURE:
             self.status = self.FAILURE
             self.message = message
-            self.save()
 
     def started(self, message: str):
         logger.info(f"{self} is in-progress. Current message: {message}")
@@ -246,7 +243,6 @@ class DataQualityTask(TaskResult):
         if self.status != self.SUCCESS and self.status != self.FAILURE:
             self.status = self.STARTED
             self.message = message
-            self.save()
 
 
 class RemoteDatasetHealthCheckCount(models.Model):
@@ -270,6 +266,9 @@ class BulkDataArchive(models.Model):
     data = models.FileField(help_text=_("A zip file containing all active datasets"))
     dataset_type = models.IntegerField(
         choices=DatasetType.choices(), default=DatasetType.TIMETABLE
+    )
+    compliant_archive = models.BooleanField(
+        _("Whether all the datasets are compliant."), default=False
     )
 
     class Meta:

@@ -8,3 +8,12 @@ class TaskLoggerContext(LoggerContext):
 
 class RevisionLoggerContext(TaskLoggerContext):
     class_name = "DatasetRevision"
+
+
+class DQSLoggerContext(LoggerContext):
+    component_name = "DQS"
+    class_name = "DataQualityReport"
+
+
+class DQSTaskLogger(DQSLoggerContext):
+    class_name = "DataQualityTask"

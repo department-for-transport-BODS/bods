@@ -1,14 +1,16 @@
-import config.hosts
 from django.http import HttpResponseRedirect
 from django_hosts import reverse
 
-from transit_odp.organisation.constants import DatasetType
+import config.hosts
+from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.publish.views.base import (
     BaseTemplateView,
     DeleteRevisionBaseView,
     PublishFeedDetailViewBase,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
+
+ExpiredStatus = FeedStatus.expired.value
 
 
 class RevisionDeleteTimetableView(DeleteRevisionBaseView):
@@ -32,19 +34,23 @@ class RevisionDeleteTimetableView(DeleteRevisionBaseView):
         )
 
     def get_cancel_url(self, feed_id):
-        return (
-            reverse(
-                "revision-publish",
-                kwargs={"pk": feed_id, "pk1": self.kwargs["pk1"]},
-                host=config.hosts.PUBLISH_HOST,
-            )
-            if self.object.live_revision is None
-            else reverse(
-                "revision-update-publish",
-                kwargs={"pk": feed_id, "pk1": self.kwargs["pk1"]},
-                host=config.hosts.PUBLISH_HOST,
-            )
+        if self.object.live_revision:
+            if self.object.live_revision.status == ExpiredStatus:
+                viewname = "feed-detail"
+            else:
+                viewname = "revision-update-publish"
+        else:
+            viewname = "revision-publish"
+        return reverse(
+            viewname,
+            kwargs={"pk": feed_id, "pk1": self.kwargs["pk1"]},
+            host=config.hosts.PUBLISH_HOST,
         )
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data["cancel_url"] = self.get_cancel_url(self.object.id)
+        return data
 
 
 class RevisionDeleteSuccessView(OrgUserViewMixin, BaseTemplateView):

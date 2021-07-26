@@ -81,51 +81,6 @@ def test_track_has_at_least_two_locations_true(location_count, expected):
 
 
 @pytest.mark.parametrize(
-    ("from_stop_ref", "to_stop_ref", "expected"),
-    [("123", "124", True), ("123", "122", True), ("122", "123", False)],
-)
-def test_unique_route_links(from_stop_ref, to_stop_ref, expected):
-    routes = """
-    <RouteSections>
-        <RouteSection id="rs_1">
-            <RouteLink id="rl_1">
-                <From>
-                    <StopPointRef>122</StopPointRef>
-                </From>
-                <To>
-                    <StopPointRef>123</StopPointRef>
-                </To>
-                <Distance>5573</Distance>
-                <Direction>outbound</Direction>
-            </RouteLink>
-            <RouteLink id="rl_2">
-                <From>
-                    <StopPointRef>{0}</StopPointRef>
-                </From>
-                <To>
-                    <StopPointRef>{1}</StopPointRef>
-                </To>
-                <Distance>4512</Distance>
-                <Direction>outbound</Direction>
-            </RouteLink>
-        </RouteSection>
-    </RouteSections>
-    """
-
-    xml = routes.format(from_stop_ref, to_stop_ref)
-    OBSERVATION_ID = 29
-    schema = Schema.from_path(PTI_PATH)
-    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
-    schema = SchemaFactory(observations=observations)
-    json_file = JSONFile(schema.json())
-    pti = PTIValidator(json_file)
-
-    txc = TXCFile(xml)
-    is_valid = pti.is_valid(txc)
-    assert is_valid == expected
-
-
-@pytest.mark.parametrize(
     ("has_direction", "expected"),
     [(True, False), (False, True)],
 )

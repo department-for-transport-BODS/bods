@@ -3,7 +3,7 @@ from django.db.models import Q
 from transit_odp.bods.interfaces.notifications import INotifications
 from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.organisation.constants import TimetableType
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.users.models import AgentUserInvite
 
 notifier: INotifications = get_notifications()
@@ -74,7 +74,7 @@ def send_endpoint_available_notification(dataset: Dataset):
 
 def send_revision_published_notification(dataset: Dataset):
 
-    has_pti_violations = dataset.live_revision.pti_observations.count() > 0
+    has_pti_violations = not dataset.live_revision.is_pti_compliant()
     if not dataset.contact.is_agent_user:
         notifier.send_data_endpoint_publish_notification(
             dataset_id=dataset.id,
@@ -151,4 +151,27 @@ def send_endpoint_validation_error_notification(dataset):
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
             contact_email=dataset.contact.email,
+        )
+
+
+def send_report_available_notifications(revision: DatasetRevision):
+    contact = revision.dataset.contact
+    if contact.is_agent_user:
+        notifier.send_agent_reports_are_available_notification(
+            dataset_id=revision.dataset_id,
+            dataset_name=revision.name,
+            operator_name=revision.dataset.organisation.name,
+            short_description=revision.short_description,
+            comments=revision.comment,
+            draft_link=revision.draft_url,
+            contact_email=contact.email,
+        )
+    else:
+        notifier.send_reports_are_available_notification(
+            dataset_id=revision.dataset_id,
+            dataset_name=revision.name,
+            short_description=revision.short_description,
+            comments=revision.comment,
+            draft_link=revision.draft_url,
+            contact_email=contact.email,
         )

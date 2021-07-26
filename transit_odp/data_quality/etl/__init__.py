@@ -4,8 +4,8 @@ from typing import List
 
 from django.db.models.query_utils import Q
 
+from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
-from transit_odp.data_quality.etl.model import DQModelPipeline
 from transit_odp.data_quality.etl.warnings import (
     JourneyPartialTimingOverlapETL,
     LineExpiredETL,
@@ -23,8 +23,6 @@ from transit_odp.data_quality.models.warnings import (
     WARNING_MODELS,
     IncorrectNOCWarning,
     JourneyStopInappropriateWarning,
-    MissingNOCWarning,
-    SchemaNotTXC24Warning,
     StopMissingNaptanWarning,
 )
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
@@ -41,6 +39,7 @@ class TransXChangeExtract:
 class TransXChangeDQPipeline:
     def __init__(self, model: DataQualityReport):
         self._model_report: DataQualityReport = model
+        self._revision = model.revision
         self._extract: TransXChangeExtract = None
         self._parser: TransXChangeDatasetParser = None
         self._report: Report = None
@@ -78,80 +77,46 @@ class TransXChangeDQPipeline:
         self._parser = TransXChangeDatasetParser(self.transxchange_file)
         return self._parser
 
-    def create_schema_not_txc24_warning(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Creating SchemaNotTXC24Warning.")
-        extract: TransXChangeExtract = self.extract()
-        if "2.1" in extract.transxchange_versions:
-            logger.info(
-                f"[DQS] Report {self.report_id} => Creating SchemaNotTXC24Warning"
-            )
-            SchemaNotTXC24Warning.objects.update_or_create(
-                report_id=self.report_id, schema="2.1"
-            )
-
     def create_incorrect_nocs_warning(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Creating IncorrectNOCWarning.")
         extract: TransXChangeExtract = self.extract()
         nocs = [noc for noc in set(extract.nocs) if noc not in self.organistion_nocs]
         warnings = [
             IncorrectNOCWarning(report_id=self.report_id, noc=noc) for noc in nocs
         ]
         if warnings:
-            logger.info(
-                f"[DQS] Report {self.report_id} => Creating IncorrectNOCWarnings"
-            )
             IncorrectNOCWarning.objects.bulk_create(warnings, ignore_conflicts=True)
 
-    def create_missing_noc_warning(self):
-        extract: TransXChangeExtract = self.extract()
-        if not extract.nocs:
-            logger.info(f"[DQS] Report {self.report_id} => Creating MissingNOCWarning")
-            MissingNOCWarning.objects.create(report_id=self.report_id)
-
     def create_journey_conflict_warning(self) -> None:
-        logger.info(
-            f"[DQS] Report {self.report_id} => Creating JourneyConflictWarning."
-        )
         warnings = self.report.filter_by_warning_type("journey-partial-timing-overlap")
         pipeline = JourneyPartialTimingOverlapETL(self.report_id, warnings)
         pipeline.load()
 
     def create_line_expired_warning(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Creating LineExpiredWarning.")
         warnings = self.report.filter_by_warning_type("line-expired")
         pipeline = LineExpiredETL(self.report_id, warnings)
         pipeline.load()
 
     def create_line_missing_block_id_warnings(self) -> None:
-        logger.info(
-            f"[DQS] Report {self.report_id} => Creating LineMissingBlockIDWarning."
-        )
         warnings = self.report.filter_by_warning_type("line-missing-block-id")
         pipeline = LineMissingBlockIDETL(self.report_id, warnings)
         pipeline.load()
 
     def create_timing_first_warnings(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Creating TimingFirstWarning.")
         warnings = self.report.filter_by_warning_type("timing-first")
         pipeline = TimingFirstETL(self.report_id, warnings)
         pipeline.load()
 
     def create_timing_last_warnings(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Creating TimingLastWarning.")
         warnings = self.report.filter_by_warning_type("timing-last")
         pipeline = TimingLastETL(self.report_id, warnings)
         pipeline.load()
 
     def create_timing_multiple_warnings(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Creating TimingMultipleWarning.")
         warnings = self.report.filter_by_warning_type("timing-multiple")
         pipeline = TimingMultipleETL(self.report_id, warnings)
         pipeline.load()
 
     def create_timing_missing_point_15_warnings(self) -> None:
-        logger.info(
-            f"[DQS] Report {self.report_id} => Creating TimingMissingPointWarning."
-        )
         warnings = self.report.filter_by_warning_type("timing-missing-point-15")
         pipeline = TimingMissingPointETL(self.report_id, warnings)
         pipeline.load()
@@ -165,25 +130,26 @@ class TransXChangeDQPipeline:
         self._extract = TransXChangeExtract(nocs=nocs, transxchange_versions=versions)
         return self._extract
 
-    def load_model(self) -> None:
-        logger.info(f"[DQS] Report {self.report_id} => Loading DQS model into BODS.")
-        pipeline = DQModelPipeline(self.report_id, self.report.model)
-        pipeline.load()
-
     def load_warnings(self) -> None:
+        adapter = get_dataset_adapter_from_revision(logger, self._revision)
+        adapter.info("Creating IncorrectNOCWarning.")
         self.create_incorrect_nocs_warning()
-        self.create_schema_not_txc24_warning()
-        self.create_missing_noc_warning()
+        adapter.info("Creating JourneyConflictWarning.")
         self.create_journey_conflict_warning()
+        adapter.info("Creating LineExpiredWarning.")
         self.create_line_expired_warning()
+        adapter.info("Creating LineMissingBlockIDWarning.")
         self.create_line_missing_block_id_warnings()
+        adapter.info("Creating TimingFirstWarning.")
         self.create_timing_first_warnings()
+        adapter.info("Creating TimingLastWarning.")
         self.create_timing_last_warnings()
+        adapter.info("Creating TimingMultipleWarning.")
         self.create_timing_multiple_warnings()
+        adapter.info("Creating TimingMissingPointWarning.")
         self.create_timing_missing_point_15_warnings()
 
     def load(self) -> None:
-        self.load_model()
         self.load_warnings()
         self.load_summary()
 
@@ -192,7 +158,8 @@ class TransXChangeDQPipeline:
         Aggregates the total number of warnings loaded and saves the data to
         DataQualityReportSummary.
         """
-        logger.info(f"[DQS] Report {self.report_id} => Generating report summary.")
+        adapter = get_dataset_adapter_from_revision(logger, self._revision)
+        adapter.info("Generating report summary.")
         self._model_report.refresh_from_db()
 
         # For certain warnings we can't be certain that the stop has a
@@ -218,6 +185,7 @@ class TransXChangeDQPipeline:
         )
 
     def run(self):
-        logger.info(f"[DQS] Report {self.report_id} => Extracting data from TxC file.")
+        adapter = get_dataset_adapter_from_revision(logger, self._revision)
+        adapter.info("Extracting data from TXC file.")
         self.extract()
         self.load()

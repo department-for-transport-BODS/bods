@@ -43,7 +43,6 @@ class CookieView(TemplateView):
 
         if is_confirm == "False" and "cookie_policy" not in request.COOKIES.keys():
             set_cookie(response, key="cookie_policy", value="1", days_expire=None)
-            print(request.COOKIES.keys())
 
         elif is_confirm == "True" and "cookie_policy" in request.COOKIES.keys():
             delete_cookie(response, "cookie_policy")

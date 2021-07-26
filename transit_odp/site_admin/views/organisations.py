@@ -203,28 +203,30 @@ class OrganisationDetailView(SiteAdminViewMixin, DetailView):
     template_name = "site_admin/organisation_detail.html"
 
     class Properties(TypedDict):
+        agents: List[User]
+        avls_created: int
+        created: datetime
+        date_added: datetime
+        fares_created: int
+        is_active: bool
+        key_contact: str
+        last_active: datetime
+        nocs: List[str]
+        operator_id: int
+        registration_complete: bool
         short_name: str
         status: str
-        operator_id: int
-        nocs: List[str]
-        date_added: datetime
-        last_active: datetime
-        agents: List[User]
         timetables_created: int
-        avls_created: int
-        fares_created: int
-        key_contact: str
 
     def get_queryset(self):
         qs = (
             super()
             .get_queryset()
-            .prefetch_related("nocs", "users", "dataset_set")
+            .prefetch_related("nocs")
             .add_key_contact_email()
             .add_registration_complete()
             .add_last_active()
             .add_status()
-            .add_published_dataset_count()
             .add_published_dataset_count_types()
         )
         return qs
@@ -232,20 +234,25 @@ class OrganisationDetailView(SiteAdminViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         organisation = self.object
+        agent_users = list(
+            organisation.users.filter(account_type=AgentUserType, is_active=True)
+        )
+        nocs = [code.noc for code in organisation.nocs.all()]
         properties = {
+            "agents": agent_users,
+            "avls_created": organisation.published_avl_count,
+            "date_added": organisation.created,
+            "fares_created": organisation.published_fares_count,
+            "is_active": organisation.is_active,
+            "key_contact": organisation.key_contact_email,
+            "last_active": organisation.last_active,
+            "name": organisation.name,
+            "nocs": nocs,
+            "operator_id": organisation.id,
+            "registration_complete": organisation.registration_complete,
             "short_name": organisation.short_name,
             "status": organisation.status,
-            "operator_id": organisation.id,
-            "nocs": [code.noc for code in organisation.nocs.all()],
-            "date_added": organisation.created,
-            "last_active": organisation.last_active,
-            "agents": list(
-                organisation.users.filter(account_type=AgentUserType, is_active=True)
-            ),
             "timetables_created": organisation.published_timetable_count,
-            "avls_created": organisation.published_avl_count,
-            "fares_created": organisation.published_fares_count,
-            "key_contact": organisation.key_contact_email,
         }
         data.update({"properties": self.Properties(**properties)})
         return data

@@ -9,3 +9,5 @@ TXC_MAP = {TXC_21: TWO_ONE_URL, TXC_24: TWO_FOUR_URL}
 
 TRANSXCAHNGE_NAMESPACE = "http://www.transxchange.org.uk/"
 TRANSXCHANGE_NAMESPACE_PREFIX = "x"
+
+PTI_COMMENT = "PTI validation report and Updated DQ score"

@@ -965,6 +965,25 @@ class TestFeedDeleteView:
         )
         self.feed = DraftDatasetFactory(organisation=self.org, contact=self.updater)
 
+    def test_one_email_is_sent_if_deleter_is_updated(self, publish_client, mailoutbox):
+        publish_client.force_login(user=self.deleter)
+
+        feed = DraftDatasetFactory(organisation=self.org, contact=self.deleter)
+        url = reverse(
+            "revision-delete",
+            host=self.host,
+            kwargs={"pk": feed.id, "pk1": self.org.id},
+        )
+
+        response = publish_client.post(url, data={"submit": "submit"})
+        assert response.status_code == 302
+        assert len(mailoutbox) == 1
+        assert mailoutbox[0].to[0] == "ms_deleter@test.test"
+        assert (
+            mailoutbox[0].subject
+            == "[BODS] You deleted an unpublished data set – no action required"
+        )
+
     def test_confirmation_displays_correct_name(self, publish_client):
         publish_client.force_login(user=self.deleter)
 
@@ -1286,6 +1305,37 @@ class TestEditDraftRevisionDescriptionView:
             fished_out_feed.revisions.latest().short_description
             == revision.short_description
         )
+
+    def test_edit_draft_revision_desc_cancel_has_correct_previous_step(
+        self, publish_client
+    ):
+        host = PUBLISH_HOST
+        org = OrganisationFactory.create()
+        feed1 = DatasetFactory(organisation=org, live_revision=None)
+        DatasetRevisionFactory(
+            status=FeedStatus.draft.value,
+            description="Old description",
+            short_description="Old short description",
+            is_published=False,
+            dataset=feed1,
+        )
+        user = UserFactory.create(
+            account_type=AccountType.org_staff.value, organisations=(org,)
+        )
+        publish_client.force_login(user=user)
+
+        url = reverse(
+            "upload-modify", host=host, kwargs={"pk": feed1.id, "pk1": org.id}
+        )
+        response = publish_client.post(
+            url,
+            data={
+                "cancel": "cancel",
+                "timetable_upload_modify-current_step": "upload",
+            },
+            follow=True,
+        )
+        assert response.context["previous_step"] == "upload"
 
     @pytest.mark.skip
     def test_edit_draft_revision_for_published_dataset_desc_success(

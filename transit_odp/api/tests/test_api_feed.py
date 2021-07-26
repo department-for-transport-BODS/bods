@@ -9,6 +9,7 @@ from rest_framework.test import APITestCase
 
 import config.hosts
 from transit_odp.api.serializers import DatasetSerializer
+from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.factories import (
@@ -53,7 +54,7 @@ class FeedAPITests(APITestCase):
         self.admin_areas = AdminAreaFactory.create_batch(2)
 
         # Create a bunch of feeds
-        DatasetFactory.create_batch(
+        for dataset in DatasetFactory.create_batch(
             4,
             organisation=self.org_user.organisation,
             live_revision__status=FeedStatus.live.value,
@@ -61,7 +62,9 @@ class FeedAPITests(APITestCase):
             live_revision__first_service_start=pytz.timezone("Europe/London").localize(
                 datetime.utcnow() + timedelta(days=1)
             ),
-        )
+        ):
+            DataQualityReportFactory(revision=dataset.live_revision)
+
         DatasetFactory.create_batch(
             4,
             dataset_type=DatasetType.AVL.value,
@@ -136,6 +139,8 @@ class FeedAPITests(APITestCase):
         feeds = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_organisation_name()
             .order_by("id")
             .filter(dataset_type=DatasetType.TIMETABLE.value)
@@ -193,7 +198,7 @@ class FeedAPITests(APITestCase):
 
         # Assert
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        feed = Dataset.objects.latest()
+        feed = Dataset.objects.get_live_dq_score().latest()
         self.assertEqual(feed.name, "New Feed")
         self.assertEqual(
             feed.description, "Feed created by organisation user via REST api"
@@ -211,6 +216,8 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_live_data()
             .add_organisation_name()
             .order_by("id")
@@ -235,6 +242,8 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .add_organisation_name()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .filter(live_revision__status="live")
             .order_by("id")
             .filter(dataset_type=DatasetType.TIMETABLE.value)
@@ -266,6 +275,8 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_live_data()
             .add_organisation_name()
             .filter(organisation__in=organisations)
@@ -322,6 +333,8 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .add_live_data()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_organisation_name()
             .filter(organisation__in=organisations)
             .filter(dataset_type=DatasetType.TIMETABLE.value)
@@ -348,6 +361,8 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .add_organisation_name()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_live_data()
             .filter(live_revision__admin_areas__atco_code=atco_code)
             .order_by("id")
@@ -371,6 +386,8 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .add_organisation_name()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_live_data()
             .order_by("id")
             .filter(dataset_type=DatasetType.TIMETABLE.value)
@@ -393,6 +410,8 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_organisation_name()
             .filter(
                 Q(live_revision__first_service_start__gte=self.now)
@@ -422,6 +441,8 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_organisation_name()
             .filter(
                 Q(live_revision__first_service_start__gte=start_date)
@@ -498,6 +519,8 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_organisation_name()
             .filter(
                 Q(live_revision__first_service_start__gte=test_date)
@@ -546,10 +569,15 @@ class FeedAPITests(APITestCase):
             self.client.login(username=self.developer.username, password="password")
         )
 
-        dataset_to_test = Dataset.objects.get_published().get_active_org().first()
+        dataset_to_test = (
+            Dataset.objects.get_published().get_live_dq_score().get_active_org().first()
+        )
         # double check there are no name clashed VERY UNLIKELY
-        objs = Dataset.objects.select_related("live_revision").filter(
-            live_revision__name=dataset_to_test.live_revision.name
+        objs = (
+            Dataset.objects.select_related("live_revision")
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
+            .filter(live_revision__name=dataset_to_test.live_revision.name)
         )
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data
@@ -576,6 +604,8 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
             .add_live_data()
             .add_organisation_name()
             .order_by("id")

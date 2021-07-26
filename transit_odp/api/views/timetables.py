@@ -16,7 +16,9 @@ class TimetablesViewSet(DatasetViewSet):
         # Filter results to only those that are live, error or expired and Published
         qs = (
             Dataset.objects.get_published()
+            .get_live_dq_score()
             .get_active_org()
+            .add_is_live_pti_compliant()
             .add_organisation_name()
             .select_related("live_revision")
             .prefetch_related("organisation__nocs")

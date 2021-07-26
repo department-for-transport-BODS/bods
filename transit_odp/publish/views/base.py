@@ -19,7 +19,7 @@ import config.hosts
 from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import (
     FeedDescriptionForm,
@@ -29,6 +29,8 @@ from transit_odp.publish.forms import (
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
+
+ExpiredStatus = FeedStatus.expired.value
 
 
 class BaseTemplateView(BODSBaseView, TemplateView):
@@ -178,15 +180,11 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
 class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
     model = Dataset
     form_class = ConfirmationForm
-    revision_name = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        revision = self.object.revisions.latest()
-        if not revision.is_published:
-            self.revision_name = revision.name
-
-        context.update({"revision_name": self.revision_name, "pk1": self.kwargs["pk1"]})
+        revision = self.object.revisions.order_by("-created").first()
+        context.update({"revision_name": revision.name, "pk1": self.kwargs["pk1"]})
         return context
 
     def get_form_kwargs(self):
@@ -202,10 +200,10 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
     def form_valid(self, form):
         client = get_notifications()
         dataset = self.get_object()
-        revision = dataset.revisions.latest()
+        revision = dataset.revisions.order_by("-created").first()
 
         # Delete revision
-        if not revision.is_published:
+        if not revision.is_published or revision.status == ExpiredStatus:
 
             try:
                 DatasetRevision.objects.get(id=revision.id).delete()
@@ -220,12 +218,13 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
                     dataset_name=revision.name,
                     contact_email=self.request.user.email,
                 )
-                client.send_data_endpoint_deleted_updater_notification(
-                    dataset_id=dataset.id,
-                    contact_email=dataset.contact.email,
-                    dataset_name=revision.name,
-                    last_updated=revision.modified,
-                )
+                if dataset.contact != self.request.user:
+                    client.send_data_endpoint_deleted_updater_notification(
+                        dataset_id=dataset.id,
+                        contact_email=dataset.contact.email,
+                        dataset_name=revision.name,
+                        last_updated=revision.modified,
+                    )
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -568,7 +567,7 @@ class BaseDatasetUploadModify(SingleObjectMixin, BaseFeedUploadWizard):
 
         if self.request.POST.get("cancel", None) == self.PUBLISH_CANCEL_STEP:
             kwargs["previous_step"] = self.request.POST.get(
-                "dataset_upload_modify-current_step", None
+                f"{self.get_prefix(self.request)}-current_step", None
             )
 
         return kwargs

@@ -119,30 +119,6 @@ urlpatterns = [
         ),
     ),
     path(
-        "not-txc-24/",
-        include(
-            [
-                path(
-                    "",
-                    view=views.SchemaNotTXC24DetailView.as_view(),
-                    name="not-schema-txc-24",
-                )
-            ]
-        ),
-    ),
-    path(
-        "missing-noc/",
-        include(
-            [
-                path(
-                    "",
-                    view=views.MissingNOCListView.as_view(),
-                    name="missing-noc-list",
-                )
-            ]
-        ),
-    ),
-    path(
         "pick-up-only/",
         include(
             [
@@ -274,23 +250,6 @@ urlpatterns = [
                     "<uuid:warning_pk>/",
                     view=views.MissingStopDetailView.as_view(),
                     name="missing-stops-detail",
-                ),
-            ]
-        ),
-    ),
-    path(
-        "missing-destination-display/",
-        include(
-            [
-                path(
-                    "",
-                    view=views.MissingHeadsignListView.as_view(),
-                    name="missing-headsign-list",
-                ),
-                path(
-                    "<uuid:warning_pk>/",
-                    view=views.MissingHeadsignDetailView.as_view(),
-                    name="missing-headsign-detail",
                 ),
             ]
         ),

@@ -1,12 +1,11 @@
 import logging
 import zipfile
-from datetime import datetime
+from collections.abc import Iterator
 from pathlib import Path
 from typing import List
 
-import pytz
 from lxml import etree
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from transit_odp.common.xmlelements import XMLElement
 from transit_odp.common.xmlelements.exceptions import NoElement
@@ -241,6 +240,14 @@ class TransXChangeDocument:
         xpath = ["JourneyPatternSections", "JourneyPatternSection"]
         return self._root.get_elements(xpath)
 
+    def get_operators(self):
+        xpath = ["Operators", "Operator"]
+        return self.find_anywhere(xpath)
+
+    def get_licensed_operators(self):
+        xpath = ["Operators", "LicensedOperator"]
+        return self.find_anywhere(xpath)
+
     def get_nocs(self) -> List[str]:
         xpath = "NationalOperatorCode"
         return [noc.text for noc in self.find_anywhere(xpath)]
@@ -250,38 +257,6 @@ class TransXChangeDocument:
         return [
             s for s in self.find_anywhere(xpath) if s.text in PRINCIPAL_TIMING_POINTS
         ]
-
-
-class TXCHeader(BaseModel):
-    revision_number: int
-    schema_version: str
-    modification: str
-    creation_datetime: datetime
-    modificaton_datetime: datetime
-    filename: str
-    service_code: str
-
-    @validator("creation_datetime", "modificaton_datetime")
-    def timezone_validate(cls, dt):
-        """
-        If datetime does not have a timezone make it UTC.
-        """
-        if dt.tzinfo is None:
-            return dt.replace(tzinfo=pytz.utc)
-        return dt
-
-    @classmethod
-    def from_txc_doc(cls, doc: TransXChangeDocument):
-        filename = doc.get_file_name() or Path(doc.name).name
-        return cls(
-            revision_number=doc.get_revision_number(),
-            schema_version=doc.get_transxchange_version(),
-            modification=doc.get_modification(),
-            creation_datetime=doc.get_creation_date_time(),
-            modificaton_datetime=doc.get_modifitication_date_time(),
-            filename=filename,
-            service_code=doc.get_service_codes()[0].text,
-        )
 
 
 class TransXChangeZip(ZippedValidator):
@@ -409,39 +384,44 @@ class TransXChangeDatasetParser:
         else:
             yield TransXChangeDocument(self._source)
 
-    def get_transxchange_versions(self) -> List[TransXChangeElement]:
-        return [doc.get_transxchange_version() for doc in self._iter_docs()]
+    def get_documents(self) -> Iterator[TransXChangeDocument]:
+        if self.is_zipfile():
+            with TransXChangeZip(self._source) as zip_:
+                for doc in zip_.iter_doc():
+                    yield doc
+        else:
+            yield TransXChangeDocument(self._source)
 
-    def get_file_headers(self):
-        return [TXCHeader.from_txc_doc(doc) for doc in self._iter_docs()]
+    def get_transxchange_versions(self) -> List[TransXChangeElement]:
+        return [doc.get_transxchange_version() for doc in self.get_documents()]
 
     def get_stop_points(self):
         all_stops = []
-        for doc in self._iter_docs():
+        for doc in self.get_documents():
             all_stops += doc.get_stop_points()
         return all_stops
 
     def get_annotated_stop_point_refs(self) -> List[TransXChangeElement]:
         all_stops = []
-        for doc in self._iter_docs():
+        for doc in self.get_documents():
             all_stops += doc.get_annotated_stop_point_refs()
         return all_stops
 
     def get_principal_timing_points(self) -> List[TransXChangeElement]:
-        all_stops = []
-        for doc in self._iter_docs():
-            all_stops += doc.get_principal_timing_points()
-        return all_stops
+        timing_points = []
+        for doc in self.get_documents():
+            timing_points += doc.get_principal_timing_points()
+        return timing_points
 
     def get_nocs(self) -> List[str]:
         nocs = []
-        for doc in self._iter_docs():
+        for doc in self.get_documents():
             nocs += doc.get_nocs()
         return nocs
 
     def get_line_names(self):
         line_names = []
-        for doc in self._iter_docs():
+        for doc in self.get_documents():
             line_names += doc.get_all_line_names()
 
         return line_names

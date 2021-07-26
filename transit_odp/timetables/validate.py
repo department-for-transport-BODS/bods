@@ -3,10 +3,9 @@ from logging import getLogger
 
 from lxml import etree
 
-from transit_odp.common.loggers import PipelineAdapter
+from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
 from transit_odp.organisation.models import DatasetRevision
-from transit_odp.timetables.loggers import RevisionLoggerContext
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
 
@@ -47,7 +46,7 @@ class DatasetTXCValidator:
         self._schema = get_transxchange_schema("2.4")
 
     def iter_get_files(self, revision: DatasetRevision):
-        context = RevisionLoggerContext(object_id=revision.id)
+        context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
         adapter = PipelineAdapter(logger, {"context": context})
 
         file_ = revision.upload_file

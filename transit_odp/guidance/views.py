@@ -1,9 +1,10 @@
 from collections import namedtuple
 
-import config
+from django.conf import settings
 from django.views.generic import TemplateView
 from django_hosts import reverse
 
+import config
 from transit_odp.common.view_mixins import BODSBaseView
 
 Section = namedtuple("Section", "name,title,template")
@@ -131,12 +132,18 @@ class DeveloperReqView(BODSBaseView, SectionedTemplateView):
         Section("api", "Using the APIs", "using_the_api.html"),
         Section("apireference", "API reference", "api_reference.html"),
         Section("dataformats", "Data formats", "data_formats.html"),
+        Section(
+            "maintainingqualitydata",
+            "Maintaining quality data",
+            "maintaining_quality_data.html",
+        ),
         Section("help", "How to get help", "help.html"),
     )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["api_base"] = reverse("api:api-root", host=config.hosts.DATA_HOST)
+        context["pti_link_on_bods"] = settings.PTI_PDF_URL
         return context
 
 
@@ -182,3 +189,9 @@ class BusOperatorReqView(BODSBaseView, SectionedTemplateView):
         Section("dataquality", "Data quality", "dataquality.html"),
         Section("help", "How to get help", "help.html"),
     )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pti_link_on_bods"] = settings.PTI_PDF_URL
+        context["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
+        return context

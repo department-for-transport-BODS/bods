@@ -1,6 +1,5 @@
 from itertools import chain
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django_hosts import reverse
 from django_tables2 import MultiTableMixin, SingleTableView
@@ -20,10 +19,9 @@ from transit_odp.data_quality.tables import (
     TimingPatternListTable,
     WarningListBaseTable,
 )
-from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
-class SimpleDetailBaseView(OrgUserViewMixin, TemplateView):
+class SimpleDetailBaseView(TemplateView):
     """
     A simple detail view for displaying observations that
     require no map or tables.
@@ -62,7 +60,7 @@ class SimpleDetailBaseView(OrgUserViewMixin, TemplateView):
         return context
 
 
-class DetailBaseView(LoginRequiredMixin, MultiTableMixin, TemplateView):
+class DetailBaseView(MultiTableMixin, TemplateView):
     template_name = "data_quality/observation_detail.html"
     model = None
     related_model = None
@@ -302,7 +300,7 @@ class TwoTableDetailView(DetailBaseView):
         return context
 
 
-class WarningListBaseView(OrgUserViewMixin, SingleTableView):
+class WarningListBaseView(SingleTableView):
     template_name = "data_quality/warning_list.html"
     table_class: WarningListBaseTable
     model: DataQualityWarningBase

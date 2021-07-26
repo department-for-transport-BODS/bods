@@ -1,9 +1,7 @@
 from pathlib import Path
-from unittest.mock import call
 
 import pytest
 
-from transit_odp.common.test_utils import does_not_raise
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
@@ -11,7 +9,7 @@ from transit_odp.organisation.factories import (
 )
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.timetables.tasks import run_scan_timetables, validate_timetable
+from transit_odp.timetables.tasks import run_scan_timetables
 from transit_odp.timetables.validate import TXCRevisionValidator
 from transit_odp.validate.antivirus import (
     AntiVirusError,
@@ -63,42 +61,6 @@ class TestFileValidation:
 
 
 class TestPipeline:
-    @pytest.mark.parametrize(
-        "filepath, expectation",
-        [(XML_FILE, does_not_raise()), (ZIP_FILE, does_not_raise())],
-    )
-    def test_validate_timetable_success(self, filepath, expectation, mocker):
-        """
-        Tests file passes validation and update is called twice.
-        """
-        revision = DatasetRevisionFactory(upload_file__from_path=filepath)
-
-        task = mocker.Mock(revision=revision, id=-1)
-        mocker.patch(GET_TASK, return_value=task)
-
-        with expectation:
-            validate_timetable(task.id)
-
-        update_progress_calls = [call(50)]
-        task.update_progress.assert_has_calls(update_progress_calls)
-
-    def test_validate_timetable_no_file_exception(self, mocker):
-        """
-        Tests file passes validation
-        """
-        revision = DatasetRevisionFactory(upload_file=None)
-
-        scanner = mocker.Mock()
-        mocker.patch(FILE_SCANNER, return_value=scanner)
-
-        task = mocker.Mock(revision=revision, id=-1)
-        mocker.patch(GET_TASK, return_value=task)
-
-        with pytest.raises(PipelineException):
-            validate_timetable(task.id)
-
-        task.to_error.assert_called_once_with("dataset_validate", task.SYSTEM_ERROR)
-
     @pytest.mark.parametrize(
         "side_effect,expectaton,task_status",
         [

@@ -1,8 +1,10 @@
 class HttpClient {
   get(url) {
-    return fetch(url, { mode: "cors", credentials: "omit" }).then(
-      this.checkStatus
-    );
+    return fetch(url, {
+      mode: "cors",
+      credentials: "same-origin",
+      cache: "no-cache",
+    }).then(this.checkStatus);
   }
 
   post(url, body) {
@@ -10,7 +12,7 @@ class HttpClient {
       method: "POST",
       body: body,
       mode: "cors",
-      credentials: "omit"
+      credentials: "omit",
     }).then(this.checkStatus);
   }
 

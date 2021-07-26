@@ -46,7 +46,9 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
     )
 
     account_type = forms.CharField(
-        initial=AccountType.developer.value, widget=forms.HiddenInput()
+        label=_("User type"),
+        required=True,
+        widget=forms.HiddenInput(),
     )
 
     def __init__(
@@ -93,8 +95,8 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
             + "?section=agents"
         )
         admin_hint_text = (
-            "Note: Admin users will be able to add and/or remove other"
-            "user's accounts from the open data service)"
+            "Note: Admin users will be able to add and/or remove other "
+            "user's accounts from the open data service."
         )
         agent_warning_text = (
             "Please note that even if you nominate an agent, it is still your legal "
@@ -140,15 +142,8 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
         )
 
     def clean(self):
-        account_type_mapper = {
-            self.AGENT_ID: AccountType.agent_user.value,
-            self.ADMIN_ID: AccountType.org_admin.value,
-            self.STAFF_ID: AccountType.org_staff.value,
-        }
-        selected_item = self.data.get("selected_item")
-
         cleaned_data = super().clean()
-        cleaned_data["account_type"] = account_type_mapper[selected_item]
+
         # make sure inviter belongs to organisation
         inviter = self.instance.inviter
         organisation = self.instance.organisation
@@ -194,6 +189,21 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
             )
 
         return email
+
+    def clean_account_type(self):
+        selected_item = self.data.get("selected_item")
+        account_type_mapper = {
+            self.AGENT_ID: AccountType.agent_user.value,
+            self.ADMIN_ID: AccountType.org_admin.value,
+            self.STAFF_ID: AccountType.org_staff.value,
+        }
+        try:
+            account_type = account_type_mapper[selected_item]
+        except KeyError:
+            raise forms.ValidationError(_("Choose the account type."))
+
+        self.cleaned_data["account_type"] = account_type
+        return account_type
 
     def validate_invitation(self, email):
         if User.objects.filter(email=email).exists():

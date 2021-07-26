@@ -9,23 +9,20 @@ from .publication import (
     TimetablePublication,
     TimetableReport,
 )
-from .user import Publisher, SiteAdmin, User
-
-# from .identity import OrganisationId, UserId, PublicationId
+from .user import AgentUser, Publisher, SiteAdmin, User
 
 __all__ = [
-    "Organisation",
-    # "OrganisationId",
-    "Publication",
-    "Revision",
-    "Dataset",
-    "AVLPublication",
     "AVLDataset",
-    "TimetablePublication",
+    "AVLPublication",
+    "AgentUser",
+    "Dataset",
+    "Organisation",
+    "Publication",
+    "Publisher",
+    "Revision",
+    "SiteAdmin",
     "TimetableDataset",
+    "TimetablePublication",
     "TimetableReport",
     "User",
-    # "UserId",
-    "Publisher",
-    "SiteAdmin",
 ]

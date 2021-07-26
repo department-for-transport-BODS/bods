@@ -7,26 +7,6 @@
   },
   "observations": [
     {
-      "details": "Accessibility information is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in PassengerInfo field. The only values you can input in the field are 'nextStopIndicator' and 'stopAnnouncements'.",
-      "category": "Accessibility Information",
-      "reference": "2.4.3",
-      "context": "//x:PassengerInfo",
-      "number": 5,
-      "rules": [{ "test": "in(., 'nextStopIndicator', 'stopAnnouncements')" }]
-    },
-    {
-      "details": "Accessibility information is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in AccessibilityInfo field. The only values allowed in the field are 'audioInformation', 'audioForHearingImpaired', 'visualDisplays', 'displaysForVisuallyImpaired'.",
-      "category": "Accessibility Information",
-      "reference": "2.4.3",
-      "context": "//x:AccessibilityInfo",
-      "number": 6,
-      "rules": [
-        {
-          "test": "in(., 'audioInformation', 'audioForHearingImpaired', 'visualDisplays', 'displaysForVisuallyImpaired')"
-        }
-      ]
-    },
-    {
       "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. The private element can only be 'false' and cannot be set to 'true'.",
       "category": "Notes",
       "reference": "2.5",
@@ -35,7 +15,7 @@
       "rules": [{ "test": "not(bool(.))" }]
     },
     {
-      "details": "Serviced Organisations are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in the 'Name' element in 'ServicedOrganisation' field. Please provide a meaningful name for the organisation composed of more than 5 characters atleast.",
+      "details": "Serviced Organisations are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in the 'Name' element in 'ServicedOrganisation' field. Please provide a meaningful name for the organisation composed of more than 5 characters at least.",
       "category": "Serviced organisations",
       "reference": "3.2",
       "context": "//x:ServicedOrganisations/x:ServicedOrganisation",
@@ -127,14 +107,6 @@
       ]
     },
     {
-      "details": "Mandatory elements incorrect in 'InterchangeActivity' field. The only values allowed in the field are 'change' and 'through'.",
-      "category": "Services and Lines",
-      "reference": "5.3.6.2",
-      "context": "//x:InterchangeActivity",
-      "number": 27,
-      "rules": [{ "test": "in(., 'change', 'through')" }]
-    },
-    {
       "details": "Serviced Organisations are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'ServicedOrganisatoin' field. When your service operators for more than a 9 month period, then please include a minimum of two dates.",
       "category": "Serviced organisations",
       "reference": "3.2",
@@ -154,7 +126,7 @@
       "rules": [{ "test": "count(x:Holidays) = 0" }]
     },
     {
-      "details": "Mandatory element incorrect in 'StandardService' field. Please ensure that atleast one 'JourneyPattern' is defined.",
+      "details": "Mandatory element incorrect in 'StandardService' field. Please ensure that at least one 'JourneyPattern' is defined.",
       "category": "Services and Lines",
       "reference": "5.3.2",
       "context": "//x:StandardService",
@@ -174,7 +146,7 @@
       ]
     },
     {
-      "details": "Mandatory elements incorrect in 'Route'. Should not contain ReversingManoeuvres  element.",
+      "details": "Mandatory elements incorrect in 'Route'. Should not contain ReversingManoeuvres element.",
       "category": "Routes and tracks",
       "reference": "7.2",
       "context": "//x:Route",
@@ -186,14 +158,14 @@
       ]
     },
     {
-      "details": "DepartureDayShift is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'DepartureDayShift' field. You have incorrect values inputted, you can only use '+1' as an entry.",
+      "details": "DepartureDayShift is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'DepartureDayShift' field. You have incorrect values inputted, you can only use '1' as an entry.",
       "category": "Vehicle journeys",
       "reference": "9.2",
       "context": "//x:DepartureDayShift",
       "number": 46,
       "rules": [
         {
-          "test": "./text() = '+1'"
+          "test": "./text() = '1'"
         }
       ]
     },
@@ -222,9 +194,9 @@
       ]
     },
     {
-      "details": "Mandatory elements incorrect in 'JourneyPattern' field. If you have two links which follow on from each other, please ensure that the 'To' and 'From' in each have the same stop information. Refer to reference column for permitted elements and values.",
+      "details": "Mandatory elements incorrect in 'JourneyPatternTimingLink' field. Within the JourneyPatternTimingLink, the 'From SequenceNumber' and 'To SequenceNumber' are mandatory.",
       "category": "Journey timings on standard services",
-      "reference": "8.4.3",
+      "reference": "8.4.4",
       "context": "//x:JourneyPatternTimingLink",
       "number": 38,
       "rules": [
@@ -237,14 +209,14 @@
       ]
     },
     {
-      "details": "Mandatory elements incorrect in the 'ServiceCode' field. The 'ServiceCode' field should include the service Registration Number from the Office of the Traffic Commissioner (OTC). An example format is the following: <ServiceCode>PF1234567:12</ServiceCode>",
+      "details": "Mandatory elements incorrect in the 'ServiceCode' field. The values you provided are not in the correct format. Please use following the format <PF0000459:134> for registered services and <UZ000WNCT:GTT32> for unregistered services.",
       "category": "Services and Lines",
       "reference": "5.3.2",
       "context": "//x:ServiceCode",
       "number": 18,
       "rules": [
         {
-          "test": "regex(., '[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+')"
+          "test": "regex(., '[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+') or regex(., 'UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+')"
         }
       ]
     },
@@ -284,18 +256,6 @@
       "rules": [
         {
           "test": "validate_line_id(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory elements incorrect in 'RouteLinks'. Multiple Routelinks occur between identical stop points.",
-      "category": "Routes and tracks",
-      "reference": "7",
-      "context": "//x:RouteSection",
-      "number": 29,
-      "rules": [
-        {
-          "test": "has_unique_links(.)"
         }
       ]
     },
@@ -444,7 +404,7 @@
       ]
     },
     {
-      "details": " Mandatory elements incorrect in 'StopPoint' field. You cannot be use this field for more than 2 months.",
+      "details": " Mandatory elements incorrect in 'StopPoint' field. You cannot use this field for more than 2 months.",
       "category": "Stop points and stop areas",
       "reference": "6",
       "number": 28,
@@ -552,18 +512,6 @@
       ]
     },
     {
-      "details": "Mandatory element 'Activity' missing",
-      "category": "Mandatory Element",
-      "reference": "0",
-      "number": 128,
-      "context": "//x:JourneyPatternTimingLink/x:From",
-      "rules": [
-        {
-          "test": "count(x:Activity) > 0"
-        }
-      ]
-    },
-    {
       "details": "Mandatory element 'TimingStatus' missing",
       "category": "Mandatory Element",
       "reference": "0",
@@ -572,18 +520,6 @@
       "rules": [
         {
           "test": "count(x:TimingStatus) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Activity' missing",
-      "category": "Mandatory Element",
-      "reference": "0",
-      "number": 130,
-      "context": "//x:JourneyPatternTimingLink/x:To",
-      "rules": [
-        {
-          "test": "count(x:Activity) > 0"
         }
       ]
     },

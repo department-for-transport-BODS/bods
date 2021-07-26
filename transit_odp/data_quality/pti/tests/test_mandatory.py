@@ -323,54 +323,6 @@ def test_journey_pattern_timing_link_elements(elements, id_, expected):
 @pytest.mark.parametrize(
     ("has_from", "has_to", "id_", "expected"),
     [
-        (True, True, 128, True),
-        (True, True, 130, True),
-        (False, True, 128, False),
-        (True, False, 130, False),
-    ],
-)
-def test_activity(has_from, has_to, id_, expected):
-    operators = """
-    <JourneyPatternSection>
-        <JourneyPatternTimingLink id="JPTL1">
-            <From>
-                {0}
-                <DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
-            </From>
-            <To>
-                {1}
-                <DynamicDestinationDisplay>Hospital Car Park</DynamicDestinationDisplay>
-            </To>
-        </JourneyPatternTimingLink>
-    </JourneyPatternSection>
-    """
-
-    from_ = ""
-    if has_from:
-        from_ = "<Activity>pickUp</Activity>"
-
-    to_ = ""
-    if has_to:
-        to_ = "<Activity>pickUp</Activity>"
-
-    xml = operators.format(from_, to_)
-
-    OBSERVATION_ID = id_
-    schema = Schema.from_path(PTI_PATH)
-    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
-    schema = SchemaFactory(observations=observations)
-
-    json_file = JSONFile(schema.json())
-    pti = PTIValidator(json_file)
-
-    txc = TXCFile(xml)
-    is_valid = pti.is_valid(txc)
-    assert is_valid == expected
-
-
-@pytest.mark.parametrize(
-    ("has_from", "has_to", "id_", "expected"),
-    [
         (True, True, 129, True),
         (True, True, 131, True),
         (False, True, 129, False),

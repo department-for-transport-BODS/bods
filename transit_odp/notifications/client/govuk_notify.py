@@ -85,4 +85,5 @@ class GovUKNotifyEmail(NotificationBase):
             "OPERATOR_NOC_CHANGED": "ca32baf1-a420-4893-98e8-04bd5e85a9c4",
             "REPORTS_AVAILABLE": "f6dc4f99-23d5-4ed5-8d9f-bc69dcb7bc9d",
             "AGENT_REPORTS_AVAILABLE": "73a1639c-b006-43bf-b7bb-b06b1f50f268",
+            "DATASET_NO_LONGER_COMPLIANT": "3093797a-a1fa-4a08-8dc0-b0bfda4e3e64",
         }

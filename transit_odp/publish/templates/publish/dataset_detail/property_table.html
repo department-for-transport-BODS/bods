@@ -83,7 +83,7 @@
       {% trans 'TransXChange Validation Report' %}
     </th>
     <td class="govuk-table__cell">
-      {% if pti_count == 0 %}
+      {% if object.is_pti_compliant %}
         <p class="govuk-body govuk-!-font-weight-bold">Successfully passed validation</p>
         <p class="govuk-body">Your data is BODS compliant.</p>
       {% else %}
@@ -97,8 +97,11 @@
         <p class="govuk-body">
         {% blocktrans %}
         The timetables data supplied is non-compliant.
-        It does not meet the data format required and from 2nd August 2021 will be
-        rejected from BODS. To pass the validation please address all outstanding
+        It does not meet the data format required and from
+        {% endblocktrans %}
+          {{ pti_enforced_date|date:"jS F Y" }}
+        {% blocktrans %}
+        will be rejected from BODS. To pass the validation please address all outstanding
         issues in the validation report and update the data set.
         {% endblocktrans %}
         </p>

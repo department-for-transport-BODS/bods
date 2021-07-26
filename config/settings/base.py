@@ -25,7 +25,6 @@ if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     ENV_FILE = env("DJANGO_ENV_FILE", default=".env")
     env_file = str(ROOT_DIR.path(ENV_FILE))
-    print("Loading : {}".format(env_file))
     env.read_env(env_file)
 
 # GENERAL
@@ -281,7 +280,8 @@ TEMPLATES = [
                 "django.template.loaders.app_directories.Loader",
             ],
             "builtins": [
-                "django_hosts.templatetags.hosts_override"  # overrides url template tag with django_hosts impl
+                # overrides url template tag with django_hosts impl
+                "django_hosts.templatetags.hosts_override"
             ],
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
@@ -523,4 +523,15 @@ ITO_GTFS_AWS_STORAGE_BUCKET_NAME = env(
 )
 ITO_GTFS_AWS_REGION = env("DJANGO_ITO_GTFS_AWS_REGION", default="eu-west-2")
 
+# PTI
+# ------------------------------------------------------------------------------
+# Date when PTI feature was released
 PTI_START_DATE = parser.parse(env("PTI_START_DATE", default="2021-04-01"))
+# Date after which operators will not be able to publish non compliant datasets
+PTI_ENFORCED_DATE = parser.parse(env("PTI_ENFORCED_DATE", default="2021-08-02"))
+
+
+PTI_PDF_URL = env(
+    "PTI_PDF_URL",
+    default="https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf",
+)

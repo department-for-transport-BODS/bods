@@ -39,17 +39,8 @@ class TestRemoteDatasetHealthCheckCountFactory:
 
 class TestDataQualityTask:
     def test_success(self, mocker):
-        # Setup
         task = DataQualityTaskFactory()
-
-        # mock out signal
-        mocked = mocker.patch(f"{MUT}.signals.dqs_report_etl")
-
-        # Test
         task.success(message="Done")
-
-        # Assert
-        mocked.send.assert_called_once_with(task, task=task)
         assert task.status == DataQualityTask.SUCCESS
 
     def test_failure(self):

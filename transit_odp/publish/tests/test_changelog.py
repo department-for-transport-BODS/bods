@@ -42,7 +42,7 @@ class TestChangelog:
         )
 
     def test_dataquality_column_with_successful_report(self, client_factory):
-        report = DataQualityReportFactory(revision=self.revision)
+        report = DataQualityReportFactory(revision=self.revision, score=1.0)
         DataQualityTaskFactory(
             revision=self.revision, status=TaskResult.SUCCESS, report=report
         )

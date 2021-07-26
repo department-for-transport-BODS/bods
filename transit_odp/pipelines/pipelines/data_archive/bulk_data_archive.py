@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 from django.core.files import File
 from django.utils import timezone
 
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import DatasetType, FeedStatus, TimetableType
 from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import BulkDataArchive
 
@@ -50,13 +50,17 @@ def zip_datasets(datasets, outpath):
                     copyfileobj(fin, fout)
 
 
-def upload_bulk_data_archive(outpath, dataset_type: DatasetType):
+def upload_bulk_data_archive(
+    outpath, dataset_type: DatasetType, is_compliant: bool = False
+):
     """Saves the zip file at `outpath` to the BulkDataArchive model and uploads the
     zip to the MEDIA_ROOT"""
     logger.info("[bulk_data_archive] creating BulkDataArchive record")
     with open(outpath, "rb") as fin:
         archive = BulkDataArchive.objects.create(
-            data=File(fin, name=os.path.basename(outpath)), dataset_type=dataset_type
+            data=File(fin, name=os.path.basename(outpath)),
+            dataset_type=dataset_type,
+            compliant_archive=is_compliant,
         )
     return archive
 
@@ -79,6 +83,27 @@ def create_timetable_archive():
     # Create BulkDataArchive
     timetable_archive = upload_bulk_data_archive(output, dataset_type=dataset_type)
 
+    logger.info(f"[bulk_data_archive] created for timetables: {timetable_archive}")
+
+
+def create_compliant_timetable_archive():
+    """
+    Create an archive of all the compliant timetables.
+    """
+    logger.info("[bulk_data_archive] processing compliant Timetable data")
+    timetable_datasets = (
+        Dataset.objects.add_live_data()
+        .get_active_org()
+        .select_related("live_revision")
+        .get_compliant_timetables()
+        .filter(status=FeedStatus.live.value)
+    )
+    now = timezone.now().strftime("%Y%m%d")
+    output = f"/tmp/bodds_compliant_timetables_archive_{now}.zip"
+    zip_datasets(timetable_datasets, output)
+    timetable_archive = upload_bulk_data_archive(
+        output, dataset_type=TimetableType, is_compliant=True
+    )
     logger.info(f"[bulk_data_archive] created for timetables: {timetable_archive}")
 
 
@@ -111,5 +136,7 @@ def run():
     # order: set expired -> bulk download
 
     create_timetable_archive()
+
+    create_compliant_timetable_archive()
 
     create_fares_archive()

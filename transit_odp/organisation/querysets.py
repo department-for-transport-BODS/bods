@@ -1,7 +1,12 @@
+from datetime import timedelta
+
+import pytz
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.aggregates.general import ArrayAgg
+from django.contrib.postgres.aggregates.general import ArrayAgg, StringAgg
 from django.db import models
 from django.db.models import (
+    BooleanField,
     Case,
     CharField,
     Count,
@@ -16,12 +21,13 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.expressions import Exists, RawSQL
+from django.db.models.expressions import Exists
+from django.db.models.fields import BooleanField
 from django.db.models.functions import Coalesce, Lower, Substr
 from django.db.models.query import Prefetch
+from django.utils import timezone
 from django_hosts import reverse
 
-from config import hosts
 from transit_odp.organisation.constants import (
     AVLType,
     DatasetType,
@@ -30,9 +36,11 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
+from transit_odp.timetables.constants import TXC_21
 from transit_odp.users.constants import AccountType
 
 User = get_user_model()
+
 # flake8: noqa: E501
 
 
@@ -140,6 +148,23 @@ class OrganisationQuerySet(models.QuerySet):
     def add_first_letter(self):
         return self.annotate(first_letter=Lower(Substr("name", 1, 1)))
 
+    def get_organisations_with_txc21_datasets(self):
+        orgs_with_published_datasets = Q(
+            dataset__live_revision__transxchange_version__contains=TXC_21,
+            dataset__live_revision__status=FeedStatus.live.value,
+            dataset__live_revision__is_published=True,
+        )
+        orgs_with_draft_datasets = Q(
+            dataset__revisions__transxchange_version__contains=TXC_21,
+            dataset__live_revision__isnull=True,
+            dataset__revisions__is_published=False,
+            dataset__revisions__status=FeedStatus.success.value,
+        )
+
+        return self.filter(
+            orgs_with_published_datasets | orgs_with_draft_datasets
+        ).distinct()
+
 
 class DatasetQuerySet(models.QuerySet):
     def add_live_data(self):
@@ -170,23 +195,9 @@ class DatasetQuerySet(models.QuerySet):
     def add_admin_area_names(self):
         """Annotate queryset with the comma-separated list of admin names of the
         live revision"""
-        # Approach 3 - Couldn't get the window approach to work as the DISTINCT ON
-        # clause does not affect the window
         return self.annotate(
-            admin_area_names=RawSQL(
-                """
-                SELECT STRING_AGG(DSQ1A."name", ', ') OVER () AS "admin_area_names"
-                FROM (
-                    SELECT DISTINCT ON (DSQ1B."name") DSQ1B.name
-                    FROM "naptan_adminarea" DSQ1B
-                           INNER JOIN "organisation_datasetrevision_admin_areas" DSQ1C
-                           ON (DSQ1B."id" = DSQ1C."adminarea_id")
-                    WHERE DSQ1C."datasetrevision_id" = ("organisation_dataset"."live_revision_id")
-                    ORDER BY DSQ1B."name" ASC
-                ) DSQ1A
-                LIMIT 1
-                """,
-                [],
+            admin_area_names=StringAgg(
+                "live_revision__admin_areas__name", ", ", distinct=True
             )
         )
 
@@ -206,6 +217,25 @@ class DatasetQuerySet(models.QuerySet):
                 to_attr="draft_revisions",
             ),
         )
+
+    def add_errored_draft_flag(self):
+        from transit_odp.organisation.models import DatasetRevision
+
+        subquery = (
+            DatasetRevision.objects.get_draft()
+            .filter(dataset_id=OuterRef("id"))
+            .order_by("-created")
+            .values("status")[:1]
+        )
+        qs = self.annotate(
+            draft_status=Subquery(subquery),
+            has_errored_draft=Case(
+                When(draft_status="error", then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            ),
+        )
+        return qs
 
     def add_draft_revision_data(self, organisation, dataset_types=None):
         """ Adds """
@@ -240,6 +270,15 @@ class DatasetQuerySet(models.QuerySet):
 
                 """,
             [organisation.id, types],
+        )
+
+    def add_nocs(self):
+        return self.annotate(
+            nocs=StringAgg(
+                "live_revision__txc_file_attributes__national_operator_code",
+                ", ",
+                distinct=True,
+            )
         )
 
     def agg_global_feed_stats(self, dataset_type: DatasetType, organisation_id: int):
@@ -278,13 +317,21 @@ class DatasetQuerySet(models.QuerySet):
             total_fare_products=fare_product_count,
         )
 
-    # Filters
-
     def get_published(self):
         """Filter queryset to datasets which have a live_revision,
         i.e. a published revision"""
 
         return self.filter(live_revision__isnull=False)
+
+    def get_live_dq_score(self):
+        from transit_odp.data_quality.models.report import DataQualityReport
+
+        latest_score_subquery = (
+            DataQualityReport.objects.filter(revision_id=OuterRef("live_revision__id"))
+            .order_by("-id")
+            .values_list("score")[:1]
+        )
+        return self.annotate(score=Subquery(latest_score_subquery))
 
     def get_active_org(self):
         return self.exclude(organisation__is_active=False)
@@ -292,11 +339,15 @@ class DatasetQuerySet(models.QuerySet):
     def get_dataset_type(self, dataset_type: DatasetType):
         return self.filter(dataset_type=dataset_type)
 
-    def get_active(self):
+    def get_active(self, dataset_type=None):
         """Filter queryset to datasets which have a published revision in a
         non-expired state"""
         exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
-        return self.get_published().exclude(live_revision__status__in=exclude_status)
+        qs = self.get_published().exclude(live_revision__status__in=exclude_status)
+        if dataset_type is not None:
+            qs = qs.filter(dataset_type=dataset_type)
+
+        return qs
 
     def search(self, keywords):
         """Searches the dataset and live_revision using keywords"""
@@ -337,8 +388,6 @@ class DatasetQuerySet(models.QuerySet):
         # its local. Therefore, exclude any draft revisions
         return self.get_published().filter(live_revision__url_link="")
 
-    # Other
-
     def select_related_live_revision(self, qs=None):
         """
         Prefetch each dataset's live revision for efficient access, i.e.
@@ -370,6 +419,112 @@ class DatasetQuerySet(models.QuerySet):
             Prefetch("revisions", queryset=qs, to_attr="_live_revision")
         )
 
+    def get_active_remote_datasets(self, dataset_type=None):
+        """Return a list of all the datasets that were uploaded via url."""
+        qs = (
+            self.select_related("organisation")
+            .select_related("live_revision")
+            .select_related("live_revision__availability_retry_count")
+            .get_active()
+            .get_remote()
+        )
+        if dataset_type is not None:
+            qs = qs.filter(dataset_type=dataset_type)
+        return qs
+
+    def get_local_timetables(self):
+        return self.get_local().get_active().filter(dataset_type=TimetableType)
+
+    def get_remote_timetables(self):
+        return self.get_active_remote_datasets(dataset_type=TimetableType)
+
+    def get_available_remote_timetables(self):
+        count_is_zero = Q(live_revision__availability_retry_count__count=0)
+        count_is_null = Q(live_revision__availability_retry_count__isnull=True)
+        return self.get_remote_timetables().filter(count_is_zero | count_is_null)
+
+    def get_unavailable_remote_timetables(self):
+        """Return a list of all the Timetable datasets that were uploaded via url and
+        have a retry count greater than zero (have been unavailable)."""
+        count_gt_zero = Q(live_revision__availability_retry_count__count__gt=0)
+        return self.get_remote_timetables().filter(count_gt_zero)
+
+    def get_remote_fares(self):
+        """Return a list of all the Fares datasets that were uploaded via url."""
+        return self.get_active_remote_datasets(dataset_type=FaresType)
+
+    def get_available_remote_fares(self):
+        count_is_zero = Q(live_revision__availability_retry_count__count=0)
+        count_is_null = Q(live_revision__availability_retry_count__isnull=True)
+        return self.get_remote_fares().filter(count_is_zero | count_is_null)
+
+    def get_unavailable_remote_fares(self):
+        """Return a list of all the Timetable datasets that were uploaded via url and
+        have a retry count greater than zero (have been unavailable)."""
+        count_gt_zero = Q(live_revision__availability_retry_count__count__gt=0)
+        return self.get_remote_fares().filter(count_gt_zero)
+
+    def add_pti_exists(self):
+        from transit_odp.data_quality.models.report import PTIObservation
+
+        observations = PTIObservation.objects.filter(
+            revision=OuterRef("live_revision_id")
+        )
+        non_zero_count = Q(live_revision__pti_result__count__gt=0)
+        qs = self.annotate(has_pti_observations=Exists(observations))
+        return qs.annotate(
+            pti_exists=Case(
+                When(has_pti_observations=True, then=True),
+                When(non_zero_count, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
+    def add_is_after_pti_compliance_date(self):
+        filter_date = settings.PTI_START_DATE.replace(tzinfo=pytz.utc)
+        is_after_pti_compliance_date = Q(live_revision__created__gt=filter_date)
+        return self.annotate(
+            is_after_pti_compliance_date=Case(
+                When(is_after_pti_compliance_date, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
+    def add_is_live_pti_compliant(self):
+        return (
+            self.add_pti_exists()
+            .add_is_after_pti_compliance_date()
+            .annotate(
+                is_pti_compliant=Case(
+                    When(
+                        Q(pti_exists=False, is_after_pti_compliance_date=True),
+                        then=True,
+                    ),
+                    When(
+                        Q(pti_exists=True, is_after_pti_compliance_date=True),
+                        then=False,
+                    ),
+                    default=None,
+                    output_field=BooleanField(),
+                ),
+            )
+        )
+
+    def filter_pti_compliant(self):
+        return self.add_is_live_pti_compliant().filter(is_pti_compliant=True)
+
+    def get_compliant_timetables(self):
+        qs = (
+            self.get_active_org()
+            .get_active()
+            .select_related("live_revision")
+            .filter(dataset_type=TimetableType)
+            .filter_pti_compliant()
+        )
+        return qs
+
 
 class DatasetRevisionQuerySet(models.QuerySet):
     def get_live_revisions(self):
@@ -379,19 +534,6 @@ class DatasetRevisionQuerySet(models.QuerySet):
         # Other methods such as a self-JOIN on
         # a GROUP BY would be very difficult to achieve as you would need a separate
         # view/ORM binding as well as a proxy
-
-        # The generated SQL looks like:
-        """
-        SELECT *
-        FROM "organisation_datasetrevision"
-        WHERE "organisation_datasetrevision"."created" = (
-            SELECT U0."created"
-            FROM "organisation_datasetrevision" U0
-            WHERE (U0."dataset_id" = ("organisation_datasetrevision"."dataset_id") AND U0."is_published" = True)
-            ORDER BY U0."created" DESC
-            LIMIT 1
-        )
-        """
         return self.filter(dataset__live_revision=F("id"))
 
     def get_published(self):
@@ -441,21 +583,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
         """Annotate queryset with the comma-separated list of admin names of the
         live revision"""
         return self.annotate(
-            admin_area_names=RawSQL(
-                """
-                SELECT STRING_AGG(DSQ1A."name", ', ') OVER () AS "admin_area_names"
-                FROM (
-                    SELECT DISTINCT ON (DSQ1B."name") DSQ1B.name
-                    FROM "naptan_adminarea" DSQ1B
-                           INNER JOIN "organisation_datasetrevision_admin_areas" DSQ1C
-                           ON (DSQ1B."id" = DSQ1C."adminarea_id")
-                    WHERE DSQ1C."datasetrevision_id" = ("organisation_datasetrevision"."id")
-                    ORDER BY DSQ1B."name" ASC
-                ) DSQ1A
-                LIMIT 1
-                """,
-                [],
-            )
+            admin_area_names=StringAgg("admin_areas__name", ", ", distinct=True)
         )
 
     def add_error_code(self):
@@ -467,3 +595,39 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .values("error_code")[:1]
         )
         return self.annotate(error_code=Coalesce(Subquery(subquery), Value("")))
+
+    def add_latest_task_progress(self):
+        from transit_odp.pipelines.models import DatasetETLTaskResult
+
+        subquery = Subquery(
+            DatasetETLTaskResult.objects.filter(revision=OuterRef("id"))
+            .order_by("-created")
+            .values("progress")[:1]
+        )
+        return self.annotate(latest_task_progress=subquery)
+
+    def add_latest_task_status(self):
+        from transit_odp.pipelines.models import DatasetETLTaskResult
+
+        subquery = Subquery(
+            DatasetETLTaskResult.objects.filter(revision=OuterRef("id"))
+            .order_by("-created")
+            .values("status")[:1]
+        )
+        return self.annotate(latest_task_status=subquery)
+
+    def get_stuck_revisions(self):
+        now = timezone.now()
+        yesterday = now - timedelta(days=1)
+        return (
+            self.add_latest_task_status()
+            .add_latest_task_progress()
+            .filter(
+                dataset__dataset_type=TimetableType,
+                latest_task_progress__lt=100,
+                created__lt=yesterday,
+            )
+            .exclude(
+                latest_task_status__in=["FAILURE", "SUCCESS"],
+            )
+        )

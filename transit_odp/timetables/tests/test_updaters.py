@@ -1,114 +1,101 @@
-from unittest.mock import Mock, patch
+from datetime import datetime
+from unittest.mock import patch
 
 import pytest
+import pytz
+from django.test import override_settings
 
-from transit_odp.organisation.constants import TimetableType
-from transit_odp.organisation.factories import DatasetFactory
-from transit_odp.timetables.exceptions import TransXChangeException
-from transit_odp.timetables.updaters import TimetableUpdater
+from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.organisation.updaters import ERROR
+from transit_odp.timetables.tasks import task_reprocess_file_based_datasets
 
 pytestmark = pytest.mark.django_db
 
-UPDATERS_MODULE = "transit_odp.timetables.updaters."
-FIRST_NOTIFICATION = UPDATERS_MODULE + "send_feed_monitor_fail_first_try_notification"
-LAST_NOTIFICATION = UPDATERS_MODULE + "send_feed_monitor_fail_final_try_notification"
-URL_AVAILABLE = UPDATERS_MODULE + "send_endpoint_available_notification"
-REQUESTS = UPDATERS_MODULE + "requests"
+PIPELINE_TASK = "transit_odp.timetables.tasks.task_dataset_pipeline"
 
 
-class TestTimetableUpdater:
-    def test_retry_count(self):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        updater = TimetableUpdater(dataset, mock_task)
-        assert updater.retry_count == 0
-        updater.retry_count += 1
-        dataset.refresh_from_db()
-        assert updater.retry_count == 1
-        assert dataset.get_availability_retry_count().count == 1
-        updater.reset_retry_count()
-        dataset.refresh_from_db()
-        assert updater.retry_count == 0
-        assert dataset.get_availability_retry_count().count == 0
+@override_settings(PTI_START_DATE=datetime(2021, 5, 24))
+def test_reprocess_dataset_create_new_revision():
+    """
+    Given that a dataset has not be updated since PTI_START_DATE.
+    Ensure that a new revision is created and the task is called with the correct
+    details.
+    """
+    live_revision = DatasetRevisionFactory(
+        upload_file__data=b"data",
+        created=datetime(2021, 5, 1, tzinfo=pytz.utc),
+    )
+    dataset = live_revision.dataset
 
-    def test_missing_url(self):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        updater = TimetableUpdater(dataset, mock_task)
-        assert updater.url == ""
-        with pytest.raises(TransXChangeException) as exc:
-            updater._get_content("")
-            expected_msg = f"Dataset {updater.pk} => Unable to check for new data."
-            assert str(exc.value) == expected_msg
+    with patch(PIPELINE_TASK) as task:
+        task_reprocess_file_based_datasets()
+        assert dataset.revisions.count() == 2
+        new_revision = dataset.revisions.order_by("created").last()
+        assert new_revision.upload_file == dataset.live_revision.upload_file
+        task.apply_async.assert_called_once_with(
+            args=(new_revision.id,), kwargs={"do_publish": True}
+        )
 
-    @patch(FIRST_NOTIFICATION)
-    def test_timetable_unavailable_first_try(self, send_notification):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        updater = TimetableUpdater(dataset, mock_task)
 
-        updater.retry_count = 2
-        updater._timetable_unavailable()
-        send_notification.assert_not_called()
-        assert updater._dataset.live_revision.status == "live"
+@override_settings(PTI_START_DATE=datetime(2021, 5, 24))
+def test_reprocess_dataset_dont_create_new_revision():
+    live_revision = DatasetRevisionFactory(
+        upload_file__data=b"data",
+        created=datetime(2021, 5, 26, tzinfo=pytz.utc),
+    )
+    dataset = live_revision.dataset
+    with patch(PIPELINE_TASK) as task:
+        task_reprocess_file_based_datasets()
+        assert dataset.revisions.count() == 1
+        new_revision = dataset.revisions.order_by("created").last()
+        assert new_revision.upload_file == dataset.live_revision.upload_file
+        task.assert_not_called()
 
-        updater.reset_retry_count()
-        updater._timetable_unavailable()
-        send_notification.assert_called_once()
-        assert updater._dataset.live_revision.status == "live"
 
-    @patch(LAST_NOTIFICATION)
-    def test_timetable_unavailable_final_try(self, send_notification):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        updater = TimetableUpdater(dataset, mock_task)
+@override_settings(PTI_START_DATE=datetime(2021, 5, 24))
+def test_reprocess_dataset_delete_draft():
+    live_revision = DatasetRevisionFactory(
+        upload_file__data=b"data",
+        created=datetime(2021, 5, 1, tzinfo=pytz.utc),
+    )
+    dataset = live_revision.dataset
+    draft = DatasetRevisionFactory(dataset=dataset, is_published=False)
 
-        updater.retry_count = 6
-        updater._timetable_unavailable()
-        send_notification.assert_called_once()
-        assert updater._dataset.live_revision.status == "expired"
+    assert dataset.revisions.count() == 2
 
-    @patch(URL_AVAILABLE)
-    def test_url_available(self, send_notification):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        updater = TimetableUpdater(dataset, mock_task)
-        updater.retry_count = 0
+    with patch(PIPELINE_TASK) as task:
+        task_reprocess_file_based_datasets()
+        assert dataset.revisions.count() == 2
+        new_revision = dataset.revisions.order_by("created").last()
+        assert new_revision.upload_file == dataset.live_revision.upload_file
+        task.apply_async.assert_called_once_with(
+            args=(new_revision.id,), kwargs={"do_publish": True}
+        )
+        assert new_revision.id != draft.id
 
-        updater._url_available()
-        send_notification.assert_not_called()
 
-        updater.retry_count = 1
-        updater._url_available()
-        send_notification.assert_called_once()
-        assert updater.retry_count == 0
+@override_settings(PTI_START_DATE=datetime(2021, 5, 24))
+def test_reprocess_dataset_errored_draft():
+    """
+    GIVEN that the current draft is in the error status
+    THEN dataset should not have been reprocessed
+    """
+    live_revision = DatasetRevisionFactory(
+        upload_file__data=b"data",
+        created=datetime(2021, 5, 1, tzinfo=pytz.utc),
+    )
+    dataset = live_revision.dataset
+    draft = DatasetRevisionFactory(
+        dataset=dataset,
+        is_published=False,
+        status=ERROR,
+        created=datetime(2021, 5, 26, tzinfo=pytz.utc),
+    )
 
-    def test_from_pk(self):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        updater = TimetableUpdater.from_pk(dataset.pk, mock_task)
-        assert dataset == updater._dataset
-
-    @patch(URL_AVAILABLE)
-    @patch(REQUESTS)
-    def test_has_been_updated(self, mock_requests, send_notification):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        mock_requests.get.return_value = Mock(content=b"<Updated Data>", ok=True)
-        updater = TimetableUpdater(dataset, mock_task)
-
-        has_updated = updater.has_new_update
-        assert has_updated
-        send_notification.assert_not_called()
-
-    @patch(URL_AVAILABLE)
-    @patch(REQUESTS)
-    def test_has_not_been_updated(self, mock_requests, send_notification):
-        dataset = DatasetFactory(dataset_type=TimetableType)
-        mock_task = Mock()
-        mock_requests.get.return_value = Mock(content=b"", ok=True)
-        updater = TimetableUpdater(dataset, mock_task)
-
-        has_updated = updater.has_new_update
-        assert not has_updated
-        send_notification.assert_not_called()
+    assert dataset.revisions.count() == 2
+    with patch(PIPELINE_TASK) as task:
+        task_reprocess_file_based_datasets()
+        assert dataset.revisions.count() == 2
+        last_revision = dataset.revisions.order_by("created").last()
+        assert last_revision.id == draft.id
+        task.apply_async.assert_not_called()

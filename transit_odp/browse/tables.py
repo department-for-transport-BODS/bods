@@ -101,7 +101,10 @@ class DatasetSubscriptionTable(GovUkTable):
 
     id = tables.Column(
         verbose_name="Data set ID",
-        attrs={"a": {"class": "govuk-link"}},
+        attrs={
+            "a": {"class": "govuk-link"},
+            "th": {"class": "govuk-table__header", "width": "20%"},
+        },
         linkify=lambda record: reverse("feed-detail", args=[record.id], host="data")
         if record.dataset_type == DatasetType.TIMETABLE.value
         else reverse("avl-feed-detail", args=[record.id], host="data")
@@ -110,7 +113,10 @@ class DatasetSubscriptionTable(GovUkTable):
     )
 
     action = tables.Column(
-        attrs={"a": {"class": "govuk-link"}},
+        attrs={
+            "a": {"class": "govuk-link"},
+            "th": {"class": "govuk-table__header", "width": "20%"},
+        },
         empty_values=(),
         orderable=False,
         linkify=lambda record: reverse(

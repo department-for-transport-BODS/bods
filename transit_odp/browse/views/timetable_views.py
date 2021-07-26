@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from allauth.account.adapter import get_adapter
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.transaction import non_atomic_requests
@@ -13,6 +14,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import DetailView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView
+from django_filters.constants import EMPTY_VALUES
 from django_hosts import reverse
 from django_tables2 import SingleTableView
 
@@ -31,7 +33,8 @@ from transit_odp.common.view_mixins import (
     BODSBaseView,
     DownloadView,
 )
-from transit_odp.organisation.constants import DatasetType, FeedStatus
+from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.organisation.constants import DatasetType, FeedStatus, TimetableType
 from transit_odp.organisation.models import (
     Dataset,
     DatasetRevision,
@@ -61,7 +64,9 @@ class DatasetDetailView(DetailView):
             .get_published()
             .add_admin_area_names()
             .add_live_data()
+            .add_nocs()
             .select_related("live_revision")
+            .add_is_live_pti_compliant()
         )
 
     def get_context_data(self, **kwargs):
@@ -69,15 +74,24 @@ class DatasetDetailView(DetailView):
 
         dataset = self.object
         live_revision = dataset.live_revision
+        report = live_revision.report.order_by("-created").first()
         user = self.request.user
 
+        kwargs["report_id"] = report.id if report else None
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         kwargs["admin_areas"] = self.object.admin_area_names
+        # Once all the reports are generated we should probably use the queryset
+        # annotation get_live_dq_score and calculate the rag from that.
+        kwargs["dq_score"] = get_data_quality_rag(report) if report else None
 
         # Handle errors produced by pipeline
         task = live_revision.etl_results.latest()
         error_code = task.error_code
         kwargs["error"] = bool(error_code)
+        kwargs["show_pti"] = (
+            live_revision.created.date() >= settings.PTI_START_DATE.date()
+        )
+        kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
 
         is_subscribed = None
         feed_api = None
@@ -296,8 +310,8 @@ class SearchView(BaseFilterView):
         form = self.filterset.form
         translated_query_params = {}
         for key, value in form.cleaned_data.items():
-            # skip blank values
-            if not value:
+            if value in EMPTY_VALUES:
+                # skip blank values
                 continue
 
             # Display the timestamps
@@ -340,6 +354,7 @@ class SearchView(BaseFilterView):
             .add_organisation_name()
             .add_live_data()
             .add_admin_area_names()
+            .add_is_live_pti_compliant()
         )
 
         # Get search terms
@@ -367,8 +382,12 @@ class DownloadTimetablesView(BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["show_bulk_archive_url"] = BulkDataArchive.objects.filter(
-            dataset_type=DatasetType.TIMETABLE.value
+        bulk_timetable = BulkDataArchive.objects.filter(dataset_type=TimetableType)
+        context["show_bulk_archive_url"] = bulk_timetable.filter(
+            compliant_archive=False
+        ).exists()
+        context["show_bulk_compliant_archive_url"] = bulk_timetable.filter(
+            compliant_archive=True
         ).exists()
 
         # Get the change archives from the last 7 days. There should be at most one per
@@ -407,8 +426,28 @@ class DownloadBulkDataArchiveView(DownloadView):
     def get_object(self, queryset=None):
         try:
             return BulkDataArchive.objects.filter(
-                dataset_type=DatasetType.TIMETABLE.value
+                dataset_type=TimetableType, compliant_archive=False
             ).earliest()  # as objects are already ordered by '-created' in model Meta
+        except BulkDataArchive.DoesNotExist:
+            raise Http404(
+                _("No %(verbose_name)s found matching the query")
+                % {"verbose_name": BulkDataArchive._meta.verbose_name}
+            )
+
+    def get_download_file(self):
+        return self.object.data
+
+
+class DownloadCompliantBulkDataArchiveView(DownloadView):
+    def get_object(self, queryset=None):
+        try:
+            return (
+                BulkDataArchive.objects.filter(
+                    dataset_type=TimetableType, compliant_archive=True
+                )
+                .order_by("-created")
+                .first()
+            )
         except BulkDataArchive.DoesNotExist:
             raise Http404(
                 _("No %(verbose_name)s found matching the query")

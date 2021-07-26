@@ -16,7 +16,6 @@ from transit_odp.data_quality.models.querysets import (
     JourneyWithoutHeadsignQuerySet,
     LineExpiredQuerySet,
     LineMissingBlockIDQuerySet,
-    MissingNOCQuerySet,
     ServiceLinkMissingStopQuerySet,
     SlowLinkQuerySet,
     SlowTimingQuerySet,
@@ -187,20 +186,6 @@ class IncorrectNOCWarning(DataQualityWarningBase):
 
     class Meta(DataQualityWarningBase.Meta):
         unique_together = (("report", "noc"),)
-
-
-class SchemaNotTXC24Warning(DataQualityWarningBase):
-    schema = models.TextField()
-
-    class Meta(DataQualityWarningBase.Meta):
-        unique_together = (("schema", "report"),)
-
-
-class MissingNOCWarning(DataQualityWarningBase):
-    objects = MissingNOCQuerySet.as_manager()
-
-    class Meta(DataQualityWarningBase.Meta):
-        pass
 
 
 class TimingPatternWarningBase(DataQualityWarningBase):
@@ -405,8 +390,6 @@ WARNING_MODELS = [
     JourneyDuplicateWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
-    MissingNOCWarning,
-    SchemaNotTXC24Warning,
     ServiceLinkMissingStopWarning,
     SlowLinkWarning,
     SlowTimingWarning,

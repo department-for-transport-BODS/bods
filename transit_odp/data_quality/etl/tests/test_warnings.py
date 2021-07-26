@@ -24,6 +24,7 @@ from transit_odp.data_quality.models.warnings import (
 )
 from transit_odp.data_quality.tasks import run_dqs_report_etl_pipeline
 from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.pipelines.factories import DataQualityTaskFactory
 from transit_odp.pipelines.pipelines.dqs_report_etl import extract, transform_model
 from transit_odp.users.constants import AgentUserType
 
@@ -158,6 +159,7 @@ def test_notify_on_dqs_completion(mailoutbox):
         file__from_path=reportfile,
         revision__upload_file__from_path=TXCFILE,
     )
+    DataQualityTaskFactory(report=dq_report)
     run_dqs_report_etl_pipeline(dq_report.id)
     mail = mailoutbox[0]
 
@@ -176,6 +178,7 @@ def test_notify_agent_on_dqs_completion(mailoutbox):
         file__from_path=reportfile,
         revision=revision,
     )
+    DataQualityTaskFactory(report=dq_report)
     run_dqs_report_etl_pipeline(dq_report.id)
     mail = mailoutbox[0]
 

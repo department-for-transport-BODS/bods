@@ -14,9 +14,10 @@ if not settings.configured:
 
 app = Celery("transit_odp")
 
-TIMETABLE_TASKS: Final = "transit_odp.timetables.tasks."
 PIPELINE_TASKS: Final = "transit_odp.pipelines.tasks."
+TIMETABLE_TASKS: Final = "transit_odp.timetables.tasks."
 AVL_TASKS: Final = "transit_odp.avl.tasks."
+FARES_TASKS: Final = "transit_odp.fares.tasks."
 
 
 class CeleryAppConfig(AppConfig):
@@ -45,6 +46,22 @@ class CeleryAppConfig(AppConfig):
                 "task": TIMETABLE_TASKS + "task_retry_unavailable_timetables",
                 "schedule": crontab(minute=0),
             },
+            "deactivate_txc_2.1_datasets": {
+                "task": TIMETABLE_TASKS + "task_deactivate_txc_2_1",
+                "schedule": crontab(minute=0, hour=2),
+            },
+            "monitor_fares_dataset": {
+                "task": FARES_TASKS + "task_update_remote_fares",
+                "schedule": crontab(minute=0, hour=4),
+            },
+            "monitor_fares_dataset_afternoon": {
+                "task": FARES_TASKS + "task_update_remote_fares",
+                "schedule": crontab(minute=0, hour=16),
+            },
+            "retry_unavailable_fares_datasets": {
+                "task": FARES_TASKS + "task_retry_unavailable_fares",
+                "schedule": crontab(minute=0),
+            },
             # scheduled 1 hour after task_set_expired_feeds to ensure archive
             # excluded newly expired datasets
             "create_bulk_data_archive": {
@@ -65,7 +82,7 @@ class CeleryAppConfig(AppConfig):
             },
             "dqs_monitor": {
                 "task": PIPELINE_TASKS + "task_dqs_monitor",
-                "schedule": 10.0,
+                "schedule": 60.0,
             },
             "monitor_avl_feeds": {
                 "task": PIPELINE_TASKS + "task_monitor_avl_feeds",
@@ -82,6 +99,14 @@ class CeleryAppConfig(AppConfig):
             "save_operational_stats": {
                 "task": "transit_odp.site_admin.tasks.task_save_operational_stats",
                 "schedule": crontab(minute=0, hour=23),
+            },
+            "timetable_upgrade_task": {
+                "task": TIMETABLE_TASKS + "task_reprocess_file_based_datasets",
+                "schedule": crontab(minute=0, hour="0, 2, 4, 18, 20, 22"),
+            },
+            "log_stuck_tasks": {
+                "task": TIMETABLE_TASKS + "task_log_stuck_revisions",
+                "schedule": crontab(minute=0, hour=18),
             },
         }
 
@@ -103,8 +128,3 @@ class CeleryAppConfig(AppConfig):
             raven_client = RavenClient(dsn=settings.RAVEN_CONFIG["dsn"])
             raven_register_logger_signal(raven_client)
             raven_register_signal(raven_client)
-
-
-@app.task(bind=True)
-def debug_task(self):
-    print(f"Request: {self.request!r}")  # pragma: no cover

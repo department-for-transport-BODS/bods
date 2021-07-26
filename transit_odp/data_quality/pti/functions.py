@@ -5,7 +5,11 @@ from typing import List, Union
 from dateutil import parser
 from lxml import etree
 
-from transit_odp.data_quality.pti.constants import BANK_HOLIDAYS, OPERATION_DAYS
+from transit_odp.data_quality.pti.constants import (
+    BANK_HOLIDAYS,
+    OPERATION_DAYS,
+    SCOTTISH_BANK_HOLIDAYS,
+)
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
 
@@ -128,15 +132,6 @@ def validate_line_id(context, lines):
     return line_id.startswith(expected_line_id)
 
 
-def has_unique_links(context, sections):
-    section = sections[0]
-    ns = {"x": section.nsmap.get(None)}
-    links = section.xpath("x:RouteLink", namespaces=ns)
-    xpath = "concat(string(x:From/x:StopPointRef),'-', string(x:To/x:StopPointRef))"
-    refs = [link.xpath(xpath, namespaces=ns) for link in links]
-    return len(refs) == len(set(refs))
-
-
 def validate_run_time(context, timing_links):
     """
     Validates journey timings.
@@ -213,4 +208,11 @@ def validate_bank_holidays(context, bank_holidays):
 
     # .getchildren() will return comments this filters out the comments
     holidays = [h for h in holidays if h]
-    return sorted(BANK_HOLIDAYS) == sorted(holidays)
+
+    # duplicate check
+    if sorted(list(set(holidays))) != sorted(holidays):
+        return False
+
+    # optional Scottish holiday check
+    scottish_removed = list(set(holidays) - set(SCOTTISH_BANK_HOLIDAYS))
+    return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)

@@ -2,7 +2,7 @@ from typing import Iterable, List, Optional, Union
 
 from transit_odp.bods.domain.entities import Publisher, SiteAdmin, User
 from transit_odp.bods.domain.entities.identity import OrganisationId, UserId
-from transit_odp.bods.domain.entities.user import Email
+from transit_odp.bods.domain.entities.user import AgentUser, Email
 from transit_odp.users import models
 from transit_odp.users.constants import AccountType
 
@@ -40,30 +40,39 @@ def map_orm_to_model(record: models.User) -> UserType:
     Maps the User model into a specific subtype of User
     """
     mute_all_dataset_notifications = record.settings.mute_all_dataset_notifications
-    if record.account_type == AccountType.developer.value:
-        return User(
+    if record.is_agent_user:
+        organisation_ids = [
+            OrganisationId(id=org.id) for org in record.organisations.all()
+        ]
+        return AgentUser(
             id=UserId(id=record.id),
             email=Email(record.email),
             mute_all_dataset_notifications=mute_all_dataset_notifications,
+            organisation_ids=organisation_ids,
+            is_admin=False,
+            notify_avl_unavailable=record.settings.notify_avl_unavailable,
         )
-    elif (record.account_type == AccountType.org_staff.value) or (
-        record.account_type == AccountType.org_admin.value
-    ):
-        is_admin = record.account_type == AccountType.org_admin.value
+    elif record.is_org_admin or record.is_standard_user:
         return Publisher(
             id=UserId(id=record.id),
             email=Email(record.email),
             mute_all_dataset_notifications=mute_all_dataset_notifications,
             organisation_id=OrganisationId(id=record.organisation_id),
-            is_admin=is_admin,
+            is_admin=record.is_org_admin,
             notify_avl_unavailable=record.settings.notify_avl_unavailable,
         )
-    else:
+    elif record.is_site_admin:
         settings = record.settings
         return SiteAdmin(
             id=UserId(id=record.id),
             email=Email(record.email),
             mute_all_dataset_notifications=settings.mute_all_dataset_notifications,
+        )
+    else:
+        return User(
+            id=UserId(id=record.id),
+            email=Email(record.email),
+            mute_all_dataset_notifications=mute_all_dataset_notifications,
         )
 
 

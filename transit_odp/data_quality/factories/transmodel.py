@@ -34,6 +34,7 @@ class DataQualityReportFactory(factory.DjangoModelFactory):
     revision = factory.SubFactory(DatasetRevisionFactory)
     summary = factory.RelatedFactory(DataQualityReportSummaryFactory, "report")
     file = factory.django.FileField(filename="report.json")
+    score = 0.33
 
     class Meta:
         model = models.DataQualityReport

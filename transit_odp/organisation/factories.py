@@ -113,6 +113,7 @@ class DatasetRevisionFactory(factory.django.DjangoModelFactory):
     comment = factory.Faker("paragraph")
     status = FeedStatus.live.value
     is_published = True
+    transxchange_version = 2.4
     published_at = factory.LazyAttribute(
         lambda obj: timezone.now() if (obj.is_published or obj.published_by) else None
     )
