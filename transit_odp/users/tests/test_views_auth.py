@@ -13,7 +13,10 @@ from django_hosts.resolvers import get_host, reverse, reverse_host
 
 import config.hosts
 from transit_odp.common.adapters import AccountAdapter
-from transit_odp.common.test_utils import add_message_middleware, add_session_middleware
+from transit_odp.common.tests.utils import (
+    add_message_middleware,
+    add_session_middleware,
+)
 from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.organisation.models import Organisation
 from transit_odp.users.constants import AccountType

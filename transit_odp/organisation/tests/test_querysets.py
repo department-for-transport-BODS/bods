@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import factory
 import faker
 import pytest
 import pytz
@@ -10,6 +11,7 @@ from freezegun import freeze_time
 
 from config import hosts
 from transit_odp.data_quality.factories.report import PTIObservationFactory
+from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import (
     AVLType,
@@ -20,7 +22,9 @@ from transit_odp.organisation.constants import (
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
+    FaresDatasetRevisionFactory,
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.pipelines.factories import (
@@ -120,9 +124,81 @@ class TestOrganisationQuerySet:
 
         fetched_org = Organisation.objects.add_published_dataset_count_types().first()
 
-        assert fetched_org.published_avl_count is None
+        assert fetched_org.published_avl_count == 0
         assert fetched_org.published_fares_count == 1
         assert fetched_org.published_timetable_count == 1
+
+    def test_add_unregistered_service_count(self):
+        organisation = OrganisationFactory(licence_required=True)
+        timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
+        TXCFileAttributesFactory.create_batch(
+            3,
+            revision=timetable_revision,
+            service_code=factory.Sequence(lambda n: f"UZ0000{n:03}"),
+        )
+        TXCFileAttributesFactory.create_batch(
+            2,
+            revision=timetable_revision,
+        )
+
+        orgs = Organisation.objects.add_unregistered_service_count()
+        org = orgs.first()
+        assert org.unregistered_service_count == 3
+
+    def test_add_number_of_services_valid_operating_date(self):
+        organisation = OrganisationFactory(licence_required=True)
+        now = datetime.today()
+        before = now - timedelta(days=2)
+        after = now + timedelta(days=2)
+
+        timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
+        TXCFileAttributesFactory.create_batch(
+            3,
+            revision=timetable_revision,
+            operating_period_start_date=before,
+            operating_period_end_date=after,
+        )
+        TXCFileAttributesFactory.create_batch(
+            2,
+            revision=timetable_revision,
+            operating_period_start_date=after,
+        )
+
+        orgs = Organisation.objects.add_number_of_services_valid_operating_date()
+        org = orgs.first()
+        assert org.number_of_services_valid_operating_date == 3
+
+    def test_add_published_services_with_future_start_date(self):
+        organisation = OrganisationFactory(licence_required=True)
+        now = datetime.today()
+        before = now - timedelta(days=2)
+        after = now + timedelta(days=2)
+
+        timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
+        TXCFileAttributesFactory.create_batch(
+            3,
+            revision=timetable_revision,
+            operating_period_start_date=before,
+            operating_period_end_date=after,
+        )
+        TXCFileAttributesFactory.create_batch(
+            2,
+            revision=timetable_revision,
+            operating_period_start_date=after,
+        )
+
+        orgs = Organisation.objects.add_published_services_with_future_start_date()
+        org = orgs.first()
+        assert org.published_services_with_future_start_date == 2
+
+    def test_number_of_fares_products(self):
+        organisation = OrganisationFactory(licence_required=True, nocs=0)
+        fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
+        FaresMetadataFactory(revision=fares_revision, num_of_fare_products=10)
+
+        orgs = Organisation.objects.add_number_of_fare_products()
+        org = orgs.first()
+        assert org.total_fare_products == 10
 
 
 @pytest.fixture

@@ -57,7 +57,8 @@ def test_stop_point_loader_already_exists():
 
 def test_service_loader():
     lines = LineFactory.create_batch(3)
-    loader = ServicesLoader()
+    model = Mock(spec=Model, lines=lines)
+    loader = ServicesLoader(model)
     loader.load(lines)
     assert Service.objects.all().count() == len(lines)
 
@@ -289,7 +290,7 @@ def test_service_pattern_service_link_loader():
         service_links=service_links,
     )
 
-    ServicesLoader().load(lines)
+    ServicesLoader(model).load(lines)
     StopPointLoader().load(stops)
     ServiceLinkLoader(model).load(service_links)
     ServicePatternLoader(model).load(service_patterns)
@@ -333,7 +334,7 @@ def test_timing_pattern_loader():
         service_patterns=service_patterns,
         timing_patterns=timing_patterns,
     )
-    ServicesLoader().load(lines)
+    ServicesLoader(model).load(lines)
     ServicePatternLoader(model).load(service_patterns)
 
     loader = TimingPatternLoader(model)
@@ -380,7 +381,7 @@ def test_load_timing_pattern_stop_loader():
         service_patterns=service_patterns,
         timing_patterns=timing_patterns,
     )
-    ServicesLoader().load(lines)
+    ServicesLoader(model).load(lines)
     StopPointLoader().load(stops)
     ServicePatternLoader(model).load(service_patterns)
     ServicePatternStopLoader(model).load(service_patterns)
@@ -412,7 +413,7 @@ def test_vehicle_journey_loader():
         timing_patterns=timing_patterns,
         vehicle_journeys=vehicle_journeys,
     )
-    ServicesLoader().load(lines)
+    ServicesLoader(model).load(lines)
     ServicePatternLoader(model).load(service_patterns)
     TimingPatternLoader(model).load(timing_patterns)
 

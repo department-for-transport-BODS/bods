@@ -39,13 +39,13 @@
         {% blocktrans %}
           You can view the data feed on your
         {% endblocktrans %}
-        <a class="govuk-link" href={% url 'avl:feed-list' pk1=pk1 host hosts.publish %}>{% trans 'data feeds page' %}</a>
+        <a class="govuk-link" href={% url 'avl:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>{% trans 'data feeds page' %}</a>
         {% blocktrans %}
           or by clicking the button below. The data will now be live for everyone else to see.
         {% endblocktrans %}
       </p>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
-      <a role="button" class="govuk-button" href="{% url 'avl:feed-detail' pk1=pk1 pk=pk host hosts.publish %}">
+      <a role="button" class="govuk-button" href="{% url 'avl:feed-detail' pk1=view.kwargs.pk1 pk=view.kwargs.pk host hosts.publish %}">
         {% trans 'View published data feed' %}
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>

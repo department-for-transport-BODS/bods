@@ -39,7 +39,7 @@ class DQModelPipeline:
         loader.load(self.model.stops)
 
     def load_services(self) -> None:
-        loader = ServicesLoader()
+        loader = ServicesLoader(self.model)
         loader.load(self.model.lines)
 
     def load_service_links(self):

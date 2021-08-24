@@ -1,6 +1,7 @@
 from crispy_forms.layout import ButtonHolder, Field, Layout
 from crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
 from crispy_forms_govuk.layout import ButtonSubmit, LinkButton
+from crispy_forms_govuk.layout.fields import CheckboxSingleField
 from django import forms
 from django.contrib import auth
 from django.core.exceptions import ValidationError
@@ -11,7 +12,10 @@ from invitations.utils import get_invitation_model
 from transit_odp.common.contants import DEFAULT_ERROR_SUMMARY
 from transit_odp.common.layout import InlineFormset
 from transit_odp.organisation.constants import FeedStatus
-from transit_odp.organisation.forms.organisation_profile import NOCFormset
+from transit_odp.organisation.forms.organisation_profile import (
+    NOCFormset,
+    OrganisationProfileForm,
+)
 from transit_odp.organisation.models import Organisation
 from transit_odp.users.constants import AccountType
 from transit_odp.users.forms.admin import (
@@ -114,12 +118,10 @@ class OrganisationContactEmailForm(CleanEmailMixin, GOVUKForm):
         return Layout("email")
 
 
-class OrganisationForm(GOVUKModelForm):
-    errors_template = "organisation/organisation_profile_form/errors.html"
-
+class OrganisationForm(OrganisationProfileForm):
     class Meta:
         model = Organisation
-        fields = ["name", "short_name", "key_contact"]
+        fields = ["name", "short_name", "key_contact", "licence_required"]
         labels = {
             "name": _("Organisation name"),
             "short_name": _("Organisation short name"),
@@ -128,22 +130,16 @@ class OrganisationForm(GOVUKModelForm):
     def __init__(
         self, data=None, files=None, instance=None, cancel_url=None, *args, **kwargs
     ):
-        super().__init__(data=data, files=files, instance=instance, *args, **kwargs)
-        self.cancel_url = cancel_url
-
-        # Create a nested formset
-        self.nested = NOCFormset(
+        super().__init__(
+            data=data,
+            files=files,
             instance=instance,
-            data=data if self.is_bound else None,
-            files=files if self.is_bound else None,
+            cancel_url=cancel_url,
+            *args,
+            **kwargs,
         )
-
         name = self.fields["name"]
         name.widget.attrs.update({"class": "govuk-!-width-two-thirds"})
-
-        short_name = self.fields["short_name"]
-        short_name.widget.attrs.update({"class": "govuk-!-width-two-thirds"})
-
         self.fields.update(
             {
                 "key_contact": forms.ModelChoiceField(
@@ -159,13 +155,18 @@ class OrganisationForm(GOVUKModelForm):
         self.fields["key_contact"].label_from_instance = lambda obj: obj.email
         key_contact.widget.attrs.update({"class": "govuk-!-width-full govuk-select"})
 
-    def get_helper_properties(self):
-        props = super().get_helper_properties()
-        # Add nested formset to helper properties. This will expose it in the context
-        props.update({"nested": self.nested})
-        return props
-
     def get_layout(self):
+        if self.instance.licences.exists():
+            checkbox = CheckboxSingleField(
+                "licence_required",
+                small_boxes=True,
+                disabled=True,
+            )
+        else:
+            checkbox = CheckboxSingleField(
+                "licence_required",
+                small_boxes=True,
+            )
         return Layout(
             Field("name", wrapper_class="govuk-form-group govuk-!-margin-bottom-4"),
             Field(
@@ -175,26 +176,14 @@ class OrganisationForm(GOVUKModelForm):
                 "key_contact",
                 wrapper_class="govuk-form-group govuk-!-margin-bottom-4",
             ),
-            InlineFormset("nested"),
+            InlineFormset("nested_noc"),
+            InlineFormset("nested_psv"),
+            checkbox,
             ButtonHolder(
                 ButtonSubmit(name="submit", content=_("Save")),
                 LinkButton(url=self.cancel_url, content="Cancel"),
             ),
         )
-
-    def is_valid(self):
-        """
-        Also validate the nested formsets.
-        """
-        is_valid = super().is_valid()
-        nested = self.nested.is_valid()
-        return is_valid and nested
-
-    def save(self, commit=True):
-        self.instance.key_contact = self.cleaned_data["key_contact"]
-        inst = super().save(commit=commit)
-        self.nested.save(commit=commit)
-        return inst
 
 
 class OrganisationFilterForm(GOVUKForm):

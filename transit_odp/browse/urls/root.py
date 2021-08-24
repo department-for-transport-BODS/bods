@@ -8,10 +8,12 @@ from transit_odp.browse.views.base_views import (
     ApiSelectView,
     BrowseHomeView,
     DownloadDataCatalogueView,
-    DownloadOperatorDatasetCatalogueView,
-    DownloadOperatorNocCatalogueView,
     DownloadsView,
     SearchSelectView,
+)
+from transit_odp.browse.views.data_catalogue import (
+    DownloadOperatorDatasetCatalogueView,
+    DownloadOperatorNocCatalogueView,
 )
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS

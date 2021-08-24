@@ -18,7 +18,7 @@ def test_txc_file_attributes_from_txc_file():
     assert attrs.count() == 1
     attr = attrs.first()
     assert attr.creation_datetime == file_.header.creation_datetime
-    assert attr.modificaton_datetime == file_.header.modificaton_datetime
+    assert attr.modification_datetime == file_.header.modification_datetime
     assert attr.service_code == file_.service_code
     assert attr.modification == file_.header.modification
     assert attr.revision_number == file_.header.revision_number

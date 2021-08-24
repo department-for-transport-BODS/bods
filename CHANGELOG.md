@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.13.0] - 2021-08-12
+
+- [BODP-4176](https://itoworld.atlassian.net/browse/BODP-4176) Timetables: TxC file from Production can be published without DQ report
+- [BODP-4108](https://itoworld.atlassian.net/browse/BODP-4108) BODS Admin: Consumer Notes field is not responsive to max text
+- [BODP-3834](https://itoworld.atlassian.net/browse/BODP-3834) Compliance and Monitoring - Ph1
+- [BODP-4172](https://itoworld.atlassian.net/browse/BODP-4172) Update screens for API download
+- [BODP-4168](https://itoworld.atlassian.net/browse/BODP-4168) C&M: Stats
+- [BODP-4150](https://itoworld.atlassian.net/browse/BODP-4150) Emails: Make the body of emails a template variable so we can make faster changes
+- [BODP-4144](https://itoworld.atlassian.net/browse/BODP-4144) BODS PTI Update: Revision incremements between versions
+- [BODP-4139](https://itoworld.atlassian.net/browse/BODP-4139) C&M: timetables_data_catalogue
+- [BODP-4127](https://itoworld.atlassian.net/browse/BODP-4127) Add License Number- Organisational profile update: Publisher Admin
+- [BODP-4125](https://itoworld.atlassian.net/browse/BODP-4125) Add License Number- Organisation profile update: Publisher Agent
+- [BODP-4121](https://itoworld.atlassian.net/browse/BODP-4121) Add License number in Organisation profile: DfT admin portal
+- [BODP-4113](https://itoworld.atlassian.net/browse/BODP-4113) C&M: Addition of new fields to the Organisations csv
+- [BODP-4053](https://itoworld.atlassian.net/browse/BODP-4053) Research Fares \(Netex\) to explore feasibility of extracting metrics for C&M
+- [BODP-4051](https://itoworld.atlassian.net/browse/BODP-4051) C&M: Create Monthly API metrics
+- [BODP-4048](https://itoworld.atlassian.net/browse/BODP-4048) Cookie Page Content Update
+- [BODP-4017](https://itoworld.atlassian.net/browse/BODP-4017) C&M: Download details of dataset publishers through datasetpublishing csv
+- [BODP-3942](https://itoworld.atlassian.net/browse/BODP-3942) C&M: Publishers
+- [BODP-3940](https://itoworld.atlassian.net/browse/BODP-3940) C&M: Update Raw API metrics CSV
+- [BODP-3939](https://itoworld.atlassian.net/browse/BODP-3939) DfT Admin: new download screens
+- [BODP-3767](https://itoworld.atlassian.net/browse/BODP-3767) Addition of new fields to the Data Catalogue
+- [BODP-3471](https://itoworld.atlassian.net/browse/BODP-3471) BODS Cookies updated
+- [BODP-4224](https://itoworld.atlassian.net/browse/BODP-4224) The numberOfServicesWithValidOperatingDates & additionalServicesWithFutureStartDate figures doubling in organisation.csv for latest timetable dataset
+- [BODP-4213](https://itoworld.atlassian.net/browse/BODP-4213) 'Cookie settings' banner is still visible after Save changes in 'Cookie settings' page
+- [BODP-4211](https://itoworld.atlassian.net/browse/BODP-4211) Incorrect column name for "unregisteredServices" in organisations.csv
+- [BODP-4210](https://itoworld.atlassian.net/browse/BODP-4210) Download lag with the "Download all publisher monitoring metrics" link
+- [BODP-4208](https://itoworld.atlassian.net/browse/BODP-4208) "Download all publisher monitoring metrics" link produces 502 after download lag
+- [BODP-4207](https://itoworld.atlassian.net/browse/BODP-4207) 'Edit organisation profile' page - Right section 'Need help populating this page?' not visible and incorrect element.
+- [BODP-4206](https://itoworld.atlassian.net/browse/BODP-4206) BODS Admin: "Need help populating this page" right hand section is missing in Organisation detail page
+- [BODP-4204](https://itoworld.atlassian.net/browse/BODP-4204) 'Organisation details' and 'Edit organisation' pages - Links must open in a new tab
+- [BODP-4203](https://itoworld.atlassian.net/browse/BODP-4203) BODS Admin: Append the word "number" to first error message for invalid PSV Licence Number
+- [BODP-4200](https://itoworld.atlassian.net/browse/BODP-4200) BODS Admin: Current Valid PSV Licence Numbers greys out "I do not have a PSV Licence number" with the box ticked
+- [BODP-4199](https://itoworld.atlassian.net/browse/BODP-4199) BODS Admin: Cancel button in Edit organisation detail page returns "Page not found"
+- [BODP-4198](https://itoworld.atlassian.net/browse/BODP-4198) BODS Admin: "I do not have a PSV Licence number" checkbox unticks itself
+- [BODP-4196](https://itoworld.atlassian.net/browse/BODP-4196) BODS Admin: PSV Licence Number row not displayed by default in Organisation detail section
+- [BODP-4195](https://itoworld.atlassian.net/browse/BODP-4195) BODS Admin: No "Need help populating this page? right hand section via Edit mode
+- [BODP-4194](https://itoworld.atlassian.net/browse/BODP-4194) BODS Admin: PSV Licence Number Field Not Visible & Related Buttons not clickable by default
+- [BODP-4186](https://itoworld.atlassian.net/browse/BODP-4186) Downloaded PTI observations file > Incorrect 'Filename' and 'XML Line Number' for 'RevisionNumber' warning
+- [BODP-4180](https://itoworld.atlassian.net/browse/BODP-4180) lastUpdatedDate in timetabledatacatalogue.csv not picking up revision.published_at \(Date from the UI\)
+- [BODP-4171](https://itoworld.atlassian.net/browse/BODP-4171) Downloaded csv file don't show the 'System' account type when an automated update happened
+- [BODP-4189](https://itoworld.atlassian.net/browse/BODP-4189) Test - BODP-3471 - BODS Cookies updated
+- [BODP-4183](https://itoworld.atlassian.net/browse/BODP-4183) Test - BODP-4113 - C&M: Addition of new fields to the Organisations csv
+- [BODP-4145](https://itoworld.atlassian.net/browse/BODP-4145) Test - BODP-4144 - BODS PTI Update: Revision incremements between versions
+- [BODP-4131](https://itoworld.atlassian.net/browse/BODP-4131) Test - BODP-4017 - C&M: Download details of dataset publishers through datasetpublishing csv
+- [BODP-4082](https://itoworld.atlassian.net/browse/BODP-4082) Test - BODP-3939 - DfT Admin: new download screens
+- [BODP-4052](https://itoworld.atlassian.net/browse/BODP-4052) Test - BODP-4051 - C&M: Create Monthly API metrics
+
 ## [1.12.1] - 2021-07-15
 
 - [BODP-4166](https://itoworld.atlassian.net/browse/BODP-4166) Dataset with critical observations has 100% DQ score

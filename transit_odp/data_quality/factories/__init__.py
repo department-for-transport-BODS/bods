@@ -1,3 +1,7 @@
+from transit_odp.data_quality.factories.report import (
+    PTIObservationFactory,
+    PTIValidationResultFactory,
+)
 from transit_odp.data_quality.factories.transmodel import (
     DataQualityReportFactory,
     DataQualityReportSummaryFactory,
@@ -28,6 +32,8 @@ __all__ = [
     "DataQualityReportSummaryFactory",
     "FastLinkWarningFactory",
     "FastTimingWarningFactory",
+    "PTIObservationFactory",
+    "PTIValidationResultFactory",
     "ServiceFactory",
     "ServiceLinkFactory",
     "ServicePatternFactory",

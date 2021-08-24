@@ -3,6 +3,7 @@ from typing import TypedDict
 
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
 from django_hosts import reverse
 
 import config.hosts
@@ -13,6 +14,7 @@ from transit_odp.avl.views.utils import (
     get_validation_task_result_from_revision_id,
 )
 from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.base import ReviewBaseView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
@@ -136,12 +138,18 @@ class ReviewView(ReviewBaseView):
         return get_avl_failure_url(self.object.dataset_id, self.kwargs["pk1"])
 
 
-class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
+class RevisionPublishSuccessView(OrgUserViewMixin, DetailView):
     template_name = "avl/revision_publish_success.html"
+    model = Dataset
+    pk_url_kwarg = "pk"
 
     def get_context_data(self, **kwargs):
+        if self.get_object().revisions.count() > 1:
+            update = True
+        else:
+            update = False
         context = super().get_context_data(**kwargs)
-        context.update({"update": False, "pk1": self.kwargs["pk1"]})
+        context.update({"update": update, "pk1": self.kwargs["pk1"]})
         return context
 
 

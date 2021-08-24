@@ -56,3 +56,22 @@ class DatasetType(int, ChoiceEnum):
 TimetableType = DatasetType.TIMETABLE.value
 AVLType = DatasetType.AVL.value
 FaresType = DatasetType.FARES.value
+
+DATASET_TYPE_NAMESPACE_MAP = {
+    DatasetType.TIMETABLE: "",
+    DatasetType.AVL: "avl",
+    DatasetType.FARES: "fares",
+}
+
+DATASET_TYPE_PRETTY_MAP = {
+    DatasetType.TIMETABLE: "Timetables",
+    DatasetType.AVL: "Automatic Vehicle Locations",
+    DatasetType.FARES: "Fares",
+}
+
+PSV_LICENCE_ERROR_HINT_MESSAGE = (
+    "The licence number should be in the format of two alpha values followed by 7 "
+    "numeric values (e.g. PD0000123). If you have a pre-2000 licence, please add 4 "
+    "zeros between the letters and numbers."
+)
+PSV_LICENCE_ERROR_MESSAGE = "Licence number entered with the wrong format"

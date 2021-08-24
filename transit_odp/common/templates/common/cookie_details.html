@@ -119,6 +119,16 @@
           </td>
           <td class="govuk-table__cell">{% trans '30 minutes' %}</td>
         </tr>
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell" scope="row">{% trans 'lb_cookie' %}</td>
+          <td class="govuk-table__cell">
+            {% blocktrans %}
+              The time period, in seconds, during which requests from a user should be
+              routed to the same target
+            {% endblocktrans %}
+          </td>
+          <td class="govuk-table__cell">{% trans '10 minutes' %}</td>
+        </tr>
         </tbody>
       </table>
 

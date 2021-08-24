@@ -2,7 +2,7 @@ import logging
 import zipfile
 from collections.abc import Iterator
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from lxml import etree
 from pydantic import BaseModel
@@ -257,6 +257,18 @@ class TransXChangeDocument:
         return [
             s for s in self.find_anywhere(xpath) if s.text in PRINCIPAL_TIMING_POINTS
         ]
+
+    def get_operating_period_start_date(self) -> Optional[TransXChangeElement]:
+        xpath = ["Services", "Service", "OperatingPeriod", "StartDate"]
+        return self.find_anywhere(xpath)
+
+    def get_operating_period_end_date(self) -> Optional[TransXChangeElement]:
+        xpath = ["Services", "Service", "OperatingPeriod", "EndDate"]
+        return self.find_anywhere(xpath)
+
+    def get_public_use(self) -> Optional[TransXChangeElement]:
+        xpath = ["Services", "Service", "PublicUse"]
+        return self.find_anywhere(xpath)
 
 
 class TransXChangeZip(ZippedValidator):

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
+from transit_odp.common.contants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 
 
@@ -26,25 +27,25 @@ class CookieView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        is_confirm = "True"
+        is_confirm = FALSE
 
         if (
             "cookie_policy" in request.COOKIES
-            and not self.request.GET.get("cookie-accept", None) == "True"
+            and not self.request.GET.get("cookie-accept", None) == FALSE
         ):
-            is_confirm = "False"
+            is_confirm = TRUE
 
-        elif self.request.GET.get("cookie-accept", None) == "False":
-            is_confirm = "False"
+        elif self.request.GET.get("cookie-accept", None) == TRUE:
+            is_confirm = TRUE
 
         context.update({"is_accept": is_confirm})
 
         response = render(request, self.template_name, context=context)
 
-        if is_confirm == "False" and "cookie_policy" not in request.COOKIES.keys():
+        if is_confirm == TRUE and "cookie_policy" not in request.COOKIES.keys():
             set_cookie(response, key="cookie_policy", value="1", days_expire=None)
 
-        elif is_confirm == "True" and "cookie_policy" in request.COOKIES.keys():
+        elif is_confirm == FALSE and "cookie_policy" in request.COOKIES.keys():
             delete_cookie(response, "cookie_policy")
 
         return response

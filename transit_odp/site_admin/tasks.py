@@ -1,13 +1,30 @@
+import logging
+from datetime import timedelta
+
 from celery import shared_task
+from dateutil.relativedelta import relativedelta
+from django.core.files.base import File
 from django.utils import timezone
 
-from transit_odp.site_admin.models import OperationalStats
+from transit_odp.site_admin.exports import (
+    create_metrics_archive,
+    create_operational_exports_file,
+)
+from transit_odp.site_admin.models import (
+    OPERATIONAL_EXPORTS_NAME,
+    APIRequest,
+    OperationalMetricsArchive,
+    OperationalStats,
+)
 from transit_odp.site_admin.stats import (
     get_active_dataset_counts,
     get_operator_count,
     get_orgs_with_active_dataset_counts,
+    get_siri_vm_vehicle_counts,
     get_user_counts,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task()
@@ -32,11 +49,63 @@ def task_save_operational_stats():
     published_avl_operator_count: number of operators with active avl feeds
     published_fares_operator_count: number of operators with active fares
 
+    vehicle_counts: The number of vehicles RT has encountered for that day
     """
     date = timezone.now().date()
-    stats = {"operator_count": get_operator_count()}
+    stats = {
+        "operator_count": get_operator_count(),
+        "vehicle_count": get_siri_vm_vehicle_counts(),
+    }
     stats.update(get_user_counts())
     stats.update(get_active_dataset_counts())
     stats.update(get_orgs_with_active_dataset_counts())
 
     OperationalStats.objects.update_or_create(date=date, defaults=stats)
+
+
+@shared_task()
+def task_create_daily_api_stats():
+    """
+    Creates a MetricArchive for this month.
+    """
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    yesterday = today - timedelta(seconds=1)
+    first_of_month = yesterday.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    logger.info(
+        "[MetricArchive] Creating metrics archive for "
+        f"{first_of_month:%Y-%m-%d} to {yesterday:%Y-%m-%d}"
+    )
+    create_metrics_archive(start=first_of_month, end=yesterday)
+
+
+@shared_task()
+def task_backfill_metrics_archive():
+    """
+    Backfills all the previous months MetricArchive's.
+    """
+    requests = APIRequest.objects.order_by("id")
+    first_created = requests.first().created
+    last_created = requests.last().created
+
+    start = first_created.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    while start < last_created:
+        end = (start + relativedelta(months=1)) - timedelta(seconds=1)
+        logger.info(
+            "[MetricArchive] Backfilling metrics archive for "
+            f"{start:%Y-%m-%d} to {end:%Y-%m-%d}"
+        )
+        create_metrics_archive(start=start, end=end)
+        start = start + relativedelta(months=1)
+
+
+@shared_task()
+def task_create_operational_exports_archive():
+    buffer_ = create_operational_exports_file()
+    archive = File(buffer_, name=OPERATIONAL_EXPORTS_NAME)
+
+    logger.info("[OperationalMetricsArchive] Creating operational metrics export.")
+    metrics = OperationalMetricsArchive.objects.order_by("modified").last()
+    if metrics is None:
+        OperationalMetricsArchive.objects.create(archive=archive)
+    else:
+        metrics.archive.save(OPERATIONAL_EXPORTS_NAME, archive)

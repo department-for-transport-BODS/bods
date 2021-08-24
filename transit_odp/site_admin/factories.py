@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 
+import factory
+from dateutil.relativedelta import relativedelta
 from factory import DjangoModelFactory, Sequence, SubFactory, post_generation
 from faker import Faker
 
-from transit_odp.site_admin.models import APIRequest, OperationalStats
+from transit_odp.site_admin.models import APIRequest, MetricsArchive, OperationalStats
 from transit_odp.users.factories import UserFactory
 
 fake = Faker()
@@ -11,6 +13,7 @@ fake = Faker()
 
 class OperationalStatsFactory(DjangoModelFactory):
     date = Sequence(lambda n: datetime(2020, 1, 1) + timedelta(days=n))
+    vehicle_count = fake.random_digit()
     operator_count = fake.random_digit()
     operator_user_count = fake.random_digit()
     agent_user_count = fake.random_digit()
@@ -33,7 +36,7 @@ class APIRequestFactory(DjangoModelFactory):
 
     @post_generation
     def created(obj, create, extracted, **kwargs):
-        """ `created` field is auto_now_add field so needs to be manually changed."""
+        """`created` field is auto_now_add field so needs to be manually changed."""
         if not create:
             return None
 
@@ -44,3 +47,12 @@ class APIRequestFactory(DjangoModelFactory):
 
     class Meta:
         model = APIRequest
+
+
+class MetricsArchiveFactory(DjangoModelFactory):
+    start = datetime.now().replace(day=1).date()
+    end = datetime.now().replace(day=1).date() + relativedelta(day=31)
+    archive = factory.django.FileField(filename="metrics_archive.zip")
+
+    class Meta:
+        model = MetricsArchive

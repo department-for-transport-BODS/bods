@@ -43,7 +43,7 @@
       <h2 class="govuk-heading-m">{% trans 'Cookies that measure website use' %}</h2>
       <p class="govuk-body-m">
         {% blocktrans %}
-          We use Google Analytics to measure how you use the website so we can improve it based
+          We use Google Analytics to measure how you use the website so we can improve the service based
           on user needs. Google Analytics sets cookies that store anonymised information about:
         {% endblocktrans %}</p>
       <ul class="govuk-list--bullet">
@@ -70,7 +70,7 @@
               {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="cookie-accept-1">
-                On
+                Use cookies that measure my website use
               </label></div>
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="cookie-accept-2" name="cookie-accept" type="radio" value="False"
@@ -78,7 +78,7 @@
                      {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="cookie-accept-2">
-                Off
+                Do not use cookies that measure my website use
               </label></div>
           </div>
         </fieldset>
@@ -99,7 +99,9 @@
     <p class="govuk-body-m">
       <a class="govuk-link" href="{% url 'cookie-detail' host hosts.root %}">{% trans 'Find out more about cookies on Bus Open Data Service' %}</a>
     </p>
-    <button class="govuk-button" type="submit">{% trans 'Save changes' %}</button>
+    <button class="govuk-button" type="submit" onClick="BODSFrontend.Cookielaw.createCookie('CookielawBanner', '{{ parent_host }}')">
+      {% trans 'Save changes' %}
+    </button>
     </form>
     </div>
   </div>

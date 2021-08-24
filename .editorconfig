@@ -18,7 +18,7 @@ known_first_party=transit_odp
 multi_line_output=3
 default_section=THIRDPARTY
 
-[*.{html,css,scss,json,yml,xml}]
+[*.{html,css,scss,json,yml,xml,js}]
 indent_style = space
 indent_size = 2
 

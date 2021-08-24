@@ -1,0 +1,49 @@
+{% extends "site_admin/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Data Monitoring' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb 'Data monitoring' %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Data monitoring</h1>
+
+        <h2 class="govuk-heading-m">View monitoring metrics</h2>
+        <p class="govuk-body">
+          This page provides a visualisation for some of the key metrics used to track
+          the different operational level and data consumer metrics used on BODS.
+        </p>
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'overview-metrics' host host.name %}">
+            View monitoring metrics
+          </a>
+        </p>
+
+        <h2 class="govuk-heading-m">Download all monitoring metrics</h2>
+        <p class="govuk-body">
+        This download provides data on the different operational level and data consumer
+        metrics used to track on BODS including details on operators and their data uploads,
+        data quality and data consumer metrics.
+        </p>
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'download-metrics' host host.name %}">
+            Select monitoring metrics to download
+          </a>
+        </p>
+      </div>
+      <div class="govuk-grid-column-one-third">
+      </div>
+    </div>
+</div>
+{% endblock %}

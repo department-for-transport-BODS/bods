@@ -14,13 +14,14 @@ from freezegun import freeze_time
 
 from config.hosts import DATA_HOST
 from transit_odp.browse.forms import UserFeedbackForm
-from transit_odp.browse.serializers import DatasetCatalogueSerializer
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
 )
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.data_quality.factories import DataQualityReportFactory
+from transit_odp.data_quality.factories.report import PTIValidationResultFactory
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
@@ -28,6 +29,7 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetSubscription, Organisation
 from transit_odp.pipelines.factories import (
@@ -639,10 +641,15 @@ class TestDataDownloadCatalogueView:
     operator_noc_headers = ["operator", "noc"]
     operator_dataset_headers = [
         "operator",
+        "operatorID",
         "dataType",
         "status",
         "lastUpdated",
         "dataID",
+        "BODSCompliantData",
+        "DQScore",
+        "NationalOperatorCode",
+        "serviceCode",
     ]
 
     def extract_csv_content(self, content):
@@ -740,33 +747,17 @@ class TestDataDownloadCatalogueView:
         assert body == []  # no organisations
 
     def test_operator_dataset_download(self, client_factory):
-        # Setup
-        orgs = OrganisationFactory.create_batch(2)
-        for org in orgs:
-            DatasetFactory.create(
-                organisation=org,
-            )
-
-        dataset_list = Dataset.objects.add_organisation_name().order_by(
-            "organisation_name", "dataset_type"
-        )
-
-        serializer = DatasetCatalogueSerializer(dataset_list, many=True)
-        serialized_data = serializer.data
-        expected = []
-
-        for data in serialized_data:
-            test_list = list(data.values())
-            test_list[4] = str(test_list[4])
-            expected.append(test_list)
+        for _ in range(2):
+            revision = DatasetRevisionFactory()
+            TXCFileAttributesFactory(revision=revision)
+            PTIValidationResultFactory(revision=revision)
+            DataQualityReportFactory(revision=revision)
 
         client = client_factory(host=self.host)
         url = reverse("operator-dataset-catalogue", host=self.host)
 
-        # Test
         response = client.get(url)
 
-        # Assert
         assert response.status_code == 200
         assert (
             response.get("Content-Disposition")
@@ -775,39 +766,51 @@ class TestDataDownloadCatalogueView:
 
         headers, body = self.extract_csv_content(response.content)
         assert headers == self.operator_dataset_headers
-        assert body == expected
+        for line in body:
+            (
+                operator,
+                operator_id,
+                dataset_type,
+                status,
+                last_updated,
+                dataset_id,
+                bods_compliance,
+                score,
+                noc,
+                service_code,
+            ) = line
+
+            dataset = Dataset.objects.get(id=dataset_id)
+            revision = dataset.live_revision
+            attributes = revision.txc_file_attributes.first()
+            assert operator == dataset.organisation.name
+            assert operator_id == str(dataset.organisation_id)
+            assert dataset_type == dataset.pretty_dataset_type
+            # We know this from the fixtures
+            assert status == "published"
+            assert last_updated == dataset.modified.isoformat()
+            assert (
+                bods_compliance == "yes" if revision.pti_result.is_compliant else "no"
+            )
+            assert score == f"{revision.report.first().score*100:.0f}"
+            assert noc == attributes.national_operator_code
+            assert service_code == attributes.service_code
 
     def test_operator_dataset_download_exclude_inactive_org(self, client_factory):
-        # Setup
-        orgs = OrganisationFactory.create_batch(2)
-        orgs.append(OrganisationFactory.create(is_active=False))
+        num_of_entries = 2
+        orgs = OrganisationFactory.create_batch(num_of_entries)
+        orgs.append(OrganisationFactory(is_active=False))
         for org in orgs:
-            DatasetFactory.create(
-                organisation=org,
-            )
-
-        dataset_list = (
-            Dataset.objects.get_active_org()
-            .add_organisation_name()
-            .order_by("organisation_name", "dataset_type")
-        )
-
-        serializer = DatasetCatalogueSerializer(dataset_list, many=True)
-        serialized_data = serializer.data
-        expected = []
-
-        for data in serialized_data:
-            test_list = list(data.values())
-            test_list[4] = str(test_list[4])
-            expected.append(test_list)
+            revision = DatasetRevisionFactory(dataset__organisation=org)
+            TXCFileAttributesFactory(revision=revision)
+            PTIValidationResultFactory(revision=revision)
+            DataQualityReportFactory(revision=revision)
 
         client = client_factory(host=self.host)
         url = reverse("operator-dataset-catalogue", host=self.host)
 
-        # Test
         response = client.get(url)
 
-        # Assert
         assert response.status_code == 200
         assert (
             response.get("Content-Disposition")
@@ -816,7 +819,7 @@ class TestDataDownloadCatalogueView:
 
         headers, body = self.extract_csv_content(response.content)
         assert headers == self.operator_dataset_headers
-        assert body == expected
+        assert len(body) == num_of_entries
 
 
 class TestGTFSStaticDownloads:

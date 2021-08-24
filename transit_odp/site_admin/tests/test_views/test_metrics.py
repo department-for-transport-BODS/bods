@@ -7,6 +7,7 @@ from django.test import Client
 from django_hosts.resolvers import reverse, reverse_host
 
 from config.hosts import ADMIN_HOST
+from transit_odp.site_admin.tasks import task_create_operational_exports_archive
 from transit_odp.users.constants import OrgStaffType, SiteAdminType
 
 pytestmark = pytest.mark.django_db
@@ -31,7 +32,7 @@ class TestMetricsDownloadView:
         client.force_login(user=user)
         response = client.get(url)
         assert response.status_code == 200
-        assert "site_admin/metrics/download.html" in response.template_name
+        assert "site_admin/metrics/index.html" in response.template_name
 
 
 class TestOperationalMetricsFileView:
@@ -50,6 +51,7 @@ class TestOperationalMetricsFileView:
         user = user_factory(account_type=SiteAdminType)
         url = reverse("operational-metrics", host=self.host)
         client.force_login(user=user)
+        task_create_operational_exports_archive()
 
         expected_disposition = "attachment; filename=operationalexports.zip"
         expected_files = [
@@ -58,6 +60,8 @@ class TestOperationalMetricsFileView:
             "consumers.csv",
             "stats.csv",
             "agents.csv",
+            "datasetpublishing.csv",
+            "timetablesdatacatalogue.csv",
         ]
 
         response = client.get(url)
@@ -71,7 +75,7 @@ class TestOperationalMetricsFileView:
 
 class TestAPIMetricsFileView:
     host = ADMIN_HOST
-    url = reverse("api-metrics", host=host)
+    url = reverse("download-metrics", host=host)
 
     def get_page(self, user):
         hostname = reverse_host(self.host)
@@ -85,21 +89,3 @@ class TestAPIMetricsFileView:
         response = self.get_page(user)
 
         assert response.status_code == 403
-
-    def test_site_admin_can_download_zip(self, user_factory):
-        user = user_factory(account_type=SiteAdminType)
-        response = self.get_page(user)
-
-        expected_disposition = "attachment; filename=apimetrics.zip"
-        expected_files = [
-            "dailyaggregates.csv",
-            "dailyconsumerbreakdown.csv",
-            "rawapimetrics.csv",
-        ]
-        response_file = io.BytesIO(b"".join(response.streaming_content))
-
-        assert response.status_code == 200
-        assert response.get("Content-Disposition") == expected_disposition
-        with zipfile.ZipFile(response_file, "r") as zout:
-            files = [name for name in zout.namelist()]
-        assert expected_files == files

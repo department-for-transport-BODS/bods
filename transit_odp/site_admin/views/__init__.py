@@ -31,7 +31,13 @@ from .invites import (
     ResendOrgUserInviteSuccessView,
     ResendOrgUserInviteView,
 )
-from .metrics import APIMetricsFileView, MetricsDownloadView, OperationalMetricsFileView
+from .metrics import (
+    MetricsDownloadDetailView,
+    MetricsDownloadListView,
+    MetricsIndexView,
+    MetricsOverviewView,
+    OperationalMetricsFileView,
+)
 from .organisations import (
     ManageOrganisationView,
     OrganisationArchiveSuccessView,
@@ -63,7 +69,10 @@ __all__ = [
     "InviteSuccessView",
     "InviteView",
     "ManageOrganisationView",
-    "MetricsDownloadView",
+    "MetricsDownloadDetailView",
+    "MetricsDownloadListView",
+    "MetricsIndexView",
+    "MetricsOverviewView",
     "OperationalMetricsFileView",
     "OrganisationAVLListView",
     "OrganisationArchiveSuccessView",

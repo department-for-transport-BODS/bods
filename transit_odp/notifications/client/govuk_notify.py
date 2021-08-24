@@ -2,27 +2,42 @@ import logging
 from typing import Dict
 
 from django.conf import settings
+from django.template.loader import render_to_string
 from notifications_python_client.notifications import NotificationsAPIClient
 
 from transit_odp.notifications.client.base import NotificationBase
+from transit_odp.notifications.constants import TEMPLATE_LOOKUP
 
 logger = logging.getLogger(__name__)
+CUSTOM = "custom"
 
 
 class GovUKNotifyEmail(NotificationBase):
     def __init__(self):
         super().__init__()
         api_key = settings.GOV_NOTIFY_API_KEY
+        self.generic_template_id = settings.GENERIC_TEMPLATE_ID
         self._notification_client = NotificationsAPIClient(api_key=api_key)
 
     def _send_mail(self, template: str, email: str, **kwargs):
         template_id = self.templates[template]
-        kwargs.pop("subject", None)
+        subject = kwargs.pop("subject", None)
+
+        if template_id == CUSTOM:
+            # We want to eventually move all emails to the custom template
+            # here we only need to define body and subject
+            template_id = self.generic_template_id
+            template = TEMPLATE_LOOKUP[template]
+            body = render_to_string(template, kwargs)
+            personalisation = {"body": body, "subject": subject}
+        else:
+            personalisation = kwargs
+
         try:
             self._notification_client.send_email_notification(
                 email_address=email,
                 template_id=template_id,
-                personalisation=kwargs,
+                personalisation=personalisation,
             )
         except Exception as e:
             name = template.lower()
@@ -53,14 +68,10 @@ class GovUKNotifyEmail(NotificationBase):
             "OPERATOR_DATA_CHANGED": "0d64bbb3-2959-4670-871d-2077d8504f53",
             "DEVELOPER_DATA_CHANGED": "c4580534-bcab-479c-8533-a8cfdb5b5811",
             "AGENT_DATA_CHANGED": "9a6a7ac6-3f2c-4541-8fa8-5325ee05e151",
-            "OPERATOR_PUBLISH_LIVE": "40b9d4b1-64f1-44e7-b207-64d6d8c9c27b",
-            "OPERATOR_PUBLISH_LIVE_WITH_PTI_VIOLATIONS": (
-                "cfda1409-d790-4e1f-8fbd-d4cef0579c66"
-            ),
-            "AGENT_PUBLISH_LIVE": "13381e69-d565-4683-90a7-8ac5a392f81c",
-            "AGENT_PUBLISH_LIVE_WITH_PTI_VIOLATIONS": (
-                "6b8e19bb-a991-4e29-aff0-ba8a6fc3e303"
-            ),
+            "OPERATOR_PUBLISH_LIVE": CUSTOM,
+            "OPERATOR_PUBLISH_LIVE_WITH_PTI_VIOLATIONS": CUSTOM,
+            "AGENT_PUBLISH_LIVE": CUSTOM,
+            "AGENT_PUBLISH_LIVE_WITH_PTI_VIOLATIONS": CUSTOM,
             "OPERATOR_PUBLISH_ERROR": "67bba20b-fb41-4c85-a07b-3d568da0648a",
             "AGENT_PUBLISH_ERROR": "0c73bdab-4700-4b99-8414-0b3ec6a75b4a",
             "OPERATOR_EXPIRED_NOTIFICATION": "0bb32cd4-27ab-4fcc-bc94-a5cf9689d7d6",
@@ -83,7 +94,7 @@ class GovUKNotifyEmail(NotificationBase):
             "OPERATOR_AGENT_REJECTED_INVITE": "b7edcd7f-5c86-4c6e-b085-c72efb487bc7",
             "OPERATOR_AGENT_REMOVED": "66a9b1c9-5709-476d-a360-b2794a1a253b",
             "OPERATOR_NOC_CHANGED": "ca32baf1-a420-4893-98e8-04bd5e85a9c4",
-            "REPORTS_AVAILABLE": "f6dc4f99-23d5-4ed5-8d9f-bc69dcb7bc9d",
-            "AGENT_REPORTS_AVAILABLE": "73a1639c-b006-43bf-b7bb-b06b1f50f268",
+            "REPORTS_AVAILABLE": CUSTOM,
+            "AGENT_REPORTS_AVAILABLE": CUSTOM,
             "DATASET_NO_LONGER_COMPLIANT": "3093797a-a1fa-4a08-8dc0-b0bfda4e3e64",
         }

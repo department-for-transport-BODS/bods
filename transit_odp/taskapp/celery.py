@@ -18,6 +18,7 @@ PIPELINE_TASKS: Final = "transit_odp.pipelines.tasks."
 TIMETABLE_TASKS: Final = "transit_odp.timetables.tasks."
 AVL_TASKS: Final = "transit_odp.avl.tasks."
 FARES_TASKS: Final = "transit_odp.fares.tasks."
+ADMIN_TASKS: Final = "transit_odp.site_admin.tasks."
 
 
 class CeleryAppConfig(AppConfig):
@@ -96,10 +97,6 @@ class CeleryAppConfig(AppConfig):
                 "task": AVL_TASKS + "task_create_gtfsrt_zipfile",
                 "schedule": 10.0,
             },
-            "save_operational_stats": {
-                "task": "transit_odp.site_admin.tasks.task_save_operational_stats",
-                "schedule": crontab(minute=0, hour=23),
-            },
             "timetable_upgrade_task": {
                 "task": TIMETABLE_TASKS + "task_reprocess_file_based_datasets",
                 "schedule": crontab(minute=0, hour="0, 2, 4, 18, 20, 22"),
@@ -107,6 +104,18 @@ class CeleryAppConfig(AppConfig):
             "log_stuck_tasks": {
                 "task": TIMETABLE_TASKS + "task_log_stuck_revisions",
                 "schedule": crontab(minute=0, hour=18),
+            },
+            "create_daily_api_stats": {
+                "task": ADMIN_TASKS + "task_create_daily_api_stats",
+                "schedule": crontab(minute=10, hour=0),
+            },
+            "save_operational_stats": {
+                "task": ADMIN_TASKS + "task_save_operational_stats",
+                "schedule": crontab(minute=0, hour=23),
+            },
+            "save_operational_exports": {
+                "task": ADMIN_TASKS + "task_create_operational_exports_archive",
+                "schedule": 1.0 * 60.0 * 60.0,
             },
         }
 

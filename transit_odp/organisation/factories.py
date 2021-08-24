@@ -5,14 +5,21 @@ import factory
 import faker
 import pytz
 from django.utils import timezone
+from factory.django import DjangoModelFactory
 from freezegun import freeze_time
 
-from transit_odp.organisation.constants import AVLType, FeedStatus, TimetableType
+from transit_odp.organisation.constants import (
+    AVLType,
+    FaresType,
+    FeedStatus,
+    TimetableType,
+)
 from transit_odp.organisation.models import (
     Dataset,
     DatasetMetadata,
     DatasetRevision,
     DatasetSubscription,
+    Licence,
     OperatorCode,
     Organisation,
     TXCFileAttributes,
@@ -24,13 +31,12 @@ FAKER = faker.Faker()
 class OrganisationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Organisation
-        # django_get_or_create = ("name",)
 
     short_name = factory.Faker("company")
     name = factory.Sequence(lambda n: factory.Faker("company").generate() + f" {n}")
     key_contact = None
     is_active = True
-    # noc = factory.fuzzy.FuzzyText(length=20)
+    licence_required = None
 
     @factory.post_generation
     def nocs(obj, create, extracted: Union[int, List[str]] = None, **kwargs):
@@ -62,6 +68,14 @@ class OperatorCodeFactory(factory.django.DjangoModelFactory):
         model = OperatorCode
 
     noc = factory.Sequence(lambda n: "NOC %03d" % n)
+    organisation = factory.SubFactory(OrganisationFactory)
+
+
+class LicenceFactory(DjangoModelFactory):
+    class Meta:
+        model = Licence
+
+    number = factory.Sequence(lambda n: f"PD0000{n:03}")
     organisation = factory.SubFactory(OrganisationFactory)
 
 
@@ -172,6 +186,15 @@ class AVLDatasetRevisionFactory(DatasetRevisionFactory):
     first_service_start = None
 
 
+class FaresDatasetRevisionFactory(DatasetRevisionFactory):
+    dataset = factory.SubFactory(
+        DatasetFactory, live_revision=None, dataset_type=FaresType
+    )
+    url_link = factory.Faker("url")
+    upload_file = None
+    first_service_start = None
+
+
 class DatasetSubscriptionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = DatasetSubscription
@@ -198,6 +221,12 @@ class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
     revision_number = "0"
     modification = "new"
     filename = FAKER.file_name(extension="xml")
-    service_code = "".join(FAKER.random_letters(length=4)).upper()
+    service_code = FAKER.pystr(min_chars=4, max_chars=4)
     creation_datetime = FAKER.date_time(tzinfo=pytz.utc)
-    modificaton_datetime = FAKER.date_time(tzinfo=pytz.utc)
+    modification_datetime = FAKER.date_time(tzinfo=pytz.utc)
+    national_operator_code = "".join(FAKER.random_letters(length=4)).upper()
+    licence_number = "PF0002280"
+    operating_period_start_date = FAKER.date()
+    operating_period_end_date = FAKER.date()
+    public_use = True
+    line_names = ["line1", "line2"]

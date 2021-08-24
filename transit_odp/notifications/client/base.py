@@ -3,6 +3,7 @@ import logging
 from abc import abstractmethod
 from typing import Optional
 
+from django.conf import settings
 from django_hosts.resolvers import reverse
 from pydantic import validate_arguments
 
@@ -338,11 +339,11 @@ class NotificationBase(INotifications):
 
         if with_pti_violations:
             template = "OPERATOR_PUBLISH_LIVE_WITH_PTI_VIOLATIONS"
-            subject = "Data set published with validation errors"
+            subject = "Action required – PTI validation report requires resolution"
 
         else:
             template = "OPERATOR_PUBLISH_LIVE"
-            subject = "Dataset published"
+            subject = "Data set published"
 
         logger.debug(
             f"[notify_{template.lower()}] notifying organisation staff/admin dataset "
@@ -359,6 +360,7 @@ class NotificationBase(INotifications):
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
     @validate_arguments
@@ -377,11 +379,11 @@ class NotificationBase(INotifications):
 
         if with_pti_violations:
             template = "AGENT_PUBLISH_LIVE_WITH_PTI_VIOLATIONS"
-            subject = "Data set published with validation errors"
+            subject = "Action required – PTI validation report requires resolution"
 
         else:
             template = "AGENT_PUBLISH_LIVE"
-            subject = "Dataset published"
+            subject = "Data set published"
 
         logger.debug(
             f"[notify_{template.lower()}] notifying agent {contact_email} dataset "
@@ -399,6 +401,7 @@ class NotificationBase(INotifications):
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
     @validate_arguments
@@ -827,12 +830,22 @@ class NotificationBase(INotifications):
         dataset_id: int,
         dataset_name: str,
         short_description: str,
+        published_at: Optional[datetime.datetime],
         comments: str,
         draft_link: str,
         contact_email: str,
     ):
 
         template = "REPORTS_AVAILABLE"
+        subject = (
+            "Action required – PTI validation report requires resolution "
+            "(if applicable)"
+        )
+        published_on = (
+            "Not published"
+            if published_at is None
+            else localize_datetime_and_convert_to_string(published_at)
+        )
         logger.debug(
             f"[notify_{template.lower()}] notifying organisation staff/admin dataset "
             f"Dataset<id={dataset_id}> that reports now available"
@@ -841,12 +854,14 @@ class NotificationBase(INotifications):
         self._send_mail(
             template,
             contact_email,
-            subject="Data set reports are now available",
+            subject=subject,
             feed_name=dataset_name,
             feed_id=dataset_id,
             feed_short_description=short_description,
             comments=comments,
+            published_time=published_on,
             link=draft_link,
+            pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
     @validate_arguments
@@ -857,25 +872,37 @@ class NotificationBase(INotifications):
         short_description: str,
         comments: str,
         operator_name: str,
+        published_at: Optional[datetime.datetime],
         draft_link: str,
         contact_email: str,
     ):
         template = "AGENT_REPORTS_AVAILABLE"
+        subject = (
+            "Action required – PTI validation report requires resolution "
+            "(if applicable)"
+        )
         logger.debug(
             f"[notify_{template.lower()}] notifying agent"
             f"Dataset<id={dataset_id}> that reports now available"
+        )
+        published_on = (
+            "Not published"
+            if published_at is None
+            else localize_datetime_and_convert_to_string(published_at)
         )
 
         self._send_mail(
             template,
             contact_email,
-            subject="Data set reports are now available",
+            subject=subject,
             organisation=operator_name,
             feed_name=dataset_name,
             feed_id=dataset_id,
             feed_short_description=short_description,
             comments=comments,
+            published_time=published_on,
             link=draft_link,
+            pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
     @validate_arguments

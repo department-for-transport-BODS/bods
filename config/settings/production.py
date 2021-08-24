@@ -18,8 +18,8 @@ DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # no
 
 # SECURITY CONFIGURATION
 # ------------------------------------------------------------------------------
-# See https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
-# and https://docs.djangoproject.com/en/dev/howto/deployment/checklist/#run-manage-py-check-deploy
+# See https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security # NOQA: E501
+# and https://docs.djangoproject.com/en/dev/howto/deployment/checklist/#run-manage-py-check-deploy # NOQA: E501
 
 # Django is deployed behind a frontend proxy server which does SSL termination
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
@@ -91,7 +91,8 @@ MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa F405
 
 # EMAIL
 # ------------------------------------------------------------------------------
-# GB - setting to DummyBackend to disable SMTP in production (all messages sent via GovUK Notify)
+# GB - setting to DummyBackend to disable SMTP in production
+# (all messages sent via GovUK Notify)
 EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 # # SMTP Backend: https://docs.djangoproject.com/en/2.1/topics/email/#smtp-backend
@@ -116,22 +117,25 @@ INSTALLED_APPS += ["gunicorn"]  # noqa F405
 # Your stuff...
 # ------------------------------------------------------------------------------
 NOTIFIER = "govuk-notify"
+GENERIC_TEMPLATE_ID = env("GENERIC_TEMPLATE_ID")
 
 if env.bool("DJANGO_SHOW_DEBUG_TOOLBAR", default=False):
     # django-debug-toolbar
     # ------------------------------------------------------------------------------
-    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites # NOQA: E501
 
     # Enable DDT from production server
     # see https://stackoverflow.com/a/40165867/5221078
 
-    INTERNAL_IPS = env.list(
-        "DJANGO_INTERNAL_IPS", default=[]
-    )  # put your client IP address(es) here (not server IP!), e.g. `DJANGO_INTERNAL_IPS=IP1,IP2,IP3`
+    INTERNAL_IPS = env.list("DJANGO_INTERNAL_IPS", default=[])
+    # put your client IP address(es) here (not server IP!),
+    # e.g. `DJANGO_INTERNAL_IPS=IP1,IP2,IP3`
 
     def show_toolbar_callback(request):
-        """Allows DDT to be displayed without DEBUG mode being turned on. The toolbar is only displayed if the request
-        address is found in INTERNAL_IPS. You can add your own IP with the DJANGO_INTERNAL_IPS env variable
+        """Allows DDT to be displayed without DEBUG mode being turned on.
+        The toolbar is only displayed if the request
+        address is found in INTERNAL_IPS.
+        You can add your own IP with the DJANGO_INTERNAL_IPS env variable
         """
         return True
         # return (
@@ -140,17 +144,18 @@ if env.bool("DJANGO_SHOW_DEBUG_TOOLBAR", default=False):
         # )
 
     INSTALLED_APPS += ["debug_toolbar"]  # noqa F405
-    # explicit setup, see https://django-debug-toolbar.readthedocs.io/en/1.0/installation.html#explicit-setup
+    # explicit setup,
+    # see https://django-debug-toolbar.readthedocs.io/en/1.0/installation.html#explicit-setup # NOQA: E501
     DEBUG_TOOLBAR_PATCH_SETTINGS = False
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#middleware
     # make sure django-debug-toolbar middleware comes after django-hosts middleware
-    # see https://django-hosts.readthedocs.io/en/latest/faq.html#does-django-hosts-work-with-the-django-debug-toolbar
+    # see https://django-hosts.readthedocs.io/en/latest/faq.html#does-django-hosts-work-with-the-django-debug-toolbar # NOQA: E501
     MIDDLEWARE.insert(
         MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     )
 
-    # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config
+    # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config # NOQA: E501
     DEBUG_TOOLBAR_CONFIG = {
         "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
         "SHOW_TEMPLATE_CONTEXT": True,

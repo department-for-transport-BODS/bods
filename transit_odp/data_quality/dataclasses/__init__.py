@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Union, final
 
 from .features import (
+    Feature,
     Line,
     Operator,
     ServiceLink,
@@ -125,6 +126,29 @@ class Report:
         if isinstance(warning_type, str):
             warning_type = [warning_type]
         return [w for w in self.warnings if w.warning_type in warning_type]
+
+    def filter_feature_by_ito_id(self, ito_id: str) -> List[Feature]:
+        """
+        Filter a feature by it's id/ito_id e.g. LI5081 for the line with id LI5081.
+
+        For features with longer ids e.g TPeb8ced2d3299ae61134bd86933d7ad5c45a5c08d
+        it is enough to just filter by the first 6 chars "TPeb8c".
+        """
+        if ito_id.startswith("TP"):
+            features = self.model.timing_patterns
+        elif ito_id.startswith("SP"):
+            features = self.model.service_patterns
+        elif ito_id.startswith("SL"):
+            features = self.model.service_links
+        elif ito_id.startswith("LI"):
+            features = self.model.lines
+        elif ito_id.startswith("VJ"):
+            features = self.model.vehicle_journeys
+        else:
+            features = self.model.stops
+
+        # using startswith so we can filter using just the first 6 chars
+        return [feature for feature in features if feature.id.startswith(ito_id)]
 
     def filter_warning_by_id(self, ito_id: str) -> List[BaseWarning]:
         return [w for w in self.warnings if w.id == ito_id]

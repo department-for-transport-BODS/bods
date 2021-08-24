@@ -162,8 +162,11 @@ def test_notify_on_dqs_completion(mailoutbox):
     DataQualityTaskFactory(report=dq_report)
     run_dqs_report_etl_pipeline(dq_report.id)
     mail = mailoutbox[0]
-
-    assert mail.subject == "[BODS] Data set reports are now available"
+    expected_subject = (
+        "[BODS] Action required – PTI validation report requires resolution "
+        "(if applicable)"
+    )
+    assert mail.subject == expected_subject
     assert mail.to[0] == dq_report.revision.dataset.contact.email
 
 
@@ -181,7 +184,10 @@ def test_notify_agent_on_dqs_completion(mailoutbox):
     DataQualityTaskFactory(report=dq_report)
     run_dqs_report_etl_pipeline(dq_report.id)
     mail = mailoutbox[0]
-
-    assert mail.subject == "[BODS] Data set reports are now available"
+    expected_subject = (
+        "[BODS] Action required – PTI validation report requires resolution "
+        "(if applicable)"
+    )
+    assert mail.subject == expected_subject
     assert mail.to[0] == "agent@agentyagent.com"
     assert revision.dataset.organisation.name in mail.body

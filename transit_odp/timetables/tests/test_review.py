@@ -51,7 +51,7 @@ class TestPublishReview:
         fished_out_dataset = Dataset.objects.get(id=self.revision.dataset.id)
         assert response.status_code == 302
         assert fished_out_dataset.live_revision == self.revision
-        assert mailoutbox[0].subject == "[BODS] Dataset published"
+        assert mailoutbox[0].subject == "[BODS] Data set published"
 
     def test_draft_revision_notifies_on_publish_with_pti_errors(
         self, client_factory, mailoutbox
@@ -72,7 +72,8 @@ class TestPublishReview:
         assert response.status_code == 302
         assert fished_out_dataset.live_revision == self.revision
         assert (
-            mailoutbox[0].subject == "[BODS] Data set published with validation errors"
+            mailoutbox[0].subject
+            == "[BODS] Action required – PTI validation report requires resolution"
         )
 
 

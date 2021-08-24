@@ -11,10 +11,11 @@ const copyToClipboard = require("./copy_to_clipboard");
 const APIService = require("./api-service");
 const MyAccountMenu = require("./my-account-menu");
 import { autoFocusToClass } from "./autofocus";
-import { initTimeoutWarning } from "./timeout-warning";
 import { refresh } from "./dqs-review-panel";
-import { initDatasetListLoaders } from "./feed-list-progress";
 import { ProgressIndicator } from "./feed-detail-progress";
+import { initDatasetListLoaders } from "./feed-list-progress";
+import { initTimeoutWarning } from "./timeout-warning";
+import { LicenceCheckbox, DisableInputs } from "./disable-inputs";
 
 // Expose GOVUKFrontend globally to call init from HTML after linking bundle.
 window.GOVUKFrontend = GOVUKFrontend;
@@ -36,6 +37,8 @@ const initAll = (options) => {
 
 module.exports = {
   Cookielaw: Cookielaw,
+  LicenceCheckbox,
+  DisableInputs,
   initMap,
   initFaresDetailMap,
   initWarningDetailMap,

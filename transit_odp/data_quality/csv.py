@@ -19,6 +19,7 @@ class ObservationCSV:
         writer.writerow(["Importance", "Line", "Observation", "Detail"])
 
         observations = [o for o in self._observation_types if o.model]
+        observations.sort(key=lambda o: o.level.name, reverse=True)
         for o in observations:
             rows = self.get_rows(o)
             writer.writerows(rows)

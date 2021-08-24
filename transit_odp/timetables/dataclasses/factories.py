@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import pytz
 from factory import Factory, SubFactory
 
-from .transxchange import Header, Operator, TXCFile
+from .transxchange import Header, Line, Operator, Service, TXCFile
 
 
 class HeaderFactory(Factory):
@@ -14,7 +14,7 @@ class HeaderFactory(Factory):
     schema_version = "2.4"
     modification = "new"
     creation_datetime = datetime.now(tz=pytz.UTC)
-    modificaton_datetime = datetime.now(tz=pytz.UTC)
+    modification_datetime = datetime.now(tz=pytz.UTC)
     filename = "transxchange.xml"
 
 
@@ -27,10 +27,29 @@ class OperatorFactory(Factory):
     licence_number = "AB1234576"
 
 
+class LineFactory(Factory):
+    class Meta:
+        model = Line
+
+    line_name = "Line1"
+
+
+class ServiceFactory(Factory):
+    class Meta:
+        model = Service
+
+    operating_period_start_date = date(2021, 1, 1)
+    operating_period_end_date = date(2022, 1, 1)
+    public_use = True
+    service_code = "A1"
+    lines = [LineFactory()]
+
+
 class TXCFileFactory(Factory):
     class Meta:
         model = TXCFile
 
     header = SubFactory(HeaderFactory)
     operator = SubFactory(OperatorFactory)
+    service = SubFactory(ServiceFactory)
     service_code = "A1"

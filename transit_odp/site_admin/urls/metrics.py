@@ -1,21 +1,29 @@
 from django.urls import path
 
 from transit_odp.site_admin.views import (
-    APIMetricsFileView,
-    MetricsDownloadView,
+    MetricsDownloadDetailView,
+    MetricsDownloadListView,
+    MetricsIndexView,
+    MetricsOverviewView,
     OperationalMetricsFileView,
 )
 
 paths = [
-    path("", MetricsDownloadView.as_view(), name="bods-metrics"),
+    path("", MetricsIndexView.as_view(), name="bods-metrics"),
+    path("overview/", MetricsOverviewView.as_view(), name="overview-metrics"),
+    path(
+        "download/",
+        MetricsDownloadListView.as_view(),
+        name="download-metrics",
+    ),
+    path(
+        "download/<int:pk>",
+        MetricsDownloadDetailView.as_view(),
+        name="download-metrics-detail",
+    ),
     path(
         "operations/",
         OperationalMetricsFileView.as_view(),
         name="operational-metrics",
-    ),
-    path(
-        "apis/",
-        APIMetricsFileView.as_view(),
-        name="api-metrics",
     ),
 ]

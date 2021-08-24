@@ -564,6 +564,7 @@ class INotifications(Protocol):
         dataset_id: int,
         dataset_name: str,
         short_description: str,
+        published_at: Optional[datetime.datetime],
         comments: str,
         draft_link: str,
         contact_email: str,
@@ -573,6 +574,7 @@ class INotifications(Protocol):
             dataset_id: id (primary key) of the dataset model
             dataset_name: name assigned to the revision
             short_description: short description of the revision
+            published_at: datetime of when dateset was published
             comments: any comments on the revision
             draft_link: link to the revisions draft review page
             contact_email: email address of datasets key contact
@@ -586,6 +588,7 @@ class INotifications(Protocol):
         short_description: str,
         comments: str,
         operator_name: str,
+        published_at: Optional[datetime.datetime],
         draft_link: str,
         contact_email: str,
     ):
@@ -596,6 +599,7 @@ class INotifications(Protocol):
             short_description: short description of the revision
             comments: any comments on the revision
             operator_name: name of the operator that published the dataset
+            published_at: datetime of when dateset was published
             draft_link: link to the revisions draft review page
             contact_email: email address of datasets key contact
         """

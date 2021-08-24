@@ -21,8 +21,8 @@ services:
       - .:/app
       - /app/node_modules
       - /app/frontend/node_modules
-         # data volume to prevent node_modules being hidden by the bind mount above
-         # However, this may cause problems as described here: https://stackoverflow.com/a/32785014/5221078
+        # data volume to prevent node_modules being hidden by the bind mount above
+        # However, this may cause problems as described here: https://stackoverflow.com/a/32785014/5221078
     ports:
       - "8000:8000"
       - "3000:3000"
@@ -69,12 +69,3 @@ services:
     ports:
       - "5555:5555"
     command: /start-celeryflower
-
-  cavl:
-    build:
-      context: ./docker/local/cavl_server/
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./docker/local/cavl_server/:/usr/src/app/
-    ports:
-      - "8033:8033"

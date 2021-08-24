@@ -1,5 +1,11 @@
+from logging import getLogger
+
+import requests
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
+from pydantic import BaseModel
+from requests.exceptions import RequestException
 
 from transit_odp.organisation.constants import (
     AVLFeedStatus,
@@ -21,6 +27,14 @@ Inactive = FeedStatus.inactive.value
 FeedUp = AVLFeedStatus.FEED_UP
 
 User = get_user_model()
+logger = getLogger(__name__)
+
+
+class ConsumerAPIStats(BaseModel):
+    version: str
+    query_time: float
+    num_of_gtfs_rt_vehicles: int
+    num_of_siri_vehicles: int
 
 
 def get_operator_count():
@@ -82,3 +96,19 @@ def get_orgs_with_active_dataset_counts():
         )
     )
     return active_org_counts
+
+
+def get_siri_vm_vehicle_counts() -> int:
+    stats_url = settings.CAVL_CONSUMER_URL + "/stats"
+    vehicle_counts = 0
+
+    try:
+        response = requests.get(stats_url, timeout=60)
+    except RequestException as exc:
+        logger.error("Request to stats api failed.", exc_info=exc)
+    else:
+        if response.status_code == 200:
+            api_stats = ConsumerAPIStats(**response.json())
+            vehicle_counts = api_stats.num_of_siri_vehicles
+
+    return vehicle_counts

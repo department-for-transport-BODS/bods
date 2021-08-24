@@ -18,13 +18,14 @@
 
 {% block content %}
   <div class="govuk-grid-row">
+    {% if user.is_agent_user %}
+      {% include "snippets/org_profile_selector.html" with current_url=current_url %}
+    {% endif %}
     <div class="govuk-grid-column-two-thirds">
-      {% if user.is_agent_user %}
-        {% include "snippets/org_profile_selector.html" with current_url=current_url %}
-      {% endif %}
       <h1 class="govuk-heading-xl">{{ organisation.name }}</h1>
+        {% include "organisation/snippets/psv_licence_panel.html" %}
 
-      <table class="govuk-table manage-users-table">
+      <table class="govuk-table manage-users-table govuk-!-margin-top-8">
         <caption class="govuk-table__caption manage-users-table__caption">
           {% trans 'Organisation detail' %}
         </caption>
@@ -56,6 +57,24 @@
               <tr/>
             {% endif %}
           <tr class="govuk-table__row">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell"></td>
+            <td colspan="2" class="govuk-table__cell"></td>
+          </tr>
+            <td class="govuk-table__cell manage-users-table__key" style="border: 0">
+              {% trans 'PSV Licence number' %}
+            </td>
+            {% if organisation %}
+              {% for licence in organisation.licences.all %}
+                <td colspan="2" class="govuk-table__cell" style="border: 0">
+                  {{ licence.number }}
+                </td>
+                <tr/><tr><td></td>
+              {% endfor %}
+            {% else %}
+              <tr/>
+            {% endif %}
+          <tr class="govuk-table__row">
             <td class="govuk-table__cell"></td>
             <td colspan="2" class="govuk-table__cell"></td>
           </tr>
@@ -68,12 +87,7 @@
     </div>
 
     <div class="govuk-grid-column-one-third">
-      <p class="govuk-body">
-        <a class="govuk-link"
-           href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/">
-          {% trans 'View general guidance on NOC' %}
-        </a>
-      </p>
+      {% include "common/snippets/organisation_helpful_links.html" %}
     </div>
   </div>
 {% endblock %}

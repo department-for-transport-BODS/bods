@@ -20,9 +20,9 @@ from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.tasks import (
     download_timetable,
     run_scan_timetables,
-    run_timetable_file_check,
-    run_timetable_txc_schema_validation,
     task_deactivate_txc_2_1,
+    task_timetable_file_check,
+    task_timetable_schema_check,
 )
 from transit_odp.users.factories import OrgAdminFactory
 from transit_odp.validate import DownloadException, FileScanner
@@ -186,7 +186,7 @@ def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
         side_effect=Exception("Exception thrown"),
     )
     with pytest.raises(PipelineException):
-        run_timetable_txc_schema_validation(task.id)
+        task_timetable_schema_check(task.revision.id, task.id)
 
     task.refresh_from_db()
     assert task.error_code == task.SCHEMA_ERROR
@@ -242,7 +242,7 @@ def test_file_check_general_exception(mocker):
     mocker.patch(download_get, side_effect=Exception(message))
 
     with pytest.raises(PipelineException) as exc_info:
-        run_timetable_file_check(task.id)
+        task_timetable_file_check(task.revision.id, task.id)
 
     task.refresh_from_db()
     assert task.error_code == task.SYSTEM_ERROR
@@ -257,7 +257,7 @@ def test_file_check_validation_exception(mocker):
     mocker.patch(download_get, side_effect=XMLSyntaxError(filename=filename))
 
     with pytest.raises(PipelineException) as exc_info:
-        run_timetable_file_check(task.id)
+        task_timetable_file_check(task.revision.id, task.id)
 
     task.refresh_from_db()
     assert task.error_code == task.XML_SYNTAX_ERROR

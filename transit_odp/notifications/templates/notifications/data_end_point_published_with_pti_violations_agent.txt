@@ -1,5 +1,12 @@
-This notification confirms that the following timetable dataset has been successfully published on the Bus Open Data Service but with some validation errors.
-Please ensure all validation errors in your validation report (if you have any) are fixed before 2nd August, 2021.
+Hello,
+
+The following timetable data set published on the Bus Open Data Service has tagged as non-compliant according to the PTI v1.1 profile and corresponding validation report is now published.
+
+Please review the validation report and work with your respective timetables scheduling supplier to update your data.
+
+Operators are legally obliged to supply data according to the PTI standard, and you must resolve all issues listed immediately.
+
+All data that has outstanding validation issues will be removed from the service during {{ pti_enforced_date|date:"j F, Y" }}. If you do not know how to resolve your validation issues, please reach out to your supplier.
 
 Operator: {{ organisation }}
 Dataset: {{ feed_name }}

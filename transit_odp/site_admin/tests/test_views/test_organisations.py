@@ -242,6 +242,27 @@ class TestOrganisationDetailView:
 
 
 class TestOrganisationEditView:
+
+    default_management_form_data = {
+        "nocs-TOTAL_FORMS": ["1"],
+        "nocs-INITIAL_FORMS": ["1"],
+        "nocs-MIN_NUM_FORMS": ["1"],
+        "nocs-MAX_NUM_FORMS": ["1000"],
+        "nocs-0-id": ["9"],
+        "nocs-0-noc": ["2"],
+        "nocs-0-DELETE": [""],
+        "nocs-__prefix__-id": [""],
+        "nocs-__prefix__-noc": [""],
+        "nocs-__prefix__-DELETE": [""],
+        "licences-TOTAL_FORMS": ["0"],
+        "licences-INITIAL_FORMS": ["0"],
+        "licences-MIN_NUM_FORMS": ["0"],
+        "licences-MAX_NUM_FORMS": ["1000"],
+        "licences-__prefix__- id": "",
+        "licences - __prefix__-number": "",
+        "licences - __prefix__-DELETE": "",
+    }
+
     def test_unsafe_get_doesnt_edit_organisation(self, client_factory):
         host = config.hosts.ADMIN_HOST
         client = client_factory(host=host)
@@ -274,21 +295,14 @@ class TestOrganisationEditView:
         client = client_factory(host=host)
         client.force_login(user=user)
 
-        data = {
-            "name": ["TestOrganisation1"],
-            "short_name": ["TestOrg1"],
-            "key_contact": ["10"],
-            "nocs-TOTAL_FORMS": ["1"],
-            "nocs-INITIAL_FORMS": ["1"],
-            "nocs-MIN_NUM_FORMS": ["1"],
-            "nocs-MAX_NUM_FORMS": ["1000"],
-            "nocs-0-id": ["9"],
-            "nocs-0-noc": ["2"],
-            "nocs-0-DELETE": [""],
-            "nocs-__prefix__-id": [""],
-            "nocs-__prefix__-noc": [""],
-            "nocs-__prefix__-DELETE": [""],
-        }
+        data = self.default_management_form_data.copy()
+        data.update(
+            {
+                "name": ["TestOrganisation1"],
+                "short_name": ["TestOrg1"],
+                "key_contact": ["10"],
+            }
+        )
 
         response = client.post(url, data=data)
 
@@ -333,21 +347,14 @@ class TestOrganisationEditView:
         client = client_factory(host=host)
         client.force_login(user=user)
 
-        data = {
-            "name": ["TestOrganisation"],
-            "short_name": ["TestOrg"],
-            "key_contact": ["11"],  # org_user2
-            "nocs-TOTAL_FORMS": ["1"],
-            "nocs-INITIAL_FORMS": ["1"],
-            "nocs-MIN_NUM_FORMS": ["1"],
-            "nocs-MAX_NUM_FORMS": ["1000"],
-            "nocs-0-id": ["9"],
-            "nocs-0-noc": ["2"],
-            "nocs-0-DELETE": [""],
-            "nocs-__prefix__-id": [""],
-            "nocs-__prefix__-noc": [""],
-            "nocs-__prefix__-DELETE": [""],
-        }
+        data = self.default_management_form_data.copy()
+        data.update(
+            {
+                "name": ["TestOrganisation"],
+                "short_name": ["TestOrg"],
+                "key_contact": ["11"],  # org_user2
+            }
+        )
 
         response = client.post(url, data=data)
         modified_org = Organisation.objects.get(id=org.id)

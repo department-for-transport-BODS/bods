@@ -172,4 +172,4 @@ class TestRevisionPublishHandler:
         revision_publish_handler(None, dataset)
 
         # Assert
-        assert mailoutbox[-1].subject == "[BODS] Dataset published"
+        assert mailoutbox[-1].subject == "[BODS] Data set published"

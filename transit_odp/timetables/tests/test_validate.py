@@ -1,6 +1,8 @@
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
+from django.utils import timezone
 
 from transit_odp.organisation.factories import (
     DatasetFactory,
@@ -129,13 +131,31 @@ def test_revision_get_by_service_code_non_unique():
 
 
 @pytest.mark.parametrize(
-    ("live_number", "draft_number", "violation_count"),
-    [(0, 1, 0), (2, 2, 1), (2, 3, 0), (2, 1, 1)],
+    ("live_number", "draft_number", "modification_datetime_changed", "violation_count"),
+    [
+        (0, 1, True, 0),
+        (2, 2, True, 1),
+        (2, 3, True, 0),
+        (2, 3, False, 0),
+        (2, 1, False, 0),
+        (2, 1, True, 1),
+    ],
 )
-def test_revision_number_violation(live_number, draft_number, violation_count):
+def test_revision_number_violation(
+    live_number, draft_number, modification_datetime_changed, violation_count
+):
     """
-    Test that files with same version code have different revision numbers and
-    the live revision number is greater than the draft revision number.
+    Given a Dataset with live revision and a draft revision
+
+    When the modification_datetime has changed and revision_number has not
+    Then a violation is generated
+
+    When the modification_datetime has changed and revision_number has
+    been decremented
+    Then a violation is generated
+
+    When the modification_datetime is unchanged between revisions
+    Then no violation is generated regardless of the revision_number
     """
     dataset = DatasetFactory()
     live_revision = DatasetRevisionFactory(
@@ -147,13 +167,28 @@ def test_revision_number_violation(live_number, draft_number, violation_count):
     dataset.live_revision = live_revision
     dataset.save()
 
+    now = timezone.now()
+    if modification_datetime_changed:
+        live_modification_datetime = now - timedelta(days=1)
+        draft_modification_datetime = now
+    else:
+        live_modification_datetime = now
+        draft_modification_datetime = now
+
     service_code = "ABC"
     TXCFileAttributesFactory(
-        revision=live_revision, service_code=service_code, revision_number=live_number
+        revision=live_revision,
+        service_code=service_code,
+        revision_number=live_number,
+        modification_datetime=live_modification_datetime,
     )
     TXCFileAttributesFactory(
-        revision=draft_revision, service_code=service_code, revision_number=draft_number
+        revision=draft_revision,
+        service_code=service_code,
+        revision_number=draft_number,
+        modification_datetime=draft_modification_datetime,
     )
+
     validator = TXCRevisionValidator(draft_revision)
     validator.validate_revision_number()
     assert len(validator.violations) == violation_count

@@ -86,7 +86,8 @@
         </tbody>
       </table>
     {% endif %}
-    {% if not has_pti_observations and dq_status != "PENDING" %}
+
+    {% if show_update or dq_status == "FAILURE" %}
         <a role="button"
            class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
            {% if is_update %}
@@ -100,7 +101,7 @@
     </div>
   </div>
 
-  {% if dq_status != "PENDING" %}
-  {% crispy form %}
+  {% if not dq_pending_or_failed  %}
+    {% crispy form %}
   {% endif %}
 </section>

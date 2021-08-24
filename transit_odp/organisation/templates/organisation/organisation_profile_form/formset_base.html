@@ -1,0 +1,89 @@
+{% load crispy_forms_tags %}
+
+{% block error_message %}
+{% endblock %}
+
+<div class="govuk-form-group{% if formset.has_error %} govuk-form-group--error{% endif %}">
+  <table class="govuk-table">
+    <caption class="govuk-table__caption app-noc-table__caption">
+      {% block caption %}
+      {% endblock %}
+    </caption>
+    <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header" style="display:none">NOC</th>
+      <th scope="col" class="govuk-table__header" style="display:none">Action</th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body" id="id_{{ formset.prefix }}-formset">
+    {% for form in formset %}
+      {% if forloop.counter <= formset.initial_forms|length  or form.cleaned_data %}
+        {# No need to show newly created empty forms #}
+        {% crispy form %}
+      {% endif %}
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+      <td colspan="2" class="govuk-!-padding-top-2">
+        {% block add_button %}
+        {% endblock %}
+      </td>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div id="id_{{ formset.prefix }}-EMPTY_FORM" style="display:none">
+    {# Would be nice to use HTML 5's template element here but not supported by IE11 #}
+  <table>
+    <tbody>
+    {% crispy formset.empty_form formset.empty_form.helper %}
+    </tbody>
+  </table>
+</div>
+
+
+<script>
+    window.addEventListener("load", function () {
+        let licenceRequiredCheckboxSelector = '[id^="id_licence_required"]';
+        let licenceInputDisableFieldsSelector = '[id^="id_licences"][id$="number"],[id="id_licences-ADD"],div.govuk-form-group td[id^="id_licences"] > button';
+        let licenceInputFieldsSelector = '[id^="id_licences"][id$="number"]:not([id*="prefix"])'
+        new BODSFrontend.DisableInputs(licenceRequiredCheckboxSelector, licenceInputDisableFieldsSelector);
+        new BODSFrontend.LicenceCheckbox(licenceInputFieldsSelector, licenceRequiredCheckboxSelector);
+
+        // Add button click handler
+        document.getElementById('id_{{ formset.prefix }}-ADD')
+            .addEventListener(
+                "click",
+                function () {
+                    // Get management form's TOTAL_FORMS input
+                    var totalForms = document.getElementById("id_{{ formset.prefix }}-TOTAL_FORMS");
+                    var formIdx = totalForms.value;
+
+                    // Get formset
+                    var formset = document.getElementById("id_{{ formset.prefix }}-formset");
+
+                    // Each form should be wrapped
+                    var emptyForm = document.querySelector("#id_{{ formset.prefix }}-EMPTY_FORM tbody");
+
+                    formset.insertAdjacentHTML(
+                        "beforeend",
+                        emptyForm.innerHTML.replace(/__prefix__/g, formIdx)
+                    );
+
+                    new BODSFrontend.LicenceCheckbox(licenceInputFieldsSelector, licenceRequiredCheckboxSelector);
+
+                    // Increment TOTAL_FORMS
+                    totalForms.value = parseInt(formIdx) + 1;
+                });
+
+        // The invalid form will be rerendered with the previous state. We need to reset the DELETE inputs since
+        // there is no way for the user to untick the input once checked
+        {% for form in formset %}
+          {% if forloop.counter <= formset.initial_forms|length  or form.cleaned_data %}
+            document.getElementById('id_{{form.prefix}}-DELETE').value = null;
+          {% endif %}
+        {% endfor %}
+    });
+</script>

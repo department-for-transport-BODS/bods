@@ -4,7 +4,7 @@ from django_hosts.resolvers import get_host, reverse
 
 import config.hosts
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.common.test_utils import add_session_middleware
+from transit_odp.common.tests.utils import add_session_middleware
 from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.organisation.forms.management import (
     Invitation,

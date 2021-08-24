@@ -1,0 +1,28 @@
+{% extends "site_admin/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Overview' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
+  {% breadcrumb 'Overview' %}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">This feature is coming soon</h1>
+        <p class="govuk-body">
+          This feature will be available soon. In the meantime, please return to the previous page for the download option.
+        </p>
+      </div>
+    </div>
+</div>
+{% endblock %}

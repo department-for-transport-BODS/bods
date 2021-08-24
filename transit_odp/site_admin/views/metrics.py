@@ -1,82 +1,54 @@
-import io
-from collections import namedtuple
-from zipfile import ZIP_DEFLATED, ZipFile
-
 from django.contrib.auth import get_user_model
-from django.http import FileResponse
-from django.views.generic import TemplateView, View
+from django.http.response import Http404
+from django.views.generic import DetailView, ListView, TemplateView
 
-from transit_odp.site_admin.exports import (
-    AgentUserCSV,
-    APIRequestCSV,
-    ConsumerCSV,
-    DailyConsumerRequestCSV,
-    OperationalStatsCSV,
-    OrganisationCSV,
-    PublisherCSV,
-    RawConsumerRequestCSV,
-)
+from transit_odp.site_admin.models import MetricsArchive, OperationalMetricsArchive
 from transit_odp.users.views.mixins import SiteAdminViewMixin
 
-__all__ = ["MetricsDownloadView", "OperationalMetricsFileView", "APIMetricsFileView"]
+__all__ = [
+    "MetricsDownloadDetailView",
+    "MetricsDownloadListView",
+    "MetricsDownloadListView",
+    "MetricsIndexView",
+    "MetricsOverviewView",
+    "OperationalMetricsFileView",
+]
 
-CSVFile = namedtuple("CSVFile", "name,builder_class")
 User = get_user_model()
 
 
-class MetricsDownloadView(SiteAdminViewMixin, TemplateView):
+class MetricsIndexView(SiteAdminViewMixin, TemplateView):
+    template_name = "site_admin/metrics/index.html"
+
+
+class MetricsOverviewView(SiteAdminViewMixin, TemplateView):
+    template_name = "site_admin/metrics/overview.html"
+
+
+class MetricsDownloadListView(SiteAdminViewMixin, ListView):
     template_name = "site_admin/metrics/download.html"
+    model = MetricsArchive
+    queryset = MetricsArchive.objects.order_by("-start")[:12]
 
 
-class OperationalMetricsFileView(SiteAdminViewMixin, View):
-    """ A view for downloading BODS operational metrics zip file."""
-
-    def render_to_response(self, *args, **kwargs):
-        filename = "operationalexports.zip"
-        buffer_ = io.BytesIO()
-        files = (
-            CSVFile("organisations.csv", OrganisationCSV),
-            CSVFile("publishers.csv", PublisherCSV),
-            CSVFile("consumers.csv", ConsumerCSV),
-            CSVFile("stats.csv", OperationalStatsCSV),
-            CSVFile("agents.csv", AgentUserCSV),
-        )
-
-        with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
-            for file_ in files:
-                Builder = file_.builder_class
-                zin.writestr(file_.name, Builder().to_string())
-
-        buffer_.seek(0)
-        response = FileResponse(buffer_)
-        response["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
+class MetricsDownloadDetailView(SiteAdminViewMixin, DetailView):
+    model = MetricsArchive
 
     def get(self, *args, **kwargs):
-        return self.render_to_response()
+        metric = self.get_object()
+        return metric.to_http_response()
 
 
-class APIMetricsFileView(SiteAdminViewMixin, View):
-    """ A view downloading BODS API usage metrics zip file."""
+class OperationalMetricsFileView(SiteAdminViewMixin, DetailView):
+    """A view for downloading BODS operational metrics zip file."""
 
-    def render_to_response(self, *args, **kwargs):
-        filename = "apimetrics.zip"
-        buffer_ = io.BytesIO()
-        files = [
-            CSVFile("dailyaggregates.csv", APIRequestCSV),
-            CSVFile("dailyconsumerbreakdown.csv", DailyConsumerRequestCSV),
-            CSVFile("rawapimetrics.csv", RawConsumerRequestCSV),
-        ]
+    model = OperationalMetricsArchive
 
-        with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
-            for file_ in files:
-                Builder = file_.builder_class
-                zin.writestr(file_.name, Builder().to_string())
-
-        buffer_.seek(0)
-        response = FileResponse(buffer_)
-        response["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
+    def get_object(self, queryset=None):
+        obj = self.get_queryset().last()
+        if obj is None:
+            raise Http404()
+        return obj
 
     def get(self, *args, **kwargs):
-        return self.render_to_response(*args, **kwargs)
+        return self.get_object().to_http_response()

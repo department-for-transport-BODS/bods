@@ -1,9 +1,11 @@
 import hashlib
 import logging
 import os
+from datetime import datetime
 from typing import Optional, cast
 
 from cavl_client.rest import ApiException
+from django.contrib.postgres.fields.array import ArrayField
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Index, Q, UniqueConstraint
@@ -18,7 +20,13 @@ from config import hosts
 from transit_odp.bods.interfaces.plugins import get_cavl_service
 from transit_odp.common.validators import validate_profanity
 from transit_odp.organisation import signals
-from transit_odp.organisation.constants import AVLFeedStatus, DatasetType, FeedStatus
+from transit_odp.organisation.constants import (
+    DATASET_TYPE_NAMESPACE_MAP,
+    DATASET_TYPE_PRETTY_MAP,
+    AVLFeedStatus,
+    DatasetType,
+    FeedStatus,
+)
 from transit_odp.organisation.managers import (
     DatasetManager,
     DatasetRevisionManager,
@@ -29,7 +37,10 @@ from transit_odp.organisation.mixins import (
     DatasetPayloadMetadataMixin,
     DatasetPayloadMixin,
 )
-from transit_odp.organisation.querysets import DatasetRevisionQuerySet
+from transit_odp.organisation.querysets import (
+    DatasetRevisionQuerySet,
+    TXCFileAttributesQuerySet,
+)
 from transit_odp.pipelines.signals import dataset_etl
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.users.models import User
@@ -39,12 +50,6 @@ logger = logging.getLogger(__name__)
 # Register database Length transformation as query lookup
 #  see https://docs.djangoproject.com/en/1.11/ref/models/database-functions/#length
 models.FileField.register_lookup(Length, "length")
-
-NAMESPACE_MAP = {
-    DatasetType.TIMETABLE: "",
-    DatasetType.AVL: "avl",
-    DatasetType.FARES: "fares",
-}
 
 
 class Organisation(TimeStampedModel):
@@ -64,11 +69,70 @@ class Organisation(TimeStampedModel):
     is_active = models.BooleanField(
         default=False, help_text="Whether the organisation is active or not"
     )
+    licence_required = models.BooleanField(
+        _("Whether an organisation requires a PSV licence"), null=True, default=None
+    )
 
     objects = OrganisationManager()
 
     def __str__(self):
-        return f"<Organisation name='{self.name}'>"
+        return f"name='{self.name}'"
+
+    @property
+    def licence_not_required(self):
+        """
+        Inverts the behaviour of licence_required if a boolean otherwise returns
+        False if licence_required is None.
+        """
+        if self.licence_required is None:
+            return False
+        elif self.licence_required:
+            return False
+        else:
+            return True
+
+    def get_latest_login_date(self) -> Optional[datetime]:
+        """
+        Returns the most recent login date.
+        """
+        dates = [user.last_login for user in self.users.all() if user.last_login]
+        if len(dates) > 0:
+            return max(dates)
+        return None
+
+    def get_status(self) -> str:
+        """
+        Returns the status of the Organisation.
+        """
+        user_count = self.users.count()
+        if self.is_active:
+            return "Active"
+        elif not self.is_active and user_count > 0:
+            return "Inactive"
+        elif not self.is_active and user_count == 0:
+            return "Pending invite"
+        else:
+            return ""
+
+    def get_invite_sent_date(self) -> Optional[datetime]:
+        """
+        Gets the earliest date that an invite was sent.
+        """
+        dates = [invite.sent for invite in self.invitation_set.all() if invite.sent]
+        if len(dates) > 0:
+            return min(dates)
+        else:
+            return None
+
+    def get_invite_accepted_date(self) -> Optional[datetime]:
+        """
+        Gets the earliest date that an invite was sent.
+        """
+        dates = [user.date_joined for user in self.users.all() if user.date_joined]
+        if len(dates) > 0:
+            return min(dates)
+        else:
+            return None
 
 
 class OperatorCode(models.Model):
@@ -79,6 +143,16 @@ class OperatorCode(models.Model):
 
     def __str__(self):
         return f"<OperatorCode noc='{self.noc}'>"
+
+
+class Licence(models.Model):
+    number = models.CharField(_("PSV Licence Number"), max_length=9, unique=True)
+    organisation = models.ForeignKey(
+        Organisation, on_delete=models.CASCADE, related_name="licences"
+    )
+
+    def __str__(self):
+        return f"id={self.id}, number={self.number!r}"
 
 
 class Dataset(TimeStampedModel):
@@ -143,7 +217,7 @@ class Dataset(TimeStampedModel):
         If this is called for location data then reverse will raise.
         Leaving this in for now as we probably want to know if this happens"""
 
-        view_namespace = NAMESPACE_MAP[self.dataset_type]
+        view_namespace = DATASET_TYPE_NAMESPACE_MAP[self.dataset_type]
 
         download_view_name = "feed-download"
         download_view_name = (
@@ -159,7 +233,7 @@ class Dataset(TimeStampedModel):
         ie if the dataset is published the feed-detail URL is returned otherwise
         the review page is returned"""
 
-        view_namespace = NAMESPACE_MAP[self.dataset_type]
+        view_namespace = DATASET_TYPE_NAMESPACE_MAP[self.dataset_type]
         view_name = "feed-detail" if self.live_revision else "revision-publish"
         view_name = f"{view_namespace}:{view_name}" if view_namespace else view_name
         org_id = self.organisation.id
@@ -176,8 +250,8 @@ class Dataset(TimeStampedModel):
         return self.live_revision and self.live_revision.is_published
 
     @property
-    def get_dataset_type_label(self):
-        return DatasetType(self.dataset_type).name.title()
+    def pretty_dataset_type(self):
+        return DATASET_TYPE_PRETTY_MAP[self.dataset_type]
 
     @property
     def is_remote(self):
@@ -467,7 +541,7 @@ class DatasetRevision(
         dataset_id = dataset.id
         org_id = dataset.organisation.id
 
-        view_namespace = NAMESPACE_MAP[dataset.dataset_type]
+        view_namespace = DATASET_TYPE_NAMESPACE_MAP[dataset.dataset_type]
         view_namespace = view_namespace + ":" if view_namespace else view_namespace
 
         if not dataset.live_revision:
@@ -549,12 +623,27 @@ class TXCFileAttributes(models.Model):
     revision_number = models.IntegerField(_("File Revision Number"))
     modification = models.CharField(_("Modification"), max_length=28)
     creation_datetime = models.DateTimeField(_("File Creation Datetime"))
-    modificaton_datetime = models.DateTimeField(_("File Modification Datetime"))
+    modification_datetime = models.DateTimeField(_("File Modification Datetime"))
     filename = models.CharField(_("Filename"), max_length=512)
     service_code = models.CharField(_("Service Code"), max_length=100)
     national_operator_code = models.CharField(
         _("National Operator Code"), max_length=100
     )
+    licence_number = models.CharField(_("Licence Number"), max_length=56, default="")
+    operating_period_start_date = models.DateField(
+        _("Operating Period Start Date"), null=True, blank=True
+    )
+    operating_period_end_date = models.DateField(
+        _("Operating Period End Date"), null=True, blank=True
+    )
+    public_use = models.BooleanField(_("Is the service for public use"), default=True)
+    line_names = ArrayField(
+        models.CharField(_("Name of Lines"), max_length=255, blank=True),
+        blank=True,
+        default=list,
+    )
+
+    objects = TXCFileAttributesQuerySet.as_manager()
 
     def __str__(self):
         return (
@@ -563,7 +652,7 @@ class TXCFileAttributes(models.Model):
             f"revision_number={self.revision_number}, "
             f"modification={self.modification!r}, "
             f"creation_datetime={self.creation_datetime.isoformat()}, "
-            f"modificaton_datetime={self.modificaton_datetime.isoformat()}, "
+            f"modification_datetime={self.modification_datetime.isoformat()}, "
             f"filename={self.filename!r}, "
             f"service_code={self.service_code!r}, "
             f"national_operator_code={self.national_operator_code!r}"
@@ -577,8 +666,13 @@ class TXCFileAttributes(models.Model):
             modification=txc_file.header.modification,
             revision_number=txc_file.header.revision_number,
             creation_datetime=txc_file.header.creation_datetime,
-            modificaton_datetime=txc_file.header.modificaton_datetime,
+            modification_datetime=txc_file.header.modification_datetime,
             filename=txc_file.header.filename,
-            service_code=txc_file.service_code,
             national_operator_code=txc_file.operator.national_operator_code,
+            licence_number=txc_file.operator.licence_number,
+            service_code=txc_file.service.service_code,
+            operating_period_start_date=txc_file.service.operating_period_start_date,
+            operating_period_end_date=txc_file.service.operating_period_end_date,
+            public_use=txc_file.service.public_use,
+            line_names=[line.line_name for line in txc_file.service.lines],
         )

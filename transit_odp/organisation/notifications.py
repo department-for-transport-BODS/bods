@@ -156,6 +156,13 @@ def send_endpoint_validation_error_notification(dataset):
 
 def send_report_available_notifications(revision: DatasetRevision):
     contact = revision.dataset.contact
+    dataset = revision.dataset
+
+    if dataset.live_revision:
+        live_revisions_published_date = dataset.live_revision.published_at
+    else:
+        live_revisions_published_date = None
+
     if contact.is_agent_user:
         notifier.send_agent_reports_are_available_notification(
             dataset_id=revision.dataset_id,
@@ -164,6 +171,7 @@ def send_report_available_notifications(revision: DatasetRevision):
             short_description=revision.short_description,
             comments=revision.comment,
             draft_link=revision.draft_url,
+            published_at=live_revisions_published_date,
             contact_email=contact.email,
         )
     else:
@@ -173,5 +181,6 @@ def send_report_available_notifications(revision: DatasetRevision):
             short_description=revision.short_description,
             comments=revision.comment,
             draft_link=revision.draft_url,
+            published_at=live_revisions_published_date,
             contact_email=contact.email,
         )

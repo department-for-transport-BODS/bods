@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django_hosts.resolvers import get_host, reverse
 
 from config.hosts import ADMIN_HOST
-from transit_odp.common.test_utils import add_session_middleware
+from transit_odp.common.tests.utils import add_session_middleware
 from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.site_admin.views import (
     InviteView,

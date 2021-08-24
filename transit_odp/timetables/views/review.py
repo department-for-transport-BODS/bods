@@ -55,6 +55,10 @@ class BaseTimetableReviewView(ReviewBaseView):
         revision = self.get_object()
         tasks = revision.data_quality_tasks
         loading = self.is_loading()
+        dq_pending_or_failed = tasks.get_latest_status() in ["FAILURE", "PENDING"]
+        show_update = (
+            self.object.is_pti_compliant() and tasks.get_latest_status() == "SUCCESS"
+        )
 
         context.update(
             {
@@ -66,6 +70,8 @@ class BaseTimetableReviewView(ReviewBaseView):
                 "dq_status": tasks.get_latest_status(),
                 "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
                 "pti_enforced_date": settings.PTI_ENFORCED_DATE,
+                "dq_pending_or_failed": dq_pending_or_failed,
+                "show_update": show_update,
             }
         )
         if context["dq_status"] == DatasetETLTaskResult.SUCCESS:

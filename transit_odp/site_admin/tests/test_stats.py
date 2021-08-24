@@ -1,5 +1,8 @@
+from unittest.mock import Mock, patch
+
 import pytest
 from django.contrib.auth import get_user_model
+from requests.exceptions import RequestException
 
 from transit_odp.organisation.constants import (
     AVLType,
@@ -17,6 +20,7 @@ from transit_odp.site_admin.stats import (
     get_active_dataset_counts,
     get_operator_count,
     get_orgs_with_active_dataset_counts,
+    get_siri_vm_vehicle_counts,
     get_user_counts,
 )
 from transit_odp.users.factories import (
@@ -190,3 +194,35 @@ def test_published_operator_count():
     assert counts["published_timetable_operator_count"] == 1
     assert counts["published_avl_operator_count"] == 1
     assert counts["published_fares_operator_count"] == 1
+
+
+def test_get_siri_vm_vehicle_counts():
+    """
+    Given that the CAVL stats API returns vehicle counts
+    When I call get_siri_vm_vehicle_counts
+    Then I should get back the number of siri vm vehicles
+    """
+    with patch("transit_odp.site_admin.stats.requests") as requests:
+        response = Mock(status_code=200)
+        expected_siri_vm_count = 18561
+        response.json.return_value = {
+            "num_of_gtfs_rt_vehicles": 18692,
+            "num_of_siri_vehicles": expected_siri_vm_count,
+            "query_time": 0.023499011993408203,
+            "version": "0.8.3",
+        }
+        requests.get.return_value = response
+        result = get_siri_vm_vehicle_counts()
+        assert result == expected_siri_vm_count
+
+
+def test_get_siri_vm_vehicle_counts_exceptions():
+    """
+    Given that the CAVL stats API returns an exception
+    When I call get_siri_vm_vehicle_counts
+    Then I should get back 0
+    """
+    with patch("transit_odp.site_admin.stats.requests") as requests:
+        requests.get.side_effect = RequestException
+        result = get_siri_vm_vehicle_counts()
+        assert result == 0

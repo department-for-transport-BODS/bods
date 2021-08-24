@@ -190,8 +190,40 @@ class StopPointLoader(SimpleFeatureLoader):
     model = StopPoint
 
 
-class ServicesLoader(SimpleFeatureLoader):
+class ServicesLoader(TransModelMapper, SimpleFeatureLoader):
     model = Service
+
+    def get_missing_ito_ids(self, features: List[features.Feature]) -> List[str]:
+        ito_ids = set(item.id for item in features)
+        db_ito_ids = set(service.ito_id for service in self.services.values())
+        missing_ito_ids = ito_ids - db_ito_ids
+        return missing_ito_ids
+
+    def load(self, features: List[features.Feature]) -> None:
+        """
+        Loads features from the DQS Report into the database.
+        """
+        super().load(features=features)
+        self.update(features=features)
+
+    def update(self, features: List[features.Feature]) -> None:
+        """
+        Updates features that are currently in the database.
+        """
+        update_services = []
+        for feature in features:
+            service = self.get_service_by_ito_id(feature.id)
+            if service is None:
+                continue
+
+            if service.name == feature.name:
+                continue
+
+            service.name = feature.name
+            update_services.append(service)
+
+        if len(update_services) > 0:
+            self.model.objects.bulk_update(update_services, ["name"])
 
 
 class ServiceLinkLoader(TransModelMapper, SimpleFeatureLoader):

@@ -285,7 +285,14 @@ class OrganisationEditView(SiteAdminViewMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({"cancel_url": self.get_cancel_url()})
+        organisation = kwargs["instance"]
+        initial_licence = organisation.licence_not_required
+        kwargs.update(
+            {
+                "cancel_url": self.get_cancel_url(),
+                "initial": {"licence_required": initial_licence},
+            }
+        )
         return kwargs
 
     def get_queryset(self):

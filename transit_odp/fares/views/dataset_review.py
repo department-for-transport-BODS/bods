@@ -214,9 +214,12 @@ class FaresDatasetUploadModify(BaseDatasetUploadModify):
     def done(self, form_list, **kwargs):
         all_data = self.get_all_cleaned_data()
         dataset = self.get_dataset()
-        all_data.update(
-            {"last_modified_user": self.request.user, "comment": "First publication"}
-        )
+        draft_revision = dataset.revisions.get_draft().first()
+        if draft_revision is None:
+            comment = "First publication"
+        else:
+            comment = draft_revision.comment
+        all_data.update({"last_modified_user": self.request.user, "comment": comment})
 
         revision = DatasetRevision.objects.filter(
             Q(dataset=dataset) & Q(is_published=False)
@@ -230,7 +233,7 @@ class FaresDatasetUploadModify(BaseDatasetUploadModify):
 
         return HttpResponseRedirect(
             reverse(
-                "fares:revision-publish",
+                "fares:revision-update-publish",
                 kwargs={"pk": dataset.id, "pk1": dataset.organisation_id},
                 host=config.hosts.PUBLISH_HOST,
             )

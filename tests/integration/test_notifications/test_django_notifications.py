@@ -181,8 +181,8 @@ class TestDjangoNotification:
     @pytest.mark.parametrize(
         "with_pti_observations, subject",
         [
-            (False, "Dataset published"),
-            (True, "Data set published with validation errors"),
+            (False, "Data set published"),
+            (True, "Action required – PTI validation report requires resolution"),
         ],
     )
     def test_send_data_endpoint_published_notification(
@@ -546,8 +546,8 @@ class TestDjangoNotification:
     @pytest.mark.parametrize(
         "with_pti_observations, subject",
         [
-            (False, "Dataset published"),
-            (True, "Data set published with validation errors"),
+            (False, "Data set published"),
+            (True, "Action required – PTI validation report requires resolution"),
         ],
     )
     def test_send_agent_data_endpoint_published_notification(
@@ -578,14 +578,15 @@ class TestDjangoNotification:
             short_description=self.short_description,
             comments=self.comments,
             draft_link=self.feed_detail_link,
+            published_at=None,
             contact_email=self.contact_email,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Data set reports are now available"
+            m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Action required – "
+            f"PTI validation report requires resolution (if applicable)"
         )
 
     def test_reports_now_available_to_agent(self, mailoutbox, settings):
@@ -597,12 +598,13 @@ class TestDjangoNotification:
             comments=self.comments,
             operator_name=self.agent_organisation,
             draft_link=self.feed_detail_link,
+            published_at=None,
             contact_email=self.agent_contact_email,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Data set reports are now available"
+            m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Action required – "
+            f"PTI validation report requires resolution (if applicable)"
         )

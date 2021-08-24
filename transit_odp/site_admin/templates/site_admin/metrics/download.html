@@ -3,44 +3,52 @@
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
+{% load crispy_forms_tags %}
 
 {% block title_tag %}
-  {% trans 'Download BODS automated metrics' %}
+    {% trans 'Overview' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb 'Automated exports' %}
+    {{ block.super }}
+    {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
+    {% breadcrumb 'Download all monitoring metrics' %}
 {% endblock %}
 
 {% block content %}
 <div class="govuk-width-container">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Download BODS automated metrics</h1>
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">Download all monitoring metrics</h1>
+            <h2 class="govuk-heading-m">Publisher metrics</h2>
+            <p class="govuk-body">
+                The monitoring data is cached on the service and will be provided in csv
+                format within a compressed zip file.
+            </p>
+            <p class="govuk-body">
+                <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
+                    Download all publisher monitoring metrics
+                </a>
+            </p>
 
-        <h2 class="govuk-heading-m">API usage metrics</h2>
-        <p class="govuk-body">
-          This download provides a time-series excel export of the different metrics used
-          to track the usage of the BODS consumer API for all the different types of data.
-        </p>
-        <p class="govuk-body">
-            Download BODS API usage metric
-        </p>
+            <h2 class="govuk-heading-m">API consumer metrics</h2>
+            <p class="govuk-body">
+                The monitoring data is cached on the service and will be provided in csv
+                format within a compressed zip file.
+            </p>
+            <div class="govuk-body">
+                <ul class="govuk-list">
+                {% for metrics_archive in object_list %}
+                    <li>
+                        <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
+                        Download API consumer metrics for {{metrics_archive.end|date:"F Y"}}
+                        </a>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
 
-        <h2 class="govuk-heading-m">Automated export metrics</h2>
-        <p class="govuk-body">
-          This download provides data on the different operational level metrics used to
-          track on BODS including details on operators and their data uploads.
-        </p>
-        <p class="govuk-body">
-          <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
-            Download BODS automated metrics
-          </a>
-        </p>
-      </div>
-      <div class="govuk-grid-column-one-third">
-      </div>
+        </div>
     </div>
 </div>
 {% endblock %}

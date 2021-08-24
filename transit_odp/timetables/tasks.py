@@ -90,7 +90,8 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
         jobs = [
             task_dataset_download.signature(args),
             task_scan_timetables.signature(args),
-            task_dataset_validate.signature(args),
+            task_timetable_file_check.signature(args),
+            task_timetable_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
             task_dqs_upload.signature(args),
@@ -167,76 +168,6 @@ def run_scan_timetables(task_id: int):
     return revision
 
 
-def run_timetable_file_check(task_id: int):
-    task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
-
-    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
-    adapter.info("Starting timetable file check.")
-    try:
-        validator = TimetableFileValidator(revision=revision)
-        validator.validate()
-    except ValidationException as exc:
-        message = exc.message
-        logger.error(message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-    except Exception as exc:
-        message = str(exc)
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-
-    task.update_progress(30)
-    adapter.info("File check complete. No issues.")
-    return revision
-
-
-def run_timetable_txc_schema_validation(task_id: int):
-    task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
-
-    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
-    adapter.info("Starting timetable schema validation.")
-
-    try:
-        adapter.info("Checking for TXC schema violations.")
-        validator = DatasetTXCValidator()
-        violations = validator.get_violations(revision=revision)
-    except Exception as exc:
-        message = str(exc)
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-    else:
-        adapter.info(f"{len(violations)} violations found")
-        if len(violations) > 0:
-            schema_violations = [
-                SchemaViolation.from_violation(revision_id=revision.id, violation=v)
-                for v in violations
-            ]
-            SchemaViolation.objects.bulk_create(
-                schema_violations, batch_size=BATCH_SIZE
-            )
-
-            message = "TransXChange schema issues found."
-            task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
-            task.additional_info = message
-            task.save()
-            raise PipelineException(message)
-
-    task.update_progress(40)
-    revision.save()
-    adapter.info("Validation complete.")
-    return revision
-
-
 def run_txc_file_attribute_extraction(task_id: int):
     """
     Index the attributes and service code of every individual file in a dataset.
@@ -250,7 +181,10 @@ def run_txc_file_attribute_extraction(task_id: int):
         # If we're in the update flow lets clear out "old" files.
         revision.txc_file_attributes.all().delete()
         parser = TransXChangeDatasetParser(revision.upload_file)
-        files = [TXCFile.from_txc_document(doc) for doc in parser.get_documents()]
+        files = [
+            TXCFile.from_txc_document(doc, use_path_filename=True)
+            for doc in parser.get_documents()
+        ]
 
         attributes = [
             TXCFileAttributes.from_txc_file(txc_file=f, revision_id=revision.id)
@@ -332,28 +266,97 @@ def task_dataset_download(revision_id: int, task_id: int):
     return revision_id
 
 
-@shared_task
+@shared_task()
 def task_scan_timetables(revision_id: int, task_id: int):
     run_scan_timetables(task_id=task_id)
     return revision_id
 
 
-@shared_task()
-def task_dataset_validate(revision_id: int, task_id: int):
-    """A task that validates the file/s in a dataset."""
-    run_timetable_file_check(task_id=task_id)
-    run_timetable_txc_schema_validation(task_id=task_id)
+@shared_task(bind=True, acks_late=True)
+def task_timetable_file_check(self, revision_id: int, task_id: int):
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting timetable file check.")
+    try:
+        validator = TimetableFileValidator(revision=revision)
+        validator.validate()
+        task.update_progress(30)
+        adapter.info("File check complete. No issues.")
+    except ValidationException as exc:
+        message = exc.message
+        logger.error(message, exc_info=True)
+        task.to_error("dataset_validate", exc.code)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message) from exc
+    except Exception as exc:
+        message = str(exc)
+        adapter.error(message, exc_info=True)
+        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message) from exc
+
     return revision_id
 
 
-@shared_task()
-def task_extract_txc_file_data(revision_id: int, task_id: int):
+@shared_task(bind=True, acks_late=True)
+def task_timetable_schema_check(self, revision_id: int, task_id: int):
+    """A task that validates the file/s in a dataset."""
+
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting timetable schema validation.")
+
+    try:
+        adapter.info("Checking for TXC schema violations.")
+        validator = DatasetTXCValidator()
+        violations = validator.get_violations(revision=revision)
+    except Exception as exc:
+        message = str(exc)
+        adapter.error(message, exc_info=True)
+        task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message) from exc
+    else:
+        adapter.info(f"{len(violations)} violations found")
+        if len(violations) > 0:
+            schema_violations = [
+                SchemaViolation.from_violation(revision_id=revision.id, violation=v)
+                for v in violations
+            ]
+
+            with transaction.atomic():
+                # 'Update data' flow allows validation to occur multiple times
+                # lets just delete any 'old' observations.
+                revision.schema_violations.all().delete()
+                SchemaViolation.objects.bulk_create(
+                    schema_violations, batch_size=BATCH_SIZE
+                )
+
+                message = "TransXChange schema issues found."
+                task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
+                task.additional_info = message
+                task.save()
+            raise PipelineException(message)
+        else:
+            adapter.info("Validation complete.")
+            task.update_progress(40)
+            return revision_id
+
+
+@shared_task(bind=True)
+def task_extract_txc_file_data(self, revision_id: int, task_id: int):
     run_txc_file_attribute_extraction(task_id)
     return revision_id
 
 
-@shared_task()
-def task_pti_validation(revision_id: int, task_id: int):
+@shared_task(bind=True, acks_late=True)
+def task_pti_validation(self, revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
@@ -379,7 +382,8 @@ def task_pti_validation(revision_id: int, task_id: int):
             adapter.info(f"{len(violations)} violations found.")
             task.update_progress(50)
             revision.save()
-
+            adapter.info("Finished PTI Profile validation.")
+            return revision_id
     except ValidationException as exc:
         message = "PTI Validation failed."
         adapter.error(message, exc_info=True)
@@ -394,9 +398,6 @@ def task_pti_validation(revision_id: int, task_id: int):
         task.additional_info = message
         task.save()
         raise PipelineException(message) from exc
-
-    adapter.info("Finished PTI Profile validation.")
-    return revision_id
 
 
 @shared_task()
@@ -456,7 +457,7 @@ def task_retry_unavailable_timetables():
         update_dataset(timetable, task_dataset_pipeline)
 
 
-@shared_task
+@shared_task()
 def task_deactivate_txc_2_1():
     organisations = Organisation.objects.get_organisations_with_txc21_datasets()
     count = organisations.count()

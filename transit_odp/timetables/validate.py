@@ -1,11 +1,12 @@
 import zipfile
 from logging import getLogger
+from typing import List, Optional
 
 from lxml import etree
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
-from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
 
@@ -123,20 +124,28 @@ class TXCRevisionValidator:
         self.violations = []
 
     @property
-    def draft_attributes(self):
+    def draft_attributes(self) -> List[TXCFileAttributes]:
+        """
+        Returns all the TXCFileAttributes of the draft revision of this Dataset.
+        """
         if self._draft_attributes is not None:
             return self._draft_attributes
         self._draft_attributes = list(self.revision.txc_file_attributes.all())
         return self._draft_attributes
 
     @property
-    def live_attributes(self):
+    def live_attributes(self) -> List[TXCFileAttributes]:
+        """
+        Returns all the TXCFileAttributes of the live revision of this Dataset.
+        """
         if self._live_attributes is not None:
             return self._live_attributes
         self._live_attributes = list(self.live_revision.txc_file_attributes.all())
         return self._live_attributes
 
-    def get_live_attribute_by_service_code(self, code, default=None):
+    def get_live_attribute_by_service_code(
+        self, code, default=None
+    ) -> Optional[TXCFileAttributes]:
         """
         Returns TXCFileAttributes with source_code equal to code.
         """
@@ -150,7 +159,7 @@ class TXCRevisionValidator:
             attrs.sort(key=lambda a: a.revision_number, reverse=True)
             return attrs[0]
 
-    def validate_creation_datetime(self):
+    def validate_creation_datetime(self) -> None:
         """
         Validates that creation_datetime remains unchanged between revisions.
         """
@@ -170,14 +179,18 @@ class TXCRevisionValidator:
                     )
                 )
 
-    def validate_revision_number(self):
+    def validate_revision_number(self) -> None:
         """
-        Validates that revision_number increments between revisions.
+        Validates that revision_number increments between revisions if the
+        modification_datetime has changed.
         """
         for draft in self.draft_attributes:
             live = self.get_live_attribute_by_service_code(draft.service_code)
 
             if live is None:
+                continue
+
+            if live.modification_datetime == draft.modification_datetime:
                 continue
 
             if live.revision_number >= draft.revision_number:
@@ -190,7 +203,7 @@ class TXCRevisionValidator:
                     )
                 )
 
-    def get_violations(self):
+    def get_violations(self) -> List[Violation]:
         """
         Returns any revision violations.
         """

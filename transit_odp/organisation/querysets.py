@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytz
 from django.conf import settings
@@ -87,32 +87,22 @@ class OrganisationQuerySet(models.QuerySet):
         """Annotates queryset with a set of total numbers of related published datasets,
         for Timetables, AVLs and Fares
         """
-        from transit_odp.organisation.models import Dataset
-
-        # Need to import here to avoid circular dependency due to
-        # organisation and dataset belonging to the organisation app
-        base_query = Dataset.objects.filter(
-            organisation_id=OuterRef("id"), live_revision__isnull=False
-        )
-
-        dataset_type = "dataset_type"
         dataset_types = (TimetableType, AVLType, FaresType)
-        timetable_subquery, avl_subquery, fares_subquery = [
-            Subquery(
-                base_query.filter(dataset_type=type_)
-                .values(dataset_type)
-                .annotate(total=Count(dataset_type))
-                .order_by(dataset_type)
-                .values_list("total"),
-                output_field=IntegerField(),
+        timetable_count, avl_count, fares_count = [
+            Count(
+                "dataset",
+                filter=Q(
+                    dataset__dataset_type=dataset_type,
+                    dataset__live_revision__isnull=False,
+                ),
+                distinct=True,
             )
-            for type_ in dataset_types
+            for dataset_type in dataset_types
         ]
-
         return self.annotate(
-            published_timetable_count=timetable_subquery,
-            published_avl_count=avl_subquery,
-            published_fares_count=fares_subquery,
+            published_timetable_count=timetable_count,
+            published_avl_count=avl_count,
+            published_fares_count=fares_count,
         )
 
     def add_published_dataset_count(self):
@@ -133,7 +123,7 @@ class OrganisationQuerySet(models.QuerySet):
         return self.annotate(invite_sent=Min("invitation__sent"))
 
     def add_status(self):
-        qs = self.annotate(total_users=Count("users"))
+        qs = self.annotate(total_users=Count("users", distinct=True))
         is_inactive = Q(is_active=False) & Q(total_users__gt=0)
         is_pending = Q(is_active=False) & Q(total_users=0)
         return qs.annotate(
@@ -164,6 +154,50 @@ class OrganisationQuerySet(models.QuerySet):
         return self.filter(
             orgs_with_published_datasets | orgs_with_draft_datasets
         ).distinct()
+
+    def add_unregistered_service_count(self):
+        unregistered_service_count = Count(
+            "dataset",
+            filter=Q(
+                dataset__live_revision__txc_file_attributes__service_code__startswith="UZ"
+            ),
+        )
+        return self.annotate(unregistered_service_count=unregistered_service_count)
+
+    def add_invite_accepted(self):
+        return self.annotate(invite_accepted=Min("users__date_joined"))
+
+    def add_number_of_fare_products(self):
+        return self.annotate(
+            total_fare_products=Sum(
+                "dataset__live_revision__metadata__faresmetadata__num_of_fare_products",
+                filter=Q(dataset__live_revision__status="live"),
+            )
+        )
+
+    def add_number_of_services_valid_operating_date(self):
+        today = datetime.today()
+        valid_today = Q(
+            dataset__live_revision__txc_file_attributes__operating_period_start_date__lte=today,
+            dataset__live_revision__txc_file_attributes__operating_period_end_date__gte=today,
+        )
+        return self.annotate(
+            number_of_services_valid_operating_date=Count(
+                "dataset__live_revision__txc_file_attributes__service_code",
+                filter=valid_today,
+            )
+        )
+
+    def add_published_services_with_future_start_date(self):
+        today = datetime.today()
+        future_start = Q(
+            dataset__live_revision__txc_file_attributes__operating_period_start_date__gt=today
+        )
+        return self.annotate(
+            published_services_with_future_start_date=Count(
+                "dataset", filter=future_start
+            )
+        )
 
 
 class DatasetQuerySet(models.QuerySet):
@@ -207,6 +241,9 @@ class DatasetQuerySet(models.QuerySet):
     def add_organisation_name(self):
         return self.annotate(organisation_name=F("organisation__name"))
 
+    def add_last_published_by_email(self):
+        return self.annotate(user_email=F("live_revision__published_by__email"))
+
     def add_draft_revisions(self):
         from transit_odp.organisation.models import DatasetRevision
 
@@ -238,7 +275,7 @@ class DatasetQuerySet(models.QuerySet):
         return qs
 
     def add_draft_revision_data(self, organisation, dataset_types=None):
-        """ Adds """
+        """Adds"""
 
         if dataset_types is None:
             dataset_types = [DatasetType.TIMETABLE]
@@ -272,11 +309,20 @@ class DatasetQuerySet(models.QuerySet):
             [organisation.id, types],
         )
 
-    def add_nocs(self):
+    def add_nocs(self, delimiter=", "):
         return self.annotate(
             nocs=StringAgg(
                 "live_revision__txc_file_attributes__national_operator_code",
-                ", ",
+                delimiter,
+                distinct=True,
+            )
+        )
+
+    def add_service_code(self, delimiter=", "):
+        return self.annotate(
+            service_codes=StringAgg(
+                "live_revision__txc_file_attributes__service_code",
+                delimiter,
                 distinct=True,
             )
         )
@@ -630,4 +676,77 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
             )
+        )
+
+
+class TXCFileAttributesQuerySet(models.QuerySet):
+    def get_active_revisions(self):
+        """
+        Filter for revisions that are published and not expired.
+        """
+        exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
+        qs = self.exclude(revision__status__in=exclude_status).filter(
+            revision__is_published=True
+        )
+        return qs
+
+    def add_dq_score(self):
+        from transit_odp.data_quality.models.report import DataQualityReport
+
+        latest_score_subquery = (
+            DataQualityReport.objects.filter(revision_id=OuterRef("revision_id"))
+            .order_by("-id")
+            .values_list("score")[:1]
+        )
+        return self.annotate(score=Subquery(latest_score_subquery))
+
+    def add_pti_exists(self):
+        from transit_odp.data_quality.models.report import PTIObservation
+
+        observations = PTIObservation.objects.filter(revision=OuterRef("revision_id"))
+        non_zero_count = Q(revision__pti_result__count__gt=0)
+        qs = self.annotate(has_pti_observations=Exists(observations))
+        return qs.annotate(
+            pti_exists=Case(
+                When(has_pti_observations=True, then=True),
+                When(non_zero_count, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
+    def add_is_after_pti_compliance_date(self):
+        filter_date = settings.PTI_START_DATE.replace(tzinfo=pytz.utc)
+        is_after_pti_compliance_date = Q(revision__created__gt=filter_date)
+        return self.annotate(
+            is_after_pti_compliance_date=Case(
+                When(is_after_pti_compliance_date, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
+    def add_bods_compliant(self):
+        return (
+            self.add_pti_exists()
+            .add_is_after_pti_compliance_date()
+            .annotate(
+                bods_compliant=Case(
+                    When(
+                        Q(pti_exists=False, is_after_pti_compliance_date=True),
+                        then=True,
+                    ),
+                    When(
+                        Q(pti_exists=True, is_after_pti_compliance_date=True),
+                        then=False,
+                    ),
+                    default=None,
+                    output_field=BooleanField(),
+                ),
+            )
+        )
+
+    def add_organisation_name(self):
+        return self.annotate(
+            organisation_name=F("revision__dataset__organisation__name")
         )

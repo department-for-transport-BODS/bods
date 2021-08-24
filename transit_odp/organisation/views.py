@@ -136,12 +136,19 @@ class OrgProfileEditView(AgentOrgAdminViewMixin, BaseUpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({"cancel_url": self.get_cancel_url()})
+        organisation = kwargs["instance"]
+        initial_licence = organisation.licence_not_required
+        kwargs.update(
+            {
+                "cancel_url": self.get_cancel_url(),
+                "initial": {"licence_required": initial_licence},
+            }
+        )
         return kwargs
 
     def form_valid(self, form):
 
-        noc_has_changed = form.nested.has_changed()
+        noc_has_changed = form.nested_noc.has_changed()
         response = super().form_valid(form)
 
         if not noc_has_changed:

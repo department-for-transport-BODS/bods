@@ -74,6 +74,7 @@ class OrganisationTable(GovUkTable):
             "short_name",
             "key_contact",
             "is_active",
+            "licence_required",
         )
         sequence = (
             "resend_invites",
