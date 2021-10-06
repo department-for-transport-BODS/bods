@@ -2,10 +2,17 @@ import pytest
 from django_hosts import reverse
 
 from config.hosts import DATA_HOST
+from transit_odp.browse.tests.test_avls import TestUserAVLFeedbackView
 from transit_odp.browse.tests.test_fares import TestFaresSearchView
 from transit_odp.data_quality.factories.report import PTIObservationFactory
-from transit_odp.organisation.constants import TimetableType
-from transit_odp.organisation.factories import DatasetFactory
+from transit_odp.organisation.constants import FeedStatus, TimetableType
+from transit_odp.organisation.factories import (
+    DatasetFactory,
+    DatasetRevisionFactory,
+    OrganisationFactory,
+)
+from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -103,3 +110,19 @@ class TestTimeTableSearchView(TestFaresSearchView):
             },
         )
         assert response.context_data["object_list"].count() == expected_results
+
+
+class TestUserTimetableFeedbackView(TestUserAVLFeedbackView):
+    view_name = "feed-feedback"
+
+    @pytest.fixture()
+    def revision(self):
+        org = OrganisationFactory()
+        publisher = UserFactory(account_type=OrgAdminType, organisations=(org,))
+        return DatasetRevisionFactory(
+            dataset__contact=publisher,
+            status=FeedStatus.live.value,
+            last_modified_user=publisher,
+            published_by=publisher,
+            dataset__organisation=org,
+        )

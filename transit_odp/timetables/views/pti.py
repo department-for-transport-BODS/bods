@@ -2,7 +2,6 @@ import io
 from abc import abstractmethod
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from django.conf import settings
 from django.db.models import CharField, Value
 from django.db.models.expressions import Case, When
 from django.db.models.functions import Concat
@@ -12,11 +11,11 @@ from django.views.generic.detail import DetailView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.data_quality.models import PTIObservation, SchemaViolation
 from transit_odp.data_quality.pti.constants import (
-    IMPORTANT_NOTE,
     NO_REF,
     REF_PREFIX,
     REF_SUFFIX,
     REF_URL,
+    get_important_note,
 )
 from transit_odp.organisation.models import Dataset
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -70,7 +69,7 @@ class PTICSV(CSVBuilder):
 
     def get_queryset(self):
         qs = PTIObservation.objects.filter(revision_id=self._revision_id)
-        qs = qs.annotate(note=Value(IMPORTANT_NOTE, output_field=CharField()))
+        qs = qs.annotate(note=Value(get_important_note(), output_field=CharField()))
         section_ref = Concat(
             Value(REF_PREFIX),
             "reference",

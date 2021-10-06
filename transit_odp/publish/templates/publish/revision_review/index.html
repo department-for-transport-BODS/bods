@@ -36,6 +36,9 @@
         {% include 'publish/revision_review/loading.html' %}
       {% elif object.error_code == "SCHEMA_ERROR"%}
         {% include 'publish/revision_review/schema_error.html' %}
+      {% elif pti_deadline_passed and has_pti_observations %}
+        {# This is the hard fail path #}
+        {% include 'publish/revision_review/pti_hard_fail.html' %}
       {% elif error %}
         {% include 'publish/revision_review/error_panel.html' %}
       {% else %}

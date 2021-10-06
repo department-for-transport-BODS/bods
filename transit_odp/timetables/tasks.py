@@ -1,4 +1,6 @@
 from logging import getLogger
+from pathlib import Path
+from urllib.parse import unquote
 
 import celery
 import pytz
@@ -66,17 +68,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
     else:
         adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
         adapter.info("Starting timetables pipeline.")
-
-        # 'Update data' flow allows validation to occur multiple times
-        # lets just delete any 'old' observations.
-        revision.schema_violations.all().delete()
-        # TODO remove once pti observations have been transitioned to pti results
-        revision.pti_observations.all().delete()
-        PTIValidationResult.objects.filter(revision_id=revision.id).delete()
-
         with transaction.atomic():
-            # TODO - refactor pipeline state to DatasetETLTaskResult
-            # (then no need for transaction here)
             revision.to_indexing()
             revision.save()
             task = DatasetETLTaskResult.objects.create(
@@ -124,7 +116,12 @@ def download_timetable(task_id):
             raise PipelineException(exc.message) from exc
         else:
             adapter.info("Timetables file downloaded successfully.")
-            name = f"remote_dataset_{revision.dataset.id}_{now}.{response.filetype}"
+
+            url_path = Path(revision.url_link)
+            if url_path.suffix in (".zip", ".xml"):
+                name = unquote(url_path.name)
+            else:
+                name = f"remote_dataset_{revision.dataset.id}_{now}.{response.filetype}"
             file_ = ContentFile(response.content, name=name)
             revision.upload_file = file_
             revision.save()
@@ -360,16 +357,16 @@ def task_pti_validation(self, revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
-    # 'Update data' flow allows validation to occur multiple times
-    # lets just delete any 'old' observations.
-    # TODO remove once pti observations have been transitioned to pti results
-    revision.pti_observations.all().delete()
-    PTIValidationResult.objects.filter(revision_id=revision.id).delete()
-
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting PTI Profile validation.")
     try:
         with transaction.atomic():
+            # 'Update data' flow allows validation to occur multiple times
+            # lets just delete any 'old' observations.
+            # TODO remove once pti observations have been transitioned to pti results
+            revision.pti_observations.all().delete()
+            PTIValidationResult.objects.filter(revision_id=revision.id).delete()
+
             pti = get_pti_validator()
             violations = pti.get_violations(revision=revision)
             revision_validator = TXCRevisionValidator(revision)
@@ -382,8 +379,7 @@ def task_pti_validation(self, revision_id: int, task_id: int):
             adapter.info(f"{len(violations)} violations found.")
             task.update_progress(50)
             revision.save()
-            adapter.info("Finished PTI Profile validation.")
-            return revision_id
+
     except ValidationException as exc:
         message = "PTI Validation failed."
         adapter.error(message, exc_info=True)
@@ -398,6 +394,17 @@ def task_pti_validation(self, revision_id: int, task_id: int):
         task.additional_info = message
         task.save()
         raise PipelineException(message) from exc
+
+    if settings.PTI_ENFORCED_DATE.date() <= timezone.localdate() and violations:
+        message = "PTI Validation failed."
+        adapter.error(message)
+        task.to_error("dataset_validate", ValidationException.code)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message)
+
+    adapter.info("Finished PTI Profile validation.")
+    return revision_id
 
 
 @shared_task()

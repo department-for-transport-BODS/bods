@@ -35,7 +35,7 @@
 
         <div class="dropdown-content">
           <a href="{% url 'users:home' host hosts.data %}"
-             class="govuk-link {% active_url 'users:home' host='data' css_class='govuk-link--active' %}">
+             class="govuk-link {% active_url 'users:home' host='data' css_class='govuk-link--active' exact=True %}">
               {% trans 'My account' %}
           </a>
           <a class="govuk-link {% active_url 'users:feeds-manage' host='data' css_class='govuk-link--active' %}"

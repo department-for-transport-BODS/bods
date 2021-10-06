@@ -1,17 +1,22 @@
 import datetime
 
 import pytest
+from django.conf import settings
 from django_hosts import reverse
 
 from config.hosts import DATA_HOST
+from transit_odp.browse.forms import UserFeedbackForm
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import AVLType, FeedStatus
 from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
     DatasetRevisionFactory,
     OrganisationFactory,
 )
 from transit_odp.organisation.models import Dataset
+from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -189,3 +194,82 @@ class TestAVLSearchView:
         actual = response.context_data["object_list"]
         assert len(actual) == 1
         assert actual[0] == expected
+
+
+class TestUserAVLFeedbackView:
+    view_name = "avl-feed-feedback"
+
+    @pytest.fixture()
+    def revision(self):
+        org = OrganisationFactory()
+        publisher = UserFactory(account_type=OrgAdminType, organisations=(org,))
+        return AVLDatasetRevisionFactory(
+            dataset__contact=publisher,
+            status=FeedStatus.live.value,
+            last_modified_user=publisher,
+            published_by=publisher,
+            dataset__organisation=org,
+        )
+
+    def test_feedback_form_is_rendered(
+        self, user: settings.AUTH_USER_MODEL, data_client, revision
+    ):
+        data_client.force_login(user=user)
+
+        url = reverse(
+            self.view_name, kwargs={"pk": revision.dataset.id}, host=DATA_HOST
+        )
+        response = data_client.get(url)
+
+        assert response.status_code == 200
+        assert "browse/timetables/user_feedback.html" in response.template_name
+
+        assert isinstance(response.context_data["form"], UserFeedbackForm)
+
+    def test_feedback_is_sent_to_pubished_by_user(
+        self, mailoutbox, user, revision, data_client
+    ):
+        data_client.force_login(user=user)
+
+        url = reverse(self.view_name, args=[revision.dataset.id], host=DATA_HOST)
+
+        response = data_client.post(
+            url,
+            data={
+                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "anonymous": False,
+            },
+            follow=True,
+        )
+
+        assert response.status_code == 200
+        assert len(mailoutbox) == 1
+        m = mailoutbox[0]
+        assert f"User: {user.email}" in m.body
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [revision.published_by.email]
+
+    def test_feedback_is_sent_anonymously(
+        self, mailoutbox, user, data_client, revision
+    ):
+        data_client.force_login(user=user)
+
+        url = reverse(self.view_name, args=[revision.dataset.id], host=DATA_HOST)
+
+        response = data_client.post(
+            url,
+            data={
+                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "anonymous": True,
+            },
+            follow=True,
+        )
+
+        assert response.status_code == 200
+        assert len(mailoutbox) == 1
+        m = mailoutbox[0]
+        assert m.subject == "You have feedback on your data"
+        assert f"User: {user.email}" not in m.body
+        assert "User: Anonymous" in m.body
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [revision.published_by.email]

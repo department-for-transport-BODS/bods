@@ -33,7 +33,7 @@ class StopPointViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = StopPointSerializer
     pagination_class = GeoJsonPagination
     filterset_class = StopPointFilterSet
-    queryset = StopPoint.objects.all()
+    queryset = StopPoint.objects.all().order_by("id")
 
     def filter_queryset(self, queryset):
         qs = super().filter_queryset(queryset)
@@ -73,7 +73,7 @@ class ServiceLinkViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ServiceLinkSerializer
     pagination_class = GeoJsonPagination
     filterset_class = ServiceLinkFilterSet
-    queryset = ServiceLink.objects.all()
+    queryset = ServiceLink.objects.all().order_by("id")
 
     # Annotate after initial filtering to avoid annotating all instances
     def filter_queryset(self, queryset):
@@ -82,7 +82,7 @@ class ServiceLinkViewSet(viewsets.ReadOnlyModelViewSet):
         # models mean we currently have to get arbitrary service pattern for
         # service links to use in template and map
         service_name_subquery = (
-            ServicePattern.objects.filter(id__in=OuterRef("service_patterns"))
+            ServicePattern.objects.filter(id=OuterRef("service_patterns"))
             .order_by("ito_id")
             .values_list("service__name")[:1]
         )

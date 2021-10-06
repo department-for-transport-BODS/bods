@@ -5,7 +5,6 @@ from typing import Dict, List, Optional
 from pydantic import validate_arguments
 
 from transit_odp.bods.interfaces.notifications import INotifications
-from transit_odp.organisation.constants import AVLFeedStatus
 
 
 class FakeNotifications(INotifications):
@@ -131,10 +130,12 @@ class FakeNotifications(INotifications):
         dataset_id: int,
         dataset_name: str,
         short_description: str,
+        dataset_type: int,
         published_at: datetime.datetime,
         comments: str,
         feed_detail_link: str,
         contact_email: str,
+        with_pti_violations: bool = False,
     ):
         template = "OPERATOR_PUBLISH_ERROR"
         self.sent[contact_email].append(template)
@@ -142,8 +143,9 @@ class FakeNotifications(INotifications):
     @validate_arguments
     def send_feedback_notification(
         self,
-        publication_id: int,
+        dataset_id: int,
         dataset_name: str,
+        feed_detail_link: str,
         contact_email: str,
         feedback: str,
         developer_email: Optional[str] = None,
@@ -193,9 +195,9 @@ class FakeNotifications(INotifications):
     @validate_arguments
     def send_avl_feed_down_publisher_notification(
         self,
-        publication_id: int,
         dataset_name: str,
         dataset_id: int,
+        short_description: str,
         contact_email: str,
     ):
         template = "OPERATOR_AVL_ENDPOINT_UNREACHABLE"
@@ -204,9 +206,10 @@ class FakeNotifications(INotifications):
     @validate_arguments
     def send_avl_feed_subscriber_notification(
         self,
-        publication_id: int,
+        dataset_id: int,
         operator_name: str,
-        dataset_status: AVLFeedStatus,
+        short_description: str,
+        dataset_status: str,
         updated_time: datetime.datetime,
         subscriber_email: str,
     ):

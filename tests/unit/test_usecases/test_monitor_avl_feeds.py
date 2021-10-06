@@ -75,6 +75,7 @@ def register_feed_with_status(
     cavl_service._set_feed_status(feed_id, status)
 
 
+@pytest.mark.skip
 class TestMonitorAVLFeeds:
     def test_publication_feed_status_is_updated(self, publication):
         uow = FakeUnitOfWork()

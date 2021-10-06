@@ -1,0 +1,5 @@
+UNDERGOING = "Undergoing Validation"
+PARTIALLY_COMPLIANT = "Partially Compliant"
+AWAITING_REVIEW = "Awaiting publisher review"
+COMPLIANT = "Compliant"
+NON_COMPLIANT = "Non-compliant"

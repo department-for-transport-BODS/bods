@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Optional
 
 from django.conf import settings
+from django.utils import timezone
 from django_hosts.resolvers import reverse
 from pydantic import validate_arguments
 
@@ -12,7 +13,7 @@ from transit_odp.bods.interfaces.notifications import INotifications
 from transit_odp.common.utils.convert_datetime import (
     localize_datetime_and_convert_to_string,
 )
-from transit_odp.organisation.constants import AVLFeedStatus
+from transit_odp.organisation.constants import AVLFeedDown
 
 logger = logging.getLogger(__name__)
 ACCOUNT_SETTINGS_VIEW = "users:settings"
@@ -26,7 +27,7 @@ class NotificationBase(INotifications):
         raise NotImplementedError
 
     @abstractmethod
-    def _send_mail(self, template: str, email: str, **kwargs):
+    def _send_mail(self, template: str, email: str, subject: str, **kwargs):
         raise NotImplementedError
 
     @validate_arguments
@@ -68,10 +69,12 @@ class NotificationBase(INotifications):
             f"[notify_{template.lower()}] notifying all subscribers "
             f"that dataset<id={dataset_id} has changed>"
         )
+        subject = "Data set status changed"
         last_update_date = localize_datetime_and_convert_to_string(last_updated)
         self._send_mail(
             template,
             contact_email,
+            subject=subject,
             feed_name=dataset_name,
             operator_name=operator_name,
             updated_time=last_update_date,
@@ -409,12 +412,13 @@ class NotificationBase(INotifications):
         self,
         dataset_id: int,
         dataset_name: str,
-        content: str,
         short_description: str,
+        dataset_type: int,
         published_at: Optional[datetime.datetime],
         comments: str,
         feed_detail_link: str,
         contact_email: str,
+        with_pti_violations: bool = False,
     ):
         template = "OPERATOR_PUBLISH_ERROR"
         logger.debug(
@@ -431,13 +435,14 @@ class NotificationBase(INotifications):
             template,
             contact_email,
             subject=subject,
-            content=content,
             feed_name=dataset_name,
             feed_id=dataset_id,
             feed_short_description=short_description,
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            dataset_type=dataset_type,
+            with_pti_violations=with_pti_violations,
         )
 
     @validate_arguments
@@ -445,13 +450,14 @@ class NotificationBase(INotifications):
         self,
         dataset_id: int,
         dataset_name: str,
-        content: str,
         short_description: str,
+        dataset_type: int,
         published_at: Optional[datetime.datetime],
         operator_name: str,
         comments: str,
         feed_detail_link: str,
         contact_email: str,
+        with_pti_violations: bool = False,
     ):
         template = "AGENT_PUBLISH_ERROR"
         logger.debug(
@@ -469,7 +475,6 @@ class NotificationBase(INotifications):
             template,
             contact_email,
             subject=subject,
-            content=content,
             feed_name=dataset_name,
             feed_id=dataset_id,
             organisation=operator_name,
@@ -477,28 +482,35 @@ class NotificationBase(INotifications):
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            dataset_type=dataset_type,
+            with_pti_violations=with_pti_violations,
         )
 
     @validate_arguments
     def send_feedback_notification(
         self,
-        publication_id: int,
+        dataset_id: int,
         dataset_name: str,
+        feed_detail_link: str,
         contact_email: str,
         feedback: str,
         developer_email: Optional[str] = None,
     ):
         template = "OPERATOR_FEEDBACK"
+        subject = "You have feedback on your data"
         logger.debug(
             f"[notify_{template.lower()}] sending feedback to publisher about dataset "
-            f"Dataset<id={publication_id}>"
+            f"Dataset<id={dataset_id}>"
         )
         if developer_email is None:
             developer_email = "Anonymous"
         self._send_mail(
             template,
             contact_email,
-            dataset_name=dataset_name,
+            subject=subject,
+            feed_id=dataset_id,
+            feed_name=dataset_name,
+            link=feed_detail_link,
             user_email=developer_email,
             feedback=feedback,
         )
@@ -512,9 +524,11 @@ class NotificationBase(INotifications):
             f"[notify_{template.lower()}] notifying inviter {inviter_email} "
             f"that user {invitee_email} has accepted invitation"
         )
+        subject = "Your team member has accepted your invitation"
         self._send_mail(
             template,
             inviter_email,
+            subject=subject,
             organisation=organisation_name,
             name=invitee_email,
         )
@@ -522,8 +536,16 @@ class NotificationBase(INotifications):
     @validate_arguments
     def send_password_reset_notification(self, contact_email: str, reset_link: str):
         template = "PASSWORD_RESET"
+        subject = "Change your password on the Bus Open Data Service"
         logger.debug(f"sending password reset to {contact_email}")
-        self._send_mail(template, contact_email, reset_link=reset_link)
+        self._send_mail(template, contact_email, subject=subject, reset_link=reset_link)
+
+    @validate_arguments
+    def send_password_change_notification(self, contact_email: str):
+        template = "PASSWORD_CHANGED"
+        subject = "You have changed your password on the Bus Open Data Service"
+        logger.debug(f"sending password changed to {contact_email}")
+        self._send_mail(template, contact_email, subject=subject)
 
     @validate_arguments
     def send_invitation_notification(
@@ -531,9 +553,11 @@ class NotificationBase(INotifications):
     ):
         template = "INVITE_USER"
         logger.debug(f"[notify_{template.lower()}] inviting new user to join bods")
+        subject = "You have been invited to publish bus data"
         self._send_mail(
             template,
             contact_email,
+            subject=subject,
             organisation=organisation_name,
             signup_link=invite_url,
         )
@@ -543,21 +567,23 @@ class NotificationBase(INotifications):
         self, contact_email: str, verify_link: str
     ):
         template = "VERIFY_EMAIL_ADDRESS"
+        subject = "Confirm your email address"
         logger.debug(
             f"[notify_{template.lower()}] sending verify email address notification"
         )
         self._send_mail(
             template,
             contact_email,
+            subject=subject,
             verify_link=verify_link,
         )
 
     @validate_arguments
     def send_avl_feed_down_publisher_notification(
         self,
-        publication_id: int,
         dataset_name: str,
         dataset_id: int,
+        short_description: str,
         contact_email: str,
     ):
         template = "OPERATOR_AVL_ENDPOINT_UNREACHABLE"
@@ -566,34 +592,40 @@ class NotificationBase(INotifications):
         )
         logger.debug(
             f"[notify_{template.lower()}] notifying last modified user that dataset"
-            f"<id={publication_id} is unreachable>"
+            f"<id={dataset_id} is unreachable>"
+        )
+        subject = (
+            f"AVL Feed {dataset_id} is no longer sending data to the "
+            "Bus Open Data Service"
         )
         self._send_mail(
             template,
             contact_email,
+            subject=subject,
             data_feed_name=dataset_name,
             data_feed_id=dataset_id,
+            feed_short_description=short_description,
             settings_link=account_settings_link,
         )
 
     @validate_arguments
     def send_avl_feed_subscriber_notification(
         self,
-        publication_id: int,
+        dataset_id: int,
         operator_name: str,
-        dataset_status: AVLFeedStatus,
+        short_description: str,
+        dataset_status: str,
         updated_time: datetime.datetime,
         subscriber_email: str,
     ):
         template = "DEVELOPER_AVL_FEED_STATUS_NOTIFICATION"
+        subject = "Data feed status changed"
         logger.debug(
             f"[notify_{template.lower()}] notifying subscribers about status of dataset"
-            f"<id={publication_id} >"
+            f"<id={dataset_id} >"
         )
         feed_status = (
-            "Data unavailable"
-            if dataset_status == AVLFeedStatus.FEED_DOWN
-            else "Published"
+            "No vehicle activity" if dataset_status == AVLFeedDown else "Published"
         )
 
         last_updated = localize_datetime_and_convert_to_string(updated_time)
@@ -601,8 +633,10 @@ class NotificationBase(INotifications):
         self._send_mail(
             template,
             subscriber_email,
-            feed_id=publication_id,
+            subject=subject,
+            feed_id=dataset_id,
             operator_name=operator_name,
+            feed_short_description=short_description,
             status=feed_status,
             updated_time=last_updated,
         )
@@ -862,6 +896,7 @@ class NotificationBase(INotifications):
             published_time=published_on,
             link=draft_link,
             pti_enforced_date=settings.PTI_ENFORCED_DATE,
+            pti_enforced=settings.PTI_ENFORCED_DATE.date() < timezone.localdate(),
         )
 
     @validate_arguments
@@ -903,6 +938,7 @@ class NotificationBase(INotifications):
             published_time=published_on,
             link=draft_link,
             pti_enforced_date=settings.PTI_ENFORCED_DATE,
+            pti_enforced=settings.PTI_ENFORCED_DATE.date() < timezone.localdate(),
         )
 
     @validate_arguments

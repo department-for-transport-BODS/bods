@@ -2,9 +2,18 @@ import pytest
 from django_hosts import reverse
 
 from config.hosts import DATA_HOST
-from transit_odp.browse.tests.test_avls import TestAVLSearchView
+from transit_odp.browse.tests.test_avls import (
+    TestAVLSearchView,
+    TestUserAVLFeedbackView,
+)
 from transit_odp.naptan.models import AdminArea
-from transit_odp.organisation.constants import FaresType
+from transit_odp.organisation.constants import FaresType, FeedStatus
+from transit_odp.organisation.factories import (
+    FaresDatasetRevisionFactory,
+    OrganisationFactory,
+)
+from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -54,3 +63,19 @@ class TestFaresSearchView(TestAVLSearchView):
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
         assert response.context_data["object_list"].count() == 2
+
+
+class TestUserFaresFeedbackView(TestUserAVLFeedbackView):
+    view_name = "fares-feed-feedback"
+
+    @pytest.fixture()
+    def revision(self):
+        org = OrganisationFactory()
+        publisher = UserFactory(account_type=OrgAdminType, organisations=(org,))
+        return FaresDatasetRevisionFactory(
+            dataset__contact=publisher,
+            status=FeedStatus.live.value,
+            last_modified_user=publisher,
+            published_by=publisher,
+            dataset__organisation=org,
+        )

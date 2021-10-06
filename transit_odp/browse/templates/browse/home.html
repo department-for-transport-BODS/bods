@@ -87,6 +87,11 @@
       </a>
     </p>
     <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
+          {% trans 'Changelog' %}
+      </a>
+    </p>
+    <p class="govuk-body">
       <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
           {% trans 'Contact us for technical issues' %}
       </a>

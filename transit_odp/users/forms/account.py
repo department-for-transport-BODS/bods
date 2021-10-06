@@ -30,7 +30,7 @@ class PublishAdminNotifications(GOVUKModelForm):
             self.fields.pop(INVITATION_NOTIFY)
 
         notify_avl_unavailable = self.fields[AVL_NOTIFY]
-        notify_avl_unavailable.label = "Published feed data unavailable alert"
+        notify_avl_unavailable.label = "No vehicle activity alert"
         notify_avl_unavailable.help_text = (
             "Receive an email if data is not received from your AVL feed for more than "
             "5 minutes "

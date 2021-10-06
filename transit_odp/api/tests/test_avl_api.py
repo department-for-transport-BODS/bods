@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import requests
+from django.http.request import QueryDict
 from lxml.etree import Element, SubElement, tostring
 from requests import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_410_GONE
@@ -26,7 +27,7 @@ def get_error_element():
 def test_get_consumer_api_response_non_200(mrequests):
     """Test function when a non-200 status code returned"""
     url = "http://fakeapi.com/datafeed"
-    query_params = {"origin_ref": "12345"}
+    query_params = QueryDict("originRef=12345")
     mresponse = MagicMock(spec=Response, status_code=HTTP_410_GONE)
     mrequests.get.return_value = mresponse
     actual_content, actual_status = _get_consumer_api_response(url, query_params)
@@ -38,7 +39,7 @@ def test_get_consumer_api_response_non_200(mrequests):
 @patch("transit_odp.api.views.avl.requests")
 def test_get_consumer_api_response(mrequests):
     url = "http://fakeapi.com/datafeed"
-    query_params = {"origin_ref": "12345"}
+    query_params = QueryDict("operatorRef=12345")
     siri_element = Element("SIRI")
     siri_element.text = "Siri response"
     mresponse = MagicMock(
@@ -54,7 +55,7 @@ def test_get_consumer_api_response(mrequests):
 @patch("transit_odp.api.views.avl.requests")
 def test_get_consumer_api_response_exception(mrequests):
     url = "http://fakeapi.com/datafeed"
-    query_params = {"origin_ref": "12345"}
+    query_params = QueryDict("originRef=12345")
     mrequests.get.side_effect = requests.Timeout
     actual_content, actual_status = _get_consumer_api_response(url, query_params)
     mrequests.get.assert_called_once_with(url, params=query_params, timeout=60)

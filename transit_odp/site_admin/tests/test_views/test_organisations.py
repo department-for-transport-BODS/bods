@@ -199,7 +199,7 @@ class TestOrganisationCreateView:
             organisation.nocs.count() == 3
         ), "assert we have the correct number of noc codes on the organisation"
         assert (
-            mailoutbox[-1].subject == "[BODS] Invite User"
+            mailoutbox[-1].subject == "You have been invited to publish bus data"
         ), "assert we receive an email"
         assert (
             mailoutbox[-1].to[0] == invitee_email

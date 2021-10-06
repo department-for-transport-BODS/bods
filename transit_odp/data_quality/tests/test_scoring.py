@@ -15,7 +15,11 @@ from transit_odp.data_quality.constants import (
     MissingBlockNumber,
     StopNotInNaptanObservation,
 )
-from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
+from transit_odp.data_quality.etl import TransXChangeDQPipeline
+from transit_odp.data_quality.factories.transmodel import (
+    DataQualityReportFactory,
+    ServicePatternStopFactory,
+)
 from transit_odp.data_quality.factories.warnings import (
     FastTimingWarningFactory,
     IncorrectNOCWarningFactory,
@@ -95,6 +99,9 @@ def test_score_calculation_with_data_set_component(from_report_id):
     incorrect_score = score_contribution(1, data_set_count, incorrect_weight)
 
     expected_score += incorrect_score
+
+    pipeline = TransXChangeDQPipeline(report)
+    pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
@@ -118,17 +125,31 @@ def test_score_calculation_with_stops_component(from_report_id):
         if not o.check_basis == CheckBasis.stops
     )
 
+    sps = ServicePatternStopFactory()
+
     missing_count = 3
     missing_weight = StopNotInNaptanObservation.weighting
-    StopMissingNaptanWarningFactory.create_batch(missing_count, report=report)
+    StopMissingNaptanWarningFactory.create_batch(
+        missing_count, stop=sps.stop, report=report
+    )
     missing_score = score_contribution(missing_count, stops_count, missing_weight)
+
+    # add in warning where stop has no service pattern
+    # this should have no impact on the score
+    StopMissingNaptanWarningFactory(report=report)
 
     incorrect_count = 2
     incorrect_weight = IncorrectStopTypeObservation.weighting
-    JourneyStopInappropriateWarningFactory.create_batch(incorrect_count, report=report)
+    JourneyStopInappropriateWarningFactory.create_batch(
+        incorrect_count, report=report, stop=sps.stop
+    )
     incorrect_score = score_contribution(incorrect_count, stops_count, incorrect_weight)
 
     expected_score += missing_score + incorrect_score
+
+    pipeline = TransXChangeDQPipeline(report)
+    pipeline.load_summary()
+
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
@@ -157,6 +178,9 @@ def test_score_calculation_lines_component(from_report_id):
     block_score = score_contribution(block_count, line_count, block_weight)
 
     expected_score += block_score
+
+    pipeline = TransXChangeDQPipeline(report)
+    pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
@@ -207,6 +231,8 @@ def test_score_calculation_timing_patterns_component(from_report_id):
     )
 
     expected_score += fast_timing_score + dropoff_score + pickup_score + backwards_score
+    pipeline = TransXChangeDQPipeline(report)
+    pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
@@ -238,6 +264,9 @@ def test_score_calculation_vehicle_journeys_component(from_report_id):
     )
 
     expected_score += backwards_score
+
+    pipeline = TransXChangeDQPipeline(report)
+    pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     score = calculator.calculate(report.id)
     assert pytest.approx(score, SCORE_TOLERANCE) == expected_score

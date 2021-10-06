@@ -393,7 +393,7 @@ class FaresUserFeedbackView(UserFeedbackView):
         context = super().get_context_data(**kwargs)
         context["back_url"] = reverse(
             "fares-feed-detail",
-            args=[self.publication.get_id()],
+            args=[self.object.id],
             host=config.hosts.DATA_HOST,
         )
         return context
@@ -401,7 +401,7 @@ class FaresUserFeedbackView(UserFeedbackView):
     def get_success_url(self):
         return reverse(
             "fares-feed-feedback-success",
-            args=[self.publication.get_id()],
+            args=[self.object.id],
             host=config.hosts.DATA_HOST,
         )
 

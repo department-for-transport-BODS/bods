@@ -111,6 +111,7 @@ def test_equal_districts_give_same_name(execution_number, equal_districts):
     """Runs the end to end test 5 times to make sure names are consistent"""
     feed_parser = setup_feed_parser("test.xml")
     feed_parser.index_feed()
+    # N.B aton and beton both have 5
     assert feed_parser.revision.name.endswith("aton_1A_20181009")
 
 

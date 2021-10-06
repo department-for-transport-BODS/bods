@@ -89,7 +89,7 @@ class SendFeedback:
 
     def send_notification(self, ctx):
         self.notifications.send_feedback_notification(
-            publication_id=ctx.publication.get_id(),
+            dataset_id=ctx.publication.get_id(),
             contact_email=ctx.recipient.email,
             dataset_name=ctx.publication.live.dataset.name,
             feedback=ctx.command.feedback,

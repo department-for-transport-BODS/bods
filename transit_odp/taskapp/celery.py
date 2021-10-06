@@ -86,7 +86,7 @@ class CeleryAppConfig(AppConfig):
                 "schedule": 60.0,
             },
             "monitor_avl_feeds": {
-                "task": PIPELINE_TASKS + "task_monitor_avl_feeds",
+                "task": AVL_TASKS + "task_monitor_avl_feeds",
                 "schedule": 30.0,
             },
             "create_siri_zip": {

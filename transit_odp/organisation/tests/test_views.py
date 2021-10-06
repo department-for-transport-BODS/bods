@@ -221,7 +221,7 @@ class TestInviteView:
         )
 
         # Assert
-        assert mailoutbox[-1].subject == "[BODS] Invite User"
+        assert mailoutbox[-1].subject == "You have been invited to publish bus data"
         assert response.status_code == 302
 
     def test_send_invitation_on_agent_success(self, client_factory, mailoutbox):
@@ -251,7 +251,7 @@ class TestInviteView:
         # Assert
         assert (
             mailoutbox[-1].subject
-            == f"[BODS] {org.name} has invited you to act as an agent on behalf of them"
+            == f"{org.name} has invited you to act as an agent on behalf of them"
         )
         assert response.status_code == 302
 
@@ -745,10 +745,10 @@ class TestAgentUserResponses:
         assert len(mailoutbox) == 2
         mailoutbox.sort(key=lambda mail: mail.subject)
         first, second = mailoutbox
-        assert first.subject == "[BODS] Agent agentsRus has accepted your invitation"
+        assert first.subject == "Agent agentsRus has accepted your invitation"
         assert (
             second.subject
-            == f"[BODS] You have accepted the request to be an agent on behalf of "
+            == f"You have accepted the request to be an agent on behalf of "
             f"{invite.organisation.name}"
         )
 
@@ -768,12 +768,11 @@ class TestAgentUserResponses:
         first, second = mailoutbox
         assert (
             first.subject
-            == f"[BODS] You have rejected the request to become an agent on behalf of "
+            == f"You have rejected the request to become an agent on behalf of "
             f"{invite.organisation.name}"
         )
         assert (
-            second.subject
-            == "[BODS] agentsRus has rejected your request to act as an agent"
+            second.subject == "agentsRus has rejected your request to act as an agent"
         )
 
     def test_agent_leaves_organisation(self, client_factory, mailoutbox):
@@ -794,9 +793,7 @@ class TestAgentUserResponses:
         mailoutbox.sort(key=lambda mail: mail.subject)
         first, second = mailoutbox
         assert (
-            first.subject == f"[BODS] You have stopped acting as an agent on behalf of "
+            first.subject == f"You have stopped acting as an agent on behalf of "
             f"{first_active_invite.organisation.name}"
         )
-        assert (
-            second.subject == "[BODS] agentsRus has terminated their role as an agent"
-        )
+        assert second.subject == "agentsRus has terminated their role as an agent"

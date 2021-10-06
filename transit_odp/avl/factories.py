@@ -1,10 +1,15 @@
 import io
+from datetime import datetime
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import factory
 from factory.django import DjangoModelFactory
 
-from transit_odp.avl.models import CAVLDataArchive, CAVLValidationTaskResult
+from transit_odp.avl.models import (
+    AVLValidationReport,
+    CAVLDataArchive,
+    CAVLValidationTaskResult,
+)
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.pipelines.factories import TaskResultFactory
 
@@ -23,6 +28,23 @@ def zipped_sirivm_file():
 
 def zipped_gtfsrt_file():
     return zipped_file("gtfsrt.bin", b"content")
+
+
+def zipped_csv_file():
+    return zipped_file("avl_report.csv", b"operatorRef,vehicleRef")
+
+
+class AVLValidationReportFactory(DjangoModelFactory):
+    revision = factory.SubFactory(DatasetRevisionFactory)
+    critical_count = 1
+    non_critical_count = 1
+    file = factory.django.FileField(
+        filename="avl_report.zip", from_func=zipped_csv_file
+    )
+    created = datetime.now().date()
+
+    class Meta:
+        model = AVLValidationReport
 
 
 class CAVLValidationTaskResultFactory(TaskResultFactory):

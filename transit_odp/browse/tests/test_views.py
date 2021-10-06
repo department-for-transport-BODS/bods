@@ -6,14 +6,12 @@ from unittest.mock import Mock, patch
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
-from django.core.management import call_command
 from django.test import RequestFactory
 from django.utils import timezone
 from django_hosts import reverse
 from freezegun import freeze_time
 
 from config.hosts import DATA_HOST
-from transit_odp.browse.forms import UserFeedbackForm
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
@@ -37,7 +35,6 @@ from transit_odp.pipelines.factories import (
     ChangeDataArchiveFactory,
     DatasetETLTaskResultFactory,
 )
-from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -536,103 +533,6 @@ class TestDownloadChangeDataArchiveView:
         response = client.get(url)
 
         assert response.status_code == 404
-
-
-@pytest.mark.django_db(transaction=True)
-class TestUserFeedbackView:
-    @pytest.fixture()
-    def revision(self):
-        # Create test data
-        org = OrganisationFactory()
-        publisher = UserFactory(
-            account_type=AccountType.org_admin.value, organisations=(org,)
-        )
-        return DatasetRevisionFactory(
-            dataset__contact=publisher,
-            status=FeedStatus.live.value,
-            last_modified_user=publisher,
-            published_by=publisher,
-            dataset__organisation=org,
-        )
-
-    def load_sites(self):
-        call_command("loaddata", "sites.json")
-
-    def test_feedback_form_is_rendered(
-        self, user: settings.AUTH_USER_MODEL, data_client, revision
-    ):
-        # Setup
-        self.load_sites()
-        data_client.force_login(user=user)
-
-        # Test
-        url = reverse(
-            "feed-feedback", kwargs={"pk": revision.dataset.id}, host=DATA_HOST
-        )
-        response = data_client.get(url)
-
-        # Assert
-        assert response.status_code == 200
-        assert "browse/timetables/user_feedback.html" in response.template_name
-
-        assert isinstance(response.context_data["form"], UserFeedbackForm)
-
-    def test_feedback_is_sent_to_pubished_by_user(
-        self, mailoutbox, user, revision, data_client
-    ):
-        # Setup
-        self.load_sites()
-        data_client.force_login(user=user)
-
-        url = reverse("feed-feedback", args=[revision.dataset.id], host=DATA_HOST)
-
-        # Test
-        response = data_client.post(
-            url,
-            data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                "anonymous": False,
-            },
-            follow=True,
-        )
-
-        # Assert
-        assert response.status_code == 200
-        assert len(mailoutbox) == 1
-        m = mailoutbox[0]
-        # assert m.subject == "New user feedback on your dataset"
-        assert f"User: {user.email}" in m.body
-        assert m.from_email == settings.DEFAULT_FROM_EMAIL
-        assert list(m.to) == [revision.published_by.email]
-
-    def test_feedback_is_sent_anonymously(
-        self, mailoutbox, user, data_client, revision
-    ):
-        # Setup
-        self.load_sites()
-        data_client.force_login(user=user)
-
-        url = reverse("feed-feedback", args=[revision.dataset.id], host=DATA_HOST)
-
-        # Test
-        response = data_client.post(
-            url,
-            data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                "anonymous": True,
-            },
-            follow=True,
-        )
-
-        # Assert
-        assert response.status_code == 200
-        assert len(mailoutbox) == 1
-        m = mailoutbox[0]
-        assert m.subject == "[BODS] Operator Feedback"
-        assert f"User: {user.email}" not in m.body
-        assert "User: Anonymous" in m.body
-        assert m.from_email == settings.DEFAULT_FROM_EMAIL
-        assert list(m.to) == [revision.published_by.email]
 
 
 class TestDataDownloadCatalogueView:

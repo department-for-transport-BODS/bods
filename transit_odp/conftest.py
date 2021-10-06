@@ -1,6 +1,10 @@
+from datetime import timedelta
+
 import pytest
+from django.conf import settings
 from django.test import RequestFactory
 from django.test.client import Client
+from django.utils.timezone import localtime
 from django_hosts import reverse_host
 from pytest_django.lazy_django import skip_if_no_django
 from pytest_factoryboy import register
@@ -72,3 +76,23 @@ def bods_mailoutbox(settings, mailoutbox):
     settings.TEMPLATES[0]["OPTIONS"]["string_if_invalid"] = InvalidString()
     yield mailoutbox
     del settings.TEMPLATES[0]["OPTIONS"]["string_if_invalid"]
+
+
+@pytest.fixture
+def pti_enforced():
+    original_value = settings.PTI_ENFORCED_DATE
+    the_past = localtime() - timedelta(days=7)
+    the_past = the_past.replace(hour=0, minute=0, second=0, microsecond=0)
+    settings.PTI_ENFORCED_DATE = the_past
+    yield settings.PTI_ENFORCED_DATE
+    settings.PTI_ENFORCED_DATE = original_value
+
+
+@pytest.fixture
+def pti_unenforced():
+    original_value = settings.PTI_ENFORCED_DATE
+    the_future = localtime() + timedelta(days=7)
+    the_future = the_future.replace(hour=0, minute=0, second=0, microsecond=0)
+    settings.PTI_ENFORCED_DATE = the_future
+    yield settings.PTI_ENFORCED_DATE
+    settings.PTI_ENFORCED_DATE = original_value

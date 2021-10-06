@@ -3,6 +3,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 from typing import Callable, List
+from urllib.parse import unquote
 
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
@@ -413,7 +414,7 @@ class PTIValidator:
                 violation = Violation(
                     line=element.sourceline,
                     name=name,
-                    filename=Path(element.base).name,
+                    filename=unquote(Path(element.base).name),
                     observation=observation,
                 )
                 self.add_violation(violation)

@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="Bus portal organisation.",
                 null=True,
-                on_delete=None,
+                on_delete=django.db.models.deletion.DO_NOTHING,
                 to=settings.AUTH_USER_MODEL,
             ),
         ),

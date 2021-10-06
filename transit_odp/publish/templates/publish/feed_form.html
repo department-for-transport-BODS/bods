@@ -57,10 +57,12 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-      var input = document.getElementById("id_upload_file");
-      var select_message = document.getElementById("file-select-success");
-      input.onchange = function () {
-          select_message.style.display = "block";
-      };
+   var input = document.getElementById("id_upload_file");
+   var select_message = document.getElementById("file-select-success");
+   if (input) {
+       input.onchange = function () {
+           select_message.style.display = "block";
+       };
+   }
   </script>
 {% endblock %}

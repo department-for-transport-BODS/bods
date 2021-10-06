@@ -1,8 +1,6 @@
 import datetime
 from typing import Optional, Protocol
 
-from transit_odp.organisation.constants import AVLFeedStatus
-
 
 class INotifications(Protocol):
     """
@@ -216,22 +214,25 @@ class INotifications(Protocol):
         self,
         dataset_id: int,
         dataset_name: str,
-        content: str,
         short_description: str,
+        dataset_type: int,
         published_at: datetime.datetime,
         comments: str,
         feed_detail_link: str,
         contact_email: str,
+        with_pti_violations: bool = False,
     ):
         """Sends notification to Publisher that the Publication has validation errors
         Args:
             dataset_id: id (primary key) of the dataset model
             dataset_name: name assigned to the revision
             short_description: short description of the revision
+            dataset_type: type of dataset: avl, fares or timetables
             published_at: date and time of publish
             comments: any comments on the revision
             feed_detail_link: link to the feed-detail or revision-publish page
             contact_email: email address of agent working on behalf of organisation
+            with_pti_violations: boolean to indicate whether dataset has pti violations
         """
         ...
 
@@ -239,31 +240,35 @@ class INotifications(Protocol):
         self,
         dataset_id: int,
         dataset_name: str,
-        content: str,
         short_description: str,
+        dataset_type: int,
         published_at: datetime.datetime,
         operator_name: str,
         comments: str,
         feed_detail_link: str,
         contact_email: str,
+        with_pti_violations: bool = False,
     ):
         """Sends notification to Agent that the Publication has validation errors
         Args:
             dataset_id: id (primary key) of the dataset model
             dataset_name: name assigned to the revision
             short_description: short description of the revision
+            dataset_type: type of dataset: avl, fares or timetables
             published_at: date and time of publish
             operator_name: name of the operator that published the dataset
             comments: any comments on the revision
             feed_detail_link: link to the feed-detail or revision-publish page
             contact_email: email address of agent working on behalf of organisation
+            with_pti_violations: boolean to indicate whether dataset has pti violations
         """
         ...
 
     def send_feedback_notification(
         self,
-        publication_id: int,
+        dataset_id: int,
         dataset_name: str,
+        feed_detail_link: str,
         contact_email: str,
         feedback: str,
         developer_email: Optional[str] = None,
@@ -281,6 +286,10 @@ class INotifications(Protocol):
         """Sends notification to User for password reset"""
         ...
 
+    def send_password_change_notification(self, contact_email: str):
+        """Sends notification to User when password is changed"""
+        ...
+
     def send_invitation_notification(
         self, contact_email: str, organisation_name: str, invite_url: str
     ):
@@ -295,9 +304,9 @@ class INotifications(Protocol):
 
     def send_avl_feed_down_publisher_notification(
         self,
-        publication_id: int,
         dataset_name: str,
         dataset_id: int,
+        short_description: str,
         contact_email: str,
     ):
         """
@@ -306,9 +315,9 @@ class INotifications(Protocol):
         The notification is sent to `contact_email`.
 
         Args:
-            publication_id: The ID of the publication
             dataset_id: The ID of the dataset
             dataset_name: The name of the publication
+            short_description: Short description of the dataset
             contact_email: The email of the recipient
 
         Returns: None
@@ -318,9 +327,10 @@ class INotifications(Protocol):
 
     def send_avl_feed_subscriber_notification(
         self,
-        publication_id: int,
+        dataset_id: int,
         operator_name: str,
-        dataset_status: AVLFeedStatus,
+        short_description: str,
+        dataset_status: str,
         updated_time: datetime.datetime,
         subscriber_email: str,
     ):
@@ -330,8 +340,9 @@ class INotifications(Protocol):
         The notification is sent to `subscriber_email`.
 
         Args:
-            publication_id: The ID of the publication
+            dataset_id: The ID of the dataset
             operator_name: The name of the operator
+            short_description: The short description of the dataset
             dataset_status: The status of the publication
             updated_time: The updated date time of the publication
             subscriber_email: The email of the recipient
@@ -574,7 +585,7 @@ class INotifications(Protocol):
             dataset_id: id (primary key) of the dataset model
             dataset_name: name assigned to the revision
             short_description: short description of the revision
-            published_at: datetime of when dateset was published
+            published_at: date and time of publish
             comments: any comments on the revision
             draft_link: link to the revisions draft review page
             contact_email: email address of datasets key contact
@@ -599,7 +610,7 @@ class INotifications(Protocol):
             short_description: short description of the revision
             comments: any comments on the revision
             operator_name: name of the operator that published the dataset
-            published_at: datetime of when dateset was published
+            published_at: date and time of publish
             draft_link: link to the revisions draft review page
             contact_email: email address of datasets key contact
         """

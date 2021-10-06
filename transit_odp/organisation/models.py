@@ -11,7 +11,7 @@ from django.db import models
 from django.db.models import Index, Q, UniqueConstraint
 from django.db.models.functions import Length
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from django_hosts import reverse
 from model_utils import FieldTracker
@@ -205,10 +205,7 @@ class Dataset(TimeStampedModel):
     objects = DatasetManager()
 
     def __str__(self):
-        return (
-            f"Dataset(id={self.id!r}, organisation={self.organisation.name!r}, "
-            f"contact={self.contact.email!r}, dataset_type={self.dataset_type!r})"
-        )
+        return f"id={self.id!r}, dataset_type={DatasetType(self.dataset_type).name!r}"
 
     @property
     def download_url(self) -> str:
@@ -355,7 +352,7 @@ class DatasetRevision(
 
     last_modified_user = models.ForeignKey(
         User,
-        on_delete=None,
+        on_delete=models.DO_NOTHING,
         blank=True,
         null=True,
         help_text="Bus portal organisation.",
@@ -399,7 +396,7 @@ class DatasetRevision(
         indexes = [Index(fields=["is_published"])]
 
     def __str__(self):
-        return f"<DatasetRevision name='{self.name}'>"
+        return f"id={self.id}, dataset_id={self.dataset_id}, name={self.name}"
 
     def save(self, **kwargs):
         if self.name is None or self.name == "":

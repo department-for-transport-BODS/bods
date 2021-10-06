@@ -1,7 +1,9 @@
 import pytest
 from django.utils.timezone import now
 
+from transit_odp.conftest import pti_enforced, pti_unenforced  # NOQA: F401
 from transit_odp.notifications.client import DjangoNotifier
+from transit_odp.organisation.constants import AVLFeedDown, TimetableType
 
 
 class TestDjangoNotification:
@@ -30,7 +32,7 @@ class TestDjangoNotification:
         assert list(m.to) == [self.contact_email]
         assert (
             m.subject
-            == "[BODS] A change has been detected in your bus data – no action required"
+            == "A change has been detected in your bus data – no action required"
         )
 
     def test_data_endpoint_changed_developer(self, mailoutbox, settings):
@@ -45,7 +47,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Developer Data Changed"
+        assert m.subject == "Data set status changed"
 
     def test_data_endpoint_unreachable(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -58,7 +60,7 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
         assert m.subject == (
-            f"{settings.EMAIL_SUBJECT_PREFIX}We cannot access the URL where your "
+            "We cannot access the URL where your "
             "bus data is hosted – no action required"
         )
 
@@ -73,10 +75,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == (
-            f"{settings.EMAIL_SUBJECT_PREFIX}Your bus data is accessible again "
-            f"– no action required"
-        )
+        assert m.subject == ("Your bus data is accessible again – no action required")
 
     def test_send_data_endpoint_unreachable_expiring_notification(
         self, mailoutbox, settings
@@ -94,10 +93,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == (
-            f"{settings.EMAIL_SUBJECT_PREFIX}Your bus data has expired due to "
-            f"inaccessibility"
-        )
+        assert m.subject == "Your bus data has expired due to inaccessibility"
         assert dataset_url in m.body
 
     def test_send_data_endpoint_deleted_confirmation_notification(
@@ -112,10 +108,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == (
-            f"{settings.EMAIL_SUBJECT_PREFIX}You deleted an unpublished data set"
-            f" – no action required"
-        )
+        assert m.subject == ("You deleted an unpublished data set – no action required")
 
     def test_send_data_endpoint_deleted_notify_updater(self, mailoutbox, settings):
         last_updated = now()
@@ -130,7 +123,7 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
         assert m.subject == (
-            f"{settings.EMAIL_SUBJECT_PREFIX}A data set you updated has been "
+            "A data set you updated has been "
             "deleted from the Bus Open Data Service – no action required"
         )
 
@@ -150,10 +143,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Published data set has been deactivated"
-        )
+        assert m.subject == "Published data set has been deactivated"
 
     def test_send_developer_data_endpoint_expired_notification(
         self, mailoutbox, settings
@@ -173,10 +163,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Published data set has been deactivated"
-        )
+        assert m.subject == "Published data set has been deactivated"
 
     @pytest.mark.parametrize(
         "with_pti_observations, subject",
@@ -204,7 +191,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}{subject}"
+        assert m.subject == subject
 
     def test_send_data_endpoint_error_notification(self, mailoutbox, settings):
         published_at = now()
@@ -213,17 +200,18 @@ class TestDjangoNotification:
         client.send_data_endpoint_validation_error_notification(
             dataset_id=self.dataset_id,
             dataset_name=self.dataset_name,
-            content="content",
             short_description=self.short_description,
+            dataset_type=TimetableType,
             published_at=published_at,
             comments=self.comments,
             feed_detail_link=self.feed_detail_link,
             contact_email=self.contact_email,
+            with_pti_violations=False,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Error publishing data set"
+        assert m.subject == "Error publishing data set"
 
     def test_send_data_endpoint_error_notification_agent(self, mailoutbox, settings):
         published_at = now()
@@ -232,18 +220,19 @@ class TestDjangoNotification:
         client.send_agent_data_endpoint_validation_error_notification(
             dataset_id=self.dataset_id,
             dataset_name=self.dataset_name,
-            content="content",
             short_description=self.short_description,
+            dataset_type=TimetableType,
             published_at=published_at,
             comments=self.comments,
             operator_name=self.agent_organisation,
             feed_detail_link=self.feed_detail_link,
             contact_email=self.agent_contact_email,
+            with_pti_violations=False,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Error publishing data set"
+        assert m.subject == "Error publishing data set"
 
     @pytest.mark.parametrize(
         "developer_email",
@@ -253,16 +242,17 @@ class TestDjangoNotification:
     def test_send_feedback_notification(self, developer_email, mailoutbox, settings):
         client = DjangoNotifier()
         client.send_feedback_notification(
-            publication_id=1,
+            dataset_id=1,
             dataset_name=self.dataset_name,
             contact_email=self.contact_email,
             feedback="This is something that could be improved",
+            feed_detail_link="www.dataishere.com",
             developer_email=developer_email,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Operator Feedback"
+        assert m.subject == "You have feedback on your data"
 
         anonymised = developer_email is None
         if anonymised:
@@ -280,7 +270,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == ["admin@org.com"]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Operator Invite Accepted"
+        assert m.subject == "Your team member has accepted your invitation"
 
     def test_send_password_reset_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -291,8 +281,20 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Password Reset"
+        assert m.subject == "Change your password on the Bus Open Data Service"
         assert "https://www.bods.com/invite_url/" in m.body
+
+    def test_send_password_changed_notification(self, mailoutbox, settings):
+        client = DjangoNotifier()
+        client.send_password_change_notification(
+            contact_email=self.contact_email,
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.contact_email]
+        assert (
+            m.subject == "You have changed your password on the Bus Open Data Service"
+        )
 
     def test_send_invitation_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -304,7 +306,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Invite User"
+        assert m.subject == "You have been invited to publish bus data"
 
     def test_send_verify_email_address_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -315,23 +317,38 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Verify Email Address"
+        assert m.subject == "Confirm your email address"
 
     def test_send_avl_feed_down_publisher_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
         client.send_avl_feed_down_publisher_notification(
-            publication_id=1,
             dataset_name=self.dataset_name,
             contact_email=self.contact_email,
             dataset_id=self.dataset_id,
+            short_description="test description",
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
         assert (
             m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Operator Avl Endpoint Unreachable"
+            == "AVL Feed 1 is no longer sending data to the Bus Open Data Service"
         )
+
+    def test_send_avl_feed_subscriber_notification(self, mailoutbox, settings):
+        client = DjangoNotifier()
+        client.send_avl_feed_subscriber_notification(
+            dataset_id=self.dataset_id,
+            operator_name=self.organisation_name,
+            short_description="test description",
+            subscriber_email=self.contact_email,
+            dataset_status=AVLFeedDown,
+            updated_time=now(),
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.contact_email]
+        assert m.subject == "Data feed status changed"
 
     def test_send_agent_invite_accepted_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -342,9 +359,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}You have accepted the request to be an "
-            f"agent on behalf of test_organisation"
+            m.subject == "You have accepted the request to be an "
+            "agent on behalf of test_organisation"
         )
 
     def test_send_agent_invite_existing_account_notification(
@@ -358,9 +374,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}test_organisation has invited you to "
-            f"act as an agent on behalf of them"
+            m.subject == "test_organisation has invited you to "
+            "act as an agent on behalf of them"
         )
 
     def test_send_agent_invite_no_account_notification(self, mailoutbox, settings):
@@ -372,9 +387,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}test_organisation has invited you to "
-            f"act as an agent on behalf of them"
+            m.subject == "test_organisation has invited you to "
+            "act as an agent on behalf of them"
         )
 
     def test_send_agent_invite_rejected_notification(self, mailoutbox, settings):
@@ -386,9 +400,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}You have rejected the request to "
-            f"become an agent on behalf of test_organisation"
+            m.subject == "You have rejected the request to "
+            "become an agent on behalf of test_organisation"
         )
 
     def test_send_agent_leaves_organisation_notification(self, mailoutbox, settings):
@@ -400,9 +413,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}You have stopped acting as an agent on "
-            f"behalf of test_organisation"
+            m.subject == "You have stopped acting as an agent on "
+            "behalf of test_organisation"
         )
 
     def test_send_agent_noc_changed_notification(self, mailoutbox, settings):
@@ -414,9 +426,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}test_organisation's National Operator "
-            f"Code (NOC) has been amended"
+            m.subject == "test_organisation's National Operator "
+            "Code (NOC) has been amended"
         )
 
     def test_send_agent_operator_removes_agent_notification(self, mailoutbox, settings):
@@ -427,11 +438,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}test_organisation has removed you as "
-            f"their agent"
-        )
+        assert m.subject == "test_organisation has removed you as their agent"
 
     def test_send_operator_agent_accepted_invite_notification(
         self, mailoutbox, settings
@@ -443,11 +450,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_inviter_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Agent agentsRus has accepted your "
-            f"invitation"
-        )
+        assert m.subject == "Agent agentsRus has accepted your invitation"
 
     def test_send_operator_agent_leaves_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -457,11 +460,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_inviter_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}agentsRus has terminated their role as "
-            f"an agent"
-        )
+        assert m.subject == "agentsRus has terminated their role as an agent"
 
     def test_send_operator_agent_rejected_invite_notification(
         self, mailoutbox, settings
@@ -473,11 +472,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_inviter_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}agentsRus has rejected your request to "
-            f"act as an agent"
-        )
+        assert m.subject == "agentsRus has rejected your request to act as an agent"
 
     def test_send_operator_agent_removed_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -487,11 +482,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_inviter_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}You have removed agentsRus as your "
-            f"agent"
-        )
+        assert m.subject == "You have removed agentsRus as your agent"
 
     def test_send_operator_noc_changed_notification(self, mailoutbox, settings):
         client = DjangoNotifier()
@@ -500,9 +491,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Your organisation’s National Operator "
-            f"Code (NOC) has been amended"
+            m.subject == "Your organisation’s National Operator "
+            "Code (NOC) has been amended"
         )
 
     def test_send_agent_data_endpoint_changed_notification(self, mailoutbox, settings):
@@ -519,9 +509,8 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}A change has been detected in your bus "
-            f"data – no action required"
+            m.subject == "A change has been detected in your bus "
+            "data – no action required"
         )
 
     def test_send_agent_data_endpoint_expired_notification(self, mailoutbox, settings):
@@ -538,10 +527,7 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
-        assert (
-            m.subject
-            == f"{settings.EMAIL_SUBJECT_PREFIX}Published data set has been deactivated"
-        )
+        assert m.subject == "Published data set has been deactivated"
 
     @pytest.mark.parametrize(
         "with_pti_observations, subject",
@@ -568,9 +554,11 @@ class TestDjangoNotification:
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
-        assert m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}{subject}"
+        assert m.subject == subject
 
-    def test_reports_now_available(self, mailoutbox, settings):
+    def test_reports_now_available_pti_unenforced(
+        self, mailoutbox, settings, pti_unenforced  # NOQA: F811
+    ):
         client = DjangoNotifier()
         client.send_reports_are_available_notification(
             dataset_id=self.dataset_id,
@@ -585,8 +573,36 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.contact_email]
         assert (
-            m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Action required – "
-            f"PTI validation report requires resolution (if applicable)"
+            m.subject == "Action required – "
+            "PTI validation report requires resolution (if applicable)"
+        )
+        assert (
+            "All data that has outstanding validation issues will be removed " in m.body
+        )
+
+    def test_reports_now_available_pti_enforced(
+        self, mailoutbox, settings, pti_enforced  # NOQA: F811
+    ):
+        client = DjangoNotifier()
+        client.send_reports_are_available_notification(
+            dataset_id=self.dataset_id,
+            dataset_name=self.dataset_name,
+            short_description=self.short_description,
+            comments=self.comments,
+            draft_link=self.feed_detail_link,
+            published_at=None,
+            contact_email=self.contact_email,
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.contact_email]
+        assert (
+            m.subject == "Action required – "
+            "PTI validation report requires resolution (if applicable)"
+        )
+        assert (
+            "All data that has outstanding validation issues will be removed "
+            not in m.body
         )
 
     def test_reports_now_available_to_agent(self, mailoutbox, settings):
@@ -605,6 +621,6 @@ class TestDjangoNotification:
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [self.agent_contact_email]
         assert (
-            m.subject == f"{settings.EMAIL_SUBJECT_PREFIX}Action required – "
-            f"PTI validation report requires resolution (if applicable)"
+            m.subject == "Action required – "
+            "PTI validation report requires resolution (if applicable)"
         )

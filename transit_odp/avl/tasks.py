@@ -17,8 +17,19 @@ from urllib3.exceptions import ReadTimeoutError
 
 from transit_odp.avl.archivers import GTFSRTArchiver
 from transit_odp.avl.models import CAVLDataArchive, CAVLValidationTaskResult
+from transit_odp.avl.notifications import (
+    send_avl_feed_down_notification,
+    send_avl_status_changed_notification,
+)
 from transit_odp.bods.interfaces.plugins import get_cavl_service
-from transit_odp.organisation.models import DatasetMetadata
+from transit_odp.organisation.constants import (
+    AVLFeedDeploying,
+    AVLFeedDown,
+    AVLFeedUp,
+    AVLType,
+    FeedStatus,
+)
+from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 
 log = logging.getLogger(__name__)
 
@@ -119,3 +130,45 @@ def task_create_gtfsrt_zipfile():
     archiver.archive()
     end = time.time()
     log.debug(_prefix + f"Finished archivng in {end-start:.2f} seconds.")
+
+
+@shared_task(ignore_result=True)
+def task_monitor_avl_feeds():
+    cavl_service = get_cavl_service()
+    feed_status_map = {feed.id: feed.status.value for feed in cavl_service.get_feeds()}
+    exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
+    datasets = (
+        Dataset.objects.select_related("live_revision", "contact")
+        .filter(live_revision__isnull=False, dataset_type=AVLType)
+        .exclude(live_revision__status__in=exclude_status)
+    )
+    revision_status_map = {
+        AVLFeedUp: FeedStatus.live.value,
+        AVLFeedDeploying: FeedStatus.live.value,
+        AVLFeedDown: FeedStatus.error.value,
+    }
+
+    datasets.update(avl_feed_last_checked=timezone.now())
+    update_list = []
+    for dataset in datasets:
+        avl_feed_status = feed_status_map.get(dataset.id)
+        if avl_feed_status is None:
+            continue
+        if dataset.avl_feed_status != avl_feed_status:
+            new_status = feed_status_map[dataset.id]
+            dataset.avl_feed_status = new_status
+            dataset.live_revision.status = revision_status_map.get(
+                new_status, FeedStatus.error.value
+            )
+            update_list.append(dataset)
+
+    log.info(f"{len(update_list)} - AVL data feeds to update")
+    Dataset.objects.bulk_update(update_list, ["avl_feed_status"])
+    DatasetRevision.objects.bulk_update(
+        [dataset.live_revision for dataset in update_list], ["status"]
+    )
+
+    for dataset in update_list:
+        send_avl_status_changed_notification(dataset)
+        if dataset.avl_feed_status == AVLFeedDown:
+            send_avl_feed_down_notification(dataset)

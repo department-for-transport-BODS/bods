@@ -4,7 +4,7 @@ from django.contrib.auth import forms as auth_forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
 from invitations.forms import CleanEmailMixin
 from invitations.utils import get_invitation_model

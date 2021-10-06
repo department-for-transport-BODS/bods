@@ -213,6 +213,7 @@ def test_service_code_format(service_code, expected):
     ("start_date", "end_date_in_days", "expected"),
     [
         ("2005-01-01", None, True),
+        ("2005-01-01", 0, True),
         ("2005-01-01", 1, True),
         ("2005-01-01", 365, True),
         ("2005-01-01", 366, True),

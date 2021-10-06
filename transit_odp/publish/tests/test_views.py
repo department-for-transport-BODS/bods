@@ -914,7 +914,7 @@ class TestFeedArchiveView:
         publish_client.post(self.url, data={"submit": "submit"})
 
         staff, agent, dev = bods_mailoutbox
-        expected_subject = "[BODS] Published data set has been deactivated"
+        expected_subject = "Published data set has been deactivated"
 
         assert staff.to[0] == self.staff.email
         assert staff.subject == expected_subject
@@ -943,7 +943,7 @@ class TestFeedArchiveView:
         assert len(mailoutbox) == 1
         mail = mailoutbox[0]
 
-        assert mail.subject == "[BODS] Published data set has been deactivated"
+        assert mail.subject == "Published data set has been deactivated"
         assert mail.to[0] == self.agent.email
         assert self.org.name in mail.body
 
@@ -981,7 +981,7 @@ class TestFeedDeleteView:
         assert mailoutbox[0].to[0] == "ms_deleter@test.test"
         assert (
             mailoutbox[0].subject
-            == "[BODS] You deleted an unpublished data set – no action required"
+            == "You deleted an unpublished data set – no action required"
         )
 
     def test_confirmation_displays_correct_name(self, publish_client):
@@ -1010,11 +1010,11 @@ class TestFeedDeleteView:
         assert deleter.to[0] == "ms_deleter@test.test"
         assert (
             deleter.subject
-            == "[BODS] You deleted an unpublished data set – no action required"
+            == "You deleted an unpublished data set – no action required"
         )
         assert updater.to[0] == "mr_updater@test.test"
         assert updater.subject == (
-            "[BODS] "
+            ""
             "A data set you updated has been deleted from the Bus Open Data Service"
             " – no action required"
         )

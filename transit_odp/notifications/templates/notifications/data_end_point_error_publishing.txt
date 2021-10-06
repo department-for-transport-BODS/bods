@@ -1,7 +1,13 @@
 Hello,
 
-{{ content }}
+The following data set has failed to publish on the Bus Open Data Service due to validation errors{% if dataset_type == 1 %} in the files as specified in the Validation report{% endif %}.
+{% if with_pti_violations %}
+You are legally obliged to supply data according to the PTI standard, and you must resolve all issues listed immediately.
 
+Please check your data set below to ensure that the most up-to-date information is maintained on BODS. If you do not know how to resolve issues, please reach out to your supplier.
+{% else %}
+Please check your data set below to ensure that the most up-to-date information is maintained on BODS.
+{% endif %}
 Data set: {{ feed_name }}
 Data set ID: {{ feed_id }}
 Short Description: {{ feed_short_description }}

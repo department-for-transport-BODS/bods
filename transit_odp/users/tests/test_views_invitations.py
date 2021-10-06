@@ -8,8 +8,12 @@ from django_hosts.resolvers import get_host, reverse
 
 import config.hosts
 from transit_odp.organisation.factories import OrganisationFactory
-from transit_odp.users.constants import AccountType
-from transit_odp.users.factories import InvitationFactory, UserFactory
+from transit_odp.users.constants import AccountType, AgentUserType
+from transit_odp.users.factories import (
+    AgentUserInviteFactory,
+    InvitationFactory,
+    UserFactory,
+)
 from transit_odp.users.models import AgentUserInvite, Invitation
 from transit_odp.users.views.invitations import AcceptInvite
 
@@ -195,7 +199,7 @@ class TestSendInvite:
         assert invite is not None
         assert (
             mailoutbox[-1].subject
-            == f"[BODS] {org.name} has invited you to act as an agent on behalf of them"
+            == f"{org.name} has invited you to act as an agent on behalf of them"
         )
         assert (
             reverse(
@@ -229,7 +233,7 @@ class TestSendInvite:
         assert agent_invite.invitation is None
         assert (
             mailoutbox[-1].subject
-            == f"[BODS] {org.name} has invited you to act as an agent on behalf of them"
+            == f"{org.name} has invited you to act as an agent on behalf of them"
         )
         assert (
             reverse("users:home", host=config.hosts.PUBLISH_HOST) in mailoutbox[-1].body
@@ -298,6 +302,7 @@ class TestSendInvite:
         assert response.status_code == 302
         assert fished_out_invite.organisation == new_org, "now using new organisation"
         assert fished_out_invite.sent.day == datetime.now().day, "sent out today"
+        assert fished_out_invite.inviter == admin
 
     def test_inviting_an_agent_already_accepted_at_organisation(self, client_factory):
         """
@@ -365,3 +370,51 @@ class TestSendInvite:
 
             assert response.status_code == 302
             AgentUserInvite.objects.get(organisation=org, agent=our_hero)
+
+    def test_two_users_add_same_email(self, client_factory):
+        """
+        This is to protect against integrity errors when two users try and add the same
+        email as an agent
+        https://itoworld.atlassian.net/browse/BODP-4360
+        """
+        new_user_email = "new_user@test.test"
+        org1, org2 = OrganisationFactory.create_batch(2)
+        admin_1 = UserFactory(
+            account_type=AccountType.org_admin.value, organisations=(org1,)
+        )
+        admin_2 = UserFactory(
+            account_type=AccountType.org_admin.value, organisations=(org2,)
+        )
+        invite = InvitationFactory(
+            email=new_user_email,
+            organisation=org1,
+            account_type=AgentUserType,
+            inviter=admin_1,
+        )
+        AgentUserInviteFactory(
+            agent=None,
+            invitation=invite,
+            organisation=org1,
+            inviter=admin_1,
+        )
+
+        client = client_factory(host=self.host)
+        client.force_login(user=admin_2)
+
+        response = client.post(
+            self.url,
+            data={
+                "email": new_user_email,
+                "selected_item": "agent",
+                "account_type": AgentUserType,
+            },
+        )
+
+        assert response.status_code == 302
+        old_key = invite.key
+        invite.refresh_from_db()
+        assert invite.organisation == org2, "existing invite org has been updated"
+        assert invite.inviter == admin_2, "existing invite inviter has been updated"
+        assert invite.agent_user_invite.inviter == admin_2
+        assert invite.agent_user_invite.organisation == org2
+        assert old_key != invite.key, "Check old invite is no longer valid"

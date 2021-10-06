@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.14.0] - 2021-09-30
+
+### Bug
+
+- [BODP-4396](https://itoworld.atlassian.net/browse/BODP-4396) Browser compatibility: General UI - Timetables changelog table does not format correctly when there is a long comment
+- [BODP-4395](https://itoworld.atlassian.net/browse/BODP-4395) \(REGRESSION\) Invalid Upload: Fares - Error message overlaps the message container \(Chrome v92\)
+- [BODP-4393](https://itoworld.atlassian.net/browse/BODP-4393) TXC Validation Check: Timetables_PTI - Validation check failed message is not matching design \(Regression\)
+- [BODP-4387](https://itoworld.atlassian.net/browse/BODP-4387) Data Quality Report: Timetables_DQ - The DQ report does not generate for a particular dataset
+- [BODP-4369](https://itoworld.atlassian.net/browse/BODP-4369) \(REGRESSION\) Timetable Upload: Timetables_PTI - "All data that has outstanding issues..." still shows in the "Action required – PTI validation report requires resolution \(if applicable\)" when hardblock is enforced.
+- [BODP-4362](https://itoworld.atlassian.net/browse/BODP-4362) PROD Publisher: PTI Validation- Accept <RunTime>PT0H0M0S</RunTime> for zero runtime
+- [BODP-4361](https://itoworld.atlassian.net/browse/BODP-4361) PTI Valid file results in DQ Service unavailable
+- [BODP-4360](https://itoworld.atlassian.net/browse/BODP-4360) \(REGRESSION\) User Management: General UI - Org Admin user invites a new user \(email\) that has a pending invite \(from another organisation\) gives back an error
+- [BODP-4356](https://itoworld.atlassian.net/browse/BODP-4356) End Date PTI validation error encountered when start and end date are the same
+- [BODP-4355](https://itoworld.atlassian.net/browse/BODP-4355) \(REGRESSSION\) Timetable Upload: Timetables - 500 Internal Server Error When Trying to Download dataqualityreport.csv
+- [BODP-4354](https://itoworld.atlassian.net/browse/BODP-4354) \(REGRESSION\) Swagger API: Fares_API - Link 'Download data catalogue' should not be visible
+- [BODP-4350](https://itoworld.atlassian.net/browse/BODP-4350) \(REGRESSION\) Password emails: General UI - Missing 'Hello,' word in the content of the email
+- [BODP-4349](https://itoworld.atlassian.net/browse/BODP-4349) \(REGRESSSION\) Timetable Publish: Timetables_PTI - Email content does not match template when publishing timetable with PTI errors for Org Staff & Org Admin
+- [BODP-4348](https://itoworld.atlassian.net/browse/BODP-4348) \(REGRESSION\) Timetable Upload: Timetables - Uploading timetable dataset over 10mb freezes progress bar at 45%
+- [BODP-4337](https://itoworld.atlassian.net/browse/BODP-4337) Timetables and Fares: Map is not displaying properly with any timetable and fares dataset within Mapbox
+- [BODP-4334](https://itoworld.atlassian.net/browse/BODP-4334) PROD Admin: Stats are not being updated since August 19th
+- [BODP-4292](https://itoworld.atlassian.net/browse/BODP-4292) Invalid Error Link in the crispy form
+- [BODP-4289](https://itoworld.atlassian.net/browse/BODP-4289) Timetables with empty <Licence /> tags cause pipeline to fail
+- [BODP-4260](https://itoworld.atlassian.net/browse/BODP-4260) Timetables PTI: File name incorrect when a single xml dataset is uplaoded via URL
+- [BODP-4223](https://itoworld.atlassian.net/browse/BODP-4223) Internal & Staging Timetables: Reverted back to "Data set reports are now available" emails \(Old Template\)
+- [BODP-4188](https://itoworld.atlassian.net/browse/BODP-4188) Inconsistent spelling of "Data feed\(s\)" between Column H and K in the stats.csv file
+- [BODP-4141](https://itoworld.atlassian.net/browse/BODP-4141) BODS Admin: 'Draft' option is not available in the Status dropdown for AVL
+- [BODP-4120](https://itoworld.atlassian.net/browse/BODP-4120) Documentation - Local authority requirements: Type error
+- [BODP-4022](https://itoworld.atlassian.net/browse/BODP-4022) Timetables: Dashboard rows overlap 'Processing' text with long data set name
+- [BODP-3781](https://itoworld.atlassian.net/browse/BODP-3781) Adding random parameter to AVL provides all results and 200 status
+- [BODP-2512](https://itoworld.atlassian.net/browse/BODP-2512) Pagination on last page of browse/search: the hyperlink to the first page is missing
+- [BODP-1437](https://itoworld.atlassian.net/browse/BODP-1437) active_url template tag does not work as expected and therefore rarely adds appropriate CSS classes to active links
+
+### Dev Task
+
+- [BODP-4327](https://itoworld.atlassian.net/browse/BODP-4327) model and migration for known issues
+- [BODP-4326](https://itoworld.atlassian.net/browse/BODP-4326) new app
+- [BODP-4288](https://itoworld.atlassian.net/browse/BODP-4288) Dev
+
+### Story
+
+- [BODP-4357](https://itoworld.atlassian.net/browse/BODP-4357) Update to include PTIC link
+- [BODP-4307](https://itoworld.atlassian.net/browse/BODP-4307) SIRI VM Validator: Control SIRI VM validator functionality though a feature flag
+- [BODP-4306](https://itoworld.atlassian.net/browse/BODP-4306) Changelog BODS
+- [BODP-4293](https://itoworld.atlassian.net/browse/BODP-4293) BODS PTI Updates: DaysofOperation - Include OtherPublicHolidays to list of acceptable elements
+- [BODP-4272](https://itoworld.atlassian.net/browse/BODP-4272) PTI hardblock: Reject Non-compliant files in automatic update
+- [BODP-4259](https://itoworld.atlassian.net/browse/BODP-4259) Datset subscriptions: 'Data feed status changed' email is not sent for Fares or Timetable datasets
+- [BODP-4229](https://itoworld.atlassian.net/browse/BODP-4229) Update AVL email for no feed activity
+- [BODP-4219](https://itoworld.atlassian.net/browse/BODP-4219) SIRIVM: change data unavailable to no vehicle activity
+- [BODP-4112](https://itoworld.atlassian.net/browse/BODP-4112) PTI hardblock: Failed validation
+- [BODP-3481](https://itoworld.atlassian.net/browse/BODP-3481) Developer Account Management Email
+- [BODP-3474](https://itoworld.atlassian.net/browse/BODP-3474) Dataset feedback email
+- [BODP-3422](https://itoworld.atlassian.net/browse/BODP-3422) Password Emails
+
+### Story Bug
+
+- [BODP-4339](https://itoworld.atlassian.net/browse/BODP-4339) Changelog Page: General UI - User is redirected to BODS Home page when clicking 'Back' link
+- [BODP-4331](https://itoworld.atlassian.net/browse/BODP-4331) Having <OtherPublicHoliday> tags within the <DaysOfOperation> AND <DaysOfNonOperation> tags produces PTI Error
+- [BODP-4287](https://itoworld.atlassian.net/browse/BODP-4287) PBODS & FBODS: Notification title still says "Published feed data unavailable alert"
+- [BODP-4286](https://itoworld.atlassian.net/browse/BODP-4286) The text "Data containing this observation will be rejected by BODS after \[DDMMYYYY\]" is showing despite the dataset not passing the publish stage.
+- [BODP-4285](https://itoworld.atlassian.net/browse/BODP-4285) No "Your data feed has been successfully updated" text in the green box when updating an already published AVL feed
+- [BODP-4281](https://itoworld.atlassian.net/browse/BODP-4281) "No Vehicle Activity" status not being reflected in the UI after "AVL Feed \[ID\] is no longer sending data to the Bus Open Data Service email notification"
+- [BODP-4264](https://itoworld.atlassian.net/browse/BODP-4264) No "You have changed your password on the Bus Open Data Service" email notification
+- [BODP-4263](https://itoworld.atlassian.net/browse/BODP-4263) No "You have feedback on your data" email notification after submitting feedback
+
+### Sub-task
+
+- [BODP-4329](https://itoworld.atlassian.net/browse/BODP-4329) Dev - BODS PTI Updates: DaysofOperation
+
+### Test Task
+
+- [BODP-4325](https://itoworld.atlassian.net/browse/BODP-4325) Test - BODP-4306 - Changelog BODS
+- [BODP-4230](https://itoworld.atlassian.net/browse/BODP-4230) Test - BODP-4229 - Update AVL email for no feed activity
+- [BODP-3482](https://itoworld.atlassian.net/browse/BODP-3482) Test - BODP-3481 - Developer Account Management Email
+
+## [1.13.1] - 2021-08-27 (Non-prod)
+
+- NO-TICKET: Added `CELERY_BROKER_VISBILITY_TIMEOUT` as environment variable
+- NO-TICKET: Various pipeline optimisations for database transactions
+
 ## [1.13.0] - 2021-08-12
 
 - [BODP-4176](https://itoworld.atlassian.net/browse/BODP-4176) Timetables: TxC file from Production can be published without DQ report

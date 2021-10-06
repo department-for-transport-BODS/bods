@@ -105,7 +105,13 @@ class DatasetManageView(LoginRequiredMixin, SingleTableView):
 
     def get_queryset(self):
         user = self.request.user
-        return super().get_queryset().filter(subscribers=user).add_live_data()
+        return (
+            super()
+            .get_queryset()
+            .filter(subscribers=user)
+            .add_live_data()
+            .order_by("id")
+        )
 
     def get_context_data(self, **kwargs):
         user = self.request.user

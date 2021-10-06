@@ -275,7 +275,7 @@ def test_single_dataset_with_one_live_revision(org_with_key_contact, mailoutbox)
     assert len(mailoutbox) == 1
     email = mailoutbox[0]
     assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "[BODS] Your data set is no longer compliant"
+    assert email.subject == "Your data set is no longer compliant"
 
 
 def test_single_dataset_with_one_live_mixed_revision(org_with_key_contact, mailoutbox):
@@ -288,7 +288,7 @@ def test_single_dataset_with_one_live_mixed_revision(org_with_key_contact, mailo
     assert len(mailoutbox) == 1
     email = mailoutbox[0]
     assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "[BODS] Your data set is no longer compliant"
+    assert email.subject == "Your data set is no longer compliant"
 
 
 def test_organisation_without_key_contact_doesnt_break():
@@ -328,7 +328,7 @@ def test_single_dataset_with_one_live_revision_and_one_draft(
     assert len(mailoutbox) == 1
     email = mailoutbox[0]
     assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "[BODS] Your data set is no longer compliant"
+    assert email.subject == "Your data set is no longer compliant"
 
 
 def test_single_dataset_with_two_live_revisions(org_with_key_contact, mailoutbox):
@@ -343,7 +343,7 @@ def test_single_dataset_with_two_live_revisions(org_with_key_contact, mailoutbox
     assert len(mailoutbox) == 1
     email = mailoutbox[0]
     assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "[BODS] Your data set is no longer compliant"
+    assert email.subject == "Your data set is no longer compliant"
 
 
 def test_single_dataset_with_two_live_revisions_and_one_draft(
@@ -361,7 +361,7 @@ def test_single_dataset_with_two_live_revisions_and_one_draft(
     assert len(mailoutbox) == 1
     email = mailoutbox[0]
     assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "[BODS] Your data set is no longer compliant"
+    assert email.subject == "Your data set is no longer compliant"
 
 
 def test_single_dataset_with_one_draft_revision(org_with_key_contact, mailoutbox):

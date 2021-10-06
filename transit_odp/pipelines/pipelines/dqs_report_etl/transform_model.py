@@ -527,9 +527,11 @@ def transform_vehicle_journeys(
         right_index=True,
     )
 
+    # can't use datetime.min incase start is negative
+    min_datetime = datetime.datetime.min + datetime.timedelta(days=7)
     # Convert start time from 'seconds past midnight' into time
     vehicle_journeys["start_time"] = vehicle_journeys["start"].apply(
-        lambda x: (datetime.datetime.min + datetime.timedelta(seconds=x)).time()
+        lambda x: (min_datetime + datetime.timedelta(seconds=x)).time()
     )
 
     # Load VJs into DB

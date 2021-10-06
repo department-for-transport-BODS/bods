@@ -1,5 +1,6 @@
 import csv
 import io
+import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Union
@@ -54,3 +55,22 @@ class CSVBuilder:
         output = csvfile.getvalue()
         csvfile.close()
         return output
+
+    def to_temporary_file(self):
+        """
+        Creates a csv file using a temporary file.
+
+        N.B. it is the callers responsiblity for calling close on file returned.
+        """
+        if self.queryset is None:
+            self.queryset = self.get_queryset()
+
+        headers = [column.header for column in self.columns]
+        csvfile = tempfile.NamedTemporaryFile(mode="w")
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        for row in self.queryset.iterator():
+            writer.writerow(self._create_row(row))
+
+        csvfile.seek(0)
+        return csvfile

@@ -1,11 +1,42 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.db.models.expressions import F
+from django.db.models.query_utils import Q
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 from transit_odp.avl.storage import get_sirivm_storage
 from transit_odp.common.fields import CallableStorageFileField
+from transit_odp.organisation.constants import AVLType
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.models import TaskResult
+
+limit_to_query = Q(dataset__dataset_type=AVLType) & Q(dataset__live_revision_id=F("id"))
+
+
+class AVLValidationReport(models.Model):
+
+    revision = models.ForeignKey(
+        DatasetRevision,
+        on_delete=models.CASCADE,
+        related_name="avl_validation_reports",
+        limit_choices_to=limit_to_query,
+    )
+    critical_count = models.PositiveIntegerField(_("Number of critical issues"))
+    non_critical_count = models.PositiveIntegerField(_("Number of non-critical issues"))
+    file = models.FileField(_("AVL validation report file"))
+    created = models.DateField(_("Creation date"))
+
+    def __str__(self):
+        return (
+            f"id={self.id}, revision_id={self.revision.id}, "
+            f"filename={self.file.name!r}, "
+            f"critical_count={self.critical_count}, "
+            f"non_critical_count={self.non_critical_count}, "
+            f"created={self.created.isoformat()}"
+        )
+
+    class Meta:
+        unique_together = ("revision", "created")
 
 
 class CAVLValidationTaskResult(TaskResult):

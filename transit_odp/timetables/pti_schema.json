@@ -228,7 +228,7 @@
       "number": 20,
       "rules": [
         {
-          "test": "count(x:EndDate) < 1 or date(x:StartDate) < date(x:EndDate)"
+          "test": "count(x:EndDate) < 1 or date(x:StartDate) <= date(x:EndDate)"
         },
         {
           "test": "count(x:EndDate) < 1 or date(x:EndDate) - date(x:StartDate) <= days(4026)"

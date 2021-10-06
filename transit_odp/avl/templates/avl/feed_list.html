@@ -36,10 +36,16 @@
             <span class="feed-stat__label">{% trans 'Data feeds' %}</span>
           </div>
         </div>
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-one-quarter">
           <div class="feed-stat">
             <span class="feed-stat__value">{{ global_feed_stats.feed_warnings }}</span>
             <span class="feed-stat__label">{% trans 'Data feeds in error state' %}</span>
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="feed-stat">
+            <span class="feed-stat__value">1234</span>
+            <span class="feed-stat__label">{% trans 'Feeds need attention in ' %}<a href="{% url 'placeholder' %}">BODS compliance</a></span>
           </div>
         </div>
       </div>

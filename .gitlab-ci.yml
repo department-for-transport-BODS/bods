@@ -109,10 +109,6 @@ before_script:
       - merge_requests
     changes:
       - "**/*"
-  # except:
-  # changes:
-  # - crispy-forms-govuk/**/*
-  # - docker/production/django_base/*
 
 build-dev:
   extends:
@@ -189,10 +185,12 @@ test-crispy_forms_govuk:
   before_script:
     - *logging
     - cd crispy-forms-govuk
-    - make install
+    - pip install poetry
+    - poetry --version
+    - poetry install -v
   script:
     - cd /builds/transit-hub/bodp-django/crispy-forms-govuk
-    - make tests
+    - poetry run pytest -vv tests/
   only:
     # Task only runs in MRs containing changes to crispy-forms-govuk project
     refs:

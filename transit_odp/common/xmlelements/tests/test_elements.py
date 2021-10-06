@@ -108,3 +108,21 @@ def test_find_anywhere(xmlelement):
     assert len(actual) == 2
     assert actual[0].localname == "CompositeFrame"
     assert actual[-1].text == "composite_frame2"
+
+
+def test_get_text_or_default():
+    test_string = """
+    <Parent>
+        <Child1>text</Child1>
+        <Child2 />
+    </Parent>
+    """
+    element = XMLElement(etree.fromstring(test_string))
+    result = element.get_text_or_default("Child1", default="")
+    assert result == "text"
+
+    result = element.get_text_or_default("Child2", default="text")
+    assert result == "text"
+
+    result = element.get_text_or_default("Child3", default="text")
+    assert result == "text"

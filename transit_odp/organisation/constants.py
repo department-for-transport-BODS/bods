@@ -57,6 +57,11 @@ TimetableType = DatasetType.TIMETABLE.value
 AVLType = DatasetType.AVL.value
 FaresType = DatasetType.FARES.value
 
+AVLFeedUp = AVLFeedStatus.FEED_UP.value
+AVLFeedDown = AVLFeedStatus.FEED_DOWN.value
+AVLFEEDSystemError = AVLFeedStatus.SYSTEM_ERROR.value
+AVLFeedDeploying = AVLFeedStatus.DEPLOYING.value
+
 DATASET_TYPE_NAMESPACE_MAP = {
     DatasetType.TIMETABLE: "",
     DatasetType.AVL: "avl",

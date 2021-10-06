@@ -54,7 +54,7 @@
   <span class="status-indicator status-indicator--warning">{% trans 'Soon to expire' %}</span>
 {% elif status == 'error' %}
   {% if record.dataset_type == 2 or dataset_type == 2 %}
-    <span class="status-indicator status-indicator--unavailable">{% trans 'Data unavailable' %}</span>
+    <span class="status-indicator status-indicator--unavailable">{% trans 'No vehicle activity' %}</span>
     {% else %}
   <span class="status-indicator status-indicator--error">{% trans 'Error' %}</span>
     {% endif %}

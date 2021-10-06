@@ -1,0 +1,29 @@
+{% load i18n %}
+
+<table class="govuk-table dataset-property-table">
+  <tbody class="govuk-table__body">
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+    <td class="govuk-table__cell">{% trans object.dataset.organisation.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
+    <td class="govuk-table__cell">
+      <div class="flex-between">
+        <span>
+            {{ object.published_at|date:"j M Y H:i" }} {% trans 'by ' %}
+            {% if object.published_by %}
+                {{ object.published_by.username }}
+            {% else %}
+                {% trans 'System' %}
+            {% endif %}
+        </span>
+      </div>
+    </td>
+  </tr>
+ </tbody>
+</table>

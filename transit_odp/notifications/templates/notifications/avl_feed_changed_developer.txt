@@ -1,9 +1,12 @@
+Hello,
+
 The following data feed status has changed on the Bus Open Data Service.
 
-Data feed: {{feed_id}}
-Operator: {{operator_name}}
-New Status: {{status}}
-Updated: {{updated_time}}
+Data feed: {{ feed_id }}
+Short Description: {{ feed_short_description }}
+Operator: {{ operator_name }}
+New Status: {{ status }}
+Updated: {{ updated_time }}
 
 Kind Regards,
 The Bus Open Data Team

@@ -14,7 +14,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
 from django.http import HttpResponseServerError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.crypto import get_random_string
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
 from invitations.adapters import get_invitations_adapter
 from invitations.exceptions import AlreadyAccepted
@@ -200,7 +202,10 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
         try:
             account_type = account_type_mapper[selected_item]
         except KeyError:
-            raise forms.ValidationError(_("Choose the account type."))
+            error = forms.ValidationError(
+                mark_safe(_('<a href="#admin-radio">Choose the account type.</a>'))
+            )
+            raise error
 
         self.cleaned_data["account_type"] = account_type
         return account_type
@@ -255,9 +260,29 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
             standard_invite.accepted = False
             standard_invite.organisation = self.instance.organisation
             standard_invite.account_type = self.instance.account_type
+            standard_invite.inviter = self.instance.inviter
+            standard_invite.key = get_random_string(64).lower()
             standard_invite.save()
         standard_invite.send_invitation(self.request, *args, site=site, **kwargs)
         return standard_invite
+
+    def _update_or_create_agent_invite(self, standard_invite):
+        try:
+            # Case where a new agent has been added but has not accepted
+            # then someone tries to add them again possibly from
+            # a different organisation.
+            agent_invite = AgentUserInvite.objects.get(invitation=standard_invite)
+            agent_invite.inviter = standard_invite.inviter
+            agent_invite.organisation = standard_invite.organisation
+            agent_invite.save()
+        except AgentUserInvite.DoesNotExist:
+            AgentUserInvite.objects.create(
+                agent=None,
+                invitation=standard_invite,
+                inviter=standard_invite.inviter,
+                status=AgentUserInvite.PENDING,
+                organisation=standard_invite.organisation,
+            )
 
     @transaction.atomic
     def save(self, *args, **kwargs):
@@ -268,14 +293,7 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
             standard_invite = self._get_or_create_standard_invite(*args, **kwargs)
 
             if account_type == AccountType.agent_user.value:
-                AgentUserInvite.objects.get_or_create(
-                    agent=None,
-                    invitation=standard_invite,
-                    inviter=standard_invite.inviter,
-                    status=AgentUserInvite.PENDING,
-                    organisation=standard_invite.organisation,
-                )
-
+                self._update_or_create_agent_invite(standard_invite)
             return standard_invite
 
         return self._send_existing_agent_user_invite()

@@ -14,6 +14,14 @@ from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
 
 API_KEY = "api_key"
+PARAMETERS = (
+    "boundingBox",
+    "operatorRef",
+    "lineRef",
+    "producerRef",
+    "originRef",
+    "destinationRef",
+)
 
 
 class AVLOpenApiView(LoginRequiredMixin, TemplateView):
@@ -115,6 +123,12 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
 
     params = query_params.copy()
     params.pop(API_KEY, None)
+
+    for key in params:
+        if key not in PARAMETERS:
+            error_msg = f"Parameter {key} is not valid."
+            content = create_xml_error_response(error_msg, response_status)
+            return content, response_status
 
     try:
         response = requests.get(url, params=params, timeout=60)

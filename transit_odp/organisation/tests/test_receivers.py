@@ -67,7 +67,7 @@ class TestMonitorFeedFailFirstTryHandler:
 
         # Assert
         assert mailoutbox[-1].subject == (
-            "[BODS] We cannot access the URL where your bus data is hosted "
+            "We cannot access the URL where your bus data is hosted "
             "– no action required"
         )
 
@@ -91,8 +91,7 @@ class TestMonitorFeedFailFinalTryHandler:
 
         # Assert
         assert (
-            mailoutbox[-1].subject
-            == "[BODS] Your bus data has expired due to inaccessibility"
+            mailoutbox[-1].subject == "Your bus data has expired due to inaccessibility"
         )
 
 
@@ -120,10 +119,8 @@ class TestMonitorFeedChangeDetectedHandler:
 
         # Assert
         emails = [mail.subject for mail in mailoutbox]
-        assert "[BODS] Developer Data Changed" in emails
         assert (
-            "[BODS] A change has been detected in your bus data – no action required"
-            in emails
+            "A change has been detected in your bus data – no action required" in emails
         )
 
 
@@ -147,7 +144,7 @@ class TestMonitorFeedAvailableHandler:
         # Assert
         assert (
             mailoutbox[-1].subject
-            == "[BODS] Your bus data is accessible again – no action required"
+            == "Your bus data is accessible again – no action required"
         )
 
 
@@ -165,11 +162,10 @@ class TestRevisionPublishHandler:
     def test_notify_feed_published_is_called(
         self, account_type, user_factory, mailoutbox
     ):
-        # Set up
         dataset = setup_dataset(user_factory, staff_account=account_type)
 
-        # Test
         revision_publish_handler(None, dataset)
 
-        # Assert
-        assert mailoutbox[-1].subject == "[BODS] Data set published"
+        publisher, developer = mailoutbox
+        assert publisher.subject == "Data set published"
+        assert developer.subject == "Data set status changed"

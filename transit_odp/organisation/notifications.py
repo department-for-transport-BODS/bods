@@ -2,7 +2,6 @@ from django.db.models import Q
 
 from transit_odp.bods.interfaces.notifications import INotifications
 from transit_odp.bods.interfaces.plugins import get_notifications
-from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.users.models import AgentUserInvite
 
@@ -52,16 +51,6 @@ def send_feed_changed_notification(dataset: Dataset):
             contact_email=agent.email,
         )
 
-    is_muted = Q(settings__mute_all_dataset_notifications=True)
-    for developer in dataset.subscribers.exclude(is_muted).order_by("id"):
-        notifier.send_developer_data_endpoint_changed_notification(
-            dataset_id=dataset.id,
-            dataset_name=dataset.live_revision.name,
-            contact_email=developer.email,
-            operator_name=dataset.organisation.name,
-            last_updated=dataset.live_revision.modified,
-        )
-
 
 def send_endpoint_available_notification(dataset: Dataset):
     notifier.send_data_endpoint_reachable_notification(
@@ -103,25 +92,25 @@ def send_revision_published_notification(dataset: Dataset):
             with_pti_violations=has_pti_violations,
         )
 
+    is_muted = Q(settings__mute_all_dataset_notifications=True)
+    for developer in dataset.subscribers.exclude(is_muted).order_by("id"):
+        # For new datasets there will be no subscribers so this wont get sent.
+        # It will only email developers when new revisions are published
+        notifier.send_developer_data_endpoint_changed_notification(
+            dataset_id=dataset.id,
+            dataset_name=dataset.live_revision.name,
+            contact_email=developer.email,
+            operator_name=dataset.organisation.name,
+            last_updated=dataset.live_revision.published_at,
+        )
+
 
 def send_endpoint_validation_error_notification(dataset):
-    content_template = (
-        "The following data set has failed to publish on the Bus Open Data Service "
-        "due to validation errors{0}.\n\n"
-        "Please check your data set below to ensure that the most up-to-date "
-        "information is maintained on BODS."
-    )
-    timetable_modifier = " in the files as specified in the Validation report"
-
-    if dataset.dataset_type == TimetableType:
-        content = content_template.format(timetable_modifier)
-    else:
-        content = content_template.format("")
-
     revision = dataset.revisions.get_draft().first()
     if revision is None:
         return
 
+    has_pti_errors = not revision.is_pti_compliant()
     # If published_at has any meaning at all its when was the datasets
     # live revision published
     if dataset.live_revision:
@@ -133,24 +122,26 @@ def send_endpoint_validation_error_notification(dataset):
         notifier.send_agent_data_endpoint_validation_error_notification(
             dataset_id=dataset.id,
             dataset_name=revision.name,
-            content=content,
             short_description=revision.short_description,
+            dataset_type=dataset.dataset_type,
             operator_name=dataset.organisation.name,
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
             contact_email=dataset.contact.email,
+            with_pti_violations=has_pti_errors,
         )
     else:
         notifier.send_data_endpoint_validation_error_notification(
             dataset_id=dataset.id,
             dataset_name=revision.name,
-            content=content,
             short_description=revision.short_description,
+            dataset_type=dataset.dataset_type,
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
             contact_email=dataset.contact.email,
+            with_pti_violations=has_pti_errors,
         )
 
 

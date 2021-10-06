@@ -5,11 +5,11 @@ from typing import Dict, List
 from pydantic import BaseModel
 
 from transit_odp.data_quality.pti.constants import (
-    IMPORTANT_NOTE,
     NO_REF,
     REF_PREFIX,
     REF_SUFFIX,
     REF_URL,
+    get_important_note,
 )
 
 GENERAL_REF = NO_REF + REF_URL
@@ -65,5 +65,5 @@ class Violation(BaseModel):
             self.observation.category,
             self.observation.details,
             ref,
-            IMPORTANT_NOTE,
+            get_important_note(),
         ]

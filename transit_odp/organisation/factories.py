@@ -24,6 +24,7 @@ from transit_odp.organisation.models import (
     Organisation,
     TXCFileAttributes,
 )
+from transit_odp.users.constants import DeveloperType
 
 FAKER = faker.Faker()
 
@@ -199,7 +200,9 @@ class DatasetSubscriptionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = DatasetSubscription
 
-    user = factory.SubFactory("transit_odp.users.factories.UserFactory")
+    user = factory.SubFactory(
+        "transit_odp.users.factories.UserFactory", account_type=DeveloperType
+    )
     dataset = factory.SubFactory(DatasetFactory)
 
 

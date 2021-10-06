@@ -163,8 +163,7 @@ def test_notify_on_dqs_completion(mailoutbox):
     run_dqs_report_etl_pipeline(dq_report.id)
     mail = mailoutbox[0]
     expected_subject = (
-        "[BODS] Action required – PTI validation report requires resolution "
-        "(if applicable)"
+        "Action required – PTI validation report requires resolution (if applicable)"
     )
     assert mail.subject == expected_subject
     assert mail.to[0] == dq_report.revision.dataset.contact.email
@@ -185,8 +184,7 @@ def test_notify_agent_on_dqs_completion(mailoutbox):
     run_dqs_report_etl_pipeline(dq_report.id)
     mail = mailoutbox[0]
     expected_subject = (
-        "[BODS] Action required – PTI validation report requires resolution "
-        "(if applicable)"
+        "Action required – PTI validation report requires resolution (if applicable)"
     )
     assert mail.subject == expected_subject
     assert mail.to[0] == "agent@agentyagent.com"

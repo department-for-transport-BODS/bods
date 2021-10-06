@@ -84,7 +84,7 @@ class TestDatasetETLTaskResult:
         task.to_error("dataset_validate", 101)
         mail = mailoutbox[0]
 
-        assert mail.subject == "[BODS] Error publishing data set"
+        assert mail.subject == "Error publishing data set"
         assert "Indexing Revision" in mail.body
         assert f"Link to data set: {indexing_revision.draft_url}" in mail.body
         # Defends against: https://itoworld.atlassian.net/browse/BODP-3721
@@ -100,7 +100,7 @@ class TestDatasetETLTaskResult:
         task.to_error("dataset_validate", 101)
         mail = mailoutbox[0]
 
-        assert mail.subject == "[BODS] Error publishing data set"
+        assert mail.subject == "Error publishing data set"
         assert "Indexing Revision" in mail.body
         assert "Published: Not published" in mail.body
         assert f"Link to data set: {indexing_revision.draft_url}" in mail.body
@@ -129,5 +129,5 @@ class TestDatasetETLTaskResult:
         task.to_error("dataset_validate", 101)
         mail = mailoutbox[0]
 
-        assert mail.subject == "[BODS] Error publishing data set"
+        assert mail.subject == "Error publishing data set"
         assert f"Operator: {org.name}" in mail.body

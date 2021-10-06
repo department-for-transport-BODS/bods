@@ -7,6 +7,8 @@ import config.hosts
 from transit_odp.common.tables import GovUkTable, TruncatedTextColumn
 from transit_odp.organisation.tables import FeedStatusColumn, get_feed_name_linkify
 
+COMMENT_ATTRS = {"th": {"class": "govuk-table__header govuk-!-width-one-third"}}
+
 
 class DatasetTable(GovUkTable):
     status = FeedStatusColumn(show_update_link=False)
@@ -21,7 +23,11 @@ class DatasetTable(GovUkTable):
     )
     id = tables.Column(verbose_name="Data set ID")
     modified = tables.Column(verbose_name="Last updated")
-    short_description = tables.Column()
+    short_description = tables.Column(
+        attrs={
+            "th": {"class": "govuk-table__header", "width": "20%"},
+        },
+    )
 
     class Meta(GovUkTable.Meta):
         attrs = {"th": {"class": "govuk-table__header"}}
@@ -63,7 +69,9 @@ class DatasetRevisionTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         template_name = "publish/snippets/feed_change_log_table.html"
 
-    comment = tables.Column(verbose_name="Comment", orderable=False)
+    comment = tables.Column(
+        verbose_name="Comment", orderable=False, attrs=COMMENT_ATTRS
+    )
     status = FeedStatusColumn(show_update_link=False, orderable=False)
     published_at = tables.Column(
         verbose_name="Updated date",

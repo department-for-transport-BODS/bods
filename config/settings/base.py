@@ -164,6 +164,7 @@ LOCAL_APPS = [
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
     "transit_odp.data_quality.apps.DataQualityConfig",
     "transit_odp.notifications.apps.NotifyConfig",
+    "transit_odp.changelog.apps.ChangelogConfig",
     "transit_odp.restrict_sessions.apps.RestrictedSessions",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -321,7 +322,7 @@ DEFAULT_FROM_EMAIL = env(
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
-EMAIL_SUBJECT_PREFIX = env("DJANGO_EMAIL_SUBJECT_PREFIX", default="[BODS] ")
+EMAIL_SUBJECT_PREFIX = env("DJANGO_EMAIL_SUBJECT_PREFIX", default="")
 
 # ADMIN
 # ------------------------------------------------------------------------------
@@ -355,7 +356,11 @@ CELERY_RESULT_SERIALIZER = "json"
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#broker-transport-options
 # Increasing visibility_timeout due to issues with duplicate Celery tasks,
 # see https://github.com/celery/django-celery/issues/215#issuecomment-154824966
-CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 18000}
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "visibility_timeout": env(
+        "CELERY_BROKER_VISIBILITY_TIMEOUT", default=18000, cast=int
+    )
+}
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
 # TODO: set to whatever value is adequate in your circumstances

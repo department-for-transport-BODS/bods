@@ -15,7 +15,7 @@ def get_feed_status(dataset):
         dataset.dataset_type == AVLType
         and dataset.live_revision.status == FeedStatus.error.value
     ):
-        return "Data unavailable"
+        return "No vehicle activity"
     if dataset.live_revision.status == "live":
         return "published"
 

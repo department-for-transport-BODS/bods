@@ -86,7 +86,7 @@
     {% endblock table %}
     {% block pagination.bottom %}
       {% if table.pagination_bottom %}
-        {% include "snippets/pagination_centre.html" with page=table.page paginator=table.paginator %}
+        {% include "snippets/pagination.html" with page=table.page paginator=table.paginator %}
       {% endif %}
     {% endblock %}
 

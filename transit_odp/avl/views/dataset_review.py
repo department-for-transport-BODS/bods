@@ -201,4 +201,8 @@ class UpdateRevisionPublishView(ReviewView):
         return context
 
     def get_success_url(self):
-        return get_avl_success_url(self.object.dataset_id, self.kwargs["pk1"])
+        return reverse(
+            "avl:revision-update-success",
+            kwargs={"pk": self.kwargs["pk"], "pk1": self.kwargs["pk1"]},
+            host=config.hosts.PUBLISH_HOST,
+        )

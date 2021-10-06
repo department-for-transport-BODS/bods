@@ -1,8 +1,6 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
-from transit_odp.bods import bootstrap
-from transit_odp.bods.domain import commands
 from transit_odp.data_quality.tasks import run_dqs_monitoring
 from transit_odp.pipelines.pipelines.data_archive import (
     bulk_data_archive,
@@ -11,9 +9,6 @@ from transit_odp.pipelines.pipelines.data_archive import (
 from transit_odp.pipelines.pipelines.naptan_etl import main
 
 logger = get_task_logger(__name__)
-
-
-bus = bootstrap.bootstrap()
 
 
 @shared_task(ignore_result=True)
@@ -36,9 +31,3 @@ def task_create_change_data_archive():
 @shared_task(ignore_result=True)
 def task_run_naptan_etl():
     main.run()
-
-
-@shared_task(ignore_result=True)
-def task_monitor_avl_feeds():
-    # TODO - add e2e test for this entrypoint
-    bus.handle(commands.MonitorAVLFeeds())

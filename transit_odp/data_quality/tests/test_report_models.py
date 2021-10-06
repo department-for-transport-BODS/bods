@@ -12,7 +12,7 @@ from transit_odp.organisation.factories import DatasetRevisionFactory
 pytestmark = pytest.mark.django_db
 
 
-def test_from_pti_violations():
+def test_from_pti_violations(pti_unenforced):
     revision = DatasetRevisionFactory()
     violations = [ViolationFactory()]
 
@@ -32,3 +32,22 @@ def test_from_pti_violations():
             assert PTI_CSV_COLUMNS == tuple(columns)
             for violation in violations:
                 assert [str(item) for item in violation.to_bods_csv()] == first
+
+
+def test_important_information_black_after_pti_deadline(pti_enforced):
+    revision = DatasetRevisionFactory()
+    violations = [ViolationFactory()]
+
+    PTIValidationResult.from_pti_violations(
+        revision=revision, violations=violations
+    ).save()
+
+    validation_result = PTIValidationResult.objects.get(revision_id=revision.id)
+    expected_filename = "pti_observations.csv"
+    with zipfile.ZipFile(validation_result.report, "r") as zf:
+        with zf.open(expected_filename, "r") as fp:
+            reader = csv.reader(TextIOWrapper(fp, UTF8))
+            columns, first = reader
+            assert PTI_CSV_COLUMNS == tuple(columns)
+            for violation in violations:
+                assert violation.to_bods_csv()[-1] == ""

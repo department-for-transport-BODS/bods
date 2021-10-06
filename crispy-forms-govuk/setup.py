@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from setuptools import setup
 
-setup()
+import setuptools
+
+if __name__ == "__main__":
+    setuptools.setup()

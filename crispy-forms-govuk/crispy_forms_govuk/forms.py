@@ -21,8 +21,9 @@ class HelperMixin(object):
     formset_show_errors = True
     page_heading_field: Optional[str] = None
     layout: Layout = None
-
-    is_formset = False  # TODO - this isn't right. The form shouldn't have to know if its being used in a formset
+    # TODO - this isn't right. The form shouldn't have to know if its
+    # being used in a formset
+    is_formset = False
 
     def get_helper_class(self):
         """Return the helper class to use."""
@@ -118,9 +119,11 @@ class GOVUKFormMixin(HelperMixin):
     def is_valid(self):
         is_valid = super().is_valid()
         if not is_valid:
-            # Initialisation of widget CSS error class depends on if the form's fields have errors.
-            # Therefore, we must call set_error_classes which does a full clean and then sets the classes.
-            # TODO - rendering should ideally reflect changes to widget attributes after initialisation
+            # Initialisation of widget CSS error class depends on if the form's
+            # fields have errors. Therefore, we must call set_error_classes which
+            # does a full clean and then sets the classes.
+            # TODO - rendering should ideally reflect changes to widget attributes
+            # after initialisation
             self.set_error_classes()
         return is_valid
 
@@ -157,10 +160,13 @@ class GOVUKFormMixin(HelperMixin):
 
     @classmethod
     def set_widget_classes(cls, widget):
-        # Note - this is duplicates some of the logic in crispy forms' CrispyFieldNode to work around a bug.
-        # The node checks to whether to apply the css class using 'css_class.find(class_name) == -1'. Since we're using
-        # BEM our error class will prevent the base class being applied, since 'govuk-input' is a substring
-        # of 'govuk-input--error' so this method applies both classes.
+        # Note - this is duplicates some of the logic in crispy forms' CrispyFieldNode
+        # to work around a bug.
+        # The node checks to whether to apply the css class using
+        # 'css_class.find(class_name) == -1'. Since we're using
+        # BEM our error class will prevent the base class being applied, since
+        # 'govuk-input' is a substring of 'govuk-input--error' so this method
+        # applies both classes.
 
         # Get CSS classes for the type of widget
         css_classes = []

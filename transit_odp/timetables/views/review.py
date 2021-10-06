@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django_hosts import reverse
 
@@ -59,7 +60,7 @@ class BaseTimetableReviewView(ReviewBaseView):
         show_update = (
             self.object.is_pti_compliant() and tasks.get_latest_status() == "SUCCESS"
         )
-
+        pti_deadline_passed = settings.PTI_ENFORCED_DATE.date() <= timezone.localdate()
         context.update(
             {
                 "loading": loading,
@@ -70,6 +71,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                 "dq_status": tasks.get_latest_status(),
                 "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
                 "pti_enforced_date": settings.PTI_ENFORCED_DATE,
+                "pti_deadline_passed": pti_deadline_passed,
                 "dq_pending_or_failed": dq_pending_or_failed,
                 "show_update": show_update,
             }

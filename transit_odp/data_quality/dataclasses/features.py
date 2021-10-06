@@ -108,7 +108,13 @@ class VehicleJourney:
         """
         Return the `start` seconds as a datetime.time object.
         """
-        date_time = datetime.min + timedelta(seconds=self.start)
+        if self.start > 0:
+            date = datetime.min
+        else:
+            # negative start would cause OverflowError using datetime.min
+            date = datetime.min + timedelta(days=1)
+
+        date_time = date + timedelta(seconds=self.start)
         return date_time.time()
 
     @property

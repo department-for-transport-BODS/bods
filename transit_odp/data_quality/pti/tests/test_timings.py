@@ -103,6 +103,8 @@ def test_from_has_sequence_number_true(from_seq, to_seq, expected):
         ("", "JPTL1", True, True),
         ("PT0M", "JPTL1", True, True),
         ("PT0S", "JPTL1", True, True),
+        ("PT0H0M0S", "JPTL1", True, True),
+        ("PT1H0M0S", "JPTL1", True, False),
     ],
 )
 def test_run_time_validation(run_time, jptl_ref, has_to_from, expected):
@@ -117,6 +119,8 @@ def test_run_time_validation(run_time, jptl_ref, has_to_from, expected):
     JPTL1 in VJ1 with RunTime PT3M and To/From absent -> True
     JPTL2 not in VJ1 with RunTime PT3 and To/From present -> True
     JPTL1 in VJ1 with RunTime PT0M and To/From present -> True
+    JPTL1 in VJ1 with RunTime PT0H0M0S and To/From present -> True
+    JPTL1 in VJ1 with RunTime PT1H0M0S and To/From present -> False
     """
     if run_time:
         run_time = "<RunTime>{0}</RunTime>".format(run_time)

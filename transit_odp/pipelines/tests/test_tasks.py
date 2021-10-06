@@ -101,7 +101,7 @@ class TestTaskFeedIndex:
         task_dataset_etl(revision.id)
 
         # Assert
-        assert mailoutbox[-1].subject == "[BODS] Operator Publish Error"
+        assert mailoutbox[-1].subject == "Operator Publish Error"
 
 
 class TestTaskDataArchive:

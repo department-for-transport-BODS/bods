@@ -249,9 +249,7 @@ class ServiceLinkMissingStopQuerySet(models.QuerySet):
         from transit_odp.data_quality.models import ServicePattern
 
         subquery = (
-            ServicePattern.objects.filter(
-                id__in=OuterRef("service_link__service_patterns")
-            )
+            ServicePattern.objects.filter(id=OuterRef("service_link__service_patterns"))
             .order_by("ito_id")
             .values_list("service__name")[:1]
         )

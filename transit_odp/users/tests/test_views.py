@@ -1,9 +1,9 @@
-import config.hosts
 import pytest
 from django.conf import settings
 from django.test import RequestFactory
 from django_hosts.resolvers import get_host, reverse
 
+import config.hosts
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import UserFactory
@@ -217,6 +217,30 @@ class TestPasswordChangeView:
 
         assert view.get_success_url() == reverse(
             "account_change_password_done", host=config.hosts.DATA_HOST
+        )
+
+    def test_change_of_password_triggers_email(self, user, client_factory, mailoutbox):
+        client = client_factory(host=self.host)
+        user.set_password("oldpassword")
+        user.save()
+
+        client.force_login(user=user)
+
+        response = client.post(
+            self.url,
+            data={
+                "oldpassword": "oldpassword",
+                "password1": "newpassword_34324()()",
+                "password2": "newpassword_34324()()",
+                "submit": "submit",
+            },
+        )
+
+        assert response.status_code == 302
+        assert mailoutbox[0].to[0] == user.email
+        assert (
+            mailoutbox[0].subject
+            == "You have changed your password on the Bus Open Data Service"
         )
 
 

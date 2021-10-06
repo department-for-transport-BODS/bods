@@ -14,12 +14,11 @@ logger = logging.getLogger(__name__)
 class DjangoNotifier(NotificationBase):
     def __init__(self):
         super().__init__()
-        self.subject_prefix = getattr(settings, "EMAIL_SUBJECT_PREFIX", "[BODS]")
         self.from_email = getattr(
             settings, "DEFAULT_FROM_EMAIL", "Bus Open Data Service <noreply@bods.com>"
         )
 
-    def _send_mail(self, template: str, email: str, **kwargs):
+    def _send_mail(self, template: str, email: str, subject: str, **kwargs):
         """
         :param template: path to template
         :param email: address to send email to
@@ -28,9 +27,6 @@ class DjangoNotifier(NotificationBase):
         :return:
         """
         template_path = self.templates[template]
-        default_subject = template.title().replace("_", " ")
-        subject = kwargs.pop("subject", default_subject)
-        subject = f"{self.subject_prefix}{subject}"
         body = render_to_string(template_path, kwargs)
 
         send_mail(subject, body, self.from_email, [email])

@@ -2,7 +2,7 @@ import logging
 
 from django.db import models, transaction
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
 from django_extensions.db.models import TimeStampedModel
 

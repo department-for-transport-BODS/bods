@@ -4,8 +4,11 @@ import pytest
 
 from transit_odp.data_quality.models.report import PTIValidationResult
 from transit_odp.data_quality.pti.factories import ViolationFactory
+from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.exceptions import PipelineException
+from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.timetables.pti import DatasetPTIValidator
 from transit_odp.timetables.tasks import task_pti_validation
 from transit_odp.timetables.utils import get_pti_validator
@@ -33,7 +36,7 @@ def test_pti_validation():
     assert len(violations) > 0
 
 
-def test_validate_pti_success(mocker):
+def test_validate_pti_success(mocker, pti_unenforced):
     """
     Given revision with a file containing pti violations
     When calling `task_pti_validation` function
@@ -58,7 +61,7 @@ def test_validate_pti_success(mocker):
     validator.get_violations.assert_called_once_with(revision=revision)
 
 
-def test_validate_pti_multiple_calls(mocker):
+def test_validate_pti_multiple_calls(mocker, pti_unenforced):
     """
     Given a revision with a file with pti violations
     When the `task_pti_validation` function is called twice
@@ -86,7 +89,7 @@ def test_validate_pti_multiple_calls(mocker):
     assert original_result != new_result
 
 
-def test_validate_pti_exception(mocker):
+def test_validate_pti_exception(mocker, pti_unenforced):
     """
     Given a revision with a file that contains pti violations
     When a call to `task_pti_validation` results in a PipelineException
@@ -112,3 +115,36 @@ def test_validate_pti_exception(mocker):
     validator.get_violations.assert_called_once_with(revision=revision)
     task.to_error.assert_called_once()
     task.save.assert_called_once()
+
+
+def test_validate_pti_fails_when_pti_enforced(mocker, pti_enforced, mailoutbox):
+    """
+    Given revision with a file containing pti violations
+    When calling `task_pti_validation` function
+    Then a PTIValidationResult object is created with a `count` of 1, `is_compliant`
+    is False and the `DatasetPTIValidator.get_violations` is called once.
+    """
+    filepath = DATA_DIR / "pti_xml_test.xml"
+    revision = DatasetRevisionFactory(
+        status=FeedStatus.indexing.value,
+        upload_file__from_path=filepath.as_posix(),
+        is_published=False,
+    )
+    task = DatasetETLTaskResultFactory(revision=revision)
+    mocker.patch(GET_TASK, return_value=task)
+
+    violation = ViolationFactory(filename=filepath.name)
+    validator = mocker.Mock(spec=DatasetPTIValidator)
+    validator.get_violations.return_value = [violation]
+    mocker.patch(GET_VALIDATOR, return_value=validator)
+
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
+
+    result = PTIValidationResult.objects.get(revision=revision)
+    assert result.count == 1
+    assert not result.is_compliant
+    validator.get_violations.assert_called_once_with(revision=revision)
+    assert DatasetRevision.objects.get(id=revision.id).status == FeedStatus.error.value
+
+    assert "You are legally obliged" in mailoutbox[0].body

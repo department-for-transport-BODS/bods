@@ -101,8 +101,9 @@ class XMLElement:
         element = self.get_element_or_none(xpath)
         if element is None:
             return default
-        else:
-            return element.text
+        if element.text is None:
+            return default
+        return element.text
 
     def _make_xpath(self, xpath) -> str:
         if isinstance(xpath, (list, tuple)):

@@ -3,25 +3,20 @@ from datetime import datetime, timedelta
 
 from allauth.account.adapter import get_adapter
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.transaction import non_atomic_requests
 from django.forms import ChoiceField
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import DetailView, FormView, TemplateView, UpdateView
-from django.views.generic.detail import BaseDetailView
+from django.views.generic.detail import BaseDetailView, SingleObjectMixin
 from django_filters.constants import EMPTY_VALUES
 from django_hosts import reverse
 from django_tables2 import SingleTableView
 
 import config.hosts
-from transit_odp.bods import bootstrap
-from transit_odp.bods.domain import commands
-from transit_odp.bods.domain.entities.identity import PublicationId, UserId
+from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import UserFeedbackForm
 from transit_odp.browse.views.base_views import BaseFilterView, BaseTemplateView
@@ -44,11 +39,6 @@ from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.timetables.tables import TimetableChangelogTable
 
 logger = logging.getLogger(__name__)
-
-bus = bootstrap.bootstrap()
-
-
-# Timetable Views
 
 
 class DatasetDetailView(DetailView):
@@ -524,63 +514,56 @@ class DatasetDownloadView(BaseDetailView):
                 )
 
 
-@method_decorator(non_atomic_requests, name="dispatch")
-@method_decorator(login_required, name="dispatch")
-class UserFeedbackView(FormView):
+class UserFeedbackView(LoginRequiredMixin, SingleObjectMixin, FormView):
     template_name = "browse/timetables/user_feedback.html"
     form_class = UserFeedbackForm
+    model = Dataset
     dataset_type = DatasetType.TIMETABLE.value
 
     def get(self, request, *args, **kwargs):
-        self.publication = self.get_object()
+        self.object = self.get_object()
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.publication = self.get_object()
+        self.object = self.get_object()
         return super().post(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["back_url"] = reverse(
-            "feed-detail",
-            args=[self.publication.get_id()],
-            host=config.hosts.DATA_HOST,
+    def get_queryset(self):
+        return (
+            Dataset.objects.get_active_org()
+            .get_dataset_type(dataset_type=self.dataset_type)
+            .get_published()
         )
-        return context
-
-    def get_object(self):
-        with bus.uow:
-            publication = bus.uow.publications.find(
-                publication_id=PublicationId(
-                    id=self.kwargs["pk"], dataset_types=[self.dataset_type]
-                )
-            )
-            if publication is None:
-                raise Http404(_("No Publications found matching the query"))
-            return publication
-
-    @property
-    def extra_context(self):
-        return {"publication_id": self.publication.get_id()}
 
     def form_valid(self, form):
+        client = get_notifications()
         data = form.cleaned_data
-        bus.handle(
-            commands.SendFeedback(
-                sender_id=UserId(id=self.request.user.id),
-                publication_id=self.publication.id,
-                feedback=data["feedback"],
-                anonymous=data["anonymous"],
-            )
+        dataset = self.object
+        feedback = data["feedback"]
+        developer_email = None if data["anonymous"] else self.request.user.email
+        client.send_feedback_notification(
+            dataset_id=dataset.id,
+            contact_email=dataset.contact.email,
+            dataset_name=dataset.live_revision.name,
+            feedback=feedback,
+            feed_detail_link=dataset.feed_detail_url,
+            developer_email=developer_email,
         )
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse(
-            "feed-feedback-success",
-            args=[self.publication.get_id()],
+            "feed-feedback-success", args=[self.object.id], host=config.hosts.DATA_HOST
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["back_url"] = reverse(
+            "feed-detail",
+            args=[self.object.id],
             host=config.hosts.DATA_HOST,
         )
+        return context
 
 
 class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):

@@ -280,6 +280,7 @@ class AVLSearchFilterForm(BaseDatasetSearchFilterForm):
             (FeedStatus.live.value, "Published"),
             (FeedStatus.error.value, "Error"),
             (FeedStatus.inactive.value, "Deactivated"),
+            (FeedStatus.success.value, "Draft"),
         ),
         required=False,
     )

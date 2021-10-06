@@ -1,46 +1,56 @@
 {% load i18n %}
-{% load django_tables2 %}
 {% load relative_url %}
-{% load my_paginator_range %}
+{% load paginator_range %}
 {# Using django_tables2 'table_page_range' tag to return a list of max 10 (by default) page numbers #}
 
 {# note in the 'querystring' tags, I've hardcoded query param 'page', could use prefixed_page_field #}
+
 {% with prefixed_page_field=prefixed_page_field|default:"page" %}
-  {% with params=request.GET.urlencode %}
+{% with params=request.GET.urlencode %}
 
-    {% block pagination %}
-      <ul class="pagination">
-
-        {% if page.has_previous or page.has_next %}
-
-          {% block pagination.range %}
-
-            {% for item in page|my_paginator_range:paginator %}
-              <li>
-                {% if item.clickable %}
-                  <a class="govuk-link" style="font-size: 18px"
-                    href="{% relative_url item.url prefixed_page_field params %}">
-                    {{ item.label }}
-                  </a>
-
-                {% else %}
-                  <a class="govuk-link noclick" style="font-size: 18px">{{ item.label }}</a>
-                {% endif %}
-
-              </li>
-            {% endfor %}
-
-          {% endblock pagination.range %}
-
+{% block pagination %}
+<div class="govuk-grid-row" >
+    <div class="govuk-grid-column-one-third browse_pagination__previous">
+        {% if page.has_previous %}
+        <a class="browse_pagination_links"
+           href="{% relative_url page.previous_page_number prefixed_page_field params %}">
+            <i class="fas fa-arrow-left browse_pagination_icon_left"></i>
+            {% trans "Previous page" %}
+        </a>
         {% else %}
-          <li>
-            <a class="govuk-link noclick" style="font-size: 18px" href="#">1</a>
-          </li>
+        <a class="browse_pagination_links noclick">
+            <i class="fas fa-arrow-left browse_pagination_icon_left"></i>
+            {% trans "Previous page" %}
+        </a>
         {% endif %}
+    </div>
+    <div class="govuk-grid-column-one-third browse_pagination__numbers">
+        {% for item in page|paginator_range:paginator %}
+        {% if page.number == item or item == "..." %}
+        <a class="browse_pagination_links_numbers noclick">{{ item }}
+            {% else %}
+            <a class="browse_pagination_links_numbers" href="{% relative_url item prefixed_page_field params %}">
+                {{ item }}
+                {% endif %}
+            </a>
+            {% endfor %}
+    </div>
+    <div class="govuk-grid-column-one-third browse_pagination__next" >
+        {% if page.has_next %}
+        <a class="browse_pagination_links" href="{% relative_url page.next_page_number prefixed_page_field params %}">
+            {% trans "Next page" %}
+            <i class="fas fa-arrow-right browse_pagination_icon_right"></i>
+        </a>
+        {% else %}
+        <a class="browse_pagination_links noclick">
+            {% trans "Next page" %}
+            <i class="fas fa-arrow-right browse_pagination_icon_right"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
 
+{% endblock pagination %}
 
-      </ul>
-    {% endblock pagination %}
-
-  {% endwith %}
+{% endwith %}
 {% endwith %}

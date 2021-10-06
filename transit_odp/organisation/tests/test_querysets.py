@@ -10,6 +10,14 @@ from django_hosts import reverse
 from freezegun import freeze_time
 
 from config import hosts
+from transit_odp.avl.constants import (
+    AWAITING_REVIEW,
+    COMPLIANT,
+    NON_COMPLIANT,
+    PARTIALLY_COMPLIANT,
+    UNDERGOING,
+)
+from transit_odp.avl.factories import AVLValidationReportFactory
 from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
@@ -20,6 +28,7 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
     DatasetFactory,
     DatasetRevisionFactory,
     FaresDatasetRevisionFactory,
@@ -804,3 +813,236 @@ def test_get_stuck_timetables():
 
     assert stuck_revisions.count() == 1
     assert stuck_revisions.last() == stuck_revision
+
+
+def test_add_critical_exists_one_day():
+    """
+    GIVEN that a AVL DatasetRevision has 1 AVL validation report created today
+    with one critical error
+    WHEN add_critical_exists is annotated on to a dataset
+    THEN the dataset.critical_exist should be True
+    """
+    revision = AVLDatasetRevisionFactory()
+    AVLValidationReportFactory(
+        created=datetime.now().date(), revision=revision, critical_count=1
+    )
+
+    datasets = Dataset.objects.add_critical_exists()
+    assert datasets.get(id=revision.dataset_id).critical_exists
+
+
+def test_add_critical_exists_seven_days():
+    """
+    GIVEN that a AVL DatasetRevision has 7 AVL validation report in the last 7 days
+    with one report with one critical error and 6 reports with no errors
+    WHEN add_critical_exists is annotated on to a dataset
+    THEN the dataset.critical_exist should be True
+    """
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    AVLValidationReportFactory(created=today, revision=revision, critical_count=1)
+    for n in range(1, 7):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(revision=revision, created=date, critical_count=0)
+    datasets = Dataset.objects.add_critical_exists()
+    assert datasets.get(id=revision.dataset_id).critical_exists
+
+
+def test_add_critical_exists_eight_days():
+    """
+    GIVEN that a AVL DatasetRevision has 8 AVL validation report in the last 8 days
+    with the oldest report with one critical error and the 7 most recent reports
+    with no errors
+    WHEN add_critical_exists is annotated on to a dataset
+    THEN the dataset.critical_exist should be False
+    """
+    revision = AVLDatasetRevisionFactory()
+    total_days = 8
+    today = datetime.now().date()
+    for n in range(0, total_days):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(revision=revision, created=date, critical_count=0)
+
+    oldest_date = today - timedelta(days=total_days)
+    AVLValidationReportFactory(revision=revision, created=oldest_date, critical_count=1)
+
+    datasets = Dataset.objects.add_critical_exists()
+    assert not datasets.get(id=revision.dataset_id).critical_exists
+
+
+def test_add_non_critical_exists_one_day():
+    """
+    GIVEN that a AVL DatasetRevision has 1 AVL validation report created today
+    with one non critical error
+    WHEN add_non_critical_exists is called
+    THEN the dataset.non_critical_exist should be True
+    """
+    revision = AVLDatasetRevisionFactory()
+    AVLValidationReportFactory(
+        created=datetime.now().date(), revision=revision, non_critical_count=1
+    )
+
+    datasets = Dataset.objects.add_non_critical_exists()
+    assert datasets.get(id=revision.dataset_id).non_critical_exists
+
+
+def test_add_non_critical_exists_seven_days():
+    """
+    GIVEN that a AVL DatasetRevision has 7 AVL validation report in the last 7 days
+    with one report with one non critical error and 6 reports with no errors
+    WHEN add_non_critical_exists is called
+    THEN the dataset.non_critical_exist should be True
+    """
+    revision = AVLDatasetRevisionFactory()
+
+    today = datetime.now().date()
+    AVLValidationReportFactory(created=today, revision=revision, non_critical_count=1)
+    for n in range(1, 7):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, non_critical_count=0
+        )
+
+    datasets = Dataset.objects.add_non_critical_exists()
+    assert datasets.get(id=revision.dataset_id).non_critical_exists
+
+
+def test_add_non_critical_exists_eight_days():
+    """
+    GIVEN that a AVL DatasetRevision has 8 AVL validation report in the last 8 days
+    with the oldest report with one non critical error and the 7 most recent reports
+    with no errors
+    WHEN add_non_critical_exists is called
+    THEN the dataset.non_critical_exists should be False
+    """
+    revision = AVLDatasetRevisionFactory()
+    total_days = 8
+    today = datetime.now().date()
+    for n in range(0, total_days):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, non_critical_count=0
+        )
+
+    oldest_date = today - timedelta(days=total_days)
+    AVLValidationReportFactory(
+        revision=revision, created=oldest_date, non_critical_count=1
+    )
+
+    datasets = Dataset.objects.add_non_critical_exists()
+    assert not datasets.get(id=revision.dataset_id).non_critical_exists
+
+
+def test_undergoing_validation_scenario():
+    """
+    GIVEN that an AVL dataset has 7 or less reports with no errors
+    WHEN add_avl_compliance_status is called
+    THEN the dataset will have an avl_compliance of "Undergoing validation"
+    """
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 7
+    for n in range(0, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, critical_count=0, non_critical_count=0
+        )
+    datasets = Dataset.objects.add_avl_compliance_status()
+    dataset = datasets.first()
+    assert dataset.avl_report_count == total_reports
+    assert dataset.avl_compliance == UNDERGOING
+
+
+def test_awaiting_review_scenario():
+    """
+    GIVEN that an AVL dataset has 7 or less reports with 1 report having an error
+    WHEN add_avl_compliance_status is called
+    THEN the dataset will have an avl_compliance of "Awaiting publisher review"
+    """
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 7
+    AVLValidationReportFactory(
+        revision=revision, created=today, critical_count=1, non_critical_count=0
+    )
+    for n in range(1, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, critical_count=0, non_critical_count=0
+        )
+
+    datasets = Dataset.objects.add_avl_compliance_status()
+    dataset = datasets.first()
+    assert dataset.avl_report_count == total_reports
+    assert dataset.avl_compliance == AWAITING_REVIEW
+
+
+def test_partially_compliant_scenario():
+    """
+    GIVEN that an AVL dataset has more than 7 reports with 1 report having a
+    non-critical error
+    WHEN add_avl_compliance_status is called
+    THEN the dataset will have an avl_compliance of "Partially compliant"
+    """
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 8
+    AVLValidationReportFactory(
+        revision=revision, created=today, critical_count=0, non_critical_count=1
+    )
+    for n in range(1, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, critical_count=0, non_critical_count=0
+        )
+
+    datasets = Dataset.objects.add_avl_compliance_status()
+    dataset = datasets.first()
+    assert dataset.avl_report_count == total_reports
+    assert dataset.avl_compliance == PARTIALLY_COMPLIANT
+
+
+def test_compliant_scenario():
+    """
+    GIVEN that an AVL dataset has more than 7 reports with no report having an error
+    WHEN add_avl_compliance_status is called
+    THEN the dataset will have an avl_compliance of "Compliant"
+    """
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 8
+    for n in range(0, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, critical_count=0, non_critical_count=0
+        )
+
+    datasets = Dataset.objects.add_avl_compliance_status()
+    dataset = datasets.first()
+    assert dataset.avl_report_count == total_reports
+    assert dataset.avl_compliance == COMPLIANT
+
+
+def test_non_compliant_scenario():
+    """
+    GIVEN that an AVL dataset has more than 7 reports with 1 report having a
+    critical error
+    WHEN add_avl_compliance_status is called
+    THEN the dataset will have an avl_compliance of "Non-Compliant"
+    """
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 8
+    AVLValidationReportFactory(
+        revision=revision, created=today, critical_count=1, non_critical_count=0
+    )
+    for n in range(1, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, critical_count=0, non_critical_count=0
+        )
+
+    datasets = Dataset.objects.add_avl_compliance_status()
+    dataset = datasets.first()
+    assert dataset.avl_report_count == total_reports
+    assert dataset.avl_compliance == NON_COMPLIANT

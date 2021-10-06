@@ -77,6 +77,7 @@ class SendAVLFeedPublisherDownNotification:
             publication_id=ctx.publication.get_id(),
             dataset_name=ctx.publication.live.dataset.name,
             dataset_id=ctx.publication.live.dataset.id,
+            short_description=ctx.publication.short_description,
             contact_email=ctx.user.email,
         )
         return Success()

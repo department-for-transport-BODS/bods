@@ -81,7 +81,7 @@
           </div>
           {% if paginator.count > 0 %}
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-            {% include "snippets/pagination_centre.html" with page=page_obj paginator=paginator %}
+            {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
           {% endif %}
           </div>
       </div>

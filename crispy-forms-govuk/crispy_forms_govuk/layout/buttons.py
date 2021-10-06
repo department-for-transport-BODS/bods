@@ -80,9 +80,9 @@ class ButtonElement(BaseInput):
          button;
         * Second argument is for ``value`` attribute and also for element content if \
         not given;
-        * Third argument is an optional named argument ``content``, if given it will be \
-          appended inside element instead of ``value``. Content string is marked as safe \
-          so you can put anything you want;
+        * Third argument is an optional named argument ``content``, if given it \
+        will be appended inside element instead of ``value``. Content string is \
+        marked as safe so you can put anything you want;
     """
 
     template = "%s/layout/basebutton.html"

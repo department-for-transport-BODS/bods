@@ -2,7 +2,7 @@ import logging
 
 from django import template
 from django.template import Node, Variable, VariableDoesNotExist
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 from django_hosts.templatetags.hosts import host_url
@@ -85,7 +85,7 @@ class BreadcrumbNode(Node):
 
         else:
             title = title.strip("'").strip('"')
-            title = smart_text(title)
+            title = smart_str(title)
 
         url = None
 
@@ -115,7 +115,7 @@ class UrlBreadcrumbNode(Node):
                 title = ""
         else:
             title = title.strip("'").strip('"')
-            title = smart_text(title)
+            title = smart_str(title)
 
         url = self.url_node.render(context)
         return create_crumb(title, url)

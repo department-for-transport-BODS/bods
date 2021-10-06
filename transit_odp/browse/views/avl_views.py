@@ -375,7 +375,7 @@ class AvlUserFeedbackView(UserFeedbackView):
         context = super().get_context_data(**kwargs)
         context["back_url"] = reverse(
             "avl-feed-detail",
-            args=[self.publication.get_id()],
+            args=[self.object.id],
             host=config.hosts.DATA_HOST,
         )
         return context
@@ -383,7 +383,7 @@ class AvlUserFeedbackView(UserFeedbackView):
     def get_success_url(self):
         return reverse(
             "avl-feed-feedback-success",
-            args=[self.publication.get_id()],
+            args=[self.object.id],
             host=config.hosts.DATA_HOST,
         )
 

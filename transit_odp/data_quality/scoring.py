@@ -9,7 +9,10 @@ from transit_odp.data_quality.constants import (
     CheckBasis,
     Observation,
 )
-from transit_odp.data_quality.models.report import DataQualityReport
+from transit_odp.data_quality.models.report import (
+    DataQualityReport,
+    DataQualityReportSummary,
+)
 from transit_odp.data_quality.models.transmodel import TimingPattern, VehicleJourney
 from transit_odp.data_quality.models.warnings import DataQualityWarningBase
 from transit_odp.organisation.models import DatasetRevision
@@ -130,13 +133,12 @@ class DataQualityCalculator:
         """Calculates the total data quality score for a dataset revision."""
         counts = self.get_counts(report_id)
         total = 0
+        summary = DataQualityReportSummary.objects.get(report_id=report_id)
         try:
             for input_ in self.inputs:
-                observations = input_.model.objects.filter(report_id=report_id)
+                observation_count = summary.data.get(input_.model.__name__, 0)
                 if input_.check_basis == CheckBasis.data_set.value:
-                    observation_count = int(observations.exists())
-                else:
-                    observation_count = observations.count()
+                    observation_count = int(observation_count > 0)
 
                 check_basis_count = getattr(counts, input_.check_basis)
                 weighting = input_.weighting

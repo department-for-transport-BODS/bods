@@ -336,6 +336,52 @@ def test_bank_holidays_scottish_holidays_true():
     assert is_valid
 
 
+def test_other_public_holidays_true():
+    day_type = """
+    <DayType id="day_04">
+        <Name>Bank Holiday Service</Name>
+        <RegularDayType>
+            <HolidaysOnly/>
+        </RegularDayType>
+        <BankHolidayOperation>
+        <DaysOfOperation>
+            {0}
+            <OtherPublicHoliday>
+              <Description>April Fools' Day</Description>
+              <Date>2022-04-01</Date>
+            </OtherPublicHoliday>
+            <OtherPublicHoliday>
+              <Description>Star Wars Day</Description>
+              <Date>2022-05-04</Date>
+            </OtherPublicHoliday>
+        </DaysOfOperation>
+        <DaysOfNonOperation>
+            {1}
+            <OtherPublicHoliday>
+              <Description>Platinum Jubilee</Description>
+              <Date>2022-06-03</Date>
+            </OtherPublicHoliday>
+        </DaysOfNonOperation>
+        </BankHolidayOperation>
+    </DayType>
+    """
+    days_of_operation = "\n".join("<{0}/>".format(d) for d in BANK_HOLIDAYS[:1])
+    days_of_non_operation = "\n".join("<{0}/>".format(d) for d in BANK_HOLIDAYS[1:])
+
+    xml = day_type.format(days_of_operation, days_of_non_operation)
+
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+
+    txc = TXCFile(xml)
+    is_valid = pti.is_valid(txc)
+    assert is_valid
+
+
 @pytest.mark.parametrize(
     ("filename", "expected"),
     [

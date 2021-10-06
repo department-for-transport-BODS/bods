@@ -1,12 +1,16 @@
 import logging
 
 from allauth.account.models import EmailConfirmation
-from allauth.account.signals import email_confirmation_sent
+from allauth.account.signals import (
+    email_confirmation_sent,
+    password_changed,
+    password_reset,
+)
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 
 from transit_odp.bods.interfaces.plugins import get_notifications
@@ -100,3 +104,13 @@ def check_added_organisation_change(sender, instance, action, **kwargs):
                         "Please contact support."
                     )
                 )
+
+
+@receiver(password_changed)
+def notify_on_password_change(request, user, **kwargs):
+    client.send_password_change_notification(user.email)
+
+
+@receiver(password_reset)
+def notify_on_password_reset(request, user, **kwargs):
+    client.send_password_change_notification(user.email)

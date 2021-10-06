@@ -296,7 +296,7 @@ class TestOperationalStatsCSV:
             "Automatic Vehicle Locations (AVL) data feeds",
             "Fares datasets",
             "Operators with at least one published timetables dataset",
-            "Operators with at least one published AVL datafeed",
+            "Operators with at least one published AVL data feed",
             "Operators with at least one published fares dataset",
         ]
         expected_first_row = [

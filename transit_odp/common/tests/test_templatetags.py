@@ -1,8 +1,9 @@
-from config.settings.base import APP_VERSION_NUMBER
 from django.conf import settings
 from django.http import QueryDict
 from django.template import Context, Template
 from django.test import TestCase
+
+from config.settings.base import APP_VERSION_NUMBER
 
 
 class TemplateTagsTestCase(TestCase):
@@ -13,7 +14,7 @@ class TemplateTagsTestCase(TestCase):
 
     def test_active_url_pattern_match(self):
         context = Context(dict_={"request": self.client})
-        context["request"].path = "/"
+        context["request"].build_absolute_uri = lambda: "/"
         out = Template(
             "{% load active_url %}"
             '{% active_url "/" host="www" css_class="govuk-link--active" %}'
@@ -22,7 +23,7 @@ class TemplateTagsTestCase(TestCase):
 
     def test_active_url_empty(self):
         context = Context(dict_={"request": self.client})
-        context["request"].path = "/browse/"
+        context["request"].build_absolute_uri = lambda: "/browse/"
         out = Template(
             "{% load active_url %}"
             '{% active_url "/guidance/" css_class="govuk-link--active" %}'

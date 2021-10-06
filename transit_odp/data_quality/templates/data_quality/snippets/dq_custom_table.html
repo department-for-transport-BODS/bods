@@ -74,7 +74,7 @@
     {% endblock table %}
     {% block pagination.bottom %}
       {% if table.pagination_bottom %}
-        {% include "snippets/pagination_centre.html" with paginator=table.paginator prefixed_page_field=table.prefixed_page_field page=table.page  %}
+        {% include "snippets/pagination.html" with paginator=table.paginator prefixed_page_field=table.prefixed_page_field page=table.page  %}
       {% endif %}
     {% endblock %}
   </div>

@@ -29,6 +29,7 @@ class ListView(PublishView):
                 datasets.add_live_data()
                 .exclude(status__in=exclude_status)
                 .add_draft_revisions()
+                .add_avl_compliance_status()
             )
             feeds_table = AVLDataFeedTable(active_feeds)
             RequestConfig(self.request, paginate={"per_page": self.per_page}).configure(

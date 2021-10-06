@@ -1,6 +1,10 @@
-A user has left some feedback on data you have published in the Bus Open Data Service.
+Hello,
 
-Dataset: {{ dataset_name }}
+A developer has left some feedback on the timetable/fares/AVL data you have published in the Bus Open Data Service.
+
+Data set: {{ feed_name }}
+Data set ID: {{ feed_id }}
+Link to dataset: {{ link }}
 User: {{ user_email }}
 Feedback: {{ feedback }}
 

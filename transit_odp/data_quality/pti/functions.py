@@ -3,17 +3,22 @@ from datetime import datetime
 from typing import List, Union
 
 from dateutil import parser
+from isoduration import DurationParsingException, parse_duration
+from isoduration.types import TimeDuration
 from lxml import etree
 
 from transit_odp.data_quality.pti.constants import (
     BANK_HOLIDAYS,
     OPERATION_DAYS,
+    OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
 )
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
 
 ElementsOrStr = Union[List[etree.Element], List[str], str]
+
+ZERO_TIME_DURATION = TimeDuration(hours=0, minutes=0, seconds=0)
 
 
 def _extract_text(elements, default=None):
@@ -152,7 +157,12 @@ def validate_run_time(context, timing_links):
     to_ = timing_link.xpath(to_xpath, namespaces=ns)
     has_from_to = any([from_, to_])
 
-    zero_run_time = run_time in ("", "PT0S", "PT0M")
+    try:
+        time_duration = parse_duration(run_time).time
+    except DurationParsingException:
+        zero_run_time = True
+    else:
+        zero_run_time = time_duration == ZERO_TIME_DURATION
 
     if not zero_run_time and has_from_to:
         return False
@@ -206,8 +216,10 @@ def validate_bank_holidays(context, bank_holidays):
             days = [el.xpath(local_name, namespaces=ns) for el in element.getchildren()]
             holidays += days
 
-    # .getchildren() will return comments this filters out the comments
-    holidays = [h for h in holidays if h]
+    # .getchildren() will return comments: this filters out the comments.
+    # It also removes occurrences of OTHER_PUBLIC_HOLIDAYS of which there may be many or
+    # none.
+    holidays = [h for h in holidays if h and h not in OTHER_PUBLIC_HOLIDAYS]
 
     # duplicate check
     if sorted(list(set(holidays))) != sorted(holidays):

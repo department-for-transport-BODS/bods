@@ -11,7 +11,7 @@
 
   {% if middle_nav_tag %}
   {# This wont be defined for anonymous users #}
-  <li class="govuk-header__navigation-item {% active_url 'feed-list' host=hosts.publish %}">
+  <li class="govuk-header__navigation-item {% active_url middle_nav_tag.href host=hosts.publish exact=True %}">
     <a class="govuk-header__link" href="{{ middle_nav_tag.href }}">
       {% trans middle_nav_tag.content %}
     </a>
@@ -29,14 +29,14 @@
   {% if request.user.is_authenticated %}
     <li class="govuk-header__navigation-item dropdown bods-dropdown">
       <a href="#"
-         class="govuk-header__link {% active_url 'account' css_class='govuk-link--active' host='publish' %}">
+         class="govuk-header__link {% active_url 'users:home' css_class='govuk-link--active' host='publish' %}">
         <img class="account-menu__icon"
           src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="">
           {% trans 'My account' %}
       </a>
 
       <div class="dropdown-content">
-        <a class="govuk-link {% active_url 'account' css_class='govuk-link--active' host='publish' %}"
+        <a class="govuk-link {% active_url 'users:home' css_class='govuk-link--active' host='publish' exact=True %}"
            href="{% url 'users:home' host hosts.publish %}">
           {% trans 'My account' %}
         </a>

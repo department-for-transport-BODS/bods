@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
       <h1 class="govuk-heading-xl">{% trans 'Publish bus open data' %}</h1>
       <p class="govuk-body-m">
@@ -51,7 +51,21 @@
         </svg>
       </a>
 
-      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">
+        {% trans "Need further help?" %}
+      </h2>
+      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li>
+          <a class="govuk-link"
+             href="{% url 'changelog' host hosts.root %}">{% trans 'Changelog' %}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-m">{% trans 'What you need to know' %}</h2>
       <ul class="govuk-list govuk-list--bullet">
         <li>
@@ -60,6 +74,14 @@
              href="{% url 'guidance:support-bus_operators' host hosts.publish %}"
              aria-label="Bus operator requirements"
           >{% trans 'Bus operator requirements' %}</a>
+        </li>
+        <li>
+          {% trans 'Familiarise yourself and your supplier with the ' %}
+          <a class="govuk-link"
+             target="_blank"
+             href="https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf"
+             aria-label="TxC 2.4 PTI v1.1a requirements"
+          >{% trans 'timetables data format (TxC 2.4 PTI v1.1a)' %}</a>
         </li>
         <li>
           {% trans 'Read the bus open data ' %}
@@ -77,7 +99,6 @@
           >{% trans 'contact us' %}</a>
         </li>
       </ul>
-      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
     </div>
   </div>
 {% endblock %}

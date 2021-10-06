@@ -742,7 +742,7 @@ class TestNotifications(TestViewsAuthBase):
         # Test
         SignupView.as_view()(request)
 
-        assert mailoutbox[-1].subject == "[BODS] Operator Invite Accepted"
+        assert mailoutbox[-1].subject == "Your team member has accepted your invitation"
 
     def test_new_agent_accepted_notifications(self, mailoutbox, request_factory):
         """Tests both agent and organisation receive an email notification"""
@@ -769,13 +769,10 @@ class TestNotifications(TestViewsAuthBase):
         assert len(mailoutbox) == 2
         mailoutbox.sort(key=lambda mail: mail.subject)
         first, second = mailoutbox
-        assert (
-            first.subject
-            == "[BODS] Agent agent_organisation has accepted your invitation"
-        )
+        assert first.subject == "Agent agent_organisation has accepted your invitation"
         assert (
             second.subject
-            == f"[BODS] You have accepted the request to be an agent on behalf of "
+            == f"You have accepted the request to be an agent on behalf of "
             f"{org.name}"
         )
 

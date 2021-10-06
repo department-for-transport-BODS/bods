@@ -1,8 +1,10 @@
 import io
+import tempfile
 import zipfile
 from collections import namedtuple
 from datetime import datetime
 from typing import BinaryIO, Optional
+from zipfile import ZIP_DEFLATED
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import File
@@ -227,7 +229,7 @@ class OperationalStatsCSV(CSVBuilder):
             accessor="published_timetable_operator_count",
         ),
         CSVColumn(
-            header="Operators with at least one published AVL datafeed",
+            header="Operators with at least one published AVL data feed",
             accessor="published_avl_operator_count",
         ),
         CSVColumn(
@@ -394,32 +396,33 @@ class APIRequestArchive:
     def filename(self):
         return f"api_requests_{self.start:%B_%Y}.zip"
 
-    def zip_as_file(self):
+    def zip_as_file(self, archive):
         files = [
             CSVFile("dailyaggregates.csv", APIRequestCSV),
             CSVFile("dailyconsumerbreakdown.csv", DailyConsumerRequestCSV),
             CSVFile("rawapimetrics.csv", RawConsumerRequestCSV),
         ]
 
-        buffer_ = io.BytesIO()
-        with zipfile.ZipFile(
-            buffer_, mode="w", compression=zipfile.ZIP_DEFLATED
-        ) as zin:
+        with zipfile.ZipFile(archive, mode="w", compression=ZIP_DEFLATED) as zin:
             for file_ in files:
                 builder = file_.builder()
                 builder.queryset = builder.get_queryset().filter(
                     created__range=(self.start, self.end)
                 )
-                zin.writestr(file_.name, builder.to_string())
 
-        buffer_.seek(0)
-        return File(buffer_, name=self.filename)
+                csvfile = builder.to_temporary_file()
+                zin.write(csvfile.name, file_.name)
+                csvfile.close()
+
+        archive.seek(0)
+        return File(archive, name=self.filename)
 
 
 def create_metrics_archive(start, end):
     archive = APIRequestArchive(start=start, end=end)
-    defaults = {"end": end.date(), "archive": archive.zip_as_file()}
-    MetricsArchive.objects.update_or_create(start=start.date(), defaults=defaults)
+    with tempfile.TemporaryFile() as tmpfile:
+        defaults = {"end": end.date(), "archive": archive.zip_as_file(archive=tmpfile)}
+        MetricsArchive.objects.update_or_create(start=start.date(), defaults=defaults)
 
 
 def create_operational_exports_file() -> BinaryIO:
@@ -434,7 +437,7 @@ def create_operational_exports_file() -> BinaryIO:
         CSVFile("timetablesdatacatalogue.csv", TimetablesDataCatalogueCSV),
     )
 
-    with zipfile.ZipFile(buffer_, mode="w", compression=zipfile.ZIP_DEFLATED) as zin:
+    with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
         for file_ in files:
             Builder = file_.builder
             zin.writestr(file_.name, Builder().to_string())

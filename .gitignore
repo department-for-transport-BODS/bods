@@ -145,6 +145,7 @@ $RECYCLE.BIN/
 .envrc
 .envs/*
 .eslintcache
+.exrc
 .fseventsd
 .fuse_hidden*
 .hypothesis/

@@ -4,6 +4,7 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
+from transit_odp.changelog.views import ChangelogView
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
@@ -39,6 +40,7 @@ urlpatterns = [
     ),
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
+    path("changelog/", ChangelogView.as_view(), name="changelog"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

@@ -62,10 +62,13 @@
 
     <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
       <h2 class="govuk-heading-m">{% trans 'Public information' %}</h2>
-      <ul class="govuk-list">
-        <li class="govuk-!-margin-bottom-4">
+      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li >
           <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
              target="_blank">{% trans 'About Bus Open Data Service' %}</a>
+        </li>
+        <li>
+          <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">{% trans 'Changelog' %}</a>
         </li>
         <li>
           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us' %}</a>

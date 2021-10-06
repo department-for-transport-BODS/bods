@@ -1,13 +1,20 @@
 swagger: "2.0"
 info:
-  description:
-    '<span class="govuk-body-m">You can use the interactive documentation
-    to customise your API </br>response using the available query parameters.
+  description: '
+    <span class="govuk-body-m">
+    You can use the interactive documentation to customise your API
+    </br>response using the available query parameters.
     If you are registered and </br>logged in, you will be given a full response.
-    Otherwise you will be given </br>an example response.</span>
-    <p><a class="govuk-link" href="/guidance/requirements/?section=Using the API">
-    View developer documentation</a></p>
-    <p><a class="govuk-link" href="/catalogue/">Download data catalogue</a></p>
+    Otherwise you will be given </br>an example response.
+    </span>
+
+    <ul class="govuk-list">
+    <li>
+    <a class="govuk-link" href="/guidance/requirements/?section=Using the API">
+    View developer documentation
+    </a>
+    </li>
+    </ul>
     '
   title: Fares data API
   version: ""
