@@ -1,6 +1,7 @@
 {% extends "guidance/bus_operators/base.html" %}
 
 {% load i18n %}
+{% load filters %}
 
 {% block extra_content %}
 
@@ -24,8 +25,8 @@
         </tr>
         <tr data-qa="bus-location-row" class="govuk-table__row">
             <td class="govuk-table__cell">Bus location</td>
-            <td class="govuk-table__cell">SIRI-VM Version 2.0</td>
-            <td class="govuk-table__cell">Validation against schema</td>
+            <td class="govuk-table__cell">DfT BODS SIRI-VM profile</td>
+            <td class="govuk-table__cell">Validation against DfT BODS SIRI-VM profile</td>
         </tr>
         <tr data-qa="basic-fares-row" class="govuk-table__row">
             <td class="govuk-table__cell">Basic fares</td>
@@ -74,16 +75,206 @@
 
 <p class="govuk-body">
     {% blocktrans %}
-    The feedback as a result of the validation check in the first step of upload is provided to the user which is to be shared with their respective software suppliers to enable them to provide robust data that fits the profile. In the second review step, a further data quality check is conducted which produces a report for operators. The report provides observations about operator’s data, highlighting common errors. Some observations are critical, meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as suggested improvements in their timetables data.
+    The feedback as a result of the validation check in the first step of upload is provided to the user which is to be shared with their respective software suppliers to enable them to provide robust data that fits the profile. In the second review step, a further data quality check is conducted which produces a report for operators. The report provides observations about operator's data, highlighting common errors. Some observations are critical, meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as suggested improvements in their timetables data.
     {% endblocktrans %}
 </p>
 
 <h2 class="govuk-heading-m">Bus location data</h2>
 <p class="govuk-body">
-    {% blocktrans %}
-    SIRI-VM data is taken into a central AVL system, where it harmonised to produce a consistent SIRI-VM 2.4 output of bus location data for open data consumers.
+    {% blocktrans trimmed %}
+    SIRI-VM data is taken into a central AVL system, where it is harmonised to produce a
+    consistent SIRI-VM 2.4 output of bus location data for open data consumers.
     {% endblocktrans %}
 </p>
+
+<p class="govuk-body">
+    {% blocktrans trimmed %}
+    We have introduced a SIRI-VM validator to BODS to ensure the highest data standards
+    are provided to consumers. The validator checks for mandatory fields specified
+    within the
+    {% endblocktrans %}
+    <a class="govuk-link"
+       href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm"
+       target="_blank">{% trans "DfT BODS profile" %}</a>.
+    {% blocktrans trimmed %}
+    The validator will run 1 randomised check per day (excluding buses running from
+    12am-5am) and will check 1000 packets or 10 minutes from a feed each day (this
+    number is configurable until deemed sensible).
+    {% endblocktrans %}
+</p>
+
+<p class="govuk-body">
+    {% blocktrans trimmed %}
+    Given the level of industry readiness in terms of providing consistent SIRI-VM data,
+    there will be no blocking of feeds as long as they are valid SIRI. However BODS
+    compliance tags will be attached to showcase if they are: compliant, non-compliant
+    or partially compliant. Compliance tags will use a 7-day rolling average. The
+    validator will look at the last 7 days' worth of SIRI-VM aggregate data and assign a
+    status of 'compliant', 'partially compliant' or 'non-compliant'.
+    {% endblocktrans %}
+</p>
+
+<p class="govuk-body">
+    {% blocktrans trimmed %}
+    A SIRI-VM feed will be deemed 'compliant' if all fields here are present more than
+    70% of the time for the last 7 days.
+    {% endblocktrans %}
+</p>
+
+<ul class="govuk-list govuk-list--bullet">
+    <li>Bearing</li>
+    <li>LineRef</li>
+    <li>OperatorRef</li>
+    <li>RecordedAtTime</li>
+    <li>ResponseTimestamp</li>
+    <li>VehicleJourneyRef</li>
+    <li>VehicleLocation (Lat, Long)</li>
+    <li>ProducerRef</li>
+    <li>DirectionRef</li>
+    <li>BlockRef</li>
+    <li>PublishedLineName</li>
+    <li>ValidUntilTime</li>
+    <li>DestinationRef</li>
+    <li>OriginName</li>
+    <li>OriginRef</li>
+    <li>VehicleRef</li>
+</ul>
+
+<p class="govuk-body">
+    {% blocktrans trimmed %}
+    A SIRI-VM feed will be deemed 'partially compliant' if it has all other mandatory
+    fields present but only have the following fields below missing 70% of the time in
+    the last 7 days.
+    {% endblocktrans %}
+</p>
+
+<ul class="govuk-list govuk-list--bullet">
+    <li>BlockRef</li>
+    <li>PublishedLineName</li>
+    <li>DestinationRef</li>
+    <li>OriginName</li>
+    <li>OriginRef</li>
+</ul>
+
+<p class="govuk-body">
+
+    {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
+    A SIRI-VM feed will be deemed 'non-compliant' if all fields below are not present
+    more than 70% of the time for the last 7 days. It can also be assigned a direct
+    non-compliant status if any one of the fields below fall under {{threshold}}
+    population at the time of the daily validation check. This is because this would
+    count as a gross error in the data and would be highlighted to the publisher
+    right away.
+    {% endblocktrans %}
+</p>
+
+<ul class="govuk-list govuk-list--bullet">
+    <li>Bearing</li>
+    <li>LineRef</li>
+    <li>OperatorRef</li>
+    <li>RecordedAtTime</li>
+    <li>ResponseTimestamp</li>
+    <li>VehicleJourneyRef</li>
+    <li>VehicleLocation (Lat, Long)</li>
+    <li>ProducerRef</li>
+    <li>DirectionRef</li>
+    <li>VehicleRef</li>
+    <li>ValidUntilTime</li>
+</ul>
+
+<p class="govuk-body">
+    {% trans "Other compliance statuses:" %}
+</p>
+
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans trimmed %}
+        Undergoing validation: This status will be used for all newly added feeds in the
+        first 24 hours until initial checks are completed. It will also be used for all
+        compliant feeds for the first 7 days until the 'automated flow' rolling
+        validation logic becomes active.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans trimmed %}
+        Awaiting publisher review: This status will be used for all feeds in the first 7
+        days after publishing if a critical or noncritical fields(s) has not been
+        provided by >70% of vehicles in a daily check.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<p class="govuk-body">
+    <b>{% trans "New feed validation process:" %}</b>
+</p>
+
+<p class="govuk-body">
+    {% blocktrans trimmed %}
+      When a new feed is added to BODS it will be validated in the following way:
+    {% endblocktrans %}
+</p>
+
+<ol class="govuk-list govuk-list--number">
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed %}
+        24 hours after a new SIRI feed is added the validator will check against the
+        mandatory fields and if necessary, an error report will be sent to operators.
+        {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed %}
+        Over the subsequent 6 days when data is flowing through it will continue to run
+        randomised daily checks.
+        {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed %}
+        After Day 7: each day a fresh automated validation check will run and a
+        compliance status will be assigned on a 7-day rolling average.
+        {% endblocktrans %}
+    </li>
+</ol>
+
+<p class="govuk-body">
+    <b>{% trans "Automated feed validation process:" %}</b>
+</p>
+
+<ol class="govuk-list govuk-list--number">
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed %}
+        The validator will run 1 randomised check per day (excluding buses running from
+        12am-5am).
+        {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed %}
+        The validator will check 1000 packets or 10 minutes from a feed each day (this
+        number is configurable until deemed sensible).
+        {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed %}
+        70% of vehicles on the feed need to be populating the mandatory fields to avoid
+        moving in to non/partial compliance error status (e.g that means 70% of
+        'Bearing' should be present in the last 7 days' worth of data, if not, it will
+        move to a non-compliant status).
+        {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
+        If the daily check has any non-compliant fields which are less than {{threshold}}
+        populated (for each non-compliant feed), it will automatically move the
+        compliance status to 'non-compliant' as it is a gross error.
+        {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+        {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
+        If the daily check has more than {{threshold}} of non-compliant fields populated (for each
+        non-compliant feed), then the rolling average check will kick in and assign a
+        compliance status based on the last 7 days.
+        {% endblocktrans %}
+    </li>
+</ol>
 
 <h2 class="govuk-heading-m">Fares data</h2>
 <p class="govuk-body">

@@ -9,12 +9,13 @@ from transit_odp.users.models import UserSettings
 
 INVITATION_NOTIFY = "notify_invitation_accepted"
 AVL_NOTIFY = "notify_avl_unavailable"
+COMPLIANCE_NOTIFY = "daily_compliance_check_alert"
 
 
 class PublishAdminNotifications(GOVUKModelForm):
     class Meta:
         model = UserSettings
-        fields = (INVITATION_NOTIFY, AVL_NOTIFY)
+        fields = (INVITATION_NOTIFY, AVL_NOTIFY, COMPLIANCE_NOTIFY)
 
     notify_invitation_accepted = forms.BooleanField(required=False)
     notify_avl_unavailable = forms.BooleanField(required=False)
@@ -36,6 +37,14 @@ class PublishAdminNotifications(GOVUKModelForm):
             "5 minutes "
         )
 
+        daily_compliance_check_alert = self.fields[COMPLIANCE_NOTIFY]
+        daily_compliance_check_alert.label = "Daily SIRI-VM compliance check alert"
+        daily_compliance_check_alert.help_text = (
+            "Receive an email every day once your AVL feed's compliance status "
+            "has been re-calculated by BODS. This ensures you're up to date on "
+            "your feed's compliance."
+        )
+
         self.heading = HTML('<h3 class="govuk-heading-m">Notification settings</h3>')
         self.hint = HTML(
             (
@@ -52,6 +61,7 @@ class PublishAdminNotifications(GOVUKModelForm):
             self.heading,
             self.hint,
             AVL_NOTIFY,
+            COMPLIANCE_NOTIFY,
             INVITATION_NOTIFY,
             self.save_button,
         )

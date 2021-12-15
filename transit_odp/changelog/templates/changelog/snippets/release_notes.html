@@ -1,16 +1,45 @@
 {% load i18n %}
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "December 2021 (1.15.0)" %}
+</h3>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      SIRI-VM Validator will provide users with reports on schema validation checks,
+      with a status of compliant, partially compliant or non-compliant.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updates to the BODS PTI validation has been added to check that lines consist of
+      journeys with at least one matching locality (where localities are provided).
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updates to the validation of BODS PTI StopPoints will look if no OperatingProfile
+      elements are at the VehicleJourney level then use the
+      <code>Service > OperatingPeriod > EndDate</code> to check if non-NaPTAN stops are
+      used for more than 2 months.
+    {% endblocktrans %}
+  </li>
+</ul>
+
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "September 2021 (1.14.0)" %}
 </h3>
 <ul class="govuk-list govuk-list--bullet">
   <li>
     {% blocktrans %}
-      TransXChange files that are not PTI compliant will no longer be allowed to be published in BODS.
+      TransXChange files that are not PTI compliant will no longer be allowed to be
+      published in BODS.
     {% endblocktrans %}
   </li>
   <li>
     {% blocktrans %}
-      Users of the service can now keep track of known issues, upcoming changes and release notes through the new Changelog page.
+      Users of the service can now keep track of known issues, upcoming changes and
+      release notes through the new Changelog page.
     {% endblocktrans %}
   </li>
 </ul>

@@ -209,6 +209,38 @@ class TestSignupView(TestViewsAuthBase):
         assert user.dev_organisation == dev_organisation
         assert user.description == description
 
+    def test_character_limit_on_description(self, client_factory):
+        client = client_factory(host=config.hosts.DATA_HOST)
+        url = reverse("account_signup", host=config.hosts.DATA_HOST)
+
+        # Test
+        email = "test@test.com"
+        first_name = "first"
+        last_name = "last"
+        dev_organisation = "TestOrganisation"
+        description = "d" * 251
+        response = client.post(
+            url,
+            data={
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "password1": "a very long and complicated phrase",
+                "password2": "a very long and complicated phrase",
+                "account_type": "false",
+                "opt_in_user_research": True,
+                "share_app_usage": True,
+                "dev_organisation": dev_organisation,
+                "description": description,
+            },
+        )
+
+        assert response.status_code == 200
+        assert (
+            response.context["form"].errors["description"][0]
+            == "Ensure this value has at most 250 characters (it has 251)."
+        )
+
     def test_new_user_has_same_entries_as_invitation(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(

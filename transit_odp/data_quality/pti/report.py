@@ -22,7 +22,7 @@ class PTIReport:
         self.filename = filename
         self.columns = PTI_CSV_COLUMNS
         self._csvfile = io.StringIO()
-        self.writer = csv.writer(self._csvfile)
+        self.writer = csv.writer(self._csvfile, quoting=csv.QUOTE_ALL)
         self.writer.writerow(self.columns)
 
     def write_violation(self, violation: Violation):

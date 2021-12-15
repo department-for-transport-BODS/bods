@@ -578,55 +578,58 @@ class TestDataDownloadCatalogueView:
         assert body == []  # no organisations
 
     def test_operator_noc_download(self, client_factory):
-        # Setup
         OrganisationFactory.create()
         OrganisationFactory.create(nocs=4)
 
-        orgs = Organisation.objects.values_list("name", "nocs__noc")
+        orgs = Organisation.objects.values_list("name", "nocs__noc").order_by(
+            "nocs__noc"
+        )
 
         client = client_factory(host=self.host)
         url = reverse("operator-noc-catalogue", host=self.host)
 
-        # Test
         response = client.get(url)
 
-        # Assert
         assert response.status_code == 200
-        assert (
-            response.get("Content-Disposition")
-            == 'attachment; filename="operator_noc_mapping.csv"'
-        )
+
+        expected_content = 'attachment; filename="operator_noc_mapping.csv"'
+        assert response.get("Content-Disposition") == expected_content
 
         headers, body = self.extract_csv_content(response.content)
         assert headers == self.operator_noc_headers
-        assert body == [list(elem) for elem in orgs]
+
+        expected = [list(elem) for elem in orgs]
+        expected.sort(key=lambda n: n[1])
+        body.sort(key=lambda n: n[1])
+        assert body == expected
 
     def test_operator_noc_download_exclude_inactive_orgs(self, client_factory):
-        # Setup
         OrganisationFactory.create()
         OrganisationFactory.create(is_active=False)
         OrganisationFactory.create(nocs=4)
 
-        orgs = Organisation.objects.filter(is_active=True).values_list(
-            "name", "nocs__noc"
+        orgs = (
+            Organisation.objects.filter(is_active=True)
+            .values_list("name", "nocs__noc")
+            .order_by("nocs__noc")
         )
 
         client = client_factory(host=self.host)
         url = reverse("operator-noc-catalogue", host=self.host)
 
-        # Test
         response = client.get(url)
 
-        # Assert
         assert response.status_code == 200
-        assert (
-            response.get("Content-Disposition")
-            == 'attachment; filename="operator_noc_mapping.csv"'
-        )
+        expected_content = 'attachment; filename="operator_noc_mapping.csv"'
+        assert response.get("Content-Disposition") == expected_content
 
         headers, body = self.extract_csv_content(response.content)
         assert headers == self.operator_noc_headers
-        assert body == [list(elem) for elem in orgs]
+
+        expected = [list(elem) for elem in orgs]
+        expected.sort(key=lambda n: n[1])
+        body.sort(key=lambda n: n[1])
+        assert body == expected
 
     def test_operator_dataset_download_for_no_orgs(self, client_factory):
         client = client_factory(host=self.host)

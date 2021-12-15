@@ -1,9 +1,10 @@
-from typing import TypedDict
+from typing import List, TypedDict
 
-import config.hosts
 from django_hosts import reverse
 
-from transit_odp.organisation.constants import DatasetType
+import config.hosts
+from transit_odp.common.enums import FeedErrorSeverity
+from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetMetadata
 from transit_odp.publish.views.base import BaseDetailView
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -30,6 +31,7 @@ class FaresFeedDetailView(OrgUserViewMixin, BaseDetailView):
         published_at: str
         api_root: str
         download_url: str
+        severe_errors: List[FeedErrorSeverity]
 
     def get_feed_download_url(self):
         if download_url := self.object.live_revision.url_link:
@@ -72,6 +74,13 @@ class FaresFeedDetailView(OrgUserViewMixin, BaseDetailView):
 
         kwargs["pk1"] = self.kwargs["pk1"]
 
+        severe_errors = revision.errors.filter(severity=FeedErrorSeverity.severe.value)
+        status = revision.status
+        # There shouldn't be severe errors without status == error, but just in case
+        # there display error banner
+        if severe_errors or (revision.status == FeedStatus.error.value):
+            status = "error"
+
         try:
             faresmetadata = revision.metadata.faresmetadata
         except DatasetMetadata.DoesNotExist:
@@ -85,7 +94,7 @@ class FaresFeedDetailView(OrgUserViewMixin, BaseDetailView):
             name=revision.name,
             description=revision.description,
             short_description=revision.short_description,
-            status=revision.status,
+            status=status,
             organisation_name=dataset.organisation.name,
             organisation_id=dataset.organisation_id,
             url_link=revision.url_link,
@@ -95,6 +104,7 @@ class FaresFeedDetailView(OrgUserViewMixin, BaseDetailView):
             published_at=revision.published_at,
             api_root=api_root,
             download_url=self.get_feed_download_url(),
+            severe_errors=severe_errors,
         )
 
         return kwargs

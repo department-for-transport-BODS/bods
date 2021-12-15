@@ -3,10 +3,10 @@ Hello,
 The following data feed status has changed on the Bus Open Data Service.
 
 Data feed: {{ feed_id }}
-Short Description: {{ feed_short_description }}
+Short description: {{ feed_short_description }}
 Operator: {{ operator_name }}
-New Status: {{ status }}
+New status: {{ status }}
 Updated: {{ updated_time }}
 
-Kind Regards,
+Kind regards,
 The Bus Open Data Team

@@ -352,6 +352,7 @@ def test_validate_less_than_two_lines():
     ("filename", "expected"),
     [
         ("nonrelatedlines.xml", False),
+        ("relatedlinesbylocalityname.xml", True),
         ("relatedlinesbyjp.xml", True),
         ("relatedlinesbystops.xml", True),
     ],

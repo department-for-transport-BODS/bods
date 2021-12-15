@@ -184,6 +184,12 @@ class UserSettings(models.Model):
         blank=False,
         default=False,
     )
+    daily_compliance_check_alert = models.BooleanField(
+        _("Daily SIRI-VM compliance check alert"),
+        null=False,
+        blank=False,
+        default=True,
+    )
 
 
 class AgentUserInvite(models.Model):

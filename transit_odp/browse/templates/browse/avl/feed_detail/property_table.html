@@ -27,6 +27,14 @@
       </div>
     </td>
   </tr>
+
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'BODS compliant data' %}</th>
+    <td class="govuk-table__cell dont-break-out">
+        {% include 'browse/snippets/avl_compliance.html'%}
+    </td>
+  </tr>
+
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
     <td class="govuk-table__cell">{% trans object.organisation.name %}</td>

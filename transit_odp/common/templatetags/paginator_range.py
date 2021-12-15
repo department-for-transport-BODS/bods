@@ -20,7 +20,7 @@ def paginator_range(page, paginator):
     """
     num_pages = paginator.num_pages
 
-    if page.number < 11:
+    if num_pages - 1 < 11:
         page_range = getattr(settings, "DJANGO_TABLES2_PAGE_RANGE", 10)
     else:
         page_range = getattr(settings, "DJANGO_TABLES2_PAGE_RANGE", 8)

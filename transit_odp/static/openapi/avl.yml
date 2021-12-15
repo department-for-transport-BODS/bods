@@ -105,7 +105,9 @@ paths:
         - in: query
           name: routeId
           type: string
-          description: Limit results to bus location data with the specified route id.
+          description: >
+            Limit results to bus location data with the specified routeId.
+            Use a comma-separated list to specify multiple routeId values.
 
         - in: query
           name: startTimeAfter

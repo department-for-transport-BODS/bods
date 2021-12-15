@@ -64,7 +64,11 @@ class FeedDescriptionForm(GOVUKModelForm):
         description.label = _("Data set description")
         description.label.id = "id-description"
         description.widget.attrs.update(
-            {"placeholder": "", "class": "govuk-!-width-three-quarters"}
+            {
+                "placeholder": "",
+                "class": "govuk-!-width-three-quarters",
+                "maxlength": "300",
+            }
         )
         description.error_messages.update(
             {
@@ -397,6 +401,14 @@ class RevisionPublishForm(GOVUKModelForm):
             raise forms.ValidationError("Select the box below to publish the data")
 
         return consent
+
+    def clean(self):
+        # There is no frontend route to this but protects against manually posting a
+        # form
+        if self.instance.is_pti_compliant():
+            return super().clean()
+
+        raise forms.ValidationError("Cannot publish PTI non compliant datasets")
 
 
 class RevisionPublishFormViolations(RevisionPublishForm):

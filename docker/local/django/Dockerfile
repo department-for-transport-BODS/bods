@@ -18,8 +18,8 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             proj-util \
             proj-dev \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/community \
             --no-cache \
             pkgconfig \
             autoconf \

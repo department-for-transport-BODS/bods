@@ -43,6 +43,7 @@
 .browse_pagination__next {
   display: flex;
   justify-content: flex-end;
+  padding-left: 0px;
 
   .browse_pagination_icon_right {
     font-size: 1rem;
@@ -53,11 +54,12 @@
 .browse_pagination__numbers {
   display: flex;
   justify-content: center;
+  padding-right: 40px;
 
   .browse_pagination_links_numbers {
     @extend .govuk-link;
     font-size: 1.25rem;
-    padding-right: govuk-spacing(3);
+    padding-right: govuk-spacing(2);
     text-decoration: unset;
   }
 }

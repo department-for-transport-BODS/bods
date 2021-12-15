@@ -2,8 +2,8 @@ from logging import getLogger
 from typing import List, Tuple
 
 from transit_odp.data_quality.dataclasses.warnings import JourneyPartialTimingOverlap
+from transit_odp.data_quality.dataclasses.warnings.base import BaseWarning
 from transit_odp.data_quality.dataclasses.warnings.lines import LineBaseWarning
-from transit_odp.data_quality.dataclasses.warnings.timings import TimingFirst
 from transit_odp.data_quality.models.transmodel import (
     Service,
     StopPoint,
@@ -13,6 +13,7 @@ from transit_odp.data_quality.models.transmodel import (
 )
 from transit_odp.data_quality.models.warnings import (
     DataQualityWarningBase,
+    FastTimingWarning,
     JourneyConflictWarning,
     LineExpiredWarning,
     LineMissingBlockIDWarning,
@@ -111,13 +112,13 @@ class JourneyPartialTimingOverlapETL:
 
 
 class TimingBaseETL:
-    """A class for loading TimingFirst/LastWarning."""
+    """A class for loading timing warnings."""
 
     WarningClass = None
     ThroughClass = None
     parent_through_name = None
 
-    def __init__(self, report_id: int, warnings: List[TimingFirst]):
+    def __init__(self, report_id: int, warnings: List[BaseWarning]):
         self.warnings = warnings
         self.report_id = report_id
         self._timing_patterns = None
@@ -161,7 +162,7 @@ class TimingBaseETL:
         return timing_pattern_stops
 
     def get_timing_pattern_by_ito_id(self, ito_id: int) -> TimingPattern:
-        """Get a TimingPattern by it's ito id."""
+        """Get a TimingPattern by its ito id."""
         return [tp for tp in self.timing_patterns if tp.ito_id == ito_id][0]
 
     def get_timing_pattern_stops(
@@ -203,7 +204,7 @@ class TimingBaseETL:
         self, warning: DataQualityWarningBase
     ) -> List[TimingPatternStop]:
         """
-        Returns a list of TimingPatternStops from a the ETL pipeline cache.
+        Returns a list of TimingPatternStops from the ETL pipeline cache.
         """
         key = self.get_cache_key(warning=warning)
         return self._cache[key]
@@ -262,6 +263,11 @@ class TimingMultipleETL(TimingBaseETL):
 class TimingMissingPointETL(TimingBaseETL):
     WarningClass = TimingMissingPointWarning
     ThroughClass = TimingMissingPointWarning.timings.through
+
+
+class FastTimingETL(TimingBaseETL):
+    WarningClass = FastTimingWarning
+    ThroughClass = FastTimingWarning.timings.through
 
 
 class LineWarningETL:

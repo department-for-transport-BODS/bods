@@ -149,14 +149,12 @@ class BaseBODSSignupForm(GOVUKFormMixin, allauth.account.forms.SignupForm):
 
 class DeveloperSignupForm(BaseBODSSignupForm):
     # Customise Signup form to add 'django-invitations' invitation data to the form
-    first_name = forms.CharField(
-        label=_("First Name*"),
+    first_name = forms.CharField(label=_("First Name*"), max_length=150)
+    last_name = forms.CharField(label=_("Last Name*"), max_length=150)
+    dev_organisation = forms.CharField(
+        label=_("Organisation"), required=False, max_length=55
     )
-    last_name = forms.CharField(
-        label=_("Last Name*"),
-    )
-    dev_organisation = forms.CharField(label=_("Organisation"), required=False)
-    description = forms.CharField(required=False)
+    description = forms.CharField(required=False, max_length=250)
     opt_in_user_research = forms.ChoiceField(
         required=True, choices=((True, "Yes"), (False, "No"))
     )

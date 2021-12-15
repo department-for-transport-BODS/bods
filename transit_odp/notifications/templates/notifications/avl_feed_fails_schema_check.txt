@@ -1,0 +1,17 @@
+Hello,
+
+The following data feed has failed to publish on the Bus Open Data Service due to validation errors in the files specified in the Validation report.
+
+You are legally obliged to supply data according to the SIRI-VM profile, and you must resolve all issues listed immediately.
+
+Please check your data set/feed below to ensure that the most up-to-date information is maintained on BODS. If you do not know how to resolve issues, please reach out to your supplier.
+
+Data feed: {{ feed_name }}
+Data feed ID: {{ feed_id }}
+Short Description: {{ feed_short_description }}
+Published: {{ published_time }}
+Comments: {{ comments }}
+Link to data feed: {{ link }}
+
+Kind Regards,
+The Bus Open Data Team

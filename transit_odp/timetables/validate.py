@@ -1,6 +1,6 @@
 import zipfile
 from logging import getLogger
-from typing import List, Optional
+from typing import List
 
 from lxml import etree
 
@@ -143,33 +143,27 @@ class TXCRevisionValidator:
         self._live_attributes = list(self.live_revision.txc_file_attributes.all())
         return self._live_attributes
 
-    def get_live_attribute_by_service_code(
-        self, code, default=None
-    ) -> Optional[TXCFileAttributes]:
+    def get_live_attribute_by_service_code(self, code) -> List[TXCFileAttributes]:
         """
         Returns TXCFileAttributes with source_code equal to code.
+
+        List is sorted by lowest revision number to highest.
         """
         attrs = [attr for attr in self.live_attributes if attr.service_code == code]
-
-        if len(attrs) == 0:
-            return None
-        elif len(attrs) == 1:
-            return attrs[0]
-        else:
-            attrs.sort(key=lambda a: a.revision_number, reverse=True)
-            return attrs[0]
+        attrs.sort(key=lambda a: a.revision_number)
+        return attrs
 
     def validate_creation_datetime(self) -> None:
         """
         Validates that creation_datetime remains unchanged between revisions.
         """
         for draft in self.draft_attributes:
-            live = self.get_live_attribute_by_service_code(draft.service_code)
+            lives = self.get_live_attribute_by_service_code(draft.service_code)
 
-            if live is None:
+            if len(lives) == 0:
                 continue
 
-            if live.creation_datetime != draft.creation_datetime:
+            if lives[0].creation_datetime != draft.creation_datetime:
                 self.violations.append(
                     Violation(
                         line=2,
@@ -183,25 +177,41 @@ class TXCRevisionValidator:
         """
         Validates that revision_number increments between revisions if the
         modification_datetime has changed.
+
+        If multiple files with the same ServiceCode appear in the zip
+        then we use modification_datetime as the attribute to distinguish
+        when we expect the revision_number to be bumped.
         """
         for draft in self.draft_attributes:
-            live = self.get_live_attribute_by_service_code(draft.service_code)
-
-            if live is None:
+            live_attributes = self.get_live_attribute_by_service_code(
+                draft.service_code
+            )
+            if len(live_attributes) == 0:
                 continue
 
-            if live.modification_datetime == draft.modification_datetime:
-                continue
+            for live in live_attributes:
+                if live.modification_datetime == draft.modification_datetime:
+                    if live.revision_number != draft.revision_number:
+                        self.violations.append(
+                            Violation(
+                                line=2,
+                                filename=draft.filename,
+                                name="RevisionNumber",
+                                observation=REVISION_NUMBER_OBSERVATION,
+                            )
+                        )
+                    break
 
-            if live.revision_number >= draft.revision_number:
-                self.violations.append(
-                    Violation(
-                        line=2,
-                        filename=draft.filename,
-                        name="RevisionNumber",
-                        observation=REVISION_NUMBER_OBSERVATION,
+                if live.revision_number >= draft.revision_number:
+                    self.violations.append(
+                        Violation(
+                            line=2,
+                            filename=draft.filename,
+                            name="RevisionNumber",
+                            observation=REVISION_NUMBER_OBSERVATION,
+                        )
                     )
-                )
+                    break
 
     def get_violations(self) -> List[Violation]:
         """

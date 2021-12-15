@@ -1,8 +1,13 @@
 from django_tables2 import RequestConfig
 
+from transit_odp.avl.constants import (
+    AWAITING_REVIEW,
+    NON_COMPLIANT,
+    PARTIALLY_COMPLIANT,
+)
+from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.tables import AVLDataFeedTable
 from transit_odp.organisation.constants import DatasetType, FeedStatus
-from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.timetable.list import PublishView
 
 
@@ -13,24 +18,23 @@ class ListView(PublishView):
         tab = self.request.GET.get("tab")
         section = tab or "active"
         datasets = (
-            Dataset.objects.filter(
-                organisation=self.organisation,
-                dataset_type=DatasetType.AVL.value,
-            )
+            AVLDataset.objects.filter(organisation=self.organisation)
             .select_related("organisation")
             .select_related("live_revision")
-        ).order_by("status")
+            .add_avl_compliance_status()
+        ).order_by("avl_feed_status")
 
         exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
         feeds_table = None
-
+        active_feeds = (
+            datasets.add_live_data()
+            .exclude(status__in=exclude_status)
+            .add_draft_revisions()
+        )
+        non_compliant_count = active_feeds.filter(
+            avl_compliance__in=[PARTIALLY_COMPLIANT, NON_COMPLIANT, AWAITING_REVIEW]
+        ).count()
         if section == "active":
-            active_feeds = (
-                datasets.add_live_data()
-                .exclude(status__in=exclude_status)
-                .add_draft_revisions()
-                .add_avl_compliance_status()
-            )
             feeds_table = AVLDataFeedTable(active_feeds)
             RequestConfig(self.request, paginate={"per_page": self.per_page}).configure(
                 feeds_table
@@ -76,6 +80,7 @@ class ListView(PublishView):
                 "pk1": self.kwargs["pk1"],
                 "current_url": self.request.build_absolute_uri(self.request.path),
                 "page_title": f"{self.organisation.name} bus location data feeds",
+                "non_compliant_count": non_compliant_count,
             }
         )
         return context

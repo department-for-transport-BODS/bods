@@ -4,14 +4,12 @@ from datetime import datetime, timedelta
 from allauth.account.adapter import get_adapter
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ChoiceField
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.generic import DetailView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView, SingleObjectMixin
-from django_filters.constants import EMPTY_VALUES
 from django_hosts import reverse
 from django_tables2 import SingleTableView
 
@@ -19,7 +17,7 @@ import config.hosts
 from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import UserFeedbackForm
-from transit_odp.browse.views.base_views import BaseFilterView, BaseTemplateView
+from transit_odp.browse.views.base_views import BaseSearchView, BaseTemplateView
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.services import get_gtfs_bucket_service
@@ -279,91 +277,32 @@ class DatasetChangeLogView(BODSBaseView, SingleTableView):
         return context
 
 
-# Search View
-
-
-class SearchView(BaseFilterView):
+class SearchView(BaseSearchView):
     template_name = "browse/timetables/search.html"
     model = Dataset
     paginate_by = 10
     filterset_class = TimetableSearchFilter
-    # Ensure FilterView assigns filtered queryset to self.object_list which is
-    # easier to use with paging
     strict = False
-
-    def translate_query_params(self):
-        """
-        Translates query params into something more human
-        readable for use in the frontend
-        :return: dict[str, str] of query params
-        """
-        form = self.filterset.form
-        translated_query_params = {}
-        for key, value in form.cleaned_data.items():
-            if value in EMPTY_VALUES:
-                # skip blank values
-                continue
-
-            # Display the timestamps
-            if isinstance(value, datetime):
-                value = value.strftime("%d/%m/%y")
-
-            # Use label_from_instance callable if its there else just use string
-            name_func = getattr(form.fields[key], "label_from_instance", str)
-            value = name_func(value)
-
-            # Use a label if its there
-            if isinstance(form.fields[key], ChoiceField):
-                choice_dict = dict(form.fields[key].choices)
-                if value in choice_dict:
-                    value = choice_dict[value]
-
-            translated_query_params[key] = value
-        return translated_query_params
-
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        query_params = self.request.GET
-        if not query_params:
-            # There are no query params so just carry on as normal
-            return kwargs
-
-        kwargs["query_params"] = self.translate_query_params()
-        kwargs["q"] = query_params.get("q", "")
-        kwargs["ordering"] = query_params.get("ordering", "name")
-
-        return kwargs
 
     def get_queryset(self):
         qs = (
             super()
             .get_queryset()
-            .get_dataset_type(dataset_type=DatasetType.TIMETABLE.value)
+            .get_dataset_type(dataset_type=TimetableType)
             .get_published()
             .get_active_org()
             .add_organisation_name()
             .add_live_data()
             .add_admin_area_names()
             .add_is_live_pti_compliant()
+            .order_by(*self.get_ordering())
         )
 
-        # Get search terms
         keywords = self.request.GET.get("q", "").strip()
-
         if keywords:
-            # TODO - enable full-text search / elasticsearch
-            # query = SearchQuery(keywords)
-            # vector = SearchVector('name', 'description')
-            # qs = qs.annotate(search=vector).filter(search=query)
-            # qs = qs.annotate(rank=SearchRank(vector, query)).order_by('-rank')
             qs = qs.search(keywords)
 
         return qs
-
-    def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "-modified")
-        # validate ordering
-        return ordering
 
 
 class DownloadTimetablesView(BaseTemplateView):

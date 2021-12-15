@@ -1,0 +1,16 @@
+Hello,
+
+The SIRI-VM compliance status has changed on the Bus Open Data Service for the following feed:
+
+Data feed: {{ feed_id }}
+Short description: {{ short_description }}
+Operator: {{ operator_name }}
+New compliance status: {{ new_status }}
+Previous compliance status: {{ old_status }}
+Updated: {{ updated_at }}
+Link: {{ link }}
+
+You can opt out of this daily notification from here {{ settings_link }}.
+
+Kind regards,
+The Bus Open Data Team

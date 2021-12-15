@@ -352,6 +352,122 @@ class INotifications(Protocol):
         """
         ...
 
+    def send_avl_report_requires_resolution(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        compliance: str,
+        contact_email: str,
+    ):
+        """
+        Sends a notification to the contact informing report requires resolution
+
+        The notification is sent to `contact`.
+
+        Args:
+            dataset_id: The ID of the datafeed
+            operator_name: The name of the operator
+            short_description: The short description of the dataset
+            published_at: date and time of publish
+            feed_detail_link: link to the feed-detail or revision-publish page
+            compliance: The level of PTI compliance the feed has, ie:
+            non compliant or partially compliant
+            contact_email: The email of the recipient
+
+        Returns: None
+
+        """
+        ...
+
+    def send_avl_flagged_with_compliance_issue(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        compliance: str,
+        contact_email: str,
+    ):
+        """
+        Sends a notification to the contact informing datafeed has been flagged with
+        compliance issue
+
+        The notification is sent to `contact`.
+
+        Args:
+            dataset_id: The ID of the datafeed
+            operator_name: The name of the operator
+            short_description: The short description of the dataset
+            published_at: date and time of publish
+            feed_detail_link: link to the feed-detail or revision-publish page
+            compliance: The level of PTI compliance the feed has, ie:
+            non compliant or partially compliant
+            contact_email: The email of the recipient
+
+        Returns: None
+
+        """
+        ...
+
+    def send_avl_flagged_with_major_issue(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        contact_email: str,
+    ):
+        """
+        Sends a notification to the contact informing datafeed has been flagged with
+        major issue
+
+        The notification is sent to `contact`.
+
+        Args:
+            dataset_id: The ID of the datafeed
+            operator_name: The name of the operator
+            short_description: The short description of the dataset
+            published_at: date and time of publish
+            feed_detail_link: link to the feed-detail or revision-publish page
+            contact_email: The email of the recipient
+
+        Returns: None
+
+        """
+        ...
+
+    def send_avl_schema_check_fail(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        contact_email: str,
+    ):
+        """
+        Sends a notification to the contact informing datafeed has failed the schema
+        check
+
+        The notification is sent to `contact`.
+
+        Args:
+            dataset_id: The ID of the datafeed
+            operator_name: The name of the operator
+            short_description: The short description of the dataset
+            published_at: date and time of publish
+            feed_detail_link: link to the feed-detail or revision-publish page
+            contact_email: The email of the recipient
+
+        Returns: None
+
+        """
+
     def send_agent_invite_accepted_notification(
         self, operator_name: str, agent_email: str
     ):

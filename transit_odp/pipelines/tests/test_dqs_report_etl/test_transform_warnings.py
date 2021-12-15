@@ -9,7 +9,6 @@ from django.contrib.gis.geos import LineString
 from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.data_quality.models import (
     FastLinkWarning,
-    FastTimingWarning,
     JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyDuplicateWarning,
@@ -94,7 +93,6 @@ def test_transform_service_link_missing_stops():
     "filename, warning_class",
     [
         ["data/timing-fast-link.json", FastLinkWarning],
-        ["data/timing-fast.json", FastTimingWarning],
         ["data/timing-slow-link.json", SlowLinkWarning],
         ["data/timing-slow.json", SlowTimingWarning],
     ],

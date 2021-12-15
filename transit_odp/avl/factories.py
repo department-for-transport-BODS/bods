@@ -6,11 +6,15 @@ import factory
 from factory.django import DjangoModelFactory
 
 from transit_odp.avl.models import (
+    AVLSchemaValidationReport,
     AVLValidationReport,
     CAVLDataArchive,
     CAVLValidationTaskResult,
 )
-from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
+    DatasetRevisionFactory,
+)
 from transit_odp.pipelines.factories import TaskResultFactory
 
 
@@ -35,16 +39,31 @@ def zipped_csv_file():
 
 
 class AVLValidationReportFactory(DjangoModelFactory):
-    revision = factory.SubFactory(DatasetRevisionFactory)
+    revision = factory.SubFactory(AVLDatasetRevisionFactory)
     critical_count = 1
     non_critical_count = 1
+    critical_score = 0.7
+    non_critical_score = 0.7
+    vehicle_activity_count = 2
     file = factory.django.FileField(
-        filename="avl_report.zip", from_func=zipped_csv_file
+        filename="avl_report.csv", from_func=zipped_csv_file
     )
     created = datetime.now().date()
 
     class Meta:
         model = AVLValidationReport
+
+
+class AVLSchemaValidationReportFactory(DjangoModelFactory):
+    revision = factory.SubFactory(AVLDatasetRevisionFactory)
+    error_count = 1
+    file = factory.django.FileField(
+        filename="avl_report.csv", from_func=zipped_csv_file
+    )
+    created = datetime.now().date()
+
+    class Meta:
+        model = AVLSchemaValidationReport
 
 
 class CAVLValidationTaskResultFactory(TaskResultFactory):

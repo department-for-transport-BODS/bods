@@ -43,6 +43,17 @@ TEMPLATE_LOOKUP: Dict[str, str] = {
     "DEVELOPER_AVL_FEED_STATUS_NOTIFICATION": (
         "notifications/avl_feed_changed_developer.txt"
     ),
+    "AVL_REPORT_REQUIRES_RESOLUTION": (
+        "notifications/avl_report_requires_resolution.txt"
+    ),
+    "AVL_FLAGGED_WITH_COMPLIANCE": (
+        "notifications/avl_dataset_flagged_with_compliance_issue.txt"
+    ),
+    "AVL_FLAGGED_WITH_MAJOR_ISSUE": (
+        "notifications/avl_dataset_flagged_with_major_issue.txt"
+    ),
+    "AVL_SCHEMA_CHECK_FAILED": "notifications/avl_feed_fails_schema_check.txt",
+    "AVL_COMPLIANCE_STATUS_CHANGED": "notifications/avl_compliance_status_changed.txt",
     "AGENT_INVITE_ACCEPTED": "notifications/agent_invite_accepted.txt",
     "AGENT_INVITE_EXISTING_ACCOUNT": (
         "notifications/agent_invite_existing_account.txt"

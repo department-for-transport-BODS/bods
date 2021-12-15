@@ -5,13 +5,13 @@
   <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
     {% trans 'Supplied data feed has failed to upload' %}
   </h2>
-
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
       <li class="app-error-summary__item" style="text-decoration: none">{{ error.description | safe }}</li>
     </ul>
   </div>
 </div>
+
 <div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
 <a role="button" class="govuk-button govuk-!-margin-bottom-0"
        href="{% url 'avl:feed-update' pk1=pk1 pk=object.dataset_id host hosts.publish %}">

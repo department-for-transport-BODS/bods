@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.transxchange.org.uk/
+../../TransXChange_general.xsd" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en" CreationDateTime="2004-06-07T14:20:00-05:00" ModificationDateTime="2007-01-21T14:20:00-05:00" Modification="revise" RevisionNumber="3" FileName="circular.xml" SchemaVersion="2.4" LocationSystem="WGS84" RegistrationDocument="false" DataSource="TxcHandcodedExamples">
+	<StopPoints>
+		<StopPoint CreationDateTime="2004-06-09T14:20:00-05:00">
+			<AtcoCode>260010966</AtcoCode>
+			<Descriptor>
+				<CommonName>Netherley Road</CommonName>
+				<Street>Netherley Road</Street>
+			</Descriptor>
+			<Place>
+				<NptgLocalityRef>E0000004</NptgLocalityRef>
+				<Location>
+					<Easting>442914</Easting>
+					<Northing>295186</Northing>
+				</Location>
+			</Place>
+			<StopClassification>
+				<StopType>BCT</StopType>
+				<OnStreet>
+					<Bus>
+						<BusStopType>MKD</BusStopType>
+						<TimingStatus>PTP</TimingStatus>
+						<MarkedPoint>
+							<DefaultWaitTime>PT0M</DefaultWaitTime>
+							<Bearing>
+								<CompassPoint>N</CompassPoint>
+							</Bearing>
+						</MarkedPoint>
+					</Bus>
+				</OnStreet>
+			</StopClassification>
+			<AdministrativeAreaRef>060</AdministrativeAreaRef>
+		</StopPoint>
+		<AnnotatedStopPointRef>
+			<StopPointRef>9990000002</StopPointRef>
+			<CommonName>High St</CommonName>
+			<Indicator>outside</Indicator>
+			<LocalityName>Tweeham</LocalityName>
+		</AnnotatedStopPointRef>
+	</StopPoints>
+	<RouteSections>
+		<RouteSection id="RS1">
+			<!-- Bus Station to High St -->
+			<RouteLink id="RL1">
+				<From>
+					<StopPointRef>260010966</StopPointRef>
+				</From>
+				<To>
+					<StopPointRef>9990000002</StopPointRef>
+				</To>
+				<Distance>200</Distance>
+				<Direction>clockwise</Direction>
+			</RouteLink>
+		</RouteSection>
+	</RouteSections>
+	<Routes>
+		<Route id="R1">
+			<Description xml:lang="en">Bus Station - High Street - Hospital - Bus Station</Description>
+			<RouteSectionRef>RS1</RouteSectionRef>
+		</Route>
+	</Routes>
+	<JourneyPatternSections>
+		<!--  ==JP Section  ==================================================== -->
+		<JourneyPatternSection id="JPS1">
+			<!-- Bus Station to High St -->
+			<JourneyPatternTimingLink id="JPTL1">
+				<DutyCrewCode>CRW1</DutyCrewCode>
+				<From>
+					<DynamicDestinationDisplay>Hospital</DynamicDestinationDisplay>
+					<StopPointRef>9990000001</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+					<FareStageNumber>001</FareStageNumber>
+					<FareStage>true</FareStage>
+				</From>
+				<To>
+					<StopPointRef>9990000002</StopPointRef>
+					<TimingStatus>PTP</TimingStatus>
+				</To>
+				<RouteLinkRef>RL1</RouteLinkRef>
+				<Direction>clockwise</Direction>
+				<RunTime>PT3M</RunTime>
+			</JourneyPatternTimingLink>
+		</JourneyPatternSection>
+	</JourneyPatternSections>
+	<Services>
+		<!--  ==Service SV1 ============================================= -->
+		<Service>
+			<ServiceCode>S1</ServiceCode>
+			<Lines>
+				<Line id="L1">
+					<LineName>1</LineName>
+				</Line>
+				<Line id="L1N">
+					<LineName>1 Night</LineName>
+				</Line>
+			</Lines>
+			<!-- Define default operating period, less than 2 months -->
+			<OperatingPeriod>
+				<StartDate>2010-02-01</StartDate>
+				<EndDate>2010-03-31</EndDate>
+			</OperatingPeriod>
+			<Description>Tweeham Hospital Circular route. Runs every day round Tweeham city centre.</Description>
+			<SchematicMap>circular.gif</SchematicMap>
+			<StandardService>
+				<Origin>Bus Station</Origin>
+				<Destination>Bus Station</Destination>
+				<Vias>
+					<Via>High Street </Via>
+				</Vias>
+				<UseAllStopPoints>false</UseAllStopPoints>
+				<!--  ==JP 1 ================================================================================= -->
+				<JourneyPattern id="JP1">
+					<Direction>clockwise</Direction>
+					<Operational>
+						<Block>
+							<Description>Short workign fro first trip of day. Change over at station</Description>
+							<BlockNumber>12</BlockNumber>
+							<Note>Use different board if short running.</Note>
+						</Block>
+						<VehicleType>
+							<VehicleTypeCode>BendyBus</VehicleTypeCode>
+							<Description>Big, red and exploding</Description>
+							<VehicleEquipment>
+								<PassengerInfoEquipment>
+									<PassengerInfo>nextStopIndicator </PassengerInfo>
+									<PassengerInfo>stopAnnouncements</PassengerInfo>
+									<AccessibilityInfo>visualDisplays</AccessibilityInfo>
+									<AccessibilityInfo>audioInformation</AccessibilityInfo>
+								</PassengerInfoEquipment>
+								<AccessVehicleEquipment>
+									<LowFloor>true</LowFloor>
+									<NumberOfSteps>1</NumberOfSteps>
+									<BoardingHeight>0.50</BoardingHeight>
+									<AutomaticDoors>true</AutomaticDoors>
+								</AccessVehicleEquipment>
+								<WheelchairVehicleEquipment>
+									<NumberOfWheelChairAreas>3</NumberOfWheelChairAreas>
+									<WidthOfAccessArea>1.0</WidthOfAccessArea>
+									<HeightOfAccessArea>2.0</HeightOfAccessArea>
+									<WheelchairTurningCircle>2.0</WheelchairTurningCircle>
+								</WheelchairVehicleEquipment>
+							</VehicleEquipment>
+						</VehicleType>
+						<TicketMachine>
+							<JourneyCode>Tickjrn21</JourneyCode>
+							<Direction>inbound</Direction>
+						</TicketMachine>
+					</Operational>
+					<RouteRef>R1</RouteRef>
+					<JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+				</JourneyPattern>
+			</StandardService>
+			<Direction>clockwise</Direction>
+		</Service>
+	</Services>
+	<VehicleJourneys>
+		<!--  ===   Start at Market St============ ======================= -->
+		<VehicleJourney>
+			<OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly />
+        </RegularDayType>
+          <!-- No OperatingProfile specified -->
+      </OperatingProfile>
+			<VehicleJourneyCode>VJ_A</VehicleJourneyCode>
+			<ServiceRef>S1</ServiceRef>
+			<LineRef>L1N</LineRef>
+			<JourneyPatternRef>JP1</JourneyPatternRef>
+			<DepartureTime>23:55:00</DepartureTime>
+			<DepartureDayShift>-1</DepartureDayShift>
+		</VehicleJourney>
+	</VehicleJourneys>
+</TransXChange>

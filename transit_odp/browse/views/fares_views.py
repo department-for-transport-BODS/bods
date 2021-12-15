@@ -1,9 +1,7 @@
 import logging
-from datetime import datetime
 
 from allauth.account.adapter import get_adapter
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ChoiceField
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
@@ -14,14 +12,14 @@ from django_tables2 import SingleTableView
 
 import config.hosts
 from transit_odp.browse.filters import FaresSearchFilter
-from transit_odp.browse.views.base_views import BaseFilterView, BaseTemplateView
+from transit_odp.browse.views.base_views import BaseSearchView, BaseTemplateView
 from transit_odp.browse.views.timetable_views import (
     DatasetSubscriptionBaseView,
     UserFeedbackView,
 )
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import DownloadView
-from transit_odp.organisation.constants import DatasetType, FeedStatus
+from transit_odp.organisation.constants import DatasetType, FaresType, FeedStatus
 from transit_odp.organisation.models import (
     Dataset,
     DatasetRevision,
@@ -63,76 +61,30 @@ class DownloadFaresBulkDataArchiveView(DownloadView):
         return self.object.data
 
 
-class FaresSearchView(BaseFilterView):
+class FaresSearchView(BaseSearchView):
     template_name = "browse/fares/search.html"
     model = Dataset
     paginate_by = 10
     filterset_class = FaresSearchFilter
-    # Ensure FilterView assigns filtered queryset to self.object_list which is
-    # easier to use with paging
     strict = False
-
-    def translate_query_params(self):
-        """
-        Translates query params into something more human
-        readable for use in the frontend
-        :return: dict[str, str] of query params
-        """
-        form = self.filterset.form
-        translated_query_params = {}
-        for key, value in form.cleaned_data.items():
-            if not value:
-                continue
-
-            if isinstance(value, datetime):
-                value = value.strftime("%d/%m/%y")
-
-            name_func = getattr(form.fields[key], "label_from_instance", str)
-            value = name_func(value)
-
-            if isinstance(form.fields[key], ChoiceField):
-                choice_dict = dict(form.fields[key].choices)
-                if value in choice_dict:
-                    value = choice_dict[value]
-
-            translated_query_params[key] = value
-        return translated_query_params
-
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        query_params = self.request.GET
-        if not query_params:
-            return kwargs
-
-        kwargs["query_params"] = self.translate_query_params()
-        kwargs["q"] = query_params.get("q", "")
-        kwargs["ordering"] = query_params.get("ordering", "name")
-
-        return kwargs
 
     def get_queryset(self):
         qs = (
             super()
             .get_queryset()
-            .get_dataset_type(dataset_type=DatasetType.FARES.value)
+            .get_dataset_type(dataset_type=FaresType)
             .get_published()
             .get_active_org()
             .add_organisation_name()
             .add_live_data()
+            .order_by(*self.get_ordering())
         )
 
-        # q is the the query param storing the search box text
         keywords = self.request.GET.get("q", "").strip()
-
         if keywords:
             qs = qs.search(keywords)
 
         return qs
-
-    def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "-modified")
-        # validate ordering
-        return ordering
 
 
 class FaresDatasetDetailView(DetailView):

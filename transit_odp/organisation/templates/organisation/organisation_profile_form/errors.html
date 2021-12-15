@@ -27,7 +27,7 @@
           {# Non-FORM errors of noc formset #}
           {% for error in nested_noc.non_form_errors %}
             <li>
-                {{ error }}
+                <a href="#id_nocs-formset"> {{ error }}</a>
             </li>
           {% endfor %}
           {# Non-FORM errors of psv formset #}

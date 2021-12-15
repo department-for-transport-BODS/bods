@@ -2,7 +2,7 @@ import itertools
 import json
 from collections import defaultdict
 from pathlib import Path
-from typing import Callable, List
+from typing import Callable, List, Optional
 from urllib.parse import unquote
 
 from dateutil import parser
@@ -181,6 +181,19 @@ class BaseValidator:
 
         return list(set(all_stop_refs))
 
+    def get_locality_name_from_annotated_stop_point_ref(self, ref) -> Optional[str]:
+        """
+        Get the LocalityName of an AnnotatedStopPointRef from its StopPointRef.
+        """
+        xpath = (
+            "//x:StopPoints//x:AnnotatedStopPointRef[string(x:StopPointRef)"
+            f" = '{ref}']/x:LocalityName/text()"
+        )
+        names = self.root.xpath(xpath, namespaces=self.namespaces)
+        if names:
+            return names[0]
+        return None
+
 
 class DestinationDisplayValidator:
     def __init__(self, journey_pattern):
@@ -286,9 +299,23 @@ class LinesValidator(BaseValidator):
 
         combinations = itertools.combinations(line_to_stops.keys(), 2)
         for line1, line2 in combinations:
-            line1_stops = line_to_stops.get(line1)
-            line2_stops = line_to_stops.get(line2)
-            if set(line1_stops).isdisjoint(line2_stops):
+            line1_stops = line_to_stops.get(line1, [])
+            line2_stops = line_to_stops.get(line2, [])
+            disjointed_stops = set(line1_stops).isdisjoint(line2_stops)
+
+            line1_localities = [
+                self.get_locality_name_from_annotated_stop_point_ref(ref)
+                for ref in line1_stops
+            ]
+            line1_localities = [name for name in line1_localities if name]
+            line2_localities = [
+                self.get_locality_name_from_annotated_stop_point_ref(ref)
+                for ref in line2_stops
+            ]
+            line2_localities = [name for name in line2_localities if name]
+            disjointed_localities = set(line1_localities).isdisjoint(line2_localities)
+
+            if disjointed_stops and disjointed_localities:
                 return False
 
         return True
@@ -324,6 +351,11 @@ class StopPointValidator(BaseValidator):
         profiles = self.root.xpath(xpath, namespaces=self.namespaces)
         return profiles
 
+    def get_service_operating_period(self):
+        xpath = "//x:Service//x:OperatingPeriod"
+        periods = self.root.xpath(xpath, namespaces=self.namespaces)
+        return periods
+
     def has_valid_operating_profile(self, ref):
         profiles = self.get_operating_profile_by_vehicle_journey_code(ref)
 
@@ -335,10 +367,22 @@ class StopPointValidator(BaseValidator):
         start_date = profile.xpath("string(.//x:StartDate)", namespaces=self.namespaces)
         end_date = profile.xpath("string(.//x:EndDate)", namespaces=self.namespaces)
 
-        if start_date == "" and end_date == "":
-            return False
+        if start_date == "" or end_date == "":
+            # If start or end date unspecified, inherit from the service's
+            # OperatingPeriod
+            periods = self.get_service_operating_period()
+            if len(periods) > 0:
+                period = periods[0]
+                if start_date == "":
+                    start_date = period.xpath(
+                        "string(./x:StartDate)", namespaces=self.namespaces
+                    )
+                if end_date == "":
+                    end_date = period.xpath(
+                        "string(./x:EndDate)", namespaces=self.namespaces
+                    )
 
-        if end_date == "":
+        if start_date == "" or end_date == "":
             return False
 
         start_date = parser.parse(start_date)

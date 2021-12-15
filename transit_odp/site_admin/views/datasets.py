@@ -53,7 +53,7 @@ class BaseOrganisationListView(SiteAdminViewMixin, FilterView):
 
     def get_queryset(self):
         org_id = self.kwargs["pk"]
-        queryset = super().get_queryset().distinct()
+        queryset = self.model.objects.distinct()
         queryset = queryset.filter(
             Q(live_revision__isnull=False) | Q(revisions__status="success"),
             organisation_id=org_id,

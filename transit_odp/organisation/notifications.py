@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.utils import timezone
 
 from transit_odp.bods.interfaces.notifications import INotifications
 from transit_odp.bods.interfaces.plugins import get_notifications
@@ -25,6 +26,17 @@ def send_feed_monitor_fail_final_try_notification(dataset: Dataset):
         remote_url=dataset.live_revision.url_link,
         contact_email=dataset.contact.email,
     )
+
+    now = timezone.now()
+    subscribers = dataset.subscribers.all()
+    for subscriber in subscribers:
+        notifier.send_developer_data_endpoint_changed_notification(
+            dataset_id=dataset.id,
+            dataset_name=dataset.live_revision.name,
+            contact_email=subscriber.email,
+            operator_name=dataset.organisation.name,
+            last_updated=now,
+        )
 
 
 def send_feed_changed_notification(dataset: Dataset):

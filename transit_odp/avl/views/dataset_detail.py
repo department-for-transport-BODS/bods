@@ -1,16 +1,16 @@
+from datetime import datetime
 from typing import TypedDict
 
 import pytz
 
-from transit_odp.organisation.constants import DatasetType
-from transit_odp.organisation.models import Dataset
+from transit_odp.avl.proxies import AVLDataset
 from transit_odp.publish.views.base import BaseDetailView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
 class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
     template_name = "avl/avl_feed_detail/index.html"
-    model = Dataset
+    model = AVLDataset
 
     class Properties(TypedDict):
         dataset_id: int
@@ -27,6 +27,10 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
         last_server_update: str
         published_by: str
         published_at: str
+        avl_compliance_status: str
+        has_schema_violations: bool
+        days_to_go: int
+        first_error_date: datetime
 
     def get_queryset(self):
         return (
@@ -34,8 +38,10 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             .get_queryset()
             .filter(
                 organisation_id=self.organisation.id,
-                dataset_type=DatasetType.AVL.value,
             )
+            .add_has_schema_violation_reports()
+            .add_avl_compliance_status()
+            .add_first_error_date()
             .get_published()
             .select_related("live_revision")
         )
@@ -82,6 +88,24 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             last_server_update=last_server_update,
             published_by=published_by,
             published_at=revision.published_at,
+            avl_compliance_status=dataset.avl_compliance,
+            has_schema_violations=dataset.has_schema_violations,
+            days_to_go=7 - dataset.avl_report_count,
+            first_error_date=dataset.first_error_date,
         )
 
         return kwargs
+
+
+class ValidationFileDownloadView(BaseDetailView):
+    model = AVLDataset
+
+    def get(self, *args, **kwargs):
+        return self.get_object().to_validation_reports_response()
+
+
+class SchemaValidationFileDownloadView(OrgUserViewMixin, BaseDetailView):
+    model = AVLDataset
+
+    def get(self, *args, **kwargs):
+        return self.get_object().to_schema_validation_response()

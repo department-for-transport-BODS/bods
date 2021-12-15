@@ -187,19 +187,19 @@
 			<StopPointRef>9990000026</StopPointRef>
 			<CommonName>Library</CommonName>
 			<Indicator>outside</Indicator>
-			<LocalityName>Tweeham</LocalityName>
+			<LocalityName>Peeham</LocalityName>
 		</AnnotatedStopPointRef>
 		<AnnotatedStopPointRef>
 			<StopPointRef>9990000027</StopPointRef>
 			<CommonName>Library</CommonName>
 			<Indicator>outside</Indicator>
-			<LocalityName>Tweeham</LocalityName>
+			<LocalityName>Peeham</LocalityName>
 		</AnnotatedStopPointRef>
 		<AnnotatedStopPointRef>
 			<StopPointRef>9990000028</StopPointRef>
 			<CommonName>Library</CommonName>
 			<Indicator>outside</Indicator>
-			<LocalityName>Tweeham</LocalityName>
+			<LocalityName>Peeham</LocalityName>
 		</AnnotatedStopPointRef>
 	</StopPoints>
 	<RouteSections>

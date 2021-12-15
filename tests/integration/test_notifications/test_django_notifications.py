@@ -624,3 +624,75 @@ class TestDjangoNotification:
             m.subject == "Action required – "
             "PTI validation report requires resolution (if applicable)"
         )
+
+    def test_send_avl_report_requires_resolution(self, mailoutbox, settings):
+        client = DjangoNotifier()
+        client.send_avl_report_requires_resolution(
+            dataset_id=self.dataset_id,
+            short_description=self.short_description,
+            operator_name=self.agent_organisation,
+            feed_detail_link=self.feed_detail_link,
+            published_at=now(),
+            contact_email=self.agent_contact_email,
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.agent_contact_email]
+        assert (
+            m.subject == "Action required - "
+            "SIRI-VM validation report requires resolution"
+        )
+
+    def test_send_avl_dataset_flagged_with_compliance_issue(self, mailoutbox, settings):
+        client = DjangoNotifier()
+        client.send_avl_flagged_with_compliance_issue(
+            dataset_id=self.dataset_id,
+            short_description=self.short_description,
+            operator_name=self.agent_organisation,
+            feed_detail_link=self.feed_detail_link,
+            published_at=now(),
+            contact_email=self.agent_contact_email,
+            compliance="non-compliant",
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.agent_contact_email]
+        assert (
+            m.subject == "SIRI-VM validation: "
+            "Your feed is flagged to public as non-compliant"
+        )
+
+    def test_send_avl_flagged_with_major_issue(self, mailoutbox, settings):
+        client = DjangoNotifier()
+        client.send_avl_flagged_with_major_issue(
+            dataset_id=self.dataset_id,
+            short_description=self.short_description,
+            operator_name=self.agent_organisation,
+            feed_detail_link=self.feed_detail_link,
+            published_at=now(),
+            contact_email=self.agent_contact_email,
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.agent_contact_email]
+        assert (
+            m.subject == "Action required - "
+            "SIRI-VM validation report requires resolution"
+        )
+
+    def test_send_avl_schema_check_fail(self, mailoutbox, settings):
+        client = DjangoNotifier()
+        client.send_avl_schema_check_fail(
+            feed_name=self.dataset_name,
+            feed_id=self.dataset_id,
+            short_description=self.short_description,
+            operator_name=self.organisation_name,
+            feed_detail_link=self.feed_detail_link,
+            published_at=now(),
+            comments=self.comments,
+            contact_email=self.contact_email,
+        )
+        [m] = mailoutbox
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [self.contact_email]
+        assert m.subject == "Error publishing data feed"

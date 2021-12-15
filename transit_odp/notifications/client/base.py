@@ -18,6 +18,8 @@ from transit_odp.organisation.constants import AVLFeedDown
 logger = logging.getLogger(__name__)
 ACCOUNT_SETTINGS_VIEW = "users:settings"
 MY_ACCOUNT_HOME = "users:home"
+OPERATOR_GUIDANCE = "guidance:support-bus_operators"
+DATA_QUALITY_SECTION = "dataquality"
 
 
 class NotificationBase(INotifications):
@@ -639,6 +641,176 @@ class NotificationBase(INotifications):
             feed_short_description=short_description,
             status=feed_status,
             updated_time=last_updated,
+        )
+
+    @validate_arguments
+    def send_avl_report_requires_resolution(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        contact_email: str,
+    ):
+        template = "AVL_REPORT_REQUIRES_RESOLUTION"
+        subject = "Action required - SIRI-VM validation report requires resolution"
+        guidance = reverse(OPERATOR_GUIDANCE, host=config.hosts.PUBLISH_HOST)
+        guidance = f"{guidance}?section={DATA_QUALITY_SECTION}"
+
+        logger.debug(f"[notify_{template.lower()}] AVL report requires resolution")
+        deadline = published_at + datetime.timedelta(days=7)
+        published_time = localize_datetime_and_convert_to_string(published_at)
+
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            feed_id=dataset_id,
+            operator_name=operator_name,
+            feed_short_description=short_description,
+            published_time=published_time,
+            deadline=deadline,
+            link=feed_detail_link,
+            guidance=guidance,
+        )
+
+    @validate_arguments
+    def send_avl_flagged_with_compliance_issue(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        compliance: str,
+        contact_email: str,
+    ):
+        template = "AVL_FLAGGED_WITH_COMPLIANCE"
+        subject = f"SIRI-VM validation: Your feed is flagged to public as {compliance}"
+        guidance = reverse(OPERATOR_GUIDANCE, host=config.hosts.PUBLISH_HOST)
+        guidance = f"{guidance}?section={DATA_QUALITY_SECTION}"
+
+        logger.debug(
+            f"[notify_{template.lower()}] "
+            f"AVL dataset {dataset_id} flagged: {compliance}"
+        )
+        published_time = localize_datetime_and_convert_to_string(published_at)
+
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            feed_id=dataset_id,
+            operator_name=operator_name,
+            feed_short_description=short_description,
+            published_time=published_time,
+            compliance=compliance,
+            link=feed_detail_link,
+            guidance=guidance,
+        )
+
+    @validate_arguments
+    def send_avl_flagged_with_major_issue(
+        self,
+        dataset_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        feed_detail_link: str,
+        contact_email: str,
+    ):
+        template = "AVL_FLAGGED_WITH_MAJOR_ISSUE"
+        subject = "Action required - SIRI-VM validation report requires resolution"
+        guidance = reverse(OPERATOR_GUIDANCE, host=config.hosts.PUBLISH_HOST)
+        guidance = f"{guidance}?section={DATA_QUALITY_SECTION}"
+
+        logger.debug(
+            f"[notify_{template.lower()}] "
+            f"AVL dataset {dataset_id} flagged with major issue"
+        )
+        published_time = localize_datetime_and_convert_to_string(published_at)
+
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            feed_id=dataset_id,
+            operator_name=operator_name,
+            feed_short_description=short_description,
+            published_time=published_time,
+            link=feed_detail_link,
+            guidance=guidance,
+        )
+
+    @validate_arguments
+    def send_avl_schema_check_fail(
+        self,
+        feed_name: str,
+        feed_id: int,
+        short_description: str,
+        operator_name: str,
+        published_at: datetime.datetime,
+        comments: str,
+        feed_detail_link: str,
+        contact_email: str,
+    ):
+        template = "AVL_SCHEMA_CHECK_FAILED"
+        subject = "Error publishing data feed"
+
+        logger.debug(
+            f"[notify_{template.lower()}] "
+            f"AVL dataset {feed_id} has failed the schema check"
+        )
+        published_time = localize_datetime_and_convert_to_string(published_at)
+
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            feed_name=feed_name,
+            feed_id=feed_id,
+            operator_name=operator_name,
+            feed_short_description=short_description,
+            published_time=published_time,
+            comments=comments,
+            link=feed_detail_link,
+        )
+
+    @validate_arguments
+    def send_avl_compliance_status_changed(
+        self,
+        feed_id: int,
+        short_description: str,
+        operator_name: str,
+        new_status: str,
+        old_status: str,
+        updated_at: datetime.datetime,
+        feed_detail_link: str,
+        contact_email: str,
+    ):
+
+        template = "AVL_COMPLIANCE_STATUS_CHANGED"
+        subject = f"SIRI-VM compliance status changed to {new_status}"
+        settings_link = reverse("users:settings", host=config.hosts.PUBLISH_HOST)
+
+        logger.debug(
+            f"[notify_{template.lower()}] "
+            f"AVL dataset {feed_id} has failed the schema check"
+        )
+        updated_at = localize_datetime_and_convert_to_string(updated_at)
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            feed_id=feed_id,
+            short_description=short_description,
+            operator_name=operator_name,
+            new_status=new_status,
+            old_status=old_status,
+            updated_at=updated_at,
+            link=feed_detail_link,
+            settings_link=settings_link,
         )
 
     @validate_arguments

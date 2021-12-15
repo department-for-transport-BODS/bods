@@ -114,9 +114,15 @@ class TestPipeline:
 
 
 def test_revision_get_by_service_code_non_unique():
+    """
+    GIVEN a DatasetRevision with two TXCFileAttributes with the same service_code.
+    WHEN `get_live_attribute_by_service_code` is called.
+    THEN a list of TXCFileAttributes are returned ordered in ascending order by
+    revision_number
+    """
     revision = DatasetRevisionFactory(upload_file=None)
     service_code = "ABC"
-    TXCFileAttributesFactory(
+    t1 = TXCFileAttributesFactory(
         revision=revision, service_code=service_code, revision_number=0
     )
     t2 = TXCFileAttributesFactory(
@@ -124,10 +130,9 @@ def test_revision_get_by_service_code_non_unique():
     )
 
     validator = TXCRevisionValidator(revision)
-
-    expected_attr = t2
-    actual_attr = validator.get_live_attribute_by_service_code(service_code)
-    assert expected_attr == actual_attr
+    expected = [t1, t2]
+    actual = validator.get_live_attribute_by_service_code(service_code)
+    assert expected == actual
 
 
 @pytest.mark.parametrize(
@@ -136,8 +141,8 @@ def test_revision_get_by_service_code_non_unique():
         (0, 1, True, 0),
         (2, 2, True, 1),
         (2, 3, True, 0),
-        (2, 3, False, 0),
-        (2, 1, False, 0),
+        (2, 3, False, 1),
+        (2, 1, False, 1),
         (2, 1, True, 1),
     ],
 )

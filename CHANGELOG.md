@@ -7,6 +7,92 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.15.0] - 2021-11-18
+
+### Bug
+
+- [BODP-4673](https://itoworld.atlassian.net/browse/BODP-4673) Old datasets are able to be published without having passed PTI first
+- [BODP-4672](https://itoworld.atlassian.net/browse/BODP-4672) Publisher and Consumer List Views show incorrect value for Last updated
+- [BODP-4628](https://itoworld.atlassian.net/browse/BODP-4628) BODS PTI: Revision number issue encountered unexpectedly
+- [BODP-4579](https://itoworld.atlassian.net/browse/BODP-4579) Invalid service code passes PTI
+- [BODP-4529](https://itoworld.atlassian.net/browse/BODP-4529) \(Regression\) Published Fares Detail page: General UI - The map is not visible and the status is marked as DRAFT
+- [BODP-4527](https://itoworld.atlassian.net/browse/BODP-4527) \(Regression\) Expired Fares Data Set: General UI - Cancel the 'Delete data' action redirects to Page not found
+- [BODP-4522](https://itoworld.atlassian.net/browse/BODP-4522) \(REGRESSION\) Invite New Organisation: BODS Admin - Submitting form with NOC Code\(s\) filled out does not save in Organisation details page
+- [BODP-4520](https://itoworld.atlassian.net/browse/BODP-4520) \(Regression\) 'Data Quality' page: General UI - Wrong percentage is displayed for the daily validation check
+- [BODP-4519](https://itoworld.atlassian.net/browse/BODP-4519) \(REGRESSION\) Invite New Organisation: BODS Admin - Submitting empty form does not display validation message for NOC code field
+- [BODP-4518](https://itoworld.atlassian.net/browse/BODP-4518) \(REGRESSION\) Invite New Organisation: BODS Admin - Submitting an invalid email also generate validation issue for an empty NOC code field
+- [BODP-4517](https://itoworld.atlassian.net/browse/BODP-4517) \(Regression\) AVL Dashboard: General UI - 'Last automated update' column is showing wrong data
+- [BODP-4516](https://itoworld.atlassian.net/browse/BODP-4516) \(REGRESSION\) Operator Dataset/Datafeed List: BODS Admin - Sorting by 'Data set name A-Z' & 'Data set name Z-A' Returns 500 Internal Server Error
+- [BODP-4515](https://itoworld.atlassian.net/browse/BODP-4515) \(Regression\) Expired Fares Data set: General UI - Data set detail page should display the same message that an Expired TImetable data set.
+- [BODP-4513](https://itoworld.atlassian.net/browse/BODP-4513) \(Regression\) Consumer Notifications: General UI - The Consumer/Developer user doesn't receive the notification email for an EXPIRED data set
+- [BODP-4502](https://itoworld.atlassian.net/browse/BODP-4502) SiriVM Validator: AVL - VehicleJourneyRef is not recognised by the validator when not included in the packet
+- [BODP-4501](https://itoworld.atlassian.net/browse/BODP-4501) \(REGRESSION\) User Management: General UI - Reset password email link immediately invalidates token
+- [BODP-4499](https://itoworld.atlassian.net/browse/BODP-4499) \(REGRESSION\) Organisation Profile \(Publisher\): General UI - Incorrect link for "Find your National Operator Code"
+- [BODP-4497](https://itoworld.atlassian.net/browse/BODP-4497) E2E Test SIRI VM Emails : SIRI_Validator - "SIRI-VM compliance status changed to..." email still generates when "Daily SIRI-VM compliance check alert" is disabled
+- [BODP-4496](https://itoworld.atlassian.net/browse/BODP-4496) E2E Test SIRI VM Confirmation Page: SIRI_Validator - Guidance page link directs the user to "https://publish-bodp.staging.bus-data.dft.gov.uk/coming\_soon/"
+- [BODP-4495](https://itoworld.atlassian.net/browse/BODP-4495) \(Regression\) Invalid upload: Fares - Error message is not contained within the message box \(Chrome v94\)
+- [BODP-4494](https://itoworld.atlassian.net/browse/BODP-4494) E2E Test SIRI VM Validation Report CSV: SIRI_Validator - Validation Report CSV The "Reference" Column is not populated
+- [BODP-4493](https://itoworld.atlassian.net/browse/BODP-4493) E2E Test SIRI VM Validation Report CSV: SIRI_Validator - Validation Report CSV Missing the Column "Category"
+- [BODP-4484](https://itoworld.atlassian.net/browse/BODP-4484) Inactive feed: AVL - Data feed is not removed from CAVL once feed becomes Inactive by schema validator
+- [BODP-4130](https://itoworld.atlassian.net/browse/BODP-4130) Regression: Missing DQ observations when xml file is added to a zip
+- [BODP-4010](https://itoworld.atlassian.net/browse/BODP-4010) Data Quality Service returning inconsistent reports.
+- [BODP-2513](https://itoworld.atlassian.net/browse/BODP-2513) Pagination: Hovering over the link to last page of browse/search
+- [BODP-1634](https://itoworld.atlassian.net/browse/BODP-1634) Console errors on data set upload on first entry to screen
+
+### Dev Task
+
+- [BODP-4385](https://itoworld.atlassian.net/browse/BODP-4385) When OperatingProfile is missing from VehicleJourney, perform 2 month check using the OperatingProfile in the Service
+- [BODP-4330](https://itoworld.atlassian.net/browse/BODP-4330) Dev
+
+### Story
+
+- [BODP-4651](https://itoworld.atlassian.net/browse/BODP-4651) Release Notes for v1.15.0
+- [BODP-4624](https://itoworld.atlassian.net/browse/BODP-4624) Automated updates should check the content of error'd drafts before reprocessing
+- [BODP-4610](https://itoworld.atlassian.net/browse/BODP-4610) SIRI-VM: Use calendar days to determine post 7 days report
+- [BODP-4609](https://itoworld.atlassian.net/browse/BODP-4609) SIRI-VM: Handling empty feeds.
+- [BODP-4465](https://itoworld.atlassian.net/browse/BODP-4465) FBOD Data feed detail page: 'BODS Compliant data' row
+- [BODP-4444](https://itoworld.atlassian.net/browse/BODP-4444) Update PTI Validation : Lines group
+- [BODP-4380](https://itoworld.atlassian.net/browse/BODP-4380) Send SIRI VM Schema failure email
+- [BODP-4379](https://itoworld.atlassian.net/browse/BODP-4379) Display SIRI-VM schema failure check on the UI
+- [BODP-4370](https://itoworld.atlassian.net/browse/BODP-4370) Update BODS PTI : StopPoints
+- [BODP-4314](https://itoworld.atlassian.net/browse/BODP-4314) SIRI-VM validator: Send email when critical score less than lower threshold%
+- [BODP-4313](https://itoworld.atlassian.net/browse/BODP-4313) SIRI-VM schema failure check \(backend\)
+- [BODP-4311](https://itoworld.atlassian.net/browse/BODP-4311) SIRIVM: Critical score less than 20% validation
+- [BODP-4268](https://itoworld.atlassian.net/browse/BODP-4268) SIRIVM: Daily Validation after day 7
+- [BODP-4265](https://itoworld.atlassian.net/browse/BODP-4265) SIRI VM Validator: Sendcompliance status email for SIRI Validator when the status changes
+- [BODP-4231](https://itoworld.atlassian.net/browse/BODP-4231) SIRI VM Validator: Send email for validation errors in the first 7 days
+- [BODP-4225](https://itoworld.atlassian.net/browse/BODP-4225) SIRI VM Validator: Validating a feed
+- [BODP-4222](https://itoworld.atlassian.net/browse/BODP-4222) SIRI-VM validator: Send email when feed is marked as non-compliant or partially compliant
+- [BODP-4221](https://itoworld.atlassian.net/browse/BODP-4221) SIRI-VM: Update 'copy' of confirmation page
+- [BODP-4220](https://itoworld.atlassian.net/browse/BODP-4220) SIRI-VM: daily compliance status change opt-out UI and functionality
+- [BODP-4218](https://itoworld.atlassian.net/browse/BODP-4218) SIRI-VM Guidance pages
+- [BODP-4217](https://itoworld.atlassian.net/browse/BODP-4217) SIRI-VM Download validation report CSV
+- [BODP-4216](https://itoworld.atlassian.net/browse/BODP-4216) SIRI-VM: individual data feed page UI
+- [BODP-4215](https://itoworld.atlassian.net/browse/BODP-4215) SIRI-VM: Location Data dashboard UI
+
+### Story Bug
+
+- [BODP-4684](https://itoworld.atlassian.net/browse/BODP-4684) Dayly validation: SIRI_Validator - The periodic task 'run_avl_validations_in_rt' is validating INACTIVE feeds
+- [BODP-4680](https://itoworld.atlassian.net/browse/BODP-4680) Changelog page: General UI - 'Release notes' order should be from most recent to oldest
+- [BODP-4679](https://itoworld.atlassian.net/browse/BODP-4679) Email updates: SIRI_Validator - Update content of email
+- [BODP-4678](https://itoworld.atlassian.net/browse/BODP-4678) Daily validation reports: SIRI_Validator - When a feed has no packets, the daily validation report is not created
+- [BODP-4463](https://itoworld.atlassian.net/browse/BODP-4463) Account settings: SIRI_Validator - 'Daily SIRI-VM compliance check alert' must be enabled by default
+- [BODP-4462](https://itoworld.atlassian.net/browse/BODP-4462) Status changed email: SIRI_Validator - 'Short description' row is not showing the saved description for the data feed
+- [BODP-4458](https://itoworld.atlassian.net/browse/BODP-4458) Data feed detail page: SIRI_Validator - 'BODS Compliant data' row is not showing the date and count days.
+- [BODP-4455](https://itoworld.atlassian.net/browse/BODP-4455) Email for validation error: SIRI_Validator - Date is showing an additional wrong day number.
+
+### Sub-task
+
+- [BODP-4353](https://itoworld.atlassian.net/browse/BODP-4353) Dev
+- [BODP-4342](https://itoworld.atlassian.net/browse/BODP-4342) Dev - BODP-4220 - SIRI-VM: daily compliance status change opt-out
+
+### Test Task
+
+- [BODP-4381](https://itoworld.atlassian.net/browse/BODP-4381) Test - BODP-4379 - Display SIRI-VM schema failure check on the UI
+- [BODP-4371](https://itoworld.atlassian.net/browse/BODP-4371) Test - BODP-4370 - Update BODS PTI : StopPoints
+- [BODP-4324](https://itoworld.atlassian.net/browse/BODP-4324) Test - BODP-4218 - SIRI-VM Guidance pages
+- [BODP-4269](https://itoworld.atlassian.net/browse/BODP-4269) Test - BODP-4268 - SIRIVM: Daily Validation
+
 ## [1.14.0] - 2021-09-30
 
 ### Bug

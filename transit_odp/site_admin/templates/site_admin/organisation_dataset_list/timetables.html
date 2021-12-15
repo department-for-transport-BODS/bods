@@ -8,12 +8,13 @@
 {% load query_transform %}
 
 {% block title_tag %}
-  {{ title }}
+{{ title }}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url organisation.name 'users:organisation-detail' pk=organisation.id host hosts.admin %}
+{{ block.super }}
+{% breadcrumb_url 'Organisation management' 'users:organisation-detail' pk=organisation.id host hosts.admin %}
+{% breadcrumb_url organisation.name 'users:organisation-detail' pk=organisation.id host hosts.admin %}
   {% breadcrumb title %}
 {% endblock %}
 

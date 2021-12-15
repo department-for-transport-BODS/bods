@@ -9,7 +9,6 @@ from transit_odp.notifications.client.base import NotificationBase
 from transit_odp.notifications.constants import TEMPLATE_LOOKUP
 
 logger = logging.getLogger(__name__)
-CUSTOM = "custom"
 
 
 class GovUKNotifyEmail(NotificationBase):
@@ -20,11 +19,10 @@ class GovUKNotifyEmail(NotificationBase):
         self._notification_client = NotificationsAPIClient(api_key=api_key)
 
     def _send_mail(self, template: str, email: str, subject: str, **kwargs):
-        template_id = self.templates[template]
-        if template_id == CUSTOM:
+        template_id = self.templates.get(template, self.generic_template_id)
+        if template_id == self.generic_template_id:
             # We want to eventually move all emails to the custom template
             # here we only need to define body and subject
-            template_id = self.generic_template_id
             template = TEMPLATE_LOOKUP[template]
             body = render_to_string(template, kwargs)
             personalisation = {"body": body, "subject": subject}
@@ -46,13 +44,10 @@ class GovUKNotifyEmail(NotificationBase):
 
     @property
     def templates(self) -> Dict[str, str]:
+        # This is now effectively a list of all the templates that need to move over
         return {
-            "VERIFY_EMAIL_ADDRESS": CUSTOM,
             "INVITE_USER": "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1",
-            "PASSWORD_RESET": CUSTOM,
-            "PASSWORD_CHANGED": CUSTOM,
             "OPERATOR_INVITE_ACCEPTED": "46bf62b7-bd47-449e-bd86-2aa252fceac7",
-            "OPERATOR_FEEDBACK": CUSTOM,
             "OPERATOR_DATA_DELETED": "1b0c8b4f-e2ec-4004-a1c3-74f16649efba",
             "OPERATOR_DELETER_DATA_DELETED": "f7a1c6bf-9e4c-4896-a106-109f71fe52b6",
             "OPERATOR_DATA_ENDPOINT_UNREACHABLE_NOW_EXPIRING": (
@@ -65,18 +60,8 @@ class GovUKNotifyEmail(NotificationBase):
                 "69dbd054-7bee-4b4d-9435-fd226578e836"
             ),
             "OPERATOR_DATA_CHANGED": "0d64bbb3-2959-4670-871d-2077d8504f53",
-            "DEVELOPER_DATA_CHANGED": CUSTOM,
             "AGENT_DATA_CHANGED": "9a6a7ac6-3f2c-4541-8fa8-5325ee05e151",
-            "OPERATOR_PUBLISH_LIVE": CUSTOM,
-            "OPERATOR_PUBLISH_LIVE_WITH_PTI_VIOLATIONS": CUSTOM,
-            "AGENT_PUBLISH_LIVE": CUSTOM,
-            "AGENT_PUBLISH_LIVE_WITH_PTI_VIOLATIONS": CUSTOM,
-            "OPERATOR_PUBLISH_ERROR": CUSTOM,
-            "AGENT_PUBLISH_ERROR": CUSTOM,
             "OPERATOR_EXPIRED_NOTIFICATION": "0bb32cd4-27ab-4fcc-bc94-a5cf9689d7d6",
-            "AGENT_EXPIRED_NOTIFICATION": "9b79ae15-93d9-45c7-b5e4-4be5a5c548f0",
-            "OPERATOR_AVL_ENDPOINT_UNREACHABLE": CUSTOM,
-            "DEVELOPER_AVL_FEED_STATUS_NOTIFICATION": CUSTOM,
             "AGENT_INVITE_ACCEPTED": "d5ddb8c7-6ef0-42f3-9333-50aa28f2778f",
             "AGENT_INVITE_EXISTING_ACCOUNT": "ea06ebdf-f5ed-46ba-a094-ef42f2afe21a",
             "AGENT_INVITE_NEW_ACCOUNT": "8866bc7b-5684-45b7-85fb-c300fc939827",
@@ -91,7 +76,5 @@ class GovUKNotifyEmail(NotificationBase):
             "OPERATOR_AGENT_REJECTED_INVITE": "b7edcd7f-5c86-4c6e-b085-c72efb487bc7",
             "OPERATOR_AGENT_REMOVED": "66a9b1c9-5709-476d-a360-b2794a1a253b",
             "OPERATOR_NOC_CHANGED": "ca32baf1-a420-4893-98e8-04bd5e85a9c4",
-            "REPORTS_AVAILABLE": CUSTOM,
-            "AGENT_REPORTS_AVAILABLE": CUSTOM,
             "DATASET_NO_LONGER_COMPLIANT": "3093797a-a1fa-4a08-8dc0-b0bfda4e3e64",
         }

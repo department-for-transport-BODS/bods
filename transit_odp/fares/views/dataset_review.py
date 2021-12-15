@@ -79,11 +79,10 @@ class ReviewView(ReviewBaseView):
             return None
 
         if task.additional_info is not None:
-            error_message = {
-                "description": XMLErrorMessageRenderer(
-                    task.additional_info
-                ).get_message()
-            }
+            renderer = XMLErrorMessageRenderer(
+                task.additional_info, error_code=task.error_code
+            )
+            error_message = {"description": renderer.get_message()}
 
         if error_message is None:
             error_message = ERROR_CODE_MAP.get(task.error_code, None)

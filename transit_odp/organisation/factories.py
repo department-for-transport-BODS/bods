@@ -222,7 +222,6 @@ class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
     modification = "new"
     schema_version = "2.4"
     revision_number = "0"
-    modification = "new"
     filename = FAKER.file_name(extension="xml")
     service_code = FAKER.pystr(min_chars=4, max_chars=4)
     creation_datetime = FAKER.date_time(tzinfo=pytz.utc)

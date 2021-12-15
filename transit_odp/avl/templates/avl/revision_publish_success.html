@@ -46,7 +46,24 @@
           or by clicking the button below. The data will now be live for everyone else to see.
         {% endblocktrans %}
       </p>
-       <a role="button" class="govuk-button" href="{% url 'avl:feed-detail' pk1=view.kwargs.pk1 pk=view.kwargs.pk host hosts.publish %}">
+      <p class="govuk-body-m">
+        {% blocktrans %}
+          Please note the introduction of a new SIRI-VM validator to ensure the highest
+          quality data is provided to consumers.
+        {% endblocktrans %}
+      </p>
+      <p class="govuk-body-m">
+        {% blocktrans %}
+          The SIRI-VM validator will check the mandatory fields are populated 24 hours
+          after publishing and if necessary an error report will be sent to you. If
+          there are still missing fields at the end of 7 days the feed will change to a
+          compliance error status. To learn more about the compliance error status and
+          how it works please read the
+        {% endblocktrans %}
+        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' %}?section=buslocation">{% trans "guidance page."%}</a>
+      </p>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
+      <a role="button" class="govuk-button" href="{% url 'avl:feed-detail' pk1=view.kwargs.pk1 pk=view.kwargs.pk host hosts.publish %}">
         {% trans 'View published data feed' %}
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>

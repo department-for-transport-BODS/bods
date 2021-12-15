@@ -15,32 +15,23 @@
 {% endblock %}
 
 {% block content %}
-    {# Page Heading Section #}
-    {% include 'avl/avl_feed_detail/page_heading.html' %}
-
+  {% include 'avl/avl_feed_detail/page_heading.html' %}
   <hr class="govuk-section-break govuk-section-break--xs govuk-section-break--visible">
 
-    {# Main Section #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        {% if status == 'error' %}
-{#            {% include 'avl/avl_feed_detail/error_panel.html' %}#}
-        {% else %}
-            {% include 'avl/avl_feed_detail/success_content.html' %}
-        {% endif %}
+      {% if properties.status == 'inactive' and properties.has_schema_violations %}
+        {% include 'avl/snippets/avl_schema_panel.html' %}
+      {% endif %}
+
+      {% include 'avl/avl_feed_detail/success_content.html' %}
     </div>
     <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
-        {% include 'avl/avl_feed_detail/related_links.html' %}
+      {% include 'avl/avl_feed_detail/related_links.html' %}
     </div>
   </div>
 {% endblock %}
 
 
 {% block scripts %}
-{#    {{ block.super }}#}
-{#    {% if status == 'success' %}#}
-{#      <script>#}
-{#          BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});#}
-{#      </script>#}
-{#    {% endif %}#}
 {% endblock %}

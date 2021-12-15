@@ -46,7 +46,7 @@
             </li>
             <li>
                 <span class="item__key">{% trans 'Last updated:' %}</span>
-                <span class="item__value">{{ item.modified|date:"j M Y" }}</span>
+                <span class="item__value">{{ item.published_at|date:"j M Y" }}</span>
             </li>
             {% if item.is_after_pti_compliance_date %}
             <li>
@@ -58,6 +58,10 @@
             <li>
                 <span class="item__key">{% trans 'Last automated update:' %}</span>
                 <span class="item__value">{{ item.avl_feed_last_checked|date:"j M Y H:i" }}</span>
+            </li>
+            <li>
+                <span class="item__key">{% trans 'BODS compliant data:' %}</span>
+                <span class="item__value">{{ item.avl_compliance}}</span>
             </li>
             {% elif item.dataset_type == 3 %}
             <li>

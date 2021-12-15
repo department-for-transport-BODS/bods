@@ -13,9 +13,9 @@
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list govuk-!-margin-bottom-6">
-      {#        {% for error in severe_errors %}#}
-      {#          <li class="app-error-summary__item">{{ error.description }}</li>#}
-      {#        {% endfor %}#}
+      {% for error in properties.severe_errors %}
+      <li class="app-error-summary__item">{{ error.description }}</li>
+      {% endfor %}
     </ul>
     <a role="button" class="govuk-button govuk-!-margin-bottom-0"
        href="{% url 'fares:feed-update' pk1=pk1 pk=object.id host hosts.publish %}">
@@ -73,7 +73,7 @@
 </p>
 <p class="govuk-body app-!-text-muted govuk-!-font-size-16">
   {% blocktrans %}
-    Accepted file formats include .xml (TransXChange).
+    Accepted file formats include .xml (NeTEx).
   {% endblocktrans %}
 </p>
 <a role="button" class="govuk-button govuk-button--secondary"

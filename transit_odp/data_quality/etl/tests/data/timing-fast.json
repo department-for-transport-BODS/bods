@@ -1,0 +1,212 @@
+{
+  "header": {
+    "schema": {
+      "url": "file://./product/warnings_spec/warnings_schema.json",
+      "version": "0.5"
+    },
+    "generated": "Wed, 04 Dec 2019 16:09:25",
+    "naptan_date": "Sun, 24 Nov 2019 04:30:30",
+    "sources": []
+  },
+  "model": {
+    "stops": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "ST9100BSHPSFD",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.164920440356703779, 51.8666973073751691]
+          },
+          "properties": {
+            "atco_code": "9100BSHPSFD",
+            "bearing": 8,
+            "feature_name": "Bishops Stortford Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100ELSENHM",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.228097234348376532, 51.9205519093724419]
+          },
+          "properties": {
+            "atco_code": "9100ELSENHM",
+            "bearing": 8,
+            "feature_name": "Elsenham Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ST9100STANMFC",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [0.199807823393543221, 51.9014446247132568]
+          },
+          "properties": {
+            "atco_code": "9100STANMFC",
+            "bearing": 8,
+            "feature_name": "Stansted Mountfitchet Rail Station",
+            "synthetic": false,
+            "type": "RLY"
+          }
+        }
+      ]
+    },
+    "stop_areas": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "service_patterns": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.164920440356703779, 51.8666973073751691],
+              [0.199807823393543221, 51.9014446247132568],
+              [0.228097234348376532, 51.9205519093724419]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishops Stortford - Cambridge",
+            "length_m": 38711.6758,
+            "route_shape": true,
+            "line": "LI55414",
+            "stops": ["ST9100BSHPSFD", "ST9100STANMFC", "ST9100ELSENHM"],
+            "timing_patterns": ["TP000d356c533cbc1604b6bdcbba1c326d27fbcc58"],
+            "service_links": [
+              "SLc7c36e03da00cdc20ae25928fa115ccef48b6e2f",
+              "SLf57115863724de47bb87cc8b2f8a9d95aab5a60e"
+            ]
+          }
+        }
+      ]
+    },
+    "service_links": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": "SLc7c36e03da00cdc20ae25928fa115ccef48b6e2f",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.164920440356703779, 51.8666973073751691],
+              [0.199807823393543221, 51.9014446247132568]
+            ]
+          },
+          "properties": {
+            "feature_name": "Bishops Stortford Rail Station-Stansted Mountfitchet Rail Station",
+            "from_stop": "ST9100BSHPSFD",
+            "length_m": 4551.18896,
+            "route_shape": false,
+            "to_stop": "ST9100STANMFC",
+            "service_patterns": ["SP159d845b06e59fcd9808e1d004b3b840430d6547"]
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "SLf57115863724de47bb87cc8b2f8a9d95aab5a60e",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [0.199807823393543221, 51.9014446247132568],
+              [0.228097234348376532, 51.9205519093724419]
+            ]
+          },
+          "properties": {
+            "feature_name": "Stansted Mountfitchet Rail Station-Elsenham Rail Station",
+            "from_stop": "ST9100STANMFC",
+            "length_m": 2882.36304,
+            "route_shape": false,
+            "to_stop": "ST9100ELSENHM",
+            "service_patterns": ["SP159d845b06e59fcd9808e1d004b3b840430d6547"]
+          }
+        }
+      ]
+    },
+    "lines": [
+      {
+        "id": "LI55414",
+        "name": "Bishops Stortford - Elsenham"
+      }
+    ],
+    "timing_patterns": [
+      {
+        "id": "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+        "service_pattern": "SP159d845b06e59fcd9808e1d004b3b840430d6547",
+        "timings": [
+          {
+            "arrival_time_secs": 0,
+            "departure_time_secs": 0,
+            "pickup_allowed": true,
+            "setdown_allowed": false,
+            "timing_point": false,
+            "distance": 0,
+            "speed": 0
+          },
+          {
+            "arrival_time_secs": 240,
+            "departure_time_secs": 240,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 4551,
+            "speed": 68
+          },
+          {
+            "arrival_time_secs": 480,
+            "departure_time_secs": 480,
+            "pickup_allowed": true,
+            "setdown_allowed": true,
+            "timing_point": true,
+            "distance": 7433,
+            "speed": 43
+          }
+        ],
+        "vehicle_journeys": ["VJ0e512c30f55fa2b449c8d8f1e2c0fa7a23b8e355"]
+      }
+    ],
+    "vehicle_journeys": [
+      {
+        "id": "VJ0e512c30f55fa2b449c8d8f1e2c0fa7a23b8e355",
+        "timing_pattern": "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+        "start": 21540,
+        "feature_name": "05:59:00 -- Bishops Stortford - Cambridge: Bishops Stortford to Cambridge",
+        "dates": ["2019-11-18"]
+      }
+    ],
+    "localities": {
+      "type": "FeatureCollection",
+      "features": []
+    },
+    "plus_bus_zone": {
+      "type": "FeatureCollection",
+      "features": []
+    }
+  },
+  "warnings": [
+    {
+      "warning_type": "timing-fast",
+      "values": [
+        {
+          "id": "TP000d356c533cbc1604b6bdcbba1c326d27fbcc58",
+          "warning_type": "timing-fast",
+          "warning_id": 0,
+          "indexes": [2],
+          "entities": [""]
+        }
+      ]
+    }
+  ]
+}

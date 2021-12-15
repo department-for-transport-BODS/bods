@@ -5,7 +5,7 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-  {% trans 'Data set deleted' %}
+    {% trans 'Data set deleted' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
@@ -16,18 +16,19 @@
 
 {% block content %}
     <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">
-        {% trans 'Data set has been deleted' %}
-      </h1>
-      <p class="govuk-body-l">
-        {% blocktrans %}
-        Data set has been deleted.
-      {% endblocktrans %}
-      </p>
-  <a role="button" class="govuk-button govuk-!-margin-top-5" href="{% url 'fares:feed-list' pk1=pk1 host hosts.publish %}">
-          {{ _('Go back to your data sets') }}
-        </a>
-  </div>
-</div>
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl">
+                {% trans 'Data set has been deleted' %}
+            </h1>
+            <p class="govuk-body-l">
+                {% blocktrans %}
+                    Data set has been deleted.
+                {% endblocktrans %}
+            </p>
+            <a role="button" class="govuk-button govuk-!-margin-top-5"
+                href="{% url 'fares:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}">
+                {{ _('Go back to your data sets') }}
+            </a>
+        </div>
+    </div>
 {% endblock %}

@@ -1,10 +1,9 @@
 from typing import List, Optional
 
-from django.contrib.postgres.fields import JSONField
 from django.core.files.base import File
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.db.models import Q
+from django.db.models import JSONField, Q
 from django.http.response import FileResponse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField

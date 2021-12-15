@@ -1,10 +1,21 @@
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.expressions import F
 from django.db.models.query_utils import Q
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
+from transit_odp.avl.csv import (
+    SchemaValidationResponseExporter,
+    ValidationReportExporter,
+)
 from transit_odp.avl.storage import get_sirivm_storage
+from transit_odp.avl.validation.models import (
+    SchemaValidationResponse,
+    ValidationResponse,
+)
+from transit_odp.common.contants import UTF8
 from transit_odp.common.fields import CallableStorageFileField
 from transit_odp.organisation.constants import AVLType
 from transit_odp.organisation.models import DatasetRevision
@@ -23,7 +34,13 @@ class AVLValidationReport(models.Model):
     )
     critical_count = models.PositiveIntegerField(_("Number of critical issues"))
     non_critical_count = models.PositiveIntegerField(_("Number of non-critical issues"))
-    file = models.FileField(_("AVL validation report file"))
+    critical_score = models.FloatField(_("Score for critical observations"))
+    non_critical_score = models.FloatField(_("Score for non-critical observations"))
+    vehicle_activity_count = models.PositiveIntegerField(
+        _("Number of VehicleActivity elements tested")
+    )
+
+    file = models.FileField(_("AVL validation report file"), null=True)
     created = models.DateField(_("Creation date"))
 
     def __str__(self):
@@ -35,8 +52,69 @@ class AVLValidationReport(models.Model):
             f"created={self.created.isoformat()}"
         )
 
+    @classmethod
+    def from_validation_response(cls, revision_id: int, response: ValidationResponse):
+        summary = response.validation_summary
+        exporter = ValidationReportExporter(response)
+        if response.results:
+            file_ = ContentFile(
+                exporter.to_csv_string().encode(UTF8), name=exporter.get_filename()
+            )
+        else:
+            file_ = None
+
+        return cls(
+            revision_id=revision_id,
+            critical_count=summary.critical_error_count,
+            non_critical_count=summary.non_critical_error_count,
+            critical_score=summary.critical_score,
+            non_critical_score=summary.non_critical_score,
+            vehicle_activity_count=summary.vehicle_activity_count,
+            file=file_,
+            created=timezone.now().date(),
+        )
+
     class Meta:
         unique_together = ("revision", "created")
+
+
+class AVLSchemaValidationReport(models.Model):
+    revision = models.ForeignKey(
+        DatasetRevision,
+        on_delete=models.CASCADE,
+        related_name="avl_schema_validation_reports",
+        limit_choices_to=limit_to_query,
+    )
+    error_count = models.PositiveIntegerField(_("Number of schema errors"))
+    file = models.FileField(_("AVL schema validation report file"))
+    created = models.DateField(_("Creation date"))
+
+    class Meta:
+        unique_together = ("revision", "created")
+
+    def __str__(self):
+        return (
+            f"id={self.id}, revision_id={self.revision.id}, "
+            f"filename={self.file.name!r}, "
+            f"error_count={self.error_count}, "
+            f"created={self.created.isoformat()}"
+        )
+
+    @classmethod
+    def from_schema_validation_response(
+        cls, revision_id: int, response: SchemaValidationResponse
+    ):
+        error_count = len(response.errors)
+        exporter = SchemaValidationResponseExporter(response)
+        file_ = ContentFile(
+            exporter.to_csv_string().encode(UTF8), name=exporter.get_filename()
+        )
+        return cls(
+            revision_id=revision_id,
+            error_count=error_count,
+            file=file_,
+            created=timezone.now().date(),
+        )
 
 
 class CAVLValidationTaskResult(TaskResult):

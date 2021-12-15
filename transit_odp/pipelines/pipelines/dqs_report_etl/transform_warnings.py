@@ -7,7 +7,6 @@ from django.db.models import Q
 from transit_odp.data_quality.models import (
     DataQualityReport,
     FastLinkWarning,
-    FastTimingWarning,
     JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyDuplicateWarning,
@@ -46,7 +45,6 @@ def run(
     transform_timing_warning(
         report, model, warnings.timing_fast_link, "timing_fast_link"
     )
-    transform_timing_warning(report, model, warnings.timing_fast, "timing_fast")
     transform_timing_warning(
         report, model, warnings.timing_slow_link, "timing_slow_link"
     )
@@ -154,7 +152,6 @@ def transform_timing_warning(
 
     warning_class_lookup = {
         "timing_fast_link": FastLinkWarning,
-        "timing_fast": FastTimingWarning,
         "timing_slow_link": SlowLinkWarning,
         "timing_slow": SlowTimingWarning,
     }
@@ -192,7 +189,6 @@ def transform_timing_warning(
     # to the warning class
     warning_class_rel_lookup = {
         "timing_fast_link": "fastlinkwarning_id",
-        "timing_fast": "fasttimingwarning_id",
         "timing_slow_link": "slowlinkwarning_id",
         "timing_slow": "slowtimingwarning_id",
     }

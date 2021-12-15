@@ -9,19 +9,13 @@
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {#  {{ block.super }}#}
-  {#  {% breadcrumb_url 'Manage data sets' 'feed-list' host host.name %}#}
-  {#  {% breadcrumb 'Delete data set' %}#}
 {% endblock %}
 
 {% block backlink %}
   {% if object.live_revision %}
-    {#    TODO: add this back when Fares update flow is done#}
-    {#    {% url 'fares:revision-update-publish' pk=object.id host hosts.publish as backlink %}#}
-    {% url 'fares:revision-publish' pk1=pk1 pk=object.id host hosts.publish as backlink %}
+    {% url 'fares:feed-detail' pk1=view.kwargs.pk1 pk=object.id host hosts.publish as backlink %}
   {% else %}
-    {% url 'fares:revision-publish' pk1=pk1 pk=object.id host hosts.publish as backlink %}
-
+    {% url 'fares:revision-publish' pk1=view.kwargs.pk1 pk=object.id host hosts.publish as backlink %}
   {% endif %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}

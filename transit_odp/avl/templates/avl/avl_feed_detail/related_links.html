@@ -10,4 +10,10 @@
     <a class="govuk-link"
        href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
   </li>
+  <li>
+    <a class="govuk-link"
+       href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+      {% trans 'AVL feed compliance guidance' %}
+    </a>
+  </li>
 </ul>

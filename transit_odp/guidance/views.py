@@ -194,4 +194,5 @@ class BusOperatorReqView(BODSBaseView, SectionedTemplateView):
         context = super().get_context_data(**kwargs)
         context["pti_link_on_bods"] = settings.PTI_PDF_URL
         context["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
+        context["siri_vm_lower_threshold"] = settings.AVL_LOWER_THRESHOLD
         return context

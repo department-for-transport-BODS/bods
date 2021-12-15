@@ -1,17 +1,28 @@
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from requests import RequestException
 
-from transit_odp.avl.factories import CAVLValidationTaskResultFactory
-from transit_odp.avl.models import CAVLValidationTaskResult
+from transit_odp.avl.constants import MORE_DATA_NEEDED
+from transit_odp.avl.factories import (
+    AVLValidationReportFactory,
+    CAVLValidationTaskResultFactory,
+)
+from transit_odp.avl.models import AVLSchemaValidationReport, CAVLValidationTaskResult
 from transit_odp.avl.tasks import (
     task_create_sirivm_zipfile,
     task_monitor_avl_feeds,
+    task_run_feed_validation,
     task_validate_avl_feed,
+)
+from transit_odp.avl.validation.factories import (
+    SchemaErrorFactory,
+    SchemaValidationResponseFactory,
+    ValidationResponseFactory,
+    ValidationSummaryFactory,
 )
 from transit_odp.bods.interfaces.gateways import AVLFeed
 from transit_odp.organisation.constants import (
@@ -22,16 +33,18 @@ from transit_odp.organisation.constants import (
     FeedStatus,
 )
 from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
     DatasetFactory,
     DatasetMetadataFactory,
     DatasetRevisionFactory,
 )
 from transit_odp.organisation.models import Dataset
-from transit_odp.users.constants import DeveloperType
+from transit_odp.users.constants import DeveloperType, OrgAdminType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 CAVL_PATH = "transit_odp.avl.tasks.get_cavl_service"
+VALIDATION_PATH = "transit_odp.avl.tasks.get_validation_client"
 
 
 @patch("transit_odp.avl.tasks.CAVLDataArchive")
@@ -235,3 +248,320 @@ class TestValidateAVLTask:
         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
         assert task.status == expected_status
         assert task.revision.metadata.schema_version == expected_version
+
+
+@patch(VALIDATION_PATH)
+def test_email_is_not_sent_on_no_errors(get_client, mailoutbox):
+    """
+    GIVEN an AVL datafeed that has not had any validation performed.
+    WHEN the validation service is called and results in a response with no issues
+    THEN no emails are sent
+    """
+    revision = AVLDatasetRevisionFactory()
+
+    summary = ValidationSummaryFactory(
+        critical_score=1,
+        non_critical_score=1,
+        critical_error_count=0,
+        non_critical_error_count=0,
+    )
+    client = Mock()
+    client.schema.return_value = SchemaValidationResponseFactory(
+        errors=[], timestamp=0, is_valid=True
+    )
+    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+    get_client.return_value = client
+
+    assert revision.avl_validation_reports.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+
+    assert len(mailoutbox) == 0
+
+
+@patch(VALIDATION_PATH)
+def test_send_pre_seven_days_action_required(get_client, mailoutbox):
+    """
+    GIVEN an AVL datafeed that has not had any validation performed.
+    WHEN the validation service is called and results in a response with a
+    critical issue
+    THEN an action required email is sent
+    """
+    revision = AVLDatasetRevisionFactory()
+
+    summary = ValidationSummaryFactory(
+        critical_score=0.9, critical_error_count=1, non_critical_error_count=0
+    )
+    client = Mock()
+    client.schema.return_value = SchemaValidationResponseFactory(
+        errors=[], timestamp=0, is_valid=True
+    )
+    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+    get_client.return_value = client
+
+    assert revision.avl_validation_reports.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+
+    expected_subject = "Action required - SIRI-VM validation report requires resolution"
+    assert len(mailoutbox) > 0
+    assert mailoutbox[0].subject == expected_subject
+    assert revision.avl_validation_reports.count() == 1
+
+
+@patch(VALIDATION_PATH)
+def test_send_flagged_non_compliant(get_client, mailoutbox):
+    """
+    GIVEN an AVL datafeed with with 8 days of non-compliant reports
+    WHEN a new non-compliant report is returned by the validation service
+    THEN a non-compliant email is sent.
+    """
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    report_count = 9
+    for n in range(1, report_count):
+        AVLValidationReportFactory(
+            revision=revision,
+            critical_score=0.5,
+            non_critical_score=0.5,
+            created=datetime.now().date() - timedelta(days=n),
+        )
+
+    summary = ValidationSummaryFactory(critical_score=0.5, non_critical_score=0.5)
+    client = Mock()
+
+    client.schema.return_value = SchemaValidationResponseFactory(
+        errors=[], is_valid=True
+    )
+    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+    get_client.return_value = client
+
+    task_run_feed_validation(revision.dataset.id)
+
+    expected_subject = (
+        "SIRI-VM validation: Your feed is flagged to public as Non-compliant"
+    )
+    assert len(mailoutbox) > 0
+    assert mailoutbox[0].subject == expected_subject
+    assert "flagged as Non-compliant" in mailoutbox[0].body
+    assert revision.avl_validation_reports.count() == report_count
+
+
+@patch(VALIDATION_PATH)
+def test_send_flagged_as_dormant(get_client, mailoutbox):
+    """
+    GIVEN an AVL datafeed with with 8 days of empty reports
+    WHEN a new empty report is returned by the validation service
+    THEN a dormant feed email is sent.
+    """
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    report_count = 9
+    for n in range(1, report_count):
+        AVLValidationReportFactory(
+            revision=revision,
+            critical_count=0,
+            non_critical_count=0,
+            critical_score=1,
+            non_critical_score=1,
+            vehicle_activity_count=0,
+            file=None,
+            created=datetime.now().date() - timedelta(days=n),
+        )
+
+    summary = ValidationSummaryFactory(
+        critical_score=1,
+        non_critical_score=1,
+        total_error_count=0,
+        critical_error_count=0,
+        non_critical_error_count=0,
+        vehicle_activity_count=0,
+    )
+    client = Mock()
+    client.schema.return_value = SchemaValidationResponseFactory(
+        errors=[], timestamp=0, is_valid=True
+    )
+    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+    get_client.return_value = client
+
+    task_run_feed_validation(revision.dataset.id)
+
+    expected_subject = (
+        f"SIRI-VM validation: Your feed is flagged to public as {MORE_DATA_NEEDED}"
+    )
+    assert len(mailoutbox) > 0
+    assert mailoutbox[0].subject == expected_subject
+    assert f"flagged as {MORE_DATA_NEEDED}" in mailoutbox[0].body
+    assert revision.avl_validation_reports.count() == report_count
+
+
+@patch(VALIDATION_PATH)
+def test_send_flagged_major_issue(get_client, mailoutbox):
+    """
+    GIVEN an AVL datafeed with with 8 days of non-compliant reports
+    WHEN a new non-compliant report is returned with a score below the lower threshold
+    THEN a "Your feed is flagged" email is sent
+    """
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+
+    report_count = 9
+    for n in range(1, report_count):
+        AVLValidationReportFactory(
+            revision=revision,
+            critical_score=0.5,
+            non_critical_score=0.5,
+            created=datetime.now().date() - timedelta(days=n),
+        )
+
+    client = Mock()
+    summary = ValidationSummaryFactory(critical_score=0.19, non_critical_score=0.5)
+    response = ValidationResponseFactory(validation_summary=summary)
+    client.schema.return_value = SchemaValidationResponseFactory(
+        errors=[], is_valid=True
+    )
+    client.validate.return_value = response
+    get_client.return_value = client
+
+    task_run_feed_validation(revision.dataset.id)
+
+    expected_subject = "Action required - SIRI-VM validation report requires resolution"
+    assert len(mailoutbox) > 0
+    assert mailoutbox[0].subject == expected_subject
+    assert "as having major errors" in mailoutbox[0].body
+    assert revision.avl_validation_reports.count() == report_count
+
+
+@patch(VALIDATION_PATH)
+def test_send_status_changed_email(get_client, mailoutbox):
+    """
+    GIVEN an AVL datafeed with with 8 days of compliant reports
+    WHEN a new non-compliant report is returned that brings the weighted average
+    below the upper threshold
+    THEN a non-compliant email is sent
+    """
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    report_count = 9
+    for n in range(1, report_count):
+        AVLValidationReportFactory(
+            revision=revision,
+            critical_score=0.7,
+            non_critical_score=0.8,
+            vehicle_activity_count=10,
+            created=datetime.now().date() - timedelta(days=n),
+        )
+
+    summary = ValidationSummaryFactory(
+        critical_score=0.6, non_critical_score=0.5, vehicle_activity_count=1000
+    )
+    client = Mock()
+    client.schema.return_value = SchemaValidationResponseFactory(
+        errors=[], is_valid=True
+    )
+    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+    get_client.return_value = client
+    task_run_feed_validation(revision.dataset.id)
+
+    expected_subject = "SIRI-VM compliance status changed to Non-compliant"
+    assert len(mailoutbox) > 0
+    assert mailoutbox[0].subject == expected_subject
+    assert "The SIRI-VM compliance status has changed" in mailoutbox[0].body
+    assert revision.avl_validation_reports.count() == report_count
+
+
+@patch("transit_odp.avl.tasks.get_validation_client")
+def test_send_schema_validation_passes(get_client, mailoutbox):
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    summary = ValidationSummaryFactory(
+        critical_score=1, non_critical_score=1, vehicle_activity_count=1000
+    )
+    client = Mock()
+    client.schema.return_value = SchemaValidationResponseFactory()
+    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+    get_client.return_value = client
+
+    assert AVLSchemaValidationReport.objects.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+    assert len(mailoutbox) == 0
+    assert AVLSchemaValidationReport.objects.count() == 0
+
+
+@patch("transit_odp.avl.tasks.get_validation_client")
+def test_feed_validation_can_handle_empty_response(get_client):
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    summary = ValidationSummaryFactory(
+        critical_score=1,
+        non_critical_score=1,
+        total_error_count=0,
+        critical_error_count=0,
+        non_critical_error_count=0,
+        vehicle_activity_count=0,
+    )
+
+    client = Mock()
+    client.schema.return_value = SchemaValidationResponseFactory(
+        is_valid=True, errors=[], timestamp=0
+    )
+    client.validate.return_value = ValidationResponseFactory(
+        packet_count=0, feed_id=revision.dataset_id, validation_summary=summary
+    )
+    get_client.return_value = client
+
+    assert revision.avl_validation_reports.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+    assert revision.avl_validation_reports.count() == 1
+    report = revision.avl_validation_reports.first()
+    assert report is not None
+    assert not report.file
+
+
+@patch("transit_odp.avl.tasks.get_cavl_service")
+@patch("transit_odp.avl.tasks.get_validation_client")
+def test_send_schema_validation_fails(get_client, get_cavl, mailoutbox):
+    user = UserFactory(account_type=OrgAdminType)
+    user.settings.daily_compliance_check_alert = True
+    user.settings.save()
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    errors = SchemaErrorFactory.create_batch(3)
+    response = SchemaValidationResponseFactory(is_valid=False, errors=errors)
+    client = Mock()
+    client.schema.return_value = response
+    get_client.return_value = client
+    cavl = Mock()
+    get_cavl.return_value = cavl
+
+    assert AVLSchemaValidationReport.objects.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+    revision.refresh_from_db()
+    assert len(mailoutbox) == 1
+    assert mailoutbox[0].subject == "Error publishing data feed"
+    assert AVLSchemaValidationReport.objects.count() == 1
+    assert revision.status == FeedStatus.inactive.value
+    cavl.delete_feed.assert_called_once_with(feed_id=revision.dataset_id)

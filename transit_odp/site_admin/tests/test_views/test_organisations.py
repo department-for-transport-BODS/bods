@@ -132,6 +132,21 @@ class TestOrganisationCreateView:
     host = config.hosts.ADMIN_HOST
     url = reverse("users:organisation-new", host=config.hosts.ADMIN_HOST)
     target_module = "transit_odp.users.views.site_management"
+    invitee_email = "invited_org_admin@testO.com"
+    test_organisation_name = "Test Organisation"
+    test_organisation_short_name = "testO"
+    default_form_data = {
+        "nocs-__prefix__-DELETE": "",
+        "nocs-__prefix__-noc": "",
+        "nocs-__prefix__-id": "",
+        "nocs-TOTAL_FORMS": "3",
+        "nocs-INITIAL_FORMS": "0",
+        "nocs-MIN_NUM_FORMS": "1",
+        "nocs-MAX_NUM_FORMS": "1000",
+        "name": test_organisation_name,
+        "short_name": test_organisation_short_name,
+        "email": invitee_email,
+    }
 
     def test_view_permission_mixin(self):
         """Tests the view subclasses SiteAdminViewMixin.
@@ -159,41 +174,25 @@ class TestOrganisationCreateView:
         client = client_factory(host=self.host)
         user = UserFactory(account_type=AccountType.site_admin.value)
         client.force_login(user=user)
-        invitee_email = "invited_org_admin@testO.com"
-        test_organisation_name = "Test Organisation"
-        test_organisation_short_name = "testO"
-        data = {
-            "name": test_organisation_name,
-            "short_name": test_organisation_short_name,
-            "email": invitee_email,
-        }
-        data.update({f"nocs-{n}-noc": f"noc{n}" for n in range(3)})
-        data.update({f"nocs-{n}-id": "" for n in range(3)})
-        data.update({f"nocs-{n}-DELETE": "" for n in range(3)})
-        data.update(
-            {
-                "nocs-__prefix__-DELETE": "",
-                "nocs-__prefix__-noc": "",
-                "nocs-__prefix__-id": "",
-            }
-        )
-        data.update(
-            {
-                "nocs-TOTAL_FORMS": "3",
-                "nocs-INITIAL_FORMS": "0",
-                "nocs-MIN_NUM_FORMS": "1",
-                "nocs-MAX_NUM_FORMS": "1000",
-            }
-        )
+        data = self.default_form_data.copy()
+        for index in range(3):
+            data.update(
+                {
+                    f"nocs-{index}-noc": f"noc{index}",
+                    f"nocs-{index}-id": "",
+                    f"nocs-{index}-DELETE": "",
+                }
+            )
+
         response = client.post(self.url, data)
         organisation = Organisation.objects.get(name="Test Organisation")
-        invite = Invitation.objects.get(email=invitee_email)
+        invite = Invitation.objects.get(email=self.invitee_email)
 
         assert (
             response.status_code == 302
         ), "assert we get successfully get redirected on POST "
         assert (
-            organisation.short_name == test_organisation_short_name
+            organisation.short_name == self.test_organisation_short_name
         ), "assert we created the correct organisation"
         assert (
             organisation.nocs.count() == 3
@@ -202,14 +201,72 @@ class TestOrganisationCreateView:
             mailoutbox[-1].subject == "You have been invited to publish bus data"
         ), "assert we receive an email"
         assert (
-            mailoutbox[-1].to[0] == invitee_email
+            mailoutbox[-1].to[0] == self.invitee_email
         ), "assert email is sent to correct person"
         assert (
             invite.is_key_contact is True
         ), "assert invite is created with key contact flag set to true"
         assert (
-            invite.email == invitee_email
+            invite.email == self.invitee_email
         ), "assert invite is created with correct email"
+
+    def test_empty_nocs_fail_loudly(self, client_factory):
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        data.update(
+            {
+                "nocs-0-noc": "",
+                "nocs-0-id": "",
+                "nocs-0-DELETE": "",
+                "nocs-TOTAL_FORMS": "1",
+            }
+        )
+
+        response = client.post(self.url, data)
+        assert response.status_code == 200
+        expected = "National Operator Code cannot be blank"
+        assert response.context_data["form"].nested_noc.errors[0]["noc"][0] == expected
+
+    def test_absent_nocs_fail_loudly(self, client_factory):
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        data.update(
+            {
+                "nocs-0-noc": "",
+                "nocs-0-id": "",
+                "nocs-0-DELETE": "",
+                "nocs-TOTAL_FORMS": "1",
+            }
+        )
+
+        response = client.post(self.url, data)
+        assert response.status_code == 200
+        expected = "Please submit 1 or more National Operator Codes"
+        assert response.context_data["form"].nested_noc.non_form_errors()[0] == expected
+
+    def test_clashing_nocs_fail_loudly(self, client_factory):
+        OrganisationFactory(nocs=["clash1"])
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        data.update(
+            {
+                "nocs-0-noc": "clash1",
+                "nocs-0-id": "",
+                "nocs-0-DELETE": "",
+                "nocs-TOTAL_FORMS": "1",
+            }
+        )
+
+        response = client.post(self.url, data)
+        assert response.status_code == 200
+        expected = "Operator code with this National Operator Code already exists."
+        assert response.context_data["form"].nested_noc.errors[0]["noc"][0] == expected
 
 
 class TestOrganisationDetailView:

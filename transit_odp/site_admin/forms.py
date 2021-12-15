@@ -47,6 +47,7 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
                 "class": "govuk-!-width-three-quarters",
             }
         ),
+        error_messages={"required": _("Enter the email address of the key contact")},
     )
 
     def __init__(self, *args, **kwargs):
@@ -65,23 +66,41 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             {"required": _("Enter the organisation short name")}
         )
 
-        self.nested = NOCFormset(
+        self.nested_noc = NOCFormset(
             instance=self.instance,
             data=self.data if self.is_bound else None,
             files=self.files if self.is_bound else None,
         )
+
+    def get_helper_properties(self):
+        props = super().get_helper_properties()
+        props.update({"nested_noc": self.nested_noc})
+        return props
 
     def get_layout(self):
         return Layout(
             "name",
             "short_name",
             "email",
-            InlineFormset("nested"),
+            InlineFormset("nested_noc"),
             ButtonHolder(
                 ButtonSubmit(name="submit", content=_("Send Invitation")),
                 LinkButton(url=self.cancel_url, content="Cancel"),
             ),
         )
+
+    def is_valid(self):
+        """
+        Also validate the nested formsets.
+        """
+        is_valid = super().is_valid()
+        noc = self.nested_noc.is_valid()
+        return all((is_valid, noc))
+
+    def save(self, commit=True):
+        inst = super().save(commit=commit)
+        self.nested_noc.save(commit=commit)
+        return inst
 
 
 class OrganisationContactEmailForm(CleanEmailMixin, GOVUKForm):

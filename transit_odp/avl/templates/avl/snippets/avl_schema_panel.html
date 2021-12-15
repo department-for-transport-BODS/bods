@@ -1,0 +1,38 @@
+{% load i18n %}
+{% load static %}
+<section>
+  <div class="app-dqs-panel">
+    <div class="app-dqs-panel__body">
+      <div class="app-dqs-panel__success">
+        <h2 class="govuk-heading-m">Validation check - Failed</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
+            The validation report checks for compliance against the mandated
+            SIRI-VM profile as prescribed by the DfT.
+          {% endblocktrans %}
+        </p>
+        <p class="govuk-body">
+          <a class="govuk-link"
+            href="{% url 'avl:schema-report-download' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">
+            Download validation report
+          </a>
+        </p>
+         <p class="govuk-body">
+
+          {% blocktrans %}
+          The AVL data supplied is not compliant and cannot be submitted to
+          BODS as per the
+          {% endblocktrans %}
+          <a class="govuk-link"
+            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+            {% trans "guidance." %}
+          </a>
+          {% blocktrans %}
+          To pass the validation please address all outstanding issues in the
+          validation report.
+          {% endblocktrans %}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

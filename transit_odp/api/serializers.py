@@ -96,7 +96,9 @@ class FaresDatasetSerializer(serializers.ModelSerializer):
 class DatasetSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     created = serializers.DateTimeField(format=GMT_FORMAT)
-    modified = serializers.DateTimeField(format=GMT_FORMAT)
+    modified = serializers.DateTimeField(
+        format=GMT_FORMAT, source="live_revision.published_at"
+    )
     operatorName = serializers.CharField(source="organisation.name")
     noc = serializers.SlugRelatedField(
         many=True, read_only=True, slug_field="noc", source="organisation.nocs"

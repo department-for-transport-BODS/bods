@@ -8,20 +8,43 @@ from typing import Optional
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import requests
+from cavl_client.rest import ApiException
 from celery import shared_task
 from django.conf import settings
 from django.core.files import File
+from django.db import transaction
 from django.utils import timezone
 from requests import RequestException
 from urllib3.exceptions import ReadTimeoutError
 
 from transit_odp.avl.archivers import GTFSRTArchiver
-from transit_odp.avl.models import CAVLDataArchive, CAVLValidationTaskResult
+from transit_odp.avl.constants import (
+    AWAITING_REVIEW,
+    LOWER_THRESHOLD,
+    MORE_DATA_NEEDED,
+    NON_COMPLIANT,
+    PARTIALLY_COMPLIANT,
+    UNDERGOING,
+)
+from transit_odp.avl.models import (
+    AVLSchemaValidationReport,
+    AVLValidationReport,
+    CAVLDataArchive,
+    CAVLValidationTaskResult,
+)
 from transit_odp.avl.notifications import (
+    send_avl_compliance_status_changed,
     send_avl_feed_down_notification,
+    send_avl_flagged_with_compliance_issue,
+    send_avl_flagged_with_major_issue,
+    send_avl_report_requires_resolution_notification,
+    send_avl_schema_check_fail,
     send_avl_status_changed_notification,
 )
+from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.validation import get_validation_client
 from transit_odp.bods.interfaces.plugins import get_cavl_service
+from transit_odp.common.loggers import get_datafeed_adapter
 from transit_odp.organisation.constants import (
     AVLFeedDeploying,
     AVLFeedDown,
@@ -31,9 +54,10 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 SIRI_ZIP = "sirivm_{}.zip"
+VALIDATION_SAMPLE_SIZE = 50
 
 
 @dataclass
@@ -66,17 +90,17 @@ def task_validate_avl_feed(task_id: str):
     try:
         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
     except CAVLValidationTaskResult.DoesNotExist:
-        log.warning(f"CAVLValidationTaskResult {task_id} does not exist")
+        logger.warning(f"CAVLValidationTaskResult {task_id} does not exist")
         return
 
     revision = task.revision
     try:
         response = cavl_validate_revision(revision)
     except ReadTimeoutError:
-        log.warning("Request to Validation Service timed out.", exc_info=True)
+        logger.warning("Request to Validation Service timed out.", exc_info=True)
         task.to_timeout_error()
     except Exception:
-        log.warning("Exception occurred with CAVL service", exc_info=True)
+        logger.warning("Exception occurred with CAVL service", exc_info=True)
         task.to_system_error()
     else:
         if response.status == CAVLValidationTaskResult.VALID:
@@ -101,7 +125,7 @@ def task_create_sirivm_zipfile(self):
     try:
         response = requests.get(URL)
     except RequestException:
-        log.error("Unable to retrieve siri vm data.", exc_info=True)
+        logger.error("Unable to retrieve siri vm data.", exc_info=True)
     else:
         bytesio = io.BytesIO()
         with ZipFile(bytesio, mode="w", compression=ZIP_DEFLATED) as zf:
@@ -124,12 +148,12 @@ def task_create_sirivm_zipfile(self):
 def task_create_gtfsrt_zipfile():
     url = f"{settings.CAVL_CONSUMER_URL}/gtfsrtfeed"
     _prefix = f"[GTFSRTArchiving] URL {url} => "
-    log.debug(_prefix + "Begin archiving GTFSRT data.")
+    logger.debug(_prefix + "Begin archiving GTFSRT data.")
     start = time.time()
     archiver = GTFSRTArchiver(url)
     archiver.archive()
     end = time.time()
-    log.debug(_prefix + f"Finished archivng in {end-start:.2f} seconds.")
+    logger.debug(_prefix + f"Finished archivng in {end-start:.2f} seconds.")
 
 
 @shared_task(ignore_result=True)
@@ -162,7 +186,7 @@ def task_monitor_avl_feeds():
             )
             update_list.append(dataset)
 
-    log.info(f"{len(update_list)} - AVL data feeds to update")
+    logger.info(f"{len(update_list)} - AVL data feeds to update")
     Dataset.objects.bulk_update(update_list, ["avl_feed_status"])
     DatasetRevision.objects.bulk_update(
         [dataset.live_revision for dataset in update_list], ["status"]
@@ -172,3 +196,78 @@ def task_monitor_avl_feeds():
         send_avl_status_changed_notification(dataset)
         if dataset.avl_feed_status == AVLFeedDown:
             send_avl_feed_down_notification(dataset)
+
+
+@shared_task()
+def task_run_avl_validations():
+    feeds = AVLDataset.objects.get_datafeeds_to_validate()
+    logger.info(f"AVL Validation - {feeds.count()} feeds to validate")
+    for feed in feeds:
+        task_run_feed_validation.delay(feed.id)
+
+
+@shared_task()
+def task_run_feed_validation(feed_id: int):
+    adapter = get_datafeed_adapter(logger, feed_id)
+    client = get_validation_client()
+
+    adapter.info("Validating feed against SIRI-VM schema.")
+    response = client.schema(feed_id=feed_id)
+
+    if len(response.errors) > 0:
+        adapter.info("Feed failed SIRI-VM schema validation.")
+        feed = AVLDataset.objects.get(id=feed_id)
+        revision = feed.live_revision
+        with transaction.atomic():
+            AVLSchemaValidationReport.from_schema_validation_response(
+                revision_id=feed.live_revision_id, response=response
+            ).save()
+            revision.to_inactive()
+            revision.save()
+
+            cavl_service = get_cavl_service()
+            try:
+                cavl_service.delete_feed(feed_id=feed_id)
+            except ApiException as exc:
+                adapter.error("Unable to de-register feed.", exc_info=exc)
+
+            send_avl_schema_check_fail(feed)
+
+        return
+
+    adapter.info("Validating feed against BODS SIRI-VM profile.")
+    feeds = AVLDataset.objects.filter(id=feed_id).add_avl_compliance_status()
+    feed = feeds.get(id=feed_id)
+    old_status = feed.avl_compliance
+
+    response = client.validate(feed_id=feed_id, sample_size=VALIDATION_SAMPLE_SIZE)
+    if response is None:
+        adapter.error("BODS SIRI-VM profile validation failed.")
+        return
+
+    adapter.info("Creating AVLValidationReport.")
+    report = AVLValidationReport.from_validation_response(
+        revision_id=feed.live_revision_id, response=response
+    )
+    report.save()
+
+    feed = feeds.get(id=feed_id)
+    new_status = feed.avl_compliance
+    if feed.post_seven_days:
+        if new_status != old_status:
+            adapter.info("Status has changed send status changed email.")
+            send_avl_compliance_status_changed(datafeed=feed, old_status=old_status)
+
+        if report.critical_score < LOWER_THRESHOLD:
+            adapter.info(f"Critical score below lower threshold of {LOWER_THRESHOLD}.")
+            adapter.info("Sending major issue email.")
+            send_avl_flagged_with_major_issue(dataset=feed)
+        elif new_status in (PARTIALLY_COMPLIANT, NON_COMPLIANT, MORE_DATA_NEEDED):
+            adapter.info(f"Feed has a compliance status of {new_status}.")
+            adapter.info("Sending compliance issue email.")
+            send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)
+    else:
+        send_email = (old_status == UNDERGOING) and (new_status == AWAITING_REVIEW)
+        if send_email:
+            adapter.info("Sending requires resolution email.")
+            send_avl_report_requires_resolution_notification(dataset=feed)

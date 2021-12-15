@@ -17,6 +17,10 @@ DATA_DIR = Path(__file__).parent / "data"
         ("bodp3615stoppoints.xml", True),
         ("bodp3615stoppointsfail2month.xml", False),
         ("bodp3615stoppointsfailnodate.xml", False),
+        ("stoppointsinheritfromservice2months.xml", True),
+        ("stoppointsinheritfromservice2monthsplus.xml", False),
+        ("stoppointsinheritstartdatefromservice.xml", True),
+        ("stoppointsinheritenddatefromservice.xml", True),
     ],
 )
 def test_non_naptan_stop_points(filename, expected):

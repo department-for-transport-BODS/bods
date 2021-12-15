@@ -120,6 +120,16 @@ class DatasetUpdater:
 
         return new_hash != live_hash
 
+    def draft_is_different(self):
+        """
+        Checks whether the content at the end of the url is different from the current
+        draft.
+        """
+        new_hash = hashlib.sha1(self.content).hexdigest()
+        with self.draft.upload_file.open("rb") as f:
+            draft_hash = hashlib.sha1(f.read()).hexdigest()
+        return new_hash != draft_hash
+
     def start_new_revision(self):
         if self.draft is None:
             revision = self.dataset.start_revision(comment=DEFUALT_COMMENT)
@@ -146,6 +156,12 @@ def update_dataset(dataset: Dataset, publish_task):
             send_endpoint_available_notification(updater.dataset)
 
         if updater.has_new_update():
+            if updater.draft and not updater.draft_is_different():
+                adapter.info(
+                    "Current draft is the same as the remote content - doing nothing."
+                )
+                return
+
             adapter.info("New data available.")
             new_revision = updater.start_new_revision()
             if new_revision is not None:

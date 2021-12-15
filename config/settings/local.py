@@ -133,4 +133,5 @@ SHELL_PLUS_IMPORTS = [
         "from transit_odp.organisation.constants import TimetableType, FaresType, "
         "AVLType"
     ),
+    "from transit_odp.avl.proxies import AVLDataset",
 ]

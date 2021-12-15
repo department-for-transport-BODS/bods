@@ -1,0 +1,18 @@
+Hello,
+
+The following data feed on the Bus Open Data service has been flagged as having major errors in the SIRI-VM validation report.
+
+Please note it is your legal obligation to provide compliant SIRI-VM feeds in line with the DfT SIRI-VM profile.
+
+Please view the SIRI-VM validation report from the link below and action the changes:
+
+Data feed: {{ feed_id }}
+Short description: {{ feed_short_description }}
+Operator: {{ operator_name }}
+Published: {{ published_time }}
+Link: {{ link }}
+
+Additional information: if you would like to know more about how your SIRI-VM compliance status is determined, please view the {{ guidance }}.
+
+Kind regards,
+The Bus Open Data Team

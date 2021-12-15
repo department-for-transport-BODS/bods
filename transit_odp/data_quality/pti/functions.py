@@ -143,28 +143,26 @@ def validate_run_time(context, timing_links):
     """
     timing_link = timing_links[0]
     ns = {"x": timing_link.nsmap.get(None)}
-
     run_time = timing_link.xpath("string(x:RunTime)", namespaces=ns)
-    journey_pattern_timing_link_ref = timing_link.xpath("string(@id)", namespaces=ns)
-
-    xpath = (
-        "//x:VehicleJourneyTimingLink"
-        f"[x:JourneyPatternTimingLinkRef='{journey_pattern_timing_link_ref}']"
-    )
-    from_xpath = xpath + "/x:From"
-    from_ = timing_link.xpath(from_xpath, namespaces=ns)
-    to_xpath = xpath + "/x:To"
-    to_ = timing_link.xpath(to_xpath, namespaces=ns)
-    has_from_to = any([from_, to_])
-
     try:
         time_duration = parse_duration(run_time).time
     except DurationParsingException:
-        zero_run_time = True
+        has_run_time = False
     else:
-        zero_run_time = time_duration == ZERO_TIME_DURATION
+        has_run_time = not time_duration == ZERO_TIME_DURATION
 
-    if not zero_run_time and has_from_to:
+    journey_pattern_timing_link_ref = timing_link.xpath("string(@id)", namespaces=ns)
+    xpath = (
+        "//x:VehicleJourney/x:VehicleJourneyTimingLink"
+        f"[x:JourneyPatternTimingLinkRef='{journey_pattern_timing_link_ref}']"
+    )
+
+    vj_timing_link = timing_link.xpath(xpath, namespaces=ns)
+    if has_run_time and len(vj_timing_link) == 0:
+        return True
+    elif has_run_time and vj_timing_link[0].xpath("x:From", namespaces=ns):
+        return False
+    elif has_run_time and vj_timing_link[0].xpath("x:To", namespaces=ns):
         return False
 
     return True

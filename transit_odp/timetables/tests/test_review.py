@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from django.utils.timezone import now
 from django_hosts import reverse
@@ -58,9 +60,21 @@ class TestPublishReview:
         assert len(mailoutbox) == 1
         assert mailoutbox[0].subject == "Data set published"
 
-    def test_draft_revision_notifies_on_publish_with_pti_errors(
-        self, client_factory, mailoutbox
+    def test_pti_hardblock_template_is_used_for_drafts_which_fail_pti(
+        self, client_factory
     ):
+        PTIObservationFactory(revision=self.revision)
+        client = client_factory(host=self.host)
+        client.force_login(self.user)
+
+        response = client.get(self.url)
+
+        assert response.status_code == 200
+        assert "publish/revision_review/pti_hard_fail.html" in [
+            t.name for t in response.templates
+        ]
+
+    def test_form_cant_publish_draft_datasets_which_fail_pti(self, client_factory):
         PTIObservationFactory(revision=self.revision)
         client = client_factory(host=self.host)
         client.force_login(self.user)
@@ -73,14 +87,7 @@ class TestPublishReview:
             },
         )
 
-        fished_out_dataset = Dataset.objects.get(id=self.revision.dataset.id)
-        assert response.status_code == 302
-        assert fished_out_dataset.live_revision == self.revision
-        assert len(mailoutbox) == 1
-        assert (
-            mailoutbox[0].subject
-            == "Action required – PTI validation report requires resolution"
-        )
+        assert response.status_code == 200
 
     def test_draft_notifies_on_publish_new_revision(self, client_factory, mailoutbox):
         self.revision.is_published = True
@@ -122,3 +129,35 @@ class TestPublishReviewByAgent(TestPublishReview):
             organisation=self.user.organisations.first(),
             status=AgentUserInvite.ACCEPTED,
         )
+
+
+def test_old_datasets_use_pti_hardblock_templates(client_factory):
+    the_past = datetime(2020, 1, 1)
+    user = UserFactory(account_type=OrgAdminType)
+    revision = DatasetRevisionFactory(
+        dataset__contact=user,
+        dataset__dataset_type=TimetableType,
+        dataset__organisation=user.organisations.first(),
+        dataset__created=the_past,
+        dataset__modified=the_past,
+        is_published=False,
+        created=the_past,
+        modified=the_past,
+    )
+    url = reverse(
+        "revision-publish",
+        host=PUBLISH_HOST,
+        kwargs={
+            "pk": revision.dataset.id,
+            "pk1": revision.dataset.organisation.id,
+        },
+    )
+    client = client_factory(host=PUBLISH_HOST)
+    client.force_login(user)
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert "publish/revision_review/pti_hard_fail.html" in [
+        t.name for t in response.templates
+    ]

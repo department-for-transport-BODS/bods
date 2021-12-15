@@ -294,7 +294,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                # custom context processors
                 "transit_odp.common.context_processors.site",
                 "transit_odp.common.context_processors.host",
                 "transit_odp.common.context_processors.js_bundle_init",
@@ -397,15 +396,12 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 """
 BODP-519 account validation and password reset emails should expire after 24 hours
 
-Note - the crypo algorithm in allauth only has precision of 1 day. Therefore, if the user generates an email
- 5 minutes before midnight, the link will expire 5 minutes later as this counts as a day.
-
-Note - account_email is checked with >= whereas password_reset is just >. Therefore, password reset times out after
- 0 days.
+Note - the crypo algorithm in allauth only has precision of 1 day. Therefore, if
+the user generates an email 5 minutes before midnight, the link will expire
+5 minutes later as this counts as a day.
 """
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
-
-PASSWORD_RESET_TIMEOUT_DAYS = 0
+PASSWORD_RESET_TIMEOUT = 86400
 
 # BODP-519 verification emails should become invalid when superseded by an new email
 #  by storing emails in EmailConfirmation model - we can delete the 'superseded' emails
@@ -475,7 +471,7 @@ GOV_NOTIFY_API_KEY = env("GOV_NOTIFY_API_KEY")
 # Data Quality Service
 # ------------------------------------------------------------------------------
 DQS_URL = env("DQS_URL")
-DQS_WAIT_TIMEOUT = 30  # minutes
+DQS_WAIT_TIMEOUT = env("DQS_WAIT_TIMEOUT", cast=int, default=30)  # minutes
 
 
 # ClamAV
@@ -511,6 +507,8 @@ IS_AVL_FEATURE_FLAG_ENABLED = env("IS_AVL_FEATURE_FLAG_ENABLED", default=False)
 CAVL_URL = env("CAVL_URL")
 CAVL_SERVICE = "transit_odp.bods.adapters.gateways.cavl.CAVLService"
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
+CAVL_VALIDATION_URL = env("CAVL_VALIDATION_URL")
+AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
 
 # Fares Service
 # ------------------------------------------------------------------------------

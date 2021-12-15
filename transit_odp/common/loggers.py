@@ -29,7 +29,18 @@ class DatasetPipelineLoggerContext(LoggerContext):
     component_name = "TimetablePipeline"
 
 
+class DatafeedPipelineLoggerContext(LoggerContext):
+    class_name = "AVLDataset"
+    component_name = "AVLPipeline"
+
+
 def get_dataset_adapter_from_revision(logger, revision) -> PipelineAdapter:
     context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
+    adapter = PipelineAdapter(logger, {"context": context})
+    return adapter
+
+
+def get_datafeed_adapter(logger, feed_id: int) -> PipelineAdapter:
+    context = DatafeedPipelineLoggerContext(object_id=feed_id)
     adapter = PipelineAdapter(logger, {"context": context})
     return adapter

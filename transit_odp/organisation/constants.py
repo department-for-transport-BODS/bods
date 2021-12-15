@@ -21,6 +21,14 @@ class FeedStatus(ChoiceEnum):
         return (self == self.live) or (self == self.expiring) or (self == self.warning)
 
 
+PENDING = FeedStatus.pending.value
+EXPIRED = FeedStatus.expired.value
+LIVE = FeedStatus.live.value
+ERROR = FeedStatus.error.value
+INACTIVE = FeedStatus.inactive.value
+DELETED = FeedStatus.deleted.value
+SUCCESS = FeedStatus.success.value
+
 EXPIRY_NOTIFY_THRESHOLD = 30
 
 # We use the same display value for multiple db values (see status_indicator.html)

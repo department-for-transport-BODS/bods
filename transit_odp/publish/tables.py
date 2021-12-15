@@ -32,6 +32,11 @@ class DatasetTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         attrs = {"th": {"class": "govuk-table__header"}}
 
+    def render_modified(self, value, record=None):
+        if record.published_at:
+            return record.published_at
+        return value
+
     # Expiry
     def render_first_expiring_service(self, value):
         return format_html(

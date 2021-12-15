@@ -47,6 +47,11 @@ urlpatterns = [
                     name="revision-delete",
                 ),
                 path(
+                    "delete-success",
+                    view=views.RevisionDeleteSuccessView.as_view(),
+                    name="revision-delete-success",
+                ),
+                path(
                     "success/",
                     view=views.RevisionPublishSuccessView.as_view(),
                     name="revision-publish-success",
@@ -129,10 +134,5 @@ urlpatterns = [
                 ),
             ]
         ),
-    ),
-    path(
-        "delete-success",
-        view=views.RevisionDeleteSuccessView.as_view(),
-        name="revision-delete-success",
     ),
 ]

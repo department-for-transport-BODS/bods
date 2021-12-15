@@ -60,6 +60,7 @@ class NOCForm(BaseFormsetForm):
     noc = forms.CharField(
         label="National Operator Code",
         widget=forms.TextInput(attrs={"aria-label": "nocs-input-0"}),
+        error_messages={"required": "National Operator Code cannot be blank"},
     )
 
     class Meta:
@@ -151,6 +152,17 @@ class BaseInlineNOCFormset(BaseInlineFormset):
             form.fields["noc"].widget.attrs.update(
                 {"aria-label": f"nocs-input-{index}"}
             )
+
+    def non_form_errors(self):
+        errors = super().non_form_errors()
+        for error in errors.data:
+            # Cant find a better way of changing this error message.
+            # maybe in the next version of django the error_messages kwarg will work
+            if error.code == "too_few_forms":
+                error.message = (
+                    f"Please submit {self.min_num} or more National Operator Codes"
+                )
+        return errors
 
 
 class BaseInlinePSVFormset(BaseInlineFormset):

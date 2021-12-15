@@ -84,11 +84,6 @@ urlpatterns = [
                                             view=transit_odp.avl.views.dataset_review.UpdateRevisionPublishView.as_view(),  # noqa E501
                                             name="revision-update-publish",
                                         ),
-                                        # path(
-                                        #     "update",
-                                        #     view=views.DatasetUpdateModify.as_view(),  # noqa E501
-                                        #     name="update-modify",
-                                        # ),
                                     ]
                                 ),
                             ),
@@ -126,6 +121,16 @@ urlpatterns = [
                     "changelog/",
                     view=views.ChangeLogView.as_view(),
                     name="feed-changelog",
+                ),
+                path(
+                    "validation-report/",
+                    view=views.ValidationFileDownloadView.as_view(),
+                    name="validation-report-download",
+                ),
+                path(
+                    "schema-report/",
+                    view=views.SchemaValidationFileDownloadView.as_view(),
+                    name="schema-report-download",
                 ),
             ]
         ),

@@ -17,10 +17,15 @@
     </thead>
     <tbody class="govuk-table__body" id="id_{{ formset.prefix }}-formset">
     {% for form in formset %}
-      {% if forloop.counter <= formset.initial_forms|length  or form.cleaned_data %}
-        {# No need to show newly created empty forms #}
+      {% if forloop.counter <= formset.min_num or forloop.counter <= formset.initial_forms|length or form.cleaned_data %}
+        {# show the form in the following conditions #}
+        {# at least the minimum number of nested forms specified #}
+        {# are already in the database #}
+        {# have been returned by the backend (probably failures) #}
         {% crispy form %}
       {% endif %}
+      {# The others are going to be the ones that have been instantiated by the user #}
+      {# but then deleted #}
     {% endfor %}
     </tbody>
     <tfoot>

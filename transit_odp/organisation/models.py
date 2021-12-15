@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Optional, cast
 
 from cavl_client.rest import ApiException
+from django.conf import settings
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.files.base import ContentFile
 from django.db import models
@@ -434,6 +435,9 @@ class DatasetRevision(
         """
         Returns if a DatasetRevision is PTI compliant.
         """
+        if self.modified.date() < settings.PTI_START_DATE.date():
+            return False
+
         if self.has_pti_result:
             return self.pti_result.is_compliant
 

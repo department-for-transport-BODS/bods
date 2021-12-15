@@ -11,7 +11,6 @@ from django.db.models import (
     CharField,
     Count,
     F,
-    IntegerField,
     Max,
     Min,
     OuterRef,
@@ -22,19 +21,10 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.fields import BooleanField
 from django.db.models.functions import Coalesce, Lower, Substr
 from django.db.models.query import Prefetch
 from django.utils import timezone
-from django_hosts import reverse
 
-from transit_odp.avl.constants import (
-    AWAITING_REVIEW,
-    COMPLIANT,
-    NON_COMPLIANT,
-    PARTIALLY_COMPLIANT,
-    UNDERGOING,
-)
 from transit_odp.organisation.constants import (
     AVLType,
     DatasetType,
@@ -47,9 +37,6 @@ from transit_odp.timetables.constants import TXC_21
 from transit_odp.users.constants import AccountType
 
 User = get_user_model()
-
-
-# flake8: noqa: E501
 
 
 class OrganisationQuerySet(models.QuerySet):
@@ -167,7 +154,7 @@ class OrganisationQuerySet(models.QuerySet):
         unregistered_service_count = Count(
             "dataset",
             filter=Q(
-                dataset__live_revision__txc_file_attributes__service_code__startswith="UZ"
+                dataset__live_revision__txc_file_attributes__service_code__startswith="UZ"  # noqa: E501
             ),
         )
         return self.annotate(unregistered_service_count=unregistered_service_count)
@@ -186,8 +173,8 @@ class OrganisationQuerySet(models.QuerySet):
     def add_number_of_services_valid_operating_date(self):
         today = datetime.today()
         valid_today = Q(
-            dataset__live_revision__txc_file_attributes__operating_period_start_date__lte=today,
-            dataset__live_revision__txc_file_attributes__operating_period_end_date__gte=today,
+            dataset__live_revision__txc_file_attributes__operating_period_start_date__lte=today,  # noqa: E501
+            dataset__live_revision__txc_file_attributes__operating_period_end_date__gte=today,  # noqa: E501
         )
         return self.annotate(
             number_of_services_valid_operating_date=Count(
@@ -199,7 +186,7 @@ class OrganisationQuerySet(models.QuerySet):
     def add_published_services_with_future_start_date(self):
         today = datetime.today()
         future_start = Q(
-            dataset__live_revision__txc_file_attributes__operating_period_start_date__gt=today
+            dataset__live_revision__txc_file_attributes__operating_period_start_date__gt=today  # noqa: E501
         )
         return self.annotate(
             published_services_with_future_start_date=Count(
@@ -313,7 +300,7 @@ class DatasetQuerySet(models.QuerySet):
                     GROUP BY "organisation_dataset"."modified", "organisation_dataset"."created", "organisation_dataset".id, b."id", b."status", b.name, b.first_expiring_service, b.num_of_lines, b.short_description, b.published_at
                     ORDER BY "organisation_dataset"."modified" DESC, "organisation_dataset"."created" DESC
 
-                """,
+                """,  # noqa: E501
             [organisation.id, types],
         )
 
@@ -402,62 +389,6 @@ class DatasetQuerySet(models.QuerySet):
             qs = qs.filter(dataset_type=dataset_type)
 
         return qs
-
-    def add_critical_exists(self):
-        """
-        Annotates True or False depending on whether any critical violations
-        occur on a datasets last 7 reports.
-        """
-        from transit_odp.avl.models import AVLValidationReport
-
-        last_week = timezone.now().date() - timedelta(days=7)
-        critical_reports = AVLValidationReport.objects.filter(
-            revision=OuterRef("live_revision_id"),
-            created__gt=last_week,
-            critical_count__gt=0,
-        )
-        return self.annotate(critical_exists=Exists(critical_reports))
-
-    def add_non_critical_exists(self):
-        """
-        Annotates True or False depending on whether any non critical violations
-        occur on a datasets last 7 reports.
-        """
-        from transit_odp.avl.models import AVLValidationReport
-
-        last_week = timezone.now().date() - timedelta(days=7)
-        critical_reports = AVLValidationReport.objects.filter(
-            revision=OuterRef("live_revision_id"),
-            created__gt=last_week,
-            non_critical_count__gt=0,
-        )
-        return self.annotate(non_critical_exists=Exists(critical_reports))
-
-    def add_avl_compliance_status(self):
-        qs = (
-            self.add_non_critical_exists()
-            .add_critical_exists()
-            .annotate(avl_report_count=Count("live_revision__avl_validation_reports"))
-        )
-        pre_7_days = Q(avl_report_count__lte=7)
-        post_7_days = Q(avl_report_count__gt=7)
-
-        no_critical = Q(critical_exists=False)
-        no_non_critical = Q(non_critical_exists=False)
-        no_errors = no_critical & no_non_critical
-        has_partial_errors = Q(non_critical_exists=True) & no_critical
-
-        return qs.annotate(
-            avl_compliance=Case(
-                When(pre_7_days & no_errors, then=Value(UNDERGOING)),
-                When(pre_7_days & ~no_critical, then=Value(AWAITING_REVIEW)),
-                When(post_7_days & ~no_critical, then=Value(NON_COMPLIANT)),
-                When(post_7_days & has_partial_errors, then=Value(PARTIALLY_COMPLIANT)),
-                When(post_7_days & no_errors, then=Value(COMPLIANT)),
-                default=Value(UNDERGOING),
-                output_field=CharField(),
-            )
-        )
 
     def search(self, keywords):
         """Searches the dataset and live_revision using keywords"""

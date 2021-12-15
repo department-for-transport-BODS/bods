@@ -2,7 +2,11 @@ from .dataset_archive import AVLFeedArchiveSuccessView, AVLFeedArchiveView
 from .dataset_changelog import ChangeLogView
 from .dataset_create import AVLUploadWizard
 from .dataset_delete import RevisionDeleteAVLView, RevisionDeleteSuccessView
-from .dataset_detail import AvlFeedDetailView
+from .dataset_detail import (
+    AvlFeedDetailView,
+    SchemaValidationFileDownloadView,
+    ValidationFileDownloadView,
+)
 from .dataset_list import ListView
 from .dataset_review import (
     PublishErrorView,
@@ -28,5 +32,7 @@ __all__ = [
     "RevisionDeleteSuccessView",
     "RevisionPublishSuccessView",
     "RevisionUpdateSuccessView",
+    "SchemaValidationFileDownloadView",
     "UpdateRevisionPublishView",
+    "ValidationFileDownloadView",
 ]

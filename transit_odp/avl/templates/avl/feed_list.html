@@ -44,8 +44,13 @@
         </div>
         <div class="govuk-grid-column-one-third">
           <div class="feed-stat">
-            <span class="feed-stat__value">1234</span>
-            <span class="feed-stat__label">{% trans 'Feeds need attention in ' %}<a href="{% url 'placeholder' %}">BODS compliance</a></span>
+            <span class="feed-stat__value">{{non_compliant_count}}</span>
+            <span class="feed-stat__label">{% trans 'Feeds need attention in ' %}
+              <a class="govuk-link"
+               href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+                {{ _('BODS compliance') }}
+              </a>
+            </span>
           </div>
         </div>
       </div>

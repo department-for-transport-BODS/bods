@@ -272,7 +272,7 @@ def task_scan_timetables(revision_id: int, task_id: int):
 @shared_task(bind=True, acks_late=True)
 def task_timetable_file_check(self, revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
+    revision = DatasetRevision.objects.get(id=revision_id)
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting timetable file check.")
@@ -304,7 +304,7 @@ def task_timetable_schema_check(self, revision_id: int, task_id: int):
     """A task that validates the file/s in a dataset."""
 
     task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
+    revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting timetable schema validation.")
 
@@ -355,31 +355,28 @@ def task_extract_txc_file_data(self, revision_id: int, task_id: int):
 @shared_task(bind=True, acks_late=True)
 def task_pti_validation(self, revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
+    revision = DatasetRevision.objects.get(id=revision_id)
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting PTI Profile validation.")
     try:
+        pti = get_pti_validator()
+        violations = pti.get_violations(revision=revision)
+        revision_validator = TXCRevisionValidator(revision)
+        violations += revision_validator.get_violations()
+        adapter.info(f"{len(violations)} violations found.")
+
         with transaction.atomic():
             # 'Update data' flow allows validation to occur multiple times
             # lets just delete any 'old' observations.
             # TODO remove once pti observations have been transitioned to pti results
             revision.pti_observations.all().delete()
             PTIValidationResult.objects.filter(revision_id=revision.id).delete()
-
-            pti = get_pti_validator()
-            violations = pti.get_violations(revision=revision)
-            revision_validator = TXCRevisionValidator(revision)
-            violations += revision_validator.get_violations()
-
             PTIValidationResult.from_pti_violations(
                 revision=revision, violations=violations
             ).save()
-
-            adapter.info(f"{len(violations)} violations found.")
             task.update_progress(50)
             revision.save()
-
     except ValidationException as exc:
         message = "PTI Validation failed."
         adapter.error(message, exc_info=True)
