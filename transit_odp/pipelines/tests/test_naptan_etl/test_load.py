@@ -8,14 +8,12 @@ from transit_odp.naptan.factories import (
     LocalityFactory,
     StopPointFactory,
 )
-from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
+from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
-    load_existing_districts,
     load_existing_localities,
     load_existing_stops,
     load_new_admin_areas,
-    load_new_districts,
     load_new_localities,
     load_new_stops,
 )
@@ -106,37 +104,6 @@ class TestNaptanLoad(TestCase):
             updated_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),
         )
-
-    def test_load_new_districts(self):
-        # Setup
-        new_districts = pd.DataFrame([{"id": 1, "name": "District1"}]).set_index("id")
-
-        # Test
-        load_new_districts(new_districts)
-
-        # Assert
-        created_district = District.objects.all()[0]
-
-        self.assertEqual(len(District.objects.all()), 1)
-        self.assertEqual(created_district.id, 1)
-        self.assertEqual(created_district.name, "District1")
-
-    def test_update_existing_districts(self):
-        # Setup
-        district = DistrictFactory(id=1, name="TestDistrict")
-        existing_districts = pd.DataFrame(
-            [{"id": 1, "name": "District1", "obj": district}]
-        ).set_index("id")
-
-        # Test
-        load_existing_districts(existing_districts)
-
-        # Assert
-        updated_district = District.objects.all()[0]
-
-        self.assertEqual(len(District.objects.all()), 1)
-        self.assertEqual(updated_district.id, 1)
-        self.assertEqual(updated_district.name, "District1")
 
     def test_load_new_admin_areas(self):
         # Setup

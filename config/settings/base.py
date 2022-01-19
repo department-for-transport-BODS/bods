@@ -490,7 +490,8 @@ FEED_MONITOR_MAX_RETRY_ATTEMPTS = env(
 
 # NAPTAN import URL
 NAPTAN_IMPORT_URL = env(
-    "NAPTAN_IMPORT_URL", default="http://naptan.app.dft.gov.uk/Datarequest/naptan.ashx"
+    "NAPTAN_IMPORT_URL",
+    default="https://beta-naptan.dft.gov.uk/Download/File/NaPTAN.xml",
 )
 
 # NPTG import URL

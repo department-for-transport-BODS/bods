@@ -19,6 +19,16 @@ class PipelineAdapter(LoggerAdapter):
         return msg, kwargs
 
 
+class LoaderAdapter(LoggerAdapter):
+    def __init__(self, pipeline, logger, extra=None):
+        self.pipeline = pipeline
+        super().__init__(logger, extra)
+
+    def process(self, msg, kwargs):
+        msg = f"[{self.pipeline}] => {msg}"
+        return msg, kwargs
+
+
 class MonitoringLoggerContext(LoggerContext):
     class_name = "Dataset"
     component_name = "DatasetMonitoring"

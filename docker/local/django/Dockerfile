@@ -36,7 +36,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             zlib-dev \
             postgresql-dev \
             poppler \
-            nodejs \
+            nodejs==14.18.1-r0 \
             npm \
             binutils \
             geos-dev \

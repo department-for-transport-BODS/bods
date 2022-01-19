@@ -4,7 +4,9 @@ The following data feed on the Bus Open Data service has been flagged as having 
 
 Please note it is your legal obligation to provide compliant SIRI-VM data feeds in line with the DfT SIRI-VM profile.
 
-Any outstanding errors beyond {{ deadline|date:"j F, Y" }} date would mean your feed would be labelled as non-compliant/partially compliant. If you do not know how to resolve your validation issues, please reach out to your SIRI-VM supplier.
+The SIRI-VM validator checks for mandatory fields specified within the DfT BODS profile, to support consistent SIRI-VM 2.0 output. The validator runs one randomised check per day of the provided feed over a 7-day period.
+
+Any outstanding errors still present after the 7-day validation period, would mean your feed would be labelled as non-compliant/partially compliant. If you do not know how to resolve your validation issues, please reach out to your SIRI-VM supplier.
 
 Data feed: {{ feed_id }}
 Short description: {{ feed_short_description }}

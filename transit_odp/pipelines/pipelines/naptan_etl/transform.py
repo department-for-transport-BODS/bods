@@ -62,3 +62,33 @@ def get_new_data(naptan_data, db_data):
 def get_existing_data(naptan_data, db_data, merge_on_field):
     existing_data = pd.merge(naptan_data, db_data, how="inner", on=merge_on_field)
     return existing_data
+
+
+def drop_stops_with_invalid_admin_areas(
+    stops: pd.DataFrame, admin_areas: pd.DataFrame
+) -> pd.DataFrame:
+    bad_stops = stops[~stops.admin_area_id.isin(admin_areas.index)]
+    bad_count = len(bad_stops)
+    if bad_count:
+        bad_admin_areas = bad_stops.admin_area_id.unique()
+        bad_codes = ", ".join(str(code) for code in bad_admin_areas)
+        logger.warning(
+            f"Found {bad_count} with incorrect admin area codes {bad_codes}."
+        )
+
+    good_stops = stops[stops.admin_area_id.isin(admin_areas.index)]
+    return good_stops
+
+
+def drop_stops_with_invalid_localities(
+    stops: pd.DataFrame, localities: pd.DataFrame
+) -> pd.DataFrame:
+
+    bad_stops = stops[~stops.locality_id.isin(localities.index)]
+    bad_count = len(bad_stops)
+    if bad_count:
+        bad_ids = ", ".join(str(code) for code in bad_stops.locality_id.unique())
+        logger.warning(f"Found {bad_count} with incorrect locality ids {bad_ids}.")
+
+    good_stops = stops[stops.locality_id.isin(localities.index)]
+    return good_stops

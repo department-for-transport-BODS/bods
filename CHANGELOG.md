@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.15.1] - 2022-01-06
+
+### Bug
+
+- [BODP-4771](https://itoworld.atlassian.net/browse/BODP-4771) SIRI VM Validator Email: Dates are incorrect
+
+### Story
+
+- [BODP-4747](https://itoworld.atlassian.net/browse/BODP-4747) NAPTAN link change
+
+### Story Bug
+
+- [BODP-4768](https://itoworld.atlassian.net/browse/BODP-4768) NaPTAN: Django Admin - NaPTAN Stop Points are missing from the Django DB
+
 ## [1.15.0] - 2021-11-18
 
 ### Bug

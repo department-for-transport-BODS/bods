@@ -1,13 +1,15 @@
 from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import Point
 
-from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
+from transit_odp.common.loggers import LoaderAdapter
+from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 
 logger = get_task_logger(__name__)
+logger = LoaderAdapter("NaPTANLoader", logger)
 
 
 def load_new_stops(new_stops):
-    logger.info("[load_new_stops]: Started")
+    logger.info(f"Loading {len(new_stops)} new NaPTAN StopPoints.")
     stops_list = []
     for row in new_stops.itertuples():
         stops_list.append(
@@ -26,11 +28,11 @@ def load_new_stops(new_stops):
         )
 
     StopPoint.objects.bulk_create(stops_list, batch_size=5000)
-    logger.info("[load_new_stops]: Finished")
+    logger.info("Finished loading new StopPoints.")
 
 
 def load_existing_stops(existing_stops):
-    logger.info("[load_existing_stops]: Started")
+    logger.info("Loading existing NaPTAN stops.")
     for row in existing_stops.itertuples():
         obj = row.obj
         obj.atco_code = row.Index
@@ -56,7 +58,7 @@ def load_existing_stops(existing_stops):
         ),
         batch_size=5000,
     )
-    logger.info("[load_existing_stops]: Finished")
+    logger.info(f"Finished loading {len(existing_stops)} existing NaPTAN stops.")
 
 
 def load_new_admin_areas(new_admin_areas):
@@ -95,36 +97,6 @@ def load_existing_admin_areas(existing_admin_areas):
         batch_size=100,
     )
     logger.info("[load_existing_admin_areas]: Finished")
-
-
-def load_new_districts(new_districts):
-    logger.info("[load_new_districts]: Started")
-    districts_list = []
-    for row in new_districts.itertuples():
-        districts_list.append(
-            District(
-                id=int(row.Index),
-                name=row.name,
-            )
-        )
-
-    District.objects.bulk_create(districts_list, batch_size=100)
-    logger.info("[load_new_districts]: Finished")
-
-
-def load_existing_districts(existing_districts):
-    logger.info("[load_existing_districts]: Started")
-    for row in existing_districts.itertuples():
-        obj = row.obj
-        obj.id = int(row.Index)
-        obj.name = row.name
-
-    District.objects.bulk_update(
-        existing_districts["obj"],
-        ("name",),
-        batch_size=100,
-    )
-    logger.info("[load_existing_districts]: Finished")
 
 
 def load_new_localities(new_localities):

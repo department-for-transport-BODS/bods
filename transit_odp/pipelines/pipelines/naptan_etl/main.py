@@ -1,5 +1,6 @@
 from celery.utils.log import get_task_logger
 
+from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.pipelines.pipelines.naptan_etl.extract import (
     cleanup,
     extract_admin_areas,
@@ -17,6 +18,8 @@ from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_new_stops,
 )
 from transit_odp.pipelines.pipelines.naptan_etl.transform import (
+    drop_stops_with_invalid_admin_areas,
+    drop_stops_with_invalid_localities,
     extract_admin_areas_from_db,
     extract_districts_from_db,
     extract_localities_from_db,
@@ -26,33 +29,22 @@ from transit_odp.pipelines.pipelines.naptan_etl.transform import (
 )
 
 logger = get_task_logger(__name__)
+logger = LoaderAdapter("NaPTANLoader", logger)
 
 
 def run():
-    logger.info("[run] called")
-    # Note this task requires the set_expired_datasets task to run first to ensure the
-    # bulk download is consistent.
-    # TODO We could create a higher-level Celery task to run the series of tasks in
-    # order: set expired -> bulk download
+    logger.info("Running NaPTAN loading pipeline.")
 
-    # Extract stops from Naptan.xml
     naptan_file_path = get_latest_naptan_xml()
-
-    # Extract NPTG.xml
     nptg_file_path = get_latest_nptg()
 
-    # Extract stops
     stops_naptan = extract_stops(naptan_file_path)
 
-    # Extract admin_areas
     admin_areas_naptan = extract_admin_areas(nptg_file_path)
-
-    # Extract districts
-    # districts_naptan = extract_districts(nptg_file_path)
-
-    # Extract localities
     localities_naptan = extract_localities(nptg_file_path)
 
+    stops_naptan = drop_stops_with_invalid_admin_areas(stops_naptan, admin_areas_naptan)
+    stops_naptan = drop_stops_with_invalid_localities(stops_naptan, localities_naptan)
     # Extract all data from DB
     stops_from_db = extract_stops_from_db()
     admin_areas_from_db = extract_admin_areas_from_db()
@@ -62,24 +54,14 @@ def run():
     # Transform
     new_stops = get_new_data(stops_naptan, stops_from_db)
     existing_stops = get_existing_data(stops_naptan, stops_from_db, "atco_code")
-
     new_admin_areas = get_new_data(admin_areas_naptan, admin_areas_from_db)
     existing_admin_areas = get_existing_data(
         admin_areas_naptan, admin_areas_from_db, "id"
     )
-
-    # new_districts = get_new_data(districts_naptan, districts_from_db)
-    # existing_districts = get_existing_data(districts_naptan, districts_from_db, "id")
-
     new_localities = get_new_data(localities_naptan, localities_from_db)
     existing_localities = get_existing_data(
         localities_naptan, localities_from_db, "gazetteer_id"
     )
-
-    # Load
-    # logger.info(f"[naptan_etl: run]: New districts {len(new_districts)} found")
-    # load_new_districts(new_districts)
-    # load_existing_districts(existing_districts)
 
     logger.info(f"[naptan_etl: run]: New admin_areas {len(new_admin_areas)} found")
     load_new_admin_areas(new_admin_areas)
@@ -93,10 +75,5 @@ def run():
     load_new_stops(new_stops)
     load_existing_stops(existing_stops)
 
-    # remove all the files on disk
-    # TODO move these to the extract step, so clean the files once they are resolved
-    # into dataframes
-
     cleanup()
-
     logger.info("[run] finished")

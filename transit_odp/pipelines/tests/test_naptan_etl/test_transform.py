@@ -3,7 +3,6 @@ from django.test import TestCase
 
 from transit_odp.naptan.factories import (
     AdminAreaFactory,
-    DistrictFactory,
     LocalityFactory,
     StopPointFactory,
 )
@@ -15,22 +14,6 @@ from transit_odp.pipelines.tests.utils import check_frame_equal
 
 
 class TestNaptanTransform(TestCase):
-    def test_get_new_districts(self):
-        # Setup
-        district = DistrictFactory(id=1, name="District1")
-        district_from_db = pd.DataFrame([{"id": 1, "obj": district}]).set_index("id")
-        district_from_naptan = pd.DataFrame(
-            [{"id": 1, "name": "District2"}, {"id": 2, "name": "District3"}]
-        ).set_index("id")
-
-        # Test
-        intersection = get_new_data(district_from_naptan, district_from_db)
-
-        # Assert
-        expected_data = pd.DataFrame([{"id": 2, "name": "District3"}]).set_index("id")
-
-        self.assertTrue(check_frame_equal(intersection, expected_data))
-
     def test_get_new_stops(self):
         # Setup
         admin_area1 = AdminAreaFactory(atco_code="1")
@@ -104,27 +87,6 @@ class TestNaptanTransform(TestCase):
                 },
             ]
         ).set_index("atco_code")
-        self.assertTrue(check_frame_equal(intersection, expected_data))
-
-    def test_get_existing_districts(self):
-        # Setup
-        district = DistrictFactory(id=1, name="District1")
-        district_from_db = pd.DataFrame([{"id": 1, "obj": district}]).set_index("id")
-        district_from_naptan = pd.DataFrame(
-            [{"id": 1, "name": "District2"}, {"id": 2, "name": "District3"}]
-        ).set_index("id")
-
-        # Test
-        intersection = get_existing_data(district_from_naptan, district_from_db, "id")
-
-        # Assert
-        expected_district = district
-        expected_district.name = "District2"
-        expected_district.save()
-        expected_data = pd.DataFrame(
-            [{"id": 1, "name": "District2", "obj": expected_district}]
-        ).set_index("id")
-
         self.assertTrue(check_frame_equal(intersection, expected_data))
 
     def test_get_existing_stops(self):

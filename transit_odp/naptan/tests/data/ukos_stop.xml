@@ -1,0 +1,37 @@
+<StopPoint xmlns="http://www.naptan.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2009-08-25T00:00:00" ModificationDateTime="2019-09-13T10:41:24" Modification="new" RevisionNumber="92" Status="active">
+  <AtcoCode>0100BRP90310</AtcoCode>
+  <NaptanCode>bstgwpa</NaptanCode>
+  <Descriptor>
+    <CommonName xml:lang="en">Temple Meads Stn</CommonName>
+    <ShortCommonName xml:lang="en">Temple Meads Stn</ShortCommonName>
+    <Street xml:lang="en">Redcliffe Way</Street>
+    <Indicator xml:lang="en">T3</Indicator>
+  </Descriptor>
+  <Place>
+    <NptgLocalityRef>N0077020</NptgLocalityRef>
+    <LocalityCentre>false</LocalityCentre>
+    <Location>
+      <GridType>UKOS</GridType>
+      <Easting>359396</Easting>
+      <Northing>172388</Northing>
+    </Location>
+  </Place>
+  <StopClassification>
+    <StopType>BCT</StopType>
+    <OnStreet>
+      <Bus>
+        <BusStopType>MKD</BusStopType>
+        <TimingStatus>OTH</TimingStatus>
+        <MarkedPoint>
+          <Bearing>
+            <CompassPoint>SE</CompassPoint>
+          </Bearing>
+        </MarkedPoint>
+      </Bus>
+    </OnStreet>
+  </StopClassification>
+  <StopAreas>
+    <StopAreaRef Modification="new" Status="active" CreationDateTime="2021-12-08T13:55:06.691012Z" ModificationDateTime="2021-12-08T13:55:06.691012Z">010G0002</StopAreaRef>
+  </StopAreas>
+  <AdministrativeAreaRef>009</AdministrativeAreaRef>
+</StopPoint>

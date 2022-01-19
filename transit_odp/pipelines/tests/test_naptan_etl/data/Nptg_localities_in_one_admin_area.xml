@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NationalPublicTransportGazetteer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                  xmlns="http://www.naptan.org.uk/" CreationDateTime="2019-11-21T20:12:00"
+                                  ModificationDateTime="2019-11-21T20:12:00" Modification="revise" RevisionNumber="3306"
+                                  FileName="NPTG.xml" SchemaVersion="2.1"
+                                  xsi:schemaLocation="http://www.naptan.org.uk/ http://www.naptan.org.uk/schema/2.1/NPTG.xsd"
+                                  LocationSystem="Grid">
+    <Regions>
+        <Region CreationDateTime="2008-02-07T16:03:40" ModificationDateTime="2008-02-07T16:03:46" RevisionNumber="0">
+            <RegionCode>GB</RegionCode>
+            <Name xml:lang="en">Great Britain</Name>
+            <Country>UK</Country>
+            <AdministrativeAreas>
+                <AdministrativeArea CreationDateTime="2006-01-25T07:54:33" ModificationDateTime="2008-12-08T19:05:00"
+                                    Modification="revise" RevisionNumber="1">
+                    <AdministrativeAreaCode>110</AdministrativeAreaCode>
+                    <AtcoAreaCode>910</AtcoAreaCode>
+                    <Name>National - National Rail</Name>
+                    <ShortName>National - Rail</ShortName>
+                    <National>0</National>
+                    <NaptanPrefixes>
+                        <AlphaPrefix>nre</AlphaPrefix>
+                    </NaptanPrefixes>
+                </AdministrativeArea>
+                <AdministrativeArea CreationDateTime="2006-01-25T07:54:33" ModificationDateTime="2008-12-08T19:05:00"
+                                    Modification="revise" RevisionNumber="1">
+                    <AdministrativeAreaCode>143</AdministrativeAreaCode>
+                    <AtcoAreaCode>900</AtcoAreaCode>
+                    <Name>National - National Coach</Name>
+                    <ShortName>National - Coach</ShortName>
+                    <National>0</National>
+                    <NaptanPrefixes>
+                        <AlphaPrefix>nxg</AlphaPrefix>
+                    </NaptanPrefixes>
+                </AdministrativeArea>
+
+            </AdministrativeAreas>
+        </Region>
+        <Region CreationDateTime="2006-01-25T07:54:31" ModificationDateTime="2006-01-25T07:54:31" RevisionNumber="0">
+            <RegionCode>NE</RegionCode>
+            <Name>North East</Name>
+            <Country>England</Country>
+            <AdministrativeAreas>
+                <AdministrativeArea CreationDateTime="2006-01-25T07:54:33" ModificationDateTime="2006-01-25T07:54:33"
+                                    RevisionNumber="0">
+                    <AdministrativeAreaCode>015</AdministrativeAreaCode>
+                    <AtcoAreaCode>076</AtcoAreaCode>
+                    <Name>Darlington</Name>
+                    <ShortName>Darlington</ShortName>
+                    <National>0</National>
+                    <NaptanPrefixes>
+                        <AlphaPrefix>dlo</AlphaPrefix>
+                    </NaptanPrefixes>
+                </AdministrativeArea>
+                <AdministrativeArea CreationDateTime="2006-01-25T07:54:33" ModificationDateTime="2006-01-25T07:54:33"
+                                    RevisionNumber="0">
+                    <AdministrativeAreaCode>022</AdministrativeAreaCode>
+                    <AtcoAreaCode>075</AtcoAreaCode>
+                    <Name>Hartlepool</Name>
+                    <ShortName>Hartlepool</ShortName>
+                    <National>0</National>
+                    <NaptanPrefixes>
+                        <AlphaPrefix>har</AlphaPrefix>
+                    </NaptanPrefixes>
+                </AdministrativeArea>
+            </AdministrativeAreas>
+        </Region>
+    </Regions>
+    <NptgDistricts>
+        <NptgDistrict CreationDateTime="2006-01-25T07:54:36" ModificationDateTime="2006-01-25T07:54:36"
+                      RevisionNumber="0">
+            <NptgDistrictCode>276</NptgDistrictCode>
+            <Name>Barking and Dagenham</Name>
+        </NptgDistrict>
+        <NptgDistrict CreationDateTime="2006-01-25T07:54:36" ModificationDateTime="2006-01-25T07:54:36"
+                      RevisionNumber="0">
+            <NptgDistrictCode>277</NptgDistrictCode>
+            <Name>Barnet</Name>
+        </NptgDistrict>
+    </NptgDistricts>
+    <NptgLocalities>
+        <NptgLocality CreationDateTime="2005-10-05T11:18:07" ModificationDateTime="2015-06-03T12:34:09"
+                      Modification="revise" RevisionNumber="1">
+            <NptgLocalityCode>E0034964</NptgLocalityCode>
+            <Descriptor>
+                <LocalityName xml:lang="EN">Amesbury</LocalityName>
+                <Qualify>
+                    <QualifierName xml:lang="en">NE Somerset</QualifierName>
+                </Qualify>
+            </Descriptor>
+            <AdministrativeAreaRef>110</AdministrativeAreaRef>
+            <NptgDistrictRef>310</NptgDistrictRef>
+            <SourceLocalityType>Lo</SourceLocalityType>
+            <Location>
+                <Translation>
+                    <Easting>365491</Easting>
+                    <Northing>158651</Northing>
+                    <Longitude>-2.496644</Longitude>
+                    <Latitude>51.3259</Latitude>
+                </Translation>
+            </Location>
+        </NptgLocality>
+        <NptgLocality CreationDateTime="2005-10-05T11:18:23" ModificationDateTime="2005-10-05T11:18:23"
+                      RevisionNumber="0">
+            <NptgLocalityCode>E0034965</NptgLocalityCode>
+            <Descriptor>
+                <LocalityName xml:lang="EN">Ashgrove</LocalityName>
+                <Qualify>
+                    <QualifierName xml:lang="en">Peasedown St John</QualifierName>
+                </Qualify>
+            </Descriptor>
+            <ParentNptgLocalityRef CreationDateTime="2005-10-05T10:50:38" ModificationDateTime="2012-05-29T11:14:12"
+                                   Modification="revise" RevisionNumber="1">E0052932
+            </ParentNptgLocalityRef>
+            <AdministrativeAreaRef>110</AdministrativeAreaRef>
+            <NptgDistrictRef>310</NptgDistrictRef>
+            <SourceLocalityType>Lo</SourceLocalityType>
+            <Location>
+                <Translation>
+                    <Easting>370798</Easting>
+                    <Northing>157864</Northing>
+                    <Longitude>-2.420418</Longitude>
+                    <Latitude>51.31913</Latitude>
+                </Translation>
+            </Location>
+        </NptgLocality>
+    </NptgLocalities>
+</NationalPublicTransportGazetteer>

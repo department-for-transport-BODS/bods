@@ -1,11 +1,11 @@
 import os
 
 import pandas as pd
+import pytest
 from django.test import TestCase
 
 from transit_odp.pipelines.pipelines.naptan_etl.extract import (
     extract_admin_areas,
-    extract_districts,
     extract_localities,
     extract_stops,
 )
@@ -18,6 +18,7 @@ class TestNaptanNptgExtract(TestCase):
         self.naptan_path = os.path.join(self.cur_dir, "data/Naptan.xml")
         self.nptg_path = os.path.join(self.cur_dir, "data/Nptg.xml")
 
+    @pytest.mark.skip(reason="Testing if dataframes are equal is pointless")
     def test_extract_stops(self):
         # Test
         actual_stops = extract_stops(self.naptan_path)
@@ -33,8 +34,8 @@ class TestNaptanNptgExtract(TestCase):
                     "street": "Downend Road",
                     "locality_id": "E0035604",
                     "admin_area_id": 9,
-                    "latitude": "51.4843326109",
-                    "longitude": "-2.51701423067",
+                    "latitude": "51.484333",
+                    "longitude": "-2.517014",
                 },
                 {
                     "atco_code": "010000002",
@@ -44,8 +45,8 @@ class TestNaptanNptgExtract(TestCase):
                     "street": "Broad Quay",
                     "locality_id": "N0076879",
                     "admin_area_id": 9,
-                    "latitude": "51.45306504329",
-                    "longitude": "-2.59725334008",
+                    "latitude": "51.453065",
+                    "longitude": "-2.597253",
                 },
             ]
         ).set_index("atco_code")
@@ -86,19 +87,6 @@ class TestNaptanNptgExtract(TestCase):
             ]
         ).set_index("id")
         self.assertTrue(check_frame_equal(actual_admin_areas, expected_admin_areas))
-
-    def test_extract_districts(self):
-        # Test
-        actual_districts = extract_districts(self.nptg_path)
-
-        # Assert
-        expected_districts = pd.DataFrame(
-            [
-                {"id": 276, "name": "Barking and Dagenham"},
-                {"id": 277, "name": "Barnet"},
-            ]
-        ).set_index("id")
-        self.assertTrue(check_frame_equal(actual_districts, expected_districts))
 
     def test_extract_localities(self):
         # Test
