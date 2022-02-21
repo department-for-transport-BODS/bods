@@ -5,6 +5,7 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.db.models import JSONField, Q
 from django.http.response import FileResponse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
 
@@ -14,8 +15,6 @@ from transit_odp.data_quality.pti.models import Violation
 from transit_odp.data_quality.pti.report import PTIReport
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.timetables.transxchange import TXCSchemaViolation
-
-PTI_REPORT_FILENAME = "pti_observations.csv"
 
 
 class DataQualityReport(models.Model):
@@ -108,7 +107,13 @@ class PTIValidationResult(models.Model):
             revision (DatasetRevision): The revision containing the violations.
             violations (List[Violation]): The violations that a revision has.
         """
-        results = PTIReport(filename=PTI_REPORT_FILENAME)
+        now = timezone.now()
+        pti_report_filename = (
+            f"BODS_TXC_validation_{revision.dataset.organisation.name}"
+            f"_{revision.dataset_id}"
+            f"_{now:%H_%M_%d%m%Y}.csv"
+        )
+        results = PTIReport(filename=pti_report_filename)
         for violation in violations:
             results.write_violation(violation=violation)
 

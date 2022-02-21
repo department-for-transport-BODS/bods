@@ -4,15 +4,16 @@ from datetime import datetime, timedelta
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+from freezegun import freeze_time
 from requests import RequestException
 
-from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.factories import (
     AVLValidationReportFactory,
     CAVLValidationTaskResultFactory,
 )
 from transit_odp.avl.models import AVLSchemaValidationReport, CAVLValidationTaskResult
 from transit_odp.avl.tasks import (
+    task_create_sirivm_tfl_zipfile,
     task_create_sirivm_zipfile,
     task_monitor_avl_feeds,
     task_run_feed_validation,
@@ -69,6 +70,19 @@ def test_task_create_sirivm_zipfile_exception(mrequests, marchive):
     mrequests.get.side_effect = RequestException
     task_create_sirivm_zipfile()
     assert not marchive.objects.objects.last.called
+
+
+@patch("transit_odp.avl.tasks.CAVLDataArchive")
+@patch("transit_odp.avl.tasks.requests")
+def test_task_create_sirivm_tfl_zipfile(mrequests, marchive):
+    filter_ = marchive.objects.filter.return_value = MagicMock()
+    filter_.last.return_value = None
+    mresponse = MagicMock(content=b"hello")
+    mrequests.get.return_value = mresponse
+    task_create_sirivm_tfl_zipfile()
+    params = mrequests.get.call_args.kwargs["params"]
+    assert params["operatorRef"] == "TFLO"
+    marchive.assert_called_once()
 
 
 def test_no_feeds_doesnt_break(mocker):
@@ -310,9 +324,11 @@ def test_send_pre_seven_days_action_required(get_client, mailoutbox):
 @patch(VALIDATION_PATH)
 def test_send_flagged_non_compliant(get_client, mailoutbox):
     """
-    GIVEN an AVL datafeed with with 8 days of non-compliant reports
+    GIVEN an AVL datafeed with 7 days of non-compliant reports
     WHEN a new non-compliant report is returned by the validation service
     THEN a non-compliant email is sent.
+    THEN WHEN a non-compliant report is generated on day 8
+    THEN no email is sent.
     """
     user = UserFactory(account_type=OrgAdminType)
     user.settings.daily_compliance_check_alert = True
@@ -320,41 +336,59 @@ def test_send_flagged_non_compliant(get_client, mailoutbox):
     revision = AVLDatasetRevisionFactory(
         dataset__contact=user, dataset__organisation=user.organisations.first()
     )
-    report_count = 9
-    for n in range(1, report_count):
+    now = datetime.now().date()
+    report_count = 6
+
+    for n in range(1, report_count + 1):
         AVLValidationReportFactory(
             revision=revision,
             critical_score=0.5,
             non_critical_score=0.5,
-            created=datetime.now().date() - timedelta(days=n),
+            created=now - timedelta(days=n),
         )
 
-    summary = ValidationSummaryFactory(critical_score=0.5, non_critical_score=0.5)
     client = Mock()
+    schema_report = SchemaValidationResponseFactory(errors=[], is_valid=True)
+    client.schema.return_value = schema_report
 
-    client.schema.return_value = SchemaValidationResponseFactory(
-        errors=[], is_valid=True
-    )
+    summary = ValidationSummaryFactory(critical_score=0.5, non_critical_score=0.5)
     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
     get_client.return_value = client
 
     task_run_feed_validation(revision.dataset.id)
+    assert len(mailoutbox) == 0
+
+    tomorrow = now + timedelta(days=1)
+    with freeze_time(tomorrow):
+        # Run the validation report for tomorrow
+        task_run_feed_validation(revision.dataset.id)
 
     expected_subject = (
         "SIRI-VM validation: Your feed is flagged to public as Non-compliant"
     )
-    assert len(mailoutbox) > 0
-    assert mailoutbox[0].subject == expected_subject
-    assert "flagged as Non-compliant" in mailoutbox[0].body
-    assert revision.avl_validation_reports.count() == report_count
+    assert len(mailoutbox) == 2
+    assert mailoutbox[1].subject in expected_subject
+    assert "flagged as Non-compliant" in mailoutbox[1].body
+    expected_report_count = report_count + 2  # we ran the task twice
+    assert revision.avl_validation_reports.count() == expected_report_count
+    mailoutbox.clear()
+
+    day_after_tomorrow = now + timedelta(days=2)
+    with freeze_time(day_after_tomorrow):
+        # Run the validation report for tomorrow
+        task_run_feed_validation(revision.dataset.id)
+    assert len(mailoutbox) == 0
 
 
 @patch(VALIDATION_PATH)
 def test_send_flagged_as_dormant(get_client, mailoutbox):
     """
+
     GIVEN an AVL datafeed with with 8 days of empty reports
     WHEN a new empty report is returned by the validation service
     THEN a dormant feed email is sent.
+    THEN WHEN a dormant report is generated on day 9
+    THEN no email is sent.
     """
     user = UserFactory(account_type=OrgAdminType)
     user.settings.daily_compliance_check_alert = True
@@ -392,13 +426,7 @@ def test_send_flagged_as_dormant(get_client, mailoutbox):
 
     task_run_feed_validation(revision.dataset.id)
 
-    expected_subject = (
-        f"SIRI-VM validation: Your feed is flagged to public as {MORE_DATA_NEEDED}"
-    )
-    assert len(mailoutbox) > 0
-    assert mailoutbox[0].subject == expected_subject
-    assert f"flagged as {MORE_DATA_NEEDED}" in mailoutbox[0].body
-    assert revision.avl_validation_reports.count() == report_count
+    assert len(mailoutbox) == 0
 
 
 @patch(VALIDATION_PATH)
@@ -406,7 +434,8 @@ def test_send_flagged_major_issue(get_client, mailoutbox):
     """
     GIVEN an AVL datafeed with with 8 days of non-compliant reports
     WHEN a new non-compliant report is returned with a score below the lower threshold
-    THEN a "Your feed is flagged" email is sent
+    on day 9
+    THEN no email is sent
     """
     user = UserFactory(account_type=OrgAdminType)
     user.settings.daily_compliance_check_alert = True
@@ -435,11 +464,7 @@ def test_send_flagged_major_issue(get_client, mailoutbox):
 
     task_run_feed_validation(revision.dataset.id)
 
-    expected_subject = "Action required - SIRI-VM validation report requires resolution"
-    assert len(mailoutbox) > 0
-    assert mailoutbox[0].subject == expected_subject
-    assert "as having major errors" in mailoutbox[0].body
-    assert revision.avl_validation_reports.count() == report_count
+    assert len(mailoutbox) == 0
 
 
 @patch(VALIDATION_PATH)

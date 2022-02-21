@@ -16,11 +16,12 @@ from transit_odp.organisation.models import Dataset
 API_KEY = "api_key"
 PARAMETERS = (
     "boundingBox",
-    "operatorRef",
-    "lineRef",
-    "producerRef",
-    "originRef",
     "destinationRef",
+    "lineRef",
+    "operatorRef",
+    "originRef",
+    "producerRef",
+    "vehicleRef",
 )
 
 

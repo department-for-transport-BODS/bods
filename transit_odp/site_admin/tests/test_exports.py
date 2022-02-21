@@ -1,29 +1,18 @@
 import csv
 import io
 import zipfile
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-import factory
 import pytest
-from dateutil import parser
 from django.utils import timezone
 
-from config import hosts
+from transit_odp.browse.exports import get_feed_status
 from transit_odp.common.utils.cast import to_int_or_value
-from transit_odp.data_quality.factories import (
-    DataQualityReportFactory,
-    PTIValidationResultFactory,
-)
-from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.organisation.constants import DatasetType, FaresType, TimetableType
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     DatasetRevisionFactory,
-    FaresDatasetRevisionFactory,
-    LicenceFactory,
-    OperatorCodeFactory,
     OrganisationFactory,
-    TXCFileAttributesFactory,
 )
 from transit_odp.site_admin.exports import (
     AgentUserCSV,
@@ -32,13 +21,10 @@ from transit_odp.site_admin.exports import (
     DailyConsumerRequestCSV,
     DatasetPublishingCSV,
     OperationalStatsCSV,
-    OrganisationCSV,
     PublisherCSV,
     RawConsumerRequestCSV,
-    TimetablesDataCatalogueCSV,
     create_metrics_archive,
     pretty_account_name,
-    service_code_to_status,
 )
 from transit_odp.site_admin.factories import APIRequestFactory, OperationalStatsFactory
 from transit_odp.site_admin.models import MetricsArchive
@@ -51,109 +37,6 @@ from transit_odp.users.constants import (
 from transit_odp.users.factories import InvitationFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
-
-
-class TestOrganisationCSV:
-    def test_organisation_to_csv(self, client_factory):
-        organisation = OrganisationFactory(licence_required=True, nocs=0)
-        client = client_factory(host=hosts.ADMIN_HOST)
-        now = datetime.today()
-        before = now - timedelta(days=2)
-        after = now + timedelta(days=2)
-        user = UserFactory(account_type=OrgAdminType, organisations=(organisation,))
-        client.force_login(user)
-        nocs = OperatorCodeFactory.create_batch(3, organisation=organisation)
-        licences = LicenceFactory.create_batch(3, organisation=organisation)
-
-        invitation = InvitationFactory(
-            account_type=OrgAdminType,
-            organisation=organisation,
-            accepted=True,
-            email=user.email,
-        )
-
-        timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
-        # Valid now services
-        txc_attributes = TXCFileAttributesFactory.create_batch(
-            3,
-            revision=timetable_revision,
-            operating_period_start_date=before,
-            operating_period_end_date=after,
-        )
-        # Future services
-        TXCFileAttributesFactory.create_batch(
-            2,
-            revision=timetable_revision,
-            operating_period_start_date=after,
-        )
-
-        # Unregistered services
-        TXCFileAttributesFactory.create_batch(
-            4,
-            revision=timetable_revision,
-            operating_period_end_date=before,
-            service_code=factory.Sequence(lambda n: f"UZ0000{n:03}"),
-        )
-
-        timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
-        # This is an attribute from a different dateset__live_revision but with
-        # the same service code. We do not want this is be discounted
-        TXCFileAttributesFactory(
-            revision=timetable_revision,
-            operating_period_start_date=before,
-            operating_period_end_date=after,
-            service_code=txc_attributes[1].service_code,
-        )
-
-        AVLDatasetRevisionFactory.create_batch(3, dataset__organisation=organisation)
-        fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
-        FaresMetadataFactory(revision=fares_revision, num_of_fare_products=10)
-
-        org_csv = OrganisationCSV()
-        actual = org_csv.to_string()
-        csvfile = io.StringIO(actual)
-        reader = csv.reader(csvfile.getvalue().splitlines())
-        headers, first_row = list(reader)
-
-        assert headers == [
-            "Name",
-            "Status",
-            "dateInviteAccepted",
-            "dateInvited",
-            "lastLogin",
-            "permitHolder",
-            "nationalOperatorCodes",
-            "licenceNumbers",
-            "numberOfLicences",
-            "numberOfServicesWithValidOperatingDates",
-            "additionalServicesWithFutureStartDate",
-            "unregisteredServices",
-            "numberOfFareProducts",
-            "numberOfPublishedTimetableDatasets",
-            "numberOfPublishedAVLDatasets",
-            "numberOfPublishedFaresDatasets",
-        ]
-
-        assert first_row[0] == organisation.name, "test name"
-        assert first_row[1] == "Active", "test Status"
-        assert first_row[2] == user.date_joined.isoformat(), "test dateInviteAccepted"
-        assert first_row[3] == invitation.sent.isoformat(), "test dateInvited"
-        assert first_row[4] == user.last_login.isoformat(), "test lastLogin"
-        assert first_row[5] == "True", "test permitHolder"
-        assert first_row[6] == "; ".join(
-            [noc.noc for noc in nocs]
-        ), "test nationalOperatorCodes"
-        assert first_row[7] == "; ".join(
-            [licence.number for licence in licences]
-        ), "test licenceNumbers"
-        assert first_row[8] == "3", "test numberOfLicences"
-        assert first_row[9] == "4", "test numberOfServicesWithValidOperatingDates"
-        assert first_row[10] == "2", "test additionalServicesWithFutureStartDate"
-        assert first_row[11] == "4", "test numberOfUnregisteredServices"
-        assert first_row[12] == "10", "test numberOfFareProducts"
-        assert first_row[13] == "2", "numberOfPublishedTimetableDatasets"
-        assert first_row[14] == "3", "numberOfPublishedAVLDatasets "
-        assert first_row[15] == "1", "numberOfPublishedFaresDatasets"
 
 
 class TestPublisherCSV:
@@ -238,7 +121,7 @@ class TestDasetPublishingCSV:
         assert first_row[0] == revision.dataset.organisation.name
         assert first_row[1] == DatasetType(revision.dataset.dataset_type).name.title()
         assert first_row[2] == str(revision.dataset.id)
-        assert first_row[3] == revision.status
+        assert first_row[3] == get_feed_status(revision.dataset)
         assert first_row[4] == revision.published_at.isoformat()
         assert first_row[5] == revision.published_by.email
         assert first_row[6] == pretty_account_name(revision.published_by.account_type)
@@ -287,6 +170,8 @@ class TestOperationalStatsCSV:
 
         expected_headers = [
             "Date",
+            "Unique Registered Service Codes",
+            "Unique Unregistered Service Codes",
             "Number of vehicles",
             "Registered Operators",
             "Registered Publishers Users",
@@ -301,6 +186,8 @@ class TestOperationalStatsCSV:
         ]
         expected_first_row = [
             stats.date.date().isoformat(),
+            stats.registered_service_code_count,
+            stats.unregistered_service_code_count,
             stats.vehicle_count,
             stats.operator_count,
             stats.operator_user_count,
@@ -473,71 +360,6 @@ class TestRawConsumerRequestsAPICSV:
         assert first[6] == request.path_info
         assert first[7] == request.query_string
         assert first[8] == request.created.isoformat()
-
-
-class TestTimetablesDataCatalogueCSV:
-    @pytest.mark.parametrize(
-        ("pti_count", "service_code"),
-        [
-            (1, "ABC123"),
-            (1, "UZABC123"),
-            (0, "ABC123"),
-            (0, "UZABC123"),
-        ],
-    )
-    def test_to_string(self, pti_count, service_code):
-        txc = TXCFileAttributesFactory(service_code=service_code)
-        DataQualityReportFactory(revision=txc.revision, score=0.5)
-        PTIValidationResultFactory(revision=txc.revision, count=pti_count)
-
-        actual = TimetablesDataCatalogueCSV().to_string()
-        csvfile = io.StringIO(actual)
-        reader = csv.reader(csvfile.getvalue().splitlines())
-        rows = list(reader)
-
-        expected_headers = [
-            "serviceStatus",
-            "organisationName",
-            "datasetId",
-            "dqScore",
-            "bodsCompliant",
-            "lastUpdatedDate",
-            "XMLFileName",
-            "licenceNumber",
-            "nationalOperatorCode",
-            "serviceCode",
-            "publicUseFlag",
-            "operatingPeriodStartDate",
-            "operatingPeriodEndDate",
-            "serviceRevisionNumber",
-            "lineName",
-        ]
-        assert len(rows) == 2
-        headers, first = rows
-        assert expected_headers == headers
-        assert first[0] == service_code_to_status(service_code)
-        assert first[1] == txc.revision.dataset.organisation.name
-        assert int(first[2]) == txc.revision.dataset.id
-        assert first[3] == "50%"
-        assert first[4] == "no" if pti_count > 0 else "yes"
-        assert parser.parse(first[5]) == txc.revision.published_at
-        assert first[6] == txc.filename
-        assert first[7] == txc.licence_number
-        assert first[8] == txc.national_operator_code
-        assert first[9] == txc.service_code
-        assert eval(first[10]) == txc.public_use
-        assert first[11] == txc.operating_period_start_date
-        assert first[12] == txc.operating_period_end_date
-        assert first[13] == txc.revision_number
-        assert first[14] == "; ".join(txc.line_names)
-
-    @pytest.mark.parametrize(
-        ("service_code", "expected"),
-        [("ABC123", "Registered"), ("UZABC123", "Unregistered"), ("", ""), (None, "")],
-    )
-    def test_service_code_to_status(self, service_code, expected):
-        result = service_code_to_status(service_code)
-        assert result == expected
 
 
 class TestAPIRequestArchive:

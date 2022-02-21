@@ -7,8 +7,11 @@ from urllib.parse import unquote
 
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
+from django.db.models import Value
+from django.db.models.functions import Replace
 from lxml import etree
 
+from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
@@ -28,6 +31,7 @@ from transit_odp.data_quality.pti.functions import (
 )
 from transit_odp.data_quality.pti.models import Observation, Schema, Violation
 from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
+from transit_odp.otc.models import Service
 
 
 def has_destination_display(context, patterns):
@@ -412,8 +416,29 @@ class StopPointValidator(BaseValidator):
         return True
 
 
+class ServiceCodeValidator:
+    def __init__(self, service_codes: List[str]):
+        self.service_codes = service_codes
+
+    def validate(self, context, service_code: str):
+        service_code = service_code[0].text
+        if service_code.startswith("UZ"):
+            return True
+
+        return service_code in self.service_codes
+
+
+def get_service_code_validator() -> Callable:
+    service_codes = Service.objects.annotate(
+        service_code=Replace("registration_number", Value("/"), Value(":"))
+    ).values_list("service_code", flat=True)
+
+    validator = ServiceCodeValidator(list(service_codes))
+    return validator.validate
+
+
 class PTIValidator:
-    def __init__(self, source):
+    def __init__(self, source: JSONFile):
         json_ = json.load(source)
         self.schema = Schema(**json_)
 
@@ -443,14 +468,17 @@ class PTIValidator:
         self.register_function("validate_run_time", validate_run_time)
         self.register_function("validate_timing_link_stops", validate_timing_link_stops)
         self.register_function("validate_bank_holidays", validate_bank_holidays)
+        self.register_function("validate_service_code", get_service_code_validator())
 
-    def register_function(self, key: str, function: Callable):
+    def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
 
-    def add_violation(self, violation: Violation):
+    def add_violation(self, violation: Violation) -> None:
         self.violations.append(violation)
 
-    def check_observation(self, observation: Observation, element: etree._Element):
+    def check_observation(
+        self, observation: Observation, element: etree._Element
+    ) -> None:
         for rule in observation.rules:
             result = element.xpath(rule.test, namespaces=self.namespaces)
             if not result:
@@ -460,11 +488,12 @@ class PTIValidator:
                     name=name,
                     filename=unquote(Path(element.base).name),
                     observation=observation,
+                    element_text=element.text,
                 )
                 self.add_violation(violation)
                 break
 
-    def is_valid(self, source):
+    def is_valid(self, source: XMLFile) -> bool:
         document = etree.parse(source)
         for observation in self.schema.observations:
             elements = document.xpath(observation.context, namespaces=self.namespaces)

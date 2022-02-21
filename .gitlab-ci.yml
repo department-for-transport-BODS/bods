@@ -23,7 +23,7 @@ variables:
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
-  BLACK_VERSION: 20.8b1
+  BLACK_VERSION: 21.12b0
 
 stages:
   - build

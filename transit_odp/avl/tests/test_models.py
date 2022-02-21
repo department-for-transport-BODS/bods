@@ -1,6 +1,6 @@
 import pytest
 
-from transit_odp.avl.csv import (
+from transit_odp.avl.csv.validation import (
     SchemaValidationResponseExporter,
     ValidationReportExporter,
 )

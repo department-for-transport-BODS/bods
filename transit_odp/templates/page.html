@@ -9,35 +9,40 @@
     {% include "header.html" %}
   {% endblock %}
 
-  <div class="govuk-width-container">
-    <main id="main-content" role="main">
-        {% include "banner.html" %}
+  <main id="main-content" role="main">
+      <div class="govuk-width-container">
+          {% include "banner.html" %}
 
-        {% block breadcrumb %}
-          <div class="govuk-breadcrumbs">
-            <ol class="govuk-breadcrumbs__list">
-                {% block breadcrumb.content %}
-                    {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
-                    {% if host.name == 'admin' %}
-                      {% breadcrumb_url 'BODS admin home' 'home' host host.name %}
-                    {% else %}
-                      {% breadcrumb_url site.name 'home' host host.name %}
-                    {% endif %}
-                {% endblock %}
-            </ol>
-          </div>
-        {% endblock %}
+      {% block breadcrumb %}
+        <div class="govuk-breadcrumbs">
+          <ol class="govuk-breadcrumbs__list">
+              {% block breadcrumb.content %}
+                  {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
+                  {% if host.name == 'admin' %}
+                    {% breadcrumb_url 'BODS admin home' 'home' host host.name %}
+                  {% else %}
+                    {% breadcrumb_url site.name 'home' host host.name %}
+                  {% endif %}
+              {% endblock %}
+          </ol>
+        </div>
+      {% endblock %}
 
-        {% block backlink %}
-        {% endblock %}
+      {% block backlink %}
+      {% endblock %}
 
+      </div>
+      {% block full_width_content %}
+      {% endblock %}
+
+      <div class="govuk-width-container">
         <div class="govuk-main-wrapper app-main-class">
             {% include 'snippets/timeout_warning_modal.html' %}
             {% block content %}
             {% endblock %}
         </div>
-    </main>
-  </div>
+      </div>
+  </main>
 
   {% block footer %}
     {% include "footer.html" %}

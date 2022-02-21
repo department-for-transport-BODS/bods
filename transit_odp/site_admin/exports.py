@@ -1,4 +1,5 @@
 import io
+import logging
 import tempfile
 import zipfile
 from collections import namedtuple
@@ -12,14 +13,27 @@ from django.db.models import Case, CharField, Count, OuterRef, Q, Subquery, Valu
 from django.db.models.expressions import F
 from django.db.models.functions import TruncDay
 
+from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
+from transit_odp.browse.exports import (
+    LOCATION_FILENAME,
+    ORGANISATION_FILENAME,
+    OTC_EMPTY_WARNING,
+    OVERALL_FILENAME,
+    TIMETABLE_FILENAME,
+    get_feed_status,
+)
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.utils import (
     get_dataset_type_from_path_info,
     remove_query_string_param,
 )
 from transit_odp.organisation.constants import DatasetType
-from transit_odp.organisation.models import Dataset, Organisation, TXCFileAttributes
+from transit_odp.organisation.csv import EmptyDataFrame
+from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
+from transit_odp.organisation.csv.overall import get_overall_data_catalogue_csv
+from transit_odp.organisation.models import Dataset
 from transit_odp.site_admin.models import APIRequest, MetricsArchive, OperationalStats
+from transit_odp.timetables.csv import get_timetable_catalogue_csv
 from transit_odp.users.constants import (
     AgentUserType,
     DeveloperType,
@@ -30,6 +44,7 @@ from transit_odp.users.models import Invitation
 
 User = get_user_model()
 CSVFile = namedtuple("CSVFile", "name, builder")
+logger = logging.getLogger(__name__)
 
 
 def pretty_account_name(account_type: Optional[int]) -> str:
@@ -55,66 +70,6 @@ def get_org_fares_count(org) -> int:
         return org.total_fare_products
     else:
         return 0
-
-
-class OrganisationCSV(CSVBuilder):
-    """A CSVBuilder class for creating Organisation CSV strings"""
-
-    columns = [
-        CSVColumn(header="Name", accessor="name"),
-        CSVColumn(header="Status", accessor=lambda org: org.get_status()),
-        CSVColumn(
-            header="dateInviteAccepted",
-            accessor=lambda org: org.get_invite_accepted_date(),
-        ),
-        CSVColumn(
-            header="dateInvited", accessor=lambda org: org.get_invite_sent_date()
-        ),
-        CSVColumn(header="lastLogin", accessor=lambda org: org.get_latest_login_date()),
-        CSVColumn(header="permitHolder", accessor="licence_required"),
-        CSVColumn(
-            header="nationalOperatorCodes",
-            accessor=lambda o: "; ".join(n.noc for n in o.nocs.all()),
-        ),
-        CSVColumn(
-            header="licenceNumbers",
-            accessor=lambda o: "; ".join(n.number for n in o.licences.all()),
-        ),
-        CSVColumn(header="numberOfLicences", accessor=lambda o: o.licences.count()),
-        CSVColumn(
-            header="numberOfServicesWithValidOperatingDates",
-            accessor="number_of_services_valid_operating_date",
-        ),
-        CSVColumn(
-            header="additionalServicesWithFutureStartDate",
-            accessor="published_services_with_future_start_date",
-        ),
-        CSVColumn(header="unregisteredServices", accessor="unregistered_service_count"),
-        CSVColumn(header="numberOfFareProducts", accessor=get_org_fares_count),
-        CSVColumn(
-            header="numberOfPublishedTimetableDatasets",
-            accessor="published_timetable_count",
-        ),
-        CSVColumn(
-            header="numberOfPublishedAVLDatasets", accessor="published_avl_count"
-        ),
-        CSVColumn(
-            header="numberOfPublishedFaresDatasets", accessor="published_fares_count"
-        ),
-    ]
-
-    def get_queryset(self):
-        return (
-            Organisation.objects.all()
-            .prefetch_related("licences", "nocs", "users", "invitation_set")
-            .add_published_dataset_count_types()
-            .add_number_of_fare_products()
-            .add_number_of_services_valid_operating_date()
-            .add_published_services_with_future_start_date()
-            .add_unregistered_service_count()
-            .order_by("pk")
-            .distinct()
-        )
 
 
 class ConsumerCSV(CSVBuilder):
@@ -190,7 +145,7 @@ class DatasetPublishingCSV(CSVBuilder):
             accessor=lambda dt: DatasetType(dt.dataset_type).name.title(),
         ),
         CSVColumn(header="dataID", accessor="id"),
-        CSVColumn(header="status", accessor="status"),
+        CSVColumn(header="status", accessor=get_feed_status),
         CSVColumn(header="lastPublished", accessor="published_at"),
         CSVColumn(header="email", accessor="user_email"),
         CSVColumn(
@@ -213,6 +168,14 @@ class OperationalStatsCSV(CSVBuilder):
     queryset = OperationalStats.objects.all().order_by("-date")
     columns = [
         CSVColumn(header="Date", accessor="date"),
+        CSVColumn(
+            header="Unique Registered Service Codes",
+            accessor="registered_service_code_count",
+        ),
+        CSVColumn(
+            header="Unique Unregistered Service Codes",
+            accessor="unregistered_service_code_count",
+        ),
         CSVColumn(header="Number of vehicles", accessor="vehicle_count"),
         CSVColumn(header="Registered Operators", accessor="operator_count"),
         CSVColumn(header="Registered Publishers Users", accessor="operator_user_count"),
@@ -332,61 +295,6 @@ class RawConsumerRequestCSV(CSVBuilder):
         )
 
 
-class TimetablesDataCatalogueCSV(CSVBuilder):
-    """Generates a csv of available timetables data"""
-
-    columns = [
-        CSVColumn(
-            header="serviceStatus",
-            accessor=lambda txc: service_code_to_status(txc.service_code),
-        ),
-        CSVColumn(header="organisationName", accessor="organisation_name"),
-        CSVColumn(
-            header="datasetId",
-            accessor=lambda txc: txc.revision.dataset_id,
-        ),
-        CSVColumn(
-            header="dqScore",
-            accessor=lambda txc: f"{txc.score*100:.0f}%" if txc.score else "",
-        ),
-        CSVColumn(
-            header="bodsCompliant",
-            accessor=lambda txc: "yes" if txc.bods_compliant else "no",
-        ),
-        CSVColumn(
-            header="lastUpdatedDate", accessor=lambda txc: txc.revision.published_at
-        ),
-        CSVColumn(header="XMLFileName", accessor="filename"),
-        CSVColumn(header="licenceNumber", accessor="licence_number"),
-        CSVColumn(
-            header="nationalOperatorCode",
-            accessor="national_operator_code",
-        ),
-        CSVColumn(
-            header="serviceCode",
-            accessor="service_code",
-        ),
-        CSVColumn(header="publicUseFlag", accessor="public_use"),
-        CSVColumn(
-            header="operatingPeriodStartDate", accessor="operating_period_start_date"
-        ),
-        CSVColumn(
-            header="operatingPeriodEndDate", accessor="operating_period_end_date"
-        ),
-        CSVColumn(header="serviceRevisionNumber", accessor="revision_number"),
-        CSVColumn(header="lineName", accessor=lambda txc: "; ".join(txc.line_names)),
-    ]
-
-    def get_queryset(self):
-        return (
-            TXCFileAttributes.objects.select_related("revision")
-            .get_active_revisions()
-            .add_bods_compliant()
-            .add_dq_score()
-            .add_organisation_name()
-        )
-
-
 class APIRequestArchive:
     def __init__(self, start: datetime, end: datetime):
         self.start = start
@@ -428,19 +336,38 @@ def create_metrics_archive(start, end):
 def create_operational_exports_file() -> BinaryIO:
     buffer_ = io.BytesIO()
     files = (
-        CSVFile("organisations.csv", OrganisationCSV),
         CSVFile("publishers.csv", PublisherCSV),
         CSVFile("consumers.csv", ConsumerCSV),
         CSVFile("stats.csv", OperationalStatsCSV),
         CSVFile("agents.csv", AgentUserCSV),
         CSVFile("datasetpublishing.csv", DatasetPublishingCSV),
-        CSVFile("timetablesdatacatalogue.csv", TimetablesDataCatalogueCSV),
     )
 
     with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
         for file_ in files:
             Builder = file_.builder
             zin.writestr(file_.name, Builder().to_string())
+
+        try:
+            zin.writestr(ORGANISATION_FILENAME, get_organisation_catalogue_csv())
+        except EmptyDataFrame as exc:
+            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
+
+        try:
+            zin.writestr(TIMETABLE_FILENAME, get_timetable_catalogue_csv())
+
+        except EmptyDataFrame as exc:
+            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
+
+        try:
+            zin.writestr(OVERALL_FILENAME, get_overall_data_catalogue_csv())
+        except EmptyDataFrame:
+            pass
+
+        try:
+            zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
+        except EmptyDataFrame:
+            pass
 
     buffer_.seek(0)
     return buffer_

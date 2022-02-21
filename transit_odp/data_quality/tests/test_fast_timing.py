@@ -33,7 +33,7 @@ def warning():
 
 
 class TestFastTimingListPage(ListPageBaseTest):
-    """ Test Fast Timing Warnings list page """
+    """Test Fast Timing Warnings list page"""
 
     model = models.FastTimingWarning
     factory = factories.FastTimingWarningFactory
@@ -50,7 +50,7 @@ class TestFastTimingListPage(ListPageBaseTest):
 
 
 class TestFastTimingDetailPage(DetailPageBaseTest):
-    """ Test Fast Timing Warnings detail page """
+    """Test Fast Timing Warnings detail page"""
 
     model = models.FastTimingWarning
     factory = factories.FastTimingWarningFactory

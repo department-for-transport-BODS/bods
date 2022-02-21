@@ -165,6 +165,7 @@ LOCAL_APPS = [
     "transit_odp.data_quality.apps.DataQualityConfig",
     "transit_odp.notifications.apps.NotifyConfig",
     "transit_odp.changelog.apps.ChangelogConfig",
+    "transit_odp.otc.apps.OTCConfig",
     "transit_odp.restrict_sessions.apps.RestrictedSessions",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

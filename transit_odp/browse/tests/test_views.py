@@ -1,6 +1,7 @@
 import csv
 import datetime
 import io
+import zipfile
 from unittest.mock import Mock, patch
 
 import pytest
@@ -12,24 +13,26 @@ from django_hosts import reverse
 from freezegun import freeze_time
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.factories import AVLValidationReportFactory
+from transit_odp.browse.tasks import task_create_data_catalogue_archive
+from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
 )
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.data_quality.factories import DataQualityReportFactory
-from transit_odp.data_quality.factories.report import PTIValidationResultFactory
+from transit_odp.data_quality.factories.report import PTIObservationFactory
+from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory
-from transit_odp.organisation.constants import FeedStatus
+from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
     OrganisationFactory,
-    TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models import Dataset, DatasetSubscription, Organisation
+from transit_odp.organisation.models import DatasetSubscription, Organisation
 from transit_odp.pipelines.factories import (
     BulkDataArchiveFactory,
     ChangeDataArchiveFactory,
@@ -445,7 +448,6 @@ class TestFeedDownloadView:
 
 class TestDownloadBulkDataArchiveView:
     def test_download(self, client_factory):
-        # Setup
         now = timezone.now()
         yesterday = now - datetime.timedelta(days=1)
 
@@ -455,7 +457,6 @@ class TestDownloadBulkDataArchiveView:
                 data__filename="bulk_archive_test.zip",
             )
 
-        # Create an older archive
         with freeze_time(yesterday):
             BulkDataArchiveFactory(
                 data__data=b"bulk content",
@@ -464,13 +465,9 @@ class TestDownloadBulkDataArchiveView:
 
         host = DATA_HOST
         client = client_factory(host=host)
-
         url = reverse("downloads-bulk", host=host)
-
-        # Test
         response = client.get(url)
 
-        # Assert
         assert response.status_code == 200
         assert response.as_attachment is True
         assert response.filename == "bulk_archive_test.zip"
@@ -539,63 +536,57 @@ class TestDataDownloadCatalogueView:
     host = DATA_HOST
 
     operator_noc_headers = ["operator", "noc"]
-    operator_dataset_headers = [
-        "operator",
-        "operatorID",
-        "dataType",
-        "status",
-        "lastUpdated",
-        "dataID",
-        "BODSCompliantData",
-        "DQScore",
-        "NationalOperatorCode",
-        "serviceCode",
-    ]
 
-    def extract_csv_content(self, content):
-        content = content.decode("utf-8")
-        cvs_reader = csv.reader(io.StringIO(content))
-        body = list(cvs_reader)
+    def extract_csv_content_from_zip_file(self, infile):
+        csv_reader = csv.reader(io.TextIOWrapper(infile, "utf-8"))
+        body = list(csv_reader)
         headers = body.pop(0)
         return headers, body
 
-    def test_operator_noc_download_for_no_orgs(self, client_factory):
+    def test_data_catalogue_download_zip_file(self, client_factory):
+        task_create_data_catalogue_archive()
         client = client_factory(host=self.host)
-        url = reverse("operator-noc-catalogue", host=self.host)
+        url = reverse("download-catalogue", host=self.host)
 
-        # Test
         response = client.get(url)
 
-        # Assert
+        expected_disposition = "attachment; filename=bodsdatacatalogue.zip"
         assert response.status_code == 200
-        assert (
-            response.get("Content-Disposition")
-            == 'attachment; filename="operator_noc_mapping.csv"'
-        )
+        assert response.get("Content-Disposition") == expected_disposition
 
-        headers, body = self.extract_csv_content(response.content)
-        assert headers == self.operator_noc_headers
-        assert body == []  # no organisations
+        expected_files = [
+            "operator_noc_data_catalogue.csv",
+            "organisation.csv",
+            "data_catalogue_guidance.txt",
+        ]
+
+        with zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))) as zf:
+            for zf in zf.infolist():
+                assert zf.filename in expected_files
 
     def test_operator_noc_download(self, client_factory):
         OrganisationFactory.create()
         OrganisationFactory.create(nocs=4)
 
         orgs = Organisation.objects.values_list("name", "nocs__noc").order_by(
-            "nocs__noc"
+            "name", "nocs__noc"
         )
 
+        task_create_data_catalogue_archive()
         client = client_factory(host=self.host)
-        url = reverse("operator-noc-catalogue", host=self.host)
+        url = reverse("download-catalogue", host=self.host)
 
         response = client.get(url)
 
         assert response.status_code == 200
+        expected_disposition = "attachment; filename=bodsdatacatalogue.zip"
+        assert response.get("Content-Disposition") == expected_disposition
 
-        expected_content = 'attachment; filename="operator_noc_mapping.csv"'
-        assert response.get("Content-Disposition") == expected_content
+        noc_csv_title = "operator_noc_data_catalogue.csv"
+        with zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))) as zf:
+            with zf.open(noc_csv_title, "r") as infile:
+                headers, body = self.extract_csv_content_from_zip_file(infile)
 
-        headers, body = self.extract_csv_content(response.content)
         assert headers == self.operator_noc_headers
 
         expected = [list(elem) for elem in orgs]
@@ -611,118 +602,29 @@ class TestDataDownloadCatalogueView:
         orgs = (
             Organisation.objects.filter(is_active=True)
             .values_list("name", "nocs__noc")
-            .order_by("nocs__noc")
+            .order_by("name", "nocs__noc")
         )
 
+        task_create_data_catalogue_archive()
         client = client_factory(host=self.host)
-        url = reverse("operator-noc-catalogue", host=self.host)
+        url = reverse("download-catalogue", host=self.host)
 
         response = client.get(url)
 
         assert response.status_code == 200
-        expected_content = 'attachment; filename="operator_noc_mapping.csv"'
-        assert response.get("Content-Disposition") == expected_content
+        expected_disposition = "attachment; filename=bodsdatacatalogue.zip"
+        assert response.get("Content-Disposition") == expected_disposition
 
-        headers, body = self.extract_csv_content(response.content)
+        noc_csv_title = "operator_noc_data_catalogue.csv"
+        with zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))) as zf:
+            with zf.open(noc_csv_title, "r") as infile:
+                headers, body = self.extract_csv_content_from_zip_file(infile)
         assert headers == self.operator_noc_headers
 
         expected = [list(elem) for elem in orgs]
         expected.sort(key=lambda n: n[1])
         body.sort(key=lambda n: n[1])
         assert body == expected
-
-    def test_operator_dataset_download_for_no_orgs(self, client_factory):
-        client = client_factory(host=self.host)
-        url = reverse("operator-dataset-catalogue", host=self.host)
-
-        # Test
-        response = client.get(url)
-
-        # Assert
-        assert response.status_code == 200
-        assert (
-            response.get("Content-Disposition")
-            == 'attachment; filename="operator_dataID_mapping.csv"'
-        )
-
-        headers, body = self.extract_csv_content(response.content)
-        assert headers == self.operator_dataset_headers
-        assert body == []  # no organisations
-
-    def test_operator_dataset_download(self, client_factory):
-        for _ in range(2):
-            revision = DatasetRevisionFactory()
-            TXCFileAttributesFactory(revision=revision)
-            PTIValidationResultFactory(revision=revision)
-            DataQualityReportFactory(revision=revision)
-
-        client = client_factory(host=self.host)
-        url = reverse("operator-dataset-catalogue", host=self.host)
-
-        response = client.get(url)
-
-        assert response.status_code == 200
-        assert (
-            response.get("Content-Disposition")
-            == 'attachment; filename="operator_dataID_mapping.csv"'
-        )
-
-        headers, body = self.extract_csv_content(response.content)
-        assert headers == self.operator_dataset_headers
-        for line in body:
-            (
-                operator,
-                operator_id,
-                dataset_type,
-                status,
-                last_updated,
-                dataset_id,
-                bods_compliance,
-                score,
-                noc,
-                service_code,
-            ) = line
-
-            dataset = Dataset.objects.get(id=dataset_id)
-            revision = dataset.live_revision
-            attributes = revision.txc_file_attributes.first()
-            assert operator == dataset.organisation.name
-            assert operator_id == str(dataset.organisation_id)
-            assert dataset_type == dataset.pretty_dataset_type
-            # We know this from the fixtures
-            assert status == "published"
-            assert last_updated == dataset.modified.isoformat()
-            assert (
-                bods_compliance == "yes" if revision.pti_result.is_compliant else "no"
-            )
-            assert score == f"{revision.report.first().score*100:.0f}"
-            assert noc == attributes.national_operator_code
-            assert service_code == attributes.service_code
-
-    def test_operator_dataset_download_exclude_inactive_org(self, client_factory):
-        num_of_entries = 2
-        orgs = OrganisationFactory.create_batch(num_of_entries)
-        orgs.append(OrganisationFactory(is_active=False))
-        for org in orgs:
-            revision = DatasetRevisionFactory(dataset__organisation=org)
-            TXCFileAttributesFactory(revision=revision)
-            PTIValidationResultFactory(revision=revision)
-            DataQualityReportFactory(revision=revision)
-
-        client = client_factory(host=self.host)
-        url = reverse("operator-dataset-catalogue", host=self.host)
-
-        response = client.get(url)
-
-        assert response.status_code == 200
-        assert (
-            response.get("Content-Disposition")
-            == 'attachment; filename="operator_dataID_mapping.csv"'
-        )
-
-        headers, body = self.extract_csv_content(response.content)
-        assert headers == self.operator_dataset_headers
-        assert len(body) == num_of_entries
 
 
 class TestGTFSStaticDownloads:
@@ -768,3 +670,214 @@ class TestUserAgentMyAccountView:
         assert response.status_code == 200
         assert "users/user_account.html" in [t.name for t in response.templates]
         assert response.context["user"].email == agent.email
+
+
+class TestOperatorsView:
+    def test_operators_view_basic(self, request_factory: RequestFactory):
+        num_orgs = 3
+        orgs = OrganisationFactory.create_batch(num_orgs)
+        orgs[0].is_active = False
+        orgs[0].save()
+
+        request = request_factory.get("/operators/")
+        request.user = AnonymousUser()
+
+        response = OperatorsView.as_view()(request)
+
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == "browse/operators.html"
+        assert response.context_data["q"] == ""
+        assert response.context_data["ordering"] == "name"
+
+        operators = response.context_data["operators"]
+        assert "names" in operators
+        assert len(operators["names"]) == num_orgs - 1
+        for n in operators["names"]:
+            assert n in [org.name for org in orgs[1:]]
+
+    def test_operators_view_order_by_name(self, request_factory: RequestFactory):
+        orgs = OrganisationFactory.create_batch(3)
+        request = request_factory.get("/operators/?ordering=name")
+        request.user = AnonymousUser()
+
+        response = OperatorsView.as_view()(request)
+        assert response.status_code == 200
+        expected_order = sorted([o.name for o in orgs])
+        operators = response.context_data["operators"]
+        assert operators["names"] == expected_order
+
+        object_names = [obj.name for obj in response.context_data["object_list"]]
+        assert object_names == expected_order
+
+    def test_operators_view_order_by_name_reverse(
+        self, request_factory: RequestFactory
+    ):
+        orgs = OrganisationFactory.create_batch(3)
+        request = request_factory.get("/operators/?ordering=-name")
+        request.user = AnonymousUser()
+
+        response = OperatorsView.as_view()(request)
+        assert response.status_code == 200
+        expected_order = sorted([o.name for o in orgs], reverse=True)
+        object_names = [obj.name for obj in response.context_data["object_list"]]
+        assert object_names == expected_order
+
+    def test_operators_view_order_by_date(self, request_factory: RequestFactory):
+        orgs = OrganisationFactory.create_batch(3)
+        orgs[1].created -= datetime.timedelta(days=1)
+        orgs[1].save()
+        orgs[2].created += datetime.timedelta(days=1)
+        orgs[2].save()
+        request = request_factory.get("/operators/?ordering=created")
+        request.user = AnonymousUser()
+
+        response = OperatorsView.as_view()(request)
+        assert response.status_code == 200
+        expected_order = [orgs[1].name, orgs[0].name, orgs[2].name]
+        object_names = [obj.name for obj in response.context_data["object_list"]]
+        assert object_names == expected_order
+
+    def test_operators_view_order_by_date_reversed(
+        self, request_factory: RequestFactory
+    ):
+        orgs = OrganisationFactory.create_batch(3)
+        orgs[1].created -= datetime.timedelta(days=1)
+        orgs[1].save()
+        orgs[2].created += datetime.timedelta(days=1)
+        orgs[2].save()
+        request = request_factory.get("/operators/?ordering=-created")
+        request.user = UserFactory(organisations=orgs)
+
+        response = OperatorsView.as_view()(request)
+        assert response.status_code == 200
+        expected_order = [orgs[2].name, orgs[0].name, orgs[1].name]
+        object_names = [obj.name for obj in response.context_data["object_list"]]
+        assert object_names == expected_order
+
+    def test_operators_view_search(self, request_factory: RequestFactory):
+        orgs = [
+            OrganisationFactory(name="Sonny & Coach"),
+            OrganisationFactory(name="BusOnWheels"),
+            OrganisationFactory(name="Coach Bronson"),
+            OrganisationFactory(name="Coachella"),
+        ]
+        request = request_factory.get("/operators/?q=son")
+        request.user = UserFactory(organisations=orgs)
+
+        response = OperatorsView.as_view()(request)
+        assert response.status_code == 200
+        object_names = [obj.name for obj in response.context_data["object_list"]]
+        assert orgs[0].name in object_names
+        assert orgs[1].name in object_names
+        assert orgs[2].name in object_names
+        assert orgs[3].name not in object_names
+
+
+class TestOperatorDetailView:
+    def test_operator_detail_view_timetable_stats(
+        self, request_factory: RequestFactory
+    ):
+        org = OrganisationFactory()
+        num_datasets = 2
+
+        datasets = DatasetFactory.create_batch(
+            num_datasets, organisation=org, dataset_type=DatasetType.TIMETABLE.value
+        )
+        revisions = [
+            DatasetRevisionFactory(dataset=datasets[0], num_of_lines=1),
+            DatasetRevisionFactory(dataset=datasets[1], num_of_lines=2),
+        ]
+
+        PTIObservationFactory(revision=revisions[1])
+
+        request = request_factory.get("/operators/")
+        request.user = UserFactory()
+
+        response = OperatorDetailView.as_view()(request, pk=org.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert context["view"].template_name == "browse/operators/operator_detail.html"
+
+        timetable_stats = context["timetable_stats"]
+        assert timetable_stats.total_dataset_count == len(datasets)
+        assert timetable_stats.line_count == 3
+        assert context["timetable_non_compliant"] == 1
+
+    def test_operator_detail_view_avl_stats(self, request_factory: RequestFactory):
+        org = OrganisationFactory()
+        num_datasets = 5
+        datasets = DatasetFactory.create_batch(
+            num_datasets, organisation=org, dataset_type=DatasetType.AVL.value
+        )
+        revisions = [DatasetRevisionFactory(dataset=d) for d in datasets]
+        AVLValidationReportFactory(
+            created=datetime.datetime.now().date(),
+            revision=revisions[0],
+            critical_count=2,
+        )
+
+        request = request_factory.get("/operators/")
+        request.user = UserFactory()
+
+        response = OperatorDetailView.as_view()(request, pk=org.id)
+        assert response.status_code == 200
+        context = response.context_data
+
+        assert context["avl_total_datasets"] == num_datasets
+        assert context["avl_non_compliant"] == 1
+
+    def test_operator_detail_view_fares_stats(self, request_factory: RequestFactory):
+        org = OrganisationFactory()
+        num_datasets = 5
+        datasets = DatasetFactory.create_batch(
+            num_datasets, organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        revisions = [DatasetRevisionFactory(dataset=d) for d in datasets]
+        FaresMetadataFactory(revision=revisions[0], num_of_fare_products=1)
+        FaresMetadataFactory(revision=revisions[1], num_of_fare_products=2)
+
+        request = request_factory.get("/operators/")
+        request.user = UserFactory()
+
+        response = OperatorDetailView.as_view()(request, pk=org.id)
+        assert response.status_code == 200
+        context = response.context_data
+
+        timetable_stats = context["fares_stats"]
+        assert timetable_stats.total_dataset_count == num_datasets
+        assert timetable_stats.total_fare_products == 3
+        assert context["fares_non_compliant"] == 0
+
+    def test_operator_detail_view_urls(self, request_factory: RequestFactory):
+        nocs = ["NOC1", "NOC2"]
+        org = OrganisationFactory(nocs=nocs)
+        user = UserFactory()
+
+        request = request_factory.get("/operators/")
+        request.user = user
+
+        response = OperatorDetailView.as_view()(request, pk=org.id)
+        assert response.status_code == 200
+        context = response.context_data
+
+        noc_query_param = "noc=" + ",".join(nocs)
+        operator_ref_query_param = "operatorRef=" + ",".join(nocs)
+        token_query_param = "api_key=" + user.auth_token.key
+
+        timetable_url = (
+            f"{reverse('api:feed-list', host=DATA_HOST)}"
+            f"?{noc_query_param}&{token_query_param}"
+        )
+        assert context["timetable_feed_url"] == timetable_url
+
+        avl_url = (
+            f"{reverse('api:avldatafeedapi', host=DATA_HOST)}"
+            f"?{operator_ref_query_param}&{token_query_param}"
+        )
+        assert context["avl_feed_url"] == avl_url
+
+        fares_url = (
+            f"{reverse('api:fares-api-list', host=DATA_HOST)}"
+            f"?{noc_query_param}&{token_query_param}"
+        )
+        assert context["fares_feed_url"] == fares_url

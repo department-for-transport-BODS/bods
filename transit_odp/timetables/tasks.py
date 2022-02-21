@@ -37,9 +37,9 @@ from transit_odp.timetables.etl import TransXChangePipeline
 from transit_odp.timetables.notifications import (
     send_data_no_longer_compliant_notification,
 )
+from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.updaters import reprocess_live_revision
-from transit_odp.timetables.utils import get_pti_validator
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     TimetableFileValidator,

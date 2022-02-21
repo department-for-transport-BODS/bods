@@ -1,0 +1,10 @@
+{% load i18n %}
+<a class="govuk-link govuk-!-font-size-19" href="{% url 'downloads' host hosts.data %}">
+    {% trans 'Download data' %}
+</a>
+
+<p class="govuk-body">
+    {% blocktrans %}
+    You can filter or download all dataset published on BODS and additional data we provide.
+    {% endblocktrans %}
+</p>

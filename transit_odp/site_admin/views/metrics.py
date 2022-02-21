@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.http.response import Http404
 from django.views.generic import DetailView, ListView, TemplateView
 
-from transit_odp.site_admin.models import MetricsArchive, OperationalMetricsArchive
+from transit_odp.site_admin.constants import OperationalMetrics
+from transit_odp.site_admin.models import DocumentArchive, MetricsArchive
 from transit_odp.users.views.mixins import SiteAdminViewMixin
 
 __all__ = [
@@ -42,7 +43,10 @@ class MetricsDownloadDetailView(SiteAdminViewMixin, DetailView):
 class OperationalMetricsFileView(SiteAdminViewMixin, DetailView):
     """A view for downloading BODS operational metrics zip file."""
 
-    model = OperationalMetricsArchive
+    model = DocumentArchive
+
+    def get_queryset(self):
+        return super().get_queryset().filter(category=OperationalMetrics)
 
     def get_object(self, queryset=None):
         obj = self.get_queryset().last()

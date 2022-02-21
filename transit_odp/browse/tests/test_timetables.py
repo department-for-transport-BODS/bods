@@ -1,5 +1,6 @@
 import pytest
 from django_hosts import reverse
+from freezegun import freeze_time
 
 from config.hosts import DATA_HOST
 from transit_odp.browse.tests.test_avls import TestUserAVLFeedbackView
@@ -11,7 +12,7 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
 )
-from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -23,11 +24,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
     dataset_type = TimetableType
     template_path = "browse/timetables/search.html"
 
-    @pytest.mark.parametrize(
-        "dateformat",
-        ["2030", "2030/12/25", "25th Dec 2030", "12/25/2030", "12-25-2030"],
-    )
-    def test_search_filters_start(self, client_factory, dateformat):
+    def test_search_filters_start(self, client_factory):
         self.setup_feeds()
         client = client_factory(host=self.host)
         response = client.get(
@@ -37,7 +34,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
                 "area": "",
                 "organisation": "",
                 "status": "",
-                "start": dateformat,
+                "start": "2030-12-25",
             },
         )
 
@@ -56,6 +53,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
                 "organisation": "",
                 "status": "",
                 "start": "silly rabbit, this isnt a time",
+                "published_at": "",
             },
         )
 
@@ -63,6 +61,26 @@ class TestTimeTableSearchView(TestFaresSearchView):
         assert response.context_data["view"].template_name == self.template_path
         error_message = response.context_data["filter"].errors["start"][0]
         assert error_message == "Timetable start date not in correct format"
+
+    def test_bad_published_at_time(self, client_factory):
+        self.setup_feeds()
+        client = client_factory(host=self.host)
+        response = client.get(
+            self.url,
+            data={
+                "q": "",
+                "area": "",
+                "organisation": "",
+                "status": "",
+                "start": "",
+                "published_at": "silly rabbit, this isnt a time",
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == self.template_path
+        error_message = response.context_data["filter"].errors["published_at"][0]
+        assert error_message == "Timetable last updated not in correct format"
 
     def test_query_params_are_human_readable_in_context(self, client_factory):
         self.setup_feeds()
@@ -75,7 +93,8 @@ class TestTimeTableSearchView(TestFaresSearchView):
                 "area": str(admin_area.id),
                 "organisation": str(self.organisation1.id),
                 "status": "live",
-                "start": "13 oct 2019",
+                "start": "2019-10-13",
+                "published_at": "3019-10-13",
             },
         )
 
@@ -83,6 +102,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
 
         assert response.status_code == 200
         assert translated_query_params["start"] == "13/10/19"
+        assert translated_query_params["published_at"] == "13/10/19"
         assert translated_query_params["area"] == admin_area.name
         assert translated_query_params["status"] == "Published"
         assert translated_query_params["organisation"] == self.organisation1.name
@@ -106,10 +126,31 @@ class TestTimeTableSearchView(TestFaresSearchView):
                 "organisation": "",
                 "status": "",
                 "start": "",
+                "published_at": "",
                 "is_pti_compliant": is_pti_compliant,
             },
         )
         assert response.context_data["object_list"].count() == expected_results
+
+    @freeze_time("19-11-2021")
+    def test_search_filters_published_at(self, client_factory):
+        self.setup_feeds()
+        client = client_factory(host=self.host)
+        response = client.get(
+            self.url,
+            data={
+                "q": "",
+                "area": "",
+                "organisation": "",
+                "status": "",
+                "start": "",
+                "published_at": "2021-11-19",
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == self.template_path
+        assert response.context_data["object_list"].count() == 6
 
 
 class TestUserTimetableFeedbackView(TestUserAVLFeedbackView):
@@ -118,6 +159,7 @@ class TestUserTimetableFeedbackView(TestUserAVLFeedbackView):
     @pytest.fixture()
     def revision(self):
         org = OrganisationFactory()
+        UserFactory(account_type=SiteAdminType)
         publisher = UserFactory(account_type=OrgAdminType, organisations=(org,))
         return DatasetRevisionFactory(
             dataset__contact=publisher,

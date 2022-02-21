@@ -11,6 +11,7 @@ from transit_odp.browse.views.avl_views import (
     DownloadAVLView,
     DownloadGTFSRTDataArchiveView,
     DownloadSIRIVMDataArchiveView,
+    DownloadSIRIVMTflDataArchiveView,
 )
 
 urlpatterns = [
@@ -33,6 +34,11 @@ urlpatterns = [
                     "gtfsrt",
                     view=DownloadGTFSRTDataArchiveView.as_view(),
                     name="download-gtfsrt-bulk",
+                ),
+                path(
+                    "sirivm_tfl",
+                    view=DownloadSIRIVMTflDataArchiveView.as_view(),
+                    name="downloads-avl-bulk-tfl",
                 ),
             ]
         ),

@@ -1,0 +1,323 @@
+openapi: "3.0.0"
+info:
+  description: |
+    You can use the interactive documentation
+    to customise your API response using the available query parameters.
+    If you are registered and logged in, you will be given a full response.
+    Otherwise you will be given an example response.
+
+    ### Ready to use the API?
+
+    [View developer documentation](/guidance/requirements/?section=api)
+
+    ### First time API user?
+
+    [Guide me](/guide-me/)
+
+  title: Timetables data API
+  version: "1.0.0"
+
+servers:
+  - url: "/api/v1"
+
+tags:
+  - name: timetables
+    description: Interact with timetable datasets
+
+paths:
+  /dataset:
+    get:
+      tags:
+        - timetables
+      summary: Find timetables
+      description: Returns all timetables
+      parameters:
+        - name: adminArea
+          in: query
+          type: array
+          description:
+            Limit results to datasets with services that stop within the specified area(s).
+            Comma separated list of admin areas defined by their AtcoAreaCode as specified in the NPTG area codes.
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["060", "205"]
+          style: form
+          explode: false
+
+        - name: noc
+          in: query
+          description:
+            Limit results to data sets published by an operator identified by the specified National Operator Code.
+            Comma separated list of National Operator Codes
+          schema:
+            type: array
+            items:
+              type: string
+            example: [SCGH, SCLI]
+          style: form
+          explode: false
+
+        - name: limit
+          in: query
+          description: The maximum number of records to return
+          schema:
+            type: integer
+            format: int64
+            default: 25
+            maximum: 100
+            example: 25
+
+        - name: offset
+          in: query
+          description:
+            Return results that match the query starting from the specified offset.<br/>
+            e.g. &offset=10&limit=25 returns results from 11 to 36
+          schema:
+            type: integer
+            format: int64
+            maximum: 100
+            default: 0
+            example: 0
+
+        - name: search
+          in: query
+          description: Return data sets where the data set name, data set description, organisation name, or admin area name contain the specified value
+          schema:
+            type: string
+            example: Stagecoach
+
+        - name: status
+          in: query
+          description: Limit results to data sets with the specified status.
+          schema:
+            type: string
+            example: published
+            enum:
+              - published
+              - error
+              - expired
+              - inactive
+
+        - name: endDateStart
+          in: query
+          description: Limit results to data sets with services with end dates after this date.
+          schema:
+            type: string
+            format: date-time
+            example: "2021-01-01T12:45:00"
+
+        - name: endDateEnd
+          in: query
+          description: Limit results to data sets with services with end dates before this date.
+          schema:
+            type: string
+            format: date-time
+            example: "2021-01-01T12:45:00"
+
+        - name: modifiedDate
+          in: query
+          description: Limit results to data sets that have been created/updated since the specified date.
+          schema:
+            type: string
+            format: date-time
+            example: "2021-01-01T12:45:00"
+
+        - name: startDateStart
+          in: query
+          description: Limit results to data sets with services with start dates after this date.
+          schema:
+            type: string
+            format: date-time
+            example: "2021-01-01T12:45:00"
+
+        - name: startDateEnd
+          in: query
+          description: Limit results to data sets with services with start dates before this date.
+          schema:
+            type: string
+            format: date-time
+            example: "2021-01-01T12:45:00"
+
+        - name: dqRag
+          in: query
+          description: Limit results to data sets with the specified String.
+          schema:
+            type: string
+            example: green
+            enum:
+              - red
+              - amber
+              - green
+
+        - name: bodsCompliance
+          in: query
+          description: Limit results to data sets with the specified boolean value.
+          schema:
+            type: boolean
+            example: true
+
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableResponse"
+        "400":
+          description: Invalid query parameters supplied
+
+  /dataset/{datasetID}:
+    get:
+      tags:
+        - timetables
+      summary: Find dataset by ID
+      description: Returns a single dataset
+      parameters:
+        - name: datasetID
+          in: path
+          description: ID of dataset to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 86
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Timetable"
+        "404":
+          description: Dataset not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    TimetableResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          example: 2345
+        next:
+          type: uri
+          nullable: true
+          example: https://data.bus-data.dft.gov.uk/api/v1/dataset/?limit=25&offset=50
+        previous:
+          type: uri
+          nullable: true
+          example: https://data.bus-data.dft.gov.uk/api/v1/dataset/?limit=25&offset=25
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Timetable"
+    Timetable:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        created:
+          type: string
+          format: date-time
+          example: "2021-01-01T12:45:00"
+        modified:
+          type: string
+          format: date-time
+          example: "2021-01-01T12:45:00"
+        operatorName:
+          type: string
+          example: Stagecoach
+        noc:
+          type: array
+          items:
+            type: string
+            example: [BDNY, CLTL]
+        name:
+          type: string
+          example: Stagecoach_Stockport_Manchester City Centre_20200828"
+        description:
+          type: string
+          example: Stagecoach Manchester
+        comment:
+          type: string
+          example: Automatically detected change in data set
+        status:
+          type: string
+          enum: [published, error, expired, inactive]
+          example: inactive
+        url:
+          type: string
+          format: uri
+          example: https://data.bus-data.dft.gov.uk/timetable/dataset/6/download/
+        extension:
+          type: string
+          example: zip
+        lines:
+          type: array
+          items:
+            type: string
+          example: ["1", "10"]
+        firstStartDate:
+          type: string
+          format: date-time
+          example: "2020-08-28T00:00:00+00:00"
+        firstEndDate:
+          type: string
+          format: date-time
+          example: "2020-11-28T23:59:00+00:00"
+        lastEndDate:
+          type: string
+          format: date-time
+          example: "2020-11-28T23:59:00+00:00"
+        adminAreas:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminArea"
+        localities:
+          type: array
+          items:
+            $ref: "#/components/schemas/Locality"
+        dqScore:
+          type: string
+          example: "100%"
+        dqRag:
+          type: string
+          enum: [red, amber, green]
+          example: green
+        bodsCompliance:
+          type: boolean
+          nullable: true
+          example: true
+    AdminArea:
+      type: object
+      properties:
+        atco_code:
+          type: string
+          example: "060"
+        name:
+          type: string
+          example: Cheshire East
+    Locality:
+      type: object
+      properties:
+        gazetter_id:
+          type: string
+          example: E0028241
+        name:
+          type: string
+          example: Abbey Hey
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: "Not found"

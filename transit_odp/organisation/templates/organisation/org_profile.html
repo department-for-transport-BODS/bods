@@ -4,6 +4,12 @@
 {% load i18n %}
 {% load breadcrumbs %}
 
+{% block above_heading %}
+  {% if user.is_agent_user %}
+    {% include "snippets/org_profile_selector.html" with current_url=current_url %}
+  {% endif %}
+{% endblock %}
+
 {% block title_tag %}
   {% trans 'My organisation details' %}
 {% endblock %}
@@ -16,78 +22,30 @@
 {% block backlink %}
 {% endblock %}
 
-{% block content %}
-  <div class="govuk-grid-row">
-    {% if user.is_agent_user %}
-      {% include "snippets/org_profile_selector.html" with current_url=current_url %}
-    {% endif %}
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ organisation.name }}</h1>
-        {% include "organisation/snippets/psv_licence_panel.html" %}
+{% block content_heading %}
+{% endblock %}
 
-      <table class="govuk-table manage-users-table govuk-!-margin-top-8">
-        <caption class="govuk-table__caption manage-users-table__caption">
-          {% trans 'Organisation detail' %}
-        </caption>
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell"></td>
-            <td colspan="2" class="govuk-table__cell"></td>
-          </tr>
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Short name' %}
-            </td>
-            <td colspan="2" class="govuk-table__cell">
-              {{ organisation.short_name }}
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell manage-users-table__key" style="border: 0">
-              {% trans 'National Operator Code' %}
-            </td>
-            {% if organisation %}
-              {% for noc in organisation.nocs.all %}
-                <td colspan="2" class="govuk-table__cell" style="border: 0">
-                  {{ noc.noc }}
-                </td>
-                <tr/><tr><td></td>
-              {% endfor %}
-            {% else %}
-              <tr/>
-            {% endif %}
-          <tr class="govuk-table__row">
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell"></td>
-            <td colspan="2" class="govuk-table__cell"></td>
-          </tr>
-            <td class="govuk-table__cell manage-users-table__key" style="border: 0">
-              {% trans 'PSV Licence number' %}
-            </td>
-            {% if organisation %}
-              {% for licence in organisation.licences.all %}
-                <td colspan="2" class="govuk-table__cell" style="border: 0">
-                  {{ licence.number }}
-                </td>
-                <tr/><tr><td></td>
-              {% endfor %}
-            {% else %}
-              <tr/>
-            {% endif %}
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell"></td>
-            <td colspan="2" class="govuk-table__cell"></td>
-          </tr>
-          </tbody>
-      </table>
-      <a role="button" class="govuk-button govuk-button--secondary"
-        href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}">
-        {% trans 'Edit' %}
-      </a>
-    </div>
+{% block subtitle %}
+{% endblock %}
 
-    <div class="govuk-grid-column-one-third">
-      {% include "common/snippets/organisation_helpful_links.html" %}
-    </div>
-  </div>
+{% block inner %}
+  <h1 class="govuk-heading-xl">{{ organisation.name }}</h1>
+  {% if user.is_standard_user %}
+    {% include "organisation/snippets/organisation_profile_table.html" %}
+  {% else %}
+    {% include "organisation/snippets/psv_licence_panel.html" %}
+    {% include "organisation/snippets/organisation_profile_table.html" %}
+    <a role="button"
+       class="govuk-button govuk-button--secondary"
+       href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}"
+    >
+      {% trans 'Edit' %}
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block inner_secondary %}
+  {% if not user.is_standard_user %}
+    {% include "common/snippets/organisation_helpful_links.html" %}
+  {% endif %}
 {% endblock %}

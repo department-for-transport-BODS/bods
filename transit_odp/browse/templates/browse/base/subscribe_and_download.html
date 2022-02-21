@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<h2 class="govuk-heading-m govuk-!-margin-top-5">{% trans "Subscribe, download the data"%}</h2>
+  <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+    <li>
+      <a class="govuk-link"
+         href="{% url subscribe_url_name pk=object.id host hosts.data %}"
+      >
+        {% if notification %}
+           {% trans "Unsubscribe from this data set" %}
+        {% else %}
+           {% trans "Subscribe to this data set" %}
+        {% endif %}
+      </a>
+    </li>
+    <li>
+      <a class="govuk-link"
+         href="{% url download_url_name pk=object.id host host.name %}"
+      >
+       Download dataset (.{{ object.live_revision.upload_file_extension }})
+      </a>
+    </li>
+  </ul>

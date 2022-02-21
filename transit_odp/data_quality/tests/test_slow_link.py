@@ -33,7 +33,7 @@ def warning():
 
 
 class TestSlowLinkListPage(ListPageBaseTest):
-    """ Test Slow Link Warnings list page """
+    """Test Slow Link Warnings list page"""
 
     model = models.SlowLinkWarning
     factory = factories.SlowLinkWarningFactory
@@ -50,7 +50,7 @@ class TestSlowLinkListPage(ListPageBaseTest):
 
 
 class TestSlowLinkDetailPage(DetailPageBaseTest):
-    """ Test Slow Link Warnings detail page """
+    """Test Slow Link Warnings detail page"""
 
     model = models.SlowLinkWarning
     factory = factories.SlowLinkWarningFactory

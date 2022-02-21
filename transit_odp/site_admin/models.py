@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 from django.contrib.auth import get_user_model
@@ -6,12 +7,10 @@ from django.http.response import FileResponse
 from django_extensions.db.models import TimeStampedModel
 
 from transit_odp.common.utils.repr import nice_repr
+from transit_odp.site_admin.constants import ARCHIVE_CATEGORY_FILENAME, ArchiveCategory
 
 User = get_user_model()
 CHAR_LEN = 512
-
-
-OPERATIONAL_EXPORTS_NAME = "operationalexports.zip"
 
 
 class OperationalStats(models.Model):
@@ -35,6 +34,10 @@ class OperationalStats(models.Model):
 
     # vehicles
     vehicle_count = models.IntegerField(default=0)
+
+    # services
+    registered_service_code_count = models.IntegerField(null=True)
+    unregistered_service_code_count = models.IntegerField(null=True)
 
     def __str__(self):
         return f"id={self.id!r}, date={self.date!s}"
@@ -70,19 +73,28 @@ class MetricsArchive(models.Model):
         return response
 
 
-class OperationalMetricsArchive(TimeStampedModel):
+class DocumentArchive(TimeStampedModel):
     archive = models.FileField()
+    category = models.CharField(
+        choices=ArchiveCategory.choices,
+        default=ArchiveCategory.OPERATIONAL_METRICS.value,
+        max_length=50,
+    )
 
     def __str__(self):
         return (
-            f"id={self.id}, filename={self.archive.name!r}, "
+            f"id={self.id}, category={self.category}, filename={self.filename!r}, "
             f"modified={self.modified.isoformat()}"
         )
 
+    @property
+    def filename(self):
+        path = Path(self.archive.name)
+        return path.name
+
     def to_http_response(self) -> Optional[FileResponse]:
+        filename = ARCHIVE_CATEGORY_FILENAME[self.category]
         self.archive.seek(0)
         response = FileResponse(self.archive.open("rb"), as_attachment=True)
-        response[
-            "Content-Disposition"
-        ] = f"attachment; filename={OPERATIONAL_EXPORTS_NAME}"
+        response["Content-Disposition"] = f"attachment; filename={filename}"
         return response

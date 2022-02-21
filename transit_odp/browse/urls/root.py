@@ -7,14 +7,16 @@ from rest_framework.authtoken import views
 from transit_odp.browse.views.base_views import (
     ApiSelectView,
     BrowseHomeView,
-    DownloadDataCatalogueView,
     DownloadsView,
     SearchSelectView,
 )
-from transit_odp.browse.views.data_catalogue import (
-    DownloadOperatorDatasetCatalogueView,
-    DownloadOperatorNocCatalogueView,
+from transit_odp.browse.views.contact_operator import (
+    ContactOperatorFeedbackSuccessView,
+    ContactOperatorView,
 )
+from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
+from transit_odp.browse.views.guide_me import GuideMeView
+from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
 from transit_odp.users.views.account import (
@@ -42,23 +44,41 @@ if urlpatterns:
         path("downloads/", view=DownloadsView.as_view(), name="downloads"),
         path("api/", view=ApiSelectView.as_view(), name="api-select"),
         path(
+            "guide-me/",
+            view=GuideMeView.as_view(),
+            name="guide-me",
+        ),
+        path(
             "catalogue/",
+            view=DownloadDataCatalogueView.as_view(),
+            name="download-catalogue",
+        ),
+        path(
+            "operators/",
             include(
                 [
+                    path("", view=OperatorsView.as_view(), name="operators"),
                     path(
-                        "",
-                        view=DownloadDataCatalogueView.as_view(),
-                        name="download-catalogue",
-                    ),
-                    path(
-                        "operator-noc/",
-                        view=DownloadOperatorNocCatalogueView.as_view(),
-                        name="operator-noc-catalogue",
-                    ),
-                    path(
-                        "operator-dataset/",
-                        view=DownloadOperatorDatasetCatalogueView.as_view(),
-                        name="operator-dataset-catalogue",
+                        "<int:pk>/",
+                        include(
+                            [
+                                path(
+                                    "",
+                                    view=OperatorDetailView.as_view(),
+                                    name="operator-detail",
+                                ),
+                                path(
+                                    "contact/",
+                                    view=ContactOperatorView.as_view(),
+                                    name="contact-operator",
+                                ),
+                                path(
+                                    "contact/success/",
+                                    view=ContactOperatorFeedbackSuccessView.as_view(),
+                                    name="feedback-operator-success",
+                                ),
+                            ]
+                        ),
                     ),
                 ]
             ),

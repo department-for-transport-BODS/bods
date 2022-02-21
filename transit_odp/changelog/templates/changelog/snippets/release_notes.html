@@ -1,45 +1,81 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
-  {% trans "December 2021 (1.15.0)" %}
+    {% trans "February 2022 (1.16.0)" %}
 </h3>
 <ul class="govuk-list govuk-list--bullet">
-  <li>
-    {% blocktrans %}
-      SIRI-VM Validator will provide users with reports on schema validation checks,
-      with a status of compliant, partially compliant or non-compliant.
-    {% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans %}
-      Updates to the BODS PTI validation has been added to check that lines consist of
-      journeys with at least one matching locality (where localities are provided).
-    {% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans %}
-      Updates to the validation of BODS PTI StopPoints will look if no OperatingProfile
-      elements are at the VehicleJourney level then use the
-      <code>Service > OperatingPeriod > EndDate</code> to check if non-NaPTAN stops are
-      used for more than 2 months.
-    {% endblocktrans %}
-  </li>
+    <li>
+        {% blocktrans %}
+            The OTC database is now being ingested by the Bus Open Data Service to improve
+            data quality. Service Codes will be validated against the Registration number
+            from the OTC database. Updating this validation check will measure an operator’s
+            compliance per registered service and hence must contain the relevant OTC
+            Registration number.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Enhancements to the Find Bus Open Data portal have been added to provide an
+            improved consumer experience, including a new capability of viewing operator
+            profiles and updated dataset detail pages with more relevant information,
+            guidance and links.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            'Download All' data zip file has an updated nested folder structure, where
+            datasets are placed into individualised operator folders.  Consumers would be
+            able to select individual operators files as requested.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Data Catalogue files have been improved with additional information including
+            improved the 'Guide Me' pages.
+        {% endblocktrans %}
+    </li>
 </ul>
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
-  {% trans "September 2021 (1.14.0)" %}
+    {% trans "December 2021 (1.15.0)" %}
 </h3>
 <ul class="govuk-list govuk-list--bullet">
-  <li>
-    {% blocktrans %}
-      TransXChange files that are not PTI compliant will no longer be allowed to be
-      published in BODS.
-    {% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans %}
-      Users of the service can now keep track of known issues, upcoming changes and
-      release notes through the new Changelog page.
-    {% endblocktrans %}
-  </li>
+    <li>
+        {% blocktrans %}
+            SIRI-VM Validator will provide users with reports on schema validation checks,
+            with a status of compliant, partially compliant or non-compliant.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Updates to the BODS PTI validation has been added to check that lines consist of
+            journeys with at least one matching locality (where localities are provided).
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Updates to the validation of BODS PTI StopPoints will look if no OperatingProfile
+            elements are at the VehicleJourney level then use the
+            <code>Service > OperatingPeriod > EndDate</code> to check if non-NaPTAN stops are
+            used for more than 2 months.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "September 2021 (1.14.0)" %}
+</h3>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            TransXChange files that are not PTI compliant will no longer be allowed to be
+            published in BODS.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Users of the service can now keep track of known issues, upcoming changes and
+            release notes through the new Changelog page.
+        {% endblocktrans %}
+    </li>
 </ul>

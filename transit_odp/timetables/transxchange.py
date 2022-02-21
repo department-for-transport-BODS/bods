@@ -79,7 +79,7 @@ class TransXChangeElement(XMLElement):
 
 
 class TransXChangeDocument:
-    """ A class for handling and validating TransXChange XML Documents."""
+    """A class for handling and validating TransXChange XML Documents."""
 
     def __init__(self, source):
         """Initialise class.
@@ -269,6 +269,32 @@ class TransXChangeDocument:
     def get_public_use(self) -> Optional[TransXChangeElement]:
         xpath = ["Services", "Service", "PublicUse"]
         return self.find_anywhere(xpath)
+
+    def get_service_origin(self) -> str:
+        """
+        Returns the Origin text of a Service.
+        """
+        flexible = ["Services", "Service", "FlexibleService", "Origin"]
+        origin = self._root.get_first_text_or_default(xpath=flexible, default="")
+        if origin:
+            return origin
+
+        standard = ["Services", "Service", "StandardService", "Origin"]
+        origin = self._root.get_first_text_or_default(xpath=standard, default="")
+        return origin
+
+    def get_service_destination(self) -> str:
+        """
+        Returns the Destination of a Service.
+        """
+        flexible = ["Services", "Service", "FlexibleService", "Destination"]
+        destination = self._root.get_first_text_or_default(xpath=flexible, default="")
+        if destination:
+            return destination
+
+        standard = ["Services", "Service", "StandardService", "Destination"]
+        destination = self._root.get_first_text_or_default(xpath=standard, default="")
+        return destination
 
 
 class TransXChangeZip(ZippedValidator):

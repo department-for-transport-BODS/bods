@@ -203,6 +203,8 @@ class Dataset(TimeStampedModel):
         help_text="The time when the AVL feed status was last checked",
     )
 
+    is_dummy = models.BooleanField(default=False, null=False, blank=False)
+
     objects = DatasetManager()
 
     def __str__(self):
@@ -643,6 +645,8 @@ class TXCFileAttributes(models.Model):
         blank=True,
         default=list,
     )
+    origin = models.CharField(_("Origin"), max_length=512, default="")
+    destination = models.CharField(_("Destination"), max_length=512, default="")
 
     objects = TXCFileAttributesQuerySet.as_manager()
 
@@ -656,6 +660,8 @@ class TXCFileAttributes(models.Model):
             f"modification_datetime={self.modification_datetime.isoformat()}, "
             f"filename={self.filename!r}, "
             f"service_code={self.service_code!r}, "
+            f"origin={self.origin!r}, "
+            f"destination={self.destination!r}, "
             f"national_operator_code={self.national_operator_code!r}"
         )
 
@@ -672,6 +678,8 @@ class TXCFileAttributes(models.Model):
             national_operator_code=txc_file.operator.national_operator_code,
             licence_number=txc_file.operator.licence_number,
             service_code=txc_file.service.service_code,
+            origin=txc_file.service.origin,
+            destination=txc_file.service.destination,
             operating_period_start_date=txc_file.service.operating_period_start_date,
             operating_period_end_date=txc_file.service.operating_period_end_date,
             public_use=txc_file.service.public_use,

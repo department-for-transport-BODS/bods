@@ -10,6 +10,11 @@ from django_hosts import reverse
 from django_tables2 import SingleTableView
 
 import config.hosts
+from transit_odp.avl.constants import (
+    AWAITING_REVIEW,
+    NON_COMPLIANT,
+    PARTIALLY_COMPLIANT,
+)
 from transit_odp.avl.models import CAVLDataArchive
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.filters import AVLSearchFilter
@@ -71,6 +76,7 @@ class AVLDatasetDetailView(BaseDetailView):
             .add_avl_compliance_status()
             .add_admin_area_names()
             .add_live_data()
+            .add_avl_compliance_status()
             .select_related("live_revision")
         )
 
@@ -79,6 +85,12 @@ class AVLDatasetDetailView(BaseDetailView):
 
         dataset = self.object
         user = self.request.user
+
+        show_url = dataset.avl_compliance in (
+            PARTIALLY_COMPLIANT,
+            AWAITING_REVIEW,
+            NON_COMPLIANT,
+        )
 
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         is_subscribed = None
@@ -105,6 +117,7 @@ class AVLDatasetDetailView(BaseDetailView):
                 "notification": is_subscribed,
                 "feed_api": feed_api,
                 "report_url": report_url,
+                "show_url": show_url,
             }
         )
 
@@ -158,7 +171,7 @@ class AVLChangeLogView(SingleTableView):
         return context
 
 
-class DownloadAVLView(TemplateView):
+class DownloadAVLView(LoginRequiredMixin, TemplateView):
     template_name = "browse/avl/download_avl.html"
 
     def get_context_data(self, **kwargs):
@@ -192,6 +205,10 @@ class DownloadSIRIVMDataArchiveView(DownloadCAVLDataArchiveView):
 
 class DownloadGTFSRTDataArchiveView(DownloadCAVLDataArchiveView):
     data_format = CAVLDataArchive.GTFSRT
+
+
+class DownloadSIRIVMTflDataArchiveView(DownloadCAVLDataArchiveView):
+    data_format = CAVLDataArchive.SIRIVM_TFL
 
 
 class AvlSubscriptionView(DatasetSubscriptionBaseView, UpdateView):

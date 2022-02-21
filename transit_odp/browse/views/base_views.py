@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ChoiceField
 from django.views.generic import ListView, TemplateView
 from django_filters.constants import EMPTY_VALUES
@@ -27,17 +29,23 @@ class BrowseHomeView(BaseTemplateView):
 class SearchSelectView(BaseTemplateView):
     template_name = "browse/search_select.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pti_pdf_url"] = settings.PTI_PDF_URL
+        return context
+
 
 class DownloadsView(BaseTemplateView):
     template_name = "browse/downloads.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pti_pdf_url"] = settings.PTI_PDF_URL
+        return context
 
-class ApiSelectView(BaseTemplateView):
+
+class ApiSelectView(LoginRequiredMixin, BaseTemplateView):
     template_name = "browse/api_select.html"
-
-
-class DownloadDataCatalogueView(BaseTemplateView):
-    template_name = "browse/download_catalogue.html"
 
 
 class BaseSearchView(BaseFilterView):

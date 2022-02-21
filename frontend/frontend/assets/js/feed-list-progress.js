@@ -3,14 +3,14 @@ import { describeArc } from "./bods-maths";
 const HEADERS = {
   "Cache-Control": "no-cache, no-store, must-revalidate",
   Pragma: "no-cache",
-  Expires: "0"
+  Expires: "0",
 };
 
 const FETCH_CONF = {
   credentials: "same-origin",
   method: "get",
   mode: "cors",
-  headers: HEADERS
+  headers: HEADERS,
 };
 
 class Dataset {
@@ -23,12 +23,12 @@ class Dataset {
   DRAFT = {
     value: "success",
     title: "Draft",
-    css: this.STATUS_CSS + "--draft"
+    css: this.STATUS_CSS + "--draft",
   };
   UNKNOWN = {
     value: "indexing",
     title: "Processing",
-    css: this.STATUS_CSS + "--success"
+    css: this.STATUS_CSS + "--success",
   };
   current_url = new URL(window.location.href);
 
@@ -36,9 +36,8 @@ class Dataset {
     this.progressCentreDiv = progressCentreDiv;
     this.parentDiv = progressCentreDiv.parentElement;
     this.datasetID = progressCentreDiv.firstElementChild.getAttribute("id");
-    this._percentProgress = progressCentreDiv.getElementsByClassName(
-      "progress-percent"
-    )[0];
+    this._percentProgress =
+      progressCentreDiv.getElementsByClassName("progress-percent")[0];
     this.interval = null;
     this.queryAPI();
     this._path = progressCentreDiv.getElementsByTagName("path")[0];
@@ -64,13 +63,13 @@ class Dataset {
 
   queryAPI() {
     fetch(`/dataset/${this.datasetID}/progress/`, FETCH_CONF)
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(response.status);
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         if (data.status === this.INDEXING.value && data.progress < 100) {
           this.updatePercentage(data.progress);
         } else if (data.status === this.DRAFT.value) {
@@ -81,7 +80,7 @@ class Dataset {
           this.toUnknown();
         }
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(`Cannot contact API, giving up: ${e}`);
         this.toUnknown();
       });
@@ -136,9 +135,11 @@ class Dataset {
   }
 }
 
-export function initDatasetListLoaders() {
+function initDatasetListLoaders() {
   const spinners = document.getElementsByClassName("progress-centre");
-  spinners.forEach(spinner => {
+  for (let spinner of spinners) {
     new Dataset(spinner);
-  });
+  }
 }
+
+export { initDatasetListLoaders };

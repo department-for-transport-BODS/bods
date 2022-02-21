@@ -5,16 +5,12 @@ info:
     You can use the interactive documentation to customise your API
     </br>response using the available query parameters.
     If you are registered and </br>logged in, you will be given a full response.
-    Otherwise you will be given </br>an example response.
-    </span>
-
-    <ul class="govuk-list">
-    <li>
-    <a class="govuk-link" href="/guidance/requirements/?section=Using the API">
-    View developer documentation
-    </a>
-    </li>
-    </ul>
+    Otherwise you will be given </br>an example response.</span>
+    <h3 class="govuk-heading-m govuk-!-padding-top-5">Ready to use the API?</h3>
+    <p><a class="govuk-link" href="/guidance/requirements/?section=Using the API">
+    View developer documentation</a></p>
+    <h3 class="govuk-heading-m govuk-!-padding-top-5">First time API user?</h3>
+    <p><a class="govuk-link" href="/guide-me/">Guide me</a></p>
     '
   title: Fares data API
   version: ""

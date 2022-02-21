@@ -1,0 +1,57 @@
+@import "govuk-frontend/govuk/helpers/spacing";
+
+.govuk-timeout-warning {
+  display: none;
+  @include govuk-responsive-padding(6);
+  // Setting width allows IE to center dialog vertically
+  width: 100%;
+
+  // To do: allow this to be customised
+  max-width: 500px;
+  z-index: 2;
+  background-color: #f9f9f9;
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin: auto;
+  border-style: solid;
+  border-width: initial;
+  border-color: initial;
+
+  .govuk-button {
+    margin: 0 govuk-spacing(2) govuk-spacing(3) 0;
+    @include govuk-media-query($from: tablet) {
+      margin-bottom: govuk-spacing(0);
+    }
+  }
+}
+
+.disable-scroll {
+  margin: 0;
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+#dialog-overlay {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+// Stop background scrolling while dialog open.
+.govuk-timeout-warning-overlay {
+  overflow: hidden;
+}
+
+.js-enabled .govuk-timeout-warning-fallback {
+  display: none;
+}
+
+.tabular-numbers {
+  font-family: $govuk-font-family-tabular;
+}

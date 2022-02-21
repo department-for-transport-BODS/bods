@@ -14,7 +14,7 @@ from transit_odp.organisation.constants import (
     FeedStatus,
     TimetableType,
 )
-from transit_odp.organisation.models import Dataset, Organisation
+from transit_odp.organisation.models import Dataset, Organisation, TXCFileAttributes
 from transit_odp.users.constants import (
     AgentUserType,
     DeveloperType,
@@ -96,6 +96,28 @@ def get_orgs_with_active_dataset_counts():
         )
     )
     return active_org_counts
+
+
+def get_service_code_counts():
+    """Returns a dictionary of the count of unique registered service codes, and the
+    count of unique unregistered service codes.
+    """
+    org_is_active = Q(revision__dataset__organisation__is_active=True)
+    revision_is_live = Q(revision__dataset__live_revision__isnull=False)
+    revision_is_active = ~Q(revision__status__in=[Inactive, Expired])
+    service_code_is_unregistered = Q(service_code__startswith="UZ")
+
+    service_code_counts = TXCFileAttributes.objects.filter(
+        org_is_active & revision_is_live & revision_is_active
+    ).aggregate(
+        registered_service_code_count=Count(
+            "service_code", distinct=True, filter=~service_code_is_unregistered
+        ),
+        unregistered_service_code_count=Count(
+            "service_code", distinct=True, filter=service_code_is_unregistered
+        ),
+    )
+    return service_code_counts
 
 
 def get_siri_vm_vehicle_counts() -> int:

@@ -53,7 +53,7 @@ def get_initialised_view(view_class, warning, add_object_list=False):
 # short unit tests with few (even one) assert should point very specifically to
 # errors, without subsequent asserts being hidden by an early failure
 class ListPageBaseTest:
-    """ Base class for testing Data Quality warning list pages """
+    """Base class for testing Data Quality warning list pages"""
 
     model = None
     factory = None
@@ -122,7 +122,7 @@ class ListPageBaseTest:
 
 
 class DetailPageBaseTest:
-    """ Base class for testing Data Quality warning detail pages """
+    """Base class for testing Data Quality warning detail pages"""
 
     def test_view_uses_correct_model(self, warning):
         view = get_initialised_view(self.view, warning)

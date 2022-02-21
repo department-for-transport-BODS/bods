@@ -1,8 +1,8 @@
 import logging
 
-import config.hosts
 from django_hosts import reverse
 
+import config.hosts
 from transit_odp.avl.models import CAVLValidationTaskResult
 
 logger = logging.getLogger(__name__)

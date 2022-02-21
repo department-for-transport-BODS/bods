@@ -22,21 +22,26 @@ from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.contants import DEFAULT_ERROR_SUMMARY
 from transit_odp.users import signals
 from transit_odp.users.forms.admin import (
+    AREAS_OF_INTEREST,
     CONFIRM_PASSWORD_LABEL,
+    CONFIRM_PASSWORD_NO_ASTERISK_LABEL,
     CURRENT_PASSWORD_LABEL,
     EMAIL_INVALID,
     EMAIL_LABEL,
     EMAIL_MISSING,
+    EMAIL_NO_ASTERISK_LABEL,
+    INTENDED_USE,
     NEW_PASSWORD_LABEL,
     OPT_IN_USER_RESEARCH_DEVELOPER,
     OPT_IN_USER_RESEARCH_OPERATOR,
     PASSWORD_HELP_TEXT,
     PASSWORD_LABEL,
     PASSWORD_MISSING,
+    PASSWORD_NO_ASTERISK_LABEL,
     PRIVACY_TEXT,
     SHARE_APP_USAGE,
 )
-from transit_odp.users.models import AgentUserInvite
+from transit_odp.users.models import AgentUserInvite, IntendedUse
 
 
 class LoginForm(GOVUKFormMixin, allauth.account.forms.LoginForm):
@@ -149,16 +154,32 @@ class BaseBODSSignupForm(GOVUKFormMixin, allauth.account.forms.SignupForm):
 
 class DeveloperSignupForm(BaseBODSSignupForm):
     # Customise Signup form to add 'django-invitations' invitation data to the form
-    first_name = forms.CharField(label=_("First Name*"), max_length=150)
-    last_name = forms.CharField(label=_("Last Name*"), max_length=150)
+    first_name = forms.CharField(label=_("First Name"), max_length=60)
+    last_name = forms.CharField(label=_("Last Name"), max_length=60)
     dev_organisation = forms.CharField(
-        label=_("Organisation"), required=False, max_length=55
+        label=_("Organisation"), required=False, max_length=60
     )
-    description = forms.CharField(required=False, max_length=250)
-    opt_in_user_research = forms.ChoiceField(
+    description = forms.CharField(
+        required=False,
+        label=_("Please provide a short description about your intended use below."),
+        max_length=400,
+    )
+    intended_use = forms.ChoiceField(
+        required=True,
+        choices=IntendedUse.choices,
+    )
+    national_interest = forms.ChoiceField(
+        required=True,
+        choices=(
+            (True, "National"),
+            (False, "Regional, please provide specific location(s) if you can "),
+        ),
+    )
+    regional_areas = forms.CharField(label="", required=False, max_length=60)
+    share_app_usage = forms.ChoiceField(
         required=True, choices=((True, "Yes"), (False, "No"))
     )
-    share_app_usage = forms.ChoiceField(
+    opt_in_user_research = forms.ChoiceField(
         required=True, choices=((True, "Yes"), (False, "No"))
     )
 
@@ -176,58 +197,98 @@ class DeveloperSignupForm(BaseBODSSignupForm):
         last_name.widget.attrs.update(self._attributes)
 
         dev_organisation = self.fields["dev_organisation"]
+        dev_organisation.help_text = _(
+            "If you do not belong to an organisation, please type N/A"
+        )
+        dev_organisation.required = True
+        dev_organisation.error_messages.update(
+            {"required": _("Please provide an Organisation")}
+        )
         dev_organisation.widget.attrs.update(self._attributes)
+
+        intended_use = self.fields["intended_use"]
+        intended_use.label = INTENDED_USE
+        intended_use.help_text = _(
+            "To help us to continuously improve the service, please provide details "
+            "about your intended use of the data."
+        )
+        intended_use.error_messages.update(
+            {"required": _("Please specify what best describes your intended use?")}
+        )
+        intended_use.widget = forms.RadioSelect()
+        intended_use.widget.attrs.update(self._attributes)
 
         description = self.fields["description"]
         description.widget = forms.Textarea(attrs={"rows": "3"})
-        description.help_text = _(
-            "Please use this section to describe how you intend to use the data. "
-            "You may include the regions or areas you're interested in targeting, "
-            "the products or apps you aim to develop/improve and what the API will "
-            "enable you to do. "
-        )
-        description.widget.attrs.update(self._attributes)
-
-        opt_in_user_research = self.fields["opt_in_user_research"]
-        opt_in_user_research.label = OPT_IN_USER_RESEARCH_DEVELOPER
-        opt_in_user_research.error_messages.update(
+        description.help_text = _("What does your product/service do? Who is it for?")
+        description.required = True
+        description.error_messages.update(
             {
                 "required": _(
-                    "Please choose if you are happy to be part of user research"
+                    "Please provide a short description about your intended use below."
                 )
             }
         )
-        opt_in_user_research.widget = forms.RadioSelect()
-        opt_in_user_research.widget.attrs.update(self._attributes)
+        description.widget.attrs.update(self._attributes)
+
+        national_interest = self.fields["national_interest"]
+        national_interest.label = AREAS_OF_INTEREST
+        national_interest.error_messages.update(
+            {"required": _("Please specify which areas of data are you interested in?")}
+        )
+        national_interest.widget = forms.RadioSelect()
+        national_interest.widget.attrs.update(self._attributes)
 
         share_app_usage = self.fields["share_app_usage"]
         share_app_usage.label = SHARE_APP_USAGE
+        share_app_usage.help_text = _(
+            "This helps us to continuously improve the BODS service and make it usable "
+            "for consumers like yourself"
+        )
         share_app_usage.error_messages.update(
             {
                 "required": _(
-                    "Please choose if you are happy to share your app usage data"
+                    "Please confirm if you are you happy for DfT to contact you to "
+                    "discuss how you’re using the data?"
                 )
             }
         )
         share_app_usage.widget = forms.RadioSelect()
         share_app_usage.widget.attrs.update(self._attributes)
 
+        opt_in_user_research = self.fields["opt_in_user_research"]
+        opt_in_user_research.label = OPT_IN_USER_RESEARCH_DEVELOPER
+        opt_in_user_research.help_text = _(
+            "This helps us to continuously improve the BODS service and make it usable "
+            "for consumers like yourself"
+        )
+        opt_in_user_research.error_messages.update(
+            {
+                "required": _(
+                    "Please confirm if you would like to be involved in the "
+                    "development of BODS and be contacted as part of our user research?"
+                )
+            }
+        )
+        opt_in_user_research.widget = forms.RadioSelect()
+        opt_in_user_research.widget.attrs.update(self._attributes)
+
         email = self.fields["email"]
-        email.label = EMAIL_LABEL
+        email.label = EMAIL_NO_ASTERISK_LABEL
         email.error_messages.update(
             {"required": EMAIL_MISSING, "invalid": EMAIL_INVALID}
         )
         email.widget.attrs.update(self._attributes)
 
         password1 = self.fields["password1"]
-        password1.label = PASSWORD_LABEL
+        password1.label = PASSWORD_NO_ASTERISK_LABEL
         password1.help_text = PASSWORD_HELP_TEXT
         password1.error_messages.update({"required": PASSWORD_MISSING})
         password1.widget.attrs.update(self._attributes)
 
         password2 = self.fields["password2"]
-        password2.label = CONFIRM_PASSWORD_LABEL
-        password2.error_messages.update({"required": _("Please confirm your password")})
+        password2.label = CONFIRM_PASSWORD_NO_ASTERISK_LABEL
+        password2.error_messages.update({"required": _("Please confirm new password")})
         password2.widget.attrs.update(self._attributes)
 
     def get_layout(self):
@@ -235,7 +296,12 @@ class DeveloperSignupForm(BaseBODSSignupForm):
             "first_name",
             "last_name",
             "dev_organisation",
+            CheckboxField("intended_use", inline=False, dont_use_label_as_legend=True),
             "description",
+            CheckboxField(
+                "national_interest", inline=False, dont_use_label_as_legend=True
+            ),
+            "regional_areas",
             CheckboxField(
                 "share_app_usage", inline=True, dont_use_label_as_legend=True
             ),
@@ -254,12 +320,28 @@ class DeveloperSignupForm(BaseBODSSignupForm):
     # inconsistency if the initial save succeeds but update fails
     # https://django-allauth.readthedocs.io/en/latest/forms.html#signup-allauth-account-forms-signupform
     def specific_custom_signup(self, request, user):
+        user.settings.intended_use = self.cleaned_data.get("intended_use")
+        user.settings.national_interest = self.cleaned_data.get("national_interest")
+        user.settings.regional_areas = self.cleaned_data.get("regional_areas")
         share_app_usage = self.cleaned_data.get("share_app_usage")
         user.settings.share_app_usage = share_app_usage
         user.settings.save()
         user.dev_organisation = self.cleaned_data.get("dev_organisation")
         user.description = self.cleaned_data.get("description")
         user.save()
+
+    def clean(self):
+        super().clean()
+        national_interest = self.cleaned_data.get("national_interest") == "True"
+        regional_areas = self.cleaned_data.get("regional_areas")
+        if national_interest and regional_areas != "":
+            self.add_error(
+                "regional_areas",
+                _(
+                    "Please don't select 'National' interest and specify regional "
+                    "locations"
+                ),
+            )
 
 
 class OperatorSignupForm(BaseBODSSignupForm):

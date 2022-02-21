@@ -1,0 +1,13 @@
+Hello,
+
+Thank you for your feedback to the {{ publisher_name }} at {{ time_now }}.
+
+Below is a copy of your email for record keeping purposes.
+
+.....................................................................................................
+
+{{ feedback }}
+
+
+Kind Regards,
+The Bus Open Data Team

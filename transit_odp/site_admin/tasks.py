@@ -6,20 +6,20 @@ from dateutil.relativedelta import relativedelta
 from django.core.files.base import File
 from django.utils import timezone
 
+from transit_odp.site_admin.constants import (
+    ARCHIVE_CATEGORY_FILENAME,
+    OperationalMetrics,
+)
 from transit_odp.site_admin.exports import (
     create_metrics_archive,
     create_operational_exports_file,
 )
-from transit_odp.site_admin.models import (
-    OPERATIONAL_EXPORTS_NAME,
-    APIRequest,
-    OperationalMetricsArchive,
-    OperationalStats,
-)
+from transit_odp.site_admin.models import APIRequest, DocumentArchive, OperationalStats
 from transit_odp.site_admin.stats import (
     get_active_dataset_counts,
     get_operator_count,
     get_orgs_with_active_dataset_counts,
+    get_service_code_counts,
     get_siri_vm_vehicle_counts,
     get_user_counts,
 )
@@ -50,6 +50,11 @@ def task_save_operational_stats():
     published_fares_operator_count: number of operators with active fares
 
     vehicle_counts: The number of vehicles RT has encountered for that day
+
+    registered_service_code_count: The number of unique registered service
+        codes in published, active datasets
+    unregistered_service_code_count: The number of unique unregistered service
+        codes in published, active datasets
     """
     date = timezone.now().date()
     stats = {
@@ -59,6 +64,8 @@ def task_save_operational_stats():
     stats.update(get_user_counts())
     stats.update(get_active_dataset_counts())
     stats.update(get_orgs_with_active_dataset_counts())
+
+    stats.update(get_service_code_counts())
 
     OperationalStats.objects.update_or_create(date=date, defaults=stats)
 
@@ -100,12 +107,17 @@ def task_backfill_metrics_archive():
 
 @shared_task()
 def task_create_operational_exports_archive():
+    filename = ARCHIVE_CATEGORY_FILENAME[OperationalMetrics]
     buffer_ = create_operational_exports_file()
-    archive = File(buffer_, name=OPERATIONAL_EXPORTS_NAME)
+    archive = File(buffer_, name=filename)
 
     logger.info("[OperationalMetricsArchive] Creating operational metrics export.")
-    metrics = OperationalMetricsArchive.objects.order_by("modified").last()
+    metrics = (
+        DocumentArchive.objects.filter(category=OperationalMetrics)
+        .order_by("modified")
+        .last()
+    )
     if metrics is None:
-        OperationalMetricsArchive.objects.create(archive=archive)
+        DocumentArchive.objects.create(archive=archive, category=OperationalMetrics)
     else:
-        metrics.archive.save(OPERATIONAL_EXPORTS_NAME, archive)
+        metrics.archive.save(filename, archive)

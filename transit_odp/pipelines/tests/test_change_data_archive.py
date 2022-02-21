@@ -84,6 +84,8 @@ def test_run():
     # Create a dataset with a live_revision that was published yesterday
     with freeze_time(yesterday):
         expected = DatasetFactory()
+        org = expected.organisation
+        directory_name = f"{org.short_name}_{org.id}"
 
     # Create a dataset published 2 days ago
     with freeze_time(now - timedelta(days=2)):
@@ -105,10 +107,12 @@ def test_run():
 
         # assert archive contains name of the dataset
         upload = expected.live_revision.upload_file
-        assert zf.namelist() == [f"{basename}/{upload.name}"]
+        assert zf.namelist() == [f"{basename}/{directory_name}/{upload.name}"]
 
         # Access zip file with upload filename
-        with zf.open(os.path.join(basename, upload.name), "r") as zipped:
+        with zf.open(
+            os.path.join(basename, directory_name, upload.name), "r"
+        ) as zipped:
             with upload.open("rb") as orig:
                 # Test the upload file data can be read from the zip
                 assert zipped.read() == orig.read()

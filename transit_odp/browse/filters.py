@@ -1,6 +1,14 @@
 import django_filters as filters
 from django.db.models import Q
 
+from transit_odp.avl.constants import (
+    AWAITING_REVIEW,
+    COMPLIANT,
+    MORE_DATA_NEEDED,
+    NON_COMPLIANT,
+    PARTIALLY_COMPLIANT,
+    UNDERGOING,
+)
 from transit_odp.browse.forms import (
     AVLSearchFilterForm,
     FaresSearchFilterForm,
@@ -21,10 +29,9 @@ class TimetableSearchFilter(filters.FilterSet):
         queryset=Organisation.objects.exclude(is_active=False)
     )
 
-    status = filters.ChoiceFilter(
-        choices=DatasetRevision.STATUS_CHOICES + ((FeedStatus.live.value, "Published"),)
-    )
+    status = filters.ChoiceFilter(choices=DatasetRevision.STATUS_CHOICES)
     start = filters.DateTimeFilter(field_name="first_service_start", lookup_expr="gte")
+    published_at = filters.DateTimeFilter(field_name="published_at", lookup_expr="gte")
 
     is_pti_compliant = filters.BooleanFilter()
 
@@ -50,7 +57,23 @@ class AVLSearchFilter(filters.FilterSet):
     )
 
     status = filters.ChoiceFilter(
-        choices=DatasetRevision.STATUS_CHOICES + ((FeedStatus.live.value, "Published"),)
+        choices=(
+            ("", "All statuses"),
+            (FeedStatus.live.value, "Published"),
+            (FeedStatus.error.value, "No vehicle activity"),
+            (FeedStatus.inactive.value, "Inactive"),
+        ),
+    )
+
+    avl_compliance = filters.ChoiceFilter(
+        choices=(
+            (UNDERGOING, UNDERGOING),
+            (PARTIALLY_COMPLIANT, PARTIALLY_COMPLIANT),
+            (MORE_DATA_NEEDED, MORE_DATA_NEEDED),
+            (AWAITING_REVIEW, AWAITING_REVIEW),
+            (COMPLIANT, COMPLIANT),
+            (NON_COMPLIANT, NON_COMPLIANT),
+        )
     )
 
     class Meta:
@@ -71,9 +94,7 @@ class FaresSearchFilter(filters.FilterSet):
         queryset=Organisation.objects.exclude(is_active=False)
     )
 
-    status = filters.ChoiceFilter(
-        choices=DatasetRevision.STATUS_CHOICES + ((FeedStatus.live.value, "Published"),)
-    )
+    status = filters.ChoiceFilter(choices=DatasetRevision.STATUS_CHOICES)
 
     class Meta:
         form = FaresSearchFilterForm

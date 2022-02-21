@@ -1,0 +1,57 @@
+{% load i18n %}
+
+<table class="govuk-table manage-users-table govuk-!-margin-top-8">
+  <caption class="govuk-table__caption manage-users-table__caption">
+    {% trans 'Organisation detail' %}
+  </caption>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"></td>
+      <td colspan="2" class="govuk-table__cell"></td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell manage-users-table__key">
+        {% trans 'Short name' %}
+      </td>
+      <td colspan="2" class="govuk-table__cell">
+        {{ organisation.short_name }}
+      </td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell manage-users-table__key" style="border: 0">
+        {% trans 'National Operator Code' %}
+      </td>
+      {% if organisation %}
+        {% for noc in organisation.nocs.all %}
+          <td colspan="2" class="govuk-table__cell" style="border: 0">
+            {{ noc.noc }}
+          </td>
+          <tr/><tr><td></td>
+        {% endfor %}
+      {% else %}
+        <tr/>
+      {% endif %}
+    <tr class="govuk-table__row">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"></td>
+      <td colspan="2" class="govuk-table__cell"></td>
+    </tr>
+      <td class="govuk-table__cell manage-users-table__key" style="border: 0">
+        {% trans 'PSV Licence number' %}
+      </td>
+      {% if organisation %}
+        {% for licence in organisation.licences.all %}
+          <td colspan="2" class="govuk-table__cell" style="border: 0">
+            {{ licence.number }}
+          </td>
+          <tr/><tr><td></td>
+        {% endfor %}
+      {% else %}
+        <tr/>
+      {% endif %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"></td>
+      <td colspan="2" class="govuk-table__cell"></td>
+    </tr>
+  </tbody>
+</table>

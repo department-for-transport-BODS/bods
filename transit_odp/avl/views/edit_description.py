@@ -1,6 +1,6 @@
-import config.hosts
 from django_hosts import reverse
 
+import config.hosts
 from transit_odp.avl.forms import EditFeedDescriptionForm
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.publish.views.base import EditDescriptionBaseView
@@ -10,6 +10,9 @@ class EditLiveRevisionDescriptionView(EditDescriptionBaseView):
     template_name = "avl/feed_description_edit.html"
     form_class = EditFeedDescriptionForm
     dataset_type = DatasetType.AVL.value
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_dummy=False)
 
     def get_object(self, queryset=None):
         dataset = super().get_object()

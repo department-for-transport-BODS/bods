@@ -19,7 +19,14 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import DownloadView
-from transit_odp.organisation.constants import DatasetType, FaresType, FeedStatus
+from transit_odp.organisation.constants import (
+    EXPIRED,
+    INACTIVE,
+    LIVE,
+    DatasetType,
+    FaresType,
+    FeedStatus,
+)
 from transit_odp.organisation.models import (
     Dataset,
     DatasetRevision,
@@ -31,7 +38,7 @@ from transit_odp.publish.tables import DatasetRevisionTable
 logger = logging.getLogger(__name__)
 
 
-class DownloadFaresView(BaseTemplateView):
+class DownloadFaresView(LoginRequiredMixin, BaseTemplateView):
     template_name = "browse/fares/download_fares.html"
 
     def get_context_data(self, **kwargs):
@@ -116,6 +123,7 @@ class FaresDatasetDetailView(DetailView):
             "fares-feed-download", args=[dataset.id], host=config.hosts.DATA_HOST
         )
         kwargs["last_modified_username"] = last_modified_username
+        kwargs["show_map"] = dataset.status in (EXPIRED, INACTIVE, LIVE)
 
         is_subscribed = None
         feed_api = None

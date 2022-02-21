@@ -192,7 +192,7 @@ class FaresDatasetRevisionFactory(DatasetRevisionFactory):
         DatasetFactory, live_revision=None, dataset_type=FaresType
     )
     url_link = factory.Faker("url")
-    upload_file = None
+    upload_file = factory.django.FileField(filename="NeTEx.xml")
     first_service_start = None
 
 
@@ -224,6 +224,8 @@ class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
     revision_number = "0"
     filename = FAKER.file_name(extension="xml")
     service_code = FAKER.pystr(min_chars=4, max_chars=4)
+    origin = FAKER.city()
+    destination = FAKER.city()
     creation_datetime = FAKER.date_time(tzinfo=pytz.utc)
     modification_datetime = FAKER.date_time(tzinfo=pytz.utc)
     national_operator_code = "".join(FAKER.random_letters(length=4)).upper()

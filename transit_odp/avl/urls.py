@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-import transit_odp.avl.views.dataset_review
+import transit_odp.avl.views.review
 from transit_odp.avl import views
 from transit_odp.avl.views.edit_description import (
     EditDraftRevisionDescriptionView,
@@ -81,7 +81,7 @@ urlpatterns = [
                                     [
                                         path(
                                             "",
-                                            view=transit_odp.avl.views.dataset_review.UpdateRevisionPublishView.as_view(),  # noqa E501
+                                            view=transit_odp.avl.views.review.UpdateRevisionPublishView.as_view(),  # noqa E501
                                             name="revision-update-publish",
                                         ),
                                     ]

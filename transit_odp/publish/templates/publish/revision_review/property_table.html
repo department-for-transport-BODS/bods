@@ -1,147 +1,148 @@
 {% load i18n %}
 {% load tz %}
 <table class="govuk-table dataset-property-table">
-  <tbody class="govuk-table__body">
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
-    <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between"><span class="govuk-!-padding-1">{% trans object.description %}</span>
-        <span style="text-align: right"><a class="govuk-link"
-           href="{% url 'revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% trans 'Edit' %}</a>
-        </span>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Name' %}{% endfilter %}</th>
+            <td class="govuk-table__cell dont-break-out">{% filter force_escape %}{% trans object.name %}{% endfilter %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Description' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                <div class="flex-between">
+                    {% filter force_escape %}{% trans object.description %}{% endfilter %}
+                    <span style="text-align: right"><a class="govuk-link"
+                        href="{% url 'revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% filter force_escape %}{% trans 'Edit' %}{% endfilter %}</a>
+                    </span>
 
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Short description' %}</th>
-    <td class="govuk-table__cell dont-break-out">
-      <div class="flex-between">{% trans object.short_description %}<a class="govuk-link"
-           href="{% url 'revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% trans 'Edit' %}</a>
-      </div></td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between">
-          {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Data quality report' %}</th>
-    <td class="govuk-table__cell">
-      <span class="no-wrap" id="id-publish-review-quality-report"
-        style="text-align: right">
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Short description' %}{% endfilter %}</th>
+            <td class="govuk-table__cell dont-break-out">
+                <div class="flex-between">{% filter force_escape %}{% trans object.short_description %}{% endfilter %}<a class="govuk-link"
+                    href="{% url 'revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% filter force_escape %}{% trans 'Edit' %}{% endfilter %}</a>
+                </div></td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Status' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                <div class="flex-between">
+                    {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Data quality report' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                <span class="no-wrap" id="id-publish-review-quality-report"
+                    style="text-align: right">
 
-        {% if dq_status == "SUCCESS" %}
-        <a class="govuk-link" target="_blank"
-          href="{% url 'dq-draft-report' pk1=pk1 pk=object.dataset.id host hosts.publish %}">
-          {% trans 'View data quality report' %}
-        </a>
-        {% else %}
-          {% trans 'Generating...' %}
-        {% endif %}
+                    {% if dq_status == "SUCCESS" %}
+                        <a class="govuk-link" target="_blank" rel="noopener noreferrer"
+                            href="{% url 'dq-draft-report' pk1=pk1 pk=object.dataset.id host hosts.publish %}">
+                            {% filter force_escape %}{% trans 'View data quality report' %}{% endfilter %}
+                        </a>
+                    {% else %}
+                        {% filter force_escape %}{% trans 'Generating...' %}{% endfilter %}
+                    {% endif %}
 
-      </span>
-      {% if dq_score %}
-        <p class="govuk-!-margin-top-3">
-          {% include "snippets/data_quality_row.html" with rag=dq_score %}
-        </p>
-      {% endif %}
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
-    <td class="govuk-table__cell">{% trans object.dataset.organisation.name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'TransXChange version' %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between">
-        <span>{{ object.transxchange_version }}</span>
-        <span class="no-wrap" style="text-align: right">
-          {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
-           <a class="govuk-link"
-              href="
-                      {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-              {% trans 'Download .xml (TxC)' %}
-            </a>
-         </span>
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'URL link' %}</th>
-    <td class="govuk-table__cell">
-        <span class="no-wrap" id="id-publish-review-url-link">
-                          {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
-                          <a class="govuk-link"
-                             href="
+                </span>
+                {% if dq_score %}
+                    <p class="govuk-!-margin-top-3">
+                        {% include "snippets/data_quality_row.html" with rag=dq_score %}
+                    </p>
+                {% endif %}
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Owner' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">{% filter force_escape %}{% trans object.dataset.organisation.name %}{% endfilter %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'TransXChange version' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                <div class="flex-between">
+                    <span>{{ object.transxchange_version }}</span>
+                    <span class="no-wrap" style="text-align: right">
+                        {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
+                        <a class="govuk-link"
+                            href="
+                            {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                            {% filter force_escape %}{% trans 'Download .xml (TxC)' %}{% endfilter %}
+                        </a>
+                    </span>
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'URL link' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                <span class="no-wrap" id="id-publish-review-url-link">
+                    {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
+                    <a class="govuk-link"
+                        href="
 
-                                     {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-                           {% trans 'Publisher URL' %}
-                          </a>
-                   </span>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Location' %}</th>
-    <td class="govuk-table__cell">{{ admin_areas }}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Bus stops' %}</th>
-    <td class="govuk-table__cell">{{ object.num_of_bus_stops }}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Bus routes' %}</th>
-    <td class="govuk-table__cell">{{ object.num_of_lines }}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between">
-        <span>
-            {# Note we use last modified time rather than published_at since the revision won't be published yet #}
-             {{ object.modified|localtime|date:"j M Y H:i" }} {% trans 'by ' %}
-            {% if object.last_modified_user %}
-                {{ object.last_modified_user.username }}
-            {% else %}
-                {% trans 'System' %}
-            {% endif %}
-        </span>
-          {#        <span style="text-align: right">#}
-          {#          {% block inner.last_updated.changelog_link %}#}
-          {#            <a class="govuk-link"#}
-          {#               href="{% url 'feed-changelog' pk=object.dataset_id host host.name %}">{% trans 'View change log' %}</a>#}
-          {#          {% endblock %}#}
-          {#        </span>#}
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Earliest start date' %}</th>
-    <td class="govuk-table__cell">
-        {% if object.first_service_start is not None %}
-              {{ object.first_service_start|localtime|date:"j M Y H:i" }}
-        {% else %}
-            {% trans 'Start date not specified' %}
-        {% endif %}
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Earliest end date' %}</th>
-    <td class="govuk-table__cell">
-        {% if object.first_expiring_service is not None %}
-              {{ object.first_expiring_service|localtime|date:"j M Y H:i" }}
-        {% else %}
-            {% trans 'Expiry not specified' %}
-        {% endif %}
-    </td>
-  </tr>
-  </tbody>
+                        {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                        {% filter force_escape %}{% trans 'Publisher URL' %}{% endfilter %}
+                    </a>
+                </span>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Location' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">{{ admin_areas }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Bus stops' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">{{ object.num_of_bus_stops }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Bus routes' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">{{ object.num_of_lines }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Last updated' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                <div class="flex-between">
+                    <span>
+                        {# Note we use last modified time rather than published_at since the revision won't be published yet #}
+                        {{ object.modified|localtime|date:"j M Y H:i" }} {% filter force_escape %}{% trans 'by ' %}{% endfilter %}
+                        {% if object.last_modified_user %}
+                            {{ object.last_modified_user.username }}
+                        {% else %}
+                            {% filter force_escape %}{% trans 'System' %}{% endfilter %}
+                        {% endif %}
+                    </span>
+                    {#        <span style="text-align: right">#}
+                    {#          {% block inner.last_updated.changelog_link %}#}
+                    {#            <a class="govuk-link"#}
+                    {#               href="{% url 'feed-changelog' pk=object.dataset_id host host.name %}">{% filter force_escape %}{% trans 'View change log' %}{% endfilter %}</a>#}
+                    {#          {% endblock %}#}
+                    {#        </span>#}
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Earliest start date' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                {% if object.first_service_start is not None %}
+                    {{ object.first_service_start|localtime|date:"j M Y H:i" }}
+                {% else %}
+                    {% filter force_escape %}{% trans 'Start date not specified' %}{% endfilter %}
+                {% endif %}
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Earliest end date' %}{% endfilter %}</th>
+            <td class="govuk-table__cell">
+                {% if object.first_expiring_service is not None %}
+                    {{ object.first_expiring_service|localtime|date:"j M Y H:i" }}
+                {% else %}
+                    {% filter force_escape %}{% trans 'Expiry not specified' %}{% endfilter %}
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
 </table>

@@ -129,7 +129,10 @@ class BulkResendInviteView(SiteAdminViewMixin, FormView):
         )
 
     def get_success_url(self):
-        return self.get_cancel_url()
+        return reverse(
+            "users:bulk-resend-invite-success",
+            host=self.request.host.name,
+        )
 
     def get_form_kwargs(self):
         adapter = get_adapter(self.request)
@@ -155,9 +158,7 @@ class BulkResendInviteView(SiteAdminViewMixin, FormView):
 
     def form_valid(self, form):
         adapter = get_adapter(self.request)
-        pending_organisation_ids = adapter.unstash_bulk_resend_invite_org_ids(
-            self.request
-        )
+        pending_organisation_ids = adapter.get_bulk_resend_invite_org_ids(self.request)
         invitations = Invitation.objects.filter(accepted=False).filter(
             organisation_id__in=pending_organisation_ids
         )
@@ -165,6 +166,23 @@ class BulkResendInviteView(SiteAdminViewMixin, FormView):
             invite.send_invitation(self.request)
 
         return super().form_valid(form)
+
+
+class BulkInviteSuccessView(SiteAdminViewMixin, TemplateView):
+    template_name = "site_admin/bulk_resend_invite_success.html"
+
+    def get_context_data(self, **kwargs):
+        adapter = get_adapter(self.request)
+        pending_organisation_ids = adapter.unstash_bulk_resend_invite_org_ids(
+            self.request
+        )
+        invitations = Invitation.objects.filter(accepted=False).filter(
+            organisation_id__in=pending_organisation_ids
+        )
+        emails = [invite.email for invite in invitations]
+        context = super().get_context_data(**kwargs)
+        context.update({"resend_emails": emails})
+        return context
 
 
 class InviteSuccessView(SiteAdminViewMixin, TemplateView):

@@ -1,53 +1,50 @@
-const polyfills = require("./polyfills");
+import "../sass/project.scss";
+
 const GOVUKFrontend = require("govuk-frontend");
-const CrispyFormsGovUK = require("../../../../crispy-forms-govuk/crispy_forms_govuk/static/js/all.js");
-const Cookielaw = require("./cookie_consent");
-const initMap = require("./feed-detail-map");
-const initFaresDetailMap = require("./fares-detail-map");
-const initWarningDetailMap = require("./data-quality-detail-map");
-const initAPIDocs = require("./api-docs");
-const copyToClipboard = require("./copy_to_clipboard");
+import * as CrispyFormsGovUK from "../../../../crispy-forms-govuk/crispy_forms_govuk/static/js/all.js";
 
-const APIService = require("./api-service");
-const MyAccountMenu = require("./my-account-menu");
-import { autoFocusToClass } from "./autofocus";
-import { refresh } from "./dqs-review-panel";
-import { ProgressIndicator } from "./feed-detail-progress";
-import { initDatasetListLoaders } from "./feed-list-progress";
-import { initTimeoutWarning } from "./timeout-warning";
+import { APIService } from "./api-service";
+import { AutoCompleteSearch } from "./autocomplete";
 import { LicenceCheckbox, DisableInputs } from "./disable-inputs";
+import { MyAccountMenu } from "./my-account-menu";
+import { ProgressIndicator } from "./feed-detail-progress";
+import { autoFocusToClass } from "./autofocus";
+import { copyToClipboard } from "./copy_to_clipboard";
+import { createCookie } from "./cookie_consent";
+import { initAPIDocs } from "./api-docs";
+import { initDatasetListLoaders } from "./feed-list-progress";
+import { initFaresDetailMap } from "./fares-detail-map";
+import { initHelpModals } from "./help-modal";
+import { initMap } from "./feed-detail-map";
+import { initTimeoutWarning } from "./timeout-warning";
+import { initWarningDetailMap } from "./data-quality-detail-map";
+import { refresh } from "./dqs-review-panel";
 
-// Expose GOVUKFrontend globally to call init from HTML after linking bundle.
+function initAll() {
+  console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
+  initTimeoutWarning();
+  initHelpModals();
+  GOVUKFrontend.initAll();
+}
+
 window.GOVUKFrontend = GOVUKFrontend;
-
-// Do something similar with crispy-forms-govuk 'library'
 window.CrispyFormsGovUK = CrispyFormsGovUK;
 
-const initAll = (options) => {
-  console.log(`Initialising BODSFrontend - ${new Date().toISOString()}`);
-  initTimeoutWarning();
-  GOVUKFrontend.initAll();
-
-  // const apiUrl = options.apiURL;
-  // const apiService = new APIService(apiUrl);
-
-  // const $pqsPanels = document.querySelectorAll('[data-module="app-dqs-panel"]');
-  // $pqsPanels.forEach(($panel) => new DQSReviewPanel($panel, apiService));
-};
-
-module.exports = {
-  Cookielaw: Cookielaw,
-  LicenceCheckbox,
+export {
+  APIService,
+  AutoCompleteSearch,
   DisableInputs,
-  initMap,
-  initFaresDetailMap,
-  initWarningDetailMap,
-  initDatasetListLoaders,
-  initAPIDocs,
-  copyToClipboard,
-  refresh,
+  LicenceCheckbox,
   MyAccountMenu,
-  autoFocusToClass,
   ProgressIndicator,
+  autoFocusToClass,
+  copyToClipboard,
+  createCookie,
+  initAPIDocs,
   initAll,
+  initDatasetListLoaders,
+  initFaresDetailMap,
+  initMap,
+  initWarningDetailMap,
+  refresh,
 };

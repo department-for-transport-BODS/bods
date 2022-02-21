@@ -20,6 +20,7 @@ from urllib3.exceptions import ReadTimeoutError
 from transit_odp.avl.archivers import GTFSRTArchiver
 from transit_odp.avl.constants import (
     AWAITING_REVIEW,
+    COMPLIANT,
     LOWER_THRESHOLD,
     MORE_DATA_NEEDED,
     NON_COMPLIANT,
@@ -57,6 +58,7 @@ from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRev
 logger = logging.getLogger(__name__)
 
 SIRI_ZIP = "sirivm_{}.zip"
+SIRI_TFL_ZIP = "sirivm_tfl_{}.zip"
 VALIDATION_SAMPLE_SIZE = 50
 
 
@@ -86,7 +88,7 @@ def cavl_validate_revision(revision):
 
 @shared_task()
 def task_validate_avl_feed(task_id: str):
-    """ Task for validating an AVL feed."""
+    """Task for validating an AVL feed."""
     try:
         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
     except CAVLValidationTaskResult.DoesNotExist:
@@ -154,6 +156,34 @@ def task_create_gtfsrt_zipfile():
     archiver.archive()
     end = time.time()
     logger.debug(_prefix + f"Finished archivng in {end-start:.2f} seconds.")
+
+
+@shared_task(bind=True)
+def task_create_sirivm_tfl_zipfile(self):
+    url = f"{settings.CAVL_CONSUMER_URL}/datafeed"
+    params = {"operatorRef": "TFLO"}
+    now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
+
+    try:
+        response = requests.get(url, params=params, timeout=1)
+    except RequestException:
+        logger.error("Unable to retrieve siri vm data for TfL.", exc_info=True)
+    else:
+        bytesio = io.BytesIO()
+        with ZipFile(bytesio, mode="w", compression=ZIP_DEFLATED) as zf:
+            zf.writestr("siri_tfl.xml", response.content)
+
+        file_ = File(bytesio, name=SIRI_TFL_ZIP.format(now))
+
+        archive = CAVLDataArchive.objects.filter(
+            data_format=CAVLDataArchive.SIRIVM_TFL
+        ).last()
+
+        if archive is None:
+            archive = CAVLDataArchive(data_format=CAVLDataArchive.SIRIVM_TFL)
+
+        archive.data = file_
+        archive.save()
 
 
 @shared_task(ignore_result=True)
@@ -236,9 +266,9 @@ def task_run_feed_validation(feed_id: int):
         return
 
     adapter.info("Validating feed against BODS SIRI-VM profile.")
-    feeds = AVLDataset.objects.filter(id=feed_id).add_avl_compliance_status()
+    feeds = AVLDataset.objects.filter(id=feed_id).add_old_avl_compliance_status()
     feed = feeds.get(id=feed_id)
-    old_status = feed.avl_compliance
+    old_status = feed.old_avl_compliance
 
     response = client.validate(feed_id=feed_id, sample_size=VALIDATION_SAMPLE_SIZE)
     if response is None:
@@ -251,18 +281,27 @@ def task_run_feed_validation(feed_id: int):
     )
     report.save()
 
+    feeds = feeds.add_avl_compliance_status()
     feed = feeds.get(id=feed_id)
     new_status = feed.avl_compliance
+
     if feed.post_seven_days:
+        was_compliant = old_status in [UNDERGOING, AWAITING_REVIEW, COMPLIANT]
+        no_longer_compliant = new_status in [
+            NON_COMPLIANT,
+            PARTIALLY_COMPLIANT,
+            MORE_DATA_NEEDED,
+        ]
+
         if new_status != old_status:
             adapter.info("Status has changed send status changed email.")
             send_avl_compliance_status_changed(datafeed=feed, old_status=old_status)
 
-        if report.critical_score < LOWER_THRESHOLD:
+        if was_compliant and report.critical_score < LOWER_THRESHOLD:
             adapter.info(f"Critical score below lower threshold of {LOWER_THRESHOLD}.")
             adapter.info("Sending major issue email.")
             send_avl_flagged_with_major_issue(dataset=feed)
-        elif new_status in (PARTIALLY_COMPLIANT, NON_COMPLIANT, MORE_DATA_NEEDED):
+        elif was_compliant and no_longer_compliant:
             adapter.info(f"Feed has a compliance status of {new_status}.")
             adapter.info("Sending compliance issue email.")
             send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)

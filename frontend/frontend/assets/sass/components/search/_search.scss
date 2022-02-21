@@ -4,13 +4,16 @@
 
 /* Pillbox */
 
+$light-grey-25: mix(white, govuk-colour("light-grey"), 25%);
+$light-grey-50: mix(white, govuk-colour("light-grey"), 50%);
+
 .search-pillbox {
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
   align-items: center;
-  background-color: #f8f8f8;
-  width: inherit;
+  background-color: $light-grey-25;
+  width: initial;
   min-height: govuk-spacing(7);
   padding: govuk-spacing(3);
   border: 0;
@@ -22,6 +25,7 @@
 
   .pill-item {
     border: solid 1px govuk-colour("dark-grey");
+    background-color: $light-grey-50;
     border-radius: 4px;
     padding: govuk-spacing(1);
     display: inline-flex;
@@ -43,76 +47,30 @@
   margin-bottom: govuk-spacing(3);
 }
 
-//.search-pillbox:first-child {
-//    font-weight: bold;
-//}
-
 /* search box */
+$search-box-height: 45px;
 
 .searchbox {
-  @extend .govuk-input;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  width: 75%;
+  width: 100%;
   display: flex;
+  margin-bottom: govuk-spacing(6);
 
   .searchbox__input {
-    vertical-align: middle;
+    @extend .govuk-input;
+    width: 100%;
+    height: $search-box-height;
     border: none;
-    height: 90%;
-  }
-
-  .searchbox__input:focus {
-    outline: 3px solid govuk-colour("yellow");
-    outline-offset: 3px;
+    z-index: 1;
   }
 
   .searchbox__button {
-    box-sizing: border-box;
-    justify-content: flex-start;
-    /*position: relative;*/
-    /*right: 40px;*/
-    width: 40px;
-    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: govuk-colour("black");
+    height: $search-box-height;
+    width: $search-box-height;
     border: 0;
-    /*padding: 5px;*/
-
-    background-color: transparent;
-
-    &:focus {
-      // Based on govuk-focused-text
-      // When colours are overridden, for example when users have a dark mode,
-      // backgrounds and box-shadows disappear, so we need to ensure there's a
-      // transparent outline which will be set to a visible colour.
-
-      // Since Internet Explorer 8 does not support box-shadow, we want to force the
-      // user-agent outlines
-      @include govuk-not-ie8 {
-        outline: $govuk-focus-width solid transparent;
-      }
-      background-color: $govuk-focus-colour;
-      box-shadow: -2px -1px $govuk-focus-colour,
-        -1px -1px $govuk-focus-text-colour;
-    }
-
-    > img {
-      vertical-align: middle;
-    }
-  }
-}
-
-@media (min-width: 40.0625em) {
-  .searchbox .searchbox__input-one-half {
-    width: calc(50% - 40px);
-  }
-
-  .searchbox .searchbox__input-full {
-    width: calc(100% - 40px);
-  }
-
-  .searchbox .searchbox__input-three-quarters {
-    width: calc(75% - 40px);
   }
 }
 
@@ -148,5 +106,39 @@
   margin-bottom: 3rem;
 }
 
-.search-empty-result {
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 3px solid govuk-colour("black");
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: $light-grey-25;
+  color: govuk-colour("black");
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  font-size: 1.1875rem;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: govuk-colour("white");
+  border-bottom: 1px solid govuk-colour("light-grey");
+}
+
+.autocomplete-items div:hover {
+  background-color: govuk-colour("dark-blue") !important;
+  color: govuk-colour("white");
+}
+
+// Used by javascript to highlight option
+.autocomplete-active {
+  background-color: govuk-colour("dark-blue") !important;
+  color: govuk-colour("white");
 }

@@ -1,29 +1,16 @@
-// Largely duplicates feed-detail-map. As DQ maps progress, refactor to remove duplication
+// Largely duplicates feed-detail-map. As DQ maps progress, refactor to remove
+// duplication
 
 const mapboxgl = require("mapbox-gl");
 
-// consider moving to OOP approach (see dqs-review-panel.js), e.g.
-// class MapComponent {
-//     map = null;
-//
-//     constructor() {
-//         //this.map = ...
-//     }
-//
-//     onHandler = () => {
-//         this.map;
-//     }
-// }
-
 const httpGetAsync = (theUrl, callback) => {
   const request = new XMLHttpRequest();
-  console.log("Sending XMLHttpRequest");
 
   if (!request) {
     alert("Giving up :( Cannot create an XMLHTTP instance");
     return false;
   }
-  request.onreadystatechange = function() {
+  request.onreadystatechange = function () {
     if (request.readyState === 4 && request.status === 200)
       callback(request.responseText);
   };
@@ -31,14 +18,14 @@ const httpGetAsync = (theUrl, callback) => {
   request.send();
 };
 
-const getLineStringBounds = coordinates => {
-  return coordinates.reduce(function(bounds, coord) {
+const getLineStringBounds = (coordinates) => {
+  return coordinates.reduce(function (bounds, coord) {
     return bounds.extend(coord);
   }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 };
 
 const showPopup = (event, map, popup) => {
-  const generateDescription = feature => {
+  const generateDescription = (feature) => {
     let properties = feature.properties;
     let description = "";
     const useServiceName = ["service-links", "service-patterns"];
@@ -58,10 +45,7 @@ const showPopup = (event, map, popup) => {
   let description = generateDescription(feature);
 
   // Populate the popup and set its coordinates based on the feature found.
-  popup
-    .setLngLat(event.lngLat)
-    .setHTML(description)
-    .addTo(map);
+  popup.setLngLat(event.lngLat).setHTML(description).addTo(map);
 };
 
 const hidePopup = (event, map, popup) => {
@@ -85,7 +69,7 @@ const removeHover = (e, map, layer) => {
   // When the mouse leaves the layer, update the feature state of the
   // previously hovered feature.
   let features = map.queryRenderedFeatures({ layers: [layer] });
-  features.forEach(feature =>
+  features.forEach((feature) =>
     map.setFeatureState(
       { source: feature.source, id: feature.id },
       { hover: false }
@@ -98,7 +82,7 @@ const fitToBounds = (geojson, map) => {
   var bounds = new mapboxgl.LngLatBounds();
 
   // loop over LineString features and calculate bounds
-  geojson.features.forEach(function(feature) {
+  geojson.features.forEach(function (feature) {
     if (feature.geometry && feature.geometry.coordinates) {
       bounds.extend(getLineStringBounds(feature.geometry.coordinates));
     }
@@ -106,12 +90,13 @@ const fitToBounds = (geojson, map) => {
 
   if (!bounds.isEmpty()) {
     map.fitBounds(bounds, {
-      padding: 20
+      padding: 20,
     });
   }
 };
 
-// refactor to reduce number of params? Maybe expect apiRoot + one other argument, then unpack in function?
+// refactor to reduce number of params? Maybe expect apiRoot + one other argument,
+// then unpack in function?
 const initWarningDetailMap = (
   apiRoot,
   servicePatternId,
@@ -146,7 +131,7 @@ const initWarningDetailMap = (
     style: "mapbox://styles/mapbox/light-v9",
     center: [-1.1743, 52.3555],
     zoom: 5,
-    maxzoom: 12
+    maxzoom: 12,
   });
 
   // Add zoom and rotation controls to the map.
@@ -156,40 +141,36 @@ const initWarningDetailMap = (
   // canvas
   map["_canvas"].setAttribute("tabindex", -1);
   // logo
-  let logoArray = map["_controls"].find(o => o.hasOwnProperty("_updateLogo"))[
+  let logoArray = map["_controls"].find((o) => o.hasOwnProperty("_updateLogo"))[
     "_container"
   ]["children"];
   for (var i = 0; i < logoArray.length; i++) {
     logoArray[i].setAttribute("tabindex", -1);
   }
   // zoom buttons
-  let zoomObject = map["_controls"].find(o =>
+  let zoomObject = map["_controls"].find((o) =>
     o.hasOwnProperty("_zoomInButton")
   );
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
-  map.on("load", function() {
-    console.log("map loaded");
-
+  map.on("load", function () {
     // Create a popup, but don't add it to the map yet.
     var popup = new mapboxgl.Popup({
       closeButton: false,
-      closeOnClick: false
+      closeOnClick: false,
     });
 
     // Fetch StopPoint GeoJSON
     if (stopPointUrl) {
-      console.log(`fetching ${stopPointUrl}`);
-      httpGetAsync(stopPointUrl, function(responseText) {
+      httpGetAsync(stopPointUrl, function (responseText) {
         var stopPointGeoJson = JSON.parse(responseText);
-        console.log(stopPointGeoJson);
 
         map.addSource("stop-points", {
           type: "geojson",
-          data: stopPointGeoJson
+          data: stopPointGeoJson,
         });
-        var source = map.getSource("stop-points");
+        map.getSource("stop-points");
 
         // Add point markers
         map.addLayer({
@@ -201,23 +182,23 @@ const initWarningDetailMap = (
               "case",
               ["boolean", ["get", "effected"], true],
               "#ff0000",
-              "#49A39A"
+              "#49A39A",
             ],
             "circle-radius": [
               "case",
               ["boolean", ["feature-state", "hover"], false],
               7,
-              5
-            ]
-          }
+              5,
+            ],
+          },
         });
 
         // consider moving to OOP approach (see dqs-review-panel.js) rather than this functional approach
-        map.on("mouseenter", "stop-points", e => {
+        map.on("mouseenter", "stop-points", (e) => {
           showPopup(e, map, popup);
           addHover(e, map);
         });
-        map.on("mouseleave", "stop-points", e => {
+        map.on("mouseleave", "stop-points", (e) => {
           hidePopup(e, map, popup);
           removeHover(e, map, "stop-points");
         });
@@ -225,16 +206,14 @@ const initWarningDetailMap = (
     }
 
     if (serviceLinkUrl) {
-      console.log("fetching ", serviceLinkUrl);
-      httpGetAsync(serviceLinkUrl, function(responseText) {
+      httpGetAsync(serviceLinkUrl, function (responseText) {
         var serviceLinkGeojson = JSON.parse(responseText);
-        console.log(serviceLinkGeojson);
 
         map.addSource("service-links", {
           type: "geojson",
-          data: serviceLinkGeojson
+          data: serviceLinkGeojson,
         });
-        var source = map.getSource("service-links");
+        map.getSource("service-links");
 
         // Add line markers
         map.addLayer({
@@ -243,7 +222,7 @@ const initWarningDetailMap = (
           source: "service-links",
           layout: {
             "line-join": "round",
-            "line-cap": "round"
+            "line-cap": "round",
           },
           paint: {
             "line-color": "#49A39A",
@@ -251,9 +230,9 @@ const initWarningDetailMap = (
               "case",
               ["boolean", ["feature-state", "hover"], false],
               4.5,
-              2
-            ]
-          }
+              2,
+            ],
+          },
         });
 
         // Only fit map to bounds based on service links if no service pattern
@@ -262,11 +241,11 @@ const initWarningDetailMap = (
         }
 
         // consider moving to OOP approach (see dqs-review-panel.js) rather than this functional approach
-        map.on("mouseenter", "service-links", e => {
+        map.on("mouseenter", "service-links", (e) => {
           showPopup(e, map, popup);
           addHover(e, map);
         });
-        map.on("mouseleave", "service-links", e => {
+        map.on("mouseleave", "service-links", (e) => {
           hidePopup(e, map, popup);
           removeHover(e, map, "service-links");
         });
@@ -274,15 +253,11 @@ const initWarningDetailMap = (
     }
 
     if (servicePatternUrl) {
-      console.log("fetching ", servicePatternUrl);
-      httpGetAsync(servicePatternUrl, function(responseText) {
-        console.log("Response received");
-
+      httpGetAsync(servicePatternUrl, function (responseText) {
         var geojson = JSON.parse(responseText);
-        console.log(geojson);
 
         map.addSource("service-patterns", { type: "geojson", data: geojson });
-        var source = map.getSource("service-patterns");
+        map.getSource("service-patterns");
 
         // Add line markers
         map.addLayer({
@@ -291,7 +266,7 @@ const initWarningDetailMap = (
           source: "service-patterns",
           layout: {
             "line-join": "round",
-            "line-cap": "round"
+            "line-cap": "round",
           },
           paint: {
             "line-color": "#49A39A",
@@ -299,21 +274,22 @@ const initWarningDetailMap = (
               "case",
               ["boolean", ["feature-state", "hover"], false],
               4.5,
-              2
-            ]
-          }
+              2,
+            ],
+          },
         });
 
         // Fit map to features
         fitToBounds(geojson, map);
       });
 
-      // consider moving to OOP approach (see dqs-review-panel.js) rather than this functional approach
-      map.on("mouseenter", "service-patterns", e => {
+      // consider moving to OOP approach (see dqs-review-panel.js) rather than this
+      // functional approach
+      map.on("mouseenter", "service-patterns", (e) => {
         showPopup(e, map, popup);
         addHover(e, map);
       });
-      map.on("mouseleave", "service-patterns", e => {
+      map.on("mouseleave", "service-patterns", (e) => {
         hidePopup(e, map, popup);
         removeHover(e, map, "service-patterns");
       });
@@ -321,4 +297,4 @@ const initWarningDetailMap = (
   });
 };
 
-module.exports = initWarningDetailMap;
+export { initWarningDetailMap };

@@ -11,20 +11,35 @@
 {% block breadcrumb %}
 {% endblock %}
 
-{% block content %}
+{% block full_width_content %}
+<div class="app-masthead">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-top-5">
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+                <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Bus Open Data Service' %}</h1>
+                <p class="app-masthead__description">The Bus Open Data Service provides bus timetable, vehicle location and fares data for every local bus service in England.</p>
 
-  <div class="govuk-grid-row govuk-!-margin-top-5">
+                <p class="app-masthead__description">{% trans 'Follow us on Twitter ' %}<a class="app-a--inverted" href="https://twitter.com/busopendata" target="_blank">{% trans '@busopendata' %}</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-!-margin-top-5">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
       <div>
-        <h1 class="govuk-heading-xl">{% trans 'Bus Open Data Service' %}</h1>
-        <h2 class="govuk-heading-m">{% trans 'Publish bus open data' %}</h2>
+            <h2 class="govuk-heading-m">{% trans 'Publish bus open data' %}</h2>
         <p class="govuk-body">
-            {% trans 'This service is for bus operators running commercial bus services in England, and local authorities acting on behalf of bus operators.' %}
+            {% trans 'This service is for operators of local bus services in England.' %}
         </p>
         <ul class="govuk-list">
           <li class="govuk-!-margin-bottom-4">
             <a href="{% url 'home' host hosts.publish %}" class="govuk-link-bold">
-                {% trans 'Publish bus open data' %}
+              {% filter force_escape %}
+                {% trans 'Publish bus data' %}
+              {% endfilter %}
             </a>
           </li>
           <li class="govuk-!-margin-bottom-4">
@@ -43,7 +58,14 @@
       <div class="govuk-!-margin-top-8">
         <h2 class="govuk-heading-m">{% trans 'Find bus open data' %}</h2>
         <p class="govuk-body">
-            {% trans 'This service is for anyone interested in using bus open data for the purpose of data analysis or building products and services.' %}
+          {% filter force_escape %}
+            {% blocktrans %}
+              This service provides timetables, bus location, and fares data for local
+              bus services across England. It is free open data, and does not require a
+              licence. Simply start using the APIs or downloading data for your
+              analysis, apps, products or services.
+            {% endblocktrans %}
+          {% endfilter %}
         </p>
         <ul class="govuk-list">
           <li class="govuk-!-margin-bottom-4">
@@ -53,7 +75,9 @@
           </li>
           <li>
             <a href="{% url 'guidance:support-developer' host hosts.data %}" class="govuk-link-bold">
-                {% trans 'How to use bus open data' %}
+              {% filter force_escape %}
+                {% trans 'View developer documentation' %}
+              {% endfilter %}
             </a>
           </li>
         </ul>
@@ -65,13 +89,13 @@
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li >
           <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
-             target="_blank">{% trans 'About Bus Open Data Service' %}</a>
+             target="_blank">{% trans 'About the Bus Open Data Service' %}</a>
         </li>
         <li>
           <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">{% trans 'Changelog' %}</a>
         </li>
         <li>
-          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us' %}</a>
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us for technical issues' %}</a>
         </li>
       </ul>
     </div>

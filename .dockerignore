@@ -11,3 +11,5 @@ CHANGELOG.md
 node_modules
 **/node_modules
 npm-debug.log
+
+transit_odp/media

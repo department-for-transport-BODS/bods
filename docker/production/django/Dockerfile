@@ -1,12 +1,10 @@
 ARG BASE_IMAGE=python:3.9-alpine
 
-# Multi-stage Build
 # Step 1 - Build frontend assets
-FROM node:10-alpine
+FROM node:16-alpine
 
 WORKDIR /app
 
-# Install Node packages
 COPY ./frontend/package.json ./frontend/package-lock.json ./frontend/
 RUN apk add \
         build-base \
@@ -25,7 +23,6 @@ RUN apk add \
     && cd frontend \
     && npm install
 
-# Build assets
 COPY ./crispy-forms-govuk ./crispy-forms-govuk
 COPY ./frontend ./frontend
 RUN cd frontend && npm run build
@@ -41,16 +38,16 @@ WORKDIR /app
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && apk update \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.13/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.13/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/community \
             --no-cache \
-            gdal-dev==3.1.4-r3 \
+            gdal-dev \
             gdal \
             proj-util \
             proj-dev \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/community \
             --no-cache \
             pkgconfig \
             autoconf \
@@ -67,8 +64,6 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             zlib-dev \
             postgresql-dev \
             poppler \
-            gdal-dev==3.1.4-r3 \
-            gdal \
             nodejs \
             npm \
             binutils \
@@ -78,16 +73,17 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
 
 
 # Install python packages
-# Copy the compiled frontend from step 1 - this ensures production image needn't depend on dev tooling
+# Copy the compiled frontend from step 1 - this ensures production image
+# needn't depend on dev tooling
 COPY --from=0 /app/frontend /app/frontend
 COPY ./cavl-client /app/cavl-client
 COPY ./crispy-forms-govuk /app/crispy-forms-govuk
-COPY ./Pipfile ./Pipfile.lock ./
-#RUN pipenv install --deploy --system \
-#    && apk del .build-deps
-RUN pipenv lock -r > requirements.txt \
-    && pip install -r requirements.txt
 
+COPY ./pyproject.toml ./poetry.lock ./
+RUN python --version \
+    && pip install poetry==1.1.12 \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-dev
 
 # Create non-privileged user
 RUN addgroup django \

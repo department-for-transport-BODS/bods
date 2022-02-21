@@ -24,10 +24,10 @@
   <p class="govuk-body-m">
     {% blocktrans %}
     You can create a data consumer account by entering your details below.
-    If you need a publishing account please go to
+    If you need to publish data, please
     {% endblocktrans %}
     <a class="govuk-link" href="{% host_url 'account_signup' host 'publish' %}">
-      create account
+      create a publisher account
     </a>.
   </p>
   {% crispy form %}

@@ -11,7 +11,7 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.timetables.utils import PTI_PATH
+from transit_odp.timetables.pti import PTI_PATH
 from transit_odp.timetables.validate import TXCRevisionValidator
 
 pytestmark = pytest.mark.django_db

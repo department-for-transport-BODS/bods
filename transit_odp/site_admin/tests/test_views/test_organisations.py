@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from random import randint
 
 import pytest
@@ -14,7 +15,7 @@ from transit_odp.site_admin.views import (
     OrganisationListView,
     OrganisationUsersManageView,
 )
-from transit_odp.users.constants import AccountType
+from transit_odp.users.constants import AccountType, SiteAdminType
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -187,7 +188,6 @@ class TestOrganisationCreateView:
         response = client.post(self.url, data)
         organisation = Organisation.objects.get(name="Test Organisation")
         invite = Invitation.objects.get(email=self.invitee_email)
-
         assert (
             response.status_code == 302
         ), "assert we get successfully get redirected on POST "
@@ -267,6 +267,46 @@ class TestOrganisationCreateView:
         assert response.status_code == 200
         expected = "Operator code with this National Operator Code already exists."
         assert response.context_data["form"].nested_noc.errors[0]["noc"][0] == expected
+
+    def test_clashing_email_already_exists_fail_loudly(self, client_factory):
+        email = self.invitee_email
+        Invitation.objects.create(email=email)
+
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=SiteAdminType)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        # data.update({"email": email})
+
+        response = client.post(self.url, data)
+        assert response.status_code == 200
+        expected = f"{email} has been already invited."
+        assert response.context_data["form"].errors["email"][0] == expected
+
+    @pytest.mark.skip
+    def test_existing_invite_error(self, client_factory):
+        four_days_ago = datetime.now() - timedelta(days=4)
+        client = client_factory(host=self.host)
+        old_org = OrganisationFactory()
+        admin = UserFactory(account_type=AccountType.site_admin.value)
+
+        old_invite = InvitationFactory(
+            email="invited_org_admin@testO.com",
+            organisation=old_org,
+            sent=four_days_ago,
+            account_type=AccountType.org_admin.value,
+            is_key_contact=True,
+        )
+        client.force_login(user=admin)
+        data = self.default_form_data.copy()
+        data.update({"nocs-0-noc": f"{data['short_name']}1"})
+        response = client.post(self.url, data)
+        invitation = Invitation.objects.get(id=old_invite.id)
+        assert response.status_code == 302
+        assert invitation.organisation.name == self.test_organisation_name
+        assert invitation.organisation.short_name == self.test_organisation_short_name
+        assert invitation.sent.day == datetime.now().day, "sent out today"
+        assert invitation.inviter == admin
 
 
 class TestOrganisationDetailView:

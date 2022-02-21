@@ -1,5 +1,8 @@
 import enum
 
+from django.db.models.enums import TextChoices
+from django.utils.translation import gettext_lazy as _
+
 from transit_odp.common.utils.choice_enum import ChoiceEnum
 
 
@@ -70,6 +73,8 @@ AVLFeedDown = AVLFeedStatus.FEED_DOWN.value
 AVLFEEDSystemError = AVLFeedStatus.SYSTEM_ERROR.value
 AVLFeedDeploying = AVLFeedStatus.DEPLOYING.value
 
+NO_ACTIVITY = "No vehicle activity"
+
 DATASET_TYPE_NAMESPACE_MAP = {
     DatasetType.TIMETABLE: "",
     DatasetType.AVL: "avl",
@@ -88,3 +93,18 @@ PSV_LICENCE_ERROR_HINT_MESSAGE = (
     "zeros between the letters and numbers."
 )
 PSV_LICENCE_ERROR_MESSAGE = "Licence number entered with the wrong format"
+
+
+class TravelineRegions(TextChoices):
+    ALL = ("ALL", _("All"))
+    EAST_ANGLIA = ("EA", _("East Anglia"))
+    EAST_MIDLANDS = ("EM", _("East Midlands"))
+    LONDON = ("L", _("London"))
+    NORTH_EAST = ("NE", _("North East"))
+    NORTH_WEST = ("NW", _("North West"))
+    SCOTLAND = ("S", _("Scotland"))
+    SOUTH_EAST = ("SE", _("South East"))
+    SOUTH_WEST = ("SW", _("South West"))
+    WALES = ("W", _("Wales"))
+    WEST_MIDLANDS = ("WM", _("West Midlands"))
+    YORKSHIRE = ("Y", _("Yorkshire"))

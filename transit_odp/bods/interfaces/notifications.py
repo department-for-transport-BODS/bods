@@ -276,6 +276,39 @@ class INotifications(Protocol):
         """Sends notification to Publisher with feedback from (anonymous) user"""
         ...
 
+    def send_dataset_feedback_consumer_copy(
+        self,
+        dataset_id: int,
+        contact_email: str,
+        dataset_name: str,
+        publisher_name: str,
+        feedback: str,
+        time_now: Optional[datetime.datetime],
+    ):
+        """Sends to the operator a copy of their feedback"""
+        ...
+
+    def send_operator_feedback_consumer_copy(
+        self,
+        contact_email: str,
+        publisher_name: str,
+        feedback: str,
+        time_now: Optional[datetime.datetime],
+    ):
+        """Sends to the consumer and DfT Admins a copy of consumer feedback"""
+        ...
+
+    def send_operator_feedback_notification(
+        self,
+        contact_email: str,
+        publisher_name: str,
+        feedback: str,
+        time_now: Optional[datetime.datetime],
+        developer_email: Optional[str] = None,
+    ):
+        """Sends to the operator a consumer/developer feedback"""
+        ...
+
     def send_invite_accepted_notification(
         self, inviter_email: str, invitee_email: str, organisation_name: str
     ):

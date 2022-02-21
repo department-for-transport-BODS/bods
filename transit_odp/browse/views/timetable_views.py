@@ -1,8 +1,10 @@
 import logging
+from collections import namedtuple
 from datetime import datetime, timedelta
 
 from allauth.account.adapter import get_adapter
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render
@@ -27,7 +29,12 @@ from transit_odp.common.view_mixins import (
     DownloadView,
 )
 from transit_odp.data_quality.scoring import get_data_quality_rag
-from transit_odp.organisation.constants import DatasetType, FeedStatus, TimetableType
+from transit_odp.organisation.constants import (
+    DatasetType,
+    FeedStatus,
+    TimetableType,
+    TravelineRegions,
+)
 from transit_odp.organisation.models import (
     Dataset,
     DatasetRevision,
@@ -35,8 +42,11 @@ from transit_odp.organisation.models import (
 )
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.timetables.tables import TimetableChangelogTable
+from transit_odp.users.constants import SiteAdminType
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
+Regions = namedtuple("Regions", ("region_code", "pretty_name_region_code", "exists"))
 
 
 class DatasetDetailView(DetailView):
@@ -80,6 +90,7 @@ class DatasetDetailView(DetailView):
             live_revision.created.date() >= settings.PTI_START_DATE.date()
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
+        kwargs["show_pti_link"] = not dataset.is_pti_compliant
 
         is_subscribed = None
         feed_api = None
@@ -102,10 +113,11 @@ class DatasetSubscriptionBaseView(LoginRequiredMixin):
     model = Dataset
 
     def handle_no_permission(self):
+        self.object = self.get_object()
         return render(
             self.request,
             "browse/timetables/feed_subscription_gatekeeper.html",
-            context={"object": self.get_object()},
+            context={"object": self.object, "backlink_url": self.get_cancel_url()},
         )
 
     def get_is_subscribed(self):
@@ -305,7 +317,7 @@ class SearchView(BaseSearchView):
         return qs
 
 
-class DownloadTimetablesView(BaseTemplateView):
+class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
     template_name = "browse/timetables/download_timetables.html"
 
     def get_context_data(self, **kwargs):
@@ -318,6 +330,17 @@ class DownloadTimetablesView(BaseTemplateView):
         context["show_bulk_compliant_archive_url"] = bulk_timetable.filter(
             compliant_archive=True
         ).exists()
+        list_traveline_regions = []
+        for region_code, pretty_name_region_code in TravelineRegions.choices:
+            list_traveline_regions.append(
+                Regions(
+                    region_code,
+                    pretty_name_region_code,
+                    bulk_timetable.filter(traveline_regions=region_code).exists(),
+                )
+            )
+
+        context["show_bulk_traveline_regions"] = list_traveline_regions
 
         # Get the change archives from the last 7 days. There should be at most one per
         # day, but use LIMIT 7 anyway
@@ -355,7 +378,9 @@ class DownloadBulkDataArchiveView(DownloadView):
     def get_object(self, queryset=None):
         try:
             return BulkDataArchive.objects.filter(
-                dataset_type=TimetableType, compliant_archive=False
+                dataset_type=TimetableType,
+                compliant_archive=False,
+                traveline_regions="All",
             ).earliest()  # as objects are already ordered by '-created' in model Meta
         except BulkDataArchive.DoesNotExist:
             raise Http404(
@@ -364,6 +389,28 @@ class DownloadBulkDataArchiveView(DownloadView):
             )
 
     def get_download_file(self):
+        return self.object.data
+
+
+class DownloadBulkDataArchiveRegionsView(DownloadView):
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(kwargs["region_code"])
+        return self.render_to_response()
+
+    def get_object(self, region_code: str = "All"):
+        try:
+            return BulkDataArchive.objects.filter(
+                dataset_type=TimetableType,
+                compliant_archive=False,
+                traveline_regions=region_code,
+            ).earliest()  # as objects are already ordered by '-created' in model Meta
+        except BulkDataArchive.DoesNotExist:
+            raise Http404(
+                _("No %(verbose_name)s found matching the query")
+                % {"verbose_name": BulkDataArchive._meta.verbose_name}
+            )
+
+    def get_download_file(self, *args):
         return self.object.data
 
 
@@ -468,11 +515,13 @@ class UserFeedbackView(LoginRequiredMixin, SingleObjectMixin, FormView):
         return super().post(request, *args, **kwargs)
 
     def get_queryset(self):
-        return (
+        qs = (
             Dataset.objects.get_active_org()
             .get_dataset_type(dataset_type=self.dataset_type)
             .get_published()
+            .add_live_data()
         )
+        return qs
 
     def form_valid(self, form):
         client = get_notifications()
@@ -480,6 +529,20 @@ class UserFeedbackView(LoginRequiredMixin, SingleObjectMixin, FormView):
         dataset = self.object
         feedback = data["feedback"]
         developer_email = None if data["anonymous"] else self.request.user.email
+        admins = User.objects.filter(account_type=SiteAdminType)
+        emails = [email["email"] for email in admins.values()]
+        emails.append(self.request.user.email)
+
+        for email in emails:
+            client.send_dataset_feedback_consumer_copy(
+                dataset_id=dataset.id,
+                contact_email=email,
+                dataset_name=dataset.live_revision.name,
+                publisher_name=dataset.organisation.name,
+                feedback=feedback,
+                time_now=None,
+            )
+
         client.send_feedback_notification(
             dataset_id=dataset.id,
             contact_email=dataset.contact.email,
@@ -488,6 +551,7 @@ class UserFeedbackView(LoginRequiredMixin, SingleObjectMixin, FormView):
             feed_detail_link=dataset.feed_detail_url,
             developer_email=developer_email,
         )
+
         return super().form_valid(form)
 
     def get_success_url(self):

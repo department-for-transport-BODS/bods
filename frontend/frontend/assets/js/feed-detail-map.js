@@ -2,13 +2,12 @@ const mapboxgl = require("mapbox-gl");
 
 const httpGetAsync = (theUrl, callback) => {
   const request = new XMLHttpRequest();
-  console.log("Sending XMLHttpRequest");
 
   if (!request) {
     alert("Giving up :( Cannot create an XMLHTTP instance");
     return false;
   }
-  request.onreadystatechange = function() {
+  request.onreadystatechange = function () {
     if (request.readyState === 4 && request.status === 200)
       callback(request.responseText);
   };
@@ -16,15 +15,13 @@ const httpGetAsync = (theUrl, callback) => {
   request.send();
 };
 
-const getLineStringBounds = coordinates => {
-  return coordinates.reduce(function(bounds, coord) {
+const getLineStringBounds = (coordinates) => {
+  return coordinates.reduce(function (bounds, coord) {
     return bounds.extend(coord);
   }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 };
 
 const initMap = (apiRoot, revisionId) => {
-  // Define API urls
-  var stopPointUrl = apiRoot + "stop_point/?revision=" + revisionId.toString();
   var servicePatternUrl =
     apiRoot + "service_pattern/?revision=" + revisionId.toString();
 
@@ -36,7 +33,7 @@ const initMap = (apiRoot, revisionId) => {
     style: "mapbox://styles/mapbox/light-v9",
     center: [-1.1743, 52.3555],
     zoom: 5,
-    maxzoom: 12
+    maxzoom: 12,
   });
 
   // Add zoom and rotation controls to the map.
@@ -46,14 +43,14 @@ const initMap = (apiRoot, revisionId) => {
   // canvas
   map["_canvas"].setAttribute("tabindex", -1);
   // logo
-  let logoArray = map["_controls"].find(o => o.hasOwnProperty("_updateLogo"))[
+  let logoArray = map["_controls"].find((o) => o.hasOwnProperty("_updateLogo"))[
     "_container"
   ]["children"];
   for (var i = 0; i < logoArray.length; i++) {
     logoArray[i].setAttribute("tabindex", -1);
   }
   // zoom buttons
-  let zoomObject = map["_controls"].find(o =>
+  let zoomObject = map["_controls"].find((o) =>
     o.hasOwnProperty("_zoomInButton")
   );
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
@@ -62,18 +59,11 @@ const initMap = (apiRoot, revisionId) => {
   var hoveredStateId = null;
 
   // Fetch ServicePattern GeoJSON
-  map.on("load", function() {
-    console.log("map loaded");
-    console.log("fetching ", servicePatternUrl);
-
-    httpGetAsync(servicePatternUrl, function(responseText) {
-      console.log("Response received");
-
+  map.on("load", function () {
+    httpGetAsync(servicePatternUrl, function (responseText) {
       var geojson = JSON.parse(responseText);
-      console.log(geojson);
 
       map.addSource("service-patterns", { type: "geojson", data: geojson });
-      var source = map.getSource("service-patterns");
 
       // Add line markers
       map.addLayer({
@@ -82,12 +72,12 @@ const initMap = (apiRoot, revisionId) => {
         source: "service-patterns",
         layout: {
           "line-join": "round",
-          "line-cap": "round"
+          "line-cap": "round",
         },
         paint: {
           "line-color": "#49A39A",
-          "line-width": 2
-        }
+          "line-width": 2,
+        },
       });
 
       // Add hover effect
@@ -102,14 +92,14 @@ const initMap = (apiRoot, revisionId) => {
             "case",
             ["boolean", ["feature-state", "hover"], false],
             4.5,
-            0
-          ]
-        }
+            0,
+          ],
+        },
       });
 
       // When the user moves their mouse over the state-fill layer, we'll update the
       // feature state for the feature under the mouse.
-      map.on("mousemove", "service-patterns", function(e) {
+      map.on("mousemove", "service-patterns", function (e) {
         if (e.features.length > 0) {
           if (hoveredStateId) {
             map.setFeatureState(
@@ -127,7 +117,7 @@ const initMap = (apiRoot, revisionId) => {
 
       // When the mouse leaves the state-fill layer, update the feature state of the
       // previously hovered feature.
-      map.on("mouseleave", "service-patterns", function() {
+      map.on("mouseleave", "service-patterns", function () {
         if (hoveredStateId) {
           map.setFeatureState(
             { source: "service-patterns", id: hoveredStateId },
@@ -141,7 +131,7 @@ const initMap = (apiRoot, revisionId) => {
       var bounds = new mapboxgl.LngLatBounds();
 
       // loop over LineString features and calculate bounds
-      geojson.features.forEach(function(feature) {
+      geojson.features.forEach(function (feature) {
         if (feature.geometry && feature.geometry.coordinates) {
           bounds.extend(getLineStringBounds(feature.geometry.coordinates));
         }
@@ -149,7 +139,7 @@ const initMap = (apiRoot, revisionId) => {
 
       if (!bounds.isEmpty()) {
         map.fitBounds(bounds, {
-          padding: 20
+          padding: 20,
         });
       }
 
@@ -160,10 +150,10 @@ const initMap = (apiRoot, revisionId) => {
     // Create a popup, but don't add it to the map yet.
     var popup = new mapboxgl.Popup({
       closeButton: false,
-      closeOnClick: false
+      closeOnClick: false,
     });
 
-    map.on("mouseenter", "service-patterns", function(e) {
+    map.on("mouseenter", "service-patterns", function (e) {
       // Change the cursor style as a UI indicator.
       map.getCanvas().style.cursor = "pointer";
 
@@ -172,41 +162,14 @@ const initMap = (apiRoot, revisionId) => {
 
       // Populate the popup and set its coordinates
       // based on the feature found.
-      popup
-        .setLngLat(e.lngLat)
-        .setHTML(description)
-        .addTo(map);
+      popup.setLngLat(e.lngLat).setHTML(description).addTo(map);
     });
 
-    map.on("mouseleave", "service-patterns", function() {
+    map.on("mouseleave", "service-patterns", function () {
       map.getCanvas().style.cursor = "";
       popup.remove();
     });
   });
 };
 
-//
-// // Handler when user moves the map
-// function onMoveEndHandler() {
-//     // Get map center
-//     var centre = map.getCenter().wrap();
-//     console.log(centre);
-//     USE STRING CONCATENATION
-//     var coords = `${centre.lng},${centre.lat}`;
-//     var dist = 10000;
-//     var stopPointUrlDistFilter = stopPointUrl + `&dist=${dist}&point=${coords}&format=json`;
-//
-//     // Update stopPoints
-//     httpGetAsync(stopPointUrlDistFilter, function (responseText) {
-//         updateSource('stopPoints', responseText)
-//     })
-// }
-//
-// // Update map data in source
-// function updateSource(source, responseText) {
-//     var geojson = JSON.parse(responseText);
-//     console.log(geojson);
-//     map.getSource(source).setData(geojson);
-// }
-
-module.exports = initMap;
+export { initMap };

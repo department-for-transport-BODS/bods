@@ -166,6 +166,7 @@ $RECYCLE.BIN/
 .idea/replstate.xml
 .idea_modules/
 .installed.cfg
+.ipynb_checkpoints/
 .lock-wscript
 .mypy_cache/
 .netrwhist

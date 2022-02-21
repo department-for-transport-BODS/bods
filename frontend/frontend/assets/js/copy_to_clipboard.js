@@ -1,5 +1,4 @@
-const copyToClipboard = text => {
-  console.log("Copying text:", text);
+const copyToClipboard = (text) => {
   let tempInput = document.createElement("textArea");
   tempInput.setAttribute(
     "style",
@@ -12,18 +11,16 @@ const copyToClipboard = text => {
   document.body.appendChild(tempInput);
 
   if (isOS()) {
-    range = document.createRange();
+    let range = document.createRange();
     range.selectNodeContents(tempInput);
-    selection = window.getSelection();
+    let selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
     tempInput.setSelectionRange(0, 999999);
   } else {
     tempInput.select();
   }
-
-  var result = document.execCommand("copy");
-
+  document.execCommand("copy");
   document.body.removeChild(tempInput);
 };
 
@@ -31,4 +28,4 @@ const isOS = () => {
   return navigator.userAgent.match(/ipad|iphone/i);
 };
 
-module.exports = copyToClipboard;
+export { copyToClipboard };

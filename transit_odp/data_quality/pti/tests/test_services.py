@@ -8,9 +8,10 @@ from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
 from transit_odp.data_quality.pti.validators import PTIValidator
-from transit_odp.timetables.utils import PTI_PATH
+from transit_odp.timetables.pti import PTI_PATH
 
 DATA_DIR = Path(__file__).parent / "data"
+pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize("no_of_services,expected", [(2, False), (0, False), (1, True)])
@@ -185,6 +186,7 @@ def test_line_description_false():
         ("PF0000459:ABC", True),
         ("PD1073423:4", True),
         ("UZ000WNCT:GTT32", True),
+        ("PD0001111:6:7", False),
     ],
 )
 def test_service_code_format(service_code, expected):

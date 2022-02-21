@@ -1,17 +1,17 @@
-import HttpClient from "./http-client";
+import { HttpClient } from "./http-client";
 
 export function initTimeoutWarning() {
-  const dialogs = document.querySelectorAll('[data-module="timeout-warning"]');
-  dialogs.forEach((dialog) => {
+  const dialogs = document.querySelectorAll("[data-module='timeout-warning']");
+  for (let dialog of dialogs) {
     new TimeoutWarning(dialog);
-  });
+  }
 }
 
 /**
  * Display a timeout modal when the user's session cookie is going to expire.
  * Countdown timer reset only on user-triggered refresh endpoint call.
  */
-export class TimeoutWarning {
+class TimeoutWarning {
   defaultCountdownMinutes = 30 * 60;
   countdownMinutes;
   countdownWindow = 60;

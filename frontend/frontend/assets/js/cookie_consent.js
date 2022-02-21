@@ -8,12 +8,8 @@ const _createCookie = (name, domain, value, days) => {
   document.cookie = `${name}=${value}; expires=${expires}; path=/; domain=.${domain}`;
 };
 
-const _hideBanner = elemId => {
-  if (typeof window.jQuery === "function") {
-    jQuery(`#${elemId}`).slideUp();
-  } else {
-    document.getElementById(elemId).style.display = "none";
-  }
+const _hideBanner = (elemId) => {
+  document.getElementById(elemId).style.display = "none";
 };
 
 const createCookie = (bannerId, domain) => {
@@ -27,10 +23,4 @@ const skipToMain = () => {
   mainContent.focus();
 };
 
-module.exports = {
-  createCookie,
-  skipToMain,
-  // TODO - only exporting these functions to be able to test them
-  _createCookie,
-  _hideBanner
-};
+export { createCookie, skipToMain, _createCookie, _hideBanner };

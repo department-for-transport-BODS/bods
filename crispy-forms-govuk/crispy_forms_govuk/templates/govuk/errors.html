@@ -39,7 +39,11 @@
           {% if field.errors %}
             {% for error in field.errors %}
               <li>
-                <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}"> {{ error }}</a>
+                {%  if field|is_radioselect %}
+                  <a href="#id_{{ field.auto_id }}_0_1"> {{ error }}</a>
+                {%  else %}
+                  <a href="#{{ field.auto_id }}"> {{ error }}</a>
+                {%  endif %}
               </li>
             {% endfor %}
           {% endif %}

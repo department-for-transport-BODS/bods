@@ -13,33 +13,33 @@
   {% breadcrumb site.name %}
 {% endblock %}
 
+{% block full_width_content %}
+<div class="app-masthead">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-top-5">
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+                <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Publish bus open data' %}</h1>
+                <p class="app-masthead__description">{% trans 'This service is for bus operators running commercial bus services in England, and local agents acting on behalf of bus operators.' %}</p>
+
+                <p class="app-masthead__description">{% trans 'Follow us on Twitter ' %}<a class="app-a--inverted" href="https://twitter.com/busopendata" target="_blank">{% trans '@busopendata' %}</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-      <h1 class="govuk-heading-xl">{% trans 'Publish bus open data' %}</h1>
-      <p class="govuk-body-m">
-        {% trans 'This service is for bus operators running commercial bus services in England, and local authorities acting on behalf of bus operators.' %}
-      </p>
-      {% if feature.avl or feature.fares %}
         <p class="govuk-body-m">
           {% trans 'Use this service to publish the following data:' %}
         </p>
         <ul class="govuk-body">
-        <li>{% trans 'Bus routes and timetable' %}</li>
-        {% if feature.avl %}
+          <li>{% trans 'Bus routes and timetable' %}</li>
           <li>{% trans 'Automatic Vehicle Location (AVL)' %}</li>
-        {% endif %}
-        {% if feature.fares %}
-        <li>{% trans 'Fares' %}</li>
-        {% endif %}
+          <li>{% trans 'Fares' %}</li>
         </ul>
 
-      {% else %}
-        <p class="govuk-body-m">
-          {% trans 'Use this service to publish your bus route and timetable data.' %}
-        </p>
-
-      {% endif %}
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
 
       <a href={{ start_view }} role="button" draggable="false"
@@ -60,6 +60,9 @@
         <li>
           <a class="govuk-link"
              href="{% url 'changelog' host hosts.root %}">{% trans 'Changelog' %}</a>
+        </li>
+        <li>
+           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us for technical issues' %}</a>
         </li>
       </ul>
     </div>

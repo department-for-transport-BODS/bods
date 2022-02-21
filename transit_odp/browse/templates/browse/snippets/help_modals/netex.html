@@ -1,0 +1,24 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+
+{% block help_heading %}
+{% trans "NeTEx" %}
+{% endblock %}
+
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      NeTEx provides a means to exchange data for passenger information such as stops,
+      routes timetables and fares, among different computer systems, together with
+      related operational data. It can be used to collect and integrate date from many
+      different stakeholders, and to reintegrate it as it evolves through successive
+      versions.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% trans 'More information on this can be ' %}
+    <a class="govuk-link" href="http://netex.uk/netex/schema.htm" target="_blank">
+      {% trans 'found here' %}
+    </a>.
+  </p>
+{% endblock %}

@@ -3,7 +3,9 @@
 {% load i18n %}
 
 {% block extra_content %}
-<h2 data-qa="apis-header" class="govuk-heading-l">{% trans 'APIs' %}</h2>
+<h1 data-qa="quick-start-header" class="govuk-heading-l">{% trans 'Quick start' %}</h1>
+
+<h2 data-qa="apis-header" class="govuk-heading-m">{% trans 'APIs' %}</h2>
 
 <p class="govuk-body">
   {% blocktrans %}
@@ -20,7 +22,6 @@
   <a href="?section=apireference">API reference</a>.
 </p>
 
-
 <p class="govuk-body">
   {% blocktrans %}
   You must
@@ -33,7 +34,7 @@
   {% endblocktrans %}
 </p>
 
-<h2 data-qa="download-all-header" class="govuk-heading-l">
+<h2 data-qa="download-all-header" class="govuk-heading-m">
   {% trans 'Download all data' %}
 </h2>
 <p class="govuk-body">
@@ -47,7 +48,7 @@
   {% endblocktrans %}
 </p>
 
-<h2 data-qa="data-service-header" class="govuk-heading-l">
+<h2 data-qa="data-service-header" class="govuk-heading-m">
   {% trans 'Data provided to service' %}
 </h2>
 <p class="govuk-body">
@@ -64,13 +65,13 @@
   </ul>
 </p>
 
-<h2 data-qa="data-updates-header" class="govuk-heading-l">
+<h2 data-qa="data-updates-header" class="govuk-heading-m">
   {% trans 'Data updates' %}
 </h2>
 
 {% include "../snippets/data_updates_table.html" %}
 
-<h2 data-qa="status-header" class="govuk-heading-l">
+<h2 data-qa="status-header" class="govuk-heading-m">
   {% trans 'Status' %}
 </h2>
 <table class="govuk-table">
@@ -90,7 +91,16 @@
       <td class="govuk-table__cell">
         {% blocktrans %}
         If a publisher actively wants to remove data
-        from a published state, they can move it to an inactive state.
+        from a published state, they can move it to an inactive state
+        {% endblocktrans %}
+      </td>
+    </tr>
+   <tr class="govuk-table__row">
+      <td class="govuk-table__cell">{% trans 'Error' %}</td>
+      <td class="govuk-table__cell">
+        {% blocktrans %}
+          If the publisher users a URL link to publish and the URL link fails to validate during the daily pull from BODS,
+          then the data set will move into error but however the old data will still be available
         {% endblocktrans %}
       </td>
     </tr>
@@ -136,7 +146,7 @@
 </table>
 
 
-<h2 data-qa="what-is-header" class="govuk-heading-l">
+<h2 data-qa="what-is-header" class="govuk-heading-m">
   {% trans 'What is a data set/feed?' %}
 </h2>
 <p class="govuk-body">

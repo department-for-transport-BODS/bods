@@ -2,7 +2,7 @@ from pandas.testing import assert_frame_equal
 
 
 def check_frame_equal(df1, df2, **kwargs) -> bool:
-    """ Compare that two dataframes are equal ignoring ordering of columns and rows"""
+    """Compare that two dataframes are equal ignoring ordering of columns and rows"""
 
     try:
         assert_frame_equal_basic(df1, df2, **kwargs)

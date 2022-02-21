@@ -1,0 +1,25 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+
+{% block help_heading %}
+{% trans "GTFS" %}
+{% endblock %}
+
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      The General Transit Feed Specification (GTFS) is a data specification that allows
+      public transit agencies to publish their transit data in a format that can be
+      consumed by a wide variety of software applications. Today, the GTFS data format
+      is used by thousands of public transport providers.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+      More information on this can be
+    {% endblocktrans %}
+    <a class="govuk-link" href="https://gtfs.org/" target="_blank">
+      {% trans 'found here' %}
+    </a>.
+  </p>
+{% endblock %}

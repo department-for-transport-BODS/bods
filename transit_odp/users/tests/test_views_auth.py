@@ -73,6 +73,10 @@ class TestViewsAuthBase:
 
         elif invite.account_type == AccountType.developer.value:
             data["dev_organisation"] = "dev_organisation"
+            data["description"] = "description"
+            data["intended_use"] = 1
+            data["national_interest"] = False
+            data["regional_areas"] = "Here and there"
 
         request = request_factory.post(url, data=data)
 
@@ -194,6 +198,9 @@ class TestSignupView(TestViewsAuthBase):
                 "share_app_usage": True,
                 "dev_organisation": dev_organisation,
                 "description": description,
+                "intended_use": 1,
+                "national_interest": False,
+                "regional_areas": "Here and there",
             },
         )
 
@@ -218,7 +225,7 @@ class TestSignupView(TestViewsAuthBase):
         first_name = "first"
         last_name = "last"
         dev_organisation = "TestOrganisation"
-        description = "d" * 251
+        description = "d" * 401
         response = client.post(
             url,
             data={
@@ -238,7 +245,7 @@ class TestSignupView(TestViewsAuthBase):
         assert response.status_code == 200
         assert (
             response.context["form"].errors["description"][0]
-            == "Ensure this value has at most 250 characters (it has 251)."
+            == "Ensure this value has at most 400 characters (it has 401)."
         )
 
     def test_new_user_has_same_entries_as_invitation(self, mailoutbox, request_factory):

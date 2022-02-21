@@ -21,6 +21,7 @@ from transit_odp.avl.constants import (
     COMPLIANT,
     LOWER_THRESHOLD,
     MORE_DATA_NEEDED,
+    NEEDS_ATTENTION_STATUSES,
     NON_COMPLIANT,
     PARTIALLY_COMPLIANT,
     UNDERGOING,
@@ -144,8 +145,12 @@ class AVLDatasetQuerySet(DatasetQuerySet):
             )
         )
 
-    def add_is_post_seven_days(self):
-        seven_days_ago = timezone.now().date() - timedelta(days=7)
+    def add_is_post_seven_days(self, from_yesterday=False):
+        if not from_yesterday:
+            seven_days_ago = timezone.now().date() - timedelta(days=7)
+        else:
+            seven_days_ago = timezone.now().date() - timedelta(days=8)
+
         return self.add_first_report_date().annotate(
             post_seven_days=Case(
                 When(first_report_date__isnull=True, then=False),
@@ -257,3 +262,92 @@ class AVLDatasetQuerySet(DatasetQuerySet):
                 output_field=CharField(),
             )
         )
+
+    def add_old_avl_compliance_status(self):
+        """
+        Adds the avl compliance level to the AVLDataset based on the following rules.
+
+        First 7 days:
+            critical_count = 0 and non_critical_count = 0 => UNDERGOING
+            critical_count > 0 or non_critical_count > 0 => AWAITING_REVIEW
+
+        Day 8 onwards:
+            0 vehicle journeys => MORE_DATA_NEEDED
+            Any critical_score < 0.2 in the last 7 days => NON_COMPLIANT
+            avg_non_critical_score and avg_critical_score >= 0.7 => COMPLIANT
+            avg_critical_score >= 0.7 and  avg_non_critical_score < 0.7
+             => PARTIALLY_COMPLIANT
+            avg_critical_score < 0.7 => NON_COMPLIANT
+        """
+        qs = (
+            self.add_avl_report_count()
+            .add_is_post_seven_days(from_yesterday=True)
+            .add_critical_lower_threshold()
+            .add_non_critical_exists()
+            .add_critical_exists()
+            .add_weighted_critical_score()
+            .add_weighted_non_critical_score()
+            .add_last_seven_days_vehicle_activity_count()
+        )
+        pre_7_days = Q(post_seven_days=False)
+        post_7_days = Q(post_seven_days=True)
+        has_errors = Q(non_critical_exists=True) | Q(critical_exists=True)
+        above_critical_threshold = Q(avg_critical_score__gte=UPPER_THRESHOLD)
+        above_non_critical_threshold = Q(avg_non_critical_score__gte=UPPER_THRESHOLD)
+        partially_compliant = above_critical_threshold & ~above_non_critical_threshold
+        compliant = above_critical_threshold & above_non_critical_threshold
+
+        return qs.annotate(
+            old_avl_compliance=Case(
+                When(pre_7_days & ~has_errors, then=Value(UNDERGOING)),
+                When(pre_7_days & has_errors, then=Value(AWAITING_REVIEW)),
+                When(
+                    post_7_days & Q(weekly_vehicle_journey_count=0),
+                    then=Value(MORE_DATA_NEEDED),
+                ),
+                When(
+                    post_7_days & Q(under_lower_threshold=True),
+                    then=Value(NON_COMPLIANT),
+                ),
+                When(post_7_days & compliant, then=Value(COMPLIANT)),
+                When(
+                    post_7_days & ~above_critical_threshold, then=Value(NON_COMPLIANT)
+                ),
+                When(
+                    post_7_days & partially_compliant, then=Value(PARTIALLY_COMPLIANT)
+                ),
+                default=Value(UNDERGOING),
+                output_field=CharField(),
+            )
+        )
+
+    def search(self, keyword):
+        from transit_odp.organisation.models import Organisation
+
+        has_nocs = Q(nocs__noc__icontains=keyword)
+        has_name = Q(name__icontains=keyword)
+        has_keyword = Q(live_revision__description__icontains=keyword)
+        organisations = Organisation.objects.filter(has_name | has_nocs).distinct()
+        contain_org = Q(organisation__in=organisations)
+        return self.filter(contain_org | has_keyword)
+
+    def get_location_data_catalogue(self):
+        return (
+            self.get_published()
+            .get_active()
+            .add_live_name()
+            .add_organisation_name()
+            .add_avl_compliance_status()
+        )
+
+    def get_needs_attention_count(self) -> int:
+        """
+        Returns the number of AVL Datasets that have a compliance status that
+        requires attention.
+        """
+        count = (
+            self.add_avl_compliance_status()
+            .filter(avl_compliance__in=NEEDS_ATTENTION_STATUSES)
+            .count()
+        )
+        return count

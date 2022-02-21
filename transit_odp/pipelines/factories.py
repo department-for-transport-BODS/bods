@@ -46,6 +46,7 @@ class BulkDataArchiveFactory(factory.django.DjangoModelFactory):
 
     created = factory.LazyFunction(timezone.now)
     data = factory.django.FileField(filename="bulk_archive.zip")
+    traveline_regions = "All"
 
 
 class ChangeDataArchiveFactory(factory.django.DjangoModelFactory):

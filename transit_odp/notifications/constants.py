@@ -7,6 +7,9 @@ TEMPLATE_LOOKUP: Dict[str, str] = {
     "PASSWORD_CHANGED": "notifications/password_changed.txt",
     "OPERATOR_INVITE_ACCEPTED": "notifications/invite_accepted.txt",
     "OPERATOR_FEEDBACK": "notifications/leave_feedback.txt",
+    "DATASET_FEEDBACK_CONSUMER_COPY": "notifications/leave_feedback_consumer_copy.txt",
+    "OPERATOR_FEEDBACK_CONSUMER_COPY": "notifications/operator_feed_consumer_copy.txt",
+    "OPERATOR_FEEDBACK_NOTIFICATION": "notifications/operator_feed_notification.txt",
     "OPERATOR_DATA_DELETED": (
         "notifications/" "data_end_point_deleted_notifying_last_updated_user.txt"
     ),

@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
-from transit_odp.avl.csv import (
+from transit_odp.avl.csv.validation import (
     SchemaValidationResponseExporter,
     ValidationReportExporter,
 )
@@ -162,7 +162,12 @@ class CAVLValidationTaskResult(TaskResult):
 class CAVLDataArchive(models.Model):
     SIRIVM = "VM"
     GTFSRT = "RT"
-    DATA_FORMAT_CHOICES = [(SIRIVM, "Siri VM"), (GTFSRT, "GTFS RT")]
+    SIRIVM_TFL = "TL"
+    DATA_FORMAT_CHOICES = [
+        (SIRIVM, "Siri VM"),
+        (GTFSRT, "GTFS RT"),
+        (SIRIVM_TFL, "Siri VM TfL"),
+    ]
 
     created = CreationDateTimeField(_("created"))
     last_updated = ModificationDateTimeField(_("last_updated"))

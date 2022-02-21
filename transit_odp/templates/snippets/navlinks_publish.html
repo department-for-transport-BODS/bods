@@ -45,9 +45,10 @@
           {% include "snippets/org_admin_menu_items_publish.html" %}
         {% endif %}
 
-        {% if request.user.is_agent_user %}
-          {% include "snippets/agent_user_menu_items_publish.html" %}
-        {% endif %}
+      {% if request.user.organisation %}
+        <a class="govuk-link {% active_url 'users:organisation-profile' css_class='govuk-link--active' host='publish' pk=request.user.organisation.id %}"
+         href="{% url 'users:organisation-profile' pk=request.user.organisation.id host hosts.publish %}">{% trans 'Organisation profile' %}</a>
+      {% endif %}
 
         <a class="govuk-link {% active_url 'users:settings' css_class='govuk-link--active' host='publish' %}"
          href="{% url 'users:settings'  host hosts.publish %}">{% trans 'Account settings' %}</a>

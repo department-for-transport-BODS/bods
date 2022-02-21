@@ -4,22 +4,15 @@
 
 {% block menu.navlinks %}
   <li class="govuk-header__navigation-item {% active_url 'home' host='data' exact=True %} ">
-      {#              govuk-header__navigation-item--active">#}
     <a class="govuk-header__link" href="{% url 'home' host hosts.data %}">
         {% trans 'Home' %}
     </a>
   </li>
   <li class="govuk-header__navigation-item">
     <a class="govuk-header__link {% active_url 'guidance' host='data' css_class='govuk-link--active' %}"
-       href="{% url 'guidance:developers-home' host hosts.data %}">
-        {% trans 'Guidance' %}
+       href="{% url 'guide-me' host hosts.data %}">
+        {% trans 'Guide me' %}
     </a>
-      {#    <div class="dropdown-content">#}
-      {#      <a class="govuk-link {% active_url 'guidance' 'govuk-link--active' %}"#}
-      {#         href="{% url 'guidance:home' %}">{% trans 'Guidance' %}</a>#}
-      {#      <a class="govuk-link {% active_url 'guidance:support-contact' 'govuk-link--active' %}"#}
-      {#         href="{% url 'guidance:support-contact' %}">{% trans 'Contact us' %}</a>#}
-      {#    </div>#}
   </li>
   <li class="flexfill"></li>
     {% if request.user.is_authenticated %}

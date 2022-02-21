@@ -10,8 +10,8 @@
 
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url 'Download all data' 'downloads' host hosts.data %}
-  {% breadcrumb 'All fares data' %}
+  {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
+  {% breadcrumb 'All Fares Data' %}
 {% endblock %}
 
 {% block heading.title.text %}{% trans 'All fares data' %}{% endblock %}
@@ -20,11 +20,21 @@
   <h3 class="govuk-heading-l">{% trans 'Download file' %}</h3>
   <p class="govuk-body">
     {% blocktrans %}
-      You can download all fares data cached on the service. Fares are provided in the
-      NeTEx format, within a compressed Zip file. This file is updated daily
-      around 6:00am GMT.
+      Download all fares data cached on the service.
     {% endblocktrans %}
   </p>
+  <ul class="govuk-list">
+    <li>
+      <b>{% trans 'Format' %}:</b>
+      {% trans 'NeTEx' %} {% include "browse/snippets/help_modals/netex.html" %}
+    </li>
+    <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
+    <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
+    <li>
+      <b>{% trans 'Update frequency' %}:</b>
+      {% trans 'Daily around 6:00 am GMT' %}
+    </li>
+  </ul>
 {% endblock %}
 
 {% block heading.subtitle %}
@@ -43,32 +53,7 @@
 {% endblock %}
 
 {% block heading.secondary %}
-  <div class="govuk-grid-column-one-third">
-    <h3 class="govuk-heading-m">
-      {% trans 'What you need to know' %}
-    </h3>
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
-        {% trans 'View developer documentation' %}
-      </a>
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
-         target="_blank">
-        {% trans 'Find out more about bus open data' %}
-      </a>
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-        {% trans 'Contact us for technical issues' %}
-      </a>
-    </p>
-  <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
-        {% trans 'Download data catalogue' %}
-      </a>
-    </p>
-  </div>
+ {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
 
 {% block inner %}

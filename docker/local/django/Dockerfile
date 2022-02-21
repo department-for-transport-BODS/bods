@@ -1,7 +1,9 @@
 ARG BASE_IMAGE=python:3.9-alpine
 FROM ${BASE_IMAGE}
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED 1 \
+    POETRY_VERSION=1.1.12
+
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
@@ -10,16 +12,16 @@ WORKDIR /app
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && apk update \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.13/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.13/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/community \
             --no-cache \
-            gdal-dev==3.1.4-r3 \
+            gdal-dev \
             gdal \
             proj-util \
             proj-dev \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/community \
             --no-cache \
             pkgconfig \
             autoconf \
@@ -36,16 +38,12 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             zlib-dev \
             postgresql-dev \
             poppler \
-            nodejs==14.18.1-r0 \
+            nodejs \
             npm \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
     && pip3 install cython pipenv
-
-# Install Node packages
-COPY ./package.json ./package-lock.json ./
-RUN npm install
 
 # Install packages for frontend
 COPY ./crispy-forms-govuk /app/crispy-forms-govuk
@@ -54,11 +52,12 @@ RUN cd frontend && npm install
 
 # Install Python packages
 COPY ./cavl-client /app/cavl-client
-COPY ./Pipfile ./Pipfile.lock ./
-RUN python --version
 
-RUN pipenv lock --dev -r > requirements.txt \
-    && pip install -r requirements.txt
+COPY ./pyproject.toml ./poetry.lock ./
+RUN python --version \
+    && pip install poetry==1.1.12 \
+    && poetry config virtualenvs.create false \
+    && poetry install
 
 ARG UID=1000
 ARG GID=36
@@ -75,6 +74,7 @@ COPY ./docker/production/django/entrypoint \
      ./docker/local/django/celery/beat/start-celerybeat \
      ./docker/local/django/celery/flower/start-celeryflower \
       /
+
 RUN chown django:django /entrypoint /start /start-migrate /start-collectstatic /start-celeryworker /start-celerybeat /start-celeryflower
 
 RUN sed -i 's/\r//' /entrypoint \

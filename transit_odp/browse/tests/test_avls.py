@@ -5,6 +5,8 @@ from django.conf import settings
 from django_hosts import reverse
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.constants import UPPER_THRESHOLD
+from transit_odp.avl.factories import AVLValidationReportFactory
 from transit_odp.browse.forms import UserFeedbackForm
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
@@ -15,13 +17,13 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
 )
 from transit_odp.organisation.models import Dataset
-from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
 
-class TestAVLSearchView:
+class BaseAVLSearchView:
     host = DATA_HOST
     url = reverse("avl-search", host=host)
     dataset_type = AVLType
@@ -185,7 +187,8 @@ class TestAVLSearchView:
 
         client = client_factory(host=self.host)
         response = client.get(
-            self.url, data={"publisher": self.organisation1.id, "q": expected.name}
+            self.url,
+            data={"publisher": self.organisation1.id, "q": expected.description},
         )
 
         assert response.status_code == 200
@@ -196,12 +199,45 @@ class TestAVLSearchView:
         assert actual[0] == expected
 
 
+class TestAVLSearchView(BaseAVLSearchView):
+    def test_avl_compliance_filter(self, client_factory):
+        self.setup_feeds()
+        revision = AVLDatasetRevisionFactory()
+        today = datetime.datetime.now().date()
+        total_reports = 8
+        for n in range(0, total_reports):
+            date = today - datetime.timedelta(days=n)
+            AVLValidationReportFactory(
+                revision=revision,
+                created=date,
+                critical_score=UPPER_THRESHOLD - 0.1,
+                non_critical_score=UPPER_THRESHOLD + 0.1,
+            )
+
+        client = client_factory(host=self.host)
+        response = client.get(
+            self.url,
+            data={
+                "q": "",
+                "area": "",
+                "organisation": "",
+                "avl_compliance": "Non-compliant",
+                "status": "",
+                "start": "",
+            },
+        )
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == self.template_path
+        assert response.context_data["object_list"].count() == 1
+
+
 class TestUserAVLFeedbackView:
     view_name = "avl-feed-feedback"
 
     @pytest.fixture()
     def revision(self):
         org = OrganisationFactory()
+        UserFactory(account_type=SiteAdminType)
         publisher = UserFactory(account_type=OrgAdminType, organisations=(org,))
         return AVLDatasetRevisionFactory(
             dataset__contact=publisher,
@@ -226,7 +262,7 @@ class TestUserAVLFeedbackView:
 
         assert isinstance(response.context_data["form"], UserFeedbackForm)
 
-    def test_feedback_is_sent_to_pubished_by_user(
+    def test_feedback_is_sent_to_admin_by_user(
         self, mailoutbox, user, revision, data_client
     ):
         data_client.force_login(user=user)
@@ -243,13 +279,56 @@ class TestUserAVLFeedbackView:
         )
 
         assert response.status_code == 200
-        assert len(mailoutbox) == 1
+        assert len(mailoutbox) == 3
         m = mailoutbox[0]
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) != [revision.published_by.email]
+
+    def test_feedback_is_sent_to_publisher_by_user(
+        self, mailoutbox, user, revision, data_client
+    ):
+        data_client.force_login(user=user)
+
+        url = reverse(self.view_name, args=[revision.dataset.id], host=DATA_HOST)
+
+        response = data_client.post(
+            url,
+            data={
+                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "anonymous": False,
+            },
+            follow=True,
+        )
+
+        assert response.status_code == 200
+        assert len(mailoutbox) == 3
+        m = mailoutbox[2]
         assert f"User: {user.email}" in m.body
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == [revision.published_by.email]
 
-    def test_feedback_is_sent_anonymously(
+    def test_copy_feedback_to_consumer_by_consumer(
+        self, mailoutbox, user, revision, data_client
+    ):
+        data_client.force_login(user=user)
+
+        url = reverse(self.view_name, args=[revision.dataset.id], host=DATA_HOST)
+
+        response = data_client.post(
+            url,
+            data={
+                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            },
+            follow=True,
+        )
+
+        assert response.status_code == 200
+        assert len(mailoutbox) == 3
+        m = mailoutbox[1]
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) == [user.email]
+
+    def test_feedback_is_sent_to_admin_anonymously(
         self, mailoutbox, user, data_client, revision
     ):
         data_client.force_login(user=user)
@@ -266,8 +345,31 @@ class TestUserAVLFeedbackView:
         )
 
         assert response.status_code == 200
-        assert len(mailoutbox) == 1
+        assert len(mailoutbox) == 3
         m = mailoutbox[0]
+        assert m.subject == "Bus Open Data feedback: Your email copy (do not reply)"
+        assert m.from_email == settings.DEFAULT_FROM_EMAIL
+        assert list(m.to) != [revision.published_by.email]
+
+    def test_feedback_is_sent_to_publisher_anonymously(
+        self, mailoutbox, user, data_client, revision
+    ):
+        data_client.force_login(user=user)
+
+        url = reverse(self.view_name, args=[revision.dataset.id], host=DATA_HOST)
+
+        response = data_client.post(
+            url,
+            data={
+                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "anonymous": True,
+            },
+            follow=True,
+        )
+
+        assert response.status_code == 200
+        assert len(mailoutbox) == 3
+        m = mailoutbox[2]
         assert m.subject == "You have feedback on your data"
         assert f"User: {user.email}" not in m.body
         assert "User: Anonymous" in m.body

@@ -518,6 +518,92 @@ class NotificationBase(INotifications):
         )
 
     @validate_arguments
+    def send_dataset_feedback_consumer_copy(
+        self,
+        dataset_id: int,
+        contact_email: str,
+        dataset_name: str,
+        publisher_name: str,
+        feedback: str,
+        time_now: Optional[datetime.datetime],
+    ):
+        template = "DATASET_FEEDBACK_CONSUMER_COPY"
+        subject = "Bus Open Data feedback: Your email copy (do not reply)"
+        logger.debug(
+            f"[notify_{template.lower()}] sending feedback to operator about dataset"
+            f"Dataset<id={dataset_id}>"
+        )
+        last_update_date = localize_datetime_and_convert_to_string(
+            time_now, datetime_string_format="%H:%M %d/%m/%Y"
+        )
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            feed_name=dataset_name,
+            publisher_name=publisher_name,
+            time_now=last_update_date,
+            feedback=feedback,
+        )
+
+    @validate_arguments
+    def send_operator_feedback_consumer_copy(
+        self,
+        contact_email: str,
+        publisher_name: str,
+        feedback: str,
+        time_now: Optional[datetime.datetime],
+    ):
+        template = "OPERATOR_FEEDBACK_CONSUMER_COPY"
+        subject = "Bus Open Data feedback: Your email copy (do not reply)"
+        logger.debug(
+            f"[notify_{template.lower()}] sending feedback to operator from consumer"
+        )
+        last_update_date = localize_datetime_and_convert_to_string(
+            time_now, datetime_string_format="%H:%M %d/%m/%Y"
+        )
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            publisher_name=publisher_name,
+            time_now=last_update_date,
+            feedback=feedback,
+        )
+
+    @validate_arguments
+    def send_operator_feedback_notification(
+        self,
+        contact_email: str,
+        publisher_name: str,
+        feedback: str,
+        time_now: Optional[datetime.datetime],
+        developer_email: Optional[str] = None,
+    ):
+        template = "OPERATOR_FEEDBACK_NOTIFICATION"
+        subject = (
+            f"Bus Open Data feedback: {publisher_name} has received a feedback message"
+        )
+        logger.debug(
+            f"[notify_{template.lower()}] sending feedback to operator from consumer"
+        )
+        last_update_date = localize_datetime_and_convert_to_string(
+            time_now, datetime_string_format="%H:%M %d/%m/%Y"
+        )
+
+        if developer_email is None:
+            developer_email = "Anonymous"
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            publisher_name=publisher_name,
+            user_email=developer_email,
+            time_now=last_update_date,
+            feedback=feedback,
+        )
+
+    @validate_arguments
     def send_invite_accepted_notification(
         self, inviter_email: str, invitee_email: str, organisation_name: str
     ):

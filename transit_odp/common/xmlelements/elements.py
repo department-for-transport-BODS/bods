@@ -89,11 +89,29 @@ class XMLElement:
 
         return elements[0]
 
+    def get_first_element(self, xpath: Union[str, List[str], Tuple[str]]):
+        elements = self.get_elements(xpath)
+        return elements[0]
+
     def get_element_or_none(self, xpath: Union[str, List[str], Tuple[str]]):
         try:
             return self.get_element(xpath)
         except NoElement:
             return None
+
+    def get_first_text_or_default(
+        self, xpath: Union[str, List[str], Tuple[str]], default: str = ""
+    ):
+        try:
+            element = self.get_first_element(xpath)
+        except NoElement:
+            return default
+
+        text = element.text
+        if text is None:
+            return default
+
+        return text
 
     def get_text_or_default(
         self, xpath: Union[str, List[str], Tuple[str]], default: str = ""

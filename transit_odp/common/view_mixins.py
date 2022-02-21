@@ -1,7 +1,6 @@
 import re
 from typing import Any, List
 
-from config import hosts
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
 from django.http import FileResponse
@@ -10,6 +9,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts.resolvers import reverse
 
+from config import hosts
 from transit_odp.common.dataclasses import AnchorTag
 from transit_odp.common.utils.flags import Feature
 from transit_odp.common.view_models import RangeFilter
@@ -170,7 +170,7 @@ class BODSBaseView:
     """Mixin for adding feature flags to the context"""
 
     def get_navigation_anchor(self, feature_flag):
-        """ Get an anchor tag for the navlinks."""
+        """Get an anchor tag for the navlinks."""
         if self.request.path == "/":
             return None
 

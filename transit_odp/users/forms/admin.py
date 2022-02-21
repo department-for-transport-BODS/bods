@@ -15,26 +15,30 @@ User = auth.get_user_model()
 Invitation = get_invitation_model()
 
 EMAIL_LABEL = _("Email*")
+EMAIL_NO_ASTERISK_LABEL = _("Email")
 EMAIL_HELP_TEXT = _("Enter an email address in the right format, like name@example.com")
 EMAIL_INVALID = EMAIL_HELP_TEXT  # TODO - make these different?
 EMAIL_MISSING = _("Please provide an email")
 USERNAME_DUPLICATE = _("This username has already been taken.")
 PASSWORD_LABEL = _("Password*")
+PASSWORD_NO_ASTERISK_LABEL = _("Password")
 PASSWORD_HELP_TEXT = _("Your password should be at least 8 characters long.")
 PASSWORD_INVALID = PASSWORD_HELP_TEXT
 PASSWORD_MISSING = _("Please provide a password")
 CONFIRM_PASSWORD_LABEL = _("Confirm new password*")
+CONFIRM_PASSWORD_NO_ASTERISK_LABEL = _("Confirm new password")
 CURRENT_PASSWORD_LABEL = _("Current password")
 NEW_PASSWORD_LABEL = _("New password")
 PRIVACY_POLICY_URL = reverse("privacy-policy")
 COOKIE_URL = reverse("cookie")
 PRIVACY_TEXT = mark_safe(
     _(
-        '<p class="govuk-body">By using this website, you agree to '
-        f"the <a class='govuk-link' href='{PRIVACY_POLICY_URL}'>Privacy</a> and "
-        f"<a class='govuk-link' href='{COOKIE_URL}'>Cookies</a> policies</p>"
+        '<p class="govuk-body">By using this website, you consent to our '
+        f"<a class='govuk-link' href='{PRIVACY_POLICY_URL}'>Privacy</a> and "
+        f"<a class='govuk-link' href='{COOKIE_URL}'>Cookies</a> policies.</p>"
     )
 )
+
 OPT_IN_USER_RESEARCH_OPERATOR = mark_safe(
     _(
         "If you are willing to be contacted as part of user research, "
@@ -44,17 +48,18 @@ OPT_IN_USER_RESEARCH_OPERATOR = mark_safe(
 
 OPT_IN_USER_RESEARCH_DEVELOPER = mark_safe(
     _(
-        "Are you are willing to be contacted as part of user research to "
-        "improve the service?*"
+        "Would you like to be involved in the development of BODS and be contacted as "
+        "part of our user research?"
     )
 )
 
 SHARE_APP_USAGE = mark_safe(
-    _(
-        "If you're an application developer, would you be happy to freely share your "
-        "app usage data with the Department for Transport?*"
-    )
+    _("Are you happy for DfT to contact you to discuss how you’re using the data?")
 )
+
+INTENDED_USE = mark_safe(_("What best describes your intended use?"))
+
+AREAS_OF_INTEREST = mark_safe(_("Which areas of data are you interested in?"))
 
 
 class UserChangeForm(auth_forms.UserChangeForm):

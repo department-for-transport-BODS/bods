@@ -24,7 +24,7 @@ class DownloadException(Exception):
 
 
 class DownloadTimeout(DownloadException):
-    """ A request timed out."""
+    """A request timed out."""
 
     code = "DOWNLOAD_TIMEOUT"
     message_template = "Request to {url} timed out."

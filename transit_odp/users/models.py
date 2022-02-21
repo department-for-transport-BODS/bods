@@ -27,15 +27,15 @@ class User(UserRoleMixin, AbstractUser):
     organisations = ManyToManyField("organisation.Organisation", related_name="users")
 
     dev_organisation = models.CharField(
-        _("Developer organisation"), max_length=55, blank=True
+        _("Developer organisation"), max_length=60, blank=True
     )
 
     agent_organisation = models.CharField(
-        _("Agent user organisation"), max_length=55, blank=True
+        _("Agent user organisation"), max_length=60, blank=True
     )
 
     description = models.CharField(
-        _("Intended use for the API"), max_length=250, blank=True
+        _("Intended use for the API"), max_length=400, blank=True
     )
 
     notes = models.CharField(
@@ -162,6 +162,15 @@ class Invitation(UserRoleMixin, InvitationBase):
         return host
 
 
+class IntendedUse(models.IntegerChoices):
+    APP = 1, "App"
+    RESEARCH = 2, "Research"
+    DIGITAL_SIGNAGE = 3, "Digital Signage"
+    WEBSITE_OR_PORTAL = 4, "Website / Portal"
+    LTA = 5, "Local Transport Authority"
+    PERSONAL_INTERESTS = 6, "Personal interests or other"
+
+
 class UserSettings(models.Model):
     user = models.OneToOneField(
         User, related_name="settings", on_delete=models.CASCADE, primary_key=True
@@ -189,6 +198,22 @@ class UserSettings(models.Model):
         null=False,
         blank=False,
         default=True,
+    )
+
+    intended_use = models.IntegerField(
+        _("What best describes intended use"),
+        choices=IntendedUse.choices,
+        null=True,
+        default=IntendedUse.APP,
+    )
+    national_interest = models.BooleanField(
+        _("Interested in national rather than regional data"),
+        null=True,
+        blank=True,
+        default=True,
+    )
+    regional_areas = models.CharField(
+        _("Regional areas of interest"), max_length=60, blank=True
     )
 
 
@@ -262,7 +287,7 @@ class AgentUserInvite(models.Model):
 
     @property
     def is_active(self):
-        """ An active invite is one that is accepted or pending."""
+        """An active invite is one that is accepted or pending."""
         return self.status in [self.ACCEPTED, self.PENDING]
 
     def to_pending(self):

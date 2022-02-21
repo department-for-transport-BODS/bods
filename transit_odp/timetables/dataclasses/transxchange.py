@@ -5,6 +5,8 @@ from typing import List, Optional
 import pytz
 from pydantic import BaseModel, validator
 
+from transit_odp.timetables.transxchange import TransXChangeDocument
+
 NOC_TAG = "NationalOperatorCode"
 LICENCE_NUM_TAG = "LicenceNumber"
 OPERATOR_SHORT_NAME_TAG = "OperatorShortName"
@@ -20,17 +22,25 @@ class Service(BaseModel):
     operating_period_end_date: Optional[date]
     public_use: bool = True
     lines: List[Line]
+    origin: str
+    destination: str
 
     @classmethod
-    def from_txc_document(cls, doc):
+    def from_txc_document(cls, doc: TransXChangeDocument):
         lines = [Line(line_name=line) for line in doc.get_all_line_names()]
         service_code = doc.get_service_codes()[0].text
-        start_dates = doc.get_operating_period_start_date()
-        start_date = start_dates[0].text if len(start_dates) > 0 else None
-        end_dates = doc.get_operating_period_end_date()
-        end_date = end_dates[0].text if len(end_dates) > 0 else None
-        public_uses = doc.get_public_use()
-        public_use = public_uses[0].text if len(public_uses) else "true"
+
+        start_date = None
+        if start_dates := doc.get_operating_period_start_date():
+            start_date = start_dates[0].text
+
+        end_date = None
+        if end_dates := doc.get_operating_period_end_date():
+            end_date = end_dates[0].text
+
+        public_use = True
+        if public_uses := doc.get_public_use():
+            public_use = public_uses[0].text
 
         return cls(
             service_code=service_code,
@@ -38,6 +48,8 @@ class Service(BaseModel):
             operating_period_start_date=start_date,
             operating_period_end_date=end_date,
             public_use=public_use,
+            origin=doc.get_service_origin(),
+            destination=doc.get_service_destination(),
         )
 
 
@@ -47,7 +59,7 @@ class Operator(BaseModel):
     licence_number: str
 
     @classmethod
-    def from_txc_document(cls, doc):
+    def from_txc_document(cls, doc: TransXChangeDocument):
         # Pre-PTI some operators use LicensedOperator, lets see if they have
         # TODO remove get_licensed_operators after PTI hard roll out
 
@@ -90,7 +102,9 @@ class Header(BaseModel):
         return dt
 
     @classmethod
-    def from_txc_document(cls, doc, use_path_filename=False):
+    def from_txc_document(
+        cls, doc: TransXChangeDocument, use_path_filename: bool = False
+    ):
         """
         Created a Header object from a TransXChangeDocument.
 
@@ -118,11 +132,13 @@ class Header(BaseModel):
 class TXCFile(BaseModel):
     header: Header
     service_code: str
-    operator: Optional[Operator]
+    operator: Operator
     service: Service
 
     @classmethod
-    def from_txc_document(cls, doc, use_path_filename=False):
+    def from_txc_document(
+        cls, doc: TransXChangeDocument, use_path_filename: bool = False
+    ):
         header = Header.from_txc_document(doc, use_path_filename=use_path_filename)
         service_code = doc.get_service_codes()[0].text
         operator = Operator.from_txc_document(doc)

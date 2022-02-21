@@ -1,16 +1,12 @@
 import logging
-from pathlib import Path
 
 from tenacity import retry
 from tenacity.stop import stop_after_attempt
 
 from transit_odp.timetables.constants import TXC_MAP
-from transit_odp.timetables.pti import DatasetPTIValidator
 from transit_odp.validate.xml import get_lxml_schema
 
 logger = logging.getLogger(__name__)
-
-PTI_PATH = Path(__file__).parent / "pti_schema.json"
 
 
 class TxCSchemaDownloader:
@@ -48,12 +44,3 @@ _txc_downloader = TxCSchemaDownloader()
 def get_transxchange_schema(version):
     """Wrapper around _txc_downloader singleton to provide a nicer api."""
     return _txc_downloader.get_transxchange_schema(version)
-
-
-def get_pti_validator():
-    """
-    Gets a PTI JSON Schema and returns a DatasetPTIValidator.
-    """
-    with PTI_PATH.open("r") as f:
-        pti = DatasetPTIValidator(f)
-    return pti

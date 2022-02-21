@@ -1,14 +1,12 @@
 import pytest
 
-from transit_odp.data_quality.pti.factories import (
-    ObservationFactory,
-    RuleFactory,
-    SchemaFactory,
-)
+from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
 from transit_odp.data_quality.pti.validators import PTIValidator
-from transit_odp.timetables.utils import PTI_PATH
+from transit_odp.timetables.pti import PTI_PATH
+
+pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
@@ -85,25 +83,10 @@ def test_string_length(name, expected):
     name = name_temp.format(name)
     xml = xml.format(name)
 
-    details = (
-        "Serviced Organisations are optional. But if you are including "
-        "it then it is required to be in the correct structure. Here, you have "
-        "an incorrect structure in the 'Name' element in 'ServicedOrganisation' field. "
-        "Please provide a meaningful name for the organisation composed of more "
-        "than 5 characters atleast."
-    )
-    rules = (
-        RuleFactory(test="count(x:Name) = 1"),
-        RuleFactory(test="string-length(strip(x:Name)) >= 5"),
-    )
-    observation = ObservationFactory(
-        details=details,
-        context="//x:ServicedOrganisations/x:ServicedOrganisation",
-        category="Serviced organisations",
-        reference="3.2",
-        rules=rules,
-    )
-    schema = SchemaFactory(observations=[observation])
+    OBSERVATION_ID = 10
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
     json_file = JSONFile(schema.json())
     pti = PTIValidator(json_file)
     txc = TXCFile(xml)

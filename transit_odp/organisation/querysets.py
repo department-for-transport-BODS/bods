@@ -11,6 +11,7 @@ from django.db.models import (
     CharField,
     Count,
     F,
+    Func,
     Max,
     Min,
     OuterRef,
@@ -100,6 +101,29 @@ class OrganisationQuerySet(models.QuerySet):
             published_fares_count=fares_count,
         )
 
+    def add_live_published_dataset_count_types(self):
+        """Annotates queryset with a set of total numbers of related published datasets,
+        for Timetables, AVLs and Fares
+        """
+        dataset_types = (TimetableType, AVLType, FaresType)
+        timetable_count, avl_count, fares_count = [
+            Count(
+                "dataset",
+                filter=Q(
+                    dataset__dataset_type=dataset_type,
+                    dataset__live_revision__isnull=False,
+                    dataset__live_revision__status="live",
+                ),
+                distinct=True,
+            )
+            for dataset_type in dataset_types
+        ]
+        return self.annotate(
+            published_timetable_count=timetable_count,
+            published_avl_count=avl_count,
+            published_fares_count=fares_count,
+        )
+
     def add_published_dataset_count(self):
         """Annotates queryset with the total number of related datasets,
         excluding drafts."""
@@ -126,6 +150,19 @@ class OrganisationQuerySet(models.QuerySet):
                 When(is_active=True, then=Value("active")),
                 When(is_inactive, then=Value("inactive")),
                 When(is_pending, then=Value("pending")),
+                output_field=CharField(),
+            )
+        )
+
+    def add_catalogue_status(self):
+        qs = self.annotate(total_users=Count("users", distinct=True))
+        is_inactive = Q(is_active=False) & Q(total_users__gt=0)
+        is_pending = Q(is_active=False) & Q(total_users=0)
+        return qs.annotate(
+            status=Case(
+                When(is_active=True, then=Value("Active")),
+                When(is_inactive, then=Value("Inactive")),
+                When(is_pending, then=Value("Pending invite")),
                 output_field=CharField(),
             )
         )
@@ -164,9 +201,13 @@ class OrganisationQuerySet(models.QuerySet):
 
     def add_number_of_fare_products(self):
         return self.annotate(
-            total_fare_products=Sum(
-                "dataset__live_revision__metadata__faresmetadata__num_of_fare_products",
-                filter=Q(dataset__live_revision__status="live"),
+            total_fare_products=Coalesce(
+                Sum(
+                    "dataset__live_revision__metadata__faresmetadata__"
+                    "num_of_fare_products",
+                    filter=Q(dataset__live_revision__status="live"),
+                ),
+                Value(0),
             )
         )
 
@@ -192,6 +233,68 @@ class OrganisationQuerySet(models.QuerySet):
             published_services_with_future_start_date=Count(
                 "dataset", filter=future_start
             )
+        )
+
+    def add_nocs_string(self, delimiter=","):
+        return self.annotate(
+            nocs_string=StringAgg(
+                "nocs__noc",
+                delimiter,
+                distinct=True,
+            )
+        )
+
+    def add_licence_string(self, delimiter=","):
+        return self.annotate(
+            licence_string=StringAgg(
+                "licences__number",
+                delimiter,
+                distinct=True,
+            )
+        )
+
+    def add_number_of_licences(self):
+        return self.annotate(number_of_licences=Count("licences", distinct=True))
+
+    def add_permit_holder(self):
+        """
+        This can really confusing on the frontend when the checkbox is ticked then
+        licence_required=False.
+        Therefore
+        | licence_number | checkbox | licence_required | permit_holder |
+        | -------------- | -------- | ---------------- | ------------- |
+        | PD0000000136   | empty    | False            | TRUE          |
+        | -------------- | -------- | ---------------- | ------------- |
+        |                | checked  | True             | FALSE         |
+        | -------------- | -------- | ---------------- | ------------- |
+        |                | empty    | True/None        | UNKNOWN       |
+        | -------------- | -------- | ---------------- | ------------- |
+        """
+        checked = Q(licence_required=False)
+        unchecked = Q(licence_required=True)
+        return self.add_number_of_licences().annotate(
+            permit_holder=Case(
+                When(unchecked & Q(number_of_licences__gt=0), then=Value("TRUE")),
+                When(checked, then=Value("FALSE")),
+                default=Value("UNKNOWN"),
+                output_field=CharField(),
+            )
+        )
+
+    def add_data_catalogue_fields(self):
+        return (
+            self.add_catalogue_status()
+            .add_invite_accepted()
+            .add_invite_sent()
+            .add_last_active()
+            .add_permit_holder()
+            .add_nocs_string(delimiter=";")
+            .add_licence_string(delimiter=";")
+            .add_number_of_licences()
+            .add_unregistered_service_count()
+            .add_number_of_services_valid_operating_date()
+            .add_published_services_with_future_start_date()
+            .add_live_published_dataset_count_types()
         )
 
 
@@ -221,6 +324,36 @@ class DatasetQuerySet(models.QuerySet):
             published_at=F("live_revision__published_at"),
         )
 
+    def add_pretty_status(self):
+        return self.annotate(
+            status=Case(
+                When(Q(live_revision__status="live"), then=Value("published")),
+                default=F("live_revision__status"),
+            )
+        )
+
+    def add_pretty_dataset_type(self):
+        # Cant call the attribute pretty_dataset_type because it clashes with model
+        # property
+        return self.annotate(
+            dataset_type_pretty=Case(
+                When(Q(dataset_type=TimetableType), then=Value("Timetables")),
+                When(
+                    Q(dataset_type=AVLType), then=Value("Automatic Vehicle Locations")
+                ),
+                When(Q(dataset_type=FaresType), then=Value("Fares")),
+                output_field=CharField(),
+            )
+        )
+
+    def add_last_updated_including_avl(self):
+        return self.annotate(
+            last_updated=Case(
+                When(Q(dataset_type=AVLType), then=F("avl_feed_last_checked")),
+                default=F("live_revision__published_at"),
+            )
+        )
+
     def add_admin_area_names(self):
         """Annotate queryset with the comma-separated list of admin names of the
         live revision"""
@@ -235,6 +368,12 @@ class DatasetQuerySet(models.QuerySet):
 
     def add_organisation_name(self):
         return self.annotate(organisation_name=F("organisation__name"))
+
+    def add_live_name(self):
+        return self.annotate(name=F("live_revision__name"))
+
+    def add_live_filename(self):
+        return self.annotate(upload_filename=F("live_revision__upload_file"))
 
     def add_last_published_by_email(self):
         return self.annotate(user_email=F("live_revision__published_by__email"))
@@ -308,6 +447,15 @@ class DatasetQuerySet(models.QuerySet):
         return self.annotate(
             nocs=StringAgg(
                 "live_revision__txc_file_attributes__national_operator_code",
+                delimiter,
+                distinct=True,
+            )
+        )
+
+    def add_profile_nocs(self, delimiter=", "):
+        return self.annotate(
+            profile_nocs=StringAgg(
+                "organisation__nocs__noc",
                 delimiter,
                 distinct=True,
             )
@@ -398,25 +546,30 @@ class DatasetQuerySet(models.QuerySet):
         # to search over this many-to-many
         # TODO - add expression indexes to AdminArea name for efficient icontains
         # search, e.g. `CREATE INDEX admin_area_lower_email ON admin_area(upper(name));`
+        fares_icontains = Q(
+            metadata__faresmetadata__stops__admin_area__name__icontains=keywords
+        )
+        timetables_icontains = Q(admin_areas__name__icontains=keywords)
         revisions = (
             DatasetRevision.objects.get_live_revisions()
-            .filter(admin_areas__name__icontains=keywords)
+            .filter(timetables_icontains | fares_icontains)
             .order_by("id")
             .distinct("id")
             .values("id")
         )
 
-        in_revisions = Q(live_revision__in=revisions)
-        name_contains_keywords = Q(live_revision__name__icontains=keywords)
+        location_contains_keywords = Q(live_revision__in=revisions)
         desc_contains_keywords = Q(live_revision__description__icontains=keywords)
         org_name_contains_keywords = Q(organisation__name__icontains=keywords)
+        noc_contains_keywords = Q(organisation__nocs__noc__icontains=keywords)
 
         qs = self.filter(
-            in_revisions
-            | name_contains_keywords
+            location_contains_keywords
             | desc_contains_keywords
             | org_name_contains_keywords
-        )
+            | noc_contains_keywords
+        ).distinct()
+
         return qs
 
     def get_remote(self):
@@ -566,6 +719,18 @@ class DatasetQuerySet(models.QuerySet):
         )
         return qs
 
+    def get_overall_data_catalogue_annotations(self):
+        return (
+            self.get_published()
+            .add_organisation_name()
+            .add_live_filename()
+            .add_live_name()
+            .add_profile_nocs(delimiter="; ")
+            .add_pretty_status()
+            .add_pretty_dataset_type()
+            .add_last_updated_including_avl()
+        )
+
 
 class DatasetRevisionQuerySet(models.QuerySet):
     def get_live_revisions(self):
@@ -677,13 +842,21 @@ class DatasetRevisionQuerySet(models.QuerySet):
 class TXCFileAttributesQuerySet(models.QuerySet):
     def get_active_revisions(self):
         """
-        Filter for revisions that are published and not expired.
+        Filter for revisions that are published and not expired or inactive.
         """
         exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
         qs = self.exclude(revision__status__in=exclude_status).filter(
             revision__is_published=True
         )
         return qs
+
+    def get_active_live_revisions(self):
+        """
+        Filter for revisions that are currently live and are not expired or inactive
+        """
+        return self.get_active_revisions().filter(
+            revision__dataset__live_revision_id=F("revision_id")
+        )
 
     def add_dq_score(self):
         from transit_odp.data_quality.models.report import DataQualityReport
@@ -744,4 +917,50 @@ class TXCFileAttributesQuerySet(models.QuerySet):
     def add_organisation_name(self):
         return self.annotate(
             organisation_name=F("revision__dataset__organisation__name")
+        )
+
+    def add_organisation_id(self):
+        organisation_id = F("revision__dataset__organisation_id")
+        return self.annotate(organisation_id=organisation_id)
+
+    def add_revision_details(self):
+        return self.annotate(
+            dataset_id=F("revision__dataset_id"),
+            last_updated_date=F("revision__published_at"),
+        )
+
+    def add_string_lines(self):
+        return self.annotate(
+            string_lines=Func(
+                F("line_names"), Value(" "), Value(""), function="array_to_string"
+            )
+        )
+
+    def get_organisation_data_catalogue(self):
+        return (
+            self.get_active_live_revisions()
+            .add_organisation_id()
+            .add_bods_compliant()
+            .distinct("service_code")
+        )
+
+    def get_active_txc_files(self):
+        return (
+            self.get_active_live_revisions()
+            .add_bods_compliant()
+            .add_dq_score()
+            .add_revision_details()
+            .add_organisation_name()
+            .add_string_lines()
+            .order_by(
+                "service_code", "-revision__dataset_id", "operating_period_start_date"
+            )
+            .distinct("service_code")
+        )
+
+    def get_overall_data_catalogue(self):
+        return (
+            self.filter(revision=F("revision__dataset__live_revision"))
+            .annotate(dataset_id=F("revision__dataset_id"))
+            .add_string_lines()
         )

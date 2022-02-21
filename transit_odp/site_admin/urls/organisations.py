@@ -31,6 +31,7 @@ from transit_odp.site_admin.views import (
     UserEditView,
     UserIsActiveView,
 )
+from transit_odp.site_admin.views.invites import BulkInviteSuccessView
 
 _agent_invite_paths = [
     path(
@@ -260,6 +261,11 @@ paths = [
         "bulk-resend-invite",
         view=BulkResendInviteView.as_view(),
         name="bulk-resend-invite",
+    ),
+    path(
+        "bulk-resend-invite-success",
+        view=BulkInviteSuccessView.as_view(),
+        name="bulk-resend-invite-success",
     ),
     path(
         "search/",

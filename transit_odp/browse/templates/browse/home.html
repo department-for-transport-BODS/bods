@@ -5,101 +5,113 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-    {% trans 'Find bus open data' %}
+{% trans 'Find bus open data' %}
 {% endblock %}
 
-{% block heading.title.text %}
-    {% trans 'Find bus open data' %}
+{% block full_width_content %}
+<div class="app-masthead">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-top-5">
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+                <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Find bus open data' %}</h1>
+                <p class="app-masthead__description">The Bus Open Data Service provides bus timetable, vehicle location and fares data for every local bus service in England.</p>
+
+                <a href="{% url 'guide-me' host hosts.data %}" role="button" draggable="false" class="govuk-button app-button--inverted govuk-!-margin-bottom-0 govuk-button--start" data-module="govuk-button">
+                    {% trans 'Guide Me' %}
+                    <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+                        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"></path>
+                    </svg></a>
+
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block heading.subtitle %}
-  <div class="govuk-!-padding-right-9">
-    <h2 class="govuk-heading-m">
-        {% trans 'Use the bus open data' %}
-    </h2>
+<div class="govuk-!-padding-right-9">
+    <p class="govuk-body">
+        {% if feature.avl or feature.fares %}
+        <a class="govuk-link-bold" href="{% url 'select-data' host hosts.data %}">
+            {% trans 'Browse data' %}
+        </a>
+        {% else %}
+        <a class="govuk-link-bold" href="{% url 'search' host hosts.data %}">
+            {% trans 'Browse data' %}
+        </a>
+        {% endif %}
+    </p>
     <p class="govuk-body">
         {% trans 'View and download open data published by operators of local bus services.' %}
     </p>
+
+
+    <hr class="govuk-section-break govuk-section-break--xl">
+
     <p class="govuk-body">
-      {% if feature.avl or feature.fares %}
-        <a class="govuk-link-bold" href="{% url 'select-data' host hosts.data %}">
-            {% trans 'Browse for specific data' %}
+        {% if feature.fares or feature.avl %}
+        <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">
+            {% trans 'Try API service' %}
         </a>
-      {% else %}
-        <a class="govuk-link-bold" href="{% url 'search' host hosts.data %}">
-            {% trans 'Browse for specific data' %}
+        {% else %}
+        <a class="govuk-link-bold" href="{% url 'api:openapi' host hosts.data %}">
+            {% trans 'Try API service' %}
         </a>
-      {% endif %}
+        {% endif %}
     </p>
     <p class="govuk-body">
-      {% if feature.avl or feature.fares %}
-      <a class="govuk-link-bold" href="{% url 'downloads' host hosts.data %}">
-          {% trans 'Download all data' %}
-      </a>
-      {% else %}
-      <a class="govuk-link-bold" href="{% url 'download-timetables' host hosts.data %}">
-          {% trans 'Download all data' %}
-      </a>
-      {% endif %}
+        {% trans 'Experiment with our interactive API services to familiarise yourself with data sets.' %}
+    </p>
+
+
+    <hr class="govuk-section-break govuk-section-break--xl">
+
+    <p class="govuk-body">
+        {% if feature.avl or feature.fares %}
+        <a class="govuk-link-bold" href="{% url 'downloads' host hosts.data %}">
+            {% trans 'Download data' %}
+        </a>
+        {% else %}
+        <a class="govuk-link-bold" href="{% url 'download-timetables' host hosts.data %}">
+            {% trans 'Download data' %}
+        </a>
+        {% endif %}
+    </p>
+    <p class="govuk-body">
+        {% trans 'Download updates or all of the data published on BODS with a registered account.' %}
     </p>
 
     <hr class="govuk-section-break govuk-section-break--xl">
 
-    <h2 class="govuk-heading-m">
-        {% trans 'Use the bus open data API Service' %}
-    </h2>
     <p class="govuk-body">
-        {% trans 'You can experiment with our interactive API services, to familiarise yourself with the data supplied.' %}
+        <a class="govuk-link-bold" href="{% url 'operators' host hosts.data %}">
+            {% trans 'View operator profiles' %}
+        </a>
     </p>
     <p class="govuk-body">
-      {% if feature.fares or feature.avl %}
-      <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">
-          {% trans 'Access interactive API' %}
-      </a>
-      {% else %}
-      <a class="govuk-link-bold" href="{% url 'api:openapi' host hosts.data %}">
-          {% trans 'Access interactive API' %}
-      </a>
-      {% endif %}
+        {% trans 'Search all operator profiles available on BODS to view associated data, NOC codes and licence numbers.' %}
     </p>
-    <p class="govuk-body">
-      <a class="govuk-link-bold" href="{% url 'guidance:support-developer' host hosts.data %}">
-          {% trans 'View developer documentation' %}
-      </a>
-    </p>
-  </div>
+
+</div>
 {% endblock %}
 
 {% block heading.secondary %}
-  <div class="govuk-grid-column-one-third">
+<div class="govuk-grid-column-one-third">
     <h2 class="govuk-heading-m">
-        {% trans 'What you need to know' %}
+        {% trans 'Need further help?' %}
     </h2>
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
-          {% trans 'View developer documentation' %}
-      </a>
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
-         target="_blank">
-          {% trans 'Find out more about bus open data' %}
-      </a>
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
-          {% trans 'Changelog' %}
-      </a>
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-          {% trans 'Contact us for technical issues' %}
-      </a>
-    </p>
-  <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
-        {% trans 'Download data catalogue' %}
-      </a>
-    </p>
-  </div>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li>
+            <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
+                {% trans 'Changelog' %}
+            </a>
+        </li>
+        <li>
+            <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
+                {% trans 'Contact us for technical issues' %}
+            </a>
+        </li>
+    </ul>
+
+</div>
 {% endblock %}

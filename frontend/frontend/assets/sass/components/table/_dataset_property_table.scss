@@ -4,3 +4,33 @@
     padding: 1.25rem 0;
   }
 }
+
+.consumer-property-table {
+  .govuk-table__row {
+    th {
+      width: 30%;
+      padding-right: 2rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    td {
+      vertical-align: middle;
+      text-align: left;
+      padding: 1.25rem 0;
+
+      div.stacked {
+        display: flex;
+        flex-direction: column;
+      }
+      div.side-by-side {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+
+    td:nth-child(3) {
+      text-align: right;
+    }
+  }
+}

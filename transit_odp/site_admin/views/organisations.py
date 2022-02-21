@@ -188,7 +188,6 @@ class OrganisationCreateView(SiteAdminViewMixin, CreateView):
                 is_key_contact=True,
             )
             invitation.send_invitation(self.request)
-
         return HttpResponseRedirect(self.get_success_url())
 
     def stash_data(self, form):

@@ -14,11 +14,13 @@ if not settings.configured:
 
 app = Celery("transit_odp")
 
+OTC_TASKS: Final = "transit_odp.otc.tasks."
 PIPELINE_TASKS: Final = "transit_odp.pipelines.tasks."
 TIMETABLE_TASKS: Final = "transit_odp.timetables.tasks."
 AVL_TASKS: Final = "transit_odp.avl.tasks."
 FARES_TASKS: Final = "transit_odp.fares.tasks."
 ADMIN_TASKS: Final = "transit_odp.site_admin.tasks."
+BROWSE_TASKS: Final = "transit_odp.browse.tasks."
 
 
 class CeleryAppConfig(AppConfig):
@@ -97,6 +99,10 @@ class CeleryAppConfig(AppConfig):
                 "task": AVL_TASKS + "task_create_gtfsrt_zipfile",
                 "schedule": 10.0,
             },
+            "create_siri_tfl_zip": {
+                "task": AVL_TASKS + "task_create_sirivm_tfl_zipfile",
+                "schedule": 10.0,
+            },
             "timetable_upgrade_task": {
                 "task": TIMETABLE_TASKS + "task_reprocess_file_based_datasets",
                 "schedule": crontab(minute=0, hour="0, 2, 4, 18, 20, 22"),
@@ -116,5 +122,13 @@ class CeleryAppConfig(AppConfig):
             "save_operational_exports": {
                 "task": ADMIN_TASKS + "task_create_operational_exports_archive",
                 "schedule": 1.0 * 60.0 * 60.0,
+            },
+            "save_data_catalogue_exports": {
+                "task": BROWSE_TASKS + "task_create_data_catalogue_archive",
+                "schedule": 1.0 * 60.0 * 60.0,
+            },
+            "update_otc_data": {
+                "task": OTC_TASKS + "task_refresh_otc_data",
+                "schedule": crontab(minute=0, hour=2),
             },
         }

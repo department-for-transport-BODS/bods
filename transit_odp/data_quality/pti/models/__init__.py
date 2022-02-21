@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -50,6 +50,7 @@ class Violation(BaseModel):
     line: int
     filename: str
     name: str
+    element_text: Optional[str] = None
     observation: Observation
 
     def to_bods_csv(self):
@@ -63,7 +64,7 @@ class Violation(BaseModel):
             self.line,
             self.name,
             self.observation.category,
-            self.observation.details,
+            self.observation.details.format(element_text=self.element_text),
             ref,
             get_important_note(),
         ]

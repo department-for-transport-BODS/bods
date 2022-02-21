@@ -1,0 +1,98 @@
+[tool.poetry]
+name = "bods"
+version = "1.16.2"
+description = "Bus Open Data Service"
+authors = [
+        "Angus Bell <angus.bell@itoworld.com>",
+        "Andrea Garau <andrea.garau@itoworld.com>",
+        "Paul Holland <paul.holland@itoworld.com>",
+        "Ciaran McCormick <ciaran.mccormick@itoworld.com>"
+]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+argh = "~=0.26.0"
+argon2-cffi = "~=20.1.0"
+attrs = "~=19.3.0"
+celery = "~=5.2.0"
+clamd = "~=1.0.0"
+decorator = "~=4.0.0"
+defusedxml = "~=0.6.0"
+django = "~=3.1.0"
+django-allauth = "~=0.42.0"
+django-anymail = {extras = ["mailgun"], version = "~=7.1.0"}
+django-celery-beat = "~=2.2.0"
+django-celery-results = "~=2.2.0"
+django-classy-tags = "~=1.0.0"
+django-cors-headers = "~=3.4.0"
+django-crispy-forms = "~=1.9.0"
+django-environ = "~=0.4.0"
+django-extensions = "~=3.1.0"
+django-filter = "~=2.4.0"
+django-formtools = "~=2.2"
+django-fsm = "~=2.7.0"
+django-hosts = "~=4.0"
+django-invitations = "~=1.9.0"
+django-model-utils = "~=4.0.0"
+django-redis = "~=4.12.0"
+django-rest-swagger = "~=2.2.0"
+django-storages = {extras = ["boto3"], version = "~=1.8"}
+django-tables2 = "~=2.3.0"
+djangorestframework = "~=3.11.0"
+djangorestframework-gis = "~=0.15"
+flower = "~=1.0.0"
+freezegun = "~=0.3.0"
+geopandas = "~=0.7.0"
+gunicorn = "~=20.0.0"
+ipython = "~=7.31.0"
+isoduration = "~=20.11.0"
+lxml = "~=4.6.0"
+notifications-python-client = "~=5.7.0"
+pandas = "~=1.2.0"
+pillow = "~=8.3.0"
+psycopg2-binary = "~=2.8.0"
+pydantic = "~=1.8.0"
+pyproj = "~=2.6.0"
+pytz = "~=2020.0"
+redis = "~=3.5.0"
+shapely = "~=1.7.0"
+stories = "~=1.0.0"
+tenacity = "~=6.2.0"
+whitenoise = "~=5.1.0"
+
+frontend = {path = "./frontend", develop = true}
+cavl-client = {path = "./cavl-client", develop = true}
+crispy-forms-govuk = {path = "./crispy-forms-govuk", develop = true}
+
+[tool.poetry.dev-dependencies]
+black = "==21.12b0"
+coverage = "~=5.1.0"
+ddt = "~=1.4.0"
+django-debug-toolbar = "~=2.2.0"
+django-querycount = "^0.7.0"
+djhtml = "^1.4.11"
+factory-boy = "~=2.12.0"
+flake8 = "~=3.8.0"
+ipdb = "~=0.13.0"
+isort = "~=5.10.0"
+mocket = "~=3.9.0"
+nose = "~=1.3.0"
+pre-commit = "~=2.9.0"
+pytest = "~=6.2.0"
+pytest-cov = "~=2.10.0"
+pytest-deadfixtures = "^2.2.1"
+pytest-django = "~=3.9.0"
+pytest-factoryboy = "~=2.1.0"
+pytest-mock = "~=3.1.0"
+pytest-sugar = "~=0.9.0"
+pytest-xdist = "~=1.32.0"
+requests-mock = "~=1.9.3"
+safety = "~=1.10.3"
+watchdog = "~=0.10.0"
+werkzeug = "~=2.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

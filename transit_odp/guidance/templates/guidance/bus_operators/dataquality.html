@@ -81,37 +81,47 @@
 
 <h2 class="govuk-heading-m">Bus location data</h2>
 <p class="govuk-body">
-    {% blocktrans trimmed %}
-    SIRI-VM data is taken into a central AVL system, where it is harmonised to produce a
-    consistent SIRI-VM 2.4 output of bus location data for open data consumers.
-    {% endblocktrans %}
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+      SIRI-VM data is taken into a central AVL system, where it is harmonised to produce a
+      consistent SIRI-VM 2.0 output of bus location data for open data consumers.
+      {% endblocktrans %}
+    {% endfilter %}
 </p>
 
 <p class="govuk-body">
-    {% blocktrans trimmed %}
-    We have introduced a SIRI-VM validator to BODS to ensure the highest data standards
-    are provided to consumers. The validator checks for mandatory fields specified
-    within the
-    {% endblocktrans %}
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        We have introduced a SIRI-VM validator to BODS to ensure the highest data
+        standards are provided to consumers. The validator has two parts: one that
+        checks first for the schema and the second part checks for mandatory fields
+        specified within the
+      {% endblocktrans %}
+    {% endfilter %}
     <a class="govuk-link"
        href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm"
        target="_blank">{% trans "DfT BODS profile" %}</a>.
-    {% blocktrans trimmed %}
-    The validator will run 1 randomised check per day (excluding buses running from
-    12am-5am) and will check 1000 packets or 10 minutes from a feed each day (this
-    number is configurable until deemed sensible).
-    {% endblocktrans %}
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        For the schema check, if the feed fails it, the feed will be put in an
+        ‘inactive’ status. The validator will run 1 randomised check per day (excluding
+        buses running from 12am-5am) and will check 1000 packets or 10 minutes from a
+        feed each day (this number is configurable until deemed sensible).
+      {% endblocktrans %}
+    {% endfilter %}
 </p>
 
 <p class="govuk-body">
-    {% blocktrans trimmed %}
-    Given the level of industry readiness in terms of providing consistent SIRI-VM data,
-    there will be no blocking of feeds as long as they are valid SIRI. However BODS
-    compliance tags will be attached to showcase if they are: compliant, non-compliant
-    or partially compliant. Compliance tags will use a 7-day rolling average. The
-    validator will look at the last 7 days' worth of SIRI-VM aggregate data and assign a
-    status of 'compliant', 'partially compliant' or 'non-compliant'.
-    {% endblocktrans %}
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        Given the level of industry readiness in terms of providing consistent SIRI-VM
+        data, there will be no blocking of feeds as long as they are valid SIRI (and
+        don't fail the schema). However BODS compliance tags will be attached to
+        showcase if they are: 'compliant', 'non-compliant' or 'partially compliant'
+        using a 7-day rolling average. The validator will look at the last 7 days' worth
+        of SIRI-VM aggregate data and assign a compliance status accordingly.
+      {% endblocktrans %}
+    {% endfilter %}
 </p>
 
 <p class="govuk-body">
@@ -201,6 +211,15 @@
         days after publishing if a critical or noncritical fields(s) has not been
         provided by >70% of vehicles in a daily check.
         {% endblocktrans %}
+    </li>
+    <li>
+        {% filter force_escape %}
+          {% blocktrans trimmed %}
+            Unavailable due to dormant feed: This status will be used for all feeds
+            which don’t have any vehicles running for 7 consecutive days and henceforth
+            have repeatedly evaded validation.
+          {% endblocktrans %}
+        {% endfilter %}
     </li>
 </ul>
 

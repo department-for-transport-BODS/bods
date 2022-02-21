@@ -3,7 +3,7 @@ from django_hosts import reverse
 
 from config.hosts import DATA_HOST
 from transit_odp.browse.tests.test_avls import (
-    TestAVLSearchView,
+    BaseAVLSearchView,
     TestUserAVLFeedbackView,
 )
 from transit_odp.naptan.models import AdminArea
@@ -12,13 +12,13 @@ from transit_odp.organisation.factories import (
     FaresDatasetRevisionFactory,
     OrganisationFactory,
 )
-from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
 
-class TestFaresSearchView(TestAVLSearchView):
+class TestFaresSearchView(BaseAVLSearchView):
     host = DATA_HOST
     url = reverse("search-fares", host=host)
     dataset_type = FaresType
@@ -71,6 +71,7 @@ class TestUserFaresFeedbackView(TestUserAVLFeedbackView):
     @pytest.fixture()
     def revision(self):
         org = OrganisationFactory()
+        UserFactory(account_type=SiteAdminType)
         publisher = UserFactory(account_type=OrgAdminType, organisations=(org,))
         return FaresDatasetRevisionFactory(
             dataset__contact=publisher,

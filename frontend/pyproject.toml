@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "frontend"
+version = "0.1.0"
+description = "Frontend for the Bus Open Data Service"
+authors = ["Ciaran McCormick <ciaran.mccormick@itoworld.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = "^3.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

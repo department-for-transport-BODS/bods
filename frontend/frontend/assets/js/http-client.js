@@ -27,4 +27,4 @@ class HttpClient {
   }
 }
 
-module.exports = HttpClient;
+export { HttpClient };

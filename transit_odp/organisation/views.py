@@ -27,7 +27,11 @@ from transit_odp.publish.views.base import (
 )
 from transit_odp.users.constants import AccountType
 from transit_odp.users.models import AgentUserInvite
-from transit_odp.users.views.mixins import AgentOrgAdminViewMixin, OrgAdminViewMixin
+from transit_odp.users.views.mixins import (
+    AgentOrgAdminViewMixin,
+    OrgAdminViewMixin,
+    OrgUserViewMixin,
+)
 
 notifier = get_notifications()
 
@@ -97,7 +101,7 @@ class InviteView(OrgAdminViewMixin, BODSBaseView, CreateView):
         )
 
 
-class OrgProfileView(AgentOrgAdminViewMixin, BaseDetailView):
+class OrgProfileView(OrgUserViewMixin, BaseDetailView):
     template_name = "organisation/org_profile.html"
     model = Organisation
 

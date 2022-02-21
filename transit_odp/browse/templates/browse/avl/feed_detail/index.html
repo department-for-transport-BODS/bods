@@ -8,10 +8,13 @@
   {% trans 'Data feed details' %}
 {% endblock %}
 
-{# Breadcrumb #}
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% include 'browse/avl/feed_detail/breadcrumb.html' %}
+ {{ block.super }}
+ {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+ {% breadcrumb_url 'Location Data' 'avl-search' host hosts.data %}
+ {% with name=object.name|truncatechars:19 %}
+   {% breadcrumb name %}
+ {% endwith %}
 {% endblock %}
 
 {% block content %}

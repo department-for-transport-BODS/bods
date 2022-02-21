@@ -1,0 +1,46 @@
+{% load i18n %}
+
+<div class="app-masthead">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row govuk-!-margin-top-5">
+      <div class="govuk-grid-column-one-half">
+        <h1 class="govuk-heading-xl app-masthead__title">
+          {% filter force_escape %}
+            {% blocktrans %}
+              {{ title }}
+            {% endblocktrans %}
+          {% endfilter %}
+        </h1>
+        <p id="search-description" class="app-masthead__description">
+          {% filter force_escape %}
+            {% blocktrans %}
+              {{ description }}
+            {% endblocktrans %}
+          {% endfilter %}
+        </p>
+        <div class="searchbox autocomplete">
+          <input class="searchbox__input"
+                 id="search"
+                 name="q"
+                 aria-labelledby="search-description"
+                 type="text"
+                 value="{{ q|default_if_none:'' }}"
+                 placeholder="{% filter force_escape %}{% blocktrans %}{{ placeholder }}{% endblocktrans %}{% endfilter %}"
+                 {% if hint %}aria-describedby="searchbar-hint"{% endif %}>
+          <button class="searchbox__button" type="submit" aria-label="submit search">
+            <svg width="21" height="22" viewBox="0 0 21 22" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="a">
+                  <feColorMatrix in="SourceGraphic" values="0 0 0 0 1.000000 0 0 0 0 1.000000 0 0 0 0 1.000000 0 0 0 1.000000 0"/>
+                </filter>
+              </defs>
+              <g transform="translate(-760 -316)" filter="url(#a)" fill="none" fill-rule="evenodd">
+                <path d="M776.594 331.75a9.418 9.418 0 0 0 2.428-6.296c0-5.213-4.268-9.454-9.51-9.454-5.244 0-9.512 4.242-9.512 9.454 0 5.213 4.268 9.455 9.51 9.455a9.523 9.523 0 0 0 5.04-1.444l4.176 4.152c.25.248.59.383.931.383.34 0 .681-.136.931-.383a1.295 1.295 0 0 0 .023-1.873l-4.017-3.994zm-13.939-6.296c0-3.746 3.065-6.814 6.855-6.814 3.792 0 6.833 3.068 6.833 6.814s-3.064 6.815-6.832 6.815-6.856-3.047-6.856-6.815z" fill="#FFF" fill-rule="nonzero"/>
+              </g>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

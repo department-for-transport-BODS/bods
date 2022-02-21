@@ -1,5 +1,6 @@
 from unittest.mock import Mock, patch
 
+import factory
 import pytest
 from django.contrib.auth import get_user_model
 from requests.exceptions import RequestException
@@ -14,12 +15,14 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DraftDatasetFactory,
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Organisation
 from transit_odp.site_admin.stats import (
     get_active_dataset_counts,
     get_operator_count,
     get_orgs_with_active_dataset_counts,
+    get_service_code_counts,
     get_siri_vm_vehicle_counts,
     get_user_counts,
 )
@@ -194,6 +197,120 @@ def test_published_operator_count():
     assert counts["published_timetable_operator_count"] == 1
     assert counts["published_avl_operator_count"] == 1
     assert counts["published_fares_operator_count"] == 1
+
+
+def test_service_code_counts_multiple_statuses():
+    """
+    GIVEN 6 timetable datasets: 3 with registered service codes and statuses
+    expired, inactive, and live; and 3 with unregistered service codes and statuses
+    expired, inactive, and live
+    WHEN `get_service_code_counts` is called
+    THEN the returned dictionary will contain a value of 1 for
+    `registered_service_code_count` and a value of 1 for
+    `unregistered_service_code_count`.
+    """
+    org = OrganisationFactory()
+    statuses = (
+        FeedStatus.expired.value,
+        FeedStatus.inactive.value,
+        FeedStatus.live.value,
+    )
+    service_code_gen = factory.Sequence(lambda n: f"SC000123:{n}")
+    attr_count = 3
+    TXCFileAttributesFactory.create_batch(
+        attr_count,
+        service_code=service_code_gen,
+        revision__status=factory.Iterator(statuses),
+        revision__dataset__dataset_type=TimetableType,
+        revision__dataset__organisation=org,
+    )
+
+    service_code_gen = factory.Sequence(lambda n: f"UZ000123:{n}")
+    TXCFileAttributesFactory.create_batch(
+        attr_count,
+        service_code=service_code_gen,
+        revision__status=factory.Iterator(statuses),
+        revision__dataset__dataset_type=TimetableType,
+        revision__dataset__organisation=org,
+    )
+
+    counts = get_service_code_counts()
+    assert counts["registered_service_code_count"] == 1
+    assert counts["unregistered_service_code_count"] == 1
+
+
+def test_service_code_counts_live_revisions():
+    """
+    GIVEN 6 timetable datasets, 2 with live revisions and registered service codes,
+    2 with live revisions and unregistered service codes, 1 with a registered service
+    code and no live revision and 1 with an unregistered service code and no live
+    revision
+    WHEN `get_service_code_counts` is called
+    THEN the returned dictionary will contain a value of 2 for
+    `registered_service_code_count` and a value of 2 for
+    `unregistered_service_code_count`.
+    """
+    org = OrganisationFactory()
+    service_code_gen = factory.Sequence(lambda n: f"SC000123:{n}")
+    attr_count = 2
+    TXCFileAttributesFactory.create_batch(
+        attr_count,
+        service_code=service_code_gen,
+        revision__dataset__dataset_type=TimetableType,
+        revision__dataset__organisation=org,
+    )
+    dataset = DraftDatasetFactory(dataset_type=TimetableType, organisation=org)
+    TXCFileAttributesFactory(
+        service_code=service_code_gen, revision=dataset.revisions.last()
+    )
+
+    service_code_gen = factory.Sequence(lambda n: f"UZ000123:{n}")
+    TXCFileAttributesFactory.create_batch(
+        attr_count,
+        service_code=service_code_gen,
+        revision__dataset__dataset_type=TimetableType,
+        revision__dataset__organisation=org,
+    )
+    dataset = DraftDatasetFactory(dataset_type=TimetableType, organisation=org)
+    TXCFileAttributesFactory(
+        service_code=service_code_gen, revision=dataset.revisions.last()
+    )
+
+    counts = get_service_code_counts()
+    assert counts["registered_service_code_count"] == 2
+    assert counts["unregistered_service_code_count"] == 2
+
+
+def test_service_code_counts_inactive_org():
+    """
+    GIVEN 6 timetable datasets, 3 with registered service codes and 3 with
+    unregistered service codes, in an inactive organisation
+    WHEN `get_service_code_counts` is called
+    THEN the returned dictionary will contain a value of 0 for
+    `registered_service_code_count` and a value of 0 for
+    `unregistered_service_code_count`.
+    """
+    org = OrganisationFactory(is_active=False)
+    service_code_gen = factory.Sequence(lambda n: f"SC000123:{n}")
+    attr_count = 3
+    TXCFileAttributesFactory.create_batch(
+        attr_count,
+        service_code=service_code_gen,
+        revision__dataset__dataset_type=TimetableType,
+        revision__dataset__organisation=org,
+    )
+
+    service_code_gen = factory.Sequence(lambda n: f"UZ000123:{n}")
+    TXCFileAttributesFactory.create_batch(
+        attr_count,
+        service_code=service_code_gen,
+        revision__dataset__dataset_type=TimetableType,
+        revision__dataset__organisation=org,
+    )
+
+    counts = get_service_code_counts()
+    assert counts["registered_service_code_count"] == 0
+    assert counts["unregistered_service_code_count"] == 0
 
 
 def test_get_siri_vm_vehicle_counts():

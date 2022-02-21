@@ -1,4 +1,4 @@
-import HttpClient from "./http-client";
+import { HttpClient } from "./http-client";
 
 const INTERVAL_LENGTH = 1000;
 const PENDING = "pending";

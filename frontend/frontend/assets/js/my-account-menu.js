@@ -12,14 +12,16 @@ class MyAccountMenu {
     }
   }
 
-  toggleDropdown = event => {
-    // don't toggle (open) dropdown if user clicks outside "My Account" area when dropdown is closed
+  toggleDropdown = (event) => {
+    // don't toggle (open) dropdown if user clicks outside "My Account" area
+    // when dropdown is closed
     const shouldToggle =
       this.myAccount.contains(event.target) ||
       this.dropdownContent.classList.contains("open");
     if (shouldToggle) {
-      // open if user clicks within the "My Account" area and dropdown not already open, otherwise close
-      // dropdown is closed on page load and does not initially have the open class
+      // open if user clicks within the "My Account" area and dropdown not
+      // already open, otherwise close dropdown is closed on page load and does
+      // not initially have the open class
       const shouldOpen =
         this.myAccount.contains(event.target) &&
         !this.dropdownContent.classList.contains("open");
@@ -34,4 +36,4 @@ class MyAccountMenu {
   };
 }
 
-module.exports = MyAccountMenu;
+export { MyAccountMenu };

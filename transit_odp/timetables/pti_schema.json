@@ -79,7 +79,7 @@
       "rules": [{ "test": "count(x:Service) = 1" }]
     },
     {
-      "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. Please do not include any of the following characters in the field:    , [ ] { } ^ = @ : ; # $ £ ? % + < > « »  / | ~ _ ¬",
+      "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. Please do not include any of the following characters in the field:    , [ ] {{ }} ^ = @ : ; # $ £ ? % + < > « »  / | ~ _ ¬",
       "category": "Notes",
       "reference": "2.5",
       "context": "//x:Notes/x:Note/x:NoteText",
@@ -216,7 +216,7 @@
       "number": 18,
       "rules": [
         {
-          "test": "regex(., '[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+') or regex(., 'UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+')"
+          "test": "regex(., '[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$') or regex(., 'UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+$')"
         }
       ]
     },

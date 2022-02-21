@@ -7,6 +7,246 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.16.1] - 2022-02-03
+
+### Bug
+
+BODP-4968 \[PTI\] Invalid ServiceCode passes PTI check
+
+### Story
+
+BODP-4969 \[PTI\]Disable Service Code OTC validation check
+
+## [1.16.1] - 2022-02-03
+
+### Story
+
+- BODP-4737 TFL Download all link
+
+## [1.16.0] - 2022-02-03
+
+### Bug
+
+- [BODP-4890](https://itoworld.atlassian.net/browse/BODP-4890) \(Regression\) Publishing data: Timetables - Uploading a TXC file with multiple causes system error
+- [BODP-4887](https://itoworld.atlassian.net/browse/BODP-4887) \[Regression\] Location data download: General UI - The GTFS RT bin file populates with an error message
+- [BODP-4886](https://itoworld.atlassian.net/browse/BODP-4886) \(REGRESSION\) PBODS Data set / feed details page: General UI - The short description field value is not inline
+- [BODP-4884](https://itoworld.atlassian.net/browse/BODP-4884) \(REGRESSION\) BODS Admin Organisation User Management : Re-inviting a user with no email address causes 500 - Internal Server Error
+- [BODP-4883](https://itoworld.atlassian.net/browse/BODP-4883) \[Regression\] Invite new user page: General UI - AXE Analysis raise a Critical issue
+- [BODP-4882](https://itoworld.atlassian.net/browse/BODP-4882) \[Regression\] PBODS Observation definitions page: General UI - AXE Analysis raise Critical issues
+- [BODP-4880](https://itoworld.atlassian.net/browse/BODP-4880) \(REGRESSION\) FBODS Timetable Data Details Page: General UI - PTI compliant datasets has the "Download validation report" link
+- [BODP-4879](https://itoworld.atlassian.net/browse/BODP-4879) \[Regression\] PBODS Timetables publishing page: General UI - AXE Analysis raise Critical and Serious issues for the 'Choose file' input
+- [BODP-4878](https://itoworld.atlassian.net/browse/BODP-4878) \[Regression\] PBODS Fares publishing page: General UI - AXE Analysis raise two critical issues
+- [BODP-4877](https://itoworld.atlassian.net/browse/BODP-4877) \[Regression\] FBODS Timetables Detail page: General UI - Breadcrumb links should be consistent across the Browse section
+- [BODP-4876](https://itoworld.atlassian.net/browse/BODP-4876) \[Regression\] PBODS Update AVL page: General UI - Axe Analysis raise a Serious issue
+- [BODP-4875](https://itoworld.atlassian.net/browse/BODP-4875) \[Regression\] FBODS Fares Detail Page: General UI - 'Expired' data set is not displaying the map
+- [BODP-4873](https://itoworld.atlassian.net/browse/BODP-4873) \(REGRESSION\) FBODS: Location Data Swagger API - Making a request with no parameter values causes the page to crash
+- [BODP-4872](https://itoworld.atlassian.net/browse/BODP-4872) Cannot open the ZIP file of timetable's validation report on staging
+- [BODP-4871](https://itoworld.atlassian.net/browse/BODP-4871) \[Regression\] PBODS Data feed detail page: General UI - 'My account' dropdown button does not expand
+- [BODP-4870](https://itoworld.atlassian.net/browse/BODP-4870) \(REGRESSION\) PBODS: DQS Service - The Review & Publish page does not automatically refresh the page when the DQ report is available.
+- [BODP-4868](https://itoworld.atlassian.net/browse/BODP-4868) \(REGRESSION\) FBODS Fares Data Details: General UI - The tab name in the <title> tag is incorrect
+- [BODP-4865](https://itoworld.atlassian.net/browse/BODP-4865) \[Regression\] PBODS Location Detail page: General UI - The counter for 'Feeds need attention' should include the Dormant feeds
+- [BODP-4859](https://itoworld.atlassian.net/browse/BODP-4859) \[Regression\] Location Data Detail Page: General UI - 'Awaiting Publisher Review' status should display the 'Download validation report' link
+- [BODP-4842](https://itoworld.atlassian.net/browse/BODP-4842) Publisher is being sent daily emails about Non-Compliant, Partially Compliant and Dormant AVL Feeds
+- [BODP-4772](https://itoworld.atlassian.net/browse/BODP-4772) Text update: SIRI VM 2.0, not 2.4
+- [BODP-4761](https://itoworld.atlassian.net/browse/BODP-4761) General UI: Text update to the Download All AVL download upgraded to 10 seconds
+- [BODP-4753](https://itoworld.atlassian.net/browse/BODP-4753) Transmach unable to publish AVL data
+- [BODP-4720](https://itoworld.atlassian.net/browse/BODP-4720) GTFS RT download link says GTFS only
+- [BODP-4688](https://itoworld.atlassian.net/browse/BODP-4688) General UI - The listed parameters for Bus location should be the same as the swagger API
+- [BODP-4687](https://itoworld.atlassian.net/browse/BODP-4687) Developer documentation: General UI - The listed parameters for Timetables should be the same as the swagger API
+- [BODP-4621](https://itoworld.atlassian.net/browse/BODP-4621) \[Users\] Invite New Organisation: BODS Admin - Inviting a new organisation with an email address that already exists in the database where the invite was not accepted produces Error 500 - Internal Server Error
+- [BODP-4589](https://itoworld.atlassian.net/browse/BODP-4589) \[Data\] Timetable Dataset 255 from Go-ahead was disappeared because of a wrong status of Live revision on Django
+- [BODP-4588](https://itoworld.atlassian.net/browse/BODP-4588) AVL contact data feed owner directly: General UI - The link and page when clicked is displaying "dataset"
+- [BODP-4586](https://itoworld.atlassian.net/browse/BODP-4586) \[PTI\] STAGING Timetables DQ / Timetables: NationalOperatorCode and OperatorCode throwing different errors for DQ and PTI
+- [BODP-4571](https://itoworld.atlassian.net/browse/BODP-4571) A file without bank holidays passes PTI validation
+- [BODP-4566](https://itoworld.atlassian.net/browse/BODP-4566) CLONE - PBODS My Account Dropdown Agent: General UI - Clicking on "My account" and "Account settings" causes dropdown to not display "My account" and "Organisation profile"
+- [BODP-4565](https://itoworld.atlassian.net/browse/BODP-4565) CLONE - PBODS My Account Dropdown Org Staff: General UI - Clicking on "My account" and "Account settings" causes dropdown to not display "My account" and "Organisation profile"
+- [BODP-4560](https://itoworld.atlassian.net/browse/BODP-4560) PBODS My Account Dropdown Agent: General UI - Clicking on "My account" and "Account settings" causes dropdown to not display "My account" and "Organisation profile"
+- [BODP-4559](https://itoworld.atlassian.net/browse/BODP-4559) PBODS My Account Dropdown Org Staff: General UI - Clicking on "My account" and "Account settings" causes dropdown to not display "My account" and "Organisation profile"
+- [BODP-4557](https://itoworld.atlassian.net/browse/BODP-4557) PBODS My Account Dropdown: General UI - Clicking on "Account settings" in the dropdown directs the user to the BODS Admin "Account setting" page
+- [BODP-4556](https://itoworld.atlassian.net/browse/BODP-4556) PBODS My Account Dropdown Org Admin: General UI - Clicking on "My account" and "Account settings" causes dropdown to not display "My account", "User management" and "Organisation profile"
+- [BODP-4555](https://itoworld.atlassian.net/browse/BODP-4555) FBODS My Account Dropdown: General UI - Clicking on "My account" in the dropdown does not display "Account settings" link in the "My account page"
+- [BODP-4554](https://itoworld.atlassian.net/browse/BODP-4554) FBODS My Account Dropdown: General UI - Clicking on "Account settings" in the dropdown directs the user to the BODS Admin "Account setting" page
+- [BODP-4553](https://itoworld.atlassian.net/browse/BODP-4553) FBODS My Account Dropdown: General UI - Clicking on "My account" and "Account settings" causes dropdown to not display "My account" and "Manage subscriptions"
+- [BODP-4552](https://itoworld.atlassian.net/browse/BODP-4552) All timetables data: Timetables - Download data set updates in TransXChange format generating duplicate of days links causing MultipleObjectsReturned exception
+- [BODP-4539](https://itoworld.atlassian.net/browse/BODP-4539) \[AXE\] API \(timetables\): General UI - axe-core accessibility tool raised Critical issues for multi-select fields and dropdown field
+- [BODP-4538](https://itoworld.atlassian.net/browse/BODP-4538) \[AXE\] API \(timetables\): General UI - axe-core accessibility tool raised Serious issues for elements that have insufficient colour contrast
+- [BODP-4537](https://itoworld.atlassian.net/browse/BODP-4537) \[AXE\] API \(timetables\): General UI - axe-core accessibility tool raised critical issues for the "servers" drop down
+- [BODP-4521](https://itoworld.atlassian.net/browse/BODP-4521) \[Guidance\] Data Quality page: General UI - Schema Validation information is not listed
+- [BODP-4472](https://itoworld.atlassian.net/browse/BODP-4472) \[Users\] Error handling request /account/signup
+- [BODP-4451](https://itoworld.atlassian.net/browse/BODP-4451) \[Bulk Downloads\] GTFS \(TfWM\) Downloadable Timetable Data Errors
+- [BODP-4399](https://itoworld.atlassian.net/browse/BODP-4399) \(REGRESSION\) My account \(BODS Admin\): General UI - Missing 'Account settings' link, body paragraph and dropdown menu
+- [BODP-4392](https://itoworld.atlassian.net/browse/BODP-4392) \[Changelog\] Fail to create an entry in changelog after Automated update for Fares
+- [BODP-4377](https://itoworld.atlassian.net/browse/BODP-4377) \[DQS\] Incorrectly flagging a stop as not on naptan although it is present on naptan download
+- [BODP-4340](https://itoworld.atlassian.net/browse/BODP-4340) Changelog page: Right-hand section Heading - AXE Analysis raise one moderate issue
+- [BODP-4258](https://itoworld.atlassian.net/browse/BODP-4258) \[DQS\] DQ Report: where the line description and/or the data it links to, does not relate to operators services.
+- [BODP-4187](https://itoworld.atlassian.net/browse/BODP-4187) \[DQS\] DQ report lists observations for lines belonging to different operator
+- [BODP-3783](https://itoworld.atlassian.net/browse/BODP-3783) Send AVL feed down notification is throwing error.
+- [BODP-2362](https://itoworld.atlassian.net/browse/BODP-2362) \[AXE\] Map element on observation page must not contain focus-able element
+
+### Story
+
+- [BODP-4888](https://itoworld.atlassian.net/browse/BODP-4888) Changelog: Release Notes - February 2022 \(1.16.0\)
+- [BODP-4814](https://itoworld.atlassian.net/browse/BODP-4814) FBODS data catalogue: Location data CSV
+- [BODP-4813](https://itoworld.atlassian.net/browse/BODP-4813) C&M: Location data CSV
+- [BODP-4758](https://itoworld.atlassian.net/browse/BODP-4758) C&M: Overall data catalogue
+- [BODP-4757](https://itoworld.atlassian.net/browse/BODP-4757) FBODS data catalogue: Overall Data catalogue CSV
+- [BODP-4755](https://itoworld.atlassian.net/browse/BODP-4755) FBODS Data catalogue \(functionality story\)
+- [BODP-4742](https://itoworld.atlassian.net/browse/BODP-4742) C&M: Organisations data catalogue
+- [BODP-4741](https://itoworld.atlassian.net/browse/BODP-4741) C&M: Timetables data catalogue
+- [BODP-4740](https://itoworld.atlassian.net/browse/BODP-4740) FBODS data catalogue: Organisations data catalogue
+- [BODP-4738](https://itoworld.atlassian.net/browse/BODP-4738) FBODS data catalogue: Timetables data catalogue
+- [BODP-4732](https://itoworld.atlassian.net/browse/BODP-4732) Download all timetables data: Folder structure update
+- [BODP-4648](https://itoworld.atlassian.net/browse/BODP-4648) FBODS: Contact Operator page \(Signed in only\)
+- [BODP-4647](https://itoworld.atlassian.net/browse/BODP-4647) FBODS: Operator Profile page \(signed in\)
+- [BODP-4646](https://itoworld.atlassian.net/browse/BODP-4646) FBODS: Specific Operator Profile page \(signed out\)
+- [BODP-4645](https://itoworld.atlassian.net/browse/BODP-4645) FBODS: View Operator Profile page \(Operator List View\)
+- [BODP-4644](https://itoworld.atlassian.net/browse/BODP-4644) FBODS: Browse data page
+- [BODP-4643](https://itoworld.atlassian.net/browse/BODP-4643) FBODS: Homepage
+- [BODP-4642](https://itoworld.atlassian.net/browse/BODP-4642) API \(location data\): Adding BODS comlpiance and Vehicleref as new query parameters
+- [BODP-4606](https://itoworld.atlassian.net/browse/BODP-4606) Modal Popup for AVL Datafeed Details
+- [BODP-4604](https://itoworld.atlassian.net/browse/BODP-4604) Modal Popup for Timetable Dataset Details
+- [BODP-4581](https://itoworld.atlassian.net/browse/BODP-4581) Download all data homepage
+- [BODP-4580](https://itoworld.atlassian.net/browse/BODP-4580) Browse data timetables
+- [BODP-4578](https://itoworld.atlassian.net/browse/BODP-4578) Fares API update
+- [BODP-4577](https://itoworld.atlassian.net/browse/BODP-4577) FBODS: Case study page
+- [BODP-4575](https://itoworld.atlassian.net/browse/BODP-4575) Updating the CSV naming for the PTI validation report.
+- [BODP-4574](https://itoworld.atlassian.net/browse/BODP-4574) API homepage : for Logged out user
+- [BODP-4481](https://itoworld.atlassian.net/browse/BODP-4481) Implement Django functionalities to enable TfL datafeed in BODS. \(UI\)
+- [BODP-4480](https://itoworld.atlassian.net/browse/BODP-4480) Download all timetables data
+- [BODP-4477](https://itoworld.atlassian.net/browse/BODP-4477) API \(Location data\)
+- [BODP-4476](https://itoworld.atlassian.net/browse/BODP-4476) API \(timetables\)
+- [BODP-4475](https://itoworld.atlassian.net/browse/BODP-4475) API \(fares data\)
+- [BODP-4474](https://itoworld.atlassian.net/browse/BODP-4474) API \(homepage\): For Logged in User
+- [BODP-4452](https://itoworld.atlassian.net/browse/BODP-4452) FBODS: Updated character limit of 'Descriptions' in registrations page
+- [BODP-4446](https://itoworld.atlassian.net/browse/BODP-4446) PTI: Just-in-Time Servicecode check
+- [BODP-4427](https://itoworld.atlassian.net/browse/BODP-4427) No reply email for the Feedback function
+- [BODP-4425](https://itoworld.atlassian.net/browse/BODP-4425) Search for Fares dataset
+- [BODP-4422](https://itoworld.atlassian.net/browse/BODP-4422) Browse data fares data
+- [BODP-4421](https://itoworld.atlassian.net/browse/BODP-4421) FBODS Guide me page
+- [BODP-4419](https://itoworld.atlassian.net/browse/BODP-4419) Search for AVL feeds
+- [BODP-4418](https://itoworld.atlassian.net/browse/BODP-4418) Location data: Individual data set page
+- [BODP-4417](https://itoworld.atlassian.net/browse/BODP-4417) Fares: Individual data set page
+- [BODP-4416](https://itoworld.atlassian.net/browse/BODP-4416) Timetables: Individual data set page
+- [BODP-4415](https://itoworld.atlassian.net/browse/BODP-4415) Addition of GA tags on events
+- [BODP-4414](https://itoworld.atlassian.net/browse/BODP-4414) Download all location data
+- [BODP-4413](https://itoworld.atlassian.net/browse/BODP-4413) Download all fares data
+- [BODP-4412](https://itoworld.atlassian.net/browse/BODP-4412) Admin - Export - Stats - Adding 3 columns for number of services
+- [BODP-4411](https://itoworld.atlassian.net/browse/BODP-4411) ADMIN - Stats - AVL feed status update in the data catalogue
+- [BODP-4405](https://itoworld.atlassian.net/browse/BODP-4405) Browse AVL feeds
+- [BODP-4376](https://itoworld.atlassian.net/browse/BODP-4376) FBODS: new user guide overview
+- [BODP-4375](https://itoworld.atlassian.net/browse/BODP-4375) FBODS Data Catalogue/Glossary
+- [BODP-4374](https://itoworld.atlassian.net/browse/BODP-4374) FBODS: Updated registrations page
+- [BODP-4373](https://itoworld.atlassian.net/browse/BODP-4373) Update Banner Bus Open Data
+- [BODP-4372](https://itoworld.atlassian.net/browse/BODP-4372) BODS main home page
+- [BODP-4123](https://itoworld.atlassian.net/browse/BODP-4123) View License number in Organisation profile: Publisher non-admin
+- [BODP-3782](https://itoworld.atlassian.net/browse/BODP-3782) Ingest OTC data into BODS
+- [BODP-3478](https://itoworld.atlassian.net/browse/BODP-3478) Agent Mode Email updates
+- [BODP-3476](https://itoworld.atlassian.net/browse/BODP-3476) AVL Emails
+
+### Story Bug
+
+- [BODP-4861](https://itoworld.atlassian.net/browse/BODP-4861) \[AXE\] 'Case studies' page: General UI - AXE Analysis raise a Critical issue for the used images
+- [BODP-4860](https://itoworld.atlassian.net/browse/BODP-4860) FBODS data catalogue: Overall Data catalogue CSV - No field name for column O
+- [BODP-4858](https://itoworld.atlassian.net/browse/BODP-4858) FBODS: Location Data Catalogue - The 'Compliant' and 'Unavailable due to dormant feed' statuses should not have validation report links
+- [BODP-4854](https://itoworld.atlassian.net/browse/BODP-4854) FBODS: Download Data Catalogue - 'DQ Score' values are rounding upwards the numbers for each percentage
+- [BODP-4853](https://itoworld.atlassian.net/browse/BODP-4853) FBODS: Location Data Catalogue - 'Expired' and 'Inactive' data feeds shouldn't be listed on the CSV
+- [BODP-4851](https://itoworld.atlassian.net/browse/BODP-4851) FBODS Data Catalogue: Functionality story - The column names in the overall data catalogue section of the data_catalogue_guidance.txt file does not match what's in overall_data_catalogue.csv
+- [BODP-4850](https://itoworld.atlassian.net/browse/BODP-4850) FBODS Data Catalogue: Functionality story - The column names in the timetables data catalogue section of the data_catalogue_guidance.txt file does not match what's in timetables_data_catalogue.csv
+- [BODP-4849](https://itoworld.atlassian.net/browse/BODP-4849) FBODS Data Catalogue: Functionality story - The data_catalogue_guidance.txt does not include information about the "location_data_catalogue" CSV
+- [BODP-4848](https://itoworld.atlassian.net/browse/BODP-4848) FBODS Data Catalogue: Functionality story - The data_catalogue_guidance.txt does not include information about the "operator_noc_data_catalogue" CSV
+- [BODP-4847](https://itoworld.atlassian.net/browse/BODP-4847) FBODS Data Catalogue: Functionality story - The organisations data catalogue section in data_catalogue_guidance.txt is not readable
+- [BODP-4846](https://itoworld.atlassian.net/browse/BODP-4846) FBODS Data Catalogue: Organisations data catalogue - Mismatch of number of published datasets for Timetables and AVL between the CSV and FBODS
+- [BODP-4845](https://itoworld.atlassian.net/browse/BODP-4845) FBODS Data Catalogue: Organisations data catalogue - Incorrect column names in the csv
+- [BODP-4812](https://itoworld.atlassian.net/browse/BODP-4812) FBODS Data Catalogue: Overall Data catalogue CSV - Incorrect column names in the csv
+- [BODP-4811](https://itoworld.atlassian.net/browse/BODP-4811) FBODS Data Catalogue: Overall Data catalogue CSV - The "Profile NOCS" and "TxC File Name" columns should not be in the csv
+- [BODP-4810](https://itoworld.atlassian.net/browse/BODP-4810) FBODS: Data Catalogue - Operator "123 Ltd." has the incorrect Permit Holder status
+- [BODP-4809](https://itoworld.atlassian.net/browse/BODP-4809) Download Timetables Data: General UI - 'All - Download timetables data...' download is not showing the expected number of files
+- [BODP-4792](https://itoworld.atlassian.net/browse/BODP-4792) FBODS: Timetables Data Catalogue - 'DQ Score' column should display the assigned percentage for the Published dataset
+- [BODP-4791](https://itoworld.atlassian.net/browse/BODP-4791) FBODS: Data Catalogue - Incorrect file name for the csv
+- [BODP-4790](https://itoworld.atlassian.net/browse/BODP-4790) FBODS: Data Catalogue - "Number of Fares Products" in the organisationsdatacatalougue.csv does not match what's on PBODS and FBODS
+- [BODP-4789](https://itoworld.atlassian.net/browse/BODP-4789) FBODS: Timetables Data Catalogue - 'Expired' and 'Inactive' data sets shouldn't be listed on the CSV
+- [BODP-4788](https://itoworld.atlassian.net/browse/BODP-4788) FBODS: Timetables Data Catalogue - 'BODS Compliant' column should display the values 'YES/NO'
+- [BODP-4786](https://itoworld.atlassian.net/browse/BODP-4786) FBODS: Data Catalogue - Incorrect folder name
+- [BODP-4785](https://itoworld.atlassian.net/browse/BODP-4785) FBODS: Data Catalogue - NOC codes and Licence Numbers are populating in the wrong columns in the organisationsdatacatalougue.csv file
+- [BODP-4784](https://itoworld.atlassian.net/browse/BODP-4784) FBODS: Data Catalogue - The organisationsdatacatalougue.csv file missing columns
+- [BODP-4783](https://itoworld.atlassian.net/browse/BODP-4783) FBODS: Data Catalogue - Missing column references despite data recorded within those columns
+- [BODP-4781](https://itoworld.atlassian.net/browse/BODP-4781) FBODS: Data Catalogue - "download the Data Catalogue" link is returning 502
+- [BODP-4739](https://itoworld.atlassian.net/browse/BODP-4739) FBODS Operator Profile page \(signed in\): General UI - The number of Non-compliant timetable datasets in Operator Profile page does not match with the number in the browse timetable data page
+- [BODP-4736](https://itoworld.atlassian.net/browse/BODP-4736) Operator Profile page: General UI - 'Contact \(operator\)' link should redirect the user to the 'Sign In' page when the user is not logged in
+- [BODP-4735](https://itoworld.atlassian.net/browse/BODP-4735) Operator Profile page: General UI - 'Location data' section doesn't display the correct number for 'Non-compliant' feeds
+- [BODP-4734](https://itoworld.atlassian.net/browse/BODP-4734) Contact Operator page \(Signed in only\) - Clicking on the "Back" link does not take the user back to the Operator Profile detail page
+- [BODP-4733](https://itoworld.atlassian.net/browse/BODP-4733) AVL Data feed Details Page: General UI - The c in "compliant" is not capitalised
+- [BODP-4731](https://itoworld.atlassian.net/browse/BODP-4731) Contact Operator page \(Signed in only\) - Clicking on the Contact \[org\] link goes to the Coming soon page
+- [BODP-4730](https://itoworld.atlassian.net/browse/BODP-4730) Modal pop up: General UI - Typo error from the Zeplin designs
+- [BODP-4729](https://itoworld.atlassian.net/browse/BODP-4729) Modal pop up: General UI - Mapbox buttons overlaps the modal pop up
+- [BODP-4728](https://itoworld.atlassian.net/browse/BODP-4728) Operator Profile page: General UI - When the user is not logged in, an exception error is displayed
+- [BODP-4726](https://itoworld.atlassian.net/browse/BODP-4726) AVL Data feed Details Page: General UI - BODS Compliance Status value is not inline with the heading in the row
+- [BODP-4725](https://itoworld.atlassian.net/browse/BODP-4725) FBODS Operator Profile page \(signed in\): General UI - Incorrect link destination for "What does this mean?"
+- [BODP-4724](https://itoworld.atlassian.net/browse/BODP-4724) FBODS Operator Profile page \(signed in\): General UI - The text in the SIRI-VM modal box in the download all data page is missing a full stop
+- [BODP-4723](https://itoworld.atlassian.net/browse/BODP-4723) FBODS Operator Profile page \(signed in\): API Request URLs - The query parameters in the request urls does not match the design
+- [BODP-4722](https://itoworld.atlassian.net/browse/BODP-4722) FBODS Operator Profile page \(signed in\): General UI - The API snippet boxes does not match the designs
+- [BODP-4721](https://itoworld.atlassian.net/browse/BODP-4721) AVL BODS compliant data modal box: General UI - Grammatical errors
+- [BODP-4719](https://itoworld.atlassian.net/browse/BODP-4719) AVL Data feed Details Page: General UI - "Awaiting Publisher Reviewer" should not display the black information icon
+- [BODP-4718](https://itoworld.atlassian.net/browse/BODP-4718) AVL Data feed Details Page: General UI - "Non-Compliant", "Partially Compliant" and "Awaiting Publisher Reviewer" being displayed as "property.avl_compliance"
+- [BODP-4713](https://itoworld.atlassian.net/browse/BODP-4713) Download TImetables data: Admin - No GA event tag on one of the TransXChange format links
+- [BODP-4712](https://itoworld.atlassian.net/browse/BODP-4712) Download Timetables data: General UI - Content of the link don't match to the designs
+- [BODP-4710](https://itoworld.atlassian.net/browse/BODP-4710) Download Timetables data: General UI - Content of the links don't match to the designs
+- [BODP-4709](https://itoworld.atlassian.net/browse/BODP-4709) Download Timetables data: General UI - If the user is not logged in must be taken to the Sign in page
+- [BODP-4708](https://itoworld.atlassian.net/browse/BODP-4708) Download Timetables data: General UI - Breadcrumb don't match to the designs
+- [BODP-4703](https://itoworld.atlassian.net/browse/BODP-4703) FBODS View Operator Profile page \(Operator List View\): Search bar - Clicking on one of the smart suggestions does not change the list view
+- [BODP-4695](https://itoworld.atlassian.net/browse/BODP-4695) FBODS View Operator Profile page \(Operator List View\): General UI - Grey placeholder block is too wide and does not touch horizontal line
+- [BODP-4694](https://itoworld.atlassian.net/browse/BODP-4694) FBODS: Browse data page: Timetables - The "found here" link in the modal box pointing to the wrong page
+- [BODP-4692](https://itoworld.atlassian.net/browse/BODP-4692) Browse Timetables page: General UI - Search by 'Location' doesn't provide the expected results
+- [BODP-4691](https://itoworld.atlassian.net/browse/BODP-4691) Browse Timetables page: General UI - Update position and content of 'BODS compliant data' row
+- [BODP-4690](https://itoworld.atlassian.net/browse/BODP-4690) Browse Timetables page: General UI - Breadcrumb should match the Heading title
+- [BODP-4689](https://itoworld.atlassian.net/browse/BODP-4689) FBODS Browse data page: General UI - The heading and paragraph in the banner does not align to the body content
+- [BODP-4686](https://itoworld.atlassian.net/browse/BODP-4686) 'API reference' page: General UI - The listed parameters should be the same as the Swagger API.
+- [BODP-4666](https://itoworld.atlassian.net/browse/BODP-4666) 'Fares Data Browser' page: General UI - Search by 'Location' doesn't provide the expected results
+- [BODP-4660](https://itoworld.atlassian.net/browse/BODP-4660) 'Fares Data Browser' page: General UI - AXE Analysis raises one moderate issue
+- [BODP-4658](https://itoworld.atlassian.net/browse/BODP-4658) 'Fares Data Browser' page: General UI - 'Last updated' row must display date \+ time
+- [BODP-4650](https://itoworld.atlassian.net/browse/BODP-4650) Feedback email copy: General UI - The DfT Admin user should receive the same email template that the Consumer user
+- [BODP-4649](https://itoworld.atlassian.net/browse/BODP-4649) Feedback email copy: General UI - The dotted line should extend only for one row
+- [BODP-4640](https://itoworld.atlassian.net/browse/BODP-4640) Search for AVL feeds: General UI - The text "Search for specific operator or location" is misleading as you cannot search for AVL data feeds by location
+- [BODP-4635](https://itoworld.atlassian.net/browse/BODP-4635) Browse AVL Feeds: General UI - Critical accessibility issue flagged for the search button in axe
+- [BODP-4634](https://itoworld.atlassian.net/browse/BODP-4634) Browse AVL Feeds: General UI - Status drop down values do not match design
+- [BODP-4627](https://itoworld.atlassian.net/browse/BODP-4627) Location data API: AVL API - Sent Request without parameters gets stuck in 'Loading' process
+- [BODP-4623](https://itoworld.atlassian.net/browse/BODP-4623) Download all location data: FBODS AVL - The user can still view "All location data" page when not signed in
+- [BODP-4622](https://itoworld.atlassian.net/browse/BODP-4622) Download all location data: General UI - Primary navigation does not match design
+- [BODP-4620](https://itoworld.atlassian.net/browse/BODP-4620) Location data API: AVL API - 'data feed ID' text input must be a mandatory field
+- [BODP-4618](https://itoworld.atlassian.net/browse/BODP-4618) Location data API: AVL API - Parameter 'vehicleRef' is not being displayed
+- [BODP-4617](https://itoworld.atlassian.net/browse/BODP-4617) Location data API: General UI - Text is not matching the design
+- [BODP-4608](https://itoworld.atlassian.net/browse/BODP-4608) Django Admin AVL Feed: General UI - Long and short descriptions are editable on PBODS
+- [BODP-4585](https://itoworld.atlassian.net/browse/BODP-4585) Location Data Individual data set page: General UI - Heading for api url does not match design
+- [BODP-4584](https://itoworld.atlassian.net/browse/BODP-4584) Feedback email: General UI - All the BODS Admin users should receive a copy of the email sent to the Consumer
+- [BODP-4583](https://itoworld.atlassian.net/browse/BODP-4583) Fares Browser and Detail page: General UI - The wording for the data type within the breadcrumb does not match design
+- [BODP-4573](https://itoworld.atlassian.net/browse/BODP-4573) Location Data Individual data set page: General UI - The ID row in the data feed details page has the incorrect label
+- [BODP-4572](https://itoworld.atlassian.net/browse/BODP-4572) Location data Individual data set page: General UI - The wording for the data type within the breadcrumb does not match design
+- [BODP-4570](https://itoworld.atlassian.net/browse/BODP-4570) API Fares: General UI - Heading \(h3\) is not matching the design
+- [BODP-4569](https://itoworld.atlassian.net/browse/BODP-4569) Location data API: General UI - 'View developer documentation' link should redirect to 'Using the APIs' section
+- [BODP-4568](https://itoworld.atlassian.net/browse/BODP-4568) Location data API: General UI - Links should open in a new tab
+- [BODP-4567](https://itoworld.atlassian.net/browse/BODP-4567) Try API Service page: General UI - Text is not matching the design
+- [BODP-4564](https://itoworld.atlassian.net/browse/BODP-4564) API Fares: General UI - Text is not matching the design on '/datasetID' section
+- [BODP-4562](https://itoworld.atlassian.net/browse/BODP-4562) Request parameters: Fares_API - 'Error' status is invalid
+- [BODP-4561](https://itoworld.atlassian.net/browse/BODP-4561) API Fares: General UI - Text is not matching the design on '/dataset' section
+- [BODP-4558](https://itoworld.atlassian.net/browse/BODP-4558) Location data Individual data set page: General UI - Breadcrumb does not match design when in the data feed details page
+- [BODP-4551](https://itoworld.atlassian.net/browse/BODP-4551) Create Account page: General UI - Character limiter is not applied in all text inputs.
+- [BODP-4549](https://itoworld.atlassian.net/browse/BODP-4549) Create Account page: General UI - Text is not matching the design
+- [BODP-4548](https://itoworld.atlassian.net/browse/BODP-4548) Addition of GA tags on events: Admin - Incorrect Event Action assigned on Google Analytics when clicking on the three links in the "Download all data" page
+- [BODP-4547](https://itoworld.atlassian.net/browse/BODP-4547) BODS & PBODS Banner: General UI - '@busopendata' link should open in a new tab
+- [BODP-4545](https://itoworld.atlassian.net/browse/BODP-4545) Stats.csv Adding 3 columns for number of services: Admin_Metrics: stats.csv is missing "Unique Service Codes" column
+- [BODP-4544](https://itoworld.atlassian.net/browse/BODP-4544) API \(timetables\): General UI - The text "\(path\)" should be above "ID of dataset to return" heading as per design
+- [BODP-4543](https://itoworld.atlassian.net/browse/BODP-4543) Guide Me page: General UI - Typo error from Zeplin designs
+- [BODP-4541](https://itoworld.atlassian.net/browse/BODP-4541) Guide Me page: General UI - 'Case studies' link should redirect to 'Developer documentation> Case studies section'
+- [BODP-4540](https://itoworld.atlassian.net/browse/BODP-4540) Guide Me page: General UI - 'Data catalogue field definitions' link should redirect to 'Data catalogue' section
+- [BODP-4536](https://itoworld.atlassian.net/browse/BODP-4536) API \(timetables\): General UI - The font size for the h3 headings does not match design
+- [BODP-4535](https://itoworld.atlassian.net/browse/BODP-4535) API \(timetables\): General UI - The paragraph "You can use the interactive documentation..." font size does not match design
+- [BODP-4533](https://itoworld.atlassian.net/browse/BODP-4533) Location data Individual data set page: General UI - Link text does not match design for subscribing to a data feed
+- [BODP-4532](https://itoworld.atlassian.net/browse/BODP-4532) Location data Individual data set page: General UI - 404 when clicking on the back link in the "Get data set updates" page
+- [BODP-4531](https://itoworld.atlassian.net/browse/BODP-4531) Subscription page: General UI - 'Back' link produces a 404 error
+- [BODP-4526](https://itoworld.atlassian.net/browse/BODP-4526) Timetables Individual data set page: General UI - Mismatch of data type label
+- [BODP-4524](https://itoworld.atlassian.net/browse/BODP-4524) Location data Individual data set page: General UI - Mismatch of data type label
+- [BODP-4523](https://itoworld.atlassian.net/browse/BODP-4523) FBODS new user guide overview: General UI - Breadcrumb does not match what's in the design
+
 ## [1.15.1] - 2022-01-06
 
 ### Bug

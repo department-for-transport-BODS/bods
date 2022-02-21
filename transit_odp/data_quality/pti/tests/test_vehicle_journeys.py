@@ -8,9 +8,10 @@ from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
 from transit_odp.data_quality.pti.validators import PTIValidator
-from transit_odp.timetables.utils import PTI_PATH
+from transit_odp.timetables.pti import PTI_PATH
 
 DATA_DIR = Path(__file__).parent / "data"
+pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(

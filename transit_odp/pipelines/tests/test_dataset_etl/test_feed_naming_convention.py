@@ -106,6 +106,7 @@ def test_end_to_end(naptan_data_matching_xml, test_file, expected):
     assert feed_parser.revision.name == expected
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("execution_number", range(5))
 def test_equal_districts_give_same_name(execution_number, equal_districts):
     """Runs the end to end test 5 times to make sure names are consistent"""

@@ -8,6 +8,8 @@ from transit_odp.data_quality.pti.factories import (
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
 from transit_odp.data_quality.pti.validators import PTIValidator
 
+pytestmark = pytest.mark.django_db
+
 
 @pytest.mark.parametrize(
     "infos,expected",

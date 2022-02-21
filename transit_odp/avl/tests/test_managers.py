@@ -21,6 +21,14 @@ from transit_odp.avl.factories import (
 )
 from transit_odp.avl.models import AVLValidationReport
 from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.tests.utils import (
+    get_awaiting_review_revision,
+    get_compliant_revision,
+    get_dormant_revision,
+    get_non_compliant_revision,
+    get_partially_compliant_revision,
+    get_undergoing_validation_revision,
+)
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -29,7 +37,10 @@ from transit_odp.organisation.constants import (
     AVLFeedDown,
     AVLFeedUp,
 )
-from transit_odp.organisation.factories import AVLDatasetRevisionFactory
+from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
+    OrganisationFactory,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -551,12 +562,49 @@ def test_add_is_post_seven_days(first_report_created_ago: int, expected: bool):
     assert dataset.post_seven_days == expected
 
 
+def test_search_across_nocs_returns_distinct_datasets():
+    org1 = OrganisationFactory(nocs=["org11", "org12"])
+    org2 = OrganisationFactory(nocs=["org21", "org22"])
+
+    AVLDatasetRevisionFactory(dataset__organisation=org1)
+    AVLDatasetRevisionFactory(dataset__organisation=org2)
+
+    datasets = AVLDataset.objects.search("org")
+    assert datasets.count() == 2, "check does not return duplicate orgs then datasets"
+
+
+def test_search_org_name():
+    org1 = OrganisationFactory(name="buscompany", nocs=2)
+    org2 = OrganisationFactory(nocs=2)
+
+    AVLDatasetRevisionFactory(dataset__organisation=org1, is_published=True)
+    AVLDatasetRevisionFactory(dataset__organisation=org2, is_published=True)
+    AVLDatasetRevisionFactory(dataset__organisation=org2, is_published=True)
+
+    datasets = AVLDataset.objects.search("buscompany")
+    assert datasets.count() == 1
+
+
+def test_search_avl_description():
+    org1 = OrganisationFactory(nocs=2)
+    org2 = OrganisationFactory(nocs=2)
+
+    AVLDatasetRevisionFactory(
+        description="a test datafeed", dataset__organisation=org1, is_published=True
+    )
+    AVLDatasetRevisionFactory(dataset__organisation=org2, is_published=True)
+    AVLDatasetRevisionFactory(dataset__organisation=org2, is_published=True)
+
+    datasets = AVLDataset.objects.search("datafeed")
+    assert datasets.count() == 1
+
+
 def test_get_datafeeds_to_validate():
     """
     GIVEN The database contains a mixture of published and unpublished data feeds
     with statuses of LIVE, SUCCESS, EXPIRED and INACTIVE.
-    WHEN get_datafeeds_to_validate is called.
     THEN only the LIVE, published feeds are returned.
+    WHEN get_datafeeds_to_validate is called.
     """
     avl_statuses = Iterator([AVLFeedUp, AVLFeedDown])
     live_feeds = 10
@@ -564,9 +612,47 @@ def test_get_datafeeds_to_validate():
         live_feeds, status=LIVE, dataset__avl_feed_status=avl_statuses
     )
     AVLDatasetRevisionFactory(is_published=True, status=INACTIVE)
-    AVLDatasetRevisionFactory(is_published=True, status=EXPIRED)
     AVLDatasetRevisionFactory(is_published=False, status=SUCCESS)
-
+    AVLDatasetRevisionFactory(is_published=True, status=EXPIRED)
     feeds = AVLDataset.objects.get_datafeeds_to_validate()
 
     assert feeds.count() == live_feeds
+
+
+def test_needs_attention_count():
+    """
+    GIVEN a mixture of dataset compliance statuses
+    WHEN calling `get_needs_attention_count`
+    THEN the correct number of datasets that need attention is returned.
+    """
+    compliant_count = 3
+    for _ in range(compliant_count):
+        get_compliant_revision()
+
+    undergoing_review_count = 5
+    for _ in range(undergoing_review_count):
+        get_undergoing_validation_revision()
+
+    expected = 0
+    dormant_count = 4
+    for _ in range(dormant_count):
+        get_dormant_revision()
+    expected += dormant_count
+
+    non_compliant_count = 5
+    for _ in range(non_compliant_count):
+        get_non_compliant_revision()
+    expected += non_compliant_count
+
+    partially_compliant_count = 2
+    for _ in range(partially_compliant_count):
+        get_partially_compliant_revision()
+    expected += partially_compliant_count
+
+    awaiting_review_count = 3
+    for _ in range(awaiting_review_count):
+        get_awaiting_review_revision()
+    expected += awaiting_review_count
+
+    actual = AVLDataset.objects.get_needs_attention_count()
+    assert actual == expected

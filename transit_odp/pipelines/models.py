@@ -8,7 +8,7 @@ from django_extensions.db.models import TimeStampedModel
 
 from transit_odp.common.enums import FeedErrorCategory, FeedErrorSeverity
 from transit_odp.data_quality.models import DataQualityReport
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import DatasetType, TravelineRegions
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.notifications import (
     send_endpoint_validation_error_notification,
@@ -269,6 +269,12 @@ class BulkDataArchive(models.Model):
     )
     compliant_archive = models.BooleanField(
         _("Whether all the datasets are compliant."), default=False
+    )
+    traveline_regions = models.CharField(
+        _("TravelineRegion"),
+        max_length=4,
+        choices=TravelineRegions.choices,
+        default=TravelineRegions.ALL.value,
     )
 
     class Meta:

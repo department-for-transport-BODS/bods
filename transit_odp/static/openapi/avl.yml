@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
-  title: Bus location data API
-  description: '<span class="govuk-body-m">You can use the interactive documentation to customise your API </br>response using the available query parameters. If you are registered and </br>logged in, you will be given a full response. Otherwise you will be given </br>an example response.</span><p><a class="govuk-link" href="/guidance/requirements/?section=Using the API">View developer documentation</a></p>'
+  title: Location data API
+  description: '<span class="govuk-body-m">You can use the interactive documentation to customise your API </br>response using the available query parameters. If you are registered and </br>logged in, you will be given a full response. Otherwise you will be given </br>an example response.</span></br><div><h2 class="govuk-heading-m">Ready to use the API?</h2><p><a class="govuk-link" href="/guidance/requirements/?section=api" target="_blank">View developer documentation</a></p></br><h2 class="govuk-heading-m">First time API user?</h2><p><a class="govuk-link" href="/guide-me/" target="_blank">Guide me</a></p></div>'
   version: ""
 basePath: "/api/v1"
 paths:
@@ -10,7 +10,7 @@ paths:
       produces:
         - text/xml
       tags:
-        - SIRI VM Data feed
+        - SIRI-VM Data feed
       description: Returns all published datafeeds
       parameters:
         - in: query
@@ -27,7 +27,12 @@ paths:
         - in: query
           name: operatorRef
           type: string
-          description: Limit results to bus location data with the specified operatorRef. The National Operator Code is often used as the input for operatorRef. Comma separated list of values can be used for querying.
+          description: Limit results to bus location data with the specified operatorRef. The National Operator Code is often used as the input for operatorRef.
+
+        - in: query
+          name: vehicleRef
+          type: string
+          description: Limit results to bus location data with the specified vehicleRef.
 
         - in: query
           name: lineRef
@@ -50,15 +55,15 @@ paths:
           description: Limit results to bus location data with the specified destinationRef.
 
       responses:
-        200:
+        "200":
           description: Successfully retrieved all datafeeds
-        400:
+        "400":
           description: Invalid data supplied
 
   /datafeed/{datafeedID}/:
     get:
       tags:
-        - SIRI VM Data feed
+        - SIRI-VM Data feed
       summary: Find datafeed by ID
       produces:
         - text/xml
@@ -66,13 +71,16 @@ paths:
       parameters:
         - name: datafeedID
           in: path
-          description: Limit results to a specific data feed of a publisher using the data feed ID.
+          description: (path)</br>
+            Limit results to a specific data feed of a publisher using the data feed ID.
           required: true
           type: integer
           format: int64
       responses:
         200:
-          description: Successfully retrieve all vehicles in a datafeed
+          description: Successful operation
+        400:
+          description: Invalid datafeedID supplied
         404:
           description: Datafeed not found
 
@@ -87,7 +95,7 @@ paths:
       description: Returns all published datafeeds
       responses:
         200:
-          description: Successfully retrieved all datafeeds
+          description: Successfully retrieved all datasets
         400:
           description: Invalid data supplied
       parameters:
@@ -106,8 +114,7 @@ paths:
           name: routeId
           type: string
           description: >
-            Limit results to bus location data with the specified routeId.
-            Use a comma-separated list to specify multiple routeId values.
+            Limit results to bus location data with the specified route id.
 
         - in: query
           name: startTimeAfter

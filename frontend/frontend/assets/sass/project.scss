@@ -1,17 +1,23 @@
-// Variables are imported before vendor scss to override defaults
 @import "variables";
 
-// Vendor packages
+$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "@fortawesome/fontawesome-free/scss/solid.scss";
+
+$govuk-fonts-path: "~govuk-frontend/govuk/assets/fonts/";
+$govuk-images-path: "~govuk-frontend/govuk/assets/images/";
 @import "govuk-frontend/govuk/all";
 @import "govuk-frontend/govuk/helpers/spacing";
 
-// Local packages
+@import "normalize.css/normalize.css";
+@import "mapbox-gl/dist/mapbox-gl.css";
+@import "swagger-ui/dist/swagger-ui.css";
+
 @import "overrides/all";
 @import "core/all";
 @import "objects/all";
 @import "components/all";
+@import "patterns/all";
 
 .key-value-list {
   list-style: none;

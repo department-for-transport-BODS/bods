@@ -17,6 +17,7 @@ from transit_odp.organisation.forms.organisation_profile import (
     OrganisationProfileForm,
 )
 from transit_odp.organisation.models import Organisation
+from transit_odp.site_admin.validators import validate_email_unique
 from transit_odp.users.constants import AccountType
 from transit_odp.users.forms.admin import (
     EMAIL_HELP_TEXT,
@@ -48,6 +49,7 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             }
         ),
         error_messages={"required": _("Enter the email address of the key contact")},
+        validators=[validate_email_unique],
     )
 
     def __init__(self, *args, **kwargs):

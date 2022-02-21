@@ -23,10 +23,16 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     FaresDatasetRevisionFactory,
+    LicenceFactory,
     OrganisationFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.organisation.models import (
+    Dataset,
+    DatasetRevision,
+    Organisation,
+    TXCFileAttributes,
+)
 from transit_odp.pipelines.factories import (
     DatasetETLTaskResultFactory,
     RemoteDatasetHealthCheckCountFactory,
@@ -200,6 +206,35 @@ class TestOrganisationQuerySet:
         org = orgs.first()
         assert org.total_fare_products == 10
 
+    def test_add_licence_string(self):
+        org = OrganisationFactory(licence_required=True)
+        licences = LicenceFactory.create_batch(3, organisation=org)
+        expected_licence_string = ":".join([lic.number for lic in licences])
+
+        org_qs = Organisation.objects.add_licence_string(delimiter=":")
+        org1 = org_qs.first()
+        assert org1.licence_string == expected_licence_string
+
+    def test_number_of_licences(self):
+        org = OrganisationFactory(licence_required=True)
+        num_licences = 3
+        LicenceFactory.create_batch(num_licences, organisation=org)
+
+        org_qs = Organisation.objects.add_number_of_licences()
+        org1 = org_qs.first()
+        assert org1.number_of_licences == num_licences
+
+    def test_add_permit_holder(self):
+        unlicensed_org = OrganisationFactory(licence_required=False)
+        licensed_org = OrganisationFactory(licence_required=True)
+        LicenceFactory.create_batch(3, organisation=licensed_org)
+        undecided_org = OrganisationFactory()
+
+        orgs = Organisation.objects.add_permit_holder()
+        assert orgs.get(id=unlicensed_org.id).permit_holder == "FALSE"
+        assert orgs.get(id=licensed_org.id).permit_holder == "TRUE"
+        assert orgs.get(id=undecided_org.id).permit_holder == "UNKNOWN"
+
 
 @pytest.fixture
 def revision_data():
@@ -308,31 +343,36 @@ class TestDatasetQuerySet:
         admin_areas = [
             AdminAreaFactory(name=name) for name in ["Cambridge", "London", "Leeds"]
         ]
-        organisations = [OrganisationFactory(name=name) for name in ["OrgX", "OrgY"]]
+        org_name_to_noc = {"OrgX": ["alpha", "bravo"], "OrgY": ["gamma", "delta"]}
+        organisations = [
+            OrganisationFactory(name=name, nocs=org_name_to_noc[name])
+            for name in org_name_to_noc.keys()
+        ]
         datasets = [
             DatasetFactory(organisation=organisation, live_revision=None)
             for organisation in organisations
         ]
-        [
-            DatasetRevisionFactory(
-                dataset=datasets[0],
-                name="DatasetP",
-                description="Descriptive",
-                admin_areas=admin_areas[:1],
-                is_published=True,
-            ),
-            DatasetRevisionFactory(
-                dataset=datasets[1],
-                name="DatasetQ",
-                description="",
-                admin_areas=admin_areas[1:],
-                is_published=True,
-            ),
-        ]
+        revision = DatasetRevisionFactory(
+            dataset=datasets[0],
+            name="DatasetP",
+            description="Descriptive",
+            admin_areas=admin_areas[:1],
+            is_published=True,
+        )
+        stops = [StopPointFactory(admin_area=admin_areas[0])]
+        FaresMetadataFactory(revision=revision, stops=stops)
 
-        qs = Dataset.objects.search("DatasetP")
-        assert len(qs) == 1
-        assert qs[0] == datasets[0]
+        revision = DatasetRevisionFactory(
+            dataset=datasets[1],
+            name="DatasetQ",
+            description="",
+            admin_areas=admin_areas[1:],
+            is_published=True,
+        )
+        stops = [
+            StopPointFactory(admin_area=admin_area) for admin_area in admin_areas[1:]
+        ]
+        FaresMetadataFactory(revision=revision, stops=stops)
 
         qs = Dataset.objects.search("Lon")
         assert len(qs) == 1
@@ -341,8 +381,11 @@ class TestDatasetQuerySet:
         qs = Dataset.objects.search("org")
         assert len(qs) == 2
 
-        # Search on descrpiption
         qs = Dataset.objects.search("Descriptive")
+        assert len(qs) == 1
+        assert qs[0] == datasets[0]
+
+        qs = Dataset.objects.search("bravo")
         assert len(qs) == 1
         assert qs[0] == datasets[0]
 
@@ -445,6 +488,63 @@ class TestDatasetQuerySet:
         )
         result = Dataset.objects.get(id=dataset.id)
         assert result.download_url == expected_download_url
+
+    def test_add_profile_nocs(self):
+        org = OrganisationFactory(nocs=["test1", "test2", "test3"])
+        DatasetFactory(organisation=org)
+
+        result = Dataset.objects.add_profile_nocs("; ").first()
+        assert result.profile_nocs == "test1; test2; test3"
+
+    def test_add_live_name(self):
+        name = "dataset name"
+        DatasetRevisionFactory(name=name)
+
+        result = Dataset.objects.add_live_name().first()
+        assert result.name == name
+
+    def test_add_live_filename(self):
+        name = "dataset.xml"
+        DatasetRevisionFactory(upload_file=name)
+        result = Dataset.objects.add_live_filename().first()
+        assert result.upload_filename == name
+
+    @pytest.mark.parametrize(
+        "status, expected",
+        [("live", "published"), ("inactive", "inactive"), ("expired", "expired")],
+    )
+    def test_add_pretty_status(self, status, expected):
+        DatasetRevisionFactory(status=status)
+        result = Dataset.objects.add_pretty_status().first()
+        assert result.status == expected
+
+    @pytest.mark.parametrize(
+        "dataset_type, expected",
+        [
+            (TimetableType, "Timetables"),
+            (AVLType, "Automatic Vehicle Locations"),
+            (FaresType, "Fares"),
+        ],
+    )
+    def test_add_pretty_dataset_type(self, dataset_type, expected):
+        DatasetRevisionFactory(dataset__dataset_type=dataset_type)
+        result = Dataset.objects.add_pretty_dataset_type().first()
+        assert result.dataset_type_pretty == expected
+
+    def test_add_last_updated_including_avl(self):
+        past = datetime(2020, 12, 25)
+        current = now()
+        DatasetRevisionFactory(
+            dataset__dataset_type=TimetableType, published_at=current
+        )
+        DatasetRevisionFactory(
+            dataset__dataset_type=AVLType,
+            published_at=past,
+            dataset__avl_feed_last_checked=current,
+        )
+        results = Dataset.objects.add_last_updated_including_avl()
+        for result in results:
+            assert result.last_updated == current
 
 
 class TestDatasetRevisionQuerySet:
@@ -804,3 +904,74 @@ def test_get_stuck_timetables():
 
     assert stuck_revisions.count() == 1
     assert stuck_revisions.last() == stuck_revision
+
+
+class TestTXCFileAttributesQueryset:
+    def test_get_active_live_revisions(self):
+        """
+        Given we have datasets with multiple previously published revisions
+        and therefore txc file attributes
+        When we apply the queryset method
+        Then we filter out file attributes that do not belong to a live revision
+        """
+
+        for _ in range(5):
+            dataset = DatasetFactory(live_revision=None)
+            for _ in range(3):
+                r = DatasetRevisionFactory(dataset=dataset)
+                TXCFileAttributesFactory(revision=r)
+
+            latest_revision = DatasetRevisionFactory(dataset=dataset)
+            TXCFileAttributesFactory(revision=latest_revision, origin="latest")
+
+        file_attributes = TXCFileAttributes.objects.get_active_live_revisions()
+        assert file_attributes.count() == 5
+        for fa in file_attributes:
+            assert fa.origin == "latest"
+
+    def test_service_code_in_multiple_datasets(self):
+        """
+        Given we have a service code that is shared across multiple datasets
+        When we apply the queryset method get_active_txc_files
+        Then we pick the txc attribute (service_code) that belongs to the latest
+        dataset
+        """
+
+        for number in range(3):
+            service_code = f"PF0000{number}"
+            revision = DatasetRevisionFactory(name=f"old{number}", is_published=True)
+            TXCFileAttributesFactory(revision=revision, service_code=service_code)
+            revision = DatasetRevisionFactory(name=f"new{number}", is_published=True)
+            TXCFileAttributesFactory(revision=revision, service_code=service_code)
+
+        file_attributes = TXCFileAttributes.objects.get_active_txc_files()
+        assert file_attributes.count() == 3
+        for fa in file_attributes:
+            assert fa.revision.name[:3] == "new"
+
+    def test_repeating_service_codes_in_same_dataset(self):
+        """
+        Given we have a service code that is shared across multiple TxC files in the
+        same dataset when we apply the queryset method get_active_txc_files
+        Then we pick the txc attribute (service_code) that belongs to the earliest
+        operating_period_start_date
+        """
+
+        for number in range(3):
+            service_code = f"PF0000{number}"
+            revision = DatasetRevisionFactory(name=f"old{number}", is_published=True)
+            TXCFileAttributesFactory(
+                revision=revision,
+                service_code=service_code,
+                operating_period_start_date=datetime(2020, 12, 25, 0, 0),
+            )
+            TXCFileAttributesFactory(
+                revision=revision,
+                service_code=service_code,
+                operating_period_start_date=datetime(2021, 1, 1, 0, 0),
+            )
+
+        file_attributes = TXCFileAttributes.objects.get_active_txc_files()
+        assert file_attributes.count() == 3
+        for fa in file_attributes:
+            assert fa.operating_period_start_date == datetime(2020, 12, 25, 0, 0).date()

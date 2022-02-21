@@ -215,7 +215,7 @@ class TestRangeFilterListView:
         assert result == items_in_col
 
     def test_get_qs_slices(self):
-        """Tests the qs is sliced up into 3 lists """
+        """Tests the qs is sliced up into 3 lists"""
         # Set up
         items_per_col = [4, 3, 3]
         items = list(range(10))

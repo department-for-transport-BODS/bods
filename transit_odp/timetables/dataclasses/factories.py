@@ -43,6 +43,8 @@ class ServiceFactory(Factory):
     public_use = True
     service_code = "A1"
     lines = [LineFactory()]
+    origin = "Milton Keynes"
+    destination = "Bedford"
 
 
 class TXCFileFactory(Factory):

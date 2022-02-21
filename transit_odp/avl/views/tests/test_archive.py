@@ -1,11 +1,11 @@
 from unittest.mock import Mock, patch
 
-import config.hosts
 import pytest
 from cavl_client.rest import ApiException
 from django_hosts.resolvers import reverse
 
-from transit_odp.avl.views.dataset_archive import AVLFeedArchiveView
+import config.hosts
+from transit_odp.avl.views.archive import AVLFeedArchiveView
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     OrganisationFactory,
@@ -28,7 +28,7 @@ class TestAVLFeedArchiveViewDataset:
     @pytest.mark.parametrize(
         "mock_kwargs", ({"return_value": None}, {"side_effect": ApiException})
     )
-    @patch(AVL_VIEWS + "dataset_archive.get_cavl_service")
+    @patch(AVL_VIEWS + "archive.get_cavl_service")
     def test_archive_successful(self, get_service, client_factory, mock_kwargs):
         client = client_factory(host=self.host)
         mock_cavl = Mock()

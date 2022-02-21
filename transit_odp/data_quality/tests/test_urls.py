@@ -43,7 +43,7 @@ class DqUrlsTestBase:
     url_segment = ""
 
     def test_url_name(self):
-        """ Test that the specified url name(s) correspond to the expected url path """
+        """Test that the specified url name(s) correspond to the expected url path"""
         scenarios = self.get_url_name_scenarios()
 
         for scenario in scenarios:
@@ -54,7 +54,7 @@ class DqUrlsTestBase:
             )
 
     def test_url_resolves_to_correct_view(self):
-        """ Test that list and detail url paths resolve to the expected views """
+        """Test that list and detail url paths resolve to the expected views"""
         scenarios = self.get_url_resolves_to_correct_view_scenarios()
 
         for scenario in scenarios:

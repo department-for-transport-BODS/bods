@@ -52,6 +52,13 @@ def run():
     # Get date to build archive
     yesterday = timezone.now().date() - timedelta(days=1)
 
+    if ChangeDataArchive.objects.filter(published_at=yesterday).count() > 0:
+        logger.info(
+            f"[change_data_archive] Archive already exists for {yesterday}. "
+            "No new archive will be created."
+        )
+        return
+
     # Get active datasets
     datasets = get_datasets_published_at(yesterday)
 

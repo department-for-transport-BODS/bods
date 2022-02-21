@@ -32,6 +32,7 @@ class TestBulkResendInvitesFeature:
     host = ADMIN_HOST
     manage_url = reverse("users:organisation-manage", host=host)
     bulk_url = reverse("users:bulk-resend-invite", host=host)
+    bulk_resend_success_url = reverse("users:bulk-resend-invite-success", host=host)
 
     def setup_organisations(self):
         """
@@ -180,6 +181,32 @@ class TestBulkResendInvitesFeature:
         )
         assert response.status_code == 302
         assert sorted([mail.to[0] for mail in mailoutbox]) == list(expected_results)
+
+    def test_bulk_invite_success_view(self, client_factory, user_factory):
+        client = client_factory(host=self.host)
+        admin = user_factory(account_type=AccountType.site_admin.value)
+        _, orgs = self.setup_organisations()
+
+        client.force_login(user=admin)
+        queryparams = "?bulk_invite=true"
+        for org in orgs:
+            queryparams += f"&invites={org.id}"
+        response = client.get(self.manage_url + queryparams)
+        assert response.status_code == 302
+
+        response = client.get(self.bulk_resend_success_url)
+        resend_emails = response.context_data["resend_emails"]
+
+        expected_results = (
+            Invitation.objects.filter(organisation_id__in=[org.id for org in orgs])
+            .order_by("email")
+            .values_list("email", flat=True)
+        )
+
+        assert response.status_code == 200
+        assert len(resend_emails) == expected_results.count() == 2
+        for email in expected_results:
+            assert email in resend_emails
 
 
 class TestInviteView:

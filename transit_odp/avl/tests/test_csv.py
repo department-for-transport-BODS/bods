@@ -1,16 +1,26 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import StringIO
 
+import pytest
+from django_hosts import reverse
 from freezegun import freeze_time
 
-from transit_odp.avl.csv import (
+from config.hosts import PUBLISH_HOST
+from transit_odp.avl.constants import (
+    MORE_DATA_NEEDED,
+    PARTIALLY_COMPLIANT,
+    UPPER_THRESHOLD,
+)
+from transit_odp.avl.csv.catalogue import _get_avl_data_catalogue
+from transit_odp.avl.csv.validation import (
     HEADERS,
     SCHEMA_HEADERS,
     SchemaValidationResponseExporter,
     ValidationReportExporter,
     isoformat_from_time_ns,
 )
+from transit_odp.avl.factories import AVLValidationReportFactory
 from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
@@ -19,6 +29,9 @@ from transit_odp.avl.validation.factories import (
     SchemaValidationResponseFactory,
     ValidationResponseFactory,
 )
+from transit_odp.organisation.factories import AVLDatasetRevisionFactory
+
+pytestmark = pytest.mark.django_db
 
 
 def test_isoformat_from_time_ns():
@@ -168,3 +181,50 @@ def test_schema_validation_exporter_with_errors():
     assert error[0] == isoformat_from_time_ns(response.timestamp)
     assert error[1] == response.errors[0].message
     assert error[2] == response.errors[0].path
+
+
+def test_data_catalogue_csv():
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 8
+    for n in range(0, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision,
+            created=date,
+            non_critical_score=UPPER_THRESHOLD - 0.1,
+            critical_score=UPPER_THRESHOLD + 0.1,
+            vehicle_activity_count=100,
+        )
+
+    df = _get_avl_data_catalogue()
+    row = df.iloc[0]
+    assert row["Organisation Name"] == revision.dataset.organisation.name
+    assert row["Datafeed ID"] == revision.dataset_id
+    assert row["Feed Compliance Status"] == PARTIALLY_COMPLIANT
+    assert row["Compliance Report URL"] == reverse(
+        "avl:validation-report-download",
+        kwargs={"pk": revision.dataset_id, "pk1": revision.dataset.organisation_id},
+        host=PUBLISH_HOST,
+    )
+
+
+def test_more_data_needed_doesnt_show_report():
+    revision = AVLDatasetRevisionFactory()
+    today = datetime.now().date()
+    total_reports = 8
+    for n in range(0, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision,
+            created=date,
+            non_critical_score=UPPER_THRESHOLD - 0.1,
+            critical_score=UPPER_THRESHOLD + 0.1,
+            vehicle_activity_count=0,
+        )
+    df = _get_avl_data_catalogue()
+    row = df.iloc[0]
+    assert row["Organisation Name"] == revision.dataset.organisation.name
+    assert row["Datafeed ID"] == revision.dataset_id
+    assert row["Feed Compliance Status"] == MORE_DATA_NEEDED
+    assert row["Compliance Report URL"] == ""

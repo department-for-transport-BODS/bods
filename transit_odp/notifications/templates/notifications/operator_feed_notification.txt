@@ -1,0 +1,13 @@
+Hello,
+
+{{ user_email }} has left a feedback to {{ publisher_name }} at {{ time_now }}.
+
+In order for data consumers to extract maximum benefit from BODS, it would be greatly beneficial if you can reply back to their queries on your data.
+
+.....................................................................................................
+
+{{ feedback }}
+
+
+Kind regards,
+The Bus Open Data Team

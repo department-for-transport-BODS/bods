@@ -159,7 +159,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         return kwargs
 
     def get_form_instance(self, step):
-        """Returns the Feed instance to bind to the step's form """
+        """Returns the Feed instance to bind to the step's form"""
         return self.object
 
     @transaction.atomic

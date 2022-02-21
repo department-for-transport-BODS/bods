@@ -1,4 +1,4 @@
-const HttpClient = require("./http-client");
+import { HttpClient } from "./http-client";
 
 class APIService {
   constructor(apiURL) {
@@ -9,8 +9,8 @@ class APIService {
   getDQSReportStatus(revisionId) {
     return this.httpClient
       .get(`${this.apiURL}revision/${revisionId}/dqs-status/`)
-      .then(response => response.json());
+      .then((response) => response.json());
   }
 }
 
-module.exports = APIService;
+export { APIService };

@@ -1,0 +1,34 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+
+{% block help_heading %}
+{% trans "TransXChange" %}
+{% endblock %}
+
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      TransXChange is the UK nationwide standard for exchanging bus schedules and related
+      data. It is used for:
+    {% endblocktrans %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>{% trans 'The electronic registration of bus routes' %}</li>
+    <li>{% trans 'The Traffic Area Network' %}</li>
+    <li>
+      {% blocktrans %}
+        The exchange of bus routes with other computer systems such as journey planners
+        and vehicle real-time tracking systems
+      {% endblocktrans %}
+    </li>
+  </ul>
+  <p class="govuk-body">
+    {% blocktrans %}
+      TransXChange is part of a family of coherent transport related XML standards that
+      follow GovTalk guidelines. The latest transxchange profile used on BODS can be
+    {% endblocktrans %}
+    <a class="govuk-link" href="{{ pti_pdf_url }}" target="_blank">
+      {% trans 'found here' %}
+    </a>.
+  </p>
+{% endblock %}

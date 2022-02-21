@@ -9,6 +9,7 @@ STATUS_CHOICE = (
     ("expired", "Expired"),
     ("inactive", "Inactive"),
     ("published", "Published"),
+    ("error", "Error"),
 )
 
 

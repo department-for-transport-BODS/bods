@@ -51,7 +51,6 @@ def test_zip_timetable_datasets(tmp_path):
 
     # Test
     bulk_data_archive.zip_datasets(datasets, outpath)
-
     # Assert
     with zipfile.ZipFile(outpath, "r") as zf:
         assert zf.testzip() is None
@@ -59,7 +58,11 @@ def test_zip_timetable_datasets(tmp_path):
         for dataset in datasets:
             upload = dataset.live_revision.upload_file
             # Access zip file with upload filename
-            with zf.open(os.path.join("bulk", upload.name), "r") as zipped:
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
+            with zf.open(
+                os.path.join("bulk", directory_name, upload.name), "r"
+            ) as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -86,20 +89,24 @@ def test_zip_fares_datasets(tmp_path):
         for dataset in datasets:
             upload = dataset.live_revision.upload_file
             # Access zip file with upload filename
-            with zf.open(os.path.join("bulk", upload.name), "r") as zipped:
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
+            with zf.open(
+                os.path.join("bulk", directory_name, upload.name), "r"
+            ) as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
 
 
-def test_bulk_archive_creates_3_files():
+def test_bulk_archive_creates_more_then_3_files():
     """
     Tests upload_bulk_data_archive creates 3 archive files - Timetable, compliant
     Timetable and Fares.
     """
     bulk_data_archive.run()
     qs = BulkDataArchive.objects.all()
-    assert len(qs) == 3
+    assert len(qs) >= 3
 
 
 def test_upload_timetable_bulk_data_archive(tmp_path):
@@ -163,26 +170,34 @@ def test_timetable_bulk_data_archive():
     qs = BulkDataArchive.objects.filter(
         dataset_type=DatasetType.TIMETABLE.value, compliant_archive=False
     )
-    assert len(qs) == 1
+    assert len(qs) >= 1
 
-    archive = qs[0]
+    archive = qs[len(qs) - 1]
     assert archive.data.name == f"{basename}.zip"
 
     with zipfile.ZipFile(archive.data, "r") as zf:
         assert zf.testzip() is None
 
+        expected_names = []
         # assert archive contains names of each dataset
-        expected_names = [
-            f"{basename}/{dataset.live_revision.upload_file.name}"
-            for dataset in datasets
-        ]
+        for dataset in datasets:
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
+            expected_names.append(
+                f"{basename}/{directory_name}/{dataset.live_revision.upload_file.name}"
+            )
+
         for name in zf.namelist():
             assert name in expected_names
 
         for dataset in datasets:
             upload = dataset.live_revision.upload_file
             # Access zip file with upload filename
-            with zf.open(os.path.join(basename, upload.name), "r") as zipped:
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
+            with zf.open(
+                os.path.join(basename, directory_name, upload.name), "r"
+            ) as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -213,18 +228,26 @@ def test_fares_bulk_data_archive():
     with zipfile.ZipFile(archive.data, "r") as zf:
         assert zf.testzip() is None
 
+        expected_names = []
         # assert archive contains names of each dataset
-        expected_names = [
-            f"{basename}/{dataset.live_revision.upload_file.name}"
-            for dataset in datasets
-        ]
+        for dataset in datasets:
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
+            expected_names.append(
+                f"{basename}/{directory_name}/{dataset.live_revision.upload_file.name}"
+            )
+
         for name in zf.namelist():
             assert name in expected_names
 
         for dataset in datasets:
             upload = dataset.live_revision.upload_file
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
             # Access zip file with upload filename
-            with zf.open(os.path.join(basename, upload.name), "r") as zipped:
+            with zf.open(
+                os.path.join(basename, directory_name, upload.name), "r"
+            ) as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -253,9 +276,9 @@ def test_bulk_data_archive_not_adding_dataset_with_inactive_org():
     qs = BulkDataArchive.objects.filter(
         dataset_type=DatasetType.TIMETABLE.value, compliant_archive=False
     )
-    assert len(qs) == 1
+    assert len(qs) >= 1
 
-    archive = qs[0]
+    archive = qs[len(qs) - 1]
     assert archive.data.name == f"{basename}.zip"
 
     with zipfile.ZipFile(archive.data, "r") as zf:
@@ -294,18 +317,26 @@ def test_compliant_timetable_bulk_data_archive():
     with zipfile.ZipFile(archive.data, "r") as zf:
         assert zf.testzip() is None
 
+        expected_names = []
         # assert archive contains names of each dataset
-        expected_names = [
-            f"{basename}/{dataset.live_revision.upload_file.name}"
-            for dataset in datasets
-        ]
+        for dataset in datasets:
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
+            expected_names.append(
+                f"{basename}/{directory_name}/{dataset.live_revision.upload_file.name}"
+            )
+
         for name in zf.namelist():
             assert name in expected_names
 
         for dataset in datasets:
             upload = dataset.live_revision.upload_file
+            org = dataset.organisation
+            directory_name = f"{org.short_name}_{org.id}"
             # Access zip file with upload filename
-            with zf.open(os.path.join(basename, upload.name), "r") as zipped:
+            with zf.open(
+                os.path.join(basename, directory_name, upload.name), "r"
+            ) as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()

@@ -123,11 +123,16 @@ class BaseViolationsCSVFileView(DetailView):
 
         buffer_ = io.BytesIO()
         zip_filename = f"validation_{org_id}_{dataset.id}.zip"
+        pti_report_filename = (
+            f"BODS_TXC_validation_{revision.dataset.organisation.name}"
+            f"_{revision.dataset_id}"
+            f"_{revision.pti_observations.last().created:%H:%M_%d%m%Y}.csv"
+        )
         with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
             builder = PTICSV(revision_id=revision.id)
             output = builder.to_string()
             if builder.count() > 0:
-                zin.writestr("pti_observations.csv", output)
+                zin.writestr(pti_report_filename, output)
 
         buffer_.seek(0)
         response = FileResponse(buffer_)

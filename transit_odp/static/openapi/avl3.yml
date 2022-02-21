@@ -1,0 +1,295 @@
+openapi: 3.0.0
+info:
+  description: |
+    You can use the interactive documentation to customise your API
+    response using the available query parameters. If you are registered and
+    logged in, you will be given a full response. Otherwise you will be given
+    an example response.
+
+    ### Ready to use the API?
+
+    [View developer documentation](/guidance/requirements/?section=api)
+
+    ### First time API user?
+
+    [Guide me](/guide-me/)
+
+  title: Location data API
+  version: 1.0.0
+
+servers:
+  - url: "/api/v1"
+
+tags:
+  - name: SIRI-VM Data feed
+    description: Interact with SIRI-VM datafeeds
+  - name: GTFS RT Data feed
+    description: Interact with GTFS-RT datafeeds
+
+paths:
+  /datafeed:
+    get:
+      tags:
+        - SIRI-VM Data feed
+      description: Returns all published datafeeds
+      parameters:
+        - name: boundingBox
+          in: query
+          description: >
+            Limit results to bus location data with vehicle position within the
+            rectangular boundingBox you set using co-ordinates.
+            [minLongitude, minLatitude, maxLongitude, maxLatitude]
+          schema:
+            type: array
+            items:
+              type: number
+            minItems: 4
+            maxItems: 4
+            example: [51.401, 51.509, 0.01, 0.201]
+
+        - name: operatorRef
+          in: query
+          description: >
+            Limit results to bus location data with the specified operatorRef.
+            The National Operator Code is often used as the input for operatorRef.
+            Comma separated list of values can be used for querying.
+          schema:
+            type: array
+            items:
+              type: string
+            example: [SCGH, SCLI, HRBT]
+
+        - name: vehicleRef
+          in: query
+          description: Limit results to bus location data with the specified vehicleRef.
+          schema:
+            type: string
+            example: BUSC
+
+        - name: lineRef
+          in: query
+          description: Limit results to bus location data with the specified lineRef.
+          schema:
+            type: string
+            example: 85A
+
+        - name: producerRef
+          in: query
+          description: Limit results to bus location data with the specified producerRef.
+          schema:
+            type: string
+            example: SCLI
+
+        - name: originRef
+          in: query
+          description: Limit results to bus location data with the specified originRef.
+          schema:
+            type: string
+            example: "21024515"
+
+        - name: destinationRef
+          in: query
+          description: Limit results to bus location data with the specified destinationRef.
+          schema:
+            type: string
+            example: "21027012"
+
+      responses:
+        200:
+          description: Successfully retrieved all datafeeds
+          content:
+            text/xml:
+              schema:
+                $ref: "#/components/schemas/Siri"
+        400:
+          description: Invalid data supplied
+
+  /datafeed/{datafeedID}/:
+    get:
+      tags:
+        - SIRI-VM Data feed
+      summary: Find datafeed by ID
+      description: Returns a single datafeed
+      parameters:
+        - name: datafeedID
+          description: Limit results to a specific data feed of a publisher using the data feed ID.
+          in: path
+          schema:
+            type: integer
+            format: int64
+          required: true
+      responses:
+        200:
+          description: Successfully retrieve all vehicles in a datafeed
+          content:
+            text/xml:
+              schema:
+                $ref: "#/components/schemas/Siri"
+        404:
+          description: Datafeed not found
+
+  /gtfsrtdatafeed/:
+    get:
+      tags:
+        - GTFS RT Data feed
+      summary: Returns all vehicles in GTFS RT format
+      produces:
+        - application/bin
+        - application/protobuf
+      description: Returns all published datafeeds
+      responses:
+        200:
+          description: Successfully retrieved all datafeeds
+        400:
+          description: Invalid data supplied
+      parameters:
+        - name: boundingBox
+          in: query
+          description: >
+            Limit results to bus location data with vehicle position within the
+            rectangular boundingBox you set using co-ordinates.
+            [minLongitude, minLatitude, maxLongitude, maxLatitude]
+          schema:
+            type: array
+            items:
+              type: number
+            minItems: 4
+            maxItems: 4
+            example: [51.401, 51.509, 0.01, 0.201]
+
+        - name: routeId
+          in: query
+          description: >
+            Limit results to bus location data with the specified routeId.
+            Use a comma-separated list to specify multiple routeId values.
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["45", "26"]
+
+        - name: startTimeAfter
+          in: query
+          description: Limit results to bus location data with a start time after startTimeAfter.
+          schema:
+            type: int
+            format: int64
+            example: 1609518528
+
+        - name: startTimeBefore
+          in: query
+          description: Limit results to bus location data with a start time before startTimeBefore.
+          schema:
+            type: int
+            format: int64
+            example: 1609518528
+
+components:
+  schemas:
+    Siri:
+      type: object
+      properties:
+        ServiceDelivery:
+          $ref: "#/components/schemas/ServiceDelivery"
+
+    ServiceDelivery:
+      type: object
+      properties:
+        ResponseTimestamp:
+          type: string
+          format: date-time
+          example: "2021-10-22T13:08:36.396022+00:00"
+        ProducerRef:
+          type: string
+          example: STCL
+        VehicleMonitoringDelivery:
+          $ref: "#/components/schemas/VehicleMonitoringDelivery"
+
+    VehicleMonitoringDelivery:
+      type: object
+      properties:
+        ResponseTimestamp:
+          type: string
+          format: date-time
+          example: "2021-10-22T13:08:36.396022+00:00"
+        RequestMessageRef:
+          type: string
+          example: 5171f862-f34a-4053-8eac-5dc07a018398
+        ValidUntil:
+          type: string
+          format: date-time
+          example: "2021-10-22T13:13:36.396022+00:00"
+        ShortestPossibleCycle:
+          type: string
+          example: PT5S
+        VehicleActivity:
+          $ref: "#/components/schemas/VehicleActivity"
+
+    VehicleActivity:
+      type: object
+      properties:
+        RecordedAtTime:
+          type: string
+          format: date-time
+          example: "2021-10-22T13:02:54+00:00"
+        ItemIdentifier:
+          type: string
+          example: 002c735-b0b8-4644-b7d2-38b2f1518728
+        ValidUntilTime:
+          type: string
+          format: date-time
+          example: "2021-10-22T13:13:36.396175"
+        MonitoredVehicleJourney:
+          $ref: "#/components/schemas/MonitoredVehicleJourney"
+        Extensions:
+          type: object
+          nullable: true
+
+    MonitoredVehicleJourney:
+      type: object
+      properties:
+        LineRef:
+          type: string
+          example: 85A
+        DirectionRef:
+          type: string
+          example: outbound
+        PublishedLineName:
+          type: string
+          example: 85A
+        OperatorRef:
+          type: string
+          example: HRBT
+        OriginRef:
+          type: string
+          example: "21024515"
+        OriginName:
+          type: string
+          example: Sainsburys
+        DestinationRef:
+          type: string
+          example: "21024515"
+        DestinationName:
+          type: string
+          example: Sainsburys
+        VehicleLocation:
+          $ref: "#/components/schemas/VehicleLocation"
+        Bearing:
+          type: number
+          example: 357.0
+        BlockRef:
+          type: string
+          example: 85A
+        VehicleRef:
+          type: string
+          example: BUSC
+
+    VehicleLocation:
+      type: object
+      properties:
+        Longitude:
+          type: number
+          example: -0.26257728
+        Latitude:
+          type: number
+          example: 52.09376837

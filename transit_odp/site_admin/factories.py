@@ -13,6 +13,8 @@ fake = Faker()
 
 class OperationalStatsFactory(DjangoModelFactory):
     date = Sequence(lambda n: datetime(2020, 1, 1) + timedelta(days=n))
+    registered_service_code_count = fake.random_digit()
+    unregistered_service_code_count = fake.random_digit()
     vehicle_count = fake.random_digit()
     operator_count = fake.random_digit()
     operator_user_count = fake.random_digit()

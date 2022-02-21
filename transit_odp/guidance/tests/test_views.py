@@ -144,12 +144,18 @@ class TestDeveloperReqView:
             (
                 "quickstart",
                 "overview",
-                "databyoperator",
+                "datacatelogue",
                 "guidance/developer/quick_start.html",
             ),
             (
-                "databyoperator",
+                "datacatelogue",
                 "quickstart",
+                "databyoperator",
+                "guidance/developer/datacatalogue.html",
+            ),
+            (
+                "databyoperator",
+                "datacatelogue",
                 "browse",
                 "guidance/developer/data_by_op_loc.html",
             ),
@@ -186,8 +192,14 @@ class TestDeveloperReqView:
             (
                 "maintainingqualitydata",
                 "dataformats",
-                "help",
+                "casestudies",
                 "guidance/developer/maintaining_quality_data.html",
+            ),
+            (
+                "casestudies",
+                "maintainingqualitydata",
+                "help",
+                "guidance/developer/case_studies.html",
             ),
         ],
     )
@@ -219,7 +231,7 @@ class TestDeveloperReqView:
         assert response.status_code == 200
         assert response.template_name == "guidance/developer/help.html"
         assert response.context_data["current_section"].name == "help"
-        assert response.context_data["prev_section"].name == "maintainingqualitydata"
+        assert response.context_data["prev_section"].name == "casestudies"
         assert response.context_data["next_section"] is None
 
     def test_incorrect_section(self, client_factory):

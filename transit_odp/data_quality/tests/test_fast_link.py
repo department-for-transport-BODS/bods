@@ -39,7 +39,7 @@ def warning():
 
 
 class TestFastLinkListPage(ListPageBaseTest):
-    """ Test Fast Link Warnings list page """
+    """Test Fast Link Warnings list page"""
 
     model = FastLinkWarning
     factory = FastLinkWarningFactory
@@ -57,7 +57,7 @@ class TestFastLinkListPage(ListPageBaseTest):
 
 
 class TestFastLinkDetailPage(DetailPageBaseTest):
-    """ Test Fast Link Warnings detail page """
+    """Test Fast Link Warnings detail page"""
 
     model = FastLinkWarning
     factory = FastLinkWarningFactory

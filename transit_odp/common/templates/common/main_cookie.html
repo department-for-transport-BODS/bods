@@ -99,7 +99,7 @@
     <p class="govuk-body-m">
       <a class="govuk-link" href="{% url 'cookie-detail' host hosts.root %}">{% trans 'Find out more about cookies on Bus Open Data Service' %}</a>
     </p>
-    <button class="govuk-button" type="submit" onClick="BODSFrontend.Cookielaw.createCookie('CookielawBanner', '{{ parent_host }}')">
+    <button class="govuk-button" type="submit" onClick="BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')">
       {% trans 'Save changes' %}
     </button>
     </form>
