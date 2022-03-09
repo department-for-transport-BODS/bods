@@ -7,7 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
-## [1.16.1] - 2022-02-03
+## [1.16.4] - 2022-03-04
+
+### Bug
+
+BODP-5032 \[DataCatalogue\] Organisations data catalogue file: Is not displaying the expected information for the published Timetables Services
+
+BODP-5017 SIRI-VM TfL download times out on production
+
+BODP-5012 \[Data Catalogue\] Improve query performance to generate Organisation.csv file
+
+### Story
+
+BODP-4986 \[APIV2\] Retrieve avl data feed details via the API - Detail
+
+BODP-4984 \[APIV2\] Retrieve avl data feed details via the API - List
+
+BODP-4982 \[APIV2\] Retrieve timetable file details via the API - Detail
+
+BODP-4980 \[APIV2\] Retrieve timetable file details via the API - List
+
+BODP-4978 \[APIV2\] Retrieve timetable datasets via the API - List
+
+BODP-4976 \[APIV2\] Retrieve a timetable dataset via the API - Detail
+
+BODP-4974 \[APIV2\] Retrieve an operator/organisation via the API - Detail
+
+BODP-4972 \[APIV2\] Retrieve operators/organisations via the API - List
+
+## [1.16.3] - 2022-02-21
+
+### Bug
+
+BODP-4998 \[DataCatalogue\] Data catalogue zip files fail to generate on Production
+
+## [1.16.2] - 2022-02-17
 
 ### Bug
 
@@ -17,7 +51,7 @@ BODP-4968 \[PTI\] Invalid ServiceCode passes PTI check
 
 BODP-4969 \[PTI\]Disable Service Code OTC validation check
 
-## [1.16.1] - 2022-02-03
+## [1.16.1] - 2022-02-17
 
 ### Story
 

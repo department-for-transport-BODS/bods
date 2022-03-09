@@ -1,2 +1,0 @@
-class NaptanException(Exception):
-    pass

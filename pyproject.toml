@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bods"
-version = "1.16.2"
+version = "1.16.4"
 description = "Bus Open Data Service"
 authors = [
         "Angus Bell <angus.bell@itoworld.com>",

@@ -1,7 +1,8 @@
 from collections import OrderedDict
+from datetime import datetime
 
 from django.db.models.expressions import F
-from pandas import DataFrame, Series
+from pandas import DataFrame, NamedAgg, Series
 
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import FaresMetadata
@@ -11,7 +12,13 @@ from transit_odp.otc.models import Licence as OTCLicence
 from transit_odp.otc.models import Service as OTCService
 
 OTC_SERVICES_FIELDS = ["published_registered_service_count"]
-TXC_FIELDS = ["organisation_id", "service_code", "bods_compliant"]
+TXC_FIELDS = [
+    "organisation_id",
+    "service_code",
+    "bods_compliant",
+    "operating_period_start_date",
+    "operating_period_end_date",
+]
 
 OTC_LICENCE_FIELDS = [
     "number",
@@ -34,9 +41,6 @@ ORG_FIELDS = [
     "nocs_string",
     "licence_string",
     "number_of_licences",
-    "unregistered_service_count",
-    "number_of_services_valid_operating_date",
-    "published_services_with_future_start_date",
     "published_timetable_count",
     "published_avl_count",
 ]
@@ -200,12 +204,11 @@ ORG_COLUMN_MAP = OrderedDict(
 
 
 def _get_compliance_percentage(row: Series) -> str:
-    try:
+    percentage = 0.0
+    if row.published_registered_service_count:
         percentage = (
             row.compliant_service_count / row.published_registered_service_count
         )
-    except ZeroDivisionError:
-        percentage = 0.0
     return f"{percentage * 100:.2f}%"
 
 
@@ -232,7 +235,15 @@ def _get_fares_dataframe() -> DataFrame:
     return df
 
 
-def _get_service_code_count() -> DataFrame:
+def _is_valid_operating_date(row: Series) -> bool:
+    today = datetime.now().date()
+    if row.operating_period_end_date is None or row.operating_period_start_date is None:
+        return False
+    return row.operating_period_start_date <= today <= row.operating_period_end_date
+
+
+def _get_service_stats() -> DataFrame:
+    today = datetime.now().date()
     SERVICE_CODE = "service_code"
     otc_services = DataFrame.from_records(
         OTCService.objects.add_service_code().values(SERVICE_CODE)
@@ -240,21 +251,47 @@ def _get_service_code_count() -> DataFrame:
     if otc_services.empty:
         raise EmptyDataFrame()
 
+    otc_services["is_registered"] = True
     txc_files = DataFrame.from_records(
         TXCFileAttributes.objects.get_organisation_data_catalogue().values(*TXC_FIELDS)
     )
-    merged_services = otc_services.merge(txc_files, on=SERVICE_CODE)
-    service_code_count = merged_services.groupby("organisation_id").agg(
-        {"service_code": ["count"], "bods_compliant": ["sum"]}
+    txc_files["unregistered_service_count"] = txc_files["service_code"].str.startswith(
+        "UZ"
     )
-    if service_code_count is not None:
-        service_code_count = service_code_count.droplevel(axis=1, level=0)
-        service_code_count = service_code_count.rename(
-            columns={
-                "count": "published_registered_service_count",
-                "sum": "compliant_service_count",
-            }
+    txc_files["number_of_services_valid_operating_date"] = txc_files.apply(
+        lambda x: _is_valid_operating_date(x), axis=1
+    )
+    txc_files["published_services_with_future_start_date"] = (
+        txc_files["operating_period_start_date"] > today
+    )
+
+    merged_services = otc_services.merge(txc_files, on=SERVICE_CODE, how="outer")
+    merged_services["is_registered_and_compliant"] = (
+        merged_services["is_registered"] & merged_services["bods_compliant"]
+    )
+    service_code_count = (
+        merged_services.groupby("organisation_id")
+        .agg(
+            published_registered_service_count=NamedAgg(
+                column="is_registered", aggfunc="sum"
+            ),
+            compliant_service_count=NamedAgg(
+                column="is_registered_and_compliant", aggfunc="sum"
+            ),
+            unregistered_service_count=NamedAgg(
+                column="unregistered_service_count", aggfunc="sum"
+            ),
+            number_of_services_valid_operating_date=NamedAgg(
+                column="number_of_services_valid_operating_date", aggfunc="sum"
+            ),
+            published_services_with_future_start_date=NamedAgg(
+                column="published_services_with_future_start_date", aggfunc="sum"
+            ),
         )
+        .astype(int)
+    )
+
+    if service_code_count is not None:
         service_code_count["compliant_service_ratio"] = service_code_count.apply(
             lambda x: _get_compliance_percentage(x), axis=1
         )
@@ -272,13 +309,16 @@ def _get_organisation_catalogue_dataframe() -> DataFrame:
         Organisation.objects.add_data_catalogue_fields().values(*ORG_FIELDS)
     )
 
-    if otc_licences.empty or orgs.empty:
+    if otc_licences.empty or orgs.empty or org_licences.empty:
         raise EmptyDataFrame()
 
-    licences = otc_licences.merge(org_licences, on="number")
+    service_stats = _get_service_stats()
+    orgs = orgs.merge(
+        service_stats, how="left", left_on="id", right_on="organisation_id"
+    )
+
+    licences = org_licences.merge(otc_licences, how="left", on="number")
     licences = licences.groupby("organisation_id").sum()
-    service_code_count = _get_service_code_count()
-    licences = licences.merge(service_code_count, on="organisation_id")
 
     orgs = orgs.merge(licences, how="outer", left_on="id", right_on="organisation_id")
     fares = _get_fares_dataframe()

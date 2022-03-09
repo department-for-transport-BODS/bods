@@ -165,7 +165,7 @@ def task_create_sirivm_tfl_zipfile(self):
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
 
     try:
-        response = requests.get(url, params=params, timeout=1)
+        response = requests.get(url, params=params, timeout=30)
     except RequestException:
         logger.error("Unable to retrieve siri vm data for TfL.", exc_info=True)
     else:

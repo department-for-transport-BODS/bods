@@ -291,9 +291,6 @@ class OrganisationQuerySet(models.QuerySet):
             .add_nocs_string(delimiter=";")
             .add_licence_string(delimiter=";")
             .add_number_of_licences()
-            .add_unregistered_service_count()
-            .add_number_of_services_valid_operating_date()
-            .add_published_services_with_future_start_date()
             .add_live_published_dataset_count_types()
         )
 
