@@ -3,9 +3,10 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 from django.http.response import FileResponse, Http404
 
-from transit_odp.avl.managers import AVLDatasetManager
+from transit_odp.avl.managers import AVLDatasetManager, AVLDatasetRevisionManager
 from transit_odp.avl.querysets import AVLDatasetQuerySet
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.querysets import DatasetRevisionQuerySet
 
 
 class AVLDataset(Dataset):
@@ -48,3 +49,10 @@ class AVLDataset(Dataset):
         response = FileResponse(report.file.open("rb"), as_attachment=True)
         response["Content-Disposition"] = f"attachment; filename={filename}"
         return response
+
+
+class AVLDatasetRevision(DatasetRevision):
+    objects = AVLDatasetRevisionManager.from_queryset(DatasetRevisionQuerySet)
+
+    class Meta:
+        proxy = True

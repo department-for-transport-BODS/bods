@@ -234,3 +234,4 @@ class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
     operating_period_end_date = FAKER.date()
     public_use = True
     line_names = ["line1", "line2"]
+    hash = factory.Sequence(lambda n: f"hash{n}")

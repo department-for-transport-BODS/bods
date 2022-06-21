@@ -5,7 +5,10 @@ FROM node:16-alpine
 
 WORKDIR /app
 
-COPY ./frontend/package.json ./frontend/package-lock.json ./frontend/
+COPY ./package.json ./package-lock.json ./
+COPY ./transit_odp/frontend/assets ./transit_odp/frontend/assets
+COPY ./webpack ./webpack
+
 RUN apk add \
         build-base \
         pkgconfig \
@@ -20,12 +23,9 @@ RUN apk add \
         zlib-dev \
         libpng-dev \
         freetype-dev \
-    && cd frontend \
-    && npm install
+    && npm install \
+    && npm run build
 
-COPY ./crispy-forms-govuk ./crispy-forms-govuk
-COPY ./frontend ./frontend
-RUN cd frontend && npm run build
 
 # Step 2 - Copy frontend assets and build Django image
 FROM ${BASE_IMAGE}
@@ -69,15 +69,14 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
-    && pip3 install cython pipenv
+    && pip3 install cython
 
 
 # Install python packages
 # Copy the compiled frontend from step 1 - this ensures production image
 # needn't depend on dev tooling
-COPY --from=0 /app/frontend /app/frontend
+COPY --from=0 /app/transit_odp/frontend/static /app/transit_odp/frontend/static
 COPY ./cavl-client /app/cavl-client
-COPY ./crispy-forms-govuk /app/crispy-forms-govuk
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN python --version \
@@ -110,7 +109,7 @@ RUN sed -i 's/\r//' /entrypoint \
     && chmod +x /entrypoint /gunicorn /start-migrate /start-collectstatic /start-celeryworker /start-celerybeat /start-celeryflower
 
 # Ensure WORKDIR is owned by django user
-RUN chown django:django /app
+RUN chown -R django:django /app
 COPY --chown=django:django . /app
 
 USER django

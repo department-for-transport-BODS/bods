@@ -15,7 +15,12 @@ from .review import (
     RevisionUpdateSuccessView,
     UpdateRevisionPublishView,
 )
-from .update import AVLUpdateWizard, DraftExistsView
+from .update import (
+    AVLUpdateWizard,
+    DraftExistsView,
+    EditDraftRevisionDescriptionView,
+    EditLiveRevisionDescriptionView,
+)
 
 __all__ = [
     "AVLFeedArchiveSuccessView",
@@ -25,6 +30,8 @@ __all__ = [
     "AvlFeedDetailView",
     "ChangeLogView",
     "DraftExistsView",
+    "EditDraftRevisionDescriptionView",
+    "EditLiveRevisionDescriptionView",
     "ListView",
     "PublishErrorView",
     "ReviewView",

@@ -14,7 +14,12 @@ from transit_odp.site_admin.exports import (
     create_metrics_archive,
     create_operational_exports_file,
 )
-from transit_odp.site_admin.models import APIRequest, DocumentArchive, OperationalStats
+from transit_odp.site_admin.models import (
+    APIRequest,
+    DocumentArchive,
+    OperationalStats,
+    ResourceRequestCounter,
+)
 from transit_odp.site_admin.stats import (
     get_active_dataset_counts,
     get_operator_count,
@@ -25,6 +30,7 @@ from transit_odp.site_admin.stats import (
 )
 
 logger = logging.getLogger(__name__)
+DATA_RETENTION_POLICY_MONTHS = 3
 
 
 @shared_task()
@@ -121,3 +127,39 @@ def task_create_operational_exports_archive():
         DocumentArchive.objects.create(archive=archive, category=OperationalMetrics)
     else:
         metrics.archive.save(filename, archive)
+
+
+@shared_task()
+def task_delete_unwanted_data():
+    """
+    Deletes data according to BODS data retention policy in chunks to avoid hitting
+    the database too hard
+
+      |----A----------B----|
+    now                   oldest
+
+    Keep deleting data from the end Q(created__lt=B) until deleting such data violates
+    the BODS data retention policy in which case obey the policy Q(created__lt=A)
+    where A and B are the two types of boundary:
+    A - now - policy
+    B - oldest + policy
+
+    """
+    policy = relativedelta(months=DATA_RETENTION_POLICY_MONTHS)
+    now = timezone.now()
+    oldest_request = APIRequest.objects.order_by("created").first()
+    if not oldest_request:
+        return
+
+    oldest_request_created = oldest_request.created
+    cut_off = min(oldest_request_created + policy, now - policy)
+
+    deleted, _ = APIRequest.objects.filter(created__lt=cut_off).delete()
+    logger.info(f"Deleted {deleted} API request logs")
+
+    # After v1.17.2 we can change the above to simplify the code. The database should
+    # have been trimmed nicely by then.
+    cut_off = now - policy
+
+    deleted, _ = ResourceRequestCounter.objects.filter(date__lt=cut_off.date()).delete()
+    logger.info(f"Deleted {deleted} Resource request logs")

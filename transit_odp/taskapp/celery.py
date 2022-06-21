@@ -123,6 +123,10 @@ class CeleryAppConfig(AppConfig):
                 "task": ADMIN_TASKS + "task_create_operational_exports_archive",
                 "schedule": 1.0 * 60.0 * 60.0,
             },
+            "task_delete_unwanted_data": {
+                "task": ADMIN_TASKS + "task_delete_unwanted_data",
+                "schedule": crontab(minute=45, hour=0),
+            },
             "save_data_catalogue_exports": {
                 "task": BROWSE_TASKS + "task_create_data_catalogue_archive",
                 "schedule": 1.0 * 60.0 * 60.0,

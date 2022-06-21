@@ -6,126 +6,120 @@
 {% load static %}
 
 {% block title_tag %}
-  {% trans page_title %}
+    {% trans page_title %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% if user.is_agent_user %}
-    {% breadcrumb_url 'Operator Dashboard' 'select-org' host hosts.publish %}
-  {% endif %}
-  {% if feature.avl or feature.fares %}
+    {{ block.super }}
+    {% if user.is_agent_user %}
+        {% breadcrumb_url 'Operator Dashboard' 'select-org' host hosts.publish %}
+    {% endif %}
     {% breadcrumb_url 'Choose data type' 'select-data' pk1=user.organisation.id host host.name %}
-  {% endif %}
-  {% breadcrumb page_title %}
+    {% breadcrumb page_title %}
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {% if feature.avl or feature.fares %}
-        {% include "snippets/data_type_selector.html" with current_url=current_url %}
-      {% endif %}
-      <h1 class="govuk-heading-xl">{% trans page_title %}</h1>
-      <p class="govuk-body-l">{% trans 'Publish, preview and manage your open data sets' %}</p>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% include "snippets/data_type_selector.html" with current_url=current_url %}
+            <h1 class="govuk-heading-xl">{% trans page_title %}</h1>
+            <p class="govuk-body-l">{% trans 'Publish, preview and manage your open data sets' %}</p>
+        </div>
     </div>
-  </div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ global_feed_stats.total_dataset_count }}</span>
-            <span class="feed-stat__label">{% trans 'Data sets' %}</span>
-          </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ global_feed_stats.total_dataset_count }}</span>
+                        <span class="feed-stat__label">{% trans 'Data sets' %}</span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ global_feed_stats.line_count }}</span>
+                        <span class="feed-stat__label">{% trans 'Bus routes' %}</span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ global_feed_stats.feed_warnings }}</span>
+                        <span class="feed-stat__label">{% trans 'Data sets requires attention' %}</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ global_feed_stats.line_count }}</span>
-            <span class="feed-stat__label">{% trans 'Bus routes' %}</span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ global_feed_stats.feed_warnings }}</span>
-            <span class="feed-stat__label">{% trans 'Data sets requires attention' %}</span>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
 
-  <div class="govuk-tabs app-!-mb-1">
-    <h2 class="govuk-tabs__title">
-      {% trans 'Contents' %}
-    </h2>
+    <div class="govuk-tabs app-!-mb-1">
+        <h2 class="govuk-tabs__title">
+            {% trans 'Contents' %}
+        </h2>
 
-    <ul class="govuk-tabs__list">
-      {% for section, title in sections %}
-        <li class="govuk-tabs__list-item {% if tab == section %}govuk-tabs__list-item--selected{% endif %}">
-          <a class="govuk-tabs__tab"
-             href="{% url 'feed-list' pk1=pk1 host hosts.publish %}?tab={{ section }}"
-          >
-            {% blocktrans %}
-              {{ title }}
+        <ul class="govuk-tabs__list">
+            {% for section, title in sections %}
+                <li class="govuk-tabs__list-item {% if tab == section %}govuk-tabs__list-item--selected{% endif %}">
+                    <a class="govuk-tabs__tab"
+                        href="{% url 'feed-list' pk1=pk1 host hosts.publish %}?tab={{ section }}"
+                    >
+                        {% blocktrans %}
+                            {{ title }}
+                        {% endblocktrans %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <section class="govuk-tabs__panel" id="active-feeds">
+            <div class="govuk-grid-row">
+                {% if active_feeds_table.data %}
+                    {% render_table active_feeds_table %}
+                {% else %}
+                    <p class="govuk-body-m">
+                        {% trans 'No data sets found' %}
+                    </p>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <a role="button" class="govuk-button govuk-!-margin-top-5" href="{% url 'feed-new' pk1=pk1 host hosts.publish %}">
+                {{ _('Publish new data sets') }}
+            </a>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+            <h3 class="govuk-heading-s"><a class="govuk-link"
+                href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _('Bus operator requirements') }}</a>
+            </h3>
+            <p class="govuk-body">
+                {% blocktrans %}
+                    Guidance and support for English bus operators.
+                {% endblocktrans %}</p>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+            <h3 class="govuk-heading-s"><a class="govuk-link"
+                href="{% url 'guidance:support-local_authorities' host hosts.publish %}">{{ _('Local authority requirements') }}</a>
+            </h3>
+            <p class="govuk-body">{% blocktrans %}
+                Guidance and support for English local authorities.
             {% endblocktrans %}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-
-    <section class="govuk-tabs__panel" id="active-feeds">
-      <div class="govuk-grid-row">
-        {#        <div class="govuk-grid-column-full">#}
-        {% if active_feeds_table.data %}
-          {% render_table active_feeds_table %}
-        {% else %}
-          <p class="govuk-body-m">
-            {% trans 'No data sets found' %}
-          </p>
-        {% endif %}
-        {#        </div>#}
-      </div>
-    </section>
-  </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <a role="button" class="govuk-button govuk-!-margin-top-5" href="{% url 'feed-new' pk1=pk1 host hosts.publish %}">
-        {{ _('Publish new data sets') }}
-      </a>
+            </p>
+        </div>
     </div>
-  </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third">
-      <h3 class="govuk-heading-s"><a class="govuk-link"
-                                     href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _('Bus operator requirements') }}</a>
-      </h3>
-      <p class="govuk-body">
-        {% blocktrans %}
-          Guidance and support for English bus operators.
-        {% endblocktrans %}</p>
-    </div>
-
-    <div class="govuk-grid-column-one-third">
-      <h3 class="govuk-heading-s"><a class="govuk-link"
-                                     href="{% url 'guidance:support-local_authorities' host hosts.publish %}">{{ _('Local authority requirements') }}</a>
-      </h3>
-      <p class="govuk-body">{% blocktrans %}
-        Guidance and support for English local authorities.
-      {% endblocktrans %}
-      </p>
-    </div>
-  </div>
 
 {% endblock %}
 {% block scripts %}
-  {{ block.super }}
-  <script>BODSFrontend.initDatasetListLoaders()</script>
-  {% if focus == tab %}
-  <script>BODSFrontend.autoFocusToClass("govuk-tabs__list-item--selected")</script>
-  {% endif %}
+    {{ block.super }}
+    <script>BODSFrontend.initDatasetListLoaders()</script>
+    {% if focus == tab %}
+        <script>BODSFrontend.autoFocusToClass("govuk-tabs__list-item--selected")</script>
+    {% endif %}
 {% endblock %}

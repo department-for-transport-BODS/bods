@@ -448,6 +448,7 @@ class TestFeedDownloadView:
 
 class TestDownloadBulkDataArchiveView:
     def test_download(self, client_factory):
+        user = UserFactory()
         now = timezone.now()
         yesterday = now - datetime.timedelta(days=1)
 
@@ -465,6 +466,7 @@ class TestDownloadBulkDataArchiveView:
 
         host = DATA_HOST
         client = client_factory(host=host)
+        client.force_login(user)
         url = reverse("downloads-bulk", host=host)
         response = client.get(url)
 

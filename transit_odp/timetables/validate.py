@@ -1,17 +1,17 @@
 import zipfile
 from logging import getLogger
-from typing import List
+from typing import List, Optional
 
 from lxml import etree
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
+from transit_odp.timetables.proxies import TimetableDatasetRevision
+from transit_odp.timetables.transxchange import TXCSchemaViolation
+from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
-
-from .transxchange import TXCSchemaViolation
-from .utils import get_transxchange_schema
 
 logger = getLogger(__name__)
 
@@ -115,13 +115,41 @@ class TimetableFileValidator:
 
 
 class TXCRevisionValidator:
-    def __init__(self, draft_revision: DatasetRevision):
+    def __init__(self, draft_revision: TimetableDatasetRevision):
         self.revision = draft_revision
         self.dataset = draft_revision.dataset
-        self.live_revision = self.dataset.live_revision
+        self._live_revision = None
         self._live_attributes = None
         self._draft_attributes = None
+        self._live_hashes = None
         self.violations = []
+
+    @property
+    def live_revision(self) -> Optional[TimetableDatasetRevision]:
+        """
+        Returns the live revision
+        """
+        if self._live_revision is not None:
+            return self._live_revision
+
+        try:
+            self._live_revision = TimetableDatasetRevision.objects.get(
+                id=self.dataset.live_revision_id
+            )
+        except TimetableDatasetRevision.DoesNotExist:
+            pass
+
+        return self._live_revision
+
+    @property
+    def live_hashes(self) -> List[str]:
+        """
+        Returns all the hashes of all the txc files in the live revision
+        """
+        if self._live_hashes is not None:
+            return self._live_hashes
+        self._live_hashes = self.live_revision.get_txc_hashes()
+        return self._live_hashes
 
     @property
     def draft_attributes(self) -> List[TXCFileAttributes]:
@@ -158,6 +186,9 @@ class TXCRevisionValidator:
         Validates that creation_datetime remains unchanged between revisions.
         """
         for draft in self.draft_attributes:
+            if draft.hash in self.live_hashes:
+                continue
+
             lives = self.get_live_attribute_by_service_code(draft.service_code)
 
             if len(lives) == 0:
@@ -183,6 +214,9 @@ class TXCRevisionValidator:
         when we expect the revision_number to be bumped.
         """
         for draft in self.draft_attributes:
+            if draft.hash in self.live_hashes:
+                continue
+
             live_attributes = self.get_live_attribute_by_service_code(
                 draft.service_code
             )

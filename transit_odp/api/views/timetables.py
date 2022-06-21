@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.views.generic import TemplateView
 
 from transit_odp.api.views.base import DatasetViewSet
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset
 
 
@@ -13,11 +13,11 @@ class TimetablesApiView(LoginRequiredMixin, TemplateView):
 
 class TimetablesViewSet(DatasetViewSet):
     def get_queryset(self):
-        # Filter results to only those that are live, error or expired and Published
         qs = (
             Dataset.objects.get_published()
             .get_live_dq_score()
             .get_active_org()
+            .get_viewable_statuses()
             .add_is_live_pti_compliant()
             .add_organisation_name()
             .select_related("live_revision")
@@ -26,7 +26,7 @@ class TimetablesViewSet(DatasetViewSet):
             .prefetch_related("live_revision__localities")
             .prefetch_related("live_revision__services")
         )
-        qs = qs.filter(dataset_type=DatasetType.TIMETABLE.value)
+        qs = qs.filter(dataset_type=TimetableType)
 
         status_list = self.request.GET.getlist("status", [])
         if status_list and "" not in status_list:

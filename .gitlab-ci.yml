@@ -159,10 +159,8 @@ build-dev:
       -e POSTGRES_DB
       -e POSTGRES_USER
       -e POSTGRES_PASSWORD
-      -e IS_FARES_FEATURE_FLAG_ENABLED
-      -e IS_AVL_FEATURE_FLAG_ENABLED
       $CURRENT_DEV_IMAGE
-      bash -c "pytest --cov=transit_odp --numprocesses=4 ."
+      bash -c "pytest --numprocesses=4 ."
   coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
 
 test-merge-request:
@@ -177,27 +175,10 @@ lint:
   before_script:
     - *logging
     - pip install black==$BLACK_VERSION
+    # need to pin click version to below 8.1.0 to fix an issue with black (https://github.com/psf/black/issues/2964)
+    - pip install "click<8.1.0"
   script:
     - black --check --config .black.toml  .
-
-test-crispy_forms_govuk:
-  stage: test
-  image: python:3.9
-  before_script:
-    - *logging
-    - cd crispy-forms-govuk
-    - pip install poetry
-    - poetry --version
-    - poetry install -v
-  script:
-    - cd /builds/transit-hub/bodp-django/crispy-forms-govuk
-    - poetry run pytest -vv tests/
-  only:
-    # Task only runs in MRs containing changes to crispy-forms-govuk project
-    refs:
-      - merge_requests
-    changes:
-      - crispy-forms-govuk/**/*
 
 # POST-MERGE TASKS
 # These tasks execute after a merge request has been tested, reviewed and merged into the target branch

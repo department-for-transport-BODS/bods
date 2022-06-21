@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from transit_odp.common.contants import FALSE, TRUE
+from transit_odp.common.constants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 
 

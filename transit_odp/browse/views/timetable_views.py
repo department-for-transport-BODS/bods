@@ -27,6 +27,7 @@ from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
     BODSBaseView,
     DownloadView,
+    ResourceCounterMixin,
 )
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import (
@@ -58,8 +59,9 @@ class DatasetDetailView(DetailView):
             super()
             .get_queryset()
             .get_active_org()
-            .get_dataset_type(dataset_type=DatasetType.TIMETABLE.value)
+            .get_dataset_type(dataset_type=TimetableType)
             .get_published()
+            .get_viewable_statuses()
             .add_admin_area_names()
             .add_live_data()
             .add_nocs()
@@ -303,6 +305,7 @@ class SearchView(BaseSearchView):
             .get_dataset_type(dataset_type=TimetableType)
             .get_published()
             .get_active_org()
+            .get_viewable_statuses()
             .add_organisation_name()
             .add_live_data()
             .add_admin_area_names()
@@ -374,7 +377,7 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
         return gtfs
 
 
-class DownloadBulkDataArchiveView(DownloadView):
+class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
     def get_object(self, queryset=None):
         try:
             return BulkDataArchive.objects.filter(

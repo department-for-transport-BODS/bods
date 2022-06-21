@@ -20,7 +20,7 @@ class Command(RunServerCommand):
         """Run the server with webpack in the background."""
         if os.environ.get(DJANGO_AUTORELOAD_ENV) != "true":
             self.stdout.write("Starting webpack build thread.")
-            command = "cd frontend && npm run start"
+            command = "npm run start"
             kwargs = {"shell": True}
             webpack_thread = threading.Thread(
                 target=subprocess.run, args=(command,), kwargs=kwargs

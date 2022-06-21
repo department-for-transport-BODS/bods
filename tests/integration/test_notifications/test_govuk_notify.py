@@ -37,7 +37,6 @@ def setup_mocking(mocker):
         "DEVELOPER_DATA_CHANGED": "7",
         "OPERATOR_PUBLISH_LIVE": "8",
         "OPERATOR_PUBLISH_ERROR": "9",
-        "OPERATOR_EXPIRING_NOTIFICATION": "10",
         "OPERATOR_EXPIRED_NOTIFICATION": "11",
         "VERIFY_EMAIL_ADDRESS": "12",
         "INVITE_USER": "13",
@@ -364,34 +363,6 @@ def test_data_endpoint_expired_developer(mocker, user_factory):
 
     client._notification_client.send_email_notification.assert_has_calls(
         [bob_call, charlie_call]
-    )
-
-
-@pytest.mark.skip
-def test_data_endpoint_expiring(mocker, datasets):
-    # Set up
-    client = setup_mocking(mocker)
-    dataset, org_user = datasets
-
-    published = localize_datetime_and_convert_to_string(
-        dataset.live_revision.published_at
-    )
-    expiry = localize_datetime_and_convert_to_string(
-        dataset.live_revision.first_expiring_service
-    )
-    # Test
-    client.send_data_endpoint_expiring_notification(dataset)
-
-    # Assert
-    client._notification_client.send_email_notification.assert_called_once_with(
-        email_address=org_user.email,
-        template_id="10",
-        personalisation={
-            "feed_name": dataset.live_revision.name,
-            "published_time": published,
-            "expiry_time": expiry,
-            "expiry_days": client._expiry_days,
-        },
     )
 
 

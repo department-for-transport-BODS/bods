@@ -24,7 +24,7 @@ from transit_odp.browse.views.timetable_views import (
     UserFeedbackView,
 )
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.common.view_mixins import DownloadView
+from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import (
     Dataset,
@@ -199,7 +199,7 @@ class DownloadCAVLDataArchiveView(DownloadView):
         return self.object.data
 
 
-class DownloadSIRIVMDataArchiveView(DownloadCAVLDataArchiveView):
+class DownloadSIRIVMDataArchiveView(ResourceCounterMixin, DownloadCAVLDataArchiveView):
     data_format = CAVLDataArchive.SIRIVM
 
 

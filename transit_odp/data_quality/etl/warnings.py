@@ -4,8 +4,10 @@ from typing import List, Tuple
 from transit_odp.data_quality.dataclasses.warnings import JourneyPartialTimingOverlap
 from transit_odp.data_quality.dataclasses.warnings.base import BaseWarning
 from transit_odp.data_quality.dataclasses.warnings.lines import LineBaseWarning
+from transit_odp.data_quality.dataclasses.warnings.stops import StopServiceLinkMissing
 from transit_odp.data_quality.models.transmodel import (
     Service,
+    ServiceLink,
     StopPoint,
     TimingPattern,
     TimingPatternStop,
@@ -17,6 +19,7 @@ from transit_odp.data_quality.models.warnings import (
     JourneyConflictWarning,
     LineExpiredWarning,
     LineMissingBlockIDWarning,
+    ServiceLinkMissingStopWarning,
     TimingFirstWarning,
     TimingLastWarning,
     TimingMissingPointWarning,
@@ -389,3 +392,77 @@ class LineExpiredETL(LineWarningETL):
 class LineMissingBlockIDETL(LineWarningETL):
     WarningClass = LineMissingBlockIDWarning
     ThroughClass = LineMissingBlockIDWarning.vehicle_journeys.through
+
+
+class ServiceLinkMissingStopsETL:
+    def __init__(self, report_id: int, warnings: List[StopServiceLinkMissing]):
+        self.warnings = warnings
+        self.report_id = report_id
+        self._service_links = None
+        self._stop_points = None
+        self._warning_stops_map = {}
+
+    @property
+    def service_links(self) -> List[ServiceLink]:
+        """
+        Returns all the ServiceLinks associated with the list of warnings.
+        """
+        if self._service_links:
+            return self._service_links
+
+        ito_ids = [w.id for w in self.warnings]
+        self._service_links = list(ServiceLink.objects.filter(ito_id__in=ito_ids))
+        return self._service_links
+
+    def get_service_link_by_ito_id(self, ito_ids: List[str]) -> List[ServiceLink]:
+        service_links = [sl for sl in self.service_links if sl.ito_id in ito_ids]
+        return service_links[0]
+
+    @property
+    def stops(self) -> List[StopPoint]:
+        if self._stop_points:
+            return self._stop_points
+
+        ito_ids = []
+        for warning in self.warnings:
+            ito_ids += warning.stops
+
+        self._stop_points = list(StopPoint.objects.filter(ito_id__in=ito_ids))
+        return self._stop_points
+
+    def get_stops_by_ito_id(self, ito_ids: List[str]) -> List[StopPoint]:
+        stops = [sp for sp in self.stops if sp.ito_id in ito_ids]
+        return stops
+
+    def map_stops(self, obj: ServiceLinkMissingStopWarning, stops: List[StopPoint]):
+        key = (obj.report_id, obj.service_link_id)
+        self._warning_stops_map[key] = stops
+
+    def get_stops_from_map(self, obj: ServiceLinkMissingStopWarning) -> List[StopPoint]:
+        key = (obj.report_id, obj.service_link_id)
+        return self._warning_stops_map.get(key)
+
+    def load(self) -> None:
+        ThroughModel = ServiceLinkMissingStopWarning.stops.through
+
+        models = []
+        for warning in self.warnings:
+            model = ServiceLinkMissingStopWarning(
+                report_id=self.report_id,
+                service_link=self.get_service_link_by_ito_id(warning.id),
+            )
+            stops = self.get_stops_by_ito_id(warning.stops)
+            self.map_stops(model, stops)
+            models.append(model)
+        objs = ServiceLinkMissingStopWarning.objects.bulk_create(models)
+
+        through_models = []
+        for obj in objs:
+            stops = self.get_stops_from_map(obj)
+            for stop in stops:
+                through_models.append(
+                    ThroughModel(
+                        servicelinkmissingstopwarning_id=obj.id, stoppoint_id=stop.id
+                    )
+                )
+        ThroughModel.objects.bulk_create(through_models)

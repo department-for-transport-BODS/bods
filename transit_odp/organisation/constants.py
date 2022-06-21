@@ -49,6 +49,11 @@ STATUS_CHOICES = (
     (FeedStatus.inactive.value, "Inactive"),
 )
 
+SEARCH_STATUS_CHOICES = (
+    (LIVE, "Published"),
+    (INACTIVE, "Inactive"),
+)
+
 
 @enum.unique
 class AVLFeedStatus(ChoiceEnum):

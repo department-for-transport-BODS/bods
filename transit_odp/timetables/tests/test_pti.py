@@ -9,6 +9,7 @@ from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
+from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import DatasetPTIValidator, get_pti_validator
 from transit_odp.timetables.tasks import task_pti_validation
 from transit_odp.validate.exceptions import ValidationException
@@ -29,10 +30,51 @@ def test_pti_validation():
     Then the number of violations returned is greater than 0
     """
     filepath = DATA_DIR / "pti_xml_test.xml"
-    revision = DatasetRevisionFactory(upload_file__from_path=filepath.as_posix())
+    revision = DatasetRevisionFactory(
+        upload_file__from_path=filepath.as_posix(), is_published=False
+    )
     pti = get_pti_validator()
-    violations = pti.get_violations(revision)
+    violations = pti.get_violations(
+        TimetableDatasetRevision.objects.get(id=revision.id)
+    )
     assert len(violations) > 0
+
+
+def test_pti_validation_passes_on_zip():
+    """
+    Given a revision with a zipfile containing no pti violations
+    When we call `get_violations` on the pti validator
+    Then the number of violations returned is 0
+    """
+    filepath = DATA_DIR / "3_pti_pass.zip"
+    revision = DatasetRevisionFactory(
+        upload_file__from_path=filepath.as_posix(), is_published=False
+    )
+    pti = get_pti_validator()
+    violations = pti.get_violations(
+        TimetableDatasetRevision.objects.get(id=revision.id)
+    )
+    assert len(violations) == 0
+
+
+def test_pti_validation_passes_on_zip_with_same_draft():
+    """
+    Given a revision with a zipfile containing no pti violations
+    When we call `get_violations` on the pti validator
+    Then the number of violations returned is 0
+    """
+    filepath = DATA_DIR / "3_pti_pass.zip"
+    draft = DatasetRevisionFactory(
+        upload_file__from_path=filepath.as_posix(), is_published=False
+    )
+    DatasetRevisionFactory(
+        upload_file__from_path=filepath.as_posix(),
+        is_published=True,
+        dataset=draft.dataset,
+    )
+    pti = get_pti_validator()
+    violations = pti.get_violations(TimetableDatasetRevision.objects.get(id=draft.id))
+    assert len(violations) == 0
 
 
 def test_validate_pti_success(mocker, pti_unenforced):

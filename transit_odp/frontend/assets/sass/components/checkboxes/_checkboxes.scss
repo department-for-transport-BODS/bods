@@ -1,0 +1,65 @@
+@import "../../variables";
+
+.govuk-checkboxes--tiny {
+  @extend .govuk-checkboxes--small;
+  // The values below come from those specified in the zeplin designs
+  // https://app.zeplin.io/project/5e2e281b00852d8097184752/screen/5fbe66e030bc418bdf8822ad
+  $checkbox-size: 13px;
+  $checkbox-left-offset: 10px;
+  $checkbox-top-offset: 3px;
+  $checkbox-label-font-size: 16px;
+
+  .govuk-checkboxes__input {
+    width: $checkbox-size;
+    height: $checkbox-size;
+    left: $checkbox-left-offset;
+    top: $checkbox-top-offset;
+  }
+
+  .govuk-checkboxes__label {
+    padding: 1px;
+    font-size: $checkbox-label-font-size;
+  }
+
+  .govuk-checkboxes__item:last-of-type {
+    margin-bottom: govuk-spacing(1);
+  }
+
+  .govuk-checkboxes__item:hover
+    .govuk-checkboxes__input:not(:disabled)
+    + .govuk-checkboxes__label:before {
+    // Disable shadow on hover
+    box-shadow: none;
+  }
+
+  .govuk-checkboxes__item:hover
+    .govuk-checkboxes__input:focus
+    + .govuk-checkboxes__label:before {
+    // Disable thicken of border and yellow shadow on focus + hover and replace with
+    // yellow border
+    box-shadow: none;
+    border: 1px solid $govuk-focus-colour;
+  }
+
+  .govuk-checkboxes__input:focus + .govuk-checkboxes__label:before {
+    // Disable thicken of border and yellow shadow on focus and replace with
+    // yellow border
+    border: 1px solid $govuk-focus-colour;
+    box-shadow: none;
+  }
+
+  .govuk-checkboxes__label::before {
+    height: $checkbox-size;
+    width: $checkbox-size;
+    border: 1px solid currentColor;
+    top: $checkbox-top-offset;
+    left: $checkbox-left-offset;
+  }
+  .govuk-checkboxes__label::after {
+    top: 7px;
+    left: 12px;
+    width: 9px;
+    height: 4px;
+    border-width: 0 0 1px 1px;
+  }
+}

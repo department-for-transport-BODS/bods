@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bods"
-version = "1.16.4"
+version = "1.17.2"
 description = "Bus Open Data Service"
 authors = [
         "Angus Bell <angus.bell@itoworld.com>",
@@ -18,6 +18,7 @@ argon2-cffi = "~=20.1.0"
 attrs = "~=19.3.0"
 celery = "~=5.2.0"
 clamd = "~=1.0.0"
+crispy-forms-govuk = "^0.2.0"
 decorator = "~=4.0.0"
 defusedxml = "~=0.6.0"
 django = "~=3.1.0"
@@ -62,9 +63,7 @@ stories = "~=1.0.0"
 tenacity = "~=6.2.0"
 whitenoise = "~=5.1.0"
 
-frontend = {path = "./frontend", develop = true}
 cavl-client = {path = "./cavl-client", develop = true}
-crispy-forms-govuk = {path = "./crispy-forms-govuk", develop = true}
 
 [tool.poetry.dev-dependencies]
 black = "==21.12b0"

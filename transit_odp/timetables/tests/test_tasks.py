@@ -13,14 +13,12 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
 )
-from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.tasks import (
-    download_timetable,
-    run_scan_timetables,
-    task_deactivate_txc_2_1,
+    task_dataset_download,
+    task_scan_timetables,
     task_timetable_file_check,
     task_timetable_schema_check,
 )
@@ -118,8 +116,9 @@ def create_datasets(organisation, txc_version=2.1):
 def test_task_run_download_with_no_task():
     """Given a task_id that doesn't exist, throw a PipelineException."""
     task_id = -1
+    revision_id = -1
     with pytest.raises(PipelineException) as exc_info:
-        download_timetable(task_id)
+        task_dataset_download(revision_id, task_id)
 
     expected = f"DatasetETLTaskResult {task_id} does not exist."
     assert str(exc_info.value) == expected
@@ -136,7 +135,7 @@ def test_download_timetable_success(mocker):
     now = timezone.now()
     now_str = now.strftime(DT_FORMAT)
     with freeze_time(now):
-        download_timetable(task.id)
+        task_dataset_download(task.revision.id, task.id)
     task.refresh_from_db()
 
     revision = task.revision
@@ -151,7 +150,7 @@ def test_download_timetable_exception(mocker):
     task = create_task(revision__upload_file=None, revision__url_link=url_link)
     mocker.patch(download_get, side_effect=DownloadException(url_link))
     with pytest.raises(PipelineException) as exc_info:
-        download_timetable(task.id)
+        task_dataset_download(task.revision.id, task.id)
 
     task.refresh_from_db()
     assert task.error_code == task.SYSTEM_ERROR
@@ -162,7 +161,7 @@ def test_download_timetable_no_file_or_url():
     """Given task has no file or url_link."""
     task = create_task(revision__upload_file=None)
     with pytest.raises(PipelineException) as exc_info:
-        download_timetable(task.id)
+        task_dataset_download(task.revision.id, task.id)
 
     expected = f"DatasetRevision {task.revision.id} doesn't contain a file."
     task.refresh_from_db()
@@ -205,7 +204,7 @@ def test_antivirus_scan_exception(mocker, tmp_path):
     mocker.patch(scanner, return_value=scanner_obj)
 
     with pytest.raises(PipelineException) as exc_info:
-        run_scan_timetables(task.id)
+        task_scan_timetables(task.revision.id, task.id)
 
     task.refresh_from_db()
     expected = f"Anti-virus alert triggered for file {task.revision.upload_file.name}."
@@ -227,7 +226,7 @@ def test_antivirus_scan_general_exception(mocker, tmp_path):
     mocker.patch(scanner, return_value=scanner_obj)
 
     with pytest.raises(PipelineException) as exc_info:
-        run_scan_timetables(task.id)
+        task_scan_timetables(task.revision.id, task.id)
 
     task.refresh_from_db()
     assert task.error_code == task.SYSTEM_ERROR
@@ -263,173 +262,3 @@ def test_file_check_validation_exception(mocker):
     assert task.error_code == task.XML_SYNTAX_ERROR
     expected_message = XMLSyntaxError.message_template.format(filename=filename)
     assert str(exc_info.value) == expected_message
-
-
-def test_single_dataset_with_one_live_revision(org_with_key_contact, mailoutbox):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_live_revision(dataset)
-
-    task_deactivate_txc_2_1()
-    fetched_revision = DatasetRevision.objects.get(id=dataset.live_revision.id)
-    assert fetched_revision.status == FeedStatus.inactive.value
-    assert len(mailoutbox) == 1
-    email = mailoutbox[0]
-    assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "Your data set is no longer compliant"
-
-
-def test_single_dataset_with_one_live_mixed_revision(org_with_key_contact, mailoutbox):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_live_revision(dataset, txc_version="2.1,2.4")
-
-    task_deactivate_txc_2_1()
-    fetched_revision = DatasetRevision.objects.get(id=dataset.live_revision.id)
-    assert fetched_revision.status == FeedStatus.inactive.value
-    assert len(mailoutbox) == 1
-    email = mailoutbox[0]
-    assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "Your data set is no longer compliant"
-
-
-def test_organisation_without_key_contact_doesnt_break():
-    org = OrganisationFactory()
-    dataset = DatasetFactory(live_revision=None, organisation=org)
-    add_live_revision(dataset)
-
-    task_deactivate_txc_2_1()
-    fetched_revision = DatasetRevision.objects.get(id=dataset.live_revision.id)
-    assert fetched_revision.status == FeedStatus.inactive.value
-
-
-def test_draft_revision_without_task_doesnt_break(org_with_key_contact):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    DatasetRevisionFactory(
-        dataset=dataset,
-        transxchange_version=2.1,
-        is_published=False,
-        status=FeedStatus.success.value,
-    )
-    task_deactivate_txc_2_1()
-    fetched_revision = DatasetRevision.objects.get(id=dataset.revisions.latest().id)
-    assert fetched_revision.status == FeedStatus.error.value
-
-
-def test_single_dataset_with_one_live_revision_and_one_draft(
-    org_with_key_contact, mailoutbox
-):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_live_revision(dataset)
-    add_draft_revision(dataset)
-    task_deactivate_txc_2_1()
-
-    fetched_revision = DatasetRevision.objects.get(id=dataset.live_revision.id)
-    assert dataset.revisions.count() == 1
-    assert fetched_revision.status == FeedStatus.inactive.value
-    assert len(mailoutbox) == 1
-    email = mailoutbox[0]
-    assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "Your data set is no longer compliant"
-
-
-def test_single_dataset_with_two_live_revisions(org_with_key_contact, mailoutbox):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_live_revision(dataset)
-    add_live_revision(dataset)
-
-    task_deactivate_txc_2_1()
-    fetched_revision = DatasetRevision.objects.get(id=dataset.live_revision.id)
-    assert dataset.revisions.count() == 2
-    assert fetched_revision.status == FeedStatus.inactive.value
-    assert len(mailoutbox) == 1
-    email = mailoutbox[0]
-    assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "Your data set is no longer compliant"
-
-
-def test_single_dataset_with_two_live_revisions_and_one_draft(
-    org_with_key_contact, mailoutbox
-):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_live_revision(dataset)
-    add_live_revision(dataset)
-    add_draft_revision(dataset)
-
-    task_deactivate_txc_2_1()
-    fetched_revision = DatasetRevision.objects.get(id=dataset.live_revision.id)
-    assert dataset.revisions.count() == 2
-    assert fetched_revision.status == FeedStatus.inactive.value
-    assert len(mailoutbox) == 1
-    email = mailoutbox[0]
-    assert email.to[0] == org_with_key_contact.key_contact.email
-    assert email.subject == "Your data set is no longer compliant"
-
-
-def test_single_dataset_with_one_draft_revision(org_with_key_contact, mailoutbox):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_draft_revision(dataset)
-    task_deactivate_txc_2_1()
-    fetched_dataset = Dataset.objects.get(id=dataset.id)
-    fetched_revision = fetched_dataset.revisions.latest()
-    assert fetched_revision.status == FeedStatus.error.value
-    assert not mailoutbox
-    assert (
-        fetched_revision.etl_results.latest().error_code
-        == DatasetETLTaskResult.SCHEMA_ERROR
-    )
-    assert fetched_revision.schema_violations.first().filename == "transXchange.xml"
-
-
-def test_single_dataset_with_one_mixed_draft_revision(org_with_key_contact):
-    dataset = DatasetFactory(live_revision=None, organisation=org_with_key_contact)
-    add_draft_revision(dataset, txc_version="2.4,2.1")
-    task_deactivate_txc_2_1()
-    fetched_dataset = Dataset.objects.get(id=dataset.id)
-    fetched_revision = fetched_dataset.revisions.latest()
-    assert fetched_revision.status == FeedStatus.error.value
-
-
-def test_each_of_above_test_cases_at_once_5_datasets(org_with_key_contact, mailoutbox):
-    d1, d2, d3, d4, d5 = create_datasets(org_with_key_contact)
-    task_deactivate_txc_2_1()
-    datasets = Dataset.objects.filter(id__in=[d1.id, d2.id, d3.id, d4.id])
-    draft = Dataset.objects.get(id=d5.id)
-    for dataset in datasets:
-        assert dataset.live_revision.status == FeedStatus.inactive.value
-    assert draft.revisions.latest().status == FeedStatus.error.value
-    assert len(mailoutbox) == 1
-    assert mailoutbox[0].body.count("Data set ID:") == 4
-
-
-def test_5_organisations_with_5_datasets(mailoutbox):
-    for _ in range(5):
-        org = create_org_with_key_contact()
-        create_datasets(org)
-
-    task_deactivate_txc_2_1()
-    assert len(mailoutbox) == 5
-    for email in mailoutbox:
-        assert email.body.count("Data set ID:") == 4
-
-    # this also tests idempotency
-    assert Organisation.objects.get_organisations_with_txc21_datasets().count() == 0
-
-
-def test_mixture_of_txc2_1_and_txc2_4(mailoutbox):
-    for _ in range(5):
-        org = create_org_with_key_contact()
-        create_datasets(org)
-        create_datasets(org, txc_version=2.4)
-
-    task_deactivate_txc_2_1()
-    assert len(mailoutbox) == 5
-    for email in mailoutbox:
-        assert email.body.count("Data set ID:") == 4
-    assert Organisation.objects.get_organisations_with_txc21_datasets().count() == 0
-
-    for test_org in Organisation.objects.all():
-        assert (
-            test_org.dataset_set.filter(
-                live_revision__status=FeedStatus.live.value
-            ).count()
-            == 4
-        )

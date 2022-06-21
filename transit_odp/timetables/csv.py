@@ -220,7 +220,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "service_type_other_details": Column(
             "Service Type Other Details",
-            "The service type other detials element as extracted from "
+            "The service type other details element as extracted from "
             "the database of the Office of the Traffic Commissioner (OTC)",
         ),
     }

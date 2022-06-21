@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models.functions.text import Lower, Substr
+from django.db.models.functions.text import Substr, Upper
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, UpdateView
 from django_filters.views import FilterView
@@ -12,10 +12,9 @@ from transit_odp.common.forms import ConfirmCancelForm
 from transit_odp.site_admin.filters import ConsumerFilter
 from transit_odp.site_admin.forms import EditNotesForm
 from transit_odp.site_admin.tables import ConsumerTable
-from transit_odp.users.constants import AccountType
+from transit_odp.users.constants import DeveloperType
 from transit_odp.users.views.mixins import SiteAdminViewMixin
 
-DeveloperType = AccountType.developer.value
 Invitation = get_invitation_model()
 User = get_user_model()
 
@@ -41,16 +40,27 @@ class ConsumerListView(SiteAdminViewMixin, FilterView, SingleTableView):
     template_name = "site_admin/consumers/list.html"
     table_class = ConsumerTable
     filterset_class = ConsumerFilter
+    paginate_by = 25
 
     def get_queryset(self):
         qs = (
             super()
             .get_queryset()
-            .annotate(email_first_letter=Lower(Substr("email", 1, 1)))
-            .filter(account_type=AccountType.developer.value)
+            .annotate(email_first_letter=Upper(Substr("email", 1, 1)))
+            .filter(account_type=DeveloperType)
             .order_by("email")
         )
+        search_term = self.request.GET.get("q", "").strip()
+        if search_term:
+            qs = qs.filter(email__istartswith=search_term)
+
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "").strip()
+        context["letters"] = self.request.GET.getlist("letters")
+        return context
 
 
 class RevokeConsumerSuccessView(SiteAdminViewMixin, DetailView):

@@ -18,7 +18,7 @@ class ListView(PublishView):
             .select_related("organisation")
             .select_related("live_revision")
             .add_avl_compliance_status()
-        ).order_by("avl_feed_status")
+        ).order_by("avl_feed_status", "-modified")
 
         exclude_status = [EXPIRED, INACTIVE]
         feeds_table = None

@@ -9,9 +9,9 @@ from zipfile import ZIP_DEFLATED
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import File
-from django.db.models import Case, CharField, Count, OuterRef, Q, Subquery, Value, When
+from django.db.models import Case, CharField, OuterRef, Q, Subquery, Value, When
 from django.db.models.expressions import F
-from django.db.models.functions import TruncDay
+from django.db.models.functions import Concat
 
 from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
 from transit_odp.browse.exports import (
@@ -27,11 +27,17 @@ from transit_odp.common.utils import (
     get_dataset_type_from_path_info,
     remove_query_string_param,
 )
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import EXPIRED, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
 from transit_odp.organisation.csv.overall import get_overall_data_catalogue_csv
 from transit_odp.organisation.models import Dataset
+from transit_odp.site_admin.csv import (
+    DAILY_AGGREGATES_FILENAME,
+    DAILY_CONSUMER_FILENAME,
+    get_consumer_breakdown_csv,
+    get_daily_aggregates_csv,
+)
 from transit_odp.site_admin.models import APIRequest, MetricsArchive, OperationalStats
 from transit_odp.timetables.csv import get_timetable_catalogue_csv
 from transit_odp.users.constants import (
@@ -147,7 +153,7 @@ class DatasetPublishingCSV(CSVBuilder):
         CSVColumn(header="dataID", accessor="id"),
         CSVColumn(header="status", accessor=get_feed_status),
         CSVColumn(header="lastPublished", accessor="published_at"),
-        CSVColumn(header="email", accessor="user_email"),
+        CSVColumn(header="email", accessor="last_published_by_email"),
         CSVColumn(
             header="accountType",
             accessor=lambda at: pretty_account_name(at.account_type),
@@ -161,6 +167,7 @@ class DatasetPublishingCSV(CSVBuilder):
             .add_organisation_name()
             .add_last_published_by_email()
             .annotate(account_type=F("live_revision__published_by__account_type"))
+            .exclude(live_revision__status=EXPIRED)
         )
 
 
@@ -215,55 +222,6 @@ class AgentUserCSV(CSVBuilder):
         )
 
 
-class APIRequestCSV(CSVBuilder):
-    """Generates a csv of aggregate APIRequest stats."""
-
-    columns = [
-        CSVColumn(header="Date", accessor=lambda r: r["day"].date().isoformat()),
-        CSVColumn(
-            header="Number of unique consumers",
-            accessor=lambda r: r["unique_consumers"],
-        ),
-        CSVColumn(
-            header="Number of API requests", accessor=lambda r: r["total_requests"]
-        ),
-    ]
-
-    def get_queryset(self):
-        return (
-            APIRequest.objects.annotate(day=TruncDay("created"))
-            .values("day")
-            .annotate(
-                total_requests=Count("id"),
-                unique_consumers=Count("requestor_id", distinct=True),
-            )
-            .order_by()
-        )
-
-
-class DailyConsumerRequestCSV(CSVBuilder):
-    """Generates a csv of daily API requests for a specific user."""
-
-    columns = [
-        CSVColumn(header="Date", accessor=lambda r: r["day"].date().isoformat()),
-        CSVColumn(header="Consumer ID", accessor=lambda r: r["requestor_id"]),
-        CSVColumn(header="Email", accessor=lambda r: r["requestor__email"]),
-        CSVColumn(
-            header="Number of daily API requests",
-            accessor=lambda r: r["total_requests"],
-        ),
-    ]
-
-    def get_queryset(self):
-        return (
-            APIRequest.objects.annotate(day=TruncDay("created"))
-            .select_related("requestor")
-            .values("day", "requestor_id", "requestor__email")
-            .annotate(total_requests=Count("id"))
-            .order_by("day", "requestor_id")
-        )
-
-
 class RawConsumerRequestCSV(CSVBuilder):
     columns = [
         CSVColumn(
@@ -272,7 +230,7 @@ class RawConsumerRequestCSV(CSVBuilder):
         ),
         CSVColumn(header="id", accessor="id"),
         CSVColumn(header="requestor", accessor="requestor_id"),
-        CSVColumn(header="Consumer Name", accessor="requestor_name"),
+        CSVColumn(header="Consumer Name", accessor="requestor_full_name"),
         CSVColumn(header="Consumer Organisation", accessor="requestor_org"),
         CSVColumn(header="Consumer Email", accessor="email"),
         CSVColumn(header="path_info", accessor="path_info"),
@@ -287,7 +245,12 @@ class RawConsumerRequestCSV(CSVBuilder):
         return (
             APIRequest.objects.select_related("requestor")
             .annotate(
-                requestor_name=F("requestor__name"),
+                requestor_full_name=Concat(
+                    F("requestor__first_name"),
+                    Value(" "),
+                    F("requestor__last_name"),
+                    output_field=CharField(),
+                ),
                 requestor_org=F("requestor__dev_organisation"),
                 email=F("requestor__email"),
             )
@@ -305,22 +268,24 @@ class APIRequestArchive:
         return f"api_requests_{self.start:%B_%Y}.zip"
 
     def zip_as_file(self, archive):
-        files = [
-            CSVFile("dailyaggregates.csv", APIRequestCSV),
-            CSVFile("dailyconsumerbreakdown.csv", DailyConsumerRequestCSV),
-            CSVFile("rawapimetrics.csv", RawConsumerRequestCSV),
-        ]
-
         with zipfile.ZipFile(archive, mode="w", compression=ZIP_DEFLATED) as zin:
-            for file_ in files:
-                builder = file_.builder()
-                builder.queryset = builder.get_queryset().filter(
-                    created__range=(self.start, self.end)
-                )
 
-                csvfile = builder.to_temporary_file()
-                zin.write(csvfile.name, file_.name)
-                csvfile.close()
+            builder = RawConsumerRequestCSV()
+            builder.queryset = builder.get_queryset().filter(
+                created__range=(self.start, self.end)
+            )
+
+            csvfile = builder.to_temporary_file()
+            zin.write(csvfile.name, "rawapimetrics.csv")
+            csvfile.close()
+
+            csvfile = get_consumer_breakdown_csv(self.start, self.end)
+            zin.write(csvfile.name, DAILY_CONSUMER_FILENAME)
+            csvfile.close()
+
+            csvfile = get_daily_aggregates_csv(self.start, self.end)
+            zin.write(csvfile.name, DAILY_AGGREGATES_FILENAME)
+            csvfile.close()
 
         archive.seek(0)
         return File(archive, name=self.filename)

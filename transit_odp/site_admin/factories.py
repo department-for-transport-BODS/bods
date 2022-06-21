@@ -5,7 +5,12 @@ from dateutil.relativedelta import relativedelta
 from factory import DjangoModelFactory, Sequence, SubFactory, post_generation
 from faker import Faker
 
-from transit_odp.site_admin.models import APIRequest, MetricsArchive, OperationalStats
+from transit_odp.site_admin.models import (
+    APIRequest,
+    MetricsArchive,
+    OperationalStats,
+    ResourceRequestCounter,
+)
 from transit_odp.users.factories import UserFactory
 
 fake = Faker()
@@ -58,3 +63,13 @@ class MetricsArchiveFactory(DjangoModelFactory):
 
     class Meta:
         model = MetricsArchive
+
+
+class ResourceRequestCounterFactory(DjangoModelFactory):
+    date = factory.LazyFunction(datetime.now)
+    requestor = SubFactory(UserFactory)
+    path_info = "/timetable/download/bulk_archive"
+    counter = 1
+
+    class Meta:
+        model = ResourceRequestCounter

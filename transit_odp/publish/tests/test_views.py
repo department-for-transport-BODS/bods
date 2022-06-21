@@ -1,3 +1,4 @@
+import math
 from datetime import timedelta
 
 import factory
@@ -15,8 +16,9 @@ from freezegun import freeze_time
 from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.naptan.factories import AdminAreaFactory
-from transit_odp.organisation.constants import DatasetType, FeedStatus
+from transit_odp.organisation.constants import INACTIVE, DatasetType, FeedStatus
 from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
     DatasetFactory,
     DatasetRevisionFactory,
     DraftDatasetFactory,
@@ -40,7 +42,6 @@ from transit_odp.users.utils import create_verified_org_user
 ETL_TEST_DATA_DIR = "transit_odp/pipelines/tests/test_dataset_etl/data/"
 
 pytestmark = pytest.mark.django_db
-settings.IS_AVL_FEATURE_FLAG_ENABLED = True
 
 
 def test_publish_home_view_for_developer_user(client_factory):
@@ -67,16 +68,10 @@ def test_publish_home_view_for_anonymous_user(client_factory):
     url = reverse("home", host=host)
     response = client.get(url, follow=True)
 
-    if not settings.IS_AVL_FEATURE_FLAG_ENABLED:
-        assert response.status_code == 200
-        assert response.context.get("start_view") == reverse(
-            "account_login", host=PUBLISH_HOST
-        )
-    else:
-        assert response.status_code == 200
-        assert response.context.get("start_view") == reverse(
-            "account_login", host=PUBLISH_HOST
-        )
+    assert response.status_code == 200
+    assert response.context.get("start_view") == reverse(
+        "account_login", host=PUBLISH_HOST
+    )
 
 
 @pytest.mark.parametrize(
@@ -94,12 +89,7 @@ def test_publish_home_view(client_factory, account_type):
     url = reverse("home", host=host)
     response = client.get(url, follow=True)
 
-    if not settings.IS_AVL_FEATURE_FLAG_ENABLED:
-        assert response.status_code == 200
-        assert response.context.get("start_view") == reverse(
-            "feed-list", host=PUBLISH_HOST
-        )
-    elif user.is_agent_user:
+    if user.is_agent_user:
         assert response.status_code == 200
         assert response.context.get("start_view") == reverse(
             "select-org",
@@ -124,12 +114,6 @@ def test_publish_home_view(client_factory, account_type):
     ids=("Test timetables feed-list", "Test AVL feed-list", "Test fares feed-list"),
 )
 def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
-
-    if (
-        not settings.IS_AVL_FEATURE_FLAG_ENABLED
-        or not settings.IS_FARES_FEATURE_FLAG_ENABLED
-    ):
-        return
 
     host = PUBLISH_HOST
     client = client_factory(host=host)
@@ -165,12 +149,6 @@ def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
 def test_publish_select_data_type_view(
     dataset_type, expected_view, pathargs, pathkwargs, client_factory
 ):
-
-    if (
-        not settings.IS_AVL_FEATURE_FLAG_ENABLED
-        or not settings.IS_FARES_FEATURE_FLAG_ENABLED
-    ):
-        return
 
     host = PUBLISH_HOST
     client = client_factory(host=host)
@@ -819,6 +797,46 @@ class TestPublishView:
         assert (
             response.context_data["tab"] == "archive"
         )  # archived tab is passed in request
+
+    def test_consistent_pagination(self, client_factory):
+        """
+        Upload lots AVL datasets and navigate to the list page. Then collect the
+        dataset ids one page at a time. The ids should not be repeated or dropped and
+        therefore there should be the same unique ids as datasets.
+        This test protects against:
+        https://itoworld.atlassian.net/browse/BODP-5116
+        """
+        number_of_files = 201
+        results_per_page = 10
+        number_of_pages = math.ceil(number_of_files / results_per_page)
+
+        host = PUBLISH_HOST
+        client = client_factory(host=host)
+        org = OrganisationFactory.create()
+        user = UserFactory(
+            account_type=AccountType.org_staff.value, organisations=(org,)
+        )
+
+        AVLDatasetRevisionFactory.create_batch(
+            number_of_files,
+            dataset__organisation=org,
+            dataset__contact=user,
+            status=INACTIVE,
+        )
+
+        client.force_login(user=user)
+        url = reverse(
+            "avl:feed-list",
+            args=[org.id],
+            host=host,
+        )
+        ids = []
+        for page in range(1, number_of_pages + 1):
+            response = client.get(url, data={"tab": "archive", "page": page})
+            data = response.context_data["active_feeds_table"].page.object_list.data
+            ids += list(data.values_list("id", flat=True))
+
+        assert len(set(ids)) == len(ids) == number_of_files
 
 
 class TestFeedArchiveView:

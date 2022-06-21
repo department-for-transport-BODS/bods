@@ -11,6 +11,7 @@ from transit_odp.data_quality.etl.warnings import (
     JourneyPartialTimingOverlapETL,
     LineExpiredETL,
     LineMissingBlockIDETL,
+    ServiceLinkMissingStopsETL,
     TimingFirstETL,
     TimingLastETL,
     TimingMissingPointETL,
@@ -127,6 +128,11 @@ class TransXChangeDQPipeline:
         pipeline = FastTimingETL(self.report_id, warnings)
         pipeline.load()
 
+    def create_service_link_missing_stop_warnings(self) -> None:
+        warnings = self.report.filter_by_warning_type("service-link-missing-stops")
+        pipeline = ServiceLinkMissingStopsETL(self.report_id, warnings)
+        pipeline.load()
+
     def extract(self) -> TransXChangeExtract:
         if self._extract is not None:
             return self._extract
@@ -156,6 +162,8 @@ class TransXChangeDQPipeline:
         self.create_timing_missing_point_15_warnings()
         adapter.info("Creating FastTimingWarning.")
         self.create_fast_timing_warnings()
+        adapter.info("Creating ServiceLinkMissingStopWarning.")
+        self.create_service_link_missing_stop_warnings()
 
     def load(self) -> None:
         self.load_warnings()

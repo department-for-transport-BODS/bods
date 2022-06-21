@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 import pytz
-from factory import Factory, SubFactory
+from factory import Factory, Sequence, SubFactory
 
 from .transxchange import Header, Line, Operator, Service, TXCFile
 
@@ -54,4 +54,6 @@ class TXCFileFactory(Factory):
     header = SubFactory(HeaderFactory)
     operator = SubFactory(OperatorFactory)
     service = SubFactory(ServiceFactory)
+    hash = Sequence(lambda n: f"hash{n}")
+
     service_code = "A1"

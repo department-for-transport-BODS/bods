@@ -1,5 +1,9 @@
+import hashlib
 import math
-from urllib.parse import parse_qs, urlencode
+from typing import Union
+from urllib.parse import parse_qs, urlencode, urlparse
+
+from django_hosts import reverse
 
 
 def remove_query_string_param(query_string: str, key: str) -> str:
@@ -28,3 +32,22 @@ def get_dataset_type_from_path_info(path_info: str) -> str:
 
 def round_down(value: float):
     return math.floor(value * 100.0) / 100.0
+
+
+def reverse_path(*args, **kwargs) -> str:
+    """
+    django_hosts reverse helper function
+    does a reverse but only return the path info
+    args and kwargs are the same as django_hosts.reverse
+    returns path string of resource
+    """
+    full_url = reverse(*args, **kwargs)
+    parsed_url = urlparse(full_url)
+    return parsed_url.path
+
+
+def sha1sum(content: Union[bytes, bytearray, memoryview]) -> str:
+    """
+    Takes the sha1 of a string and returns a hex string
+    """
+    return hashlib.sha1(content).hexdigest()

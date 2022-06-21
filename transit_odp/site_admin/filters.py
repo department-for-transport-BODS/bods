@@ -1,73 +1,81 @@
 import django_filters as filters
 from django.contrib.auth import get_user_model
-from django.forms import Select
 
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import DatasetRevision, Organisation
-from transit_odp.site_admin.forms import AVLSearchFilterForm, TimetableSearchFilterForm
+from transit_odp.site_admin.forms import (
+    LETTER_CHOICES,
+    AgentOrganisationFilterForm,
+    AVLSearchFilterForm,
+    ConsumerFilterForm,
+    OperatorFilterForm,
+    TimetableSearchFilterForm,
+)
 
 User = get_user_model()
 
 
 class OrganisationFilter(filters.FilterSet):
+    class Meta:
+        model = Organisation
+        fields = ["status"]
+        form = OperatorFilterForm
+
     STATUS_CHOICES = (
         ("active", "Active"),
         ("inactive", "Inactive"),
         ("pending", "Pending Invite"),
     )
-    OPERATOR_CHOICES = (
-        ("a-f", "A - F"),
-        ("g-l", "G - L"),
-        ("m-r", "M - R"),
-        ("s-z", "S - Z"),
-    )
     status = filters.ChoiceFilter(
         label="Status",
         empty_label="All statuses",
         choices=STATUS_CHOICES,
-        widget=Select(attrs={"class": "govuk-!-width-full govuk-select"}),
     )
-    operators = filters.ChoiceFilter(
-        label="Operators",
-        empty_label="All operators",
-        choices=OPERATOR_CHOICES,
-        widget=Select(attrs={"class": "govuk-!-width-full govuk-select"}),
-        method="filter_by_name",
+    # Needs to be letters to match up with the django form.
+    # To aid code reuse the filter forms pass "letters=" back as query params
+    letters = filters.MultipleChoiceFilter(
+        choices=LETTER_CHOICES,
+        lookup_expr="istartswith",
+        field_name="name",
     )
 
-    def filter_by_name(self, queryset, name, value):
-        lower, upper = value.split("-")
-        return queryset.filter(first_letter__gte=lower, first_letter__lte=upper)
-
-    class Meta:
-        model = Organisation
-        fields = ["operators", "status"]
+    def get_form_class(self):
+        # bug in base class expects to find form at self._form but it is unset
+        return self._meta.form
 
 
 class ConsumerFilter(filters.FilterSet):
-    EMAIL_CHOICES = (
-        ("a-f", "A - F"),
-        ("g-l", "G - L"),
-        ("m-r", "M - R"),
-        ("s-z", "S - Z"),
-    )
-    email = filters.ChoiceFilter(
-        label="Email",
-        empty_label="All emails",
-        choices=EMAIL_CHOICES,
-        widget=Select(attrs={"class": "govuk-!-width-full govuk-select"}),
-        method="filter_by_email",
-    )
-
-    def filter_by_email(self, queryset, name, value):
-        lower, upper = value.split("-")
-        return queryset.filter(
-            email_first_letter__gte=lower, email_first_letter__lte=upper
-        )
-
     class Meta:
         model = User
         fields = ["email"]
+        form = ConsumerFilterForm
+
+    letters = filters.MultipleChoiceFilter(
+        choices=LETTER_CHOICES,
+        lookup_expr="istartswith",
+        field_name="email",
+    )
+
+    def get_form_class(self):
+        # bug in base class expects to find form at self._form but it is unset
+        return self._meta.form
+
+
+class AgentFilter(filters.FilterSet):
+    class Meta:
+        model = User
+        fields = ["agent_organisation"]
+        form = AgentOrganisationFilterForm
+
+    letters = filters.MultipleChoiceFilter(
+        choices=LETTER_CHOICES,
+        lookup_expr="istartswith",
+        field_name="agent_organisation",
+    )
+
+    def get_form_class(self):
+        # bug in base class expects to find form at self._form but it is unset
+        return self._meta.form
 
 
 class BaseDatasetSearchFilter(filters.FilterSet):

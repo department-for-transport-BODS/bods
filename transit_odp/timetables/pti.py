@@ -7,9 +7,11 @@ from typing import BinaryIO, Iterable, List
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.common.types import JSONFile
+from transit_odp.common.utils import sha1sum
 from transit_odp.data_quality.pti.models import Violation
 from transit_odp.data_quality.pti.validators import PTIValidator
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.timetables.proxies import TimetableDatasetRevision
 
 PTI_PATH = Path(__file__).parent / "pti_schema.json"
 
@@ -38,11 +40,27 @@ class DatasetPTIValidator:
             file_.seek(0)
             yield file_
 
-    def get_violations(self, revision: DatasetRevision) -> List[Violation]:
+    def get_live_hashes(self, revision: TimetableDatasetRevision) -> List[str]:
+        live_revision_id = revision.dataset.live_revision_id
+        try:
+            live_revision = TimetableDatasetRevision.objects.get(id=live_revision_id)
+        except TimetableDatasetRevision.DoesNotExist:
+            return []
+
+        return live_revision.get_txc_hashes()
+
+    def get_violations(self, revision: TimetableDatasetRevision) -> List[Violation]:
         context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
         adapter = PipelineAdapter(logger, {"context": context})
+        live_hashes = self.get_live_hashes(revision)
+
         for xml in self.iter_get_files(revision=revision):
-            self._validator.is_valid(xml)
+            if sha1sum(xml.read()) in live_hashes:
+                adapter.info(f"{xml.name} unchanged, skipping.")
+                continue
+            else:
+                xml.seek(0)
+                self._validator.is_valid(xml)
 
         adapter.info(f"Revision contains {len(self._validator.violations)} violations.")
         return self._validator.violations

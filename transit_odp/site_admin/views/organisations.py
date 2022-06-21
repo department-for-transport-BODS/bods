@@ -320,7 +320,7 @@ class OrganisationListView(SiteAdminViewMixin, FilterView, SingleTableView, Form
         return self.get_form(form_class)
 
     def get_queryset(self):
-        return (
+        qs = (
             super()
             .get_queryset()
             .add_registration_complete()
@@ -330,6 +330,11 @@ class OrganisationListView(SiteAdminViewMixin, FilterView, SingleTableView, Form
             .add_first_letter()
             .order_by("name")
         )
+        search_term = self.request.GET.get("q")
+        if search_term:
+            qs = qs.filter(name__istartswith=search_term)
+
+        return qs
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -363,6 +368,17 @@ class OrganisationListView(SiteAdminViewMixin, FilterView, SingleTableView, Form
                 request, form.cleaned_data["invites"]
             )
             return self.form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        active_orgs = self.model.objects.all()
+        operators = {
+            "names": [name for name in active_orgs.values_list("name", flat=True)]
+        }
+        context["operators"] = operators
+        context["q"] = self.request.GET.get("q", "").strip()
+        context["letters"] = self.request.GET.getlist("letters")
+        return context
 
 
 class OrganisationUsersManageView(DetailView, SiteAdminViewMixin, ContextMixin):

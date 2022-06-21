@@ -79,7 +79,7 @@ class BaseOrganisationListView(SiteAdminViewMixin, FilterView):
                 output_field=output_field(),
             )
 
-        return queryset.annotate(**annotation_kwargs)
+        return queryset.annotate(**annotation_kwargs).order_by(self.get_ordering())
 
     def get_ordering(self):
         return self.request.GET.get("ordering", "-modified")

@@ -4,8 +4,6 @@ from django.http import HttpResponseForbidden, HttpResponseNotFound
 from django.template import loader
 from django.views.decorators.csrf import requires_csrf_token
 
-from transit_odp.common.utils.flags import Feature
-
 
 @requires_csrf_token
 def page_not_found(request, exception, template_name="404.html"):
@@ -34,7 +32,6 @@ def page_not_found(request, exception, template_name="404.html"):
     context = {
         "request_path": quote(request.path),
         "exception": exception_repr,
-        "feature": Feature(),
     }
     template = loader.get_template(template_name)
     body = template.render(context, request)
@@ -68,7 +65,6 @@ def permission_denied(request, exception, template_name="403.html"):
     context = {
         "request_path": quote(request.path),
         "exception": exception_repr,
-        "feature": Feature(),
     }
     template = loader.get_template(template_name)
     body = template.render(context, request)

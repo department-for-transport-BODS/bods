@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django_hosts.resolvers import reverse
 
 from config.hosts import ADMIN_HOST
+from transit_odp.site_admin.forms import CHECKBOX_FIELD_KEY
 from transit_odp.users.constants import (
     AccountType,
     DeveloperType,
@@ -161,7 +162,7 @@ class TestConsumerListView:
 
         client = client_factory(host=self.host)
         user = user_factory(account_type=AccountType.site_admin.value)
-        for letter in "abc" + "xyz":
+        for letter in "abc" + "xyz" + "123" + "ABC":
             user_factory(
                 email=f"{letter}@email.zz", account_type=AccountType.developer.value
             )
@@ -170,23 +171,52 @@ class TestConsumerListView:
         user_factory(account_type=AccountType.org_admin.value)
         client.force_login(user=user)
 
-        response = client.get(self.url, {"email": "a-f"})
+        for letter in "ABC":
+            response = client.get(
+                f"{self.url}?letters={letter}&letters=P&submitform=submit"
+            )
+            assert response.status_code == 200
+            table = response.context["table"]
+            assert len(table.rows) == 2
+
+        for letter in "XYZ":
+            response = client.get(
+                f"{self.url}?letters={letter}&letters=P&submitform=submit"
+            )
+            assert response.status_code == 200
+            table = response.context["table"]
+            assert len(table.rows) == 1
+
+        response = client.get(self.url, {"letters": "0-9"})
         assert response.status_code == 200
         table = response.context["table"]
         assert len(table.rows) == 3
 
-        response = client.get(self.url, {"email": "s-z"})
-        assert response.status_code == 200
-        table = response.context["table"]
-        assert len(table.rows) == 3
+    def test_bucket_counts(self, client_factory, user_factory):
+        emails = [
+            "0digit@site.com",
+            "5digit@site.com",
+            "aletter@site.com",
+            "Aletter@site.com",
+            "eletter@site.com",
+            "zletter@site.com",
+        ]
+        _ = [user_factory(email=e, account_type=DeveloperType) for e in emails]
 
-        response = client.get(self.url, {"email": "m-r"})
+        client = client_factory(host=self.host)
+        user = user_factory(account_type=SiteAdminType)
+        client.force_login(user=user)
+        response = client.get(self.url)
         assert response.status_code == 200
-        table = response.context["table"]
-        assert len(table.rows) == 0
 
-        response = client.get(self.url, {"email": "d-f"})
-        assert response.status_code == 200
-        table = response.context["table"]
-        assert len(table.rows) == 0
-        assert "1_id_email-error" in str(response.content)
+        first_letter_count = (
+            response.context["filter"]
+            .form.fields[CHECKBOX_FIELD_KEY]
+            .first_letter_count
+        )
+        assert first_letter_count["0 - 9"] == 2
+        assert first_letter_count["A"] == 2
+        assert first_letter_count["E"] == 1
+        assert first_letter_count["Z"] == 1
+        for ch in "BCDFGHIJKLMNOPQRSTUVWXY":
+            assert first_letter_count[ch] == 0

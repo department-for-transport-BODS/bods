@@ -1,0 +1,42 @@
+{% load l10n %}
+{% load crispy_forms_field %}
+{% load crispy_forms_govuk_tags %}
+{% load filters %}
+
+<div class="govuk-form-group govuk-checkboxes--tiny checkbox-filter">
+    {# Render fieldset with legend #}
+    <fieldset class="govuk-fieldset"
+        {% if field.help_text %}
+            aria-describedby="{{ field.auto_id }}-hint"
+        {% endif %}
+    >
+        {% include 'govuk/snippets/field_legend.html' %}
+        {# style multi checkbox container #}
+
+        <div class="govuk-checkboxes">
+            {% for choice in field.field.choices %}
+                <div class="govuk-checkboxes__item">
+                    <input type="checkbox"
+                        class="govuk-checkboxes__input"
+                        {% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %}
+                            checked="checked"{% endif %}
+                        name="{{ field.html_name }}"
+                        id="id_{{ field.html_name }}_{{ forloop.counter }}"
+                        value="{{ choice.0|unlocalize }}"
+                        {% if choice.0 in field.field.widget.disabled_choices %} disabled {% endif %}
+                    >
+                    <label for="id_{{ field.html_name }}_{{ forloop.counter }}"
+                        class="govuk-label govuk-checkboxes__label"
+                        {% if flat_attrs %}{{ flat_attrs|safe }}{% endif %}
+                    >
+                        {{ choice.1|unlocalize }}
+                        <span class="checkbox-filter__annotation">
+                            ({{ field.field.first_letter_count|lookup:choice.1 }})
+                        </span>
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+
+    </fieldset>
+</div>

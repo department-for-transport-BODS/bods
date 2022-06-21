@@ -128,7 +128,7 @@ class DeveloperReqView(BODSBaseView, SectionedTemplateView):
     SECTIONS = (
         Section("overview", "Overview", "overview.html"),
         Section("quickstart", "Quick start", "quick_start.html"),
-        Section("datacatelogue", "Data catalogue", "datacatalogue.html"),
+        Section("datacatalogue", "Data catalogue", "datacatalogue.html"),
         Section(
             "databyoperator", "Data by operator or location", "data_by_op_loc.html"
         ),

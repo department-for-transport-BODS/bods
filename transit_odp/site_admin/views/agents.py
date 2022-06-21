@@ -1,15 +1,18 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.db.models.expressions import Value
 from django.db.models.fields import CharField
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.list import MultipleObjectMixin
+from django_filters.views import FilterView
 from django_hosts import reverse
 from django_tables2 import SingleTableView
 from django_tables2.views import SingleTableMixin
 
 from transit_odp.common.forms import AgentRemoveForm, AgentResendInviteForm
 from transit_odp.organisation.models import Organisation
+from transit_odp.site_admin.filters import AgentFilter
 from transit_odp.site_admin.tables import AgentOrganisationsTable, AgentsTable
 from transit_odp.users.constants import AgentUserType
 from transit_odp.users.models import AgentUserInvite
@@ -54,11 +57,12 @@ class AgentDetailView(
         return context
 
 
-class AgentListView(SiteAdminViewMixin, SingleTableView):
+class AgentListView(SiteAdminViewMixin, FilterView, SingleTableView):
     model = User
     template_name = "site_admin/agent_list.html"
     table_class = AgentsTable
     paginate_by = 10
+    filterset_class = AgentFilter
 
     def get_queryset(self):
         qs = (
@@ -66,8 +70,21 @@ class AgentListView(SiteAdminViewMixin, SingleTableView):
             .get_queryset()
             .annotate(details=Value("See details", output_field=CharField()))
             .filter(account_type=AgentUserType, is_active=True)
+            .order_by("agent_organisation", "email")
         )
+        search_term = self.request.GET.get("q", "").strip()
+        if search_term:
+            org_search = Q(agent_organisation__istartswith=search_term)
+            email_search = Q(email__istartswith=search_term)
+            qs = qs.filter(org_search | email_search)
+
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "").strip()
+        context["letters"] = self.request.GET.getlist("letters")
+        return context
 
 
 class RemoveAgentUserSuccessView(DetailView, SiteAdminViewMixin):

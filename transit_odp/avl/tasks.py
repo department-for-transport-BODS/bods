@@ -1,5 +1,4 @@
 import io
-import json
 import logging
 import time
 from dataclasses import dataclass
@@ -59,7 +58,7 @@ logger = logging.getLogger(__name__)
 
 SIRI_ZIP = "sirivm_{}.zip"
 SIRI_TFL_ZIP = "sirivm_tfl_{}.zip"
-VALIDATION_SAMPLE_SIZE = 50
+VALIDATION_SAMPLE_SIZE = 250
 
 
 @dataclass
@@ -72,20 +71,6 @@ class ValidateResponse:
     password: Optional[str] = None
 
 
-def cavl_validate_revision(revision):
-    """Calls the CAVL Validate Feed service."""
-    cavl_service = get_cavl_service()
-    response = cavl_service.validate_feed(
-        url=revision.url_link,
-        username=revision.username,
-        password=revision.password,
-        _request_timeout=60,
-        _preload_content=False,
-    )
-    data = json.loads(response.data)
-    return ValidateResponse(**data)
-
-
 @shared_task()
 def task_validate_avl_feed(task_id: str):
     """Task for validating an AVL feed."""
@@ -96,8 +81,13 @@ def task_validate_avl_feed(task_id: str):
         return
 
     revision = task.revision
+    cavl_service = get_cavl_service()
     try:
-        response = cavl_validate_revision(revision)
+        response = cavl_service.validate_feed(
+            url=revision.url_link,
+            username=revision.username,
+            password=revision.password,
+        )
     except ReadTimeoutError:
         logger.warning("Request to Validation Service timed out.", exc_info=True)
         task.to_timeout_error()
@@ -105,17 +95,21 @@ def task_validate_avl_feed(task_id: str):
         logger.warning("Exception occurred with CAVL service", exc_info=True)
         task.to_system_error()
     else:
-        if response.status == CAVLValidationTaskResult.VALID:
-            metadata, _ = DatasetMetadata.objects.update_or_create(
-                revision=revision, defaults={"schema_version": response.version}
-            )
-            task.to_valid()
-        elif response.status == CAVLValidationTaskResult.INVALID:
-            task.to_invalid()
-        elif response.status == CAVLValidationTaskResult.SYSTEM_ERROR:
+        if not response:
+            logger.warning("CAVL service returned empty", exc_info=True)
             task.to_system_error()
-        elif response.status == CAVLValidationTaskResult.TIMEOUT_ERROR:
-            task.to_timeout_error()
+        else:
+            if response.status == CAVLValidationTaskResult.VALID:
+                metadata, _ = DatasetMetadata.objects.update_or_create(
+                    revision=revision, defaults={"schema_version": response.version}
+                )
+                task.to_valid()
+            elif response.status == CAVLValidationTaskResult.INVALID:
+                task.to_invalid()
+            elif response.status == CAVLValidationTaskResult.SYSTEM_ERROR:
+                task.to_system_error()
+            elif response.status == CAVLValidationTaskResult.TIMEOUT_ERROR:
+                task.to_timeout_error()
     task.save()
 
 

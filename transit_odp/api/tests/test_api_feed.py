@@ -11,7 +11,7 @@ import config.hosts
 from transit_odp.api.serializers import DatasetSerializer
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.naptan.factories import AdminAreaFactory
-from transit_odp.organisation.constants import DatasetType, FeedStatus
+from transit_odp.organisation.constants import DatasetType, FeedStatus, TimetableType
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
@@ -141,6 +141,7 @@ class FeedAPITests(APITestCase):
             .get_active_org()
             .get_live_dq_score()
             .add_is_live_pti_compliant()
+            .get_viewable_statuses()
             .add_organisation_name()
             .order_by("id")
             .filter(dataset_type=DatasetType.TIMETABLE.value)
@@ -208,7 +209,7 @@ class FeedAPITests(APITestCase):
 
     def test_feeds(self):
         """
-        Ensure API returns all 'public' feeds (live or expiring)
+        Ensure API returns all 'public' feeds
         """
         self.assertTrue(
             self.client.login(username=self.developer.username, password="password")
@@ -217,6 +218,7 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .get_active_org()
             .get_live_dq_score()
+            .get_viewable_statuses()
             .add_is_live_pti_compliant()
             .add_live_data()
             .add_organisation_name()
@@ -276,6 +278,7 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .get_active_org()
             .get_live_dq_score()
+            .get_viewable_statuses()
             .add_is_live_pti_compliant()
             .add_live_data()
             .add_organisation_name()
@@ -333,6 +336,7 @@ class FeedAPITests(APITestCase):
             Dataset.objects.get_published()
             .add_live_data()
             .get_active_org()
+            .get_viewable_statuses()
             .get_live_dq_score()
             .add_is_live_pti_compliant()
             .add_organisation_name()
@@ -387,6 +391,7 @@ class FeedAPITests(APITestCase):
             .add_organisation_name()
             .get_active_org()
             .get_live_dq_score()
+            .get_viewable_statuses()
             .add_is_live_pti_compliant()
             .add_live_data()
             .order_by("id")
@@ -412,6 +417,7 @@ class FeedAPITests(APITestCase):
             .get_active_org()
             .get_live_dq_score()
             .add_is_live_pti_compliant()
+            .get_viewable_statuses()
             .add_organisation_name()
             .filter(
                 Q(live_revision__first_service_start__gte=self.now)
@@ -443,6 +449,7 @@ class FeedAPITests(APITestCase):
             .get_active_org()
             .get_live_dq_score()
             .add_is_live_pti_compliant()
+            .get_viewable_statuses()
             .add_organisation_name()
             .filter(
                 Q(live_revision__first_service_start__gte=start_date)
@@ -576,6 +583,7 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.select_related("live_revision")
             .get_live_dq_score()
+            .get_viewable_statuses()
             .add_is_live_pti_compliant()
             .filter(live_revision__name=dataset_to_test.live_revision.name)
         )
@@ -593,7 +601,7 @@ class FeedAPITests(APITestCase):
 
     def test_feed_from_active_org(self):
         """
-        Ensure API returns all 'public' feeds (live or expiring)
+        Ensure API returns all 'public' feeds live
         """
         self.assertTrue(
             self.client.login(username=self.developer.username, password="password")
@@ -604,12 +612,13 @@ class FeedAPITests(APITestCase):
         objs = (
             Dataset.objects.get_published()
             .get_active_org()
+            .get_viewable_statuses()
             .get_live_dq_score()
             .add_is_live_pti_compliant()
             .add_live_data()
             .add_organisation_name()
             .order_by("id")
-            .filter(dataset_type=DatasetType.TIMETABLE.value)
+            .filter(dataset_type=TimetableType)
         )
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data

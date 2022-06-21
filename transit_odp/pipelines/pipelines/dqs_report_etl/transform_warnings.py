@@ -12,7 +12,6 @@ from transit_odp.data_quality.models import (
     JourneyDuplicateWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
-    ServiceLinkMissingStopWarning,
     ServicePattern,
     SlowLinkWarning,
     SlowTimingWarning,
@@ -38,10 +37,6 @@ BATCH_SIZE = 100000
 def run(
     report: DataQualityReport, model: TransformedModel, warnings: ExtractedWarnings
 ):
-    transform_service_link_missing_stops(
-        report, model, warnings.service_link_missing_stops
-    )
-
     transform_timing_warning(
         report, model, warnings.timing_fast_link, "timing_fast_link"
     )
@@ -70,65 +65,6 @@ def run(
     )
 
     transform_stop_incorrect_type_warning(report, model, warnings.stop_incorrect_type)
-
-
-def transform_service_link_missing_stops(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join service link id
-    warnings = warnings.merge(
-        model.service_links["id"].rename("service_link_id"),
-        how="left",
-        left_on="service_link_ito_id",
-        right_index=True,
-    )
-
-    # Load warnings
-    def inner():
-        for record in warnings.itertuples():
-            yield ServiceLinkMissingStopWarning(
-                report=report, service_link_id=record.service_link_id
-            )
-
-    warnings_objs = ServiceLinkMissingStopWarning.objects.bulk_create(inner())
-
-    # Create m2m of missing stops
-
-    # Join internal ids onto DataFrame
-    warnings["id"] = [w.id for w in warnings_objs]
-
-    def get_stops(stops):
-        result = set(model.stops.loc[set(stops), "id"])
-        return result
-
-    # Get ids for each missing stop
-    warnings["stop_ids"] = warnings["stops"].apply(lambda stops: get_stops(stops))
-
-    # Could also generate a DataFrame of service_link to missing_stop.
-    # This may be more performant
-    # to find stop id for each missing stop
-    # warnings[["stops"]].groupby("ito_id").apply(
-    #     lambda df: pd.DataFrame(df["stops"].iloc[0], columns=["stop_ito_id"])
-    # )
-
-    through = ServiceLinkMissingStopWarning.stops.through
-
-    def create_missing_stop():
-        for warning in warnings[["id", "stop_ids"]].itertuples():
-            for stop_id in list(warning.stop_ids):
-                yield through(
-                    servicelinkmissingstopwarning_id=warning.id, stoppoint_id=stop_id
-                )
-
-    created_m2m = through.objects.bulk_create(create_missing_stop())
-
-    logger.info(
-        f"[Load ServiceLinkMissingStopWarning] Created {len(warnings_objs)} "
-        f"warnings with {len(created_m2m)} missing stop associations"
-    )
 
 
 def transform_timing_warning(

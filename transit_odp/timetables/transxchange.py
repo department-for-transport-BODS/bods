@@ -7,17 +7,17 @@ from typing import List, Optional
 from lxml import etree
 from pydantic import BaseModel
 
+from transit_odp.common.utils import sha1sum
 from transit_odp.common.xmlelements import XMLElement
 from transit_odp.common.xmlelements.exceptions import NoElement
-from transit_odp.validate import ZippedValidator
-
-from .constants import (
+from transit_odp.timetables.constants import (
     TRANSXCAHNGE_NAMESPACE,
     TRANSXCHANGE_NAMESPACE_PREFIX,
     TXC_21,
     TXC_24,
 )
-from .utils import get_transxchange_schema
+from transit_odp.timetables.utils import get_transxchange_schema
+from transit_odp.validate import ZippedValidator
 
 logger = logging.getLogger(__name__)
 
@@ -54,17 +54,17 @@ class TransXChangeElement(XMLElement):
 
     Example:
         # Traverse the tree
-        >>> tree = etree.parse(netexfile)
-        >>> trans = TransXChangeDocument(tree.getroot())
-        >>> trans.get_element("PublicationTimestamp")
+        tree = etree.parse(netexfile)
+        trans = TransXChangeDocument(tree.getroot())
+        trans.get_element("PublicationTimestamp")
             PublicationTimestamp(text='2119-06-22T13:51:43.044Z')
-        >>> trans.get_elements(["dataObjects", "CompositeFrame"])
+        trans.get_elements(["dataObjects", "CompositeFrame"])
             [CompositeFrame(...), CompositeFrame(...)]
-        >>> trans.get_elements(["dataObjects", "CompositeFrame", "Name"])
+        trans.get_elements(["dataObjects", "CompositeFrame", "Name"])
             [Name(...), Name(...)
 
         # Element attributes are accessed like dict values
-        >>> trans["version"]
+        trans["version"]
             '1.1'
     """
 
@@ -88,7 +88,10 @@ class TransXChangeDocument:
             source (path|file|url): Something that can parsed by `lxml.etree.parse`.
 
         """
+        self.hash = None
         if hasattr(source, "seek"):
+            source.seek(0)
+            self.hash = sha1sum(source.read())
             source.seek(0)
         self.source = source
         self.name = getattr(source, "name", source)

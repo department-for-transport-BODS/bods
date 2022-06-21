@@ -1,11 +1,6 @@
 from django.urls import include, path
 
-import transit_odp.avl.views.review
 from transit_odp.avl import views
-from transit_odp.avl.views.edit_description import (
-    EditDraftRevisionDescriptionView,
-    EditLiveRevisionDescriptionView,
-)
 
 app_name = "avl"
 urlpatterns = [
@@ -33,22 +28,17 @@ urlpatterns = [
                                 view=views.ReviewView.as_view(),
                                 name="revision-publish",
                             ),
-                            # path(
-                            #     "update",
-                            #     view=DatasetUploadModify.as_view(),
-                            #     name="upload-modify",
-                            # ),
                         ]
                     ),
                 ),
                 path(
                     "dataset-edit/",
-                    view=EditLiveRevisionDescriptionView.as_view(),
+                    view=views.EditLiveRevisionDescriptionView.as_view(),
                     name="dataset-edit",
                 ),
                 path(
                     "revision-edit/",
-                    view=EditDraftRevisionDescriptionView.as_view(),
+                    view=views.EditDraftRevisionDescriptionView.as_view(),
                     name="revision-edit",
                 ),
                 path(
@@ -81,7 +71,7 @@ urlpatterns = [
                                     [
                                         path(
                                             "",
-                                            view=transit_odp.avl.views.review.UpdateRevisionPublishView.as_view(),  # noqa E501
+                                            view=views.UpdateRevisionPublishView.as_view(),  # noqa E501
                                             name="revision-update-publish",
                                         ),
                                     ]

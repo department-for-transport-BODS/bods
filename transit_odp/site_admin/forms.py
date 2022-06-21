@@ -1,15 +1,24 @@
+from collections import Counter
+from string import ascii_uppercase
+
 from crispy_forms.layout import ButtonHolder, Field, Layout
 from crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
 from crispy_forms_govuk.layout import ButtonSubmit, LinkButton
-from crispy_forms_govuk.layout.fields import CheckboxSingleField
+from crispy_forms_govuk.layout.fields import (
+    CheckboxMultipleField,
+    CheckboxSingleField,
+    LegendSize,
+)
 from django import forms
 from django.contrib import auth
 from django.core.exceptions import ValidationError
+from django.db.models.functions.text import Substr, Upper
+from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
 from invitations.forms import CleanEmailMixin
 from invitations.utils import get_invitation_model
 
-from transit_odp.common.contants import DEFAULT_ERROR_SUMMARY
+from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.common.layout import InlineFormset
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.forms.organisation_profile import (
@@ -18,7 +27,7 @@ from transit_odp.organisation.forms.organisation_profile import (
 )
 from transit_odp.organisation.models import Organisation
 from transit_odp.site_admin.validators import validate_email_unique
-from transit_odp.users.constants import AccountType
+from transit_odp.users.constants import AccountType, AgentUserType, DeveloperType
 from transit_odp.users.forms.admin import (
     EMAIL_HELP_TEXT,
     EMAIL_INVALID,
@@ -28,6 +37,15 @@ from transit_odp.users.forms.admin import (
 
 User = auth.get_user_model()
 Invitation = get_invitation_model()
+
+LETTER_CHOICES = [("0-9", "0 - 9")] + [(letter, letter) for letter in ascii_uppercase]
+STATUS_CHOICES = (
+    ("", "All statuses"),
+    ("active", "Active"),
+    ("inactive", "Inactive"),
+    ("pending", "Pending Invite"),
+)
+CHECKBOX_FIELD_KEY = "letters"
 
 
 class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
@@ -273,7 +291,6 @@ class BaseDatasetSearchFilterForm(GOVUKForm):
             ("", "All statuses"),
             (FeedStatus.live.value, "Published"),
             (FeedStatus.success.value, "Draft"),
-            (FeedStatus.expired.value, "Expired"),
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
@@ -299,8 +316,8 @@ class AVLSearchFilterForm(BaseDatasetSearchFilterForm):
         choices=(
             ("", "All statuses"),
             (FeedStatus.live.value, "Published"),
-            (FeedStatus.error.value, "Error"),
-            (FeedStatus.inactive.value, "Deactivated"),
+            (FeedStatus.error.value, "No vehicle activity"),
+            (FeedStatus.inactive.value, "Inactive"),
             (FeedStatus.success.value, "Draft"),
         ),
         required=False,
@@ -318,3 +335,89 @@ class EditNotesForm(GOVUKModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class CheckboxFilterForm(GOVUKForm):
+    form_method = "get"
+    letters = forms.MultipleChoiceField(
+        choices=LETTER_CHOICES, widget=CheckboxSelectMultiple(), required=False
+    )
+    form_label = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        field = self.fields[CHECKBOX_FIELD_KEY]
+        if self.form_label is not None:
+            field.label = self.form_label
+
+        qs = self.get_queryset()
+        field.first_letter_count = Counter(qs.values_list("first_letter", flat=True))
+        digits = [str(i) for i in range(10)]
+        digits_count = qs.filter(first_letter__in=digits).count()
+        field.first_letter_count["0 - 9"] = digits_count
+
+    def get_queryset(self):
+        # Implement this in the derived class
+        raise NotImplementedError()
+
+    def get_layout(self):
+        template = "common/forms/checkbox_filter_field.html"
+
+        return Layout(
+            CheckboxMultipleField(
+                CHECKBOX_FIELD_KEY, legend_size=LegendSize.s, template=template
+            ),
+            ButtonSubmit("submitform", "submit", content=_("Apply filter")),
+        )
+
+    def clean_letters(self):
+        letters = self.cleaned_data[CHECKBOX_FIELD_KEY]
+        if not letters:
+            return []
+
+        if letters[0] == "0-9":
+            letters.pop(0)
+            return letters + list(map(str, range(10)))
+
+        return letters
+
+
+class ConsumerFilterForm(CheckboxFilterForm):
+    form_label = "Email"
+
+    def get_queryset(self):
+        return User.objects.filter(account_type=DeveloperType).annotate(
+            first_letter=Upper(Substr("email", 1, 1))
+        )
+
+
+class OperatorFilterForm(CheckboxFilterForm):
+    form_label = "Operators"
+    status = forms.ChoiceField(
+        choices=STATUS_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={"class": "govuk-!-width-full govuk-select"}),
+    )
+
+    def get_queryset(self):
+        return Organisation.objects.add_first_letter()
+
+    def get_layout(self):
+        template = "common/forms/checkbox_filter_field.html"
+
+        return Layout(
+            CheckboxMultipleField(
+                CHECKBOX_FIELD_KEY, legend_size=LegendSize.s, template=template
+            ),
+            "status",
+            ButtonSubmit("submitform", "submit", content=_("Apply filter")),
+        )
+
+
+class AgentOrganisationFilterForm(CheckboxFilterForm):
+    form_label = "Agents"
+
+    def get_queryset(self):
+        return User.objects.filter(account_type=AgentUserType).annotate(
+            first_letter=Upper(Substr("agent_organisation", 1, 1))
+        )

@@ -7,7 +7,6 @@ Base settings to build other settings data upon.
 import os
 
 import environ
-from crispy_forms_govuk.settings import *
 from dateutil import parser
 
 ROOT_DIR = (
@@ -145,28 +144,29 @@ THIRD_PARTY_APPS = [
     "formtools",
     "django_celery_beat",
     "django_celery_results",
-    "frontend",  # technically 'third party'
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
     "transit_odp.avl.apps.AvlConfig",
-    "transit_odp.fares.apps.FaresConfig",
-    "transit_odp.users.apps.UsersAppConfig",
-    "transit_odp.organisation.apps.OrganisationConfig",
-    "transit_odp.publish.apps.PublishConfig",
-    "transit_odp.site_admin.apps.SiteAdminConfig",
-    "transit_odp.common.apps.CommonConfig",
     "transit_odp.browse.apps.BrowseConfig",
+    "transit_odp.changelog.apps.ChangelogConfig",
+    "transit_odp.common.apps.CommonConfig",
+    "transit_odp.data_quality.apps.DataQualityConfig",
+    "transit_odp.fares.apps.FaresConfig",
+    "transit_odp.frontend.apps.FrontendConfig",
     "transit_odp.guidance.apps.GuidanceConfig",
     "transit_odp.naptan.apps.NaptanConfig",
-    "transit_odp.transmodel.apps.TransmodelConfig",
-    "transit_odp.pipelines.apps.PipelinesConfig",
-    "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
-    "transit_odp.data_quality.apps.DataQualityConfig",
     "transit_odp.notifications.apps.NotifyConfig",
-    "transit_odp.changelog.apps.ChangelogConfig",
+    "transit_odp.organisation.apps.OrganisationConfig",
     "transit_odp.otc.apps.OTCConfig",
+    "transit_odp.pipelines.apps.PipelinesConfig",
+    "transit_odp.publish.apps.PublishConfig",
     "transit_odp.restrict_sessions.apps.RestrictedSessions",
+    "transit_odp.site_admin.apps.SiteAdminConfig",
+    "transit_odp.timetables.apps.TimetablesConfig",
+    "transit_odp.transmodel.apps.TransmodelConfig",
+    "transit_odp.users.apps.UsersAppConfig",
+    "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -505,16 +505,11 @@ GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
 
 # Central AVL Service
 # ------------------------------------------------------------------------------
-IS_AVL_FEATURE_FLAG_ENABLED = env("IS_AVL_FEATURE_FLAG_ENABLED", default=False)
 CAVL_URL = env("CAVL_URL")
 CAVL_SERVICE = "transit_odp.bods.adapters.gateways.cavl.CAVLService"
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
 CAVL_VALIDATION_URL = env("CAVL_VALIDATION_URL")
 AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
-
-# Fares Service
-# ------------------------------------------------------------------------------
-IS_FARES_FEATURE_FLAG_ENABLED = env("IS_FARES_FEATURE_FLAG_ENABLED", default=False)
 
 # ITO GTFS Files
 # ------------------------------------------------------------------------------
@@ -540,3 +535,32 @@ PTI_PDF_URL = env(
     "PTI_PDF_URL",
     default="https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf",
 )
+
+# Crispy forms
+# ------------------------------------------------------------------------------
+CRISPY_ALLOWED_TEMPLATE_PACKS = (
+    "bootstrap",
+    "uni_form",
+    "bootstrap3",
+    "bootstrap4",
+    "govuk",
+)
+
+CRISPY_TEMPLATE_PACK = "govuk"
+
+CRISPY_CLASS_CONVERTERS = {
+    "textinput": "govuk-input ",
+    "hiddeninput": "",
+    "urlinput": "govuk-input ",
+    "numberinput": "govuk-input ",
+    "emailinput": "govuk-input ",
+    "dateinput": "govuk-input govuk-date-input__input ",
+    "textarea": "govuk-textarea ",
+    "passwordinput": "govuk-input ",
+    "fileinput": "govuk-file-upload",
+    "clearablefileinput": "govuk-file-upload",
+    "select": "govuk-select ",
+    "checkboxinput": "govuk-checkboxes__input ",
+    "radioinput": "govuk-radios__input ",
+    # 'button': "govuk-button ",
+}

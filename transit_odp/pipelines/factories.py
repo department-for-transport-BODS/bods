@@ -2,6 +2,7 @@ import factory
 from django.utils import timezone
 
 from transit_odp.common.enums import FeedErrorCategory, FeedErrorSeverity
+from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.pipelines.models import (
     BulkDataArchive,
@@ -47,6 +48,8 @@ class BulkDataArchiveFactory(factory.django.DjangoModelFactory):
     created = factory.LazyFunction(timezone.now)
     data = factory.django.FileField(filename="bulk_archive.zip")
     traveline_regions = "All"
+    compliant_archive = False
+    dataset_type = TimetableType
 
 
 class ChangeDataArchiveFactory(factory.django.DjangoModelFactory):

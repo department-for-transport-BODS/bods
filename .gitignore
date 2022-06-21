@@ -248,6 +248,7 @@ sftp-config.json
 staticfiles/
 tags
 target/
+transit_odp/frontend/static
 transit_odp/media/
 transit_odp/naptan/naptan_rawdata/
 transit_odp\.dump

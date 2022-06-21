@@ -8,6 +8,10 @@ from django_extensions.db.models import TimeStampedModel
 
 from transit_odp.common.utils.repr import nice_repr
 from transit_odp.site_admin.constants import ARCHIVE_CATEGORY_FILENAME, ArchiveCategory
+from transit_odp.site_admin.querysets import (
+    APIRequestQuerySet,
+    ResourceRequestCounterQuerySet,
+)
 
 User = get_user_model()
 CHAR_LEN = 512
@@ -50,6 +54,20 @@ class APIRequest(TimeStampedModel):
     requestor = models.ForeignKey(User, on_delete=models.CASCADE)
     path_info = models.CharField(max_length=CHAR_LEN)
     query_string = models.CharField(max_length=CHAR_LEN)
+
+    objects = models.Manager.from_queryset(APIRequestQuerySet)()
+
+    def __str__(self):
+        return nice_repr(self)
+
+
+class ResourceRequestCounter(models.Model):
+    date = models.DateField()
+    requestor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    path_info = models.CharField(max_length=CHAR_LEN)
+    counter = models.IntegerField(null=False, default=0)
+
+    objects = models.Manager.from_queryset(ResourceRequestCounterQuerySet)()
 
     def __str__(self):
         return nice_repr(self)

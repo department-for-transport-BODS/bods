@@ -5,7 +5,8 @@ from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
 from .local import *  # noqa
 from .local import env
 
-# A settings file that allows you to use S3 as the media storage backend for local testing.
+# A settings file that allows you to use S3 as the media storage backend for
+# local testing.
 
 
 AWS_ACCESS_KEY_ID = env("DJANGO_AWS_ACCESS_KEY_ID")
@@ -27,8 +28,10 @@ AWS_BUCKET_ACL = None
 
 
 class MediaRootS3Boto3Storage(S3Boto3Storage):
-    # Prevent overwriting existing file with the same name. Unfortunately this isn't the default!
-    # Note we only apply this setting to Media storage, since we want static files to be overwritten.
+    # Prevent overwriting existing file with the same name. Unfortunately this
+    # isn't the default!
+    # Note we only apply this setting to Media storage, since we want static files to
+    # be overwritten.
     file_overwrite = False
 
 

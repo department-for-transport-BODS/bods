@@ -35,17 +35,17 @@ class NeTExElement(XMLElement):
 
     Example:
         # Traverse the tree
-        >>> tree = etree.parse(netexfile)
-        >>> netex = NeTExElement(tree.getroot())
-        >>> netex.get_element("PublicationTimestamp")
+        tree = etree.parse(netexfile)
+        netex = NeTExElement(tree.getroot())
+        netex.get_element("PublicationTimestamp")
             PublicationTimestamp(text='2119-06-22T13:51:43.044Z')
-        >>> netex.get_elements(["dataObjects", "CompositeFrame"])
+        netex.get_elements(["dataObjects", "CompositeFrame"])
             [CompositeFrame(...), CompositeFrame(...)]
-        >>> netex.get_elements(["dataObjects", "CompositeFrame", "Name"])
+        netex.get_elements(["dataObjects", "CompositeFrame", "Name"])
             [Name(...), Name(...)
 
         # Element attributes are accessed like dict values
-        >>> netex["version"]
+        netex["version"]
             '1.1'
     """
 

@@ -76,14 +76,10 @@ class DqUrlsTestBase:
         )
 
     def generate_dq_base_url_path(self):
-        if settings.IS_AVL_FEATURE_FLAG_ENABLED:
-            path = (
-                f"/org/{self.org_id}/dataset/timetable/{self.dataset_id}"
-                f"/report/{self.report_id}/"
-            )
-        else:
-            path = f"/org/{self.org_id}/dataset/{self.dataset_id}/report/"
-        return path
+        return (
+            f"/org/{self.org_id}/dataset/timetable/{self.dataset_id}"
+            f"/report/{self.report_id}/"
+        )
 
 
 class WarningUrlsTestBase(DqUrlsTestBase):

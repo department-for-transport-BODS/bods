@@ -26,74 +26,56 @@ from transit_odp.users.views.account import (
     UserRedirectView,
 )
 
-urlpatterns = []
-timetable_path = "search/"
-
-if settings.IS_AVL_FEATURE_FLAG_ENABLED:
-    # AVL routes
-    urlpatterns.append(path("avl/", include("transit_odp.browse.urls.avl")))
-
-if settings.IS_FARES_FEATURE_FLAG_ENABLED:
-    # Fares routes
-    urlpatterns.append(path("fares/", include("transit_odp.browse.urls.fares")))
-
-if urlpatterns:
-    timetable_path = "timetable/"
-    urlpatterns = [
-        path("search/", view=SearchSelectView.as_view(), name="select-data"),
-        path("downloads/", view=DownloadsView.as_view(), name="downloads"),
-        path("api/", view=ApiSelectView.as_view(), name="api-select"),
-        path(
-            "guide-me/",
-            view=GuideMeView.as_view(),
-            name="guide-me",
-        ),
-        path(
-            "catalogue/",
-            view=DownloadDataCatalogueView.as_view(),
-            name="download-catalogue",
-        ),
-        path(
-            "operators/",
-            include(
-                [
-                    path("", view=OperatorsView.as_view(), name="operators"),
-                    path(
-                        "<int:pk>/",
-                        include(
-                            [
-                                path(
-                                    "",
-                                    view=OperatorDetailView.as_view(),
-                                    name="operator-detail",
-                                ),
-                                path(
-                                    "contact/",
-                                    view=ContactOperatorView.as_view(),
-                                    name="contact-operator",
-                                ),
-                                path(
-                                    "contact/success/",
-                                    view=ContactOperatorFeedbackSuccessView.as_view(),
-                                    name="feedback-operator-success",
-                                ),
-                            ]
-                        ),
-                    ),
-                ]
-            ),
-        ),
-    ] + urlpatterns
-
-urlpatterns += [
-    # Find data routes
+urlpatterns = [
     path("", view=BrowseHomeView.as_view(), name="home"),
+    path("search/", view=SearchSelectView.as_view(), name="select-data"),
+    path("downloads/", view=DownloadsView.as_view(), name="downloads"),
+    path("api/", view=ApiSelectView.as_view(), name="api-select"),
+    path(
+        "guide-me/",
+        view=GuideMeView.as_view(),
+        name="guide-me",
+    ),
+    path(
+        "catalogue/",
+        view=DownloadDataCatalogueView.as_view(),
+        name="download-catalogue",
+    ),
+    path(
+        "operators/",
+        include(
+            [
+                path("", view=OperatorsView.as_view(), name="operators"),
+                path(
+                    "<int:pk>/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=OperatorDetailView.as_view(),
+                                name="operator-detail",
+                            ),
+                            path(
+                                "contact/",
+                                view=ContactOperatorView.as_view(),
+                                name="contact-operator",
+                            ),
+                            path(
+                                "contact/success/",
+                                view=ContactOperatorFeedbackSuccessView.as_view(),
+                                name="feedback-operator-success",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
     path(
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),
         name="contact",
     ),
-    # API routes
     path(
         "api/",
         include(
@@ -107,10 +89,9 @@ urlpatterns += [
             ]
         ),
     ),
-    # Timetable routes
-    path(timetable_path, include("transit_odp.browse.urls.timetables")),
-    # path("", include("transit_odp.browse.urls.timetables")),
-    # Account routes
+    path("timetable/", include("transit_odp.browse.urls.timetables")),
+    path("avl/", include("transit_odp.browse.urls.avl")),
+    path("fares/", include("transit_odp.browse.urls.fares")),
     path("account/", include("config.urls.allauth")),
     path(
         "account/",

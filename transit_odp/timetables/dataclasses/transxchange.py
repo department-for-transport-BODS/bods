@@ -134,6 +134,7 @@ class TXCFile(BaseModel):
     service_code: str
     operator: Operator
     service: Service
+    hash: str
 
     @classmethod
     def from_txc_document(
@@ -144,5 +145,9 @@ class TXCFile(BaseModel):
         operator = Operator.from_txc_document(doc)
         service = Service.from_txc_document(doc)
         return cls(
-            header=header, service_code=service_code, operator=operator, service=service
+            header=header,
+            service_code=service_code,
+            operator=operator,
+            service=service,
+            hash=doc.hash,
         )

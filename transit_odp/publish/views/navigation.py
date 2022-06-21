@@ -5,7 +5,6 @@ from django.views.generic import FormView
 from django_hosts import reverse
 
 from config.hosts import PUBLISH_HOST
-from transit_odp.common.utils.flags import Feature
 from transit_odp.organisation.constants import AVLType, FaresType, TimetableType
 from transit_odp.publish.forms import SelectDataTypeForm
 from transit_odp.publish.views.base import BaseTemplateView
@@ -40,7 +39,6 @@ class SelectOrgView(OrgUserViewMixin, BaseTemplateView):
     class Context(TypedDict):
         organisations: List
         page_title: str
-        feature: Feature
         view: "SelectOrgView"
 
     def get_context_data(self, **kwargs):

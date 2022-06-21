@@ -60,6 +60,7 @@ class FaresDatasetViewset(DatasetBaseViewSet):
         qs = (
             Dataset.objects.get_published()
             .filter(dataset_type=DatasetType.FARES.value)
+            .get_viewable_statuses()
             .get_active_org()
             .add_organisation_name()
             .select_related("live_revision")

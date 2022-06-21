@@ -1,14 +1,12 @@
-import config.hosts
 import pytest
 from django.conf import settings
 from django_hosts.resolvers import reverse
 
+import config.hosts
 from transit_odp.fares.views import DatasetUpdateModify
 from transit_odp.organisation.models import Dataset
 
 pytestmark = pytest.mark.django_db
-
-settings.IS_AVL_FEATURE_FLAG_ENABLED = True
 
 
 def get_archive_feed_context(published_archive_url):

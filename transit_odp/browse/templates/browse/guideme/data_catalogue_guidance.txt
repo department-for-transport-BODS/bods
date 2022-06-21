@@ -70,7 +70,7 @@ Granted_Date	The granted date element as extracted from the database of the Offi
 Exp_Date	The expiry date element as extracted from the database of the Office of the Traffic Commissioner (OTC)
 effective_date	The effective date element as extracted from the database of the Office of the Traffic Commissioner (OTC)
 received_date	The received date element as extracted from the database of the Office of the Traffic Commissioner (OTC)
-Service_Type_Other_Details	The service type other detials element as extracted from the database of the Office of the Traffic Commissioner (OTC)
+Service_Type_Other_Details	The service type other details element as extracted from the database of the Office of the Traffic Commissioner (OTC)
 
 Organisations data catalogue:
 Field Name	Definition

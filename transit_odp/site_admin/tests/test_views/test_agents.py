@@ -4,8 +4,9 @@ from django_hosts.resolvers import reverse
 
 from config.hosts import ADMIN_HOST
 from transit_odp.organisation.factories import OrganisationFactory
+from transit_odp.site_admin.forms import CHECKBOX_FIELD_KEY
 from transit_odp.site_admin.views import RemoveAgentUserView
-from transit_odp.users.constants import AccountType
+from transit_odp.users.constants import AgentUserType, SiteAdminType
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -39,7 +40,7 @@ class TestAgentDetailView:
         assert response.status_code == 403
 
     def test_site_admin_get_agent_detail(self, client_factory, user_factory):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         client = client_factory(host=self.host)
         agent = self.setup_agent()
         client.force_login(user=user)
@@ -52,7 +53,7 @@ class TestAgentDetailView:
     def test_site_admin_gets_404_when_agent_doesnt_exist(
         self, client_factory, user_factory
     ):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         client = client_factory(host=self.host)
         client.force_login(user=user)
         url = reverse("users:agent-detail", kwargs={"pk": 999}, host=self.host)
@@ -72,7 +73,7 @@ class TestAgentListView:
         assert response.status_code == 403
 
     def test_site_admin_get_agent_list(self, client_factory, user_factory):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         client = client_factory(host=self.host)
         AgentUserFactory.create_batch(4)
         AgentUserFactory.create_batch(2, is_active=False)
@@ -81,6 +82,38 @@ class TestAgentListView:
         assert response.status_code == 200
         table = response.context["table"]
         assert len(table.rows) == 4
+
+    def test_bucket_counts(self, client_factory, user_factory):
+        org_names = [
+            "1organisation",
+            "9organisation",
+            "Borganisation",
+            "borganisation",
+            "BBorganisation",
+            "Qorganisation",
+            "zorganisation",
+            "Zorganisation",
+        ]
+        for name in org_names:
+            _ = AgentUserFactory(agent_organisation=name)
+
+        client = client_factory(host=self.host)
+        user = user_factory(account_type=SiteAdminType)
+        client.force_login(user=user)
+        response = client.get(self.url)
+        assert response.status_code == 200
+
+        first_letter_count = (
+            response.context["filter"]
+            .form.fields[CHECKBOX_FIELD_KEY]
+            .first_letter_count
+        )
+        assert first_letter_count["0 - 9"] == 2
+        assert first_letter_count["B"] == 3
+        assert first_letter_count["Q"] == 1
+        assert first_letter_count["Z"] == 2
+        for ch in "ACDEFGHIJKLMNOPRSTUVWXY":
+            assert first_letter_count[ch] == 0
 
 
 class TestAgentUserInviteDetails:
@@ -94,12 +127,12 @@ class TestAgentUserInviteDetails:
         assert issubclass(RemoveAgentUserView, SiteAdminViewMixin)
 
     def test_correct_template_used(self, client_factory, user_factory):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         organisation = OrganisationFactory.create()
         agent = UserFactory.create(
             email="abc@abc.com",
             organisations=(organisation,),
-            account_type=AccountType.agent_user.value,
+            account_type=AgentUserType,
         )
         invite = AgentUserInviteFactory(
             organisation=organisation, agent=agent, status=AgentUserInvite.ACCEPTED
@@ -124,14 +157,14 @@ class TestAgentUserInviteDetails:
 
     def test_user_does_not_exist(self, client_factory, user_factory):
         # Set up
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         organisation = OrganisationFactory.create()
 
         agent = UserFactory.create(
             id=5,
             email="abc@abc.com",
             organisations=(organisation,),
-            account_type=AccountType.agent_user.value,
+            account_type=AgentUserType,
         )
         AgentUserInviteFactory(id=20, agent=agent, organisation=organisation)
 
@@ -152,7 +185,7 @@ class TestResendAgentUserInviteDetail:
     host = ADMIN_HOST
 
     def test_admin_can_resend_for_pending_agent(self, client_factory, user_factory):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         organisation = OrganisationFactory.create()
         standard_invite = InvitationFactory()
         invite = AgentUserInviteFactory(
@@ -179,13 +212,13 @@ class TestResendAgentUserInviteDetail:
         assert response.context["agentuserinvite"].email == standard_invite.email
 
     def test_admin_cant_resend_for_accepted_agent(self, client_factory, user_factory):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         organisation = OrganisationFactory.create()
         standard_invite = InvitationFactory()
         agent = UserFactory.create(
             email="abc@abc.com",
             organisations=(organisation,),
-            account_type=AccountType.agent_user.value,
+            account_type=AgentUserType,
         )
         invite = AgentUserInviteFactory(
             organisation=organisation,
@@ -207,7 +240,7 @@ class TestResendAgentUserInviteDetail:
         assert response.status_code == 404
 
     def test_admin_can_access_success_page(self, client_factory, user_factory):
-        user = user_factory(account_type=AccountType.site_admin.value)
+        user = user_factory(account_type=SiteAdminType)
         organisation = OrganisationFactory.create()
         standard_invite = InvitationFactory()
         invite = AgentUserInviteFactory(

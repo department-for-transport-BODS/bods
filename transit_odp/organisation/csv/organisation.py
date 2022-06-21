@@ -119,8 +119,8 @@ ORG_COLUMN_MAP = OrderedDict(
         "compliant_service_count": Column(
             "Compliant Registered Services Published",
             (
-                "The number of registered services of an "
-                "organisation that are part of a PTI compliant dataset."
+                "The total number of compliant registered services are "
+                "published in total by the operator/publisher to BODS."
             ),
         ),
         "compliant_service_ratio": Column(

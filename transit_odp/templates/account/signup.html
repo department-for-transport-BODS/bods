@@ -6,34 +6,32 @@
 {% load hosts %}
 
 {% block title_tag %}
-  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
-  {% trans 'Create account' %}
+    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+    {% trans 'Create account' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Sign in' 'account_login' %}
-  {% breadcrumb 'Create account' %}
+    {{ block.super }}
+    {% breadcrumb_url 'Sign in' 'account_login' %}
+    {% breadcrumb 'Create account' %}
 {% endblock %}
 
 {% block head_title %}
-  {% trans 'Create account' %}
+    {% trans 'Create account' %}
 {% endblock %}
 
 {% block inner %}
-  <p class="govuk-body-m">
-    {% blocktrans %}
-    You can create a data consumer account by entering your details below.
-    If you need to publish data, please
-    {% endblocktrans %}
-    <a class="govuk-link" href="{% host_url 'account_signup' host 'publish' %}">
-      create a publisher account
-    </a>.
-  </p>
-  {% crispy form %}
+    <p class="govuk-body-m">
+        {% filter force_escape %}
+            {% blocktrans %}
+                Enter your details to create an account and start using bus open data.
+            {% endblocktrans %}
+        {% endfilter %}
+    </p>
+    {% crispy form %}
 {% endblock %}
 
 
 {% block inner_secondary %}
-  {% include 'account/snippets/already_have_an_account.html' %}
+    {% include 'account/snippets/already_have_an_account.html' %}
 {% endblock %}

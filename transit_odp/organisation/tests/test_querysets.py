@@ -14,6 +14,10 @@ from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import (
+    ERROR,
+    EXPIRED,
+    INACTIVE,
+    LIVE,
     AVLType,
     FaresType,
     FeedStatus,
@@ -410,6 +414,28 @@ class TestDatasetQuerySet:
         assert len(revisions) == 1
         assert revisions[0] == remote.dataset
 
+    def test_get_viewable_statuses(self):
+        """
+        GIVEN a set of Timetables with various statuses, live, inactive, expired and
+        error.
+        WHEN calling get_viewable_statuses
+        THEN only timetables with the live and inactive statuses will be returned.
+        """
+        live_count = 4
+        DatasetRevisionFactory.create_batch(live_count, status=LIVE)
+        inactive_count = 3
+        DatasetRevisionFactory.create_batch(inactive_count, status=INACTIVE)
+
+        DatasetRevisionFactory.create_batch(2, status=ERROR)
+        DatasetRevisionFactory.create_batch(4, status=EXPIRED)
+
+        datasets = Dataset.objects.get_viewable_statuses().select_related(
+            "live_revision"
+        )
+        assert datasets.count() == live_count + inactive_count
+        for dataset in datasets:
+            assert dataset.live_revision.status in [LIVE, INACTIVE]
+
     def test_add_live_data(self):
         """Tests the queryset is annotated with data of the current live revision"""
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -545,6 +571,26 @@ class TestDatasetQuerySet:
         results = Dataset.objects.add_last_updated_including_avl()
         for result in results:
             assert result.last_updated == current
+
+    def test_add_last_published_by_email(self):
+        org_user1 = UserFactory()
+        # First revision, published by org_user1
+        first_revision = DatasetRevisionFactory(published_by=org_user1)
+        dataset = first_revision.dataset
+        org_user2 = UserFactory()
+        # Second revision, published by org_user2
+        DatasetRevisionFactory(dataset=dataset, published_by=org_user2)
+        # Third revision, draft by org_user1
+        DatasetRevisionFactory(
+            dataset=dataset,
+            published_by=org_user1,
+            is_published=False,
+            status=FeedStatus.draft.value,
+        )
+        # Fourth revision, published by system (no user)
+        DatasetRevisionFactory(dataset=dataset, published_by=None)
+        results = Dataset.objects.add_last_published_by_email()
+        assert results.first().last_published_by_email == org_user2.email
 
 
 class TestDatasetRevisionQuerySet:

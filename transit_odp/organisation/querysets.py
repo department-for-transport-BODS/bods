@@ -22,11 +22,14 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.functions import Coalesce, Lower, Substr
+from django.db.models.functions import Coalesce, Substr, Upper
 from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from transit_odp.organisation.constants import (
+    EXPIRED,
+    INACTIVE,
+    LIVE,
     AVLType,
     DatasetType,
     FaresType,
@@ -168,7 +171,7 @@ class OrganisationQuerySet(models.QuerySet):
         )
 
     def add_first_letter(self):
-        return self.annotate(first_letter=Lower(Substr("name", 1, 1)))
+        return self.annotate(first_letter=Upper(Substr("name", 1, 1)))
 
     def get_organisations_with_txc21_datasets(self):
         orgs_with_published_datasets = Q(
@@ -373,7 +376,16 @@ class DatasetQuerySet(models.QuerySet):
         return self.annotate(upload_filename=F("live_revision__upload_file"))
 
     def add_last_published_by_email(self):
-        return self.annotate(user_email=F("live_revision__published_by__email"))
+        from transit_odp.organisation.models import DatasetRevision
+
+        subquery = (
+            DatasetRevision.objects.get_published()
+            .filter(published_by__isnull=False)
+            .filter(dataset_id=OuterRef("id"))
+            .order_by("-created")
+            .values("published_by__email")[:1]
+        )
+        return self.annotate(last_published_by_email=Subquery(subquery))
 
     def add_draft_revisions(self):
         from transit_odp.organisation.models import DatasetRevision
@@ -521,6 +533,13 @@ class DatasetQuerySet(models.QuerySet):
 
     def get_active_org(self):
         return self.exclude(organisation__is_active=False)
+
+    def get_viewable_statuses(self):
+        """
+        Returns only the statuses that can be viewable by a consumer of BODS,
+        e.g. "live" and "inactive" (N.B. only applies to Fares and Timetables).
+        """
+        return self.get_published().filter(live_revision__status__in=[LIVE, INACTIVE])
 
     def get_dataset_type(self, dataset_type: DatasetType):
         return self.filter(dataset_type=dataset_type)
@@ -726,6 +745,7 @@ class DatasetQuerySet(models.QuerySet):
             .add_pretty_status()
             .add_pretty_dataset_type()
             .add_last_updated_including_avl()
+            .exclude(live_revision__status=EXPIRED)
         )
 
 

@@ -15,7 +15,7 @@ from transit_odp.browse.forms import (
     TimetableSearchFilterForm,
 )
 from transit_odp.naptan.models import AdminArea
-from transit_odp.organisation.constants import FeedStatus
+from transit_odp.organisation.constants import SEARCH_STATUS_CHOICES, FeedStatus
 from transit_odp.organisation.models import DatasetRevision, Organisation
 
 
@@ -29,7 +29,7 @@ class TimetableSearchFilter(filters.FilterSet):
         queryset=Organisation.objects.exclude(is_active=False)
     )
 
-    status = filters.ChoiceFilter(choices=DatasetRevision.STATUS_CHOICES)
+    status = filters.ChoiceFilter(choices=SEARCH_STATUS_CHOICES)
     start = filters.DateTimeFilter(field_name="first_service_start", lookup_expr="gte")
     published_at = filters.DateTimeFilter(field_name="published_at", lookup_expr="gte")
 

@@ -7,6 +7,128 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.17.2] - 2022-06-06
+
+### Story
+
+BODP-5275 Data Retention - API requests table clean-up script
+
+## [1.17.1] - 2022-04-14
+
+### Bug
+
+BODP-5097 Staging_Publisher_Publishing Timetables Update: Data that should pass validation is failing when uploaded as an update to an existing published datsaet
+
+BODP-4874 TransXchange Error: unexpectedly failed the PTI validation check when updating timetable datasets
+
+## [1.17.0] - 2022-04-01
+
+### Bug
+
+BODP-5136 \[Regression\] Admin_Publisher: General UI - Org Admin user can't remove an Agent
+
+BODP-5135 \[Regression\] PBODS Publisher: General UI - Unexpected body text on Create Account form
+
+BODP-5134 \[Regression\] FBODS: API - Accessibility warnings on "data API" pages for Timetables, Locations and Fares
+
+BODP-5133 \[Regression\] FBODS Download: General UI - User without been logged in should be redirected to the Sign In page
+
+BODP-5130 \[Regression\] BODS Admin - User initially not taken to "Organisation management" when clicking on that link
+
+BODP-5129 \[Regression\] BODS Admin - "Sort by" doesn't work on "Organisation management" data sets pages
+
+BODP-5128 \[Regression\] FBODS: Browse & Download - Comma at the end of sentence on "Developer documentation > Overview" page
+
+BODP-5124 \[Regression\] FBODS Data Catalogue/Glossary - Page content not matching the document - typos only
+
+BODP-5122 \[Added in error\] FBODS: All - Data doesn't correspond with column names in "overall_data_catalogue.csv"
+
+BODP-5117 \[Regression\] BODS Admin: Admin - Expired data sets listed in Django Admin
+
+BODP-5116 \[KPMG Regression\] AVL: After deactivating the AVL feed, the datafeed is not showing up on the inactive tab
+
+BODP-5115 \[Regression\] BODS Admin: Timetables - Timetables data sets listed as 'Expired' status
+
+BODP-5114 \[Regression\] BODS Admin: Admin_Metrics - 'Consumer Name' column do not populate in 'rawapimetrics.csv' file
+
+BODP-5112 \[Regression\] BODS Admin: General UI - Organisation timetables/fares data set page display unexpected Status
+
+BODP-5111 \[Regression\] BODS Admin: General UI - Organisation location data feeds page display unexpected Statuses
+
+BODP-5110 \[Regression\] FBODS: All - "Data quality" page not displayed in FBODS > Guidance section
+
+BODP-5043 \[KPMG Regression\] AVL: After deactivating the AVL feed, the datafeed is not showing up on the inactive tab
+
+BODP-5033 Duplicate | Developer documentation - Add guidance on GTFS and GTFS-RT are missing on page
+
+BODP-5019 General UI: Update to 'dataset' instead of datafeed for text in PBODS errored file
+
+BODP-5014 Changelog: Update for patch release / 1.17.0 - take out OTC info
+
+BODP-4957 PBODS User Management: User Management - Clicking on user "test123abc@gmail.com" causes \(500\) Internal Server Error
+
+BODP-4878 \[Regression\] PBODS Fares publishing page: General UI - AXE Analysis raise two critical issues
+
+BODP-4674 \[Publishing\] 'Fares Data Browser' page: General UI - Data sets with the status 'Expired' or 'Error' shouldn't be listed
+
+### Story
+
+BODP-5160 Changelog: Release Notes - April 2022 \(1.17.0\)
+
+BODP-5050 Developer documentation: Updates to Maintaining data quality section
+
+BODP-5046 Developer documentation: Add GTFS details to Data formats section
+
+BODP-5045 DfT admin portal update: dailyaggregates \(with download all\) - this would enable the admin user to report on the usage of download all on a daily aggregate basis
+
+BODP-5044 DfT admin portal update: Consumerbreakdownmetrics \(with download all\) - this would enable the admin user to report on the usage of download all on a per consumer per day basis.
+
+BODP-5005 Duplicate | Developer documentation - Updates to Data Quality guidance
+
+BODP-4961 DfT Admin - UI change to Data Consumers, Agents, Organisation Management screen for filtering data on screen
+
+BODP-4927 FBODS: All location data - add GTFS-RT data type in Data Format list and respective tooltip which was missing
+
+BODP-4925 BODS admin portal: In data catalogue file populate the email ID of whoever made the last manual change to the data set for system updates so that DfT Admin is able to chase them up when something is wrong within the data set
+
+BODP-4924 Update Accessibility statement page to make it inline with current updates
+
+BODP-4922 DfT admin portal: Data consumers - I would like to be sort the columns in data consumers So that I can find the data consumer I want much faster
+
+BODP-4921 DfT admin portal: Agents - I would like to be sort the first two columns in Agent So that I can find the Agent organisation and contact I want much faster
+
+BODP-4920 DfT admin portal: Agents - I would like to be able to filter alphabetically using a checkbox So that I am able to easily find the agent user I’m looking for.
+
+BODP-4919 DfT admin portal: Agents - I would like to be able to search agent organisation names or emails using a search bar So that I am able to easily find the agent I’m looking for.
+
+BODP-4918 DfT Admin portal: Org Management - I would like to be able to filter alphabetically using a checkbox So that I am able to easily find the organisation I’m looking for.
+
+BODP-4917 DfT Admin portal: Org Management - I would like to be able to search orgs using a search bar So that I am able to easily find what I’m looking for.
+
+BODP-4916 DfT Admin portal: Data consumers - I would like to be able to filter alphabetically using a checkbox So that I am able to easily find the data consumer I’m looking for
+
+BODP-4915 DfT Admin portal: Data consumers - I would like to be able to search data consumers using a search bar So that I am able to easily find what I’m looking for
+
+BODP-4827 \[Tech debt\] Improve logging around Django app
+
+BODP-4819 \[Tech debt\] Refactor Dataset models code
+
+BODP-4817 \[Tech debt\] Remove expired/expiring datasets
+
+BODP-4807 \[Tech debt\] Remove unused feature flags
+
+BODP-4803 \[Tech debt\] Refactor package name/structure/views to use Python conventions
+
+BODP-4801 \[Tech debt\] Refactor Data quality service checks that still use pandas so that they use the non pandas method
+
+BODP-4799 \[Tech debt\] Moving and building front-end in BODS package
+
+BODP-4797 \[Tech debt\] Build Crispforms_GovUK as PY PI application
+
+BODP-4795 \[Tech debt\] CAVL Client - Re-implement the CAVL client in a more concise way and move it into BODS
+
+BODP-4793 \[Tech debt\] Increase unit test coverage
+
 ## [1.16.4] - 2022-03-04
 
 ### Bug

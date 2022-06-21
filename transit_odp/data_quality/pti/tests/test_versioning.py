@@ -11,12 +11,14 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     TXCFileAttributesFactory,
 )
+from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import PTI_PATH
 from transit_odp.timetables.validate import TXCRevisionValidator
 
 pytestmark = pytest.mark.django_db
 
-DATA_DIR = Path(__file__).parent / "data"
+HERE = Path(__file__)
+DATA_DIR = HERE.parent / "data"
 
 TXC = """<?xml version="1.0" encoding="UTF-8"?>
     <TransXChange xmlns="http://www.transxchange.org.uk/" xml:lang="en"
@@ -126,6 +128,7 @@ def test_revision_single_file_modification_changed(
         modification_datetime=modification_datetime,
         revision_number=revision,
     )
+    draft = TimetableDatasetRevision.objects.get(id=draft.id)
     validator = TXCRevisionValidator(draft_revision=draft)
     violations = validator.get_violations()
     assert len(violations) == expected
@@ -181,6 +184,7 @@ def test_revision_bug_bodp_4628():
         operating_period_start_date="2021-10-30",
         service_code="PD0000479:304",
     )
+    draft = TimetableDatasetRevision.objects.get(id=draft.id)
     validator = TXCRevisionValidator(draft_revision=draft)
     violations = validator.get_violations()
     assert len(violations) == 0
@@ -223,6 +227,7 @@ def test_revision_check_modification_doesnt_change():
             modification_datetime=header.modification_datetime,
             revision_number=header.revision_number,
         )
+    draft = TimetableDatasetRevision.objects.get(id=draft.id)
     validator = TXCRevisionValidator(draft_revision=draft)
     violations = validator.get_violations()
     assert len(violations) == len(headers)
@@ -265,6 +270,82 @@ def test_modification_datetime_change_revision_stays_the_same():
             modification_datetime=header.modification_datetime,
             revision_number=header.revision_number,
         )
+    draft = TimetableDatasetRevision.objects.get(id=draft.id)
     validator = TXCRevisionValidator(draft_revision=draft)
     violations = validator.get_violations()
     assert len(violations) == len(headers)
+
+
+def test_no_violations_are_raised_when_sha1sums_match():
+    """
+    GIVEN a live revision
+    WHEN a draft whose sha1sum match with the files in a live revision
+    THEN 0 violations should be generated.
+    """
+
+    filepath = DATA_DIR / "3_pti_pass.zip"
+    TxCFileAttributes = namedtuple(
+        "FileHeader",
+        [
+            "filename",
+            "service_code",
+            "revision_number",
+            "modification_datetime",
+            "hash",
+        ],
+    )
+    prefix = "ARBB_Z_ARBBPF0000508519Z_20220109_20220213"
+    live_revision = DatasetRevisionFactory(upload_file__from_path=filepath.as_posix())
+    attribs = [
+        TxCFileAttributes(
+            f"{prefix}_7888cd56-3ba9-45e9-9232-e71119451d73.xml",
+            "PF0000508:519",
+            "10",
+            "2021-12-22T12:53:42",
+            "e517a7eb21950ac1174a3e5f7c0bf69d26d4ba49",
+        ),
+        TxCFileAttributes(
+            f"{prefix}_b9689420-7be3-4316-bba7-0d24351d9aaa.xml",
+            "PF0000508:519",
+            "10",
+            "2021-12-22T12:53:41",
+            "16db196c818e2d57f299b909adc6ba85010332a0",
+        ),
+        TxCFileAttributes(
+            f"{prefix}_cc0cc896-6883-4596-8fb5-adbdf96db78f.xml",
+            "PF0000508:519",
+            "10",
+            "2021-12-22T12:53:39",
+            "885adc326683280001337cab18dcda882052fc7f",
+        ),
+    ]
+    for attr in attribs:
+        TXCFileAttributesFactory(
+            filename=attr.filename,
+            revision=live_revision,
+            modification="revise",
+            revision_number=attr.revision_number,
+            modification_datetime=attr.modification_datetime,
+            service_code=attr.service_code,
+            hash=attr.hash,
+        )
+
+    draft = DatasetRevisionFactory(
+        upload_file__from_path=filepath.as_posix(),
+        dataset=live_revision.dataset,
+        is_published=False,
+    )
+    for attr in attribs:
+        TXCFileAttributesFactory(
+            filename=attr.filename,
+            revision=draft,
+            modification="revise",
+            revision_number=attr.revision_number,
+            modification_datetime=attr.modification_datetime,
+            service_code=attr.service_code,
+            hash=attr.hash,
+        )
+    revision = TimetableDatasetRevision.objects.get(id=draft.id)
+    validator = TXCRevisionValidator(draft_revision=revision)
+    violations = validator.get_violations()
+    assert len(violations) == 0

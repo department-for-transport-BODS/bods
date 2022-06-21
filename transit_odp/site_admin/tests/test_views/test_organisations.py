@@ -8,6 +8,7 @@ from django_hosts.resolvers import reverse
 import config.hosts
 from transit_odp.organisation.factories import OperatorCodeFactory, OrganisationFactory
 from transit_odp.organisation.models import Organisation
+from transit_odp.site_admin.forms import CHECKBOX_FIELD_KEY
 from transit_odp.site_admin.views import (
     OrganisationArchiveView,
     OrganisationCreateView,
@@ -57,21 +58,23 @@ class TestOrganisationListView:
             t.name for t in response.templates
         ]
 
-    def test_queryset_has_annotations(self):
+    def test_queryset_has_annotations(self, client_factory):
+        client = client_factory(host=self.host)
         organisation = OrganisationFactory.create()
+        user = UserFactory.create(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
         UserFactory.create(
             account_type=AccountType.org_admin.value, organisations=[organisation]
         )
         UserFactory.create_batch(
             3, account_type=AccountType.org_staff.value, organisations=[organisation]
         )
-
-        view = OrganisationListView()
-        queryset = view.get_queryset()
+        response = client.get(self.url)
+        queryset = response.context_data["object_list"]
         assert list(queryset) == [organisation]
         expected_org = queryset.first()
         assert expected_org.status == "active"
-        assert expected_org.first_letter == organisation.name[0].lower()
+        assert expected_org.first_letter == organisation.name[0].upper()
 
     def test_filter_by_operator(self, user_factory, client_factory):
         admin = user_factory(account_type=AccountType.site_admin.value)
@@ -80,7 +83,8 @@ class TestOrganisationListView:
 
         client = client_factory(host=self.host)
         client.force_login(user=admin)
-        response = client.get(self.url, {"operators": "s-z"})
+        url = f"{self.url}?letters=X&letters=Y&letters=Z&submitform=submit"
+        response = client.get(url)
 
         context = response.context
         orgs = context["organisation_list"]
@@ -127,6 +131,35 @@ class TestOrganisationListView:
         orgs = context["organisation_list"]
         assert len(orgs) == 3
         assert list(orgs.order_by("id")) == pending
+
+    def test_bucket_counts(self, client_factory, user_factory):
+        org_names = [
+            "Aorganisation",
+            "aorganisation",
+            "Borganisation",
+            "dorganisation",
+            "Zorganisation",
+        ]
+        _ = [OrganisationFactory(name=name) for name in org_names]
+
+        client = client_factory(host=self.host)
+        user = user_factory(account_type=SiteAdminType)
+        client.force_login(user=user)
+        response = client.get(self.url)
+        assert response.status_code == 200
+
+        first_letter_count = (
+            response.context["filter"]
+            .form.fields[CHECKBOX_FIELD_KEY]
+            .first_letter_count
+        )
+        assert first_letter_count["0 - 9"] == 0
+        assert first_letter_count["A"] == 2
+        assert first_letter_count["B"] == 1
+        assert first_letter_count["D"] == 1
+        assert first_letter_count["Z"] == 1
+        for ch in "CEFGHIJKLMNOPQRSTUVWXY":
+            assert first_letter_count[ch] == 0
 
 
 class TestOrganisationCreateView:

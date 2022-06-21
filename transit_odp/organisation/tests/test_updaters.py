@@ -4,7 +4,7 @@ import pytest
 from django.conf import settings
 from requests.exceptions import ConnectTimeout
 
-from transit_odp.organisation.constants import TimetableType
+from transit_odp.organisation.constants import INACTIVE, TimetableType
 from transit_odp.organisation.factories import DatasetFactory, DatasetRevisionFactory
 from transit_odp.organisation.updaters import (
     ERROR,
@@ -47,16 +47,14 @@ def test_missing_url():
         assert str(exc.value) == expected_msg
 
 
-def test_expire_dataset():
+def test_deactivate_dataset():
     dataset = DatasetFactory(dataset_type=TimetableType)
     updater = DatasetUpdater(dataset)
     assert dataset.live_revision.status == "live"
-    updater.expire_dataset()
+    updater.deactivate_dataset()
     dataset.refresh_from_db()
-    assert dataset.live_revision.status == "expired"
-    expected_description = "Data set is not reachable"
-    actual_description = updater.live_revision.errors.first().description
-    assert expected_description == actual_description
+    assert dataset.live_revision.status == INACTIVE
+    assert dataset.live_revision.comment == "Data set is not reachable"
 
 
 def test_no_draft():

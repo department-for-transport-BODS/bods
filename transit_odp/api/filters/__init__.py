@@ -6,7 +6,6 @@ from transit_odp.data_quality.scoring import AMBER_THRESHOLD, GREEN_THRESHOLD
 from transit_odp.organisation.models import Dataset, Organisation
 
 STATUS_CHOICE = (
-    ("expired", "Expired"),
     ("inactive", "Inactive"),
     ("published", "Published"),
     ("error", "Error"),

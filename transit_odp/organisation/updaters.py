@@ -8,19 +8,19 @@ from django.conf import settings
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ConnectTimeout, RequestException
 
-from transit_odp.common.enums import FeedErrorCategory, FeedErrorSeverity
 from transit_odp.common.loggers import MonitoringLoggerContext, PipelineAdapter
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.constants import INACTIVE
+from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.organisation.notifications import (
     send_endpoint_available_notification,
     send_feed_changed_notification,
     send_feed_monitor_fail_final_try_notification,
     send_feed_monitor_fail_first_try_notification,
 )
-from transit_odp.pipelines.models import DatasetETLError
 
 ERROR = "error"
 DEFUALT_COMMENT = "Automatically detected change in data set"
+DEACTIVATE_COMMENT = "Data set is not reachable"
 TIMEOUT = 90
 
 logger = logging.getLogger(__name__)
@@ -36,8 +36,8 @@ class DatasetUpdater:
     """
 
     def __init__(self, dataset):
-        self.dataset = dataset
-        self.live_revision = dataset.live_revision
+        self.dataset: Dataset = dataset
+        self.live_revision: DatasetRevision = dataset.live_revision
         self._content = None
 
     @property
@@ -68,18 +68,12 @@ class DatasetUpdater:
     def reset_retry_count(self):
         self.retry_count = 0
 
-    def expire_dataset(self):
+    def deactivate_dataset(self):
         """
-        Expire the dataset.
+        Deactivate the dataset.
         """
-        DatasetETLError.objects.filter(revision=self.live_revision).delete()
-        DatasetETLError.objects.create(
-            revision=self.live_revision,
-            severity=FeedErrorSeverity.severe.value,
-            category=FeedErrorCategory.availability.value,
-            description="Data set is not reachable",
-        )
-        self.live_revision.to_expired()
+        self.live_revision.status = INACTIVE
+        self.live_revision.comment = DEACTIVATE_COMMENT
         self.live_revision.save()
 
     def get_content(self):
@@ -185,7 +179,7 @@ def update_dataset(dataset: Dataset, publish_task):
         elif updater.retry_count >= settings.FEED_MONITOR_MAX_RETRY_ATTEMPTS:
             adapter.warning("Max retries reached. Expiring data set.")
             send_feed_monitor_fail_final_try_notification(updater.dataset)
-            updater.expire_dataset()
+            updater.deactivate_dataset()
     except Exception:
         message = "Unexpected exception. Failed to update data set."
         adapter.error(message, exc_info=True)

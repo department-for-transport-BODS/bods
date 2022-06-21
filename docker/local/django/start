@@ -5,4 +5,4 @@ set -o nounset
 
 
 python manage.py migrate
-python manage.py startdev
+python manage.py startdev "0.0.0.0:8000"

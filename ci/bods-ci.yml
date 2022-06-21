@@ -80,7 +80,6 @@ before_script:
       - "**/*"
   except:
     changes:
-      - crispy-forms-govuk/**/*
       - docker/production/django_base/*
 
 build-dev:

@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django_hosts.resolvers import reverse
 
 import config.hosts
-from transit_odp.common.contants import DEFAULT_ERROR_SUMMARY
+from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.publish.constants import (
     DUPLICATE_COMMENT_ERROR_MESSAGE,

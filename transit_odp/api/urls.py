@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_swagger.views import get_swagger_view
@@ -32,44 +31,16 @@ schema_view = get_swagger_view(title="Timetables Data API")
 avl_views = get_swagger_view(title="Bus Location Data API")
 fares_views = get_swagger_view(title="Fares Data API")
 
-urlpatterns = []
-
-if settings.IS_AVL_FEATURE_FLAG_ENABLED:
-    urlpatterns += [
-        path("buslocation-openapi/", AVLOpenApiView.as_view(), name="avlopenapi"),
-        path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
-        path(
-            "v1/datafeed/<int:pk>/",
-            AVLDetailApiView.as_view(),
-            name="avldetaildatafeedapi",
-        ),
-        path(
-            "v1/gtfsrtdatafeed/", AVLGTFSRTApiView.as_view(), name="gtfsrtdatafeedapi"
-        ),
-    ]
-
-if settings.IS_FARES_FEATURE_FLAG_ENABLED:
-    urlpatterns.append(
-        path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi")
-    )
-
-if urlpatterns:
-    # At least one flag is enabled
-    urlpatterns = [
-        path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi")
-    ] + urlpatterns
-
-else:
-    urlpatterns = [
-        path(
-            "openapi/",
-            TimetablesApiView.as_view(),
-            name="openapi",
-        )
-    ]
-
-urlpatterns += [
+urlpatterns = [
+    path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
+    path("buslocation-openapi/", AVLOpenApiView.as_view(), name="avlopenapi"),
+    path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi"),
     path("app/", include("transit_odp.api.app.urls")),
     path("v1/", include(router_v1.urls)),
+    path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
+    path(
+        "v1/datafeed/<int:pk>/", AVLDetailApiView.as_view(), name="avldetaildatafeedapi"
+    ),
+    path("v1/gtfsrtdatafeed/", AVLGTFSRTApiView.as_view(), name="gtfsrtdatafeedapi"),
     path("v2/", include((router_v2.urls, app_name), namespace="v2")),
 ]

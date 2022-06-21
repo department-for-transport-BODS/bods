@@ -49,13 +49,15 @@
         <div class="govuk-grid-column-one-third">
             {% block inner_secondary %}
               <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
-              <p class="govuk-body">
-                <a class="govuk-link" style="font-size: 18px"
-                   href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _('View our guidelines here') }}</a>
-              </p>
-              <p class="govuk-body">
-                <a class="govuk-link" style="font-size: 18px"
-                   href="{% url 'contact' host hosts.root %}">{{ _('Contact support desk') }}</a></p>
+              <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+                  <li>
+                      <a class="govuk-link" style="font-size: 18px"
+                         href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _('View our guidelines here') }}</a>
+                  </li>
+                  <li>
+                      <a class="govuk-link" style="font-size: 18px"
+                         href="{% url 'contact' host hosts.root %}">{{ _('Contact support desk') }}</a>
+                  </li></ul>
             {% endblock %}
         </div>
       {% endif %}

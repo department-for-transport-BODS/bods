@@ -55,18 +55,20 @@
 
   <div class="govuk-grid-column-one-third">
     <h2 class="govuk-heading-s">{% trans 'Related content' %}</h2>
-    <p class="govuk-body">
-      <a class="govuk-link"
-        href="{% url 'guidance:support-local_authorities' host hosts.publish %}">
-        {% trans 'Local authority requirements' %}
-      </a>
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link"
-        href="{% url 'contact' host hosts.root %}">
-        {% trans 'Contact the Bus Open Data Service' %}
-      </a>
-    </p>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li>
+            <a class="govuk-link"
+               href="{% url 'guidance:support-local_authorities' host hosts.publish %}">
+                {% trans 'Local authority requirements' %}
+            </a>
+        </li>
+        <li>
+            <a class="govuk-link"
+               href="{% url 'contact' host hosts.root %}">
+                {% trans 'Contact the Bus Open Data Service' %}
+            </a>
+        </li>
+    </ul>
   </div>
 </div>
 

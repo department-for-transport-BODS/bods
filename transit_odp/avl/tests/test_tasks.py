@@ -5,6 +5,8 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from freezegun import freeze_time
+from mocket import Mocketizer
+from mocket.mockhttp import Entry
 from requests import RequestException
 
 from transit_odp.avl.factories import (
@@ -228,36 +230,35 @@ class TestValidateAVLTask:
         ],
     )
     def test_task_validate_avl_feed(
-        self, avl_status, expected_status, expected_version, mocker
+        self, avl_status, expected_status, expected_version, settings
     ):
         url = "https://cavlvalidation.com"
         username = "user"
         password = "pass"
-        data = {
-            "version": expected_version,
-            "status": avl_status,
-            "url": url,
-            "username": username,
-            "password": password,
-            "created": datetime.now().isoformat(),
-        }
-        service = Mock()
-        service.validate_feed.return_value = Mock(data=json.dumps(data))
+        Entry.single_register(
+            Entry.POST,
+            f"{settings.CAVL_URL}/validate",
+            body=json.dumps(
+                {
+                    "version": expected_version,
+                    "status": avl_status,
+                    "url": url,
+                    "username": username,
+                    "password": password,
+                    "created": datetime.now().isoformat(),
+                }
+            ),
+            headers={"content-type": "application/json"},
+        )
+
         revision = DatasetRevisionFactory(
             username=username, password=password, url_link=url
         )
         DatasetMetadataFactory(revision=revision)
-        mocker.patch(CAVL_PATH, return_value=service)
         task_id = uuid.uuid4()
         CAVLValidationTaskResultFactory(task_id=task_id, revision=revision)
-        task_validate_avl_feed(task_id)
-        service.validate_feed.assert_called_once_with(
-            url=url,
-            username=username,
-            password=password,
-            _request_timeout=60,
-            _preload_content=False,
-        )
+        with Mocketizer():
+            task_validate_avl_feed(task_id)
 
         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
         assert task.status == expected_status

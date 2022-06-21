@@ -54,18 +54,20 @@
     <div class="govuk-grid-column-one-third">
       <h2 class="govuk-heading-s">{% trans 'Related content' %}</h2>
 
-      <p class="govuk-body">
-        <a class="govuk-link"
-          href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-          {% trans 'Bus operator requirements' %}
-        </a>
-      </p>
+      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+          <li>
+              <a class="govuk-link"
+                 href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+                  {% trans 'Bus operator requirements' %}
+              </a>
+          </li>
 
-      <p class="govuk-body">
-        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-          {% trans 'Support line' %}
-        </a>
-      </p>
+          <li>
+              <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
+                  {% trans 'Support line' %}
+              </a>
+          </li>
+      </ul>
     </div>
 
   </div>

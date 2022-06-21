@@ -5,8 +5,11 @@ from datetime import timedelta
 
 import pytest
 from django.utils import timezone
+from freezegun import freeze_time
 
+from config.hosts import DATA_HOST
 from transit_odp.browse.exports import get_feed_status
+from transit_odp.common.utils import reverse_path
 from transit_odp.common.utils.cast import to_int_or_value
 from transit_odp.organisation.constants import DatasetType, FaresType, TimetableType
 from transit_odp.organisation.factories import (
@@ -14,11 +17,14 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
 )
+from transit_odp.site_admin.csv.dailyaggregates import (
+    get_daily_aggregates_csv,
+    get_daily_aggregates_df,
+)
+from transit_odp.site_admin.csv.dailyconsumer import get_consumer_breakdown_df
 from transit_odp.site_admin.exports import (
     AgentUserCSV,
-    APIRequestCSV,
     ConsumerCSV,
-    DailyConsumerRequestCSV,
     DatasetPublishingCSV,
     OperationalStatsCSV,
     PublisherCSV,
@@ -26,7 +32,11 @@ from transit_odp.site_admin.exports import (
     create_metrics_archive,
     pretty_account_name,
 )
-from transit_odp.site_admin.factories import APIRequestFactory, OperationalStatsFactory
+from transit_odp.site_admin.factories import (
+    APIRequestFactory,
+    OperationalStatsFactory,
+    ResourceRequestCounterFactory,
+)
 from transit_odp.site_admin.models import MetricsArchive
 from transit_odp.users.constants import (
     AgentUserType,
@@ -83,7 +93,7 @@ class TestPublisherCSV:
         ]
 
 
-class TestDasetPublishingCSV:
+class TestDatasetPublishingCSV:
     @pytest.mark.parametrize(
         "factory, dataset_type, user_type",
         [
@@ -224,25 +234,52 @@ class TestAgentUserCSV:
 
 
 class TestAPIRequestCSV:
+    expected_headers = [
+        "Date",
+        "Number of unique consumers",
+        "Number of API requests",
+        "Number of total timetables downloads (using download all)",
+        "Number of total location data downloads (using download all)",
+        "Number of total fares data downloads (using download all)",
+    ]
+
     def get_csv_rows(self):
-        actual = APIRequestCSV().to_string()
-        csvfile = io.StringIO(actual)
-        reader = csv.reader(csvfile.getvalue().splitlines())
+        start = timezone.now() - timedelta(days=2)
+        end = timezone.now()
+        csv_string = get_daily_aggregates_df(start, end).to_csv(index=False)
+        reader = csv.reader(csv_string.splitlines())
         rows = list(reader)
         return rows
 
     def test_no_api_requests_to_string(self):
-        expected_headers = [
-            "Date",
-            "Number of unique consumers",
-            "Number of API requests",
-        ]
+
         rows = self.get_csv_rows()
         headers, *_ = rows
         assert len(rows) == 1
-        assert expected_headers == headers
+        assert self.expected_headers == headers
 
+    def test_headers_of_csv_file(self):
+        start = timezone.now() - timedelta(days=2)
+        end = timezone.now()
+        consumer1 = UserFactory()
+        APIRequestFactory.create_batch(5, requestor=consumer1)
+
+        consumer2 = UserFactory()
+        APIRequestFactory.create_batch(3, requestor=consumer2)
+
+        yesterday = timezone.now() - timedelta(days=1)
+        APIRequestFactory.create_batch(4, requestor=consumer2, created=yesterday)
+
+        csvfile = get_daily_aggregates_csv(start, end)
+        with open(csvfile.name, "r") as csv_:
+            reader = csv.reader(csv_)
+            headers, *rows = list(reader)
+
+        assert headers == self.expected_headers
+
+    @freeze_time("18/03/21 11:17:12")
     def test_requests_from_multiple_users(self):
+        ResourceRequestCounterFactory(requestor=None, counter=10)
         consumer1 = UserFactory()
         APIRequestFactory.create_batch(5, requestor=consumer1)
 
@@ -254,22 +291,67 @@ class TestAPIRequestCSV:
 
         _, first, second = self.get_csv_rows()
 
-        day, consumer_count, request_count = first
+        day, consumer_count, request_count, _, _, _ = first
         assert day == yesterday.date().isoformat()
         assert consumer_count == "1"
         assert request_count == "4"
 
-        day, consumer_count, request_count = second
+        day, consumer_count, request_count, _, _, _ = second
         assert day == timezone.now().date().isoformat()
         assert consumer_count == "2"
         assert request_count == "8"
 
+    @pytest.mark.parametrize(
+        "view_name, csv_index",
+        [
+            ("downloads-bulk", 3),
+            ("downloads-fares-bulk", 5),
+            ("downloads-avl-bulk", 4),
+        ],
+        ids=["timetables", "fares", "avls"],
+    )
+    def test_requests_from_multiple_users_for_multiple_downloads(
+        self, view_name, csv_index
+    ):
+        ResourceRequestCounterFactory(requestor=None, counter=10)
+        resource = reverse_path(view_name, host=DATA_HOST)
+        consumer1 = UserFactory()
+        APIRequestFactory.create_batch(5, requestor=consumer1)
+        ResourceRequestCounterFactory(
+            counter=5, requestor=consumer1, path_info=resource
+        )
+
+        consumer2 = UserFactory()
+        APIRequestFactory.create_batch(3, requestor=consumer2)
+        ResourceRequestCounterFactory(
+            counter=3, requestor=consumer2, path_info=resource
+        )
+
+        yesterday = timezone.now() - timedelta(days=1)
+        APIRequestFactory.create_batch(4, requestor=consumer2, created=yesterday)
+        ResourceRequestCounterFactory(
+            counter=4, requestor=consumer2, date=yesterday.date(), path_info=resource
+        )
+
+        _, row1, row2 = self.get_csv_rows()
+
+        assert row1[0] == yesterday.date().isoformat()
+        assert row1[1] == "1"
+        assert row1[2] == "4"
+        assert row1[csv_index] == "4"
+
+        assert row2[0] == timezone.now().date().isoformat()
+        assert row2[1] == "2"
+        assert row2[2] == "8"
+        assert row2[csv_index] == "8"
+
 
 class TestDailyConsumerRequestCSV:
     def get_csv_rows(self):
-        actual = DailyConsumerRequestCSV().to_string()
-        csvfile = io.StringIO(actual)
-        reader = csv.reader(csvfile.getvalue().splitlines())
+        start = timezone.now() - timedelta(days=2)
+        end = timezone.now()
+        csv_string = get_consumer_breakdown_df(start, end).to_csv(index=False)
+        reader = csv.reader(csv_string.splitlines())
         rows = list(reader)
         return rows
 
@@ -279,13 +361,16 @@ class TestDailyConsumerRequestCSV:
             "Consumer ID",
             "Email",
             "Number of daily API requests",
+            "Number of timetables daily downloads (using Download all)",
+            "Number of location data daily downloads (using Download all)",
+            "Number of fares daily downloads (using Download all)",
         ]
         rows = self.get_csv_rows()
         headers, *_ = rows
         assert len(rows) == 1
         assert expected_headers == headers
 
-    def test_requests_from_multiple_users(self):
+    def test_api_requests_from_multiple_users(self):
         consumer1 = UserFactory()
         APIRequestFactory.create_batch(5, requestor=consumer1)
 
@@ -297,23 +382,97 @@ class TestDailyConsumerRequestCSV:
 
         _, first, second, third = self.get_csv_rows()
 
-        day, consumer_id, email, request_count = first
+        day, consumer_id, email, request_count, _, _, _ = first
         assert day == yesterday.date().isoformat()
         assert consumer_id == str(consumer2.id)
         assert email == str(consumer2.email)
         assert request_count == "4"
 
-        day, consumer_id, email, request_count = second
+        day, consumer_id, email, request_count, _, _, _ = second
         assert day == timezone.now().date().isoformat()
         assert consumer_id == str(consumer1.id)
         assert email == str(consumer1.email)
         assert request_count == "5"
 
-        day, consumer_id, email, request_count = third
+        day, consumer_id, email, request_count, _, _, _ = third
         assert day == timezone.now().date().isoformat()
         assert consumer_id == str(consumer2.id)
         assert email == str(consumer2.email)
         assert request_count == "3"
+
+    def test_both_api_users_and_request_users(self):
+        ResourceRequestCounterFactory(requestor=None, counter=10)
+        apiuser = UserFactory()
+        APIRequestFactory.create_batch(5, requestor=apiuser)
+
+        requestuser = UserFactory()
+        ResourceRequestCounterFactory(requestor=requestuser)
+
+        super_user = UserFactory()
+        APIRequestFactory.create_batch(5, requestor=super_user)
+        ResourceRequestCounterFactory(requestor=super_user, counter=3)
+
+        _, first, second, third = self.get_csv_rows()
+
+        _, consumer_id, _, api, timetables, fares, avls = first
+        assert consumer_id == str(apiuser.id)
+        assert api == "5"
+        assert (timetables, fares, avls) == ("0", "0", "0")
+
+        _, consumer_id, _, api, timetables, fares, avls = second
+        assert consumer_id == str(super_user.id)
+        assert api == "5"
+        assert timetables == "3"
+        assert (avls, fares) == ("0", "0")
+
+        _, consumer_id, _, api, timetables, fares, avls = third
+        assert consumer_id == str(requestuser.id)
+        assert timetables == "1"
+        assert (fares, avls) == ("0", "0")
+
+    def test_download_requests_from_multiple_users(self):
+        ResourceRequestCounterFactory(requestor=None, counter=10)
+        consumer1 = UserFactory()
+        ResourceRequestCounterFactory.create_batch(5, requestor=consumer1)
+
+        consumer2 = UserFactory()
+        ResourceRequestCounterFactory.create_batch(
+            3, requestor=consumer2, path_info="/fares/download/bulk_archive"
+        )
+
+        yesterday = timezone.now() - timedelta(days=1)
+        ResourceRequestCounterFactory.create_batch(
+            4,
+            requestor=consumer2,
+            date=yesterday.date(),
+            path_info="/avl/download/bulk_archive",
+        )
+
+        _, first, second, third = self.get_csv_rows()
+
+        day, consumer_id, email, _, timetables, avls, fares = first
+        assert day == yesterday.date().isoformat()
+        assert consumer_id == str(consumer2.id)
+        assert email == str(consumer2.email)
+        assert avls == "4"
+        assert fares == "0"
+        assert timetables == "0"
+
+        day, consumer_id, email, _, timetables, avls, fares = second
+        assert day == timezone.now().date().isoformat()
+        assert consumer_id == str(consumer1.id)
+        assert email == str(consumer1.email)
+        assert timetables == "5"
+        assert fares == "0"
+        assert avls == "0"
+
+        day, consumer_id, email, _, timetables, avls, fares = third
+        assert day == timezone.now().date().isoformat()
+        assert consumer_id == str(consumer2.id)
+        assert email == str(consumer2.email)
+        assert fares == "3"
+        assert timetables == "0"
+        assert avls == "0"
 
 
 class TestRawConsumerRequestsAPICSV:
@@ -354,7 +513,7 @@ class TestRawConsumerRequestsAPICSV:
         assert first[0] in api_metrics_csv
         assert first[1] == str(request.id)
         assert first[2] == str(consumer1.id)
-        assert first[3] == consumer1.name
+        assert first[3] == f"{consumer1.first_name} {consumer1.last_name}"
         assert first[4] == consumer1.dev_organisation
         assert first[5] == consumer1.email
         assert first[6] == request.path_info
@@ -365,9 +524,9 @@ class TestRawConsumerRequestsAPICSV:
 class TestAPIRequestArchive:
     def count_entries_in_csv(self, archive):
         expected_files = [
-            "dailyaggregates.csv",
-            "dailyconsumerbreakdown.csv",
             "rawapimetrics.csv",
+            "dailyconsumerbreakdown.csv",
+            "dailyaggregates.csv",
         ]
         with zipfile.ZipFile(archive, "r") as z:
             assert expected_files == [name for name in z.namelist()]

@@ -18,7 +18,7 @@ from transit_odp.browse.views.timetable_views import (
     UserFeedbackView,
 )
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.common.view_mixins import DownloadView
+from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -52,7 +52,7 @@ class DownloadFaresView(LoginRequiredMixin, BaseTemplateView):
         return context
 
 
-class DownloadFaresBulkDataArchiveView(DownloadView):
+class DownloadFaresBulkDataArchiveView(ResourceCounterMixin, DownloadView):
     def get_object(self, queryset=None):
         try:
             return BulkDataArchive.objects.filter(
@@ -81,6 +81,7 @@ class FaresSearchView(BaseSearchView):
             .get_queryset()
             .get_dataset_type(dataset_type=FaresType)
             .get_published()
+            .get_viewable_statuses()
             .get_active_org()
             .add_organisation_name()
             .add_live_data()

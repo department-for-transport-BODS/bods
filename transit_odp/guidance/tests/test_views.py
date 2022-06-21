@@ -144,18 +144,18 @@ class TestDeveloperReqView:
             (
                 "quickstart",
                 "overview",
-                "datacatelogue",
+                "datacatalogue",
                 "guidance/developer/quick_start.html",
             ),
             (
-                "datacatelogue",
+                "datacatalogue",
                 "quickstart",
                 "databyoperator",
                 "guidance/developer/datacatalogue.html",
             ),
             (
                 "databyoperator",
-                "datacatelogue",
+                "datacatalogue",
                 "browse",
                 "guidance/developer/data_by_op_loc.html",
             ),

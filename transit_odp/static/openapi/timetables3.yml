@@ -97,7 +97,6 @@ paths:
             enum:
               - published
               - error
-              - expired
               - inactive
 
         - name: endDateStart
@@ -252,7 +251,7 @@ components:
           example: Automatically detected change in data set
         status:
           type: string
-          enum: [published, error, expired, inactive]
+          enum: [published, error, inactive]
           example: inactive
         url:
           type: string

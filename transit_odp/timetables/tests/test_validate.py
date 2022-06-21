@@ -11,7 +11,8 @@ from transit_odp.organisation.factories import (
 )
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.timetables.tasks import run_scan_timetables
+from transit_odp.timetables.proxies import TimetableDatasetRevision
+from transit_odp.timetables.tasks import task_scan_timetables
 from transit_odp.timetables.validate import TXCRevisionValidator
 from transit_odp.validate.antivirus import (
     AntiVirusError,
@@ -108,7 +109,7 @@ class TestPipeline:
         mocker.patch(GET_TASK, return_value=task)
 
         with expectaton:
-            run_scan_timetables(task.id)
+            task_scan_timetables(revision.id, task.id)
 
         task.to_error.assert_called_once_with("dataset_validate", task_status)
 
@@ -194,6 +195,11 @@ def test_revision_number_violation(
         modification_datetime=draft_modification_datetime,
     )
 
-    validator = TXCRevisionValidator(draft_revision)
+    validator = TXCRevisionValidator(
+        TimetableDatasetRevision.objects.get(id=draft_revision.id)
+    )
+    validator._live_hashes = list(
+        live_revision.txc_file_attributes.values_list("hash", flat=True)
+    )
     validator.validate_revision_number()
     assert len(validator.violations) == violation_count

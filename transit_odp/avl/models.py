@@ -15,7 +15,7 @@ from transit_odp.avl.validation.models import (
     SchemaValidationResponse,
     ValidationResponse,
 )
-from transit_odp.common.contants import UTF8
+from transit_odp.common.constants import UTF8
 from transit_odp.common.fields import CallableStorageFileField
 from transit_odp.organisation.constants import AVLType
 from transit_odp.organisation.models import DatasetRevision

@@ -647,6 +647,7 @@ class TXCFileAttributes(models.Model):
     )
     origin = models.CharField(_("Origin"), max_length=512, default="")
     destination = models.CharField(_("Destination"), max_length=512, default="")
+    hash = models.CharField(_("Hash of file"), max_length=40, default="")
 
     objects = TXCFileAttributesQuerySet.as_manager()
 
@@ -662,7 +663,8 @@ class TXCFileAttributes(models.Model):
             f"service_code={self.service_code!r}, "
             f"origin={self.origin!r}, "
             f"destination={self.destination!r}, "
-            f"national_operator_code={self.national_operator_code!r}"
+            f"national_operator_code={self.national_operator_code!r}, "
+            f"hash={self.hash!r}"
         )
 
     @classmethod
@@ -684,4 +686,5 @@ class TXCFileAttributes(models.Model):
             operating_period_end_date=txc_file.service.operating_period_end_date,
             public_use=txc_file.service.public_use,
             line_names=[line.line_name for line in txc_file.service.lines],
+            hash=txc_file.hash,
         )

@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.http import QueryDict
 from django.template import Context, Template
 from django.test import TestCase
@@ -80,23 +79,3 @@ class TestQueryChop(TestCase):
             context=context
         )
         self.assertEqual(out, "?")
-
-
-class TestFeatureFlagEnabled(TestCase):
-    def test_feature_flag_enabled_true(self):
-        settings.IS_AVL_FEATURE_FLAG_ENABLED = True
-        context = Context(dict_={"request": self.client})
-        context["request"].path = "/"
-        out = Template(
-            "{% load feature_flag_enabled %}" "{% is_avl_feature_flag_enabled %}"
-        ).render(context=context)
-        self.assertEqual(out, "True")
-
-    def test_feature_flag_enabled_false(self):
-        settings.IS_AVL_FEATURE_FLAG_ENABLED = False
-        context = Context(dict_={"request": self.client})
-        context["request"].path = "/"
-        out = Template(
-            "{% load feature_flag_enabled %}" "{% is_avl_feature_flag_enabled %}"
-        ).render(context=context)
-        self.assertEqual(out, "False")

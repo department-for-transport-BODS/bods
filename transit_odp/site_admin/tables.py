@@ -13,9 +13,9 @@ User = get_user_model()
 
 RESEND_CLASS = "resend-checkbox"
 CLICKER_SCRIPT = (
-    f"document"
+    f"[...document"
     f'.getElementsByClassName("{RESEND_CLASS}")'
-    f".forEach("
+    f"].forEach("
     f"function(elem){{elem.checked = this.checked}}.bind(this)"
     f")"
 )
@@ -235,9 +235,9 @@ class AgentsTable(GovUkTable):
         fields = ("agent_organisation", "email")
 
     agent_organisation = tables.Column(
-        orderable=False, verbose_name="Agent Organisation"
+        orderable=True, verbose_name="Agent organisation"
     )
-    email = tables.Column(orderable=False, verbose_name="Email")
+    email = tables.Column(orderable=True, verbose_name="Email")
     details = tables.Column(
         orderable=False,
         linkify=lambda record: reverse(

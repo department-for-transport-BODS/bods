@@ -43,18 +43,15 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
-    && pip3 install cython pipenv
-
-# Install packages for frontend
-COPY ./crispy-forms-govuk /app/crispy-forms-govuk
-COPY ./frontend /app/frontend
-RUN cd frontend && npm install
+    && pip3 install cython
 
 # Install Python packages
 COPY ./cavl-client /app/cavl-client
 
-COPY ./pyproject.toml ./poetry.lock ./
+COPY ./pyproject.toml ./poetry.lock ./package.json ./package-lock.json ./
+
 RUN python --version \
+    && npm install \
     && pip install poetry==1.1.12 \
     && poetry config virtualenvs.create false \
     && poetry install

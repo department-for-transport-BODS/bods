@@ -1,4 +1,5 @@
 from allauth.account.adapter import get_adapter
+from django.contrib.auth import get_user_model
 from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django.views.generic import CreateView
@@ -19,7 +20,6 @@ from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.organisation.forms.management import InvitationForm, UserEditForm
 from transit_odp.organisation.forms.organisation_profile import OrganisationProfileForm
 from transit_odp.organisation.models import Organisation
-from transit_odp.organisation.view_models import User
 from transit_odp.publish.views.base import (
     BaseDetailView,
     BaseTemplateView,
@@ -34,6 +34,8 @@ from transit_odp.users.views.mixins import (
 )
 
 notifier = get_notifications()
+
+User = get_user_model()
 
 
 class ManageView(OrgAdminViewMixin, BaseDetailView, ContextMixin):

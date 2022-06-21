@@ -5,8 +5,6 @@ import config.hosts
 
 pytestmark = pytest.mark.django_db
 
-settings.IS_AVL_FEATURE_FLAG_ENABLED = True
-
 
 def test_upload_step__empty_comment(unpublished_update_url):
     """

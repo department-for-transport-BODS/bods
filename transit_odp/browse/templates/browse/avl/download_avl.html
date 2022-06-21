@@ -31,6 +31,10 @@
             <b>{% trans "Format:" %}</b>
             {% trans "SIRI-VM" %}
             {% include "browse/snippets/help_modals/sirivm.html" %}
+            {% filter force_escape %}
+                {% trans "GTFS-RT" %}
+            {% endfilter %}
+            {% include "browse/snippets/help_modals/gtfsrt.html" %}
         </li>
         <li>
             <b>{% trans "Mode:" %}</b> {% trans "Bus" %}
