@@ -2,6 +2,8 @@ from collections import namedtuple
 from pathlib import Path
 
 import pytest
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 
 from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
@@ -127,6 +129,55 @@ def test_revision_single_file_modification_changed(
         service_code="PD0000479:304",
         modification_datetime=modification_datetime,
         revision_number=revision,
+    )
+    draft = TimetableDatasetRevision.objects.get(id=draft.id)
+    validator = TXCRevisionValidator(draft_revision=draft)
+    violations = validator.get_violations()
+    assert len(violations) == expected
+
+
+LESS_THAN_SIX_MONTHS = timezone.now() - relativedelta(months=5)
+MORE_THAN_SIX_MONTHS = timezone.now() - relativedelta(months=7)
+
+
+@pytest.mark.parametrize(
+    ("creation_datetime", "expected"),
+    [
+        ("2019-11-22T11:00:00", 1),
+        ("2020-11-22T11:00:00", 0),
+        (LESS_THAN_SIX_MONTHS, 0),
+        (MORE_THAN_SIX_MONTHS, 1),
+    ],
+)
+def test_validate_creation_datetime(creation_datetime, expected):
+    """
+    GIVEN a draft revision to be validated with different/same creation date
+    and younger/older than six months
+    WHEN a validator is created and `get_violations` is called
+    THEN violations should be returned
+    """
+    live_revision = DatasetRevisionFactory()
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        modification="revise",
+        revision_number="80",
+        filename="X18B-None--SCWW-LS-2021-09-18-TXC LS210918-BODS_V1_1.xml",
+        creation_datetime="2020-11-22T11:00:00",
+        modification_datetime="2021-10-20T10:31:39",
+        operating_period_start_date="2021-08-02",
+        service_code="PD0000479:304",
+    )
+
+    draft = DatasetRevisionFactory(dataset=live_revision.dataset, is_published=False)
+    TXCFileAttributesFactory(
+        revision=draft,
+        modification="revise",
+        filename="X18B-None--SCWW-LS-2021-12-31-TXC LS210918-BODS_V1_1.xml",
+        creation_datetime=creation_datetime,
+        operating_period_start_date="2021-11-02",
+        service_code="PD0000479:304",
+        revision_number="81",
+        modification_datetime="2021-11-21T10:34:49",
     )
     draft = TimetableDatasetRevision.objects.get(id=draft.id)
     validator = TXCRevisionValidator(draft_revision=draft)

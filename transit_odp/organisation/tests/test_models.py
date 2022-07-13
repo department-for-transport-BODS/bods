@@ -61,7 +61,7 @@ class TestDatasetModel:
 
 
 class TestDatasetRevision:
-    mut = "transit_odp.organisation.models"
+    mut = "transit_odp.organisation.models.data"
 
     def test_dataset_created_must_be_unique(self):
         """Tests that IntegrityError is raised if dataset-created fields are

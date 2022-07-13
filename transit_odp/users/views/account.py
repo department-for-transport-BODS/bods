@@ -11,8 +11,8 @@ from rest_framework.authtoken.models import Token
 from transit_odp.browse.tables import DatasetSubscriptionTable
 from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import BODSBaseView
+from transit_odp.common.views import BaseUpdateView
 from transit_odp.organisation.models import Dataset
-from transit_odp.publish.views.base import BaseUpdateView
 from transit_odp.users.forms.account import PublishAdminNotifications
 from transit_odp.users.models import AccountType, UserSettings
 

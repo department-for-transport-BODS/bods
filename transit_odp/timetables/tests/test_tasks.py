@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -6,6 +7,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 from requests import Response
 
+from transit_odp.data_quality.models.report import PTIValidationResult
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
@@ -18,6 +20,7 @@ from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.tasks import (
     task_dataset_download,
+    task_pti_validation,
     task_scan_timetables,
     task_timetable_file_check,
     task_timetable_schema_check,
@@ -31,6 +34,8 @@ from transit_odp.validate.xml import XMLSyntaxError
 pytestmark = pytest.mark.django_db
 
 TASK_MODULE = "transit_odp.timetables.tasks"
+HERE = Path(__file__)
+DATA = HERE.parent / "data"
 
 
 @pytest.fixture
@@ -57,15 +62,16 @@ def create_task(**kwargs):
 
 
 def _add_revision(dataset, **kwargs):
-    txc_version = kwargs.get("txc_version", 2.1)
-    status = kwargs.get("status", FeedStatus.live.value)
-    is_published = kwargs.get("is_published", True)
+    txc_version = kwargs.pop("txc_version", 2.1)
+    status = kwargs.pop("status", FeedStatus.live.value)
+    is_published = kwargs.pop("is_published", True)
 
     revision = DatasetRevisionFactory(
         transxchange_version=txc_version,
         dataset=dataset,
         status=status,
         is_published=is_published,
+        **kwargs,
     )
     DatasetETLTaskResultFactory(revision=revision)
 
@@ -74,12 +80,14 @@ def add_live_revision(dataset, txc_version=2.1):
     _add_revision(dataset, txc_version=txc_version)
 
 
-def add_draft_revision(dataset, txc_version=2.1):
+def add_draft_revision(dataset, txc_version=2.1, **kwargs):
+    status = kwargs.pop("status", FeedStatus.success.value)
     _add_revision(
         dataset,
         txc_version=txc_version,
-        status=FeedStatus.success.value,
         is_published=False,
+        status=status,
+        **kwargs,
     )
 
 
@@ -262,3 +270,20 @@ def test_file_check_validation_exception(mocker):
     assert task.error_code == task.XML_SYNTAX_ERROR
     expected_message = XMLSyntaxError.message_template.format(filename=filename)
     assert str(exc_info.value) == expected_message
+
+
+def test_task_pti_validation():
+    upload_file_path = DATA / "3_pti_pass.zip"
+    dataset = DatasetFactory(live_revision=None)
+    add_draft_revision(
+        dataset,
+        txc_version=2.2,
+        upload_file__from_path=upload_file_path,
+        status=FeedStatus.indexing.value,
+    )
+    revision = dataset.revisions.first()
+
+    task = revision.etl_results.first()
+    task_pti_validation(revision.id, task.id)
+    result = PTIValidationResult.objects.get(revision=revision)
+    assert result.count == 0

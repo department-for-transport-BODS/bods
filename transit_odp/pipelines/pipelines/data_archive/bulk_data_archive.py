@@ -32,9 +32,8 @@ def get_datasets(dataset_type: DatasetType):
 def get_datasets_by_region(region_code: str):
     """Returns all published distinct datasets by region."""
     return (
-        Dataset.objects.filter(
-            live_revision__admin_areas__traveline_region_id=region_code
-        )
+        Dataset.objects.get_active_org()
+        .filter(live_revision__admin_areas__traveline_region_id=region_code)
         .filter(dataset_type=TimetableType)
         .get_published()
         .distinct("id")

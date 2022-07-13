@@ -12,8 +12,18 @@ from transit_odp.timetables.views import (
 from transit_odp.timetables.views.pti import PublishedViolationsCSVFileView
 
 urlpatterns = [
-    path("", view=timetable.PublishView.as_view(), name="feed-list"),
-    path("new", view=timetable.FeedUploadWizard.as_view(), name="feed-new"),
+    path("", view=timetable.ListView.as_view(), name="feed-list"),
+    path(
+        "attention/",
+        view=timetable.RequiresAttentionView.as_view(),
+        name="requires-attention",
+    ),
+    path("new", view=timetable.FeedUploadWizard.as_view(), name="new-feed"),
+    path(
+        "service-codes/",
+        view=timetable.ServiceCodeView.as_view(),
+        name="service-codes",
+    ),
     # All these routes must restrict access to organisation who owns
     # the feed
     path(

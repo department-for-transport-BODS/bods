@@ -1,8 +1,10 @@
-from django.db.models import F, QuerySet, Value
+from django.db.models import CharField, F, QuerySet, Subquery, Value
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace
 from django.db.models.query_utils import Q
 
+from transit_odp.organisation.models import Licence as BODSLicence
+from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.otc.constants import (
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -13,7 +15,11 @@ from transit_odp.otc.constants import (
 class ServiceQuerySet(QuerySet):
     def add_service_code(self):
         return self.annotate(
-            service_code=Replace("registration_number", Value("/"), Value(":"))
+            service_code=Replace(
+                "registration_number",
+                Value("/", output_field=CharField()),
+                Value(":", output_field=CharField()),
+            )
         )
 
     def add_operator_details(self):
@@ -33,6 +39,40 @@ class ServiceQuerySet(QuerySet):
 
     def add_timetable_data_annotations(self):
         return self.add_service_code().add_operator_details().add_licence_details()
+
+    def get_all_in_organisation(self, organisation_id):
+        org_licences = BODSLicence.objects.filter(organisation=organisation_id)
+        return (
+            self.filter(licence__number__in=Subquery(org_licences.values("number")))
+            .order_by("licence__number", "registration_number")
+            .distinct("licence__number", "registration_number")
+        )
+
+    def get_missing_from_organisation(self, organisation_id):
+        org_licences = BODSLicence.objects.filter(organisation=organisation_id)
+        org_timetables = TXCFileAttributes.objects.filter(
+            revision__dataset__organisation_id=organisation_id
+        ).get_active_live_revisions()
+        return (
+            self.filter(licence__number__in=Subquery(org_licences.values("number")))
+            .add_service_code()
+            .exclude(service_code__in=Subquery(org_timetables.values("service_code")))
+            .order_by("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number", "service_number")
+        )
+
+    def search(self, keywords: str):
+        """Searches License code, service number, and line number in
+        OTCService using keywords.
+        """
+        licence_number_keywords = Q(licence__number__icontains=keywords)
+        service_number_keywords = Q(service_number__icontains=keywords)
+        registration_number_keywords = Q(registration_number__icontains=keywords)
+        return self.filter(
+            licence_number_keywords
+            | service_number_keywords
+            | registration_number_keywords
+        ).distinct()
 
 
 class LicenceQuerySet(QuerySet):

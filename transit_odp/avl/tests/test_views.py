@@ -1,7 +1,7 @@
 import pytest
 from django.conf import settings
 
-import config.hosts
+from config.hosts import PUBLISH_HOST
 
 pytestmark = pytest.mark.django_db
 
@@ -10,7 +10,7 @@ def test_upload_step__empty_comment(unpublished_update_url):
     """
     Test form complains on empty comment
     """
-    settings.DEFAULT_HOST = config.hosts.PUBLISH_HOST
+    settings.DEFAULT_HOST = PUBLISH_HOST
     url, client, _ = unpublished_update_url
     response = client.post(
         url,
@@ -31,7 +31,7 @@ def test_upload_step__duplicate_comment(unpublished_update_url):
     """
     Test form complains on duplicate comment
     """
-    settings.DEFAULT_HOST = config.hosts.PUBLISH_HOST
+    settings.DEFAULT_HOST = PUBLISH_HOST
     url, client, dataset = unpublished_update_url
     revision = dataset.revisions.first()
     comment = "another_test"

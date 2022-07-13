@@ -1,5 +1,5 @@
 from crispy_forms.layout import Field, Layout
-from crispy_forms_govuk.forms import GOVUKForm
+from crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
 from crispy_forms_govuk.layout import ButtonSubmit
 from django import forms
 from django.forms.widgets import NumberInput
@@ -17,7 +17,7 @@ from transit_odp.avl.constants import (
 )
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import FeedStatus
-from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models import ConsumerFeedback, Organisation
 
 
 class TimetableSearchFilterForm(GOVUKForm):
@@ -197,31 +197,62 @@ class FaresSearchFilterForm(GOVUKForm):
         )
 
 
-class UserFeedbackForm(GOVUKForm):
+class ConsumerFeedbackForm(GOVUKModelForm):
+    class Meta:
+        model = ConsumerFeedback
+        fields = (
+            "feedback",
+            "consumer_id",
+            "dataset_id",
+            "organisation_id",
+        )
+
     feedback = forms.CharField(
         label="What best describes the issue you are experiencing?*",
         widget=forms.Textarea(attrs={"rows": 3}),
         required=True,
         error_messages={"required": _("Enter feedback in the box below")},
     )
+    consumer_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
+    dataset_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
+    organisation_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
+
     anonymous = forms.BooleanField(
         initial=False, label="Send this feedback anonymously", required=False
     )
 
     def get_layout(self):
-        return Layout("feedback", "anonymous", ButtonSubmit(content=_("Send")))
+        return Layout(
+            "feedback",
+            "anonymous",
+            ButtonSubmit(content=_("Send")),
+        )
 
+    def has_changed(self):
+        # We always want to create from initial
+        return True
 
-class OperatorFeedbackForm(GOVUKForm):
-    feedback = forms.CharField(
-        label="What best describes the issue you are experiencing?*",
-        widget=forms.Textarea(attrs={"rows": 3}),
-        required=True,
-        error_messages={"required": _("Enter feedback in the box below")},
-    )
-    anonymous = forms.BooleanField(
-        initial=False, label="Send this feedback anonymously", required=False
-    )
+    def clean(self):
+        data = super().clean()
+        if data["anonymous"]:
+            data["consumer_id"] = None
 
-    def get_layout(self):
-        return Layout("feedback", "anonymous", ButtonSubmit(content=_("Send")))
+        return data
+
+    def save(self, commit=True):
+        # need to force the initial data onto the new object because they only get
+        # added if they are in the http form on the frontend. We dont want the
+        # user to be able to set the user id or dataset id so they are hidden and
+        # disabled
+        instance = super().save(commit=False)
+        instance.dataset_id = self.cleaned_data["dataset_id"]
+        instance.consumer_id = self.cleaned_data["consumer_id"]
+        instance.organisation_id = self.cleaned_data["organisation_id"]
+        instance.save()
+        return instance

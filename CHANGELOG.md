@@ -7,6 +7,154 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.18.0] - 2022-21-06
+
+### Bug
+
+BODP-5350 \[Regression\] AVL: Notifications - Agent/Admin receive double emails for publishing datasets
+
+BODP-5347 \[Regression\] PBODS: Customer activity summary - API hits not reflected when query parameters are used
+
+BODP-5343 \[Regression\] FBODS Operator Profile page: General UI - User is redirected to homepage after sign in.
+
+BODP-5340 \[Regression\] AVL_API: General UI - Query ignores multiples inputs for the 'operatorRef' parameter
+
+BODP-5333 \[Regression\] PBODS: Data Consumer Activity - Unable to download the "consumer interactions" file on Staging
+
+BODP-5332 "Choose data type" always defaults to "Timetables" data type on the 'Review my published data' page
+
+BODP-5331 \[Regression\] BODS Admin: Publisher Metrics - `feedback_report_operator_breakdown.csv` file is updated with a delay
+
+BODP-5329 \[Regression\] PBODS Timetables/Fares/AVL: Publishing process stuck in validation step
+
+BODP-5328 \[Regression\] PBODS Data Requiring Attention: General UI - Improve 'Service codes' table layout
+
+BODP-5327 \[Regression\] Internal: Incorrect NOC Code Link in DQ service is showing Field Error
+
+BODP-5325 \[Regression\] PBODS: New dashboard page - "Choose data type" option defaults to "Timetables" with each selection
+
+BODP-5324 \[Regression\] BODS Admin: Publisher Metrics - `feedback_report_operator_breakdown.csv` file is empty on Staging
+
+BODP-5321 Timetables Requiring Attention page has wrong breadcrumb for Agents
+
+BODP-5320 Sorting by Line crashes in Data Requiring Attention
+
+BODP-5319 AVL API requests not reflected correctly on consumer activity CSV download
+
+BODP-5316 Staging: Existing users cannot login
+
+BODP-5304 PBODS site: Timetables Data - Not possible to complete an upload process
+
+BODP-5258 Django Admin: General UI - Search-box input is returning an Internal Server Error
+
+BODP-5257 Review my Data: General UI - Incorrect behaviour for 'Choose data type' drop down input
+
+BODP-5254 FBODS site: General UI - Unexpected wording for 'Service changelog' link
+
+BODP-5243 AVL – validation reports are not available to Django admin user
+
+BODP-5242 AVL – sync up the CAVL config API for inactive feeds with BODS status
+
+BODP-5238 "Data sets" instead of "data feeds" text on "Bus location data" page
+
+BODP-5156 FBODS Data Catalogue/Glossary - Page content not matching designs
+
+BODP-5152 Some AVL records on Overall Data Catalogue have an incorrect status
+
+BODP-5131 \[Regression\] FBODS Download: Timetables - Regional links display Inactive/Pending Invite organisations
+
+BODP-5081 Data issue - "123 Ltd." is displayed as "Pending Invite" under "Active" filter
+
+BODP-5076 Accessibility - Error using "Skip to main content" button without using the screen reader
+
+BODP-5002 FBODS Developer documentation page: General UI - The 'Timetables data API parameters' section should be consistent with the Swagger UI
+
+BODP-5001 FBODS Timetables API: Swagger UI - 'Error' status should not be listed as an option for the 'Status' parameter
+
+BODP-4967 Accessibility page: General UI - Hyperlinks to third party sites should open in a new tab
+
+BODP-4882 \[Regression\] PBODS Observation definitions page: General UI - AXE Analysis raise Critical issues
+
+BODP-4576 \[Publisher\] Agent Publisher Timetables Dashboard: not listing all datasets and showing some datasets more than once
+
+BODP-4528 \[Emails\] \(Regression\) Agent Notifications: General UI - 'Error publishing data set' email, wrong text on the second paragraph.
+
+BODP-4525 \[Emails\] \(Regression\) Agent Notifications: General UI - 'Action required – PTI validation...' email, second parapgrah displays wrong template
+
+BODP-4400 \[Users\] \(REGRESSION\) Organisation Management: General UI - 'Invitation has been re-sent' page is not showing
+
+### Story
+
+BODP-5344 Update the version of notifications-python-client from 5.7.1 to 6.3.0
+
+BODP-5336 Changelog: Release Notes - June 2022 \(1.18.0\)
+
+BODP-5267 Publisher-Timetables data requiring attention CSV
+
+BODP-5266 Publisher-Timetables data requiring attention
+
+BODP-5265 Publisher-Timetables data requiring attention: addition of search box
+
+BODP-5264 Publisher- Location and Fares data Review page UI changes as per new design
+
+BODP-5263 Publisher - Timetable data Review page UI changes as per new design
+
+BODP-5262 Publisher- Timetables data - Addition of Tool tip for timetables data requiring attention
+
+BODP-5261 Publishers- Timetables data- Creation of the tool tip explaining what line is
+
+BODP-5260 Agent- General- Dashboard Review my published data page for Agent \(without notification centre\)
+
+BODP-5259 Publisher-Review page: Hyperlink addition for license set up
+
+BODP-5255 BODS PTI Profile validation - Versioning - CreationDataTime
+
+BODP-5179 SIRI-VM compliance: addition of new status. This will enable the user to understand that for inactive feeds the validation has failed
+
+BODP-5157 Package upgrade
+
+BODP-5146 Removal of disruptions API link: this will remove the hyperlink relating to disruptions on BODS \(which will come in the future\)
+
+BODP-5145 Additional CSV for C&M: feedback issues: this will enable the BCM/DfT team to have complete oversight of all the feedback on specific data sets/feeds that are provided to operators by consumers.
+
+BODP-5144 New summary PTI report: this enables the publisher to have a high-level view of their PTI observations
+
+BODP-5143 CSV 2 for consumer activity \(feedback issues\): This will enable the publishers to have a centralized place where they can see all of their feedback, henceforth improving transparency and their ability to track/reply to feedback.
+
+BODP-5142 CSV 1 for consumer activity \(consumer interactions\): This will enable the publishers to directly understand how consumers are using their data. This is a novel feature that wasn’t available before.
+
+BODP-5141 Logic and UI for consumers accessing BODS data page: This will enable the publishers to directly understand how consumers are using their data. This is a novel feature that wasn’t available before
+
+BODP-5138 Post Publishing check reports\[Second Draft\]
+
+BODP-5089 Logic for Data requiring attention \(Location data\): this will enable the user to auto-triage AVL data \(prev manually done\) and identify the things they should be spending most of their time reviewing on BODS
+
+BODP-5087 Logic for review page Consumer counter: This will enable the publishers to readily view the amount of consumer interactions on their data in the last 7 days
+
+BODP-5086 Review my published data Fares \(Publisher admin \+ standard\): This will enable users to review some high level extra info about their data e.g data consumers
+
+BODP-5085 Review my published data AVL \(Publisher admin \+ standard\): This will enable users to review some high level extra info about their data e.g data consumers
+
+BODP-5084 Review my Published Data Timetables \(Publisher admin \+ standard \+ Agent\): This will enable users to review some high level extra info about their data e.g OTC matching & data consumers for timetables
+
+BODP-5073 PE2E: Information Page to be shown when user do not have access to links from Guide Me page. This will enable users to understand which pages they don’t have access to
+
+BODP-5072 PE2E: New Guide me page for Publisher Admin \+ Agent \+ Staff, this will enable the publisher to view a more helpful step by step guide
+
+BODP-5049 PE2E: Publish homepage \(Publisher Admin \+ Publisher Standard \+ Publisher admin\)
+
+BODP-5048 PE2E: Bus Open data Service Landing page
+
+BODP-5047 Header updates 2: Publisher BODS
+
+BODP-5024 Analysis - Post Publishing check reports\[First Draft\]
+
+## [1.17.3] - 2022-17-06
+
+### Bug
+
+BODP-5337 \[Regression\] PBODS Timetables: Unable to publish a valid file
+
 ## [1.17.2] - 2022-06-06
 
 ### Story

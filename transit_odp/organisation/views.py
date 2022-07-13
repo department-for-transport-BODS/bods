@@ -17,14 +17,10 @@ from transit_odp.common.forms import (
     ConfirmationForm,
 )
 from transit_odp.common.view_mixins import BODSBaseView
+from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
 from transit_odp.organisation.forms.management import InvitationForm, UserEditForm
 from transit_odp.organisation.forms.organisation_profile import OrganisationProfileForm
 from transit_odp.organisation.models import Organisation
-from transit_odp.publish.views.base import (
-    BaseDetailView,
-    BaseTemplateView,
-    BaseUpdateView,
-)
 from transit_odp.users.constants import AccountType
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import (

@@ -3,6 +3,7 @@ import logging
 from django.db import models
 
 from transit_odp.organisation.querysets import (
+    ConsumerFeedbackQuerySet,
     DatasetQuerySet,
     DatasetRevisionQuerySet,
     OrganisationQuerySet,
@@ -23,8 +24,5 @@ class DatasetRevisionManager(models.Manager.from_queryset(DatasetRevisionQuerySe
     pass
 
 
-class LiveDatasetRevisionManager(DatasetRevisionManager):
-    def get_queryset(self):
-        """Select the latest published revision for each dataset"""
-        qs = super().get_queryset()
-        return qs.get_live_revisions()
+class ConsumerFeedbackManager(models.Manager.from_queryset(ConsumerFeedbackQuerySet)):
+    pass

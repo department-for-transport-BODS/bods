@@ -1,13 +1,18 @@
 import json
+import re
 import uuid
 from datetime import datetime, timedelta
+from http import HTTPStatus
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+import requests_mock
+from django.conf import settings
 from freezegun import freeze_time
 from mocket import Mocketizer
 from mocket.mockhttp import Entry
 from requests import RequestException
+from requests.exceptions import ConnectionError, ReadTimeout
 
 from transit_odp.avl.factories import (
     AVLValidationReportFactory,
@@ -29,6 +34,7 @@ from transit_odp.avl.validation.factories import (
 )
 from transit_odp.bods.interfaces.gateways import AVLFeed
 from transit_odp.organisation.constants import (
+    LIVE,
     AVLFeedDown,
     AVLFeedStatus,
     AVLFeedUp,
@@ -591,3 +597,64 @@ def test_send_schema_validation_fails(get_client, get_cavl, mailoutbox):
     assert AVLSchemaValidationReport.objects.count() == 1
     assert revision.status == FeedStatus.inactive.value
     cavl.delete_feed.assert_called_once_with(feed_id=revision.dataset_id)
+
+
+@pytest.mark.parametrize("exception", [ConnectionError, ReadTimeout])
+@patch("transit_odp.avl.tasks.get_validation_client")
+@requests_mock.Mocker(kw="m")
+def test_send_schema_fails_with_request_exceptions(
+    get_client, exception, mailoutbox, **kwargs
+):
+    """
+    Simulate common connection problems with the config API
+    """
+    m = kwargs["m"]
+    matcher = re.compile(settings.CAVL_URL)
+    m.delete(matcher, exc=exception)
+    user = UserFactory(account_type=OrgAdminType)
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    errors = SchemaErrorFactory.create_batch(3)
+    response = SchemaValidationResponseFactory(is_valid=False, errors=errors)
+    client = Mock()
+    client.schema.return_value = response
+    get_client.return_value = client
+
+    assert AVLSchemaValidationReport.objects.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+    revision.refresh_from_db()
+    assert AVLSchemaValidationReport.objects.count() == 0
+    assert revision.status == LIVE
+    assert len(mailoutbox) == 0
+
+
+@patch("transit_odp.avl.tasks.get_validation_client")
+@requests_mock.Mocker(kw="m")
+def test_send_schema_fails_with_502_bad_gateway(get_client, mailoutbox, **kwargs):
+    """
+    Simulate a bad gateway response from the server.
+    """
+    m = kwargs["m"]
+    matcher = re.compile(settings.CAVL_URL)
+    m.delete(
+        matcher,
+        status_code=HTTPStatus.BAD_GATEWAY,
+        json={"message": "Internal server error"},
+    )
+    user = UserFactory(account_type=OrgAdminType)
+    revision = AVLDatasetRevisionFactory(
+        dataset__contact=user, dataset__organisation=user.organisations.first()
+    )
+    errors = SchemaErrorFactory.create_batch(3)
+    response = SchemaValidationResponseFactory(is_valid=False, errors=errors)
+    client = Mock()
+    client.schema.return_value = response
+    get_client.return_value = client
+
+    assert AVLSchemaValidationReport.objects.count() == 0
+    task_run_feed_validation(revision.dataset.id)
+    revision.refresh_from_db()
+    assert AVLSchemaValidationReport.objects.count() == 0
+    assert revision.status == LIVE
+    assert len(mailoutbox) == 0

@@ -1,17 +1,13 @@
 import re
-from datetime import datetime
 from typing import Any, List
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import F, QuerySet
+from django.db.models import QuerySet
 from django.http import FileResponse
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
-from django_hosts.resolvers import reverse
 
-from config import hosts
-from transit_odp.common.dataclasses import AnchorTag
 from transit_odp.common.view_models import RangeFilter
 from transit_odp.site_admin.models import ResourceRequestCounter
 
@@ -168,61 +164,15 @@ class DownloadView(SingleObjectMixin, BaseDownloadFileView):
 
 
 class BODSBaseView:
-    """Mixin for adding feature flags to the context"""
+    """Mixin for adding feature flags to the context, this could be useful for things
+    to add to all views"""
 
-    def get_navigation_anchor(self):
-        """Get an anchor tag for the navlinks."""
-        if self.request.path == "/":
-            return None
-
-        if not hasattr(self.request, "user"):
-            return None
-
-        user = self.request.user
-        if not user.is_authenticated:
-            return None
-
-        if user.is_site_admin or user.is_developer:
-            return None
-
-        if user.is_agent_user:
-            tag = AnchorTag(
-                href=reverse("select-org", host=hosts.PUBLISH_HOST),
-                content="Operator Dashboard",
-            )
-        else:
-            tag = AnchorTag(
-                href=reverse(
-                    "select-data",
-                    kwargs={"pk1": user.organisation_id},
-                    host=hosts.PUBLISH_HOST,
-                ),
-                content="Choose data type",
-            )
-
-        return tag
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        tag = self.get_navigation_anchor()
-        if tag is not None:
-            context["middle_nav_tag"] = tag
-
-        return context
+    pass
 
 
 class ResourceCounterMixin:
     """Mixin to count the number times a user requests a resource in a day"""
 
     def get(self, request, *args, **kwargs):
-        user = request.user if not request.user.is_anonymous else None
-        today = datetime.now().date()
-        resource_counter, _ = ResourceRequestCounter.objects.get_or_create(
-            requestor=user,
-            path_info=request.path,
-            date=today,
-            defaults={"counter": 0},
-        )
-        resource_counter.counter = F("counter") + 1
-        resource_counter.save()
+        ResourceRequestCounter.from_request(request)
         return super().get(request, *args, **kwargs)

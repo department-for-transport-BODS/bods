@@ -1,12 +1,12 @@
 from typing import Any
 
 from allauth.account.adapter import get_adapter
-from config.hosts import ADMIN_HOST, PUBLISH_HOST
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import Http404
 from django.utils.translation import gettext as _
 from django_hosts import reverse
 
+from config.hosts import ADMIN_HOST, PUBLISH_HOST
 from transit_odp.common.adapters import AccountAdapter
 from transit_odp.organisation.models import Organisation
 from transit_odp.users.constants import AccountType
@@ -47,7 +47,7 @@ class BaseOrgUserMixin(HostAuthMixin):
         super().__init__(*args, **kwargs)
 
     @property
-    def organisation(self):
+    def organisation(self) -> Organisation:
         if self._organisation is not None:
             return self._organisation
 

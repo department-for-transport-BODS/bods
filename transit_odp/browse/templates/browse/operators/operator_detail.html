@@ -5,325 +5,317 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-  {% filter force_escape %}
-    {% trans 'Operator details' %}
-  {% endfilter %}
+    {% filter force_escape %}
+        {% trans 'Operator details' %}
+    {% endfilter %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Operator Profiles' 'operators' %}
-  {% with name=object.short_name|truncatechars:19 %}
-    {% breadcrumb name %}
-  {% endwith %}
+    {{ block.super }}
+    {% breadcrumb_url 'Operator Profiles' 'operators' %}
+    {% with name=object.short_name|truncatechars:19 %}
+        {% breadcrumb name %}
+    {% endwith %}
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">
-        {{ object.short_name }}
-      </h1>
-      <ul class="govuk-list">
-        <li class="govuk-!-margin-bottom-3">
-          {% if user.is_authenticated %}
-            <a class='govuk-link'
-               href="{% url 'contact-operator' object.id host hosts.data %}">
-              {% filter force_escape %}{% trans 'Contact ' %}{% endfilter %}
-              {{ object.short_name }}
-            </a>
-          {% else %}
-            <a class='govuk-link'
-               href="{% url 'account_login' host hosts.data %}">
-              {% filter force_escape %}{% trans 'Contact ' %}{% endfilter %}
-              {{ object.short_name }}
-            </a>
-          {% endif %}
-        </li>
-        <li class="govuk-!-margin-bottom-5">
-          <a class='govuk-link' href="{% url 'downloads' host hosts.data %}">
-            {% filter force_escape %}{% trans 'Download all data' %}{% endfilter %}
-          </a>
-        </li>
-      </ul>
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">
+                {{ object.short_name }}
+            </h1>
+            <ul class="govuk-list">
+                <li class="govuk-!-margin-bottom-3">
+                    <a class='govuk-link'
+                        href="{% url 'contact-operator' object.id host hosts.data %}">
+                        {% filter force_escape %}{% trans 'Contact ' %}{% endfilter %}
+                        {{ object.short_name }}
+                    </a>
+                </li>
+                <li class="govuk-!-margin-bottom-5">
+                    <a class='govuk-link' href="{% url 'downloads' host hosts.data %}">
+                        {% filter force_escape %}{% trans 'Download all data' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-      <table class="govuk-table">
-        <caption class="govuk-table__caption">
-          <h3 class="govuk-heading-m">
-           {% filter force_escape %}{% trans 'Organisation detail' %}{% endfilter %}
-          </h3>
-        </caption>
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">
-              {% filter force_escape %}{% trans 'Long name' %}{% endfilter %}
-            </th>
-            <td class="govuk-table__cell" colspan="2">
-              {{ object.name }}
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">
-              {% filter force_escape %}{% trans 'Date registered' %}{% endfilter %}
-            </th>
-            <td class="govuk-table__cell" colspan="2">
-              {{ object.created|date:"j F Y" }}
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">
-              {% filter force_escape %}{% trans 'Licence number' %}{% endfilter %}
-            </th>
-            <td class="govuk-table__cell" colspan="2">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                {% for licence in organisation.licences.all %}
-                  <li class="govuk-!-margin-bottom-1">
-                    {{ licence.number }}
-                  </li>
-                {% endfor %}
-              </ul>
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">
-              {% filter force_escape %}{% trans 'National Operator Code' %}{% endfilter %}
-            </th>
-            <td class="govuk-table__cell" colspan="2">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                {% for noc in object.nocs.all %}
-                  <li class="govuk-!-margin-bottom-1">
-                    {{ noc.noc }}
-                  </li>
-                {% endfor %}
-              </ul>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <table class="govuk-table">
+                <caption class="govuk-table__caption">
+                    <h3 class="govuk-heading-m">
+                        {% filter force_escape %}{% trans 'Organisation detail' %}{% endfilter %}
+                    </h3>
+                </caption>
+                <tbody class="govuk-table__body">
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">
+                            {% filter force_escape %}{% trans 'Long name' %}{% endfilter %}
+                        </th>
+                        <td class="govuk-table__cell" colspan="2">
+                            {{ object.name }}
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">
+                            {% filter force_escape %}{% trans 'Date registered' %}{% endfilter %}
+                        </th>
+                        <td class="govuk-table__cell" colspan="2">
+                            {{ object.created|date:"j F Y" }}
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">
+                            {% filter force_escape %}{% trans 'Licence number' %}{% endfilter %}
+                        </th>
+                        <td class="govuk-table__cell" colspan="2">
+                            <ul class="govuk-list govuk-!-margin-bottom-0">
+                                {% for licence in organisation.licences.all %}
+                                    <li class="govuk-!-margin-bottom-1">
+                                        {{ licence.number }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">
+                            {% filter force_escape %}{% trans 'National Operator Code' %}{% endfilter %}
+                        </th>
+                        <td class="govuk-table__cell" colspan="2">
+                            <ul class="govuk-list govuk-!-margin-bottom-0">
+                                {% for noc in object.nocs.all %}
+                                    <li class="govuk-!-margin-bottom-1">
+                                        {{ noc.noc }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-      <h3 class="govuk-heading-m govuk-!-margin-top-3">
-        {% filter force_escape %}{% trans 'Timetables data' %}{% endfilter %}
-      </h3>
-      <ul class="govuk-list">
-        <li class="govuk-!-margin-bottom-3">
-          <a class="govuk-link"
-             href="{% url 'search' host hosts.data %}?organisation={{ object.id }}">
-            {% filter force_escape %}{% trans 'Browse Timetables data' %}{% endfilter %}
-          </a>
-        </li>
-      </ul>
-      <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">
-              {{ timetable_stats.total_dataset_count }}
-            </span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Data sets' %}{% endfilter %}
-            </span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ timetable_stats.line_count }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Bus routes' %}{% endfilter %}
-            </span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ timetable_non_compliant }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
-            </span>
-          </div>
-          <div class="govuk-!-margin-top-2">
-            <a class="govuk-link"
-               target="_blank"
-               rel="noopener noreferrer"
-               href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-              <i class="fas fa-play govuk-!-margin-right-1">
-              </i>
-              {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
-            </a>
-          </div>
-        </div>
-      </div>
-      {% if user.is_authenticated %}
-        <p class="govuk-body-m govuk-!-padding-top-3">
-          {% filter force_escape %}
-            {% trans 'Timetables data API feed URL' %}
-          {% endfilter %}
-        </p>
-        <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
-          <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out"
-                id="timetable-feed-url">
-              {{ timetable_feed_url }}
-            </p>
-          </div>
-          <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
-            <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
-                    aria-label="Copy code snippet to clipboard"
-                    onclick="BODSFrontend.copyToClipboard(document.getElementById('timetable-feed-url').innerText)">
-              {% filter force_escape %}{% trans 'Copy' %}{% endfilter %}
-            </button>
-          </div>
-        </div>
-      {% endif %}
+            <h3 class="govuk-heading-m govuk-!-margin-top-3">
+                {% filter force_escape %}{% trans 'Timetables data' %}{% endfilter %}
+            </h3>
+            <ul class="govuk-list">
+                <li class="govuk-!-margin-bottom-3">
+                    <a class="govuk-link"
+                        href="{% url 'search' host hosts.data %}?organisation={{ object.id }}">
+                        {% filter force_escape %}{% trans 'Browse Timetables data' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">
+                            {{ timetable_stats.total_dataset_count }}
+                        </span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Data sets' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ timetable_stats.line_count }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Bus routes' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ timetable_non_compliant }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
+                        </span>
+                    </div>
+                    <div class="govuk-!-margin-top-2">
+                        <a class="govuk-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+                            <i class="fas fa-play govuk-!-margin-right-1">
+                            </i>
+                            {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <p class="govuk-body-m govuk-!-padding-top-3">
+                    {% filter force_escape %}
+                        {% trans 'Timetables data API feed URL' %}
+                    {% endfilter %}
+                </p>
+                <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
+                    <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+                        <p class="api-url-panel__url govuk-!-margin-3 dont-break-out"
+                            id="timetable-feed-url">
+                            {{ timetable_feed_url }}
+                        </p>
+                    </div>
+                    <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
+                        <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
+                            aria-label="Copy code snippet to clipboard"
+                            onclick="BODSFrontend.copyToClipboard(document.getElementById('timetable-feed-url').innerText)">
+                            {% filter force_escape %}{% trans 'Copy' %}{% endfilter %}
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
 
-      <h3 class="govuk-heading-m govuk-!-margin-top-7">
-        {% filter force_escape %}{% trans 'Location data' %}{% endfilter %}
-      </h3>
-      <ul class="govuk-list">
-        <li class="govuk-!-margin-bottom-3">
-          <a class="govuk-link"
-             href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}">
-            {% filter force_escape %}{% trans 'Browse Location data' %}{% endfilter %}
-          </a>
-        </li>
-      </ul>
-      <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ avl_total_datasets }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Data feeds' %}{% endfilter %}
-            </span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ avl_non_compliant }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
-            </span>
-          </div>
-          <div class="govuk-!-margin-top-2">
-            <a class="govuk-link"
-               target="_blank"
-               rel="noopener noreferrer"
-               href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-              <i class="fas fa-play govuk-!-margin-right-1">
-              </i>
-              {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
-            </a>
-          </div>
-        </div>
-      </div>
-      {% if user.is_authenticated %}
-        <p class="govuk-body-m govuk-!-padding-top-3">
-          {% filter force_escape %}
-            {% trans 'SIRI-VM - Location data API feed URL' %}
-          {% endfilter %}
-        </p>
-        <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
-          <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out"
-                id="avl-feed-url">
-              {{ avl_feed_url }}
-            </p>
-          </div>
-          <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
-            <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
-                    aria-label="Copy code snippet to clipboard"
-                    onclick="BODSFrontend.copyToClipboard(document.getElementById('avl-feed-url').innerText)">
-              {% filter force_escape %}{% trans 'Copy' %}{% endfilter %}
-            </button>
-          </div>
-        </div>
-      {% endif %}
+            <h3 class="govuk-heading-m govuk-!-margin-top-7">
+                {% filter force_escape %}{% trans 'Location data' %}{% endfilter %}
+            </h3>
+            <ul class="govuk-list">
+                <li class="govuk-!-margin-bottom-3">
+                    <a class="govuk-link"
+                        href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}">
+                        {% filter force_escape %}{% trans 'Browse Location data' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ avl_total_datasets }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Data feeds' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ avl_non_compliant }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
+                        </span>
+                    </div>
+                    <div class="govuk-!-margin-top-2">
+                        <a class="govuk-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+                            <i class="fas fa-play govuk-!-margin-right-1">
+                            </i>
+                            {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <p class="govuk-body-m govuk-!-padding-top-3">
+                    {% filter force_escape %}
+                        {% trans 'SIRI-VM - Location data API feed URL' %}
+                    {% endfilter %}
+                </p>
+                <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
+                    <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+                        <p class="api-url-panel__url govuk-!-margin-3 dont-break-out"
+                            id="avl-feed-url">
+                            {{ avl_feed_url }}
+                        </p>
+                    </div>
+                    <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
+                        <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
+                            aria-label="Copy code snippet to clipboard"
+                            onclick="BODSFrontend.copyToClipboard(document.getElementById('avl-feed-url').innerText)">
+                            {% filter force_escape %}{% trans 'Copy' %}{% endfilter %}
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
 
-      <h3 class="govuk-heading-m govuk-!-margin-top-7">
-        {% filter force_escape %}{% trans 'Fares data' %}{% endfilter %}
-      </h3>
-      <ul class="govuk-list">
-        <li class="govuk-!-margin-bottom-3">
-          <a class="govuk-link"
-             href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}">
-            {% filter force_escape %}{% trans 'Browse Fares data' %}{% endfilter %}
-          </a>
-        </li>
-      </ul>
-      <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ fares_stats.total_dataset_count }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Data sets' %}{% endfilter %}
-            </span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ fares_stats.total_fare_products }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}
-                {% trans 'Total number of fares products' %}
-              {% endfilter %}
-            </span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ fares_non_compliant }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
-            </span>
-          </div>
-          <div class="govuk-!-margin-top-2">
-            <a class="govuk-link"
-               target="_blank"
-               rel="noopener noreferrer"
-               href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-              <i class="fas fa-play govuk-!-margin-right-1">
-              </i>
-              {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
-            </a>
-          </div>
-        </div>
-      </div>
-      {% if user.is_authenticated %}
-        <p class="govuk-body-m govuk-!-padding-top-3">
-          {% filter force_escape %}
-            {% trans 'Fares data API feed URL' %}
-          {% endfilter %}
-        </p>
-        <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
-          <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out"
-                id="fares-feed-url">
-              {{ fares_feed_url }}
-            </p>
-          </div>
-          <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
-            <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
-                    aria-label="Copy code snippet to clipboard"
-                    onclick="BODSFrontend.copyToClipboard(document.getElementById('fares-feed-url').innerText)">
-              {% filter force_escape %}{% trans 'Copy' %}{% endfilter %}
-            </button>
-          </div>
-        </div>
-      {% endif %}
+            <h3 class="govuk-heading-m govuk-!-margin-top-7">
+                {% filter force_escape %}{% trans 'Fares data' %}{% endfilter %}
+            </h3>
+            <ul class="govuk-list">
+                <li class="govuk-!-margin-bottom-3">
+                    <a class="govuk-link"
+                        href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}">
+                        {% filter force_escape %}{% trans 'Browse Fares data' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ fares_stats.total_dataset_count }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Data sets' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ fares_stats.total_fare_products }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}
+                                {% trans 'Total number of fares products' %}
+                            {% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ fares_non_compliant }}</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
+                        </span>
+                    </div>
+                    <div class="govuk-!-margin-top-2">
+                        <a class="govuk-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+                            <i class="fas fa-play govuk-!-margin-right-1">
+                            </i>
+                            {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <p class="govuk-body-m govuk-!-padding-top-3">
+                    {% filter force_escape %}
+                        {% trans 'Fares data API feed URL' %}
+                    {% endfilter %}
+                </p>
+                <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
+                    <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+                        <p class="api-url-panel__url govuk-!-margin-3 dont-break-out"
+                            id="fares-feed-url">
+                            {{ fares_feed_url }}
+                        </p>
+                    </div>
+                    <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
+                        <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
+                            aria-label="Copy code snippet to clipboard"
+                            onclick="BODSFrontend.copyToClipboard(document.getElementById('fares-feed-url').innerText)">
+                            {% filter force_escape %}{% trans 'Copy' %}{% endfilter %}
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
 
-      {% if not user.is_authenticated %}
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        <h3 class="govuk-heading-m govuk-!-margin-top-3">
-          {% filter force_escape %}{% trans 'Use API' %}{% endfilter %}
-        </h3>
-        <p class="govuk-body-m">
-          <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">
-            {% filter force_escape %}{% trans 'Register' %}{% endfilter %}</a>
-          {% filter force_escape %}{% trans ' or ' %}{% endfilter %}
-          <a class="govuk-link" href="{% url 'account_login' host hosts.data %}">
-            {% filter force_escape %}{% trans 'sign in' %}{% endfilter %}</a>
-          {% filter force_escape %}
-            {% trans " to use this operator's data." %}
-          {% endfilter %}
-        </p>
-      {% endif %}
+            {% if not user.is_authenticated %}
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                <h3 class="govuk-heading-m govuk-!-margin-top-3">
+                    {% filter force_escape %}{% trans 'Use API' %}{% endfilter %}
+                </h3>
+                <p class="govuk-body-m">
+                    <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">
+                        {% filter force_escape %}{% trans 'Register' %}{% endfilter %}</a>
+                    {% filter force_escape %}{% trans ' or ' %}{% endfilter %}
+                    <a class="govuk-link" href="{% url 'account_login' host hosts.data %}">
+                        {% filter force_escape %}{% trans 'sign in' %}{% endfilter %}</a>
+                    {% filter force_escape %}
+                        {% trans " to use this operator's data." %}
+                    {% endfilter %}
+                </p>
+            {% endif %}
+        </div>
     </div>
-  </div>
 {% endblock %}

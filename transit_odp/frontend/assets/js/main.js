@@ -10,7 +10,7 @@ import { MyAccountMenu } from "./my-account-menu";
 import { ProgressIndicator } from "./feed-detail-progress";
 import { autoFocusToClass } from "./autofocus";
 import { copyToClipboard } from "./copy_to_clipboard";
-import { createCookie } from "./cookie_consent";
+import { createCookie, skipToMain } from "./cookie_consent";
 import { initAPIDocs } from "./api-docs";
 import { initDatasetListLoaders } from "./feed-list-progress";
 import { initFaresDetailMap } from "./fares-detail-map";
@@ -40,6 +40,7 @@ export {
   autoFocusToClass,
   copyToClipboard,
   createCookie,
+  skipToMain,
   initAPIDocs,
   initAll,
   initDatasetListLoaders,

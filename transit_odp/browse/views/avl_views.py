@@ -25,6 +25,7 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
+from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import (
     Dataset,
@@ -32,7 +33,6 @@ from transit_odp.organisation.models import (
     DatasetSubscription,
 )
 from transit_odp.publish.tables import DatasetRevisionTable
-from transit_odp.publish.views.base import BaseDetailView
 
 logger = logging.getLogger(__name__)
 
@@ -203,7 +203,7 @@ class DownloadSIRIVMDataArchiveView(ResourceCounterMixin, DownloadCAVLDataArchiv
     data_format = CAVLDataArchive.SIRIVM
 
 
-class DownloadGTFSRTDataArchiveView(DownloadCAVLDataArchiveView):
+class DownloadGTFSRTDataArchiveView(ResourceCounterMixin, DownloadCAVLDataArchiveView):
     data_format = CAVLDataArchive.GTFSRT
 
 
@@ -337,7 +337,7 @@ class AvlUserFeedbackView(UserFeedbackView):
         context = super().get_context_data(**kwargs)
         context["back_url"] = reverse(
             "avl-feed-detail",
-            args=[self.object.id],
+            args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
         return context
@@ -345,7 +345,7 @@ class AvlUserFeedbackView(UserFeedbackView):
     def get_success_url(self):
         return reverse(
             "avl-feed-feedback-success",
-            args=[self.object.id],
+            args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
 

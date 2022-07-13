@@ -14,6 +14,7 @@ from transit_odp.avl.constants import (
     PARTIALLY_COMPLIANT,
     UNDERGOING,
     UPPER_THRESHOLD,
+    VALIDATION_TERMINATED,
 )
 from transit_odp.avl.factories import (
     AVLSchemaValidationReportFactory,
@@ -25,6 +26,7 @@ from transit_odp.avl.tests.utils import (
     get_awaiting_review_revision,
     get_compliant_revision,
     get_dormant_revision,
+    get_feed_down_revision,
     get_non_compliant_revision,
     get_partially_compliant_revision,
     get_undergoing_validation_revision,
@@ -260,6 +262,27 @@ def test_compliant_scenario():
     dataset = datasets.first()
     assert dataset.avl_report_count == total_reports
     assert dataset.avl_compliance == COMPLIANT
+
+
+def test_validation_terminated_scenario():
+    """
+    GIVEN that an AVL dataset has more than 7 reports with no report having an error but status is INACTIVE
+    WHEN add_avl_compliance_status is called
+    THEN the dataset will have an avl_compliance of "Validation terminated"
+    """
+    revision = AVLDatasetRevisionFactory(status=INACTIVE)
+    today = datetime.now().date()
+    total_reports = 8
+    for n in range(0, total_reports):
+        date = today - timedelta(days=n)
+        AVLValidationReportFactory(
+            revision=revision, created=date, critical_score=1.0, non_critical_score=1.0
+        )
+
+    datasets = AVLDataset.objects.add_avl_compliance_status()
+    dataset = datasets.first()
+    assert dataset.avl_report_count == total_reports
+    assert dataset.avl_compliance == VALIDATION_TERMINATED
 
 
 def test_non_compliant_scenario():
@@ -654,5 +677,11 @@ def test_needs_attention_count():
         get_awaiting_review_revision()
     expected += awaiting_review_count
 
+    feed_down = 2
+    for _ in range(feed_down):
+        get_feed_down_revision()
+    expected += feed_down
+
     actual = AVLDataset.objects.get_needs_attention_count()
+
     assert actual == expected

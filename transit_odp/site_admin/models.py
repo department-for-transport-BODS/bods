@@ -1,8 +1,11 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import F
+from django.http import HttpRequest
 from django.http.response import FileResponse
 from django_extensions.db.models import TimeStampedModel
 
@@ -57,6 +60,9 @@ class APIRequest(TimeStampedModel):
 
     objects = models.Manager.from_queryset(APIRequestQuerySet)()
 
+    class Meta:
+        indexes = [models.Index(fields=["created"], name="apirequest_created_idx")]
+
     def __str__(self):
         return nice_repr(self)
 
@@ -69,8 +75,25 @@ class ResourceRequestCounter(models.Model):
 
     objects = models.Manager.from_queryset(ResourceRequestCounterQuerySet)()
 
+    class Meta:
+        indexes = [models.Index(fields=["date"], name="requestcounter_date_idx")]
+
     def __str__(self):
         return nice_repr(self)
+
+    @classmethod
+    def from_request(cls, request: HttpRequest):
+        user = request.user if not request.user.is_anonymous else None
+        today = datetime.now().date()
+        resource_counter, _ = cls.objects.get_or_create(
+            requestor=user,
+            path_info=request.path,
+            date=today,
+            defaults={"counter": 0},
+        )
+        resource_counter.counter = F("counter") + 1
+        resource_counter.save()
+        return resource_counter
 
 
 class MetricsArchive(models.Model):

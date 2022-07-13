@@ -7,7 +7,7 @@ from django_hosts import reverse
 from config.hosts import DATA_HOST
 from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.factories import AVLValidationReportFactory
-from transit_odp.browse.forms import UserFeedbackForm
+from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import AVLType, FeedStatus
@@ -16,7 +16,7 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
 )
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import ConsumerFeedback, Dataset
 from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
@@ -225,6 +225,7 @@ class TestAVLSearchView(BaseAVLSearchView):
 
 class TestUserAVLFeedbackView:
     view_name = "avl-feed-feedback"
+    feedback_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 
     @pytest.fixture()
     def revision(self):
@@ -252,7 +253,7 @@ class TestUserAVLFeedbackView:
         assert response.status_code == 200
         assert "browse/timetables/user_feedback.html" in response.template_name
 
-        assert isinstance(response.context_data["form"], UserFeedbackForm)
+        assert isinstance(response.context_data["form"], ConsumerFeedbackForm)
 
     def test_feedback_is_sent_to_admin_by_user(
         self, mailoutbox, user, revision, data_client
@@ -264,12 +265,15 @@ class TestUserAVLFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_text,
                 "anonymous": False,
             },
             follow=True,
         )
 
+        feedback = ConsumerFeedback.objects.filter(dataset=revision.dataset).first()
+        assert feedback.consumer == user
+        assert feedback.feedback == self.feedback_text
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[0]
@@ -286,12 +290,14 @@ class TestUserAVLFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_text,
                 "anonymous": False,
             },
             follow=True,
         )
-
+        feedback = ConsumerFeedback.objects.filter(dataset=revision.dataset).first()
+        assert feedback.consumer == user
+        assert feedback.feedback == self.feedback_text
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[2]
@@ -309,11 +315,13 @@ class TestUserAVLFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_text,
             },
             follow=True,
         )
-
+        feedback = ConsumerFeedback.objects.filter(dataset=revision.dataset).first()
+        assert feedback.consumer == user
+        assert feedback.feedback == self.feedback_text
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[1]
@@ -330,12 +338,14 @@ class TestUserAVLFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_text,
                 "anonymous": True,
             },
             follow=True,
         )
-
+        feedback = ConsumerFeedback.objects.filter(dataset=revision.dataset).first()
+        assert feedback.consumer is None
+        assert feedback.feedback == self.feedback_text
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[0]
@@ -353,12 +363,14 @@ class TestUserAVLFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_text,
                 "anonymous": True,
             },
             follow=True,
         )
-
+        feedback = ConsumerFeedback.objects.filter(dataset=revision.dataset).first()
+        assert feedback.consumer is None
+        assert feedback.feedback == self.feedback_text
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[2]

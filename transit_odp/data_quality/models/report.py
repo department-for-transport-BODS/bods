@@ -108,15 +108,12 @@ class PTIValidationResult(models.Model):
             violations (List[Violation]): The violations that a revision has.
         """
         now = timezone.now()
-        pti_report_filename = (
-            f"BODS_TXC_validation_{revision.dataset.organisation.name}"
+        pti_report_ending = (
+            f"{revision.dataset.organisation.name}"
             f"_{revision.dataset_id}"
             f"_{now:%H_%M_%d%m%Y}.csv"
         )
-        results = PTIReport(filename=pti_report_filename)
-        for violation in violations:
-            results.write_violation(violation=violation)
-
+        results = PTIReport(pti_report_ending, violations)
         zip_filename = f"pti_validation_revision_{revision.id}.zip"
         report = File(results.to_zip_as_bytes(), name=zip_filename)
         return cls(revision_id=revision.id, count=len(violations), report=report)

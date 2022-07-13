@@ -94,6 +94,11 @@ $govuk-table-border: 1px solid $govuk-border-colour;
   }
 }
 
+.custom_govuk_table_border {
+  border: solid 1px #979797;
+  padding: 20px;
+}
+
 /* pagination */
 
 .pagination-controls {

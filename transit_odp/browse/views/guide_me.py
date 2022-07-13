@@ -1,13 +1,7 @@
-from collections import namedtuple
-
-from django.views.generic import TemplateView
-
-from transit_odp.common.view_mixins import BODSBaseView
-
-Section = namedtuple("Section", ["title", "template"])
+from transit_odp.common.views import GuideMeBaseView, Section
 
 
-class GuideMeView(BODSBaseView, TemplateView):
+class BrowseGuideMeView(GuideMeBaseView):
     template_location = "browse/guideme"
     template_name = f"{template_location}/guide_me.html"
 
@@ -33,8 +27,3 @@ class GuideMeView(BODSBaseView, TemplateView):
             f"{template_location}/use_api.html",
         ),
     )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["sections"] = self.SECTIONS
-        return context

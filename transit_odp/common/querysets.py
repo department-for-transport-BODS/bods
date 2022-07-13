@@ -9,7 +9,7 @@ class GroupConcat(Aggregate):
 
     def __init__(self, expression, delimiter, distinct=False, **extra):
         output_field = extra.pop("output_field", CharField())
-        delimiter = Value(delimiter)
+        delimiter = Value(delimiter, CharField())
         super(GroupConcat, self).__init__(
             expression,
             delimiter,

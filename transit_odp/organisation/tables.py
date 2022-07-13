@@ -1,8 +1,8 @@
-import config.hosts
 import django_tables2 as tables
 from django.db.models import Case, CharField, Value, When
 from django_hosts import reverse
 
+import config.hosts
 from transit_odp.organisation.constants import STATUS_CHOICES
 
 
@@ -23,7 +23,7 @@ class FeedStatusColumn(tables.TemplateColumn):
 
     def order(self, queryset, is_descending, status_choices=STATUS_CHOICES):
         whens = [
-            When(status=db_value, then=Value(display))
+            When(status=db_value, then=Value(display, output_field=CharField()))
             for db_value, display in status_choices
         ]
         order = "-status_display" if is_descending else "status_display"

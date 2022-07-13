@@ -8,11 +8,24 @@ from transit_odp.common.utils.custom_error_handlers import (
 )
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.publish.views.api import ProgressAPIView
+from transit_odp.publish.views.base import DataActivityView
 from transit_odp.publish.views.gatekeeper import PublishGateKeeperView
+from transit_odp.publish.views.guide_me import (
+    PublishGuideMeView,
+    RedirectDashBoardView,
+    RedirectDataActivityView,
+    RedirectProfileView,
+    RedirectPublishView,
+)
 from transit_odp.publish.views.home import PublishHomeView
 from transit_odp.publish.views.navigation import (
+    AgentDashboardView,
     PublishSelectDataTypeView,
     SelectOrgView,
+)
+from transit_odp.publish.views.reporting import (
+    ConsumerFeedbackView,
+    ConsumerInteractionsView,
 )
 from transit_odp.users.views.auth import InviteOnlySignupView
 
@@ -21,7 +34,36 @@ handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
 
 urlpatterns = [
     path("", view=PublishHomeView.as_view(), name="home"),
+    path(
+        "guide-me/",
+        include(
+            [
+                path("", view=PublishGuideMeView.as_view(), name="guide-me"),
+                path(
+                    "publish/",
+                    view=RedirectPublishView.as_view(),
+                    name="redirect-publish",
+                ),
+                path(
+                    "dashboard/",
+                    view=RedirectDashBoardView.as_view(),
+                    name="redirect-dashboard",
+                ),
+                path(
+                    "activity/",
+                    view=RedirectDataActivityView.as_view(),
+                    name="redirect-activity",
+                ),
+                path(
+                    "profile/",
+                    view=RedirectProfileView.as_view(),
+                    name="redirect-profile",
+                ),
+            ]
+        ),
+    ),
     path("org/", view=SelectOrgView.as_view(), name="select-org"),
+    path("agent-dashboard/", view=AgentDashboardView.as_view(), name="agent-dashboard"),
     path("api/dq/", include("transit_odp.data_quality.api.urls")),
     path("gatekeeper", view=PublishGateKeeperView.as_view(), name="gatekeeper"),
     path(
@@ -33,10 +75,36 @@ urlpatterns = [
         "org/<int:pk1>/dataset/",
         include(
             [
-                path("", view=PublishSelectDataTypeView.as_view(), name="select-data"),
+                path(
+                    "",
+                    view=PublishSelectDataTypeView.as_view(),
+                    name="select-data",
+                ),
                 path("timetable/", include("transit_odp.timetables.urls")),
                 path("avl/", include("transit_odp.avl.urls", namespace="avl")),
                 path("fares/", include("transit_odp.fares.urls", namespace="fares")),
+                path(
+                    "data-activity/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=DataActivityView.as_view(),
+                                name="data-activity",
+                            ),
+                            path(
+                                "consumer-feedback/",
+                                view=ConsumerFeedbackView.as_view(),
+                                name="consumer-feedback",
+                            ),
+                            path(
+                                "consumer-interactions/",
+                                view=ConsumerInteractionsView.as_view(),
+                                name="consumer-interactions",
+                            ),
+                        ]
+                    ),
+                ),
             ]
         ),
     ),

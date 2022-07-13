@@ -7,20 +7,22 @@ from django.db import transaction
 from django.db.models.query_utils import Q
 from django.forms import Form
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.generic import DetailView, TemplateView, UpdateView
+from django.views.generic import DetailView
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
+from django_tables2 import RequestConfig
 from formtools.wizard.views import SessionWizardView
 
 import config.hosts
 from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
+from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
 from transit_odp.organisation.constants import DatasetType, FeedStatus
-from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.publish.forms import (
     FeedDescriptionForm,
     FeedPublishCancelForm,
@@ -31,18 +33,6 @@ from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 ExpiredStatus = FeedStatus.expired.value
-
-
-class BaseTemplateView(BODSBaseView, TemplateView):
-    pass
-
-
-class BaseDetailView(BODSBaseView, DetailView):
-    pass
-
-
-class BaseUpdateView(BODSBaseView, UpdateView):
-    pass
 
 
 class PublishFeedDetailViewBase(BaseDetailView):
@@ -576,3 +566,157 @@ class BaseDatasetUploadModify(SingleObjectMixin, BaseFeedUploadWizard):
         # Get feed object to update
         self.object = self.get_object()
         return super().post(*args, **kwargs)
+
+
+class BasePublishListView(OrgUserViewMixin, BaseTemplateView):
+    per_page = 10
+
+    datasets = None
+    dataset_type = None
+    model = None
+    table = None
+
+    page_title_datatype = ""
+    publish_url_name = ""
+    nav_url_name = ""
+
+    exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
+    sections = (
+        ("active", "Active"),
+        ("draft", "Draft"),
+        ("archive", "Inactive"),
+    )
+
+    @property
+    def organisation(self) -> Organisation:
+        if self._organisation is not None:
+            return self._organisation
+
+        organisation_queryset = (
+            Organisation.objects.select_related("stats")
+            .add_total_subscriptions()
+            .filter(users=self.request.user)
+        )
+        self._organisation = get_object_or_404(
+            organisation_queryset, id=self.kwargs.get("pk1")
+        )
+        return self.organisation
+
+    def get_datasets(self):
+        return (
+            self.model.objects.filter(
+                organisation=self.organisation,
+                dataset_type=self.dataset_type,
+            )
+            .select_related("organisation")
+            .select_related("live_revision")
+        )
+
+    def get_active_qs(self):
+        return (
+            self.datasets.add_live_data()
+            .exclude(status__in=self.exclude_status)
+            .add_draft_revisions()
+        )
+
+    def get_draft_qs(self):
+        return self.datasets.add_draft_revisions().add_draft_revision_data(
+            organisation=self.organisation, dataset_type=self.dataset_type
+        )
+
+    def get_archive_qs(self):
+        return (
+            self.datasets.add_live_data()
+            .filter(status__in=self.exclude_status)
+            .add_draft_revisions()
+        )
+
+    def get_page_title(self) -> str:
+        title_subject = (
+            self.organisation.name if self.request.user.is_agent_user else "my"
+        )
+        return f"Review {title_subject} {self.page_title_datatype} data"
+
+    def get_extra_args_to_context(self) -> dict:
+        """
+        This method can be overridden by subclass to add a dict with extra data to
+        context
+        """
+        return dict()
+
+    def update_context(self, context, **args):
+        context.update(
+            {
+                "organisation": self.organisation,
+                "sections": self.sections,
+                "active_feeds": self.datasets,
+                "dataset_type": self.dataset_type,
+                "current_url": self.request.build_absolute_uri(self.request.path),
+                "page_title": _(self.get_page_title()),
+                "publish_new_ds_url": reverse(
+                    self.publish_url_name,
+                    kwargs={"pk1": self.kwargs["pk1"]},
+                    host=config.hosts.PUBLISH_HOST,
+                ),
+                "nav_url": reverse(
+                    self.nav_url_name,
+                    kwargs={"pk1": self.kwargs["pk1"]},
+                    host=config.hosts.PUBLISH_HOST,
+                ),
+                **args,
+            },
+        )
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.datasets = self.get_datasets()
+        return super().get(self, request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # We want to know if tab is None, this means user hasn't clicked on tab
+        # so don't run autofocus script
+        section = self.request.GET.get("tab") or "active"
+
+        qs = None
+        feeds_table = None
+
+        if section == "active":
+            # active feeds
+            qs = self.get_active_qs()
+
+        elif section == "draft":
+            # draft revisions
+            qs = self.get_draft_qs()
+
+        elif section == "archive":
+            # archived feeds
+            qs = self.get_archive_qs()
+
+        if qs is not None:
+            feeds_table = self.table(qs)
+            RequestConfig(self.request, paginate={"per_page": self.per_page}).configure(
+                feeds_table
+            )
+
+        return self.update_context(
+            context,
+            tab=section,
+            focus=section,
+            active_feeds_table=feeds_table,
+        )
+
+
+class DataActivityView(OrgUserViewMixin, DetailView):
+    template_name = "publish/data_activity.html"
+    model = Organisation
+    pk_url_kwarg = "pk1"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("stats").add_total_subscriptions()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["pk1"] = self.kwargs.get("pk1")
+        return context

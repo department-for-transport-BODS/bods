@@ -12,6 +12,7 @@ from django.db.models import (
     Count,
     F,
     Func,
+    IntegerField,
     Max,
     Min,
     OuterRef,
@@ -22,14 +23,17 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.functions import Coalesce, Substr, Upper
+from django.db.models.functions import Coalesce, Concat, Substr, TruncDate, Upper
 from django.db.models.query import Prefetch
 from django.utils import timezone
 
+from config.hosts import DATA_HOST
+from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
+    NO_ACTIVITY,
     AVLType,
     DatasetType,
     FaresType,
@@ -41,6 +45,9 @@ from transit_odp.timetables.constants import TXC_21
 from transit_odp.users.constants import AccountType
 
 User = get_user_model()
+ANONYMOUS = "Anonymous"
+GENERAL_LEVEL = "General"
+DATASET_LEVEL = "Data set level"
 
 
 class OrganisationQuerySet(models.QuerySet):
@@ -150,9 +157,9 @@ class OrganisationQuerySet(models.QuerySet):
         is_pending = Q(is_active=False) & Q(total_users=0)
         return qs.annotate(
             status=Case(
-                When(is_active=True, then=Value("active")),
-                When(is_inactive, then=Value("inactive")),
-                When(is_pending, then=Value("pending")),
+                When(is_active=True, then=Value("active", output_field=CharField())),
+                When(is_inactive, then=Value("inactive", output_field=CharField())),
+                When(is_pending, then=Value("pending", output_field=CharField())),
                 output_field=CharField(),
             )
         )
@@ -163,9 +170,11 @@ class OrganisationQuerySet(models.QuerySet):
         is_pending = Q(is_active=False) & Q(total_users=0)
         return qs.annotate(
             status=Case(
-                When(is_active=True, then=Value("Active")),
-                When(is_inactive, then=Value("Inactive")),
-                When(is_pending, then=Value("Pending invite")),
+                When(is_active=True, then=Value("Active", output_field=CharField())),
+                When(is_inactive, then=Value("Inactive", output_field=CharField())),
+                When(
+                    is_pending, then=Value("Pending invite", output_field=CharField())
+                ),
                 output_field=CharField(),
             )
         )
@@ -210,7 +219,7 @@ class OrganisationQuerySet(models.QuerySet):
                     "num_of_fare_products",
                     filter=Q(dataset__live_revision__status="live"),
                 ),
-                Value(0),
+                Value(0, output_field=IntegerField()),
             )
         )
 
@@ -277,12 +286,25 @@ class OrganisationQuerySet(models.QuerySet):
         unchecked = Q(licence_required=True)
         return self.add_number_of_licences().annotate(
             permit_holder=Case(
-                When(unchecked & Q(number_of_licences__gt=0), then=Value("TRUE")),
-                When(checked, then=Value("FALSE")),
-                default=Value("UNKNOWN"),
+                When(
+                    unchecked & Q(number_of_licences__gt=0),
+                    then=Value("TRUE", output_field=CharField()),
+                ),
+                When(checked, then=Value("FALSE", output_field=CharField())),
+                default=Value("UNKNOWN", output_field=CharField()),
                 output_field=CharField(),
             )
         )
+
+    def add_total_subscriptions(self):
+        """
+        Annotates the total number of subscribers onto an organisation.
+        * Be careful * with this qs when using in conjunction with other annotations.
+        It joins through to organisation -> dataset -> subscribers which are all many
+        to many relations. so this will rapidly increase the number of rows in
+        interesting ways.
+        """
+        return self.annotate(total_subscriptions=Count("dataset__subscribers"))
 
     def add_data_catalogue_fields(self):
         return (
@@ -327,8 +349,16 @@ class DatasetQuerySet(models.QuerySet):
     def add_pretty_status(self):
         return self.annotate(
             status=Case(
-                When(Q(live_revision__status="live"), then=Value("published")),
+                When(
+                    Q(live_revision__status="live"),
+                    then=Value("published", output_field=CharField()),
+                ),
+                When(
+                    Q(live_revision__status="error", dataset_type=AVLType),
+                    then=Value(NO_ACTIVITY, output_field=CharField()),
+                ),
                 default=F("live_revision__status"),
+                output_field=CharField(),
             )
         )
 
@@ -337,11 +367,18 @@ class DatasetQuerySet(models.QuerySet):
         # property
         return self.annotate(
             dataset_type_pretty=Case(
-                When(Q(dataset_type=TimetableType), then=Value("Timetables")),
                 When(
-                    Q(dataset_type=AVLType), then=Value("Automatic Vehicle Locations")
+                    Q(dataset_type=TimetableType),
+                    then=Value("Timetables", output_field=CharField()),
                 ),
-                When(Q(dataset_type=FaresType), then=Value("Fares")),
+                When(
+                    Q(dataset_type=AVLType),
+                    then=Value("Automatic Vehicle Locations", output_field=CharField()),
+                ),
+                When(
+                    Q(dataset_type=FaresType),
+                    then=Value("Fares", output_field=CharField()),
+                ),
                 output_field=CharField(),
             )
         )
@@ -410,20 +447,17 @@ class DatasetQuerySet(models.QuerySet):
         qs = self.annotate(
             draft_status=Subquery(subquery),
             has_errored_draft=Case(
-                When(draft_status="error", then=Value(True)),
-                default=Value(False),
+                When(draft_status="error", then=Value(True, BooleanField())),
+                default=Value(False, BooleanField()),
                 output_field=BooleanField(),
             ),
         )
         return qs
 
-    def add_draft_revision_data(self, organisation, dataset_types=None):
-        """Adds"""
-
-        if dataset_types is None:
-            dataset_types = [DatasetType.TIMETABLE]
-
-        types = ",".join(str(type_.value) for type_ in dataset_types)
+    def add_draft_revision_data(self, organisation, dataset_type):
+        """
+        Adds extra draft revision data to OrganisationDataset used on feed list view
+        """
         return self.raw(
             """
                 SELECT "organisation_dataset".*,
@@ -444,12 +478,12 @@ class DatasetQuerySet(models.QuerySet):
                          and ("organisation_datasetrevision".status != 'inactive')
                          and ("organisation_datasetrevision".status != 'expired')
                         ) b
-                    WHERE ("organisation_dataset".dataset_type IN (%s))
+                    WHERE ("organisation_dataset".dataset_type = %s)
                     GROUP BY "organisation_dataset"."modified", "organisation_dataset"."created", "organisation_dataset".id, b."id", b."status", b.name, b.first_expiring_service, b.num_of_lines, b.short_description, b.published_at
                     ORDER BY "organisation_dataset"."modified" DESC, "organisation_dataset"."created" DESC
 
                 """,  # noqa: E501
-            [organisation.id, types],
+            [organisation.id, dataset_type],
         )
 
     def add_nocs(self, delimiter=", "):
@@ -498,13 +532,16 @@ class DatasetQuerySet(models.QuerySet):
 
         # sum total number of lines across all feeds
         line_count = active.aggregate(
-            value=Coalesce(Sum("live_revision__num_of_lines"), Value(0))
+            value=Coalesce(
+                Sum("live_revision__num_of_lines"),
+                Value(0, output_field=IntegerField()),
+            )
         )["value"]
 
         fare_product_count = active.aggregate(
             value=Coalesce(
                 Sum("live_revision__metadata__faresmetadata__num_of_fare_products"),
-                Value(0),
+                Value(0, output_field=IntegerField()),
             )
         )["value"]
 
@@ -722,6 +759,90 @@ class DatasetQuerySet(models.QuerySet):
             )
         )
 
+    def add_dataset_download_url(self):
+        """
+        Annotates the download url to the dataset
+        """
+        key = 9999999999
+        timetables_url = reverse_path(
+            "feed-download", kwargs={"pk": key}, host=DATA_HOST
+        )
+        fares_url = reverse_path(
+            "fares-feed-download", kwargs={"pk": key}, host=DATA_HOST
+        )
+        prefix_timetable_url, suffix_timetable_url = timetables_url.split(str(key))
+        prefix_fares_url, suffix_fares_url = fares_url.split(str(key))
+        return self.annotate(
+            dataset_download_url=Case(
+                When(
+                    Q(dataset_type=TimetableType),
+                    then=Concat(
+                        Value(prefix_timetable_url),
+                        F("id"),
+                        Value(suffix_timetable_url),
+                    ),
+                ),
+                When(
+                    Q(dataset_type=FaresType),
+                    then=Concat(
+                        Value(prefix_fares_url), F("id"), Value(suffix_fares_url)
+                    ),
+                ),
+                default=None,
+                output_field=CharField(null=True),
+            )
+        )
+
+    def add_api_url(self):
+        """
+        Annotates the v1 api url to the dataset
+        """
+        key = 9999999999
+        timetables_url = reverse_path(
+            "api:feed-detail", kwargs={"pk": key}, host=DATA_HOST
+        )
+        avls_url = reverse_path(
+            "api:avldetaildatafeedapi", kwargs={"pk": key}, host=DATA_HOST
+        )
+        fares_url = reverse_path(
+            "api:fares-api-detail", kwargs={"pk": key}, host=DATA_HOST
+        )
+        prefix_timetable_url, suffix_timetable_url = timetables_url.split(str(key))
+        prefix_avl_url, suffix_avl_url = avls_url.split(str(key))
+        prefix_fares_url, suffix_fares_url = fares_url.split(str(key))
+
+        return self.annotate(
+            api_detail_url=Case(
+                When(
+                    Q(dataset_type=TimetableType),
+                    then=Concat(
+                        Value(prefix_timetable_url),
+                        F("id"),
+                        Value(suffix_timetable_url),
+                    ),
+                ),
+                When(
+                    Q(dataset_type=AVLType),
+                    then=Concat(
+                        Value(prefix_avl_url),
+                        F("id"),
+                        Value(suffix_avl_url),
+                    ),
+                ),
+                When(
+                    Q(dataset_type=FaresType),
+                    then=Concat(
+                        Value(prefix_fares_url), F("id"), Value(suffix_fares_url)
+                    ),
+                ),
+                default=None,
+                output_field=CharField(null=True),
+            )
+        )
+
+    def add_total_subscriptions(self):
+        return self.annotate(total_subscriptions=Count("subscribers"))
+
     def filter_pti_compliant(self):
         return self.add_is_live_pti_compliant().filter(is_pti_compliant=True)
 
@@ -817,7 +938,9 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .order_by("-created")
             .values("error_code")[:1]
         )
-        return self.annotate(error_code=Coalesce(Subquery(subquery), Value("")))
+        return self.annotate(
+            error_code=Coalesce(Subquery(subquery), Value("", output_field=CharField()))
+        )
 
     def add_latest_task_progress(self):
         from transit_odp.pipelines.models import DatasetETLTaskResult
@@ -949,7 +1072,11 @@ class TXCFileAttributesQuerySet(models.QuerySet):
     def add_string_lines(self):
         return self.annotate(
             string_lines=Func(
-                F("line_names"), Value(" "), Value(""), function="array_to_string"
+                F("line_names"),
+                Value(" ", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
             )
         )
 
@@ -981,3 +1108,71 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .annotate(dataset_id=F("revision__dataset_id"))
             .add_string_lines()
         )
+
+
+class ConsumerFeedbackQuerySet(models.QuerySet):
+    def add_feedback_type(self):
+        return self.annotate(
+            feedback_type=Case(
+                When(
+                    Q(dataset__isnull=True),
+                    then=Value(GENERAL_LEVEL, output_field=CharField()),
+                ),
+                default=Value(DATASET_LEVEL, output_field=CharField()),
+            )
+        )
+
+    def add_consumer_details(self):
+        return self.annotate(
+            username=Case(
+                When(
+                    Q(consumer__isnull=True),
+                    then=Value(ANONYMOUS),
+                ),
+                default=F("consumer__username"),
+                output_field=CharField(),
+            ),
+            email=Case(
+                When(
+                    Q(consumer__isnull=True),
+                    then=Value(ANONYMOUS),
+                ),
+                default=F("consumer__email"),
+                output_field=CharField(),
+            ),
+        )
+
+    def add_date(self):
+        return self.annotate(date=TruncDate("created"))
+
+    def add_total_issues_per_dataset(self):
+        counter_subquery = (
+            self.values("dataset_id")
+            .annotate(count=Count("dataset_id"))
+            .filter(dataset_id=OuterRef("dataset_id"))
+            .values("count")
+        )
+
+        return self.annotate(count=Subquery(counter_subquery))
+
+    def add_dataset_type(self):
+        return self.select_related("dataset").annotate(
+            dataset_type=Case(
+                When(
+                    Q(dataset__dataset_type=TimetableType),
+                    then=Value("Timetables", output_field=CharField()),
+                ),
+                When(
+                    Q(dataset__dataset_type=AVLType),
+                    then=Value("Automatic Vehicle Locations", output_field=CharField()),
+                ),
+                When(
+                    Q(dataset__dataset_type=FaresType),
+                    then=Value("Fares", output_field=CharField()),
+                ),
+                output_field=CharField(),
+            )
+        )
+
+    def add_organisation_name(self):
+        return self.annotate(organisation_name=F("organisation__name"))

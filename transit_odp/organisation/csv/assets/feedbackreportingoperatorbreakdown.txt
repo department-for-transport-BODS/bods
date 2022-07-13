@@ -1,0 +1,10 @@
+Feedback Reporting Operator Breakdown:
+Field name                                   Definition
+Date                                   Data for date shown
+Feedback type                          Type of feedback, whether its a general feedback given or feedback given on a specific data set
+Dataset ID                                   The BODS Dataset ID of dataset shown
+DataType                                   Type of data displayed, Fares, AVL or Timetable
+Description                                   Free text of description of issue, entered by user giving the feedback
+Raised by: Name                                   Name of user giving feedback, maybe be omitted if feedback is anonymous
+Raised by: Email                                   Email of user giving feedback, maybe be omitted if feedback is anonymous
+Total number of issues raised on this dataset/feed    Total count of issues raised for that dataset on the date given

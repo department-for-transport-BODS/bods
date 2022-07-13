@@ -18,12 +18,15 @@ from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
+    NO_ACTIVITY,
     AVLType,
     FaresType,
     FeedStatus,
     TimetableType,
 )
 from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
+    ConsumerFeedbackFactory,
     DatasetFactory,
     DatasetRevisionFactory,
     FaresDatasetRevisionFactory,
@@ -32,11 +35,13 @@ from transit_odp.organisation.factories import (
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import (
+    ConsumerFeedback,
     Dataset,
     DatasetRevision,
     Organisation,
     TXCFileAttributes,
 )
+from transit_odp.organisation.querysets import ANONYMOUS, DATASET_LEVEL, GENERAL_LEVEL
 from transit_odp.pipelines.factories import (
     DatasetETLTaskResultFactory,
     RemoteDatasetHealthCheckCountFactory,
@@ -45,6 +50,7 @@ from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.transmodel.factories import ServicePatternFactory
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import UserFactory
+from transit_odp.users.models import User
 
 pytestmark = pytest.mark.django_db
 
@@ -239,6 +245,19 @@ class TestOrganisationQuerySet:
         assert orgs.get(id=licensed_org.id).permit_holder == "TRUE"
         assert orgs.get(id=undecided_org.id).permit_holder == "UNKNOWN"
 
+    def test_add_total_number_of_subscriptions(self):
+        org = OrganisationFactory()
+        tom = UserFactory()
+        dick = UserFactory()
+        harry = UserFactory()
+
+        DatasetFactory(organisation=org, subscribers=[tom, dick])
+        DatasetFactory(organisation=org, subscribers=[tom, harry])
+
+        org = Organisation.objects.add_total_subscriptions().first()
+
+        assert org.total_subscriptions == 4
+
 
 @pytest.fixture
 def revision_data():
@@ -258,14 +277,14 @@ def revision_data():
         },
         {
             "created": now,
-            "name": "DATASET 1 LIVE REVISION",
+            "name": "DATASET_LEVEL 1 LIVE REVISION",
             "dataset": datasets[0],
             "is_published": True,
         },
         # dataset 2 has a live + draft revision
         {
             "created": now - timedelta(hours=6),
-            "name": "DATASET 2 LIVE REVISION",
+            "name": "DATASET_LEVEL 2 LIVE REVISION",
             "dataset": datasets[1],
             "is_published": True,
         },
@@ -306,9 +325,15 @@ class TestDatasetQuerySet:
                 # test we can iterate over the QuerySet and access live_revision
                 # without incurring anymore DB hits
                 if dataset.id == datasets[0].id:
-                    assert dataset._live_revision[0].name == "DATASET 1 LIVE REVISION"
+                    assert (
+                        dataset._live_revision[0].name
+                        == "DATASET_LEVEL 1 LIVE REVISION"
+                    )
                 elif dataset.id == datasets[1].id:
-                    assert dataset._live_revision[0].name == "DATASET 2 LIVE REVISION"
+                    assert (
+                        dataset._live_revision[0].name
+                        == "DATASET_LEVEL 2 LIVE REVISION"
+                    )
                 else:
                     assert dataset._live_revision == []
 
@@ -541,6 +566,15 @@ class TestDatasetQuerySet:
     )
     def test_add_pretty_status(self, status, expected):
         DatasetRevisionFactory(status=status)
+        result = Dataset.objects.add_pretty_status().first()
+        assert result.status == expected
+
+    @pytest.mark.parametrize(
+        "status, expected",
+        [("live", "published"), ("inactive", "inactive"), ("error", NO_ACTIVITY)],
+    )
+    def test_add_pretty_status_for_avl(self, status, expected):
+        AVLDatasetRevisionFactory(status=status)
         result = Dataset.objects.add_pretty_status().first()
         assert result.status == expected
 
@@ -1021,3 +1055,73 @@ class TestTXCFileAttributesQueryset:
         assert file_attributes.count() == 3
         for fa in file_attributes:
             assert fa.operating_period_start_date == datetime(2020, 12, 25, 0, 0).date()
+
+
+class TestConsumerFeedbackQuerySet:
+    def test_anon_consumer_details(self):
+        ConsumerFeedbackFactory(consumer=None)
+        feedback = ConsumerFeedback.objects.add_consumer_details().first()
+        assert feedback.username == ANONYMOUS
+        assert feedback.email == ANONYMOUS
+
+    def test_consumer_details(self):
+        ConsumerFeedbackFactory()
+        feedback = ConsumerFeedback.objects.add_consumer_details().first()
+        consumer = User.objects.first()
+        assert feedback.username == consumer.username
+        assert feedback.email == consumer.email
+
+    @pytest.mark.parametrize(
+        "factory,expected",
+        [
+            (DatasetRevisionFactory, "Timetables"),
+            (AVLDatasetRevisionFactory, "Automatic Vehicle Locations"),
+            (FaresDatasetRevisionFactory, "Fares"),
+        ],
+    )
+    def test_add_dataset_type(self, factory, expected):
+        revision = factory()
+        ConsumerFeedbackFactory(dataset=revision.dataset)
+        feedback = ConsumerFeedback.objects.add_dataset_type().first()
+        assert feedback.dataset_type == expected
+
+    def test_add_feedback_type_dataset_level(self):
+        ConsumerFeedbackFactory()
+        feedback = ConsumerFeedback.objects.add_feedback_type().first()
+        assert feedback.feedback_type == DATASET_LEVEL
+
+    def test_add_feedback_type_general_level(self):
+        ConsumerFeedbackFactory(dataset=None)
+        feedback = ConsumerFeedback.objects.add_feedback_type().first()
+        assert feedback.feedback_type == GENERAL_LEVEL
+
+    def test_consumer_counts_per_day(self):
+        """
+        Create feedback objects so we have 1 on day 1 2 on day 2 3 on day 3 ...
+        then add 1 feedback to all datasets so the counts look like this:
+        7,7,7,7,7,7,7  6,6,6,6,6,6  5,5,5,5,5  4,4,4,4  3,3,3  2,2 1
+        Also include general feedback for completeness
+        """
+        timenow = now()
+        for counter in range(7):
+            dataset = DatasetFactory()
+            with freeze_time(timenow - timedelta(days=counter)):
+                ConsumerFeedbackFactory.create_batch(counter, dataset=dataset)
+                ConsumerFeedbackFactory(dataset=None)
+
+        # This happens "today" so should be counted in all totals
+        for dataset in Dataset.objects.all():
+            ConsumerFeedbackFactory(dataset=dataset)
+
+        feedback = (
+            ConsumerFeedback.objects.add_date()
+            .exclude(dataset_id=None)
+            .add_total_issues_per_dataset()
+            .order_by("-count")
+            .values_list("count", flat=True)
+        )
+        expected = []
+        for i in range(7, 0, -1):
+            expected += [i] * i
+
+        assert list(feedback) == expected

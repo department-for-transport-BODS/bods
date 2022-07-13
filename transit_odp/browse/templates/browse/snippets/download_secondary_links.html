@@ -1,24 +1,24 @@
 {% load i18n %}
 
 <div class="govuk-grid-column-one-third">
-  <h3 class="govuk-heading-m">
-    {% trans 'Need further help?' %}
-  </h3>
-  <ul class="govuk-list">
-    <li class="govuk-!-margin-bottom-3">
-      <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
-        {% trans 'Guide me' %}
-      </a>
-    </li>
-    <li class="govuk-!-margin-bottom-3">
-      <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
-        {% trans 'Changelog' %}
-      </a>
-    </li>
-    <li class="govuk-!-margin-bottom-3">
-      <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-        {% trans 'Contact us for technical issues' %}
-      </a>
-    </li>
-  </ul>
+    <h3 class="govuk-heading-m">
+        {% trans 'Need further help?' %}
+    </h3>
+    <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-3">
+            <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
+                {% trans 'Guide me' %}
+            </a>
+        </li>
+        <li class="govuk-!-margin-bottom-3">
+            <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
+                {% trans 'Service changelog' %}
+            </a>
+        </li>
+        <li class="govuk-!-margin-bottom-3">
+            <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
+                {% trans 'Contact us for technical issues' %}
+            </a>
+        </li>
+    </ul>
 </div>

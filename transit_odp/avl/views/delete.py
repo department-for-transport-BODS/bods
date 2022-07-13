@@ -1,8 +1,9 @@
 from django_hosts import reverse
 
 import config.hosts
+from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import DatasetType
-from transit_odp.publish.views.base import BaseTemplateView, DeleteRevisionBaseView
+from transit_odp.publish.views.base import DeleteRevisionBaseView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 

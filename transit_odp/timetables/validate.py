@@ -2,6 +2,8 @@ import zipfile
 from logging import getLogger
 from typing import List, Optional
 
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 from lxml import etree
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
@@ -185,6 +187,8 @@ class TXCRevisionValidator:
         """
         Validates that creation_datetime remains unchanged between revisions.
         """
+        SIX_MONTHS_AGO = timezone.now() - relativedelta(months=6)
+
         for draft in self.draft_attributes:
             if draft.hash in self.live_hashes:
                 continue
@@ -194,7 +198,11 @@ class TXCRevisionValidator:
             if len(lives) == 0:
                 continue
 
-            if lives[0].creation_datetime != draft.creation_datetime:
+            if (
+                draft.creation_datetime
+                not in [live.creation_datetime for live in lives]
+                and draft.creation_datetime < SIX_MONTHS_AGO
+            ):
                 self.violations.append(
                     Violation(
                         line=2,

@@ -24,13 +24,13 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l">
-                {% trans 'Contact ' as contact %}{{ contact | force_escape }}{{ object.name }}
+                {% trans 'Contact ' as contact %}{{ contact | force_escape }}{{ organisation_name }}
             </h1>
             <p class="govuk-body">
                 {% trans "An email generated from this form will be sent to the data set/data feed owner directly. They will be your point of contact for any potential resolution to your query." as message %}{{ message | force_escape }}
             </p>
-      </br>
-      {% crispy form %}
+            </br>
+            {% crispy form %}
         </div>
     </div>
 {% endblock %}

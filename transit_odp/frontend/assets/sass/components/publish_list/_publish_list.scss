@@ -1,0 +1,36 @@
+.review-banner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+
+  .review-stat {
+    margin: 0 govuk-spacing(7) govuk-spacing(7) 0;
+
+    &__description {
+      @include govuk-font($size: 16, $weight: bold);
+      margin: 0 0 govuk-spacing(6) 0;
+    }
+
+    &__top {
+      @include govuk-font($size: 48, $weight: bold);
+    }
+
+    &__bottom {
+      @include govuk-font($size: 19);
+      position: relative;
+      right: govuk-spacing(1);
+    }
+
+    a.review-stat__link {
+      @include govuk-font($size: 16);
+      color: inherit;
+    }
+    a.review-stat__link:visited {
+      color: unset;
+    }
+  }
+  .review-stat:last-child {
+    margin-right: unset;
+  }
+}

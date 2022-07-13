@@ -1,0 +1,9 @@
+Consumer metrics Operator Breakdown
+Field name                                   Definition
+Date                                   Data for date shown
+Dataset ID                                   BODS Dataset ID of dataset shown
+DataType                                   Type of data displayed, Fares, AVL or Timetable
+Number of current subscriptions                                   Total count of subscriptions currently registered for that dataset
+Number of downloads(dataset download)                                   Number of times the dataset has been specifically downloaded on the date given
+Number of downloads(download all)                                   Number of times the dataset has been downloaded as part of the download all data on the date given
+Number of API Requests                                   Number of API requests performed on the date given

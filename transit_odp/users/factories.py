@@ -30,12 +30,17 @@ class UserFactory(DjangoModelFactory):
 
     username = Faker("user_name")
     email = Faker("email")
-    name = Faker("name")
     account_type = DeveloperType
-    first_name = Faker("name")
-    last_name = Faker("name")
+    first_name = Faker("first_name")
+    last_name = Faker("last_name")
     # token - Created automatically by post save signal
     # settings - Created automatically by post save signal
+
+    @post_generation
+    def name(self, create: bool, extracted: Sequence[Any], **kwargs):
+        name = extracted
+        if name is None:
+            self.name = f"{self.first_name} {self.last_name}"
 
     @post_generation
     def password(self, create: bool, extracted: Sequence[Any], **kwargs):

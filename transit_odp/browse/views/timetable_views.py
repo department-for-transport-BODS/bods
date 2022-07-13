@@ -6,19 +6,20 @@ from allauth.account.adapter import get_adapter
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.http import FileResponse, Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.generic import DetailView, FormView, TemplateView, UpdateView
-from django.views.generic.detail import BaseDetailView, SingleObjectMixin
+from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
+from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
 from django_tables2 import SingleTableView
 
 import config.hosts
 from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.browse.filters import TimetableSearchFilter
-from transit_odp.browse.forms import UserFeedbackForm
+from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.views.base_views import BaseSearchView, BaseTemplateView
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
@@ -37,11 +38,13 @@ from transit_odp.organisation.constants import (
     TravelineRegions,
 )
 from transit_odp.organisation.models import (
+    ConsumerFeedback,
     Dataset,
     DatasetRevision,
     DatasetSubscription,
 )
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
+from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.users.constants import SiteAdminType
 
@@ -362,6 +365,8 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
     """View from downloading a GTFS file from S3 and returning it as FileResponse"""
 
     def get(self, request, *args, **kwargs):
+        if self.kwargs.get("id") == TravelineRegions.ALL.lower():
+            ResourceRequestCounter.from_request(request)
         return self.render_to_response()
 
     def render_to_response(self):
@@ -463,7 +468,7 @@ class DownloadChangeDataArchiveView(DownloadView):
         return self.object.data
 
 
-class DatasetDownloadView(BaseDetailView):
+class DatasetDownloadView(ResourceCounterMixin, BaseDetailView):
     dataset_type = DatasetType.TIMETABLE.value
 
     def get_queryset(self):
@@ -503,72 +508,76 @@ class DatasetDownloadView(BaseDetailView):
                 )
 
 
-class UserFeedbackView(LoginRequiredMixin, SingleObjectMixin, FormView):
+class UserFeedbackView(LoginRequiredMixin, CreateView):
     template_name = "browse/timetables/user_feedback.html"
-    form_class = UserFeedbackForm
-    model = Dataset
-    dataset_type = DatasetType.TIMETABLE.value
+    form_class = ConsumerFeedbackForm
+    model = ConsumerFeedback
+    dataset = None
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.dataset = get_object_or_404(
+            Dataset.objects.select_related("live_revision", "organisation"),
+            id=self.kwargs.get("pk"),
+        )
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.dataset = get_object_or_404(
+            Dataset.objects.select_related("live_revision"), id=self.kwargs.get("pk")
+        )
         return super().post(request, *args, **kwargs)
 
-    def get_queryset(self):
-        qs = (
-            Dataset.objects.get_active_org()
-            .get_dataset_type(dataset_type=self.dataset_type)
-            .get_published()
-            .add_live_data()
-        )
-        return qs
+    def get_initial(self):
+        return {
+            "dataset_id": self.dataset.id,
+            "organisation_id": self.dataset.organisation.id,
+            "consumer_id": self.request.user.id,
+        }
 
+    @transaction.atomic
     def form_valid(self, form):
         client = get_notifications()
-        data = form.cleaned_data
-        dataset = self.object
-        feedback = data["feedback"]
-        developer_email = None if data["anonymous"] else self.request.user.email
+        response = super().form_valid(form)
         admins = User.objects.filter(account_type=SiteAdminType)
         emails = [email["email"] for email in admins.values()]
         emails.append(self.request.user.email)
 
         for email in emails:
             client.send_dataset_feedback_consumer_copy(
-                dataset_id=dataset.id,
+                dataset_id=self.dataset.id,
                 contact_email=email,
-                dataset_name=dataset.live_revision.name,
-                publisher_name=dataset.organisation.name,
-                feedback=feedback,
+                dataset_name=self.dataset.live_revision.name,
+                publisher_name=self.dataset.organisation.name,
+                feedback=self.object.feedback,
                 time_now=None,
             )
 
         client.send_feedback_notification(
-            dataset_id=dataset.id,
-            contact_email=dataset.contact.email,
-            dataset_name=dataset.live_revision.name,
-            feedback=feedback,
-            feed_detail_link=dataset.feed_detail_url,
-            developer_email=developer_email,
+            dataset_id=self.dataset.id,
+            contact_email=self.dataset.contact.email,
+            dataset_name=self.dataset.live_revision.name,
+            feedback=self.object.feedback,
+            feed_detail_link=self.dataset.feed_detail_url,
+            developer_email=self.request.user.email if self.object.consumer else None,
         )
 
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse(
-            "feed-feedback-success", args=[self.object.id], host=config.hosts.DATA_HOST
+            "feed-feedback-success",
+            args=[self.dataset.id],
+            host=config.hosts.DATA_HOST,
         )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["back_url"] = reverse(
             "feed-detail",
-            args=[self.object.id],
+            args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
+        context["dataset"] = self.dataset
         return context
 
 

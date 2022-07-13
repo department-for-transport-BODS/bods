@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=python:3.9-alpine
+ARG BASE_IMAGE=python:3.9-alpine3.15
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED 1 \
@@ -12,17 +12,13 @@ WORKDIR /app
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && apk update \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/community \
             --no-cache \
             gdal-dev \
             gdal \
             proj-util \
             proj-dev \
-    && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/community \
-            --no-cache \
             pkgconfig \
             autoconf \
             automake \

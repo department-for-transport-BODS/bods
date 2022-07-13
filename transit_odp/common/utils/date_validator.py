@@ -19,5 +19,5 @@ def validate(date_time_str):
     except Exception:
         return False
     raise ValidationError(
-        u"Provided datetime format is incorrect. Correct format: 'YYYY-MM-DDTHH:MM:SS'"
+        "Provided datetime format is incorrect. Correct format: 'YYYY-MM-DDTHH:MM:SS'"
     )

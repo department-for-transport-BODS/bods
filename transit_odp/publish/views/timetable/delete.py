@@ -2,9 +2,9 @@ from django.http import HttpResponseRedirect
 from django_hosts import reverse
 
 import config.hosts
+from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.publish.views.base import (
-    BaseTemplateView,
     DeleteRevisionBaseView,
     PublishFeedDetailViewBase,
 )

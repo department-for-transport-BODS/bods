@@ -4,7 +4,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from transit_odp.bods.interfaces.plugins import get_notifications
-from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.models import (
+    ConsumerStats,
+    Dataset,
+    DatasetRevision,
+    Organisation,
+)
 from transit_odp.organisation.notifications import (
     send_endpoint_available_notification,
     send_feed_changed_notification,
@@ -77,3 +82,9 @@ def revision_publish_handler(sender, dataset: Dataset, **kwargs):
         f"DatasetRevision<id={dataset.live_revision.id}>"
     )
     send_revision_published_notification(dataset)
+
+
+@receiver(post_save, sender=Organisation)
+def create_consumer_stats(sender, instance=None, created=False, **kwargs):
+    if created:
+        ConsumerStats.objects.create(organisation=instance)

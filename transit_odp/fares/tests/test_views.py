@@ -2,7 +2,7 @@ import pytest
 from django.conf import settings
 from django_hosts.resolvers import reverse
 
-import config.hosts
+from config.hosts import PUBLISH_HOST
 from transit_odp.fares.views import DatasetUpdateModify
 from transit_odp.organisation.models import Dataset
 
@@ -28,7 +28,7 @@ def test_archive_view_works(published_archive_url):
     assert fished_out_feed.live_revision.status == "inactive"
     assert response.context["back_to_data_sets"] == reverse(
         "fares:feed-list",
-        host=config.hosts.PUBLISH_HOST,
+        host=PUBLISH_HOST,
         kwargs={"pk1": fished_out_feed.organisation_id},
     )
 
@@ -54,7 +54,7 @@ def test_upload_step__empty_comment(unpublished_update_url):
     Test form complains on empty comment
     """
     # Set Up
-    settings.DEFAULT_HOST = config.hosts.PUBLISH_HOST
+    settings.DEFAULT_HOST = PUBLISH_HOST
     url, client = unpublished_update_url
     response = client.post(
         url,

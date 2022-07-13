@@ -307,7 +307,7 @@ class FaresSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
         return context
 
 
-class FaresDatasetDownloadView(BaseDetailView):
+class FaresDatasetDownloadView(ResourceCounterMixin, BaseDetailView):
     dataset_type = DatasetType.FARES.value
 
     def get_queryset(self):
@@ -354,7 +354,7 @@ class FaresUserFeedbackView(UserFeedbackView):
         context = super().get_context_data(**kwargs)
         context["back_url"] = reverse(
             "fares-feed-detail",
-            args=[self.object.id],
+            args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
         return context
@@ -362,7 +362,7 @@ class FaresUserFeedbackView(UserFeedbackView):
     def get_success_url(self):
         return reverse(
             "fares-feed-feedback-success",
-            args=[self.object.id],
+            args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
 

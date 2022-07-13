@@ -4,6 +4,7 @@ from django_hosts import reverse
 
 import config.hosts
 from transit_odp.common.enums import FeedErrorSeverity
+from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -12,7 +13,6 @@ from transit_odp.organisation.constants import (
     FeedStatus,
 )
 from transit_odp.organisation.models import Dataset, DatasetMetadata
-from transit_odp.publish.views.base import BaseDetailView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 URL_NAMESPACE = "fares"

@@ -28,7 +28,7 @@ class StopRepeatedListView(TimingPatternsListBaseView):
         return qs.annotate(
             message=Concat(
                 Subquery(service_name_subquery, output_field=CharField()),
-                Value(message),
+                Value(message, output_field=CharField()),
             )
         ).distinct("timing_pattern_id")
 

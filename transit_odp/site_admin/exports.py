@@ -29,6 +29,7 @@ from transit_odp.common.utils import (
 )
 from transit_odp.organisation.constants import EXPIRED, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
+from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackAdminCSV
 from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
 from transit_odp.organisation.csv.overall import get_overall_data_catalogue_csv
 from transit_odp.organisation.models import Dataset
@@ -107,11 +108,15 @@ class PublisherCSV(CSVBuilder):
 
     def get_queryset(self):
         # TODO include agent users with a record per agent user org
-        when_is_inactive = When(Q(is_active=False), then=Value("Inactive"))
-        when_is_active = When(Q(is_active=True), then=Value("Active"))
+        when_is_inactive = When(
+            Q(is_active=False), then=Value("Inactive", output_field=CharField())
+        )
+        when_is_active = When(
+            Q(is_active=True), then=Value("Active", output_field=CharField())
+        )
         when_key_contact = When(
             is_key_contact=True,
-            then=Value("yes"),
+            then=Value("yes", output_field=CharField()),
         )
 
         user_subquery = Subquery(
@@ -127,13 +132,15 @@ class PublisherCSV(CSVBuilder):
                 user_status=Case(
                     when_is_inactive,
                     when_is_active,
-                    default=Value("Pending"),
+                    default=Value("Pending", output_field=CharField()),
                     output_field=CharField(),
                 )
             )
             .annotate(
                 key_contact=Case(
-                    when_key_contact, default=Value("no"), output_field=CharField()
+                    when_key_contact,
+                    default=Value("no", output_field=CharField()),
+                    output_field=CharField(),
                 )
             )
             .exclude(account_type=AgentUserType)
@@ -247,7 +254,7 @@ class RawConsumerRequestCSV(CSVBuilder):
             .annotate(
                 requestor_full_name=Concat(
                     F("requestor__first_name"),
-                    Value(" "),
+                    Value(" ", output_field=CharField()),
                     F("requestor__last_name"),
                     output_field=CharField(),
                 ),
@@ -306,6 +313,7 @@ def create_operational_exports_file() -> BinaryIO:
         CSVFile("stats.csv", OperationalStatsCSV),
         CSVFile("agents.csv", AgentUserCSV),
         CSVFile("datasetpublishing.csv", DatasetPublishingCSV),
+        CSVFile("feedback_report_operator_breakdown.csv", ConsumerFeedbackAdminCSV),
     )
 
     with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
@@ -313,22 +321,27 @@ def create_operational_exports_file() -> BinaryIO:
             Builder = file_.builder
             zin.writestr(file_.name, Builder().to_string())
 
+        prefix = "Pandas - to_csv - "
+        logger.info(prefix + f"Generating {ORGANISATION_FILENAME}")
         try:
             zin.writestr(ORGANISATION_FILENAME, get_organisation_catalogue_csv())
         except EmptyDataFrame as exc:
             logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
 
+        logger.info(prefix + f"Generating {TIMETABLE_FILENAME}")
         try:
             zin.writestr(TIMETABLE_FILENAME, get_timetable_catalogue_csv())
 
         except EmptyDataFrame as exc:
             logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
 
+        logger.info(prefix + f"Generating {OVERALL_FILENAME}")
         try:
             zin.writestr(OVERALL_FILENAME, get_overall_data_catalogue_csv())
         except EmptyDataFrame:
             pass
 
+        logger.info(prefix + f"Generating {LOCATION_FILENAME}")
         try:
             zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
         except EmptyDataFrame:

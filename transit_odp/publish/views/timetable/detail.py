@@ -3,11 +3,11 @@ from django_hosts import reverse
 
 import config.hosts
 from transit_odp.common.enums import FeedErrorSeverity
+from transit_odp.common.views import BaseDetailView
 from transit_odp.data_quality.models.report import DataQualityReport
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset
-from transit_odp.publish.views.base import BaseDetailView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 

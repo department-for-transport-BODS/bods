@@ -1,0 +1,9 @@
+.agent_dashboard {
+  thead th:nth-child(2) {
+    width: 45%;
+  }
+
+  tbody td {
+    padding: govuk-spacing(4) 0;
+  }
+}

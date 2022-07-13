@@ -23,7 +23,7 @@ variables:
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
-  BLACK_VERSION: 21.12b0
+  BLACK_VERSION: 22.3.0
 
 stages:
   - build
@@ -65,7 +65,8 @@ before_script:
     && ln -sf /usr/bin/python3 /usr/bin/python
   - python3 -m venv .venv
   - source .venv/bin/activate
-  - pip install awscli
+  - pip install -U pip
+  - pip install awscli==1.24.1
   - $(aws ecr get-login --no-include-email --region eu-west-1) # will pick up secret keys set in GitLab UI
 
 # Base tasks
@@ -175,8 +176,6 @@ lint:
   before_script:
     - *logging
     - pip install black==$BLACK_VERSION
-    # need to pin click version to below 8.1.0 to fix an issue with black (https://github.com/psf/black/issues/2964)
-    - pip install "click<8.1.0"
   script:
     - black --check --config .black.toml  .
 

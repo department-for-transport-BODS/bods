@@ -7,7 +7,6 @@ from typing import Optional
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import requests
-from cavl_client.rest import ApiException
 from celery import shared_task
 from django.conf import settings
 from django.core.files import File
@@ -59,6 +58,7 @@ logger = logging.getLogger(__name__)
 SIRI_ZIP = "sirivm_{}.zip"
 SIRI_TFL_ZIP = "sirivm_tfl_{}.zip"
 VALIDATION_SAMPLE_SIZE = 250
+CONFIG_API_WAIT_TIME = 25
 
 
 @dataclass
@@ -227,7 +227,7 @@ def task_run_avl_validations():
     feeds = AVLDataset.objects.get_datafeeds_to_validate()
     logger.info(f"AVL Validation - {feeds.count()} feeds to validate")
     for feed in feeds:
-        task_run_feed_validation.delay(feed.id)
+        task_run_feed_validation(feed.id)
 
 
 @shared_task()
@@ -242,19 +242,20 @@ def task_run_feed_validation(feed_id: int):
         adapter.info("Feed failed SIRI-VM schema validation.")
         feed = AVLDataset.objects.get(id=feed_id)
         revision = feed.live_revision
+        # Sleeping to give the config api time to be available
+        time.sleep(CONFIG_API_WAIT_TIME)
         with transaction.atomic():
+            cavl_service = get_cavl_service()
+            deleted = cavl_service.delete_feed(feed_id=feed_id)
+            if not deleted:
+                adapter.error("Unable to de-register feed.")
+                return
+
             AVLSchemaValidationReport.from_schema_validation_response(
                 revision_id=feed.live_revision_id, response=response
             ).save()
             revision.to_inactive()
             revision.save()
-
-            cavl_service = get_cavl_service()
-            try:
-                cavl_service.delete_feed(feed_id=feed_id)
-            except ApiException as exc:
-                adapter.error("Unable to de-register feed.", exc_info=exc)
-
             send_avl_schema_check_fail(feed)
 
         return

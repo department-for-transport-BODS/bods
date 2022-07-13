@@ -3,7 +3,7 @@ import logging
 from tenacity import retry
 from tenacity.stop import stop_after_attempt
 
-from transit_odp.timetables.constants import TXC_MAP
+from transit_odp.timetables.constants import get_txc_map
 from transit_odp.validate.xml import get_lxml_schema
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class TxCSchemaDownloader:
 
         """
         logger.info(f"[TransXChange] => Downloading v{version}.")
-        url = TXC_MAP.get(version, None)
+        url = get_txc_map().get(version, None)
 
         if version in self.schema_cache:
             logger.warning(f"[TransXChange] => Getting {version} from cache.")

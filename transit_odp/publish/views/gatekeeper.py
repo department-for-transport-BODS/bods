@@ -1,4 +1,4 @@
-from transit_odp.publish.views.base import BaseTemplateView
+from transit_odp.common.views import BaseTemplateView
 
 
 class PublishGateKeeperView(BaseTemplateView):

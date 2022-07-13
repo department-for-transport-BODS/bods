@@ -1,6 +1,6 @@
 This notification confirms that the {% if not pti_enforced %}Validation report and {% endif %}Data quality report for the following timetable dataset is now available to view.
 
-You are legally obliged to supply data according to the PTI standard, and you must resolve all issues listed immediately.
+Operators are legally obliged to supply data according to the PTI standard, and you must resolve all issues listed immediately.
 {% if not pti_enforced %}
 All data that has outstanding validation issues will be removed from the service from {{ pti_enforced_date|date:"j F Y" }}. If you do not know how to resolve issues, please reach out to your supplier.
 {% endif %}

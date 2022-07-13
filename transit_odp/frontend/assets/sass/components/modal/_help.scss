@@ -28,6 +28,9 @@
         position: absolute;
         right: 0;
         margin: govuk-spacing(5);
+        border: 0;
+        border-style: none;
+        background-color: $govuk-body-background-colour;
       }
 
       .content {

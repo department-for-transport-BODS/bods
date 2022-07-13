@@ -5,14 +5,14 @@ from transit_odp.organisation.querysets import DatasetRevisionQuerySet
 
 
 class FaresDataset(Dataset):
-    objects = FaresDatasetManager.from_queryset(FaresDatasetQuerySet)
+    objects = FaresDatasetManager.from_queryset(FaresDatasetQuerySet)()
 
     class Meta:
         proxy = True
 
 
 class FaresDatasetRevision(DatasetRevision):
-    objects = FaresDatasetRevisionManager.from_queryset(DatasetRevisionQuerySet)
+    objects = FaresDatasetRevisionManager.from_queryset(DatasetRevisionQuerySet)()
 
     class Meta:
         proxy = True

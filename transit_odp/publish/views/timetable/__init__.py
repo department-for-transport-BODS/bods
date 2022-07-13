@@ -14,7 +14,11 @@ from transit_odp.publish.views.timetable.edit_description import (
     EditDraftRevisionDescriptionView,
     EditLiveRevisionDescriptionView,
 )
-from transit_odp.publish.views.timetable.list import PublishView
+from transit_odp.publish.views.timetable.list import (
+    ListView,
+    RequiresAttentionView,
+    ServiceCodeView,
+)
 from transit_odp.publish.views.timetable.progess import PublishProgressView
 from transit_odp.publish.views.timetable.update import (
     DatasetUpdateModify,
@@ -34,10 +38,12 @@ __all__ = [
     "DatasetDownloadView",
     "EditDraftRevisionDescriptionView",
     "EditLiveRevisionDescriptionView",
-    "PublishView",
+    "ListView",
     "PublishProgressView",
     "DatasetUpdateModify",
     "DraftExistsView",
     "FeedUpdateWizard",
     "RevisionUpdateSuccessView",
+    "RequiresAttentionView",
+    "ServiceCodeView",
 ]

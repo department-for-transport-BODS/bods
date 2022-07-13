@@ -13,17 +13,19 @@
     {% breadcrumb_url root_site.name 'home' host hosts.root %}
     {% breadcrumb_url site.name 'home' host hosts.publish %}
     {% if user.is_agent_user %}
-      {% breadcrumb_url 'Operator Dashboard' 'select-org' host hosts.publish %}
+        {% breadcrumb 'Operator Dashboard' %}
+        {% breadcrumb 'Publish a Dataset or Data Feed' %}
+    {% else %}
+        {% breadcrumb 'Publish a Dataset or Data Feed' %}
     {% endif %}
-    {% breadcrumb 'Choose data type' %}
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-  <div class="component-wrapper">
-      {% crispy form %}
-  </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+            <div class="component-wrapper">
+                {% crispy form %}
+            </div>
+        </div>
     </div>
-  </div>
 {% endblock %}

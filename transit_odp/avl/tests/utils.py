@@ -4,6 +4,7 @@ from transit_odp.avl.factories import (
     AVLDatasetRevisionFactory,
     AVLValidationReportFactory,
 )
+from transit_odp.organisation.constants import ERROR
 from transit_odp.organisation.models import DatasetRevision
 
 
@@ -138,3 +139,13 @@ def get_undergoing_validation_revision():
         vehicle_activity_count=vehicle_activity_count,
         report_count=report_count,
     )
+
+
+def get_feed_down_revision():
+    """
+    Returns an AVL DatasetRevision with an undergoing validation status.
+    """
+    revision = get_avl_revision()
+    revision.status = ERROR
+    revision.save()
+    return revision

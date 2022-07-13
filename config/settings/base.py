@@ -175,6 +175,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
 MIGRATION_MODULES = {"sites": "transit_odp.contrib.sites.migrations"}
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -195,7 +196,6 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "account_logout_success"
 LOGIN_URL = "account_login"
 
 # Login url's for Publish when AVL feature flag is turned on/off
-PUBLISH_SELECT_DATA_URL = "select-data"
 PUBLISH_FEED_LIST_URL = "feed-list"
 
 # PASSWORDS
@@ -522,6 +522,11 @@ ITO_GTFS_AWS_STORAGE_BUCKET_NAME = env(
     "DJANGO_ITO_GTFS_AWS_STORAGE_BUCKET_NAME", default=None
 )
 ITO_GTFS_AWS_REGION = env("DJANGO_ITO_GTFS_AWS_REGION", default="eu-west-2")
+
+# TxC Schema
+# ------------------------------------------------------------------------------
+TXC_BASE_URL = env("TXC_BASE_URL", default="http://www.transxchange.org.uk")
+TXC_V24_OVERRIDE = env("TXC_V24_OVERRIDE", default=None)
 
 # PTI
 # ------------------------------------------------------------------------------

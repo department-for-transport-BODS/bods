@@ -3,8 +3,9 @@ from django.conf import settings
 from django_hosts import reverse
 
 from config.hosts import DATA_HOST
-from transit_odp.browse.forms import OperatorFeedbackForm
+from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.organisation.factories import OrganisationFactory
+from transit_odp.organisation.models import ConsumerFeedback
 from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
@@ -13,6 +14,7 @@ pytestmark = pytest.mark.django_db
 
 class TestOperatorFeedbackView:
     view_name = "contact-operator"
+    feedback_message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 
     @pytest.fixture()
     def org(self, user: settings.AUTH_USER_MODEL):
@@ -42,7 +44,7 @@ class TestOperatorFeedbackView:
             response.context_data["view"].template_name
             == "browse/operators/contact_operator.html"
         )
-        assert isinstance(response.context_data["form"], OperatorFeedbackForm)
+        assert isinstance(response.context_data["form"], ConsumerFeedbackForm)
         assert response.context_data["back_url"] == back_url
 
     def test_success_page(self, user, data_client, org):
@@ -73,7 +75,7 @@ class TestOperatorFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_message,
                 "anonymous": False,
             },
             follow=True,
@@ -81,6 +83,7 @@ class TestOperatorFeedbackView:
 
         org_users = org.users.filter(account_type=OrgAdminType)
         org_users_emails = [org_user["email"] for org_user in org_users.values()]
+        feedback = ConsumerFeedback.objects.first()
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[2]
@@ -92,6 +95,10 @@ class TestOperatorFeedbackView:
         assert f"{org.name}" in m.body
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == org_users_emails
+        assert feedback.feedback == self.feedback_message
+        assert feedback.consumer == user
+        assert feedback.dataset_id is None
+        assert feedback.organisation == org
 
     def test_feedback_is_sent_to_publisher_anonymously(
         self, mailoutbox, user, data_client, org
@@ -103,13 +110,14 @@ class TestOperatorFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_message,
                 "anonymous": True,
             },
             follow=True,
         )
         org_users = org.users.filter(account_type=OrgAdminType)
         org_users_emails = [org_user["email"] for org_user in org_users.values()]
+        feedback = ConsumerFeedback.objects.first()
         assert response.status_code == 200
         assert len(mailoutbox) == 3
         m = mailoutbox[2]
@@ -121,6 +129,10 @@ class TestOperatorFeedbackView:
         assert f"{org.name}" in m.body
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
         assert list(m.to) == org_users_emails
+        assert feedback.feedback == self.feedback_message
+        assert feedback.consumer is None
+        assert feedback.dataset_id is None
+        assert feedback.organisation == org
 
     def test_feedback_is_sent_to_admins_by_consumer(
         self, mailoutbox, user, org, data_client
@@ -131,7 +143,7 @@ class TestOperatorFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_message,
             },
             follow=True,
         )
@@ -154,7 +166,7 @@ class TestOperatorFeedbackView:
         response = data_client.post(
             url,
             data={
-                "feedback": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                "feedback": self.feedback_message,
             },
             follow=True,
         )

@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<a class="govuk-link govuk-!-font-size-19" href="{% url 'users:invite' host hosts.publish %}">
+    {% trans 'Invite members and agents' %}
+</a>
+
+<p class="govuk-body">
+    {% blocktrans %}
+        Invite other members from your organisations and / or agents who will act on your
+        behalf to publish data.
+    {% endblocktrans %}
+</p>
+
+<a class="govuk-link govuk-!-font-size-19" href={% url 'redirect-profile' host hosts.publish %}>
+    {% trans 'Update profile' %}
+</a>
+
+<p class="govuk-body">
+    {% blocktrans %}
+        Update your profile including licence number and NOC codes. Please make sure your
+        profile information is correct and up to date.
+    {% endblocktrans %}
+</p>

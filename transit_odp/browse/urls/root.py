@@ -15,7 +15,7 @@ from transit_odp.browse.views.contact_operator import (
     ContactOperatorView,
 )
 from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
-from transit_odp.browse.views.guide_me import GuideMeView
+from transit_odp.browse.views.guide_me import BrowseGuideMeView
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
@@ -33,7 +33,7 @@ urlpatterns = [
     path("api/", view=ApiSelectView.as_view(), name="api-select"),
     path(
         "guide-me/",
-        view=GuideMeView.as_view(),
+        view=BrowseGuideMeView.as_view(),
         name="guide-me",
     ),
     path(

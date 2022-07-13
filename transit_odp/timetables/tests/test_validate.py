@@ -13,7 +13,8 @@ from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.tasks import task_scan_timetables
-from transit_odp.timetables.validate import TXCRevisionValidator
+from transit_odp.timetables.utils import _txc_downloader
+from transit_odp.timetables.validate import DatasetTXCValidator, TXCRevisionValidator
 from transit_odp.validate.antivirus import (
     AntiVirusError,
     ClamConnectionError,
@@ -203,3 +204,39 @@ def test_revision_number_violation(
     )
     validator.validate_revision_number()
     assert len(validator.violations) == violation_count
+
+
+def test_use_non_default_txc_xsd_base_url(mocker, settings):
+    settings.TXC_BASE_URL = "http://new_base.com"
+    get_lxml_schema = mocker.patch(
+        "transit_odp.timetables.utils.get_lxml_schema", return_value="mocked result!"
+    )
+    mocker.patch.object(_txc_downloader, "schema_cache", {})
+    validator = DatasetTXCValidator()
+    assert validator._schema == "mocked result!"
+    get_lxml_schema.assert_called_with(
+        "http://new_base.com/schema/2.4/TransXChange_general.xsd"
+    )
+
+
+def test_use_override_xsd(mocker, settings):
+    settings.TXC_V24_OVERRIDE = "http://test/looks/here.xsd"
+    get_lxml_schema = mocker.patch(
+        "transit_odp.timetables.utils.get_lxml_schema", return_value="mocked result!"
+    )
+    mocker.patch.object(_txc_downloader, "schema_cache", {})
+    validator = DatasetTXCValidator()
+    assert validator._schema == "mocked result!"
+    get_lxml_schema.assert_called_with("http://test/looks/here.xsd")
+
+
+def test_schema_download_default(mocker):
+    get_lxml_schema = mocker.patch(
+        "transit_odp.timetables.utils.get_lxml_schema", return_value="mocked result!"
+    )
+    mocker.patch.object(_txc_downloader, "schema_cache", {})
+    validator = DatasetTXCValidator()
+    assert validator._schema == "mocked result!"
+    get_lxml_schema.assert_called_with(
+        "http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd"
+    )

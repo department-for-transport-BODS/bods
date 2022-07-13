@@ -96,7 +96,6 @@ paths:
             example: published
             enum:
               - published
-              - error
               - inactive
 
         - name: endDateStart

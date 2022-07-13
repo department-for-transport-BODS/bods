@@ -21,6 +21,7 @@ AVL_TASKS: Final = "transit_odp.avl.tasks."
 FARES_TASKS: Final = "transit_odp.fares.tasks."
 ADMIN_TASKS: Final = "transit_odp.site_admin.tasks."
 BROWSE_TASKS: Final = "transit_odp.browse.tasks."
+PUBLISH_TASKS: Final = "transit_odp.publish.tasks."
 
 
 class CeleryAppConfig(AppConfig):
@@ -134,5 +135,14 @@ class CeleryAppConfig(AppConfig):
             "update_otc_data": {
                 "task": OTC_TASKS + "task_refresh_otc_data",
                 "schedule": crontab(minute=0, hour=2),
+            },
+            "refresh_monthly_breakdown_csv": {
+                "task": PUBLISH_TASKS
+                + "task_generate_monthly_consumer_interaction_breakdowns",
+                "schedule": crontab(minute=40),
+            },
+            "refresh_weekly_consumer_interactions_stats": {
+                "task": PUBLISH_TASKS + "task_generate_consumer_interaction_stats",
+                "schedule": crontab(minute=55),
             },
         }

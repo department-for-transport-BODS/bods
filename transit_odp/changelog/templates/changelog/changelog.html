@@ -3,84 +3,84 @@
 {% load breadcrumbs %}
 
 {% block breadcrumb.content %}
-  {# defining here otherwise root-home is shown twice #}
-  {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
-  {% breadcrumb "Changelog" %}
+    {# defining here otherwise root-home is shown twice #}
+    {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
+    {% breadcrumb "Service Changelog" %}
 {% endblock %}
 
 {% block backlink %}
 {% endblock %}
 
 {% block content %}
- <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        {% trans "Changelog" %}
-      </h1>
-      <p class="govuk-body">
-        {% trans "Last Updated: " %}{{ last_updated|date:"d/m/Y" }}
-      </p>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                {% filter force_escape %}{% trans "Service changelog" %}{% endfilter %}
+            </h1>
+            <p class="govuk-body">
+                {% trans "Last Updated: " %}{{ last_updated|date:"d/m/Y" }}
+            </p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">
+                {% trans "Need further guidance?" %}
+            </h2>
+            <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+                        {% trans 'View operator guidance' %}
+                    </a>
+                </li>
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'guidance:support-developer' host hosts.data %}">
+                        {% trans 'View developer guidance' %}
+                    </a>
+                </li>
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'contact' host hosts.root %}">
+                        {% trans 'Contact support desk' %}
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">
-      {% trans "Need further guidance?" %}
-    </h2>
-    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-      <li>
-        <a class="govuk-link"
-           href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-          {% trans 'View operator guidance' %}
-        </a>
-      </li>
-      <li>
-        <a class="govuk-link"
-           href="{% url 'guidance:support-developer' host hosts.data %}">
-          {% trans 'View developer guidance' %}
-        </a>
-      </li>
-      <li>
-        <a class="govuk-link"
-           href="{% url 'contact' host hosts.root %}">
-          {% trans 'Contact support desk' %}
-        </a>
-      </li>
-    </ul>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l">
+                {% trans "Known Issues" %}
+            </h2>
+            <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
+                {% trans "Publisher issues:" %}
+            </h3>
+            {% include 'changelog/snippets/issue_list.html' with known_issues=known_issues.publisher %}
+            <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
+                {% trans "Consumer issues:" %}
+            </h3>
+            {% include 'changelog/snippets/issue_list.html' with known_issues=known_issues.consumer %}
+        </div>
     </div>
- </div>
- <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l">
-        {% trans "Known Issues" %}
-      </h2>
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
-      {% trans "Publisher issues:" %}
-    </h3>
-     {% include 'changelog/snippets/issue_list.html' with known_issues=known_issues.publisher %}
-    <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
-      {% trans "Consumer issues:" %}
-    </h3>
-      {% include 'changelog/snippets/issue_list.html' with known_issues=known_issues.consumer %}
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l">
+                {% trans "High-level roadmap" %}
+            </h2>
+            <p class="govuk-body">
+                {{ roadmap.description }}
+            </p>
+        </div>
     </div>
-  </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l">
-        {% trans "High-level roadmap" %}
-      </h2>
-      <p class="govuk-body">
-        {{ roadmap.description }}
-      </p>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l govuk-!-margin-bottom-5">
+                {% trans "Release notes" %}
+            </h2>
+            {% include 'changelog/snippets/release_notes.html' %}
+        </div>
     </div>
-  </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l govuk-!-margin-bottom-5">
-        {% trans "Release notes" %}
-      </h2>
-      {% include 'changelog/snippets/release_notes.html' %}
-    </div>
-  </div>
 {% endblock %}

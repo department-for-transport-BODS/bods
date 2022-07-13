@@ -1,5 +1,15 @@
 import pytest
 
+from transit_odp.organisation.factories import (
+    DatasetFactory,
+    DatasetRevisionFactory,
+    DraftDatasetFactory,
+)
+from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
+from transit_odp.organisation.factories import (
+    OrganisationFactory,
+    TXCFileAttributesFactory,
+)
 from transit_odp.otc.constants import (
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -7,6 +17,7 @@ from transit_odp.otc.constants import (
 )
 from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 from transit_odp.otc.models import Licence
+from transit_odp.otc.models import Service as OTCService
 
 pytestmark = pytest.mark.django_db
 
@@ -115,3 +126,81 @@ def test_add_distinct_service_count():
     licence = licences.first()
     assert licence
     assert licence.distinct_service_count == 2
+
+
+def test_get_all_in_organisation():
+    org1 = OrganisationFactory()
+    org1_licence_number = "PD000001"
+    BODSLicenceFactory(organisation=org1, number=org1_licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    dataset2 = DatasetFactory(organisation=org1)
+    num_org1_services = 4
+    org1_service_codes = [
+        f"{org1_licence_number}:{n:03}" for n in range(num_org1_services)
+    ]
+    for code in org1_service_codes[:2]:
+        TXCFileAttributesFactory(revision__dataset=dataset1, service_code=code)
+    for code in org1_service_codes[2:]:
+        TXCFileAttributesFactory(revision__dataset=dataset2, service_code=code)
+
+    org2 = OrganisationFactory()
+    org2_licence_number = "PD000002"
+    BODSLicenceFactory(organisation=org2, number=org2_licence_number)
+    dataset3 = DatasetFactory(organisation=org2)
+    num_org2_services = 5
+    org2_service_codes = [
+        f"{org2_licence_number}:{n:03}" for n in range(num_org2_services)
+    ]
+    for code in org2_service_codes:
+        TXCFileAttributesFactory(revision__dataset=dataset3, service_code=code)
+
+    otc_lic1 = LicenceModelFactory(number=org1_licence_number)
+    for code in org1_service_codes:
+        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+    otc_lic2 = LicenceModelFactory(number=org2_licence_number)
+    for code in org2_service_codes:
+        ServiceModelFactory(licence=otc_lic2, registration_number=code)
+
+    queryset = OTCService.objects.get_all_in_organisation(org1.id).add_service_code()
+    assert queryset.count() == num_org1_services
+    otc_service_codes = [s.service_code for s in queryset]
+    assert sorted(otc_service_codes) == sorted(org1_service_codes)
+
+    queryset = OTCService.objects.get_all_in_organisation(org2.id).add_service_code()
+    assert queryset.count() == num_org2_services
+    otc_service_codes = [s.service_code for s in queryset]
+    assert sorted(otc_service_codes) == sorted(org2_service_codes)
+
+
+def test_get_missing_from_organisation():
+    total_services = 7
+    licence_number = "PD000001"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+
+    org1 = OrganisationFactory()
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision, service_code=all_service_codes[0]
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision, service_code=all_service_codes[1]
+    )
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+
+    expected_missing_service_codes = all_service_codes[2:3] + all_service_codes[4:]
+    queryset = OTCService.objects.get_missing_from_organisation(
+        org1.id
+    ).add_service_code()
+    assert queryset.count() == len(expected_missing_service_codes)
+    otc_service_codes = [s.service_code for s in queryset]
+    assert sorted(otc_service_codes) == sorted(expected_missing_service_codes)

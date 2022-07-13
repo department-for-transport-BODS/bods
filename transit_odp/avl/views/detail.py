@@ -4,7 +4,7 @@ from typing import TypedDict
 import pytz
 
 from transit_odp.avl.proxies import AVLDataset
-from transit_odp.publish.views.base import BaseDetailView
+from transit_odp.common.views import BaseDetailView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 

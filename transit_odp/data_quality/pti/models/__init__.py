@@ -53,18 +53,21 @@ class Violation(BaseModel):
     element_text: Optional[str] = None
     observation: Observation
 
-    def to_bods_csv(self):
+    def to_pandas_dict(self):
         if self.observation.reference != "0":
             ref = REF_PREFIX + self.observation.reference + REF_SUFFIX + REF_URL
         else:
             ref = GENERAL_REF
 
-        return [
-            self.filename,
-            self.line,
-            self.name,
-            self.observation.category,
-            self.observation.details.format(element_text=self.element_text),
-            ref,
-            get_important_note(),
-        ]
+        return {
+            "observation_number": self.observation.number,
+            "filename": self.filename,
+            "line": self.line,
+            "name": self.name,
+            "observation_category": self.observation.category,
+            "observation_details": self.observation.details.format(
+                element_text=self.element_text
+            ),
+            "reference": ref,
+            "note": get_important_note(),
+        }

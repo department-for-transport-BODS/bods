@@ -1,8 +1,11 @@
+from collections import namedtuple
+
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, TemplateView, UpdateView
 
 from transit_odp.common.constants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
+from transit_odp.common.view_mixins import BODSBaseView
 
 
 class ComingSoonView(TemplateView):
@@ -57,3 +60,28 @@ class CookieDetailView(TemplateView):
 
 class PrivacyPolicyView(TemplateView):
     template_name = "common/privacy.html"
+
+
+class BaseTemplateView(BODSBaseView, TemplateView):
+    pass
+
+
+class BaseDetailView(BODSBaseView, DetailView):
+    pass
+
+
+class BaseUpdateView(BODSBaseView, UpdateView):
+    pass
+
+
+Section = namedtuple("Section", ["title", "template"])
+
+
+class GuideMeBaseView(BaseTemplateView):
+    SECTIONS = None
+    template_name = "common/guide_me.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sections"] = self.SECTIONS
+        return context

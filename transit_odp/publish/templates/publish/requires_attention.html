@@ -1,0 +1,88 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+{% load render_table from django_tables2 %}
+
+{% block title_tag %}
+    {% filter force_escape %}{% trans 'Data Requiring Attention' %}{% endfilter %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+    {{ block.super }}
+    {% breadcrumb_url ancestor 'feed-list' pk1=org_id host hosts.publish %}
+    {% breadcrumb 'Data Requiring Attention' %}
+{% endblock %}
+
+{% block full_width_content %}
+    <div class="app-masthead">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row govuk-!-margin-top-5">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Data requiring attention' %}</h1>
+                    <p class="app-masthead__description">
+                        {% filter force_escape %}
+                            {% blocktrans %}
+                                We have not been able to find the below registered service codes within your published
+                                datasets. Ensure you publish data that covers all service codes registered within the OTC
+                                database.
+                            {% endblocktrans %}
+                        {% endfilter %}
+                    </p>
+                    <div class="review-banner">
+                        <div class="review-stat govuk-!-margin-bottom-0">
+                            <div>
+                                <span class="review-stat__top">{{ num_missing_services }}</span>
+                            </div>
+                            <p class="review-stat__description">{% trans 'Service codes missing from BODS' %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-top-0">
+            <form>
+                {% with description="Search for a licence number / service code / line number" placeholder="" style_border="2px solid black"%}
+                    {% include "browse/snippets/search_banner_no_masthead.html" %}
+                {% endwith %}
+            </form>
+
+            {% if not_empty %}
+                <div class="govuk-width-container">
+                    <div class="govuk-grid-column-full custom_govuk_table_border">
+                        {% render_table table %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="govuk-grid-column-two-thirds">
+                    <h2 class="govuk-heading-m">
+                        {% filter force_escape %}{% trans 'Sorry, no results found for your search' %}{% endfilter %}
+                    </h2>
+                    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break">
+                    <p class="govuk-body">
+                        <b>{% trans "Having trouble finding what you want?" %}</b>
+                    </p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>Check your spelling and try again</li>
+                        <li>User another search term</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+        <div class="govuk-grid-row govuk-!-margin-top-5">
+            <p class="govuk-body-s">
+                {% trans 'Use the link below to download and view the entire list of service codes' %}
+            </p>
+            <p class="govuk-body-s">
+                <a class="govuk-link" href={% url 'service-codes' pk1=org_id host hosts.publish %}>
+                    {% trans 'Download detailed export' %}
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

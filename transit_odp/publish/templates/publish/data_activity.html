@@ -1,0 +1,108 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+    {% filter force_escape %}{% trans 'Data activity' %}{% endfilter %}
+{% endblock %}
+
+{# Breadcrumb #}
+{% block breadcrumb %}
+    {# No breadcrumb #}
+{% endblock %}
+
+{# Backlink #}
+{% block backlink %}
+    {% url 'feed-list' pk1=pk1 host host.name as backlink_url %}
+    {% include 'snippets/backlink.html' with url=backlink_url %}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full govuk-!-margin-bottom-9">
+            <div class="govuk-!-margin-botton-6">
+                <h1 class="govuk-heading-l">
+                    {% filter force_escape %}{% trans 'Data consumer activity' %}{% endfilter %}
+                </h1>
+                <p class="govuk-body govuk-!-margin-bottom-6">
+                    {% filter force_escape %}{% trans 'The statistics on this page are generated on a fixed time interval. It is aimed to provide a snapshot of consumer activities relating to all your data (including timetables, bus location and fares).' %}{% endfilter %}
+                </p>
+            </div>
+
+            <h2 class="govuk-heading-s govuk-!-margin-top-3">
+                {% filter force_escape %}{% trans 'Number of current active subscriptions' %}{% endfilter %}
+            </h2>
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">
+                            {{ organisation.total_subscriptions }}
+                        </span>
+                        <span class="feed-stat__label govuk-!-font-size-14">
+                            {% filter force_escape %}{% trans 'Subscriptions' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="govuk-heading-s govuk-!-margin-top-4">
+                {% filter force_escape %}{% trans 'Number of total consumer interactions related to your data in the last 7 days' %}{% endfilter %}
+            </h2>
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">
+                            {{ organisation.stats.weekly_downloads }}
+                        </span>
+                        <span class="feed-stat__label govuk-!-font-size-14">
+                            {% filter force_escape %}{% trans 'Downloads' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">
+                            {{ organisation.stats.weekly_api_hits }}
+                        </span>
+                        <span class="feed-stat__label govuk-!-font-size-14">
+                            {% filter force_escape %}{% trans 'API hits' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">
+                            {{ organisation.stats.weekly_unique_consumers }}
+                        </span>
+                        <span class="feed-stat__label govuk-!-font-size-14">
+                            {% filter force_escape %}{% trans 'No. of Unique consumers using the API' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="govuk-grid-column-one-half govuk-!-margin-bottom-2">
+            <h2 class="govuk-heading-m">
+                {% filter force_escape %}{% trans 'Data consumer interactions with your data since publishing' %}{% endfilter %}
+            </h2>
+            <p class="govuk-body">
+                {% filter force_escape %}{% trans 'This will include subscription, download, search results from browsing, and API hits.' %}{% endfilter %}
+            </p>
+            <a class="govuk-link govuk-!-font-size-19" href={% url 'consumer-interactions' pk1=pk1 host hosts.publish %}>
+                {% filter force_escape %}{% trans 'Download report' %}{% endfilter %}
+            </a>
+
+            <h2 class="govuk-heading-m govuk-!-margin-top-8">
+                {% filter force_escape %}{% trans 'Data issues reported on published data' %}{% endfilter %}
+            </h2>
+            <p class="govuk-body">
+                {% filter force_escape %}{% trans 'This will provide you details of the data with issues that have been reported on and also the number of issues reported on each of them.' %}{% endfilter %}
+            </p>
+            <a class="govuk-link govuk-!-font-size-19" href={% url 'consumer-feedback' pk1=pk1 host hosts.publish %}>
+                {% filter force_escape %}{% trans 'Download report' %}{% endfilter %}
+            </a>
+        </div>
+    </div>
+{% endblock %}

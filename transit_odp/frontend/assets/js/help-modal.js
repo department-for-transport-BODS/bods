@@ -21,12 +21,12 @@ export class HelpModal {
   }
 
   onOpen() {
-    document.querySelector("body").classList.add("disable-scroll");
+    document.querySelector("html").classList.add("disable-scroll");
     this.overlay.style.display = "flex";
   }
 
   onClose() {
-    document.querySelector("body").classList.remove("disable-scroll");
+    document.querySelector("html").classList.remove("disable-scroll");
     this.overlay.style.display = "none";
   }
 }

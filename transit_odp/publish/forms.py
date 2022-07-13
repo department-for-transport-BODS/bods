@@ -465,8 +465,9 @@ class RevisionPublishFormViolations(RevisionPublishForm):
 
 
 class SelectDataTypeForm(GOVUKForm):
+    form_title = _("Choose data type")
     dataset_type = forms.ChoiceField(
-        label=_("Choose data type"),
+        label="",
         choices=[
             (1, _("Timetables")),
             (2, _("Automatic Vehicle Locations (AVL)")),
@@ -477,9 +478,17 @@ class SelectDataTypeForm(GOVUKForm):
         error_messages={"required": "Please select a data type"},
     )
     page_heading_field = "dataset_type"
+    description = _("Please choose the type of data you would like to publish.")
 
     def get_layout(self):
-        return Layout("dataset_type", CONTINUE_BUTTON)
+        return Layout(
+            HTML(
+                f'<p class="govuk-body-m '
+                f'govuk-!-margin-bottom-7">{self.description}</p>'
+            ),
+            "dataset_type",
+            CONTINUE_BUTTON,
+        )
 
 
 class EditFeedDescriptionForm(GOVUKModelForm):

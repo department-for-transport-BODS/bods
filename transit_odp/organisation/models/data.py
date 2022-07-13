@@ -1,7 +1,6 @@
 import hashlib
 import logging
 import os
-from datetime import datetime
 from typing import Optional, cast
 
 from cavl_client.rest import ApiException
@@ -28,12 +27,7 @@ from transit_odp.organisation.constants import (
     DatasetType,
     FeedStatus,
 )
-from transit_odp.organisation.managers import (
-    DatasetManager,
-    DatasetRevisionManager,
-    LiveDatasetRevisionManager,
-    OrganisationManager,
-)
+from transit_odp.organisation.managers import DatasetManager, DatasetRevisionManager
 from transit_odp.organisation.mixins import (
     DatasetPayloadMetadataMixin,
     DatasetPayloadMixin,
@@ -53,115 +47,12 @@ logger = logging.getLogger(__name__)
 models.FileField.register_lookup(Length, "length")
 
 
-class Organisation(TimeStampedModel):
-    class Meta(TimeStampedModel.Meta):
-        ordering = ("name",)
-        indexes = [models.Index(fields=["name"], name="organisation_name_idx")]
-
-    name = models.CharField(_("Name of Organisation"), max_length=255, unique=True)
-    short_name = models.CharField(_("Organisation Short Name"), max_length=255)
-    key_contact = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="key_organisation",
-        null=True,
-        blank=True,
-    )
-    is_active = models.BooleanField(
-        default=False, help_text="Whether the organisation is active or not"
-    )
-    licence_required = models.BooleanField(
-        _("Whether an organisation requires a PSV licence"), null=True, default=None
-    )
-
-    objects = OrganisationManager()
-
-    def __str__(self):
-        return f"name='{self.name}'"
-
-    @property
-    def licence_not_required(self):
-        """
-        Inverts the behaviour of licence_required if a boolean otherwise returns
-        False if licence_required is None.
-        """
-        if self.licence_required is None:
-            return False
-        elif self.licence_required:
-            return False
-        else:
-            return True
-
-    def get_latest_login_date(self) -> Optional[datetime]:
-        """
-        Returns the most recent login date.
-        """
-        dates = [user.last_login for user in self.users.all() if user.last_login]
-        if len(dates) > 0:
-            return max(dates)
-        return None
-
-    def get_status(self) -> str:
-        """
-        Returns the status of the Organisation.
-        """
-        user_count = self.users.count()
-        if self.is_active:
-            return "Active"
-        elif not self.is_active and user_count > 0:
-            return "Inactive"
-        elif not self.is_active and user_count == 0:
-            return "Pending invite"
-        else:
-            return ""
-
-    def get_invite_sent_date(self) -> Optional[datetime]:
-        """
-        Gets the earliest date that an invite was sent.
-        """
-        dates = [invite.sent for invite in self.invitation_set.all() if invite.sent]
-        if len(dates) > 0:
-            return min(dates)
-        else:
-            return None
-
-    def get_invite_accepted_date(self) -> Optional[datetime]:
-        """
-        Gets the earliest date that an invite was sent.
-        """
-        dates = [user.date_joined for user in self.users.all() if user.date_joined]
-        if len(dates) > 0:
-            return min(dates)
-        else:
-            return None
-
-
-class OperatorCode(models.Model):
-    noc = models.CharField(_("National Operator Code"), max_length=20, unique=True)
-    organisation = models.ForeignKey(
-        Organisation, on_delete=models.CASCADE, related_name="nocs"
-    )
-
-    def __str__(self):
-        return f"<OperatorCode noc='{self.noc}'>"
-
-
-class Licence(models.Model):
-    number = models.CharField(_("PSV Licence Number"), max_length=9, unique=True)
-    organisation = models.ForeignKey(
-        Organisation, on_delete=models.CASCADE, related_name="licences"
-    )
-
-    def __str__(self):
-        return f"id={self.id}, number={self.number!r}"
-
-
 class Dataset(TimeStampedModel):
     # attribute set dynamically by select_related_live_revision QS method
     _live_revision: Optional[DatasetRevisionQuerySet]
 
     organisation = models.ForeignKey(
-        Organisation,
+        "Organisation",
         on_delete=models.CASCADE,
         help_text="Bus portal organisation.",
     )
@@ -295,6 +186,14 @@ class Dataset(TimeStampedModel):
             defaults.update(kwargs)
 
         return DatasetRevision(dataset=self, name=name, **defaults)
+
+
+class DatasetSubscription(TimeStampedModel):
+    class Meta:
+        unique_together = ("dataset", "user")
+
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class DatasetRevision(
@@ -594,23 +493,6 @@ class DatasetRevision(
         self.name = f"{org_name}_{dataset_id}_{now:%Y%m%d %H:%M:%S}"
 
 
-class LiveDatasetRevision(DatasetRevision):
-    """A proxy model which returns the latest, published DatasetRevision objects"""
-
-    class Meta(DatasetRevision.Meta):
-        proxy = True
-
-    objects = LiveDatasetRevisionManager()
-
-
-class DatasetSubscription(TimeStampedModel):
-    class Meta:
-        unique_together = ("dataset", "user")
-
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
 class DatasetMetadata(models.Model):
     revision = models.OneToOneField(
         DatasetRevision, related_name="metadata", on_delete=models.CASCADE
@@ -688,3 +570,26 @@ class TXCFileAttributes(models.Model):
             line_names=[line.line_name for line in txc_file.service.lines],
             hash=txc_file.hash,
         )
+
+
+class ConsumerStats(models.Model):
+    organisation = models.OneToOneField(
+        "Organisation",
+        on_delete=models.CASCADE,
+        help_text="Operator",
+        null=False,
+        blank=False,
+        related_name="stats",
+    )
+    monthly_breakdown = models.FileField(
+        _("Monthly breakdown per dataset per day"), default=None
+    )
+    weekly_unique_consumers = models.IntegerField(
+        _("Number of unique consumers in the last 7 days"), default=0
+    )
+    weekly_downloads = models.IntegerField(
+        _("Number of direct downloads in the last 7 days"), default=0
+    )
+    weekly_api_hits = models.IntegerField(
+        _("Number of api hits in the last 7 days"), default=0
+    )

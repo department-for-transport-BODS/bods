@@ -15,6 +15,7 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.models import (
+    ConsumerFeedback,
     Dataset,
     DatasetMetadata,
     DatasetRevision,
@@ -235,3 +236,16 @@ class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
     public_use = True
     line_names = ["line1", "line2"]
     hash = factory.Sequence(lambda n: f"hash{n}")
+
+
+class ConsumerFeedbackFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ConsumerFeedback
+
+    created = factory.LazyFunction(timezone.now)
+    consumer = factory.SubFactory(
+        "transit_odp.users.factories.UserFactory", account_type=DeveloperType
+    )
+    dataset = factory.SubFactory(DatasetFactory)
+    feedback = factory.Faker("sentence", nb_words=10)
+    organisation = factory.SubFactory(OrganisationFactory)

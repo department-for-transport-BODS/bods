@@ -46,6 +46,8 @@ paths:
             minItems: 4
             maxItems: 4
             example: [51.401, 51.509, 0.01, 0.201]
+          style: form
+          explode: false
 
         - name: operatorRef
           in: query
@@ -58,6 +60,8 @@ paths:
             items:
               type: string
             example: [SCGH, SCLI, HRBT]
+          style: form
+          explode: false
 
         - name: vehicleRef
           in: query
@@ -156,6 +160,8 @@ paths:
             minItems: 4
             maxItems: 4
             example: [51.401, 51.509, 0.01, 0.201]
+          style: form
+          explode: false
 
         - name: routeId
           in: query
@@ -167,6 +173,8 @@ paths:
             items:
               type: string
             example: ["45", "26"]
+          style: form
+          explode: false
 
         - name: startTimeAfter
           in: query

@@ -1,0 +1,16 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+
+{% block help_heading %}
+    {% trans "Timetables data requiring attention" as tmsg %}{{ tmsg | force_escape }}
+{% endblock %}
+
+{% block help_content %}
+    <p class="govuk-body">
+        {% filter force_escape %}
+            {% blocktrans %}
+                Registered Service codes within the OTC database that are missing from your published timetables data are listed for your attention
+            {% endblocktrans %}
+        {% endfilter %}
+    </p>
+{% endblock %}

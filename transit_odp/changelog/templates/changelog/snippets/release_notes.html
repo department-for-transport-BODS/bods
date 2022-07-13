@@ -1,6 +1,60 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "June 2022 (1.18.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        The team has worked on a number of high-value feature updates
+        that will be available to all publishers including:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            A new 'Guide Me' section for all publishers which simplifies and puts a step
+            by step guide to how to go about publishing and maintaining data on BODS.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A new Publisher dashboard. All publishers once logged-in will now be able to
+            view all the different feature options they have on BODS and select their
+            relevant flow. A simplified ‘Review my published data’ dashboard is also now
+            available for Publisher and Agent users, where they can review the status of
+            the different operators that they are agents for.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A new ‘Data requiring attention’ section for all publishers and agents which
+            highlights to all operators the service codes which are available on the OTC
+            (Office of the Traffic Commissioner) database but have not been found in the
+            BODS data that has been uploaded by publishers. This includes a downloadable
+            CSV.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A new ‘Data consumer activity’ section showcasing the total consumer
+            interactions with the data for a given operator’s data. This is intended to
+            give the publishers a more granular idea about how their data is being
+            utilized by consumers (e.g. passenger app developers, researchers) on BODS.
+            This section includes two downloadable CSVs: one related to granular data
+            interactions with the operator’s data, and the other relates to the direct
+            feedback that has been received by operators on their published data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An additional summarised version of the PTI validation report. This
+            simplifies and gives an overview of the major errors in the data as it
+            passes through our PTI TransXChange validator.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "April 2022 (1.17.0)" %}
 </h3>
 <ul class="govuk-list govuk-list--bullet">

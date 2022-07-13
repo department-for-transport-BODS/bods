@@ -38,6 +38,7 @@ from transit_odp.pipelines.factories import (
     ChangeDataArchiveFactory,
     DatasetETLTaskResultFactory,
 )
+from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -645,6 +646,24 @@ class TestGTFSStaticDownloads:
         response = client.get(url)
         assert response.status_code == 404
         downloader_obj.download_file_by_id.assert_called_once_with("all")
+
+    @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    def test_download_gtfs_increments_resource_counter(
+        self, downloader_cls, client_factory
+    ):
+        url = reverse("gtfs-file-download", args=["all"], host=self.host)
+
+        downloader_obj = Mock()
+        downloader_cls.return_value = downloader_obj
+        gtfs_file = GTFSFile.from_id("all")
+        gtfs_file.file = io.StringIO("blahblah")
+        downloader_obj.download_file_by_id.return_value = gtfs_file
+
+        client = client_factory(host=self.host)
+        assert ResourceRequestCounter.objects.count() == 0
+        response = client.get(url)
+        assert response.status_code == 200
+        assert ResourceRequestCounter.objects.count() == 1
 
 
 class TestUserAgentMyAccountView:

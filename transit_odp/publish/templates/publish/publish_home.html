@@ -5,103 +5,81 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-  {% trans 'Publish bus open data' %}
+    {% trans 'Publish bus open data' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {% breadcrumb_url root_site.name 'home' host hosts.root %}
-  {% breadcrumb site.name %}
+    {% breadcrumb_url root_site.name 'home' host hosts.root %}
+    {% breadcrumb site.name %}
 {% endblock %}
 
 {% block full_width_content %}
-<div class="app-masthead">
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row govuk-!-margin-top-5">
-            <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-                <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Publish bus open data' %}</h1>
-                <p class="app-masthead__description">{% trans 'This service is for bus operators running commercial bus services in England, and local agents acting on behalf of bus operators.' %}</p>
-
-                <p class="app-masthead__description">{% trans 'Follow us on Twitter ' %}<a class="app-a--inverted" href="https://twitter.com/busopendata" target="_blank">{% trans '@busopendata' %}</a></p>
+    <div class="app-masthead">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row govuk-!-margin-top-5">
+                <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+                    <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Publish bus open data' %}</h1>
+                    <p class="app-masthead__description">{% filter force_escape %}{% trans 'Use this service to publish the following data:' %}{% endfilter %}</p>
+                    <ul class="app-masthead__description">
+                        <li>{% filter force_escape %}{% trans 'Bus routes and timetable' %}{% endfilter %}</li>
+                        <li>{% filter force_escape %}{% trans 'Automatic Vehicle Location (AVL)' %}{% endfilter %}</li>
+                        <li>{% filter force_escape %}{% trans 'Fares' %}{% endfilter %}</li>
+                    </ul>
+                    <a href="{{ start_view }}" role="button" draggable="false" class="govuk-button app-button--inverted govuk-!-margin-bottom-0 govuk-button--start" data-module="govuk-button">
+                        {% trans 'Publish data' %}
+                        <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+                            <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row govuk-!-margin-bottom-8">
-    <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-        <p class="govuk-body-m">
-          {% trans 'Use this service to publish the following data:' %}
-        </p>
-        <ul class="govuk-body">
-          <li>{% trans 'Bus routes and timetable' %}</li>
-          <li>{% trans 'Automatic Vehicle Location (AVL)' %}</li>
-          <li>{% trans 'Fares' %}</li>
-        </ul>
+    <div class="govuk-grid-row govuk-!-margin-bottom-8">
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+            <h2 class="govuk-heading-s">
+                <a class="govuk-link-bold" href="{% url 'guide-me' host hosts.publish %}">
+                    {% filter force_escape %}{% trans 'Guide me' %}{% endfilter %}
+                </a>
+            </h2>
+            <p class="govuk-body govuk-!-margin-bottom-7">
+                {% filter force_escape %}{% trans 'Get started publishing data to BODS and learn about the different feature and requirements.' %}{% endfilter %}
+            </p>
 
-      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+            <h2 class="govuk-heading-s">
+                <a class="govuk-link-bold" href="{{ review_page }}">
+                    {% filter force_escape %}{% trans 'Review my published data' %}{% endfilter %}
+                </a>
+            </h2>
+            <p class="govuk-body govuk-!-margin-bottom-7">
+                {% filter force_escape %}{% trans 'Review all datasets published on BODS from your account and keep track of your data health.' %}{% endfilter %}
+            </p>
 
-      <a href={{ start_view }} role="button" draggable="false"
-         class="govuk-button govuk-button--start">
-        {% trans 'Start now' %}
-        <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19"
-             viewBox="0 0 33 40" role="presentation" focusable="false">
-          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
-        </svg>
-      </a>
-
+            <h2 class="govuk-heading-s">
+                <a class="govuk-link-bold" href="{% url 'users:home' %}">
+                    {% filter force_escape %}{% trans 'Manage your account' %}{% endfilter %}
+                </a>
+            </h2>
+            <p class="govuk-body govuk-!-margin-bottom-7">
+                {% filter force_escape %}{% trans 'View or edit NOC codes, licence numbers and other information related to your account.' %}{% endfilter %}
+            </p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">
+                {% trans "Need further help?" %}
+            </h2>
+            <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'changelog' host hosts.root %}">{% filter force_escape %}{% trans 'Service changelog' %}{% endfilter %}</a>
+                </li>
+                <li>
+                    <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% filter force_escape %}{% trans 'Contact us for technical issues' %}{% endfilter %}</a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">
-        {% trans "Need further help?" %}
-      </h2>
-      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-        <li>
-          <a class="govuk-link"
-             href="{% url 'changelog' host hosts.root %}">{% trans 'Changelog' %}</a>
-        </li>
-        <li>
-           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us for technical issues' %}</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-m">{% trans 'What you need to know' %}</h2>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>
-          {% trans 'Familiarise yourself with ' %}
-          <a class="govuk-link"
-             href="{% url 'guidance:support-bus_operators' host hosts.publish %}"
-             aria-label="Bus operator requirements"
-          >{% trans 'Bus operator requirements' %}</a>
-        </li>
-        <li>
-          {% trans 'Familiarise yourself and your supplier with the ' %}
-          <a class="govuk-link"
-             target="_blank"
-             href="https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf"
-             aria-label="TxC 2.4 PTI v1.1a requirements"
-          >{% trans 'timetables data format (TxC 2.4 PTI v1.1a)' %}</a>
-        </li>
-        <li>
-          {% trans 'Read the bus open data ' %}
-          <a class="govuk-link"
-             aria-label="implementation guide (opens in new tab)"
-             href="https://www.gov.uk/government/publications/bus-open-data-implementation-guide"
-             target="_blank"
-          >{% trans 'implementation guide' %}</a>
-        </li>
-        <li>
-          {% trans 'If you are experiencing technical issues please ' %}
-          <a class="govuk-link"
-             href="{% url 'contact' host hosts.root %}"
-             aria-label="contact us"
-          >{% trans 'contact us' %}</a>
-        </li>
-      </ul>
-    </div>
-  </div>
 {% endblock %}

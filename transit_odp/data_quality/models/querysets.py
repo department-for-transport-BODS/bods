@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import CharField, F, OuterRef, Subquery
+from django.db.models import CharField, F, OuterRef, Subquery, TextField
 from django.db.models.aggregates import Min
 from django.db.models.expressions import Func, RawSQL, Value
 from django.db.models.functions.comparison import Greatest
@@ -62,7 +62,9 @@ class IncorrectNOCQuerySet(models.QuerySet):
             message=Concat(
                 "noc",
                 Value(
-                    " is specified in the dataset but not assigned to your organisation"
+                    " is specified in the dataset but not assigned to your "
+                    "organisation",
+                    output_field=TextField(),
                 ),
             )
         )
@@ -74,9 +76,9 @@ class JourneyStopInappropriateQuerySet(models.QuerySet):
 
     def add_message(self):
         message_args = (
-            Value("Includes stop "),
+            Value("Includes stop ", output_field=CharField()),
             "stop__name",
-            Value(" of type "),
+            Value(" of type ", output_field=CharField()),
             "stop__type",
         )
         return self.annotate(message=Concat(*message_args, output_field=CharField()))
@@ -193,14 +195,18 @@ class JourneyDateRangeBackwardsQuerySet(JourneyQuerySet):
             message=Concat(
                 Func(
                     F("vehicle_journey__start_time"),
-                    Value("HH24:MI"),
+                    Value("HH24:MI", output_field=CharField()),
                     function="to_char",
                 ),
-                Value(" from "),
+                Value(" from ", output_field=CharField()),
                 "first_stop_name",
-                Value(" on "),
-                Func(F("start"), Value("DD/MM/YYYY"), function="to_char"),
-                Value(" has a backwards date range"),
+                Value(" on ", output_field=CharField()),
+                Func(
+                    F("start"),
+                    Value("DD/MM/YYYY", output_field=CharField()),
+                    function="to_char",
+                ),
+                Value(" has a backwards date range", output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -215,18 +221,20 @@ class JourneyWithoutHeadsignQuerySet(JourneyQuerySet):
                 message=Concat(
                     Func(
                         F("vehicle_journey__start_time"),
-                        Value("HH24:MI"),
+                        Value("HH24:MI", output_field=CharField()),
                         function="to_char",
                     ),
-                    Value(" from "),
+                    Value(" from ", output_field=CharField()),
                     "first_stop_name",
-                    Value(" on "),
+                    Value(" on ", output_field=CharField()),
                     Func(
                         F("first_date"),
-                        Value("DD/MM/YYYY"),
+                        Value("DD/MM/YYYY", output_field=CharField()),
                         function="to_char",
                     ),
-                    Value(" is missing a destination display"),
+                    Value(
+                        " is missing a destination display", output_field=CharField()
+                    ),
                     output_field=CharField(),
                 ),
             )
@@ -237,9 +245,9 @@ class ServiceLinkMissingStopQuerySet(models.QuerySet):
     def add_message(self):
         return self.annotate(
             message=Concat(
-                Value("Might have a missing stop between "),
+                Value("Might have a missing stop between ", output_field=CharField()),
                 "service_link__from_stop__name",
-                Value(" and "),
+                Value(" and ", output_field=CharField()),
                 "service_link__to_stop__name",
                 output_field=CharField(),
             )
@@ -283,9 +291,9 @@ class SlowLinkQuerySet(TimingPatternLineQuerySet):
     def add_message(self):
         return self.annotate(
             message=Concat(
-                Value("Slow running time between "),
+                Value("Slow running time between ", output_field=CharField()),
                 "service_links__from_stop__name",
-                Value(" and "),
+                Value(" and ", output_field=CharField()),
                 "service_links__to_stop__name",
                 output_field=CharField(),
             ),
@@ -296,9 +304,9 @@ class FastLinkQuerySet(TimingPatternLineQuerySet):
     def add_message(self):
         return self.annotate(
             message=Concat(
-                Value("Fast running time between "),
+                Value("Fast running time between ", output_field=CharField()),
                 "service_links__from_stop__name",
-                Value(" and "),
+                Value(" and ", output_field=CharField()),
                 "service_links__to_stop__name",
                 output_field=CharField(),
             ),
@@ -314,18 +322,20 @@ class JourneyDuplicateQuerySet(JourneyQuerySet):
                 message=Concat(
                     Func(
                         F("vehicle_journey__start_time"),
-                        Value("HH24:MI"),
+                        Value("HH24:MI", output_field=CharField()),
                         function="to_char",
                     ),
-                    Value(" from "),
+                    Value(" from ", output_field=CharField()),
                     "first_stop_name",
-                    Value(" on "),
+                    Value(" on ", output_field=CharField()),
                     Func(
                         F("first_date"),
-                        Value("DD/MM/YYYY"),
+                        Value("DD/MM/YYYY", output_field=CharField()),
                         function="to_char",
                     ),
-                    Value(" has at least one duplicate journey"),
+                    Value(
+                        " has at least one duplicate journey", output_field=CharField()
+                    ),
                     output_field=CharField(),
                 ),
             )
@@ -367,20 +377,20 @@ class JourneyConflictQuerySet(JourneyQuerySet):
                 message=Concat(
                     Func(
                         F("vehicle_journey__start_time"),
-                        Value("HH24:MI"),
+                        Value("HH24:MI", output_field=CharField()),
                         function="to_char",
                     ),
-                    Value(" from "),
+                    Value(" from ", output_field=CharField()),
                     "first_stop_name",
-                    Value(" and "),
+                    Value(" and ", output_field=CharField()),
                     Func(
                         F("conflict__start_time"),
-                        Value("HH24:MI"),
+                        Value("HH24:MI", output_field=CharField()),
                         function="to_char",
                     ),
-                    Value(" from "),
+                    Value(" from ", output_field=CharField()),
                     "conflict_stop_name",
-                    Value(" overlaps"),
+                    Value(" overlaps", output_field=CharField()),
                     output_field=CharField(),
                 ),
             )

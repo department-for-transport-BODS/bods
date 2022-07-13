@@ -162,19 +162,7 @@ class AccountAdapter(DefaultAccountAdapter):
         # I have no idea why this is needed but for testing
         # resolve_url(url) (parent) can not resolve the "LOGIN_REDIRECT_URL"
         # using django reverse. It can when used in the browser!!!
-        host = config.hosts.PUBLISH_HOST
         try:
-            if request.host == host or request.host.name == host:
-                if request.user.is_agent_user:
-                    return reverse("select-org", host=host)
-
-                return reverse(
-                    settings.PUBLISH_SELECT_DATA_URL,
-                    host=host,
-                    kwargs={"pk1": request.user.organisation_id},
-                )
-
-            # use django_hosts reverse relative to current host
             return reverse(settings.LOGIN_REDIRECT_URL, host=request.host)
         except NoReverseMatch:
             return super().get_login_redirect_url(request)

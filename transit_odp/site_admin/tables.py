@@ -46,7 +46,7 @@ class OrganisationTable(GovUkTable):
     name = tables.Column(
         verbose_name="Name", attrs={"td": {"class": "organisation_name_cell"}}
     )
-    registration_complete = tables.Column(verbose_name="Status")
+    status = tables.Column(verbose_name="Status")
     invite_sent = tables.Column(
         verbose_name="Date invited", order_by=("registration_complete", "invite_sent")
     )
@@ -79,7 +79,7 @@ class OrganisationTable(GovUkTable):
         sequence = (
             "resend_invites",
             "name",
-            "registration_complete",
+            "status",
             "invite_sent",
             "last_active",
         )
@@ -145,17 +145,6 @@ class OrganisationTable(GovUkTable):
             link=link,
             value=value,
         )
-
-    def render_registration_complete(self, **kwargs):
-        record = kwargs["record"]
-        value = kwargs["value"]
-
-        if not value:
-            return "Pending Invite"
-        elif record.is_active:
-            return "Active"
-        else:
-            return "Inactive"
 
     def render_actions(self, **kwargs):
         record = kwargs["record"]

@@ -173,7 +173,7 @@
                         {% endblocktrans %}
                     {% endfilter %}
                     {% blocktrans with link="https://www.equalityadvisoryservice.com/"%}
-                        <a class="govuk-link" href="{{link}}">
+                        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">
                             contact the Equality Advisory and Support
                             Service (EASS).
                         </a>
@@ -208,7 +208,7 @@
                 <p class="govuk-body">
                     {% filter force_escape %}{% trans 'This website follows the' %}{% endfilter %}
                     {% blocktrans with link="https://www.w3.org/TR/WCAG21/" %}
-                        <a class="govuk-link" href="{{link}}">Web Content Accessibility Guidelines version 2.1</a>
+                        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.1</a>
                     {% endblocktrans %}
                     {% filter force_escape %}{% trans 'AA standard.' %}{% endfilter %}
                 </p>
@@ -273,7 +273,7 @@
                     <p class="govuk-body">
                         {% filter force_escape %}{% trans 'You can read the' %}{% endfilter %}
                         {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data"%}
-                            <a class="govuk-link" href="{{link}}">full accessibility test report</a>.
+                            <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">full accessibility test report</a>.
                         {% endblocktrans %}
                     </p>
                     <p class="govuk-body">{% filter force_escape %}{% trans 'Last updated 11 February 2021' %}{% endfilter %}</p>

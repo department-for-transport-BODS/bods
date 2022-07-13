@@ -10,17 +10,14 @@ from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
 
 import config.hosts
+from transit_odp.common.views import BaseDetailView, BaseTemplateView
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import (
     FeedCommentForm,
     FeedPublishCancelForm,
     FeedUploadForm,
 )
-from transit_odp.publish.views.base import (
-    BaseDetailView,
-    BaseTemplateView,
-    FeedWizardBaseView,
-)
+from transit_odp.publish.views.base import FeedWizardBaseView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 

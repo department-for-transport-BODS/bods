@@ -1,36 +1,16 @@
-{% extends 'browse/base.html' %}
-
-{% load static %}
+{% extends 'common/guide_me.html' %}
 {% load i18n %}
-{% load breadcrumbs %}
-
-{% block title_tag %}
-    {% trans 'Guide me' %}
-{% endblock %}
-
-{% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb 'Guide Me' %}
-{% endblock %}
-
-{% block heading.title.text %}
-    {% trans 'Guide me' %}
-{% endblock  %}
 
 {% block heading.subtitle %}
-    <p class="govuk-body">
-        {% blocktrans %}
-            We advise all users to review the following guidance for a
-            better Bus Open Data Service (BODS) experience.
-        {% endblocktrans %}
-    </p>
+    {{ block.super }}
+
     <p class="govuk-body">
         {% url 'download-catalogue' host hosts.data as datalogue_url %}
         {% blocktrans %}
             For a quick tour of what has been published on BODS <a class="govuk-link govuk-!-font-size-19" href="{{ datalogue_url }}">download the Data Catalogue</a>
         {% endblocktrans %}
     </p>
-{% endblock heading.subtitle %}
+{% endblock %}
 
 {% block heading.secondary %}
     <div class="govuk-grid-column-one-third">
@@ -45,7 +25,7 @@
             </li>
             <li>
                 <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
-                    {% trans 'Changelog' %}
+                    {% trans 'Service changelog' %}
                 </a>
             </li>
             <li>
@@ -61,33 +41,3 @@
         </ul>
     </div>
 {% endblock heading.secondary %}
-
-{% block content.extra %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-three-quarters">
-            <ol class="app-step-nav__steps">
-                {% for section in sections %}
-                    <li class="app-step-nav__step js-step">
-                        <div class="app-step-nav__header js-toggle-panel" data-position="{{ forloop.counter }}">
-                            <h2 class="app-step-nav__title">
-                                <span class="app-step-nav__circle app-step-nav__circle--number">
-                                    <span class="app-step-nav__circle-inner">
-                                        <span class="app-step-nav__circle-background">
-                                            <span class="govuk-visually-hidden">Step</span> {{ forloop.counter }}
-                                        </span>
-                                    </span>
-                                </span>
-                                <span class="js-step-title">
-                                    <span class="js-step-title-text">
-                                        {{ section.title }}
-                                    </span>
-                                </span>
-                            </h2>
-                        </div>
-                        {% include section.template with host=host hosts=hosts feature=feature %}
-                    </li>
-                {% endfor %}
-            </ol>
-        </div>
-    </div>
-{% endblock content.extra %}

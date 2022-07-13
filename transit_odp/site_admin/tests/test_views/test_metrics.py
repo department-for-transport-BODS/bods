@@ -10,12 +10,16 @@ from config.hosts import ADMIN_HOST
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
+    ConsumerFeedbackFactory,
+    DatasetRevisionFactory,
     LicenceFactory,
+    OrganisationFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.otc.factories import ServiceModelFactory
 from transit_odp.site_admin.tasks import task_create_operational_exports_archive
 from transit_odp.users.constants import OrgStaffType, SiteAdminType
+from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 User = get_user_model()
@@ -66,6 +70,12 @@ class TestOperationalMetricsFileView:
         AVLDatasetRevisionFactory()
         FaresMetadataFactory()
         LicenceFactory(number=service.licence.number)
+        org = OrganisationFactory(short_name="TEST CSV")
+        consumer = UserFactory()
+        revision = DatasetRevisionFactory(dataset__organisation=org)
+        ConsumerFeedbackFactory(
+            consumer=consumer, dataset=revision.dataset, organisation=org
+        )
         task_create_operational_exports_archive()
 
         expected_disposition = "attachment; filename=operationalexports.zip"
@@ -75,10 +85,36 @@ class TestOperationalMetricsFileView:
             "stats.csv",
             "agents.csv",
             "datasetpublishing.csv",
+            "feedback_report_operator_breakdown.csv",
             "organisations_data_catalogue.csv",
             "timetables_data_catalogue.csv",
             "overall_data_catalogue.csv",
             "location_data_catalogue.csv",
+        ]
+
+        response = client.get(url)
+        response_file = io.BytesIO(b"".join(response.streaming_content))
+        assert response.status_code == 200
+        assert response.get("Content-Disposition") == expected_disposition
+        with zipfile.ZipFile(response_file, "r") as zout:
+            files = [name for name in zout.namelist()]
+        assert files == expected_files
+
+    def test_site_admin_empty_dataframes(self, client_factory, user_factory):
+        client = client_factory(host=self.host)
+        user = user_factory(account_type=SiteAdminType)
+        url = reverse("operational-metrics", host=self.host)
+        client.force_login(user=user)
+        task_create_operational_exports_archive()
+
+        expected_disposition = "attachment; filename=operationalexports.zip"
+        expected_files = [
+            "publishers.csv",
+            "consumers.csv",
+            "stats.csv",
+            "agents.csv",
+            "datasetpublishing.csv",
+            "feedback_report_operator_breakdown.csv",
         ]
 
         response = client.get(url)

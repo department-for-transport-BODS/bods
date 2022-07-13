@@ -4,6 +4,7 @@ from django_hosts.resolvers import reverse
 from config.hosts import DATA_HOST
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.views.base_views import BaseListView
+from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -12,7 +13,6 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
-from transit_odp.publish.views.base import BaseDetailView
 
 
 class OperatorsView(BaseListView):

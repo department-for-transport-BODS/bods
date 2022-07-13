@@ -6,6 +6,7 @@ AWAITING_REVIEW = "Awaiting publisher review"
 COMPLIANT = "Compliant"
 NON_COMPLIANT = "Non-compliant"
 MORE_DATA_NEEDED = "Unavailable due to dormant feed"
+VALIDATION_TERMINATED = "Validation terminated"
 NEEDS_ATTENTION_STATUSES = [
     AWAITING_REVIEW,
     MORE_DATA_NEEDED,

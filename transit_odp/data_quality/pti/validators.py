@@ -7,7 +7,7 @@ from urllib.parse import unquote
 
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
-from django.db.models import Value
+from django.db.models import CharField, Value
 from django.db.models.functions import Replace
 from lxml import etree
 
@@ -430,7 +430,11 @@ class ServiceCodeValidator:
 
 def get_service_code_validator() -> Callable:
     service_codes = Service.objects.annotate(
-        service_code=Replace("registration_number", Value("/"), Value(":"))
+        service_code=Replace(
+            "registration_number",
+            Value("/", output_field=CharField()),
+            Value(":", output_field=CharField()),
+        )
     ).values_list("service_code", flat=True)
 
     validator = ServiceCodeValidator(list(service_codes))

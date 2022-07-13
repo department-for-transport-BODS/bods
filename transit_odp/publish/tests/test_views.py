@@ -1,4 +1,7 @@
+import csv
+import io
 import math
+import zipfile
 from datetime import timedelta
 
 import factory
@@ -14,22 +17,35 @@ from django_hosts.resolvers import get_host
 from freezegun import freeze_time
 
 from config.hosts import DATA_HOST, PUBLISH_HOST
+from transit_odp.common.utils import reverse_path
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.constants import INACTIVE, DatasetType, FeedStatus
+from transit_odp.organisation.csv.consumer_interactions import CSV_HEADERS
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     DatasetFactory,
     DatasetRevisionFactory,
+    DatasetSubscriptionFactory,
     DraftDatasetFactory,
+)
+from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
+from transit_odp.organisation.factories import (
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.publish.forms import FeedUploadForm
+from transit_odp.publish.tasks import task_generate_consumer_interaction_stats
 from transit_odp.publish.views.timetable.create import FeedUploadWizard
 from transit_odp.publish.views.timetable.update import FeedUpdateWizard
-from transit_odp.users.constants import AccountType
+from transit_odp.site_admin.factories import (
+    APIRequestFactory,
+    ResourceRequestCounterFactory,
+)
+from transit_odp.users.constants import AccountType, OrgAdminType, OrgStaffType
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -69,9 +85,7 @@ def test_publish_home_view_for_anonymous_user(client_factory):
     response = client.get(url, follow=True)
 
     assert response.status_code == 200
-    assert response.context.get("start_view") == reverse(
-        "account_login", host=PUBLISH_HOST
-    )
+    assert response.context.get("start_view") is None
 
 
 @pytest.mark.parametrize(
@@ -100,7 +114,9 @@ def test_publish_home_view(client_factory, account_type):
         assert response.context.get("start_view") == reverse(
             "select-data",
             host=PUBLISH_HOST,
-            kwargs={"pk1": user.organisation.id},
+            kwargs={
+                "pk1": user.organisation.id,
+            },
         )
 
 
@@ -141,9 +157,9 @@ def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
 @pytest.mark.parametrize(
     "dataset_type,expected_view, pathargs, pathkwargs",
     [
-        (DatasetType.TIMETABLE.value, "feed-list", [], {"pk1": 1}),
-        (DatasetType.AVL.value, "avl:feed-list", [], {"pk1": 1}),
-        (DatasetType.FARES.value, "fares:feed-list", [], {"pk1": 1}),
+        (DatasetType.TIMETABLE.value, "new-feed", [], {"pk1": 1}),
+        (DatasetType.AVL.value, "avl:new-feed", [], {"pk1": 1}),
+        (DatasetType.FARES.value, "fares:new-feed", [], {"pk1": 1}),
     ],
 )
 def test_publish_select_data_type_view(
@@ -167,7 +183,7 @@ def test_publish_select_data_type_view(
     "pathname,pathargs,pathkwargs",
     [
         ("feed-list", [], {"pk1": 1}),
-        ("feed-new", [], {"pk1": 1}),
+        ("new-feed", [], {"pk1": 1}),
         ("feed-detail", [], {"pk": 1, "pk1": 1}),
         ("revision-publish-success", [], {"pk": 1, "pk1": 1}),
         ("feed-update", [], {"pk": 1, "pk1": 1}),
@@ -233,6 +249,57 @@ def test_404_returned_if_feed_doesnt_belong_to_orguser(
     assert response.status_code == 404
 
 
+def test_publish_data_activity_view(client_factory):
+    host = PUBLISH_HOST
+    client = client_factory(host=host)
+    org = OrganisationFactory(id=1)
+    user = UserFactory(account_type=AccountType.agent_user.value, organisations=(org,))
+    client.force_login(user=user)
+    url = reverse("data-activity", kwargs={"pk1": org.id}, host=host)
+    response = client.get(url, follow=True)
+
+    assert response.status_code == 200
+
+
+def test_monthly_breakdown_empty(client_factory, user_factory):
+    today = now().date()
+    client = client_factory(host=PUBLISH_HOST)
+    org = OrganisationFactory()
+    user = user_factory(account_type=OrgAdminType, organisations=(org,))
+    url = reverse("consumer-interactions", args=[org.id], host=PUBLISH_HOST)
+    client.force_login(user=user)
+    expected_filename = f"Consumer_metrics_{org.name}_{today:%d%m%y}"
+    expected_disposition = f"attachment; filename={expected_filename}.zip"
+    expected_files = [
+        expected_filename + ".csv",
+        "consumermetricsoperatorbreakdown.txt",
+    ]
+
+    response = client.get(url)
+    response_file = io.BytesIO(b"".join(response.streaming_content))
+    assert response.status_code == 200
+    assert response.get("Content-Disposition") == expected_disposition
+    with zipfile.ZipFile(response_file, "r") as zout:
+        assert sorted(zout.namelist()) == expected_files
+        with zout.open(expected_filename + ".csv", "r") as fp:
+            reader = csv.reader(io.TextIOWrapper(fp, "utf-8"))
+            columns, *_ = reader
+            assert columns == CSV_HEADERS
+
+
+def test_present_monthly_breakdown_view(client_factory):
+    host = PUBLISH_HOST
+    client = client_factory(host=host)
+    org = OrganisationFactory()
+    org.stats.monthly_breakdown.save("filename", io.StringIO("this is a csv file"))
+    org.stats.save()
+    user = UserFactory(account_type=AccountType.agent_user.value, organisations=(org,))
+    client.force_login(user=user)
+    url = reverse("consumer-interactions", kwargs={"pk1": org.id}, host=host)
+    response = client.get(url)
+    assert response.status_code == 200
+
+
 class UploadFeedViewTest(TestCase):
     def setUp(self):
         # Set HTTP_HOST on client
@@ -263,7 +330,7 @@ class UploadFeedViewTest(TestCase):
         self.WIZARD_CURRENT_STEP = f"{self.WIZARD_NAME}-current_step"
         self.WIZARD_GOTO_STEP = "wizard_goto_step"
         self.WIZARD_URL = reverse(
-            "feed-new",
+            "new-feed",
             kwargs={"pk1": self.dataset_unpublished.organisation_id},
             host=PUBLISH_HOST,
         )
@@ -726,6 +793,58 @@ class TestPublishView:
             response.context_data["active_feeds_table"].rows.data._length == 3
         )  # excludes expired feeds
         assert response.context_data["tab"] == "active"  # default tab is active
+
+    def test_context_data_on_list_view(self, client_factory):
+        host = PUBLISH_HOST
+        client = client_factory(host=host)
+
+        org = OrganisationFactory.create()
+
+        live_ds = DatasetRevisionFactory(
+            dataset__organisation=org, status=FeedStatus.live.value, is_published=True
+        )
+
+        DatasetRevisionFactory(
+            dataset__organisation=org, status=FeedStatus.error.value, is_published=False
+        )
+
+        user = OrgStaffFactory(organisations=[org])
+        client.force_login(user=user)
+
+        valid_api_hits = 5
+        APIRequestFactory.create_batch(valid_api_hits, requestor=user)
+
+        valid_bulk_downloads = 3
+        ResourceRequestCounterFactory.create(
+            counter=valid_bulk_downloads,
+            requestor=user,
+            path_info=reverse_path("downloads-bulk", host=DATA_HOST),
+        )
+        valid_dataset_downloads = 2
+        ResourceRequestCounterFactory.create(
+            counter=valid_dataset_downloads,
+            requestor=user,
+            path_info=reverse_path(
+                "feed-download", kwargs={"pk": live_ds.dataset.id}, host=DATA_HOST
+            ),
+        )
+
+        valid_active_subs = 2
+        DatasetSubscriptionFactory.create_batch(
+            valid_active_subs, dataset=live_ds.dataset
+        )
+
+        url = reverse("feed-list", kwargs={"pk1": org.id}, host=host)
+        task_generate_consumer_interaction_stats()
+        response = client.get(url)
+        organisation = response.context["organisation"]
+
+        assert organisation.stats.weekly_api_hits == valid_api_hits
+        assert organisation.total_subscriptions == valid_active_subs
+        assert (
+            organisation.stats.weekly_downloads
+            == valid_bulk_downloads + valid_dataset_downloads
+        )
 
     # Skipping because active feeds shouldn't include feeds with status indexing.
     @pytest.mark.skip
@@ -1405,3 +1524,89 @@ class TestEditDraftRevisionDescriptionView:
             fished_out_feed.revisions.latest().short_description
             == data["short_description"]
         )
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_empty_search_box(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision, service_code=all_service_codes[0]
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision, service_code=all_service_codes[1]
+    )
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 4
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_field_in_search_box(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision, service_code=all_service_codes[0]
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision, service_code=all_service_codes[1]
+    )
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": "006"}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 1

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bods"
-version = "1.17.2"
+version = "1.18.0"
 description = "Bus Open Data Service"
 authors = [
         "Angus Bell <angus.bell@itoworld.com>",
@@ -21,7 +21,7 @@ clamd = "~=1.0.0"
 crispy-forms-govuk = "^0.2.0"
 decorator = "~=4.0.0"
 defusedxml = "~=0.6.0"
-django = "~=3.1.0"
+django = "~=3.2.0"
 django-allauth = "~=0.42.0"
 django-anymail = {extras = ["mailgun"], version = "~=7.1.0"}
 django-celery-beat = "~=2.2.0"
@@ -50,7 +50,7 @@ gunicorn = "~=20.0.0"
 ipython = "~=7.31.0"
 isoduration = "~=20.11.0"
 lxml = "~=4.6.0"
-notifications-python-client = "~=5.7.0"
+notifications-python-client = "~=6.3.0"
 pandas = "~=1.2.0"
 pillow = "~=8.3.0"
 psycopg2-binary = "~=2.8.0"
@@ -66,7 +66,7 @@ whitenoise = "~=5.1.0"
 cavl-client = {path = "./cavl-client", develop = true}
 
 [tool.poetry.dev-dependencies]
-black = "==21.12b0"
+black = "==22.3.0"
 coverage = "~=5.1.0"
 ddt = "~=1.4.0"
 django-debug-toolbar = "~=2.2.0"

@@ -11,6 +11,12 @@ from freezegun.api import freeze_time
 from config.hosts import PUBLISH_HOST
 from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.data_quality.models.report import PTIValidationResult
+from transit_odp.data_quality.pti.constants import (
+    REF_PREFIX,
+    REF_SUFFIX,
+    REF_URL,
+    get_important_note,
+)
 from transit_odp.data_quality.pti.factories import ViolationFactory
 from transit_odp.data_quality.pti.report import PTI_CSV_COLUMNS, UTF8
 from transit_odp.organisation.factories import (
@@ -27,6 +33,7 @@ pytestmark = pytest.mark.django_db
 def test_from_pti_violations(pti_unenforced):
     revision = DatasetRevisionFactory()
     violations = [ViolationFactory()]
+    violation = violations[0]
 
     PTIValidationResult.from_pti_violations(
         revision=revision, violations=violations
@@ -45,15 +52,21 @@ def test_from_pti_violations(pti_unenforced):
         with zf.open(expected_filename, "r") as fp:
             reader = csv.reader(TextIOWrapper(fp, UTF8))
             columns, first = reader
-            assert PTI_CSV_COLUMNS == tuple(columns)
-            for violation in violations:
-                assert [str(item) for item in violation.to_bods_csv()] == first
+            assert list(PTI_CSV_COLUMNS.values()) == columns
+            assert first[0] == violation.filename
+            assert first[1] == str(violation.line)
+            assert first[2] == violation.name
+            assert first[3] == violation.observation.category
+            assert first[4] == violation.observation.details
+            assert first[5] == REF_PREFIX + "2.4.3" + REF_SUFFIX + REF_URL
+            assert first[6] == get_important_note()
 
 
 @freeze_time("2030-12-25T12:05:05")
 def test_important_information_blank_after_pti_deadline(pti_enforced):
     revision = DatasetRevisionFactory()
     violations = [ViolationFactory()]
+    violation = violations[0]
 
     PTIValidationResult.from_pti_violations(
         revision=revision, violations=violations
@@ -69,9 +82,8 @@ def test_important_information_blank_after_pti_deadline(pti_enforced):
         with zf.open(expected_filename, "r") as fp:
             reader = csv.reader(TextIOWrapper(fp, UTF8))
             columns, _ = reader
-            assert PTI_CSV_COLUMNS == tuple(columns)
-            for violation in violations:
-                assert violation.to_bods_csv()[-1] == ""
+            assert list(PTI_CSV_COLUMNS.values()) == columns
+            assert violation.to_pandas_dict()["note"] == ""
 
 
 @freeze_time("2030-12-25T12:05:05")

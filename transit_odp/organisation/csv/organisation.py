@@ -30,19 +30,25 @@ OTC_LICENCE_FIELDS = [
 ]
 
 ORG_LICENCE_FIELDS = ["number", "organisation_id"]
-ORG_FIELDS = [
+ORG_DATASET_FIELDS = [
     "id",
-    "name",
-    "status",
+    "published_timetable_count",
+    "published_avl_count",
+]
+ORG_USER_FIELDS = [
+    "id",
     "invite_accepted",
     "invite_sent",
     "last_active",
+    "status",
+]
+ORG_FIELDS = [
+    "id",
+    "name",
     "permit_holder",
     "nocs_string",
     "licence_string",
     "number_of_licences",
-    "published_timetable_count",
-    "published_avl_count",
 ]
 
 ORG_COLUMN_MAP = OrderedDict(
@@ -300,14 +306,44 @@ def _get_service_stats() -> DataFrame:
         raise EmptyDataFrame()
 
 
+def _get_organisation_details_dataframe() -> DataFrame:
+    orgs = DataFrame.from_records(
+        Organisation.objects.values("id", "name")
+        .add_nocs_string(delimiter=";")
+        .add_licence_string(delimiter=";")
+        .add_number_of_licences()
+        .add_permit_holder()
+        .values(*ORG_FIELDS)
+    )
+
+    if orgs.empty:
+        raise EmptyDataFrame
+
+    orgs_with_datasets = DataFrame.from_records(
+        Organisation.objects.values("id")
+        .add_live_published_dataset_count_types()
+        .values(*ORG_DATASET_FIELDS)
+    )
+    orgs_with_users = DataFrame.from_records(
+        Organisation.objects.values("id")
+        .add_catalogue_status()
+        .add_invite_accepted()
+        .add_invite_sent()
+        .add_last_active()
+        .values(*ORG_USER_FIELDS)
+    )
+
+    orgs = orgs.merge(orgs_with_datasets, on="id")
+    orgs = orgs.merge(orgs_with_users, on="id")
+    return orgs
+
+
 def _get_organisation_catalogue_dataframe() -> DataFrame:
     otc_licences = DataFrame.from_records(
         OTCLicence.objects.add_data_annotations().values(*OTC_LICENCE_FIELDS)
     )
     org_licences = DataFrame.from_records(Licence.objects.values(*ORG_LICENCE_FIELDS))
-    orgs = DataFrame.from_records(
-        Organisation.objects.add_data_catalogue_fields().values(*ORG_FIELDS)
-    )
+    orgs = _get_organisation_details_dataframe()
 
     if otc_licences.empty or orgs.empty or org_licences.empty:
         raise EmptyDataFrame()

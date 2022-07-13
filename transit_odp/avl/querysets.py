@@ -26,8 +26,9 @@ from transit_odp.avl.constants import (
     PARTIALLY_COMPLIANT,
     UNDERGOING,
     UPPER_THRESHOLD,
+    VALIDATION_TERMINATED,
 )
-from transit_odp.organisation.constants import EXPIRED, INACTIVE
+from transit_odp.organisation.constants import ERROR, EXPIRED, INACTIVE
 from transit_odp.organisation.querysets import DatasetQuerySet
 
 
@@ -76,7 +77,7 @@ class AVLDatasetQuerySet(DatasetQuerySet):
                     function="SUM",
                 ),
                 weighted_avg=Case(
-                    When(total_vehicles=0, then=0),
+                    When(total_vehicles=0, then=Value(0.0, output_field=FloatField())),
                     default=ExpressionWrapper(
                         F("score_sum") / F("total_vehicles"), output_field=FloatField()
                     ),
@@ -209,6 +210,8 @@ class AVLDatasetQuerySet(DatasetQuerySet):
         """
         Adds the avl compliance level to the AVLDataset based on the following rules.
 
+        status = INACTIVE => VALIDATION_TERMINATED
+
         First 7 days:
             critical_count = 0 and non_critical_count = 0 => UNDERGOING
             critical_count > 0 or non_critical_count > 0 => AWAITING_REVIEW
@@ -231,6 +234,7 @@ class AVLDatasetQuerySet(DatasetQuerySet):
             .add_weighted_non_critical_score()
             .add_last_seven_days_vehicle_activity_count()
         )
+
         pre_7_days = Q(post_seven_days=False)
         post_7_days = Q(post_seven_days=True)
         has_errors = Q(non_critical_exists=True) | Q(critical_exists=True)
@@ -241,24 +245,39 @@ class AVLDatasetQuerySet(DatasetQuerySet):
 
         return qs.annotate(
             avl_compliance=Case(
-                When(pre_7_days & ~has_errors, then=Value(UNDERGOING)),
-                When(pre_7_days & has_errors, then=Value(AWAITING_REVIEW)),
+                When(
+                    Q(live_revision__status=INACTIVE),
+                    then=Value(VALIDATION_TERMINATED, output_field=CharField()),
+                ),
+                When(
+                    pre_7_days & ~has_errors,
+                    then=Value(UNDERGOING, output_field=CharField()),
+                ),
+                When(
+                    pre_7_days & has_errors,
+                    then=Value(AWAITING_REVIEW, output_field=CharField()),
+                ),
                 When(
                     post_7_days & Q(weekly_vehicle_journey_count=0),
-                    then=Value(MORE_DATA_NEEDED),
+                    then=Value(MORE_DATA_NEEDED, output_field=CharField()),
                 ),
                 When(
                     post_7_days & Q(under_lower_threshold=True),
-                    then=Value(NON_COMPLIANT),
-                ),
-                When(post_7_days & compliant, then=Value(COMPLIANT)),
-                When(
-                    post_7_days & ~above_critical_threshold, then=Value(NON_COMPLIANT)
+                    then=Value(NON_COMPLIANT, output_field=CharField()),
                 ),
                 When(
-                    post_7_days & partially_compliant, then=Value(PARTIALLY_COMPLIANT)
+                    post_7_days & compliant,
+                    then=Value(COMPLIANT, output_field=CharField()),
                 ),
-                default=Value(UNDERGOING),
+                When(
+                    post_7_days & ~above_critical_threshold,
+                    then=Value(NON_COMPLIANT, output_field=CharField()),
+                ),
+                When(
+                    post_7_days & partially_compliant,
+                    then=Value(PARTIALLY_COMPLIANT, output_field=CharField()),
+                ),
+                default=Value(UNDERGOING, output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -299,24 +318,35 @@ class AVLDatasetQuerySet(DatasetQuerySet):
 
         return qs.annotate(
             old_avl_compliance=Case(
-                When(pre_7_days & ~has_errors, then=Value(UNDERGOING)),
-                When(pre_7_days & has_errors, then=Value(AWAITING_REVIEW)),
+                When(
+                    pre_7_days & ~has_errors,
+                    then=Value(UNDERGOING, output_field=CharField()),
+                ),
+                When(
+                    pre_7_days & has_errors,
+                    then=Value(AWAITING_REVIEW, output_field=CharField()),
+                ),
                 When(
                     post_7_days & Q(weekly_vehicle_journey_count=0),
-                    then=Value(MORE_DATA_NEEDED),
+                    then=Value(MORE_DATA_NEEDED, output_field=CharField()),
                 ),
                 When(
                     post_7_days & Q(under_lower_threshold=True),
-                    then=Value(NON_COMPLIANT),
-                ),
-                When(post_7_days & compliant, then=Value(COMPLIANT)),
-                When(
-                    post_7_days & ~above_critical_threshold, then=Value(NON_COMPLIANT)
+                    then=Value(NON_COMPLIANT, output_field=CharField()),
                 ),
                 When(
-                    post_7_days & partially_compliant, then=Value(PARTIALLY_COMPLIANT)
+                    post_7_days & compliant,
+                    then=Value(COMPLIANT, output_field=CharField()),
                 ),
-                default=Value(UNDERGOING),
+                When(
+                    post_7_days & ~above_critical_threshold,
+                    then=Value(NON_COMPLIANT, output_field=CharField()),
+                ),
+                When(
+                    post_7_days & partially_compliant,
+                    then=Value(PARTIALLY_COMPLIANT, output_field=CharField()),
+                ),
+                default=Value(UNDERGOING, output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -347,7 +377,11 @@ class AVLDatasetQuerySet(DatasetQuerySet):
         """
         count = (
             self.add_avl_compliance_status()
-            .filter(avl_compliance__in=NEEDS_ATTENTION_STATUSES)
+            .filter(
+                Q(avl_compliance__in=NEEDS_ATTENTION_STATUSES)
+                | Q(live_revision__status=ERROR)
+            )
             .count()
         )
+
         return count

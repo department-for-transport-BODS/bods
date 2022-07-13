@@ -71,15 +71,15 @@ class PTICSV(CSVBuilder):
         qs = PTIObservation.objects.filter(revision_id=self._revision_id)
         qs = qs.annotate(note=Value(get_important_note(), output_field=CharField()))
         section_ref = Concat(
-            Value(REF_PREFIX),
+            Value(REF_PREFIX, output_field=CharField()),
             "reference",
-            Value(REF_SUFFIX),
-            Value(REF_URL),
+            Value(REF_SUFFIX, output_field=CharField()),
+            Value(REF_URL, output_field=CharField()),
             output_field=CharField(),
         )
         general_ref = Concat(
-            Value(NO_REF),
-            Value(REF_URL),
+            Value(NO_REF, output_field=CharField()),
+            Value(REF_URL, output_field=CharField()),
             output_field=CharField(),
         )
         case = Case(When(reference="0", then=general_ref), default=section_ref)

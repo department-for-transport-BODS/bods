@@ -1,85 +1,86 @@
-from django_tables2 import RequestConfig
+from django.http import HttpResponse
+from django.utils.timezone import now
+from django.views import View
+from django_tables2 import SingleTableView
 
-from transit_odp.organisation.constants import DatasetType, FeedStatus
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.constants import TimetableType
+from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
+from transit_odp.organisation.models import Organisation
+from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.tables import DatasetTable
-from transit_odp.publish.views.base import BaseTemplateView
+from transit_odp.publish.views.base import BasePublishListView
+from transit_odp.timetables.proxies import TimetableDataset
+from transit_odp.timetables.tables import RequiresAttentionTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
-class PublishView(OrgUserViewMixin, BaseTemplateView):
+class ListView(BasePublishListView):
     template_name = "publish/feed_list.html"
-    per_page = 10
+
+    dataset_type = TimetableType
+    model = TimetableDataset
+    table = DatasetTable
+
+    page_title_datatype = "timetables"
+    publish_url_name = "new-feed"
+    nav_url_name = "feed-list"
 
     def get_context_data(self, **kwargs):
-        # We want to know if tab is None, this means user hasnt clicked on tab
-        # so dont run autofocus script
-        tab = self.request.GET.get("tab")
-        section = tab or "active"
-        datasets = (
-            Dataset.objects.filter(
-                organisation=self.organisation,
-                dataset_type=DatasetType.TIMETABLE.value,
-            )
-            .select_related("organisation")
-            .select_related("live_revision")
-        )
-        exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
-        feeds_table = None
-
-        if section == "active":
-            # active feeds
-            active_feeds = (
-                datasets.add_live_data()
-                .exclude(status__in=exclude_status)
-                .add_draft_revisions()
-            )
-            feeds_table = DatasetTable(active_feeds)
-            RequestConfig(self.request, paginate={"per_page": self.per_page}).configure(
-                feeds_table
-            )
-
-        elif section == "draft":
-            # draft revisions
-            draft_revisions = datasets.add_draft_revisions().add_draft_revision_data(
-                organisation=self.organisation
-            )
-            feeds_table = DatasetTable(draft_revisions)
-            RequestConfig(self.request, paginate={"per_page": self.per_page}).configure(
-                feeds_table
-            )
-
-        elif section == "archive":
-            # archived feeds
-            archive_feeds = (
-                datasets.add_live_data()
-                .filter(status__in=exclude_status)
-                .add_draft_revisions()
-            )
-            feeds_table = DatasetTable(archive_feeds)
-            RequestConfig(self.request, paginate={"per_page": self.per_page}).configure(
-                feeds_table
-            )
         context = super().get_context_data(**kwargs)
-        context.update(
-            {
-                "organisation": self.organisation,
-                "tab": section,
-                "focus": tab,
-                "sections": (
-                    ("active", "Active"),
-                    ("draft", "Draft"),
-                    ("archive", "Inactive"),
-                ),
-                "active_feeds": datasets,
-                "active_feeds_table": feeds_table,
-                "global_feed_stats": datasets.agg_global_feed_stats(
-                    dataset_type=DatasetType.TIMETABLE.value,
-                    organisation_id=self.organisation.id,
-                ),
-                "pk1": self.kwargs["pk1"],
-                "current_url": self.request.build_absolute_uri(self.request.path),
-                "page_title": f"{self.organisation.name} timetables data sets",
-            }
-        )
+        org_id = context["pk1"]
+        context["all_service_codes"] = OTCService.objects.get_all_in_organisation(
+            org_id
+        ).count()
+        context[
+            "missing_service_codes"
+        ] = OTCService.objects.get_missing_from_organisation(org_id).count()
         return context
+
+
+class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
+    template_name = "publish/requires_attention.html"
+    model = OTCService
+    table_class = RequiresAttentionTable
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org_id = self.kwargs["pk1"]
+        context["org_id"] = org_id
+        data_owner = self.organisation.name if self.request.user.is_agent_user else "My"
+
+        context["ancestor"] = f"Review {data_owner} Timetables Data"
+        context[
+            "num_missing_services"
+        ] = OTCService.objects.get_missing_from_organisation(org_id).count()
+
+        context["not_empty"] = self.object_list.count()
+        context["q"] = self.request.GET.get("q", "").strip()
+        return context
+
+    def get_queryset(self):
+        org_id = self.kwargs["pk1"]
+        qs = OTCService.objects.get_missing_from_organisation(org_id)
+
+        keywords = self.request.GET.get("q", "").strip()
+        if keywords:
+            qs = qs.search(keywords)
+
+        return qs
+
+
+class ServiceCodeView(OrgUserViewMixin, View):
+    def get(self, *args, **kwargs):
+        self.org = Organisation.objects.get(id=kwargs["pk1"])
+        return self.render_to_response()
+
+    def render_to_response(self):
+        csv_filename = (
+            f"{now():%d%m%y}_timetables_datastatus_by_service_code_"
+            f"{self.org.name}.csv"
+        )
+        csv_export = ServiceCodesCSV(self.org.id)
+        file_ = csv_export.to_csv()
+        response = HttpResponse(file_, content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
+        return response
