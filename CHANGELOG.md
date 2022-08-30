@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Note changes prior to [0.1.0] are not documented as these changes were released internally.
 
+## [1.19.0] - 2022-08-05
+
+### Bug
+
+BODP-5397 Internal Environment: Site currently down
+
+BODP-5381 Feedback form: General UI - When the user press 'Enter' is not included in the text input counter
+
+BODP-5380 BODS Admin: Breadcrumb changes organisation when clicking on an agent user
+
+BODP-5371 DQ Report: General UI - Trying to download the DQ report file gives back an exception error
+
+BODP-5360 Resource request counter has duplicate records
+
+BODP-5359 External links should be opened in a new tab
+
+BODP-5358 KPMG Test: Timetables and Fares datasets after being deactivated are not found on any tab
+
+BODP-5357 In The Bus Operator Requirements not all the a tags have the same class: govuk-link
+
+BODP-5351 PROD Timetables DQ: Missing Stops Report directing users to incorrect report through link
+
+BODP-5330 \[Regression\] FBODS: Timetables: Difference in count between API v1 and v2
+
+BODP-5241 Duplicate BODP 5242 | AVL – For Inactive feeds on BODS, AVL API is providing the feed data in response
+
+BODP-5193 AVL terminations due to schema invalid message, sending a feed into inactive does not generate a validation report
+
+BODP-5167 \[BODS Admin\] Page not found or user taken to a wrong page when clicking on Organisation Name breadcrumb link
+
+BODP-5148 AVL Compliance validation report missing failed checks and not creating a report
+
+BODP-5083 Staging_Publisher_timetables publishing: User's dataset fails validation due to dataset containing an xml file that can't be parsed, also unable to download validation report
+
+BODP-5078 DQ services from other operators incorrectly listed in DQ report
+
+BODP-4964 \[API\] Timetables data API: Timetables_API - 'dqRag' parameter provides unexpected results
+
+### Story
+
+BODP-5418 Changelog 1.19 release note update
+
+BODP-5353 Publisher ALL - Timetables data - PTI logic validation update
+
+BODP-5313 Generic Content updates: All users
+
+BODP-5311 Publisher-Consumer: Addition of new feedback form
+
+BODP-5310 DfT Admin: addition of feedback form CSV
+
+BODP-5273 Analysis story - Data Retention - Review of Log tables which stands for clean-up
+
+### Task
+
+BODP-5419 Update default for NPTG URL
+
 ## [1.18.0] - 2022-21-06
 
 ### Bug

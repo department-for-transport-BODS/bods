@@ -1,6 +1,5 @@
 import os
 import shutil
-import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -20,11 +19,10 @@ namespace = {"naptan": ns}
 CHUNK_SIZE = 2000
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
-DISK_PATH_FOR_NPTG_ZIP = "/tmp/NPTG.zip"
 
 DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/NaptanStops/"
 DISK_PATH_FOR_NPTG_FOLDER = "/tmp/NPTG/"
-
+DISK_PATH_FOR_NPTG = "/tmp/NPTG.xml"
 
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
@@ -72,20 +70,14 @@ def get_latest_nptg():
         response = requests.get(nptg_url)
         logger.info("Writing NPTG response data to a file on disk.")
         if response.status_code == 200:
-            with open(DISK_PATH_FOR_NPTG_ZIP, "wb") as f:
+            with open(DISK_PATH_FOR_NPTG, "wb") as f:
                 for chunk in response.iter_content(CHUNK_SIZE):
                     f.write(chunk)
             logger.info("Finished NPTG writing to file on disk.")
+            xml_file_path = DISK_PATH_FOR_NPTG
 
-            # Now that we have the zip file on disk, extract zip
-            with zipfile.ZipFile(DISK_PATH_FOR_NPTG_ZIP, "r") as zip_ref:
-                zip_ref.extractall(DISK_PATH_FOR_NPTG_FOLDER)
-
-            for filename in os.listdir(DISK_PATH_FOR_NPTG_FOLDER):
-                if filename.endswith(".xml"):
-                    xml_file_path = os.path.join(DISK_PATH_FOR_NPTG_FOLDER, filename)
-    except Exception:
-        logger.info("Exception while getting NPTG data.")
+    except Exception as e:
+        logger.warning("Exception while getting NPTG data.", exc_info=e)
 
     logger.info("NPTG file successfully extracted to disk.")
     return xml_file_path
@@ -210,9 +202,9 @@ def cleanup():
     if os.path.exists(DISK_PATH_FOR_NAPTAN_FOLDER):
         logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_FOLDER}.")
         shutil.rmtree(DISK_PATH_FOR_NAPTAN_FOLDER)
-    if os.path.exists(DISK_PATH_FOR_NPTG_ZIP):
-        logger.info(f"Removing {DISK_PATH_FOR_NPTG_ZIP}.")
-        os.remove(DISK_PATH_FOR_NPTG_ZIP)
+    if os.path.exists(DISK_PATH_FOR_NPTG):
+        logger.info(f"Removing {DISK_PATH_FOR_NPTG}.")
+        os.remove(DISK_PATH_FOR_NPTG)
     if os.path.exists(DISK_PATH_FOR_NPTG_FOLDER):
         logger.info(f"Removing {DISK_PATH_FOR_NPTG_FOLDER}.")
         shutil.rmtree(DISK_PATH_FOR_NPTG_FOLDER)

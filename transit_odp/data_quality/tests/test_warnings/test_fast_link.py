@@ -7,7 +7,7 @@ from transit_odp.data_quality.factories import (
     TimingPatternStopFactory,
 )
 from transit_odp.data_quality.models import FastLinkWarning
-from transit_odp.data_quality.tests.base_warning_test import (
+from transit_odp.data_quality.tests.test_warnings.base_warning_test import (
     DetailPageBaseTest,
     ListPageBaseTest,
 )

@@ -43,6 +43,7 @@ class UserDetailView(SiteAdminViewMixin, DetailView):
                 organisation_id=self.kwargs.get("pk")
             ).first()
             context["invite"] = invite
+        context["organisation"] = Organisation.objects.get(id=self.kwargs["pk"])
 
         return context
 

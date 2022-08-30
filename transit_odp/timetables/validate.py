@@ -183,6 +183,27 @@ class TXCRevisionValidator:
         attrs.sort(key=lambda a: a.revision_number)
         return attrs
 
+    def get_live_attribute_by_service_code_and_lines(
+        self, code, lines
+    ) -> List[TXCFileAttributes]:
+        """
+        Returns TXCFileAttributes with source_code equal to code and lines_names equal
+        to lines.
+
+        List is sorted by lowest revision number to highest.
+        """
+        # "this is a temporary change" - 25/07/2022
+        filtered = []
+        draft_lines = sorted(lines)
+
+        for attrs in self.live_attributes:
+            lines_attr = sorted(attrs.line_names)
+            if attrs.service_code == code and lines_attr == draft_lines:
+                filtered.append(attrs)
+
+        filtered.sort(key=lambda a: a.revision_number)
+        return filtered
+
     def validate_creation_datetime(self) -> None:
         """
         Validates that creation_datetime remains unchanged between revisions.
@@ -225,8 +246,8 @@ class TXCRevisionValidator:
             if draft.hash in self.live_hashes:
                 continue
 
-            live_attributes = self.get_live_attribute_by_service_code(
-                draft.service_code
+            live_attributes = self.get_live_attribute_by_service_code_and_lines(
+                draft.service_code, draft.line_names
             )
             if len(live_attributes) == 0:
                 continue

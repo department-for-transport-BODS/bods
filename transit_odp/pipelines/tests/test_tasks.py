@@ -6,11 +6,7 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
-from transit_odp.pipelines.tasks import (
-    task_create_bulk_data_archive,
-    task_create_change_data_archive,
-    task_run_naptan_etl,
-)
+from transit_odp.pipelines.tasks import task_run_naptan_etl
 from transit_odp.timetables.tasks import task_dataset_etl, task_publish_revision
 from transit_odp.users.constants import AccountType
 
@@ -102,18 +98,6 @@ class TestTaskFeedIndex:
 
         # Assert
         assert mailoutbox[-1].subject == "Operator Publish Error"
-
-
-class TestTaskDataArchive:
-    def test_task_create_bulk_data_archive(self, mocker):
-        mocked = mocker.patch(f"{MUT}.bulk_data_archive")
-        task_create_bulk_data_archive()
-        mocked.run.assert_called_once_with()
-
-    def test_task_create_change_data_archive(self, mocker):
-        mocked = mocker.patch(f"{MUT}.change_data_archive")
-        task_create_change_data_archive()
-        mocked.run.assert_called_once_with()
 
 
 class TestTaskPublishRevision:

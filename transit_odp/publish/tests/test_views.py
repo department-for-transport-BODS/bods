@@ -28,6 +28,7 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
     DraftDatasetFactory,
+    FaresDatasetRevisionFactory,
 )
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
@@ -917,9 +918,19 @@ class TestPublishView:
             response.context_data["tab"] == "archive"
         )  # archived tab is passed in request
 
-    def test_consistent_pagination(self, client_factory):
+    @pytest.mark.parametrize(
+        "dataset_revision_factory, url_name",
+        [
+            (DatasetRevisionFactory, "feed-list"),
+            (AVLDatasetRevisionFactory, "avl:feed-list"),
+            (FaresDatasetRevisionFactory, "fares:feed-list"),
+        ],
+    )
+    def test_consistent_pagination(
+        self, client_factory, dataset_revision_factory, url_name
+    ):
         """
-        Upload lots AVL datasets and navigate to the list page. Then collect the
+        Upload lots of datasets and navigate to the list page. Then collect the
         dataset ids one page at a time. The ids should not be repeated or dropped and
         therefore there should be the same unique ids as datasets.
         This test protects against:
@@ -936,7 +947,7 @@ class TestPublishView:
             account_type=AccountType.org_staff.value, organisations=(org,)
         )
 
-        AVLDatasetRevisionFactory.create_batch(
+        dataset_revision_factory.create_batch(
             number_of_files,
             dataset__organisation=org,
             dataset__contact=user,
@@ -945,7 +956,7 @@ class TestPublishView:
 
         client.force_login(user=user)
         url = reverse(
-            "avl:feed-list",
+            url_name,
             args=[org.id],
             host=host,
         )

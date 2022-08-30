@@ -1,6 +1,5 @@
 import factory
 from django.contrib.gis.geos import LineString, Point
-from factory import fuzzy
 
 from transit_odp.data_quality import models
 from transit_odp.organisation.factories import DatasetRevisionFactory
@@ -44,7 +43,7 @@ class ServiceFactory(factory.DjangoModelFactory):
     # TODO: investigate -- threw error when trying to load TimingPatternStop
     # report = factory.SubFactory(DataQualityReportFactory)
     ito_id = factory.Sequence(lambda n: f"{n}")  # unique ito id
-    name = fuzzy.FuzzyText(length=50)
+    name = factory.Faker("pystr_format", string_format="???:??????????")
 
     class Meta:
         model = models.Service
@@ -97,6 +96,15 @@ class ServiceLinkFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.ServiceLink
+
+
+class ServicePatternServiceLinkFactory(factory.DjangoModelFactory):
+    service_pattern = factory.SubFactory(ServicePatternFactory)
+    service_link = factory.SubFactory(ServiceLinkFactory)
+    position = factory.Sequence(lambda n: str(n))
+
+    class Meta:
+        model = models.ServicePatternServiceLink
 
 
 class ServicePatternStopFactory(factory.DjangoModelFactory):

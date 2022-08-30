@@ -1,9 +1,7 @@
 import pytest
 
 from transit_odp.data_quality import factories, models, views
-
-# allow tests to access db
-from transit_odp.data_quality.tests.base_warning_test import (
+from transit_odp.data_quality.tests.test_warnings.base_warning_test import (
     DetailPageBaseTest,
     ListPageBaseTest,
 )
@@ -24,7 +22,7 @@ def warning():
         common_service_pattern=timing_pattern.service_pattern,
     )
 
-    return factories.SlowTimingWarningFactory.create(
+    return factories.TimingDropOffWarningFactory.create(
         timing_pattern=timing_pattern,
         # 5 of the 10 timing pattern stops should be considered "effected" by the
         # warning and stored as timings
@@ -34,38 +32,37 @@ def warning():
     )
 
 
-class TestSlowTimingListPage(ListPageBaseTest):
-    """Test Slow Timing Warnings list page"""
-
-    model = models.SlowTimingWarning
-    factory = factories.SlowTimingWarningFactory
-    view = views.SlowTimingsListView
+class TestLastStopPickUpListPage(ListPageBaseTest):
+    model = models.TimingDropOffWarning
+    factory = factories.TimingDropOffWarningFactory
+    view = views.LastStopPickUpListView
     expected_output = {
         "test_get_queryset_adds_correct_message_annotation": (
-            "There is at least one journey with "
-            "slow timing link between timing points"
+            "There is at least one journey where the last "
+            "stop is designated as pick up only"
         ),
         "test_get_table_creates_correct_column_headers": ["Line", "Timing pattern (1)"],
         "test_preamble_text": (
-            "Following timing pattern(s) have been observed to "
-            "have slow timing links."
+            "The following timing pattern(s) have been observed "
+            "to have last stop as pick up only."
         ),
     }
 
 
-class TestSlowTimingDetailPage(DetailPageBaseTest):
-    """Test Slow Timing Warnings detail page"""
-
-    model = models.SlowTimingWarning
-    factory = factories.SlowTimingWarningFactory
-    view = views.SlowTimingsDetailView
-    list_url_name = "dq:slow-timings-list"
+class TestLastStopPickUpDetailPage(DetailPageBaseTest):
+    # Naming is very, very confusing
+    model = models.TimingDropOffWarning
+    factory = factories.TimingDropOffWarningFactory
+    view = views.LastStopPickUpDetailView
+    list_url_name = "dq:last-stop-pick-up-only-list"
 
     expected_output = {
         "test_timing_pattern_table_caption": (
-            "between {first_effected_stop_name} and " "{last_effected_stop_name}"
+            "{last_effected_stop_name} is the last stop in a timing pattern but "
+            "is designated as pick up only"
         ),
         "test_subtitle_text": (
-            "Line {service_name} has slow timing between " "timing points"
+            "Line {service_name} has at least one journey "
+            "where the last stop is designated as pick up only"
         ),
     }

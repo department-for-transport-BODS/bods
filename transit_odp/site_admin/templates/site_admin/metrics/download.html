@@ -16,39 +16,39 @@
 {% endblock %}
 
 {% block content %}
-<div class="govuk-width-container">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">Download all monitoring metrics</h1>
-            <h2 class="govuk-heading-m">Publisher metrics</h2>
-            <p class="govuk-body">
-                The monitoring data is cached on the service and will be provided in csv
-                format within a compressed zip file.
-            </p>
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
-                    Download bus open data service metrics
-                </a>
-            </p>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Download all monitoring metrics</h1>
+                <h2 class="govuk-heading-m">Publisher metrics</h2>
+                <p class="govuk-body">
+                    The monitoring data is cached on the service and will be provided in CSV
+                    format within a compressed ZIP file.
+                </p>
+                <p class="govuk-body">
+                    <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
+                        Download all publisher monitoring metrics
+                    </a>
+                </p>
 
-            <h2 class="govuk-heading-m">API consumer metrics</h2>
-            <p class="govuk-body">
-                The monitoring data is cached on the service and will be provided in csv
-                format within a compressed zip file.
-            </p>
-            <div class="govuk-body">
-                <ul class="govuk-list">
-                {% for metrics_archive in object_list %}
-                    <li>
-                        <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
-                        Download API consumer metrics for {{metrics_archive.end|date:"F Y"}}
-                        </a>
-                    </li>
-                {% endfor %}
-                </ul>
+                <h2 class="govuk-heading-m">API consumer metrics</h2>
+                <p class="govuk-body">
+                    The monitoring data is cached on the service and will be provided in CSV
+                    format within a compressed ZIP file.
+                </p>
+                <div class="govuk-body">
+                    <ul class="govuk-list">
+                        {% for metrics_archive in object_list %}
+                            <li>
+                                <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
+                                    Download API consumer metrics for {{metrics_archive.end|date:"F Y"}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
             </div>
-
         </div>
     </div>
-</div>
 {% endblock %}

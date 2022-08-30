@@ -4,6 +4,10 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
+from transit_odp.browse.views.base_views import (
+    GlobalFeedbackThankYouView,
+    GlobalFeedbackView,
+)
 from transit_odp.changelog.views import ChangelogView
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
@@ -22,6 +26,19 @@ urlpatterns = [
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),
         name="contact",
+    ),
+    path(
+        "global-feedback/",
+        include(
+            [
+                path("", GlobalFeedbackView.as_view(), name="global-feedback"),
+                path(
+                    "thank-you/",
+                    GlobalFeedbackThankYouView.as_view(),
+                    name="global-feedback-success",
+                ),
+            ]
+        ),
     ),
     path("version/", VersionView.as_view(), name="version"),
     path(

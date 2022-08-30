@@ -4,180 +4,180 @@
 
 {% block extra_content %}
 
-<h1 data-qa="bus-loc-header" class="govuk-heading-l">{% trans 'Bus location data' %}</h1>
-<p class="govuk-body">
-  {% blocktrans %}
-  Bus location data is also known as Automated Vehicle Location (AVL) and gives
-  information about the bus location at that point in time. All data feeds published
-  must be in the SIRI-VM Version 2.0 or 2.0Q format.
-  {% endblocktrans %}
-</p>
+    <h1 data-qa="bus-loc-header" class="govuk-heading-l">{% trans 'Bus location data' %}</h1>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Bus location data is also known as Automated Vehicle Location (AVL) and gives
+            information about the bus location at that point in time. All data feeds published
+            must be in the SIRI-VM Version 2.0 or 2.0Q format.
+        {% endblocktrans %}
+    </p>
 
 
-<h2 data-qa="what-siri-header" class="govuk-heading-l">{% trans 'What is SIRI-VM?' %}</h2>
-<p class="govuk-body">
-  {% blocktrans %}
-  The Service Interface for Real Time Information (SIRI) specifies a European
-  interface standard for exchanging information about the planned, current or
-  projected performance of real-time public transport operations between different
-  computer systems.
-  {% endblocktrans %}
-</p>
+    <h2 data-qa="what-siri-header" class="govuk-heading-l">{% trans 'What is SIRI-VM?' %}</h2>
+    <p class="govuk-body">
+        {% blocktrans %}
+            The Service Interface for Real Time Information (SIRI) specifies a European
+            interface standard for exchanging information about the planned, current or
+            projected performance of real-time public transport operations between different
+            computer systems.
+        {% endblocktrans %}
+    </p>
 
-<p class="govuk-body">
-  {% blocktrans %}
-  SIRI-VM is specifically the vehicle monitoring service, which allows for the
-  exchange of real-time positions of public transport vehicles.
-  {% endblocktrans %}
-</p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            SIRI-VM is specifically the vehicle monitoring service, which allows for the
+            exchange of real-time positions of public transport vehicles.
+        {% endblocktrans %}
+    </p>
 
-<p class="govuk-body">
-  {% blocktrans %}
-  The service is designed to exchange vehicle monitoring information between control
-  systems, and to distribute to journey planners, alert systems and displays that
-  they would be able to process and match real-time positions based on structured
-  elements. More information can be found at:
-  <a href="http://siri.org.uk/">http://siri.org.uk/</a>
-  {% endblocktrans %}
-</p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            The service is designed to exchange vehicle monitoring information between control
+            systems, and to distribute to journey planners, alert systems and displays that
+            they would be able to process and match real-time positions based on structured
+            elements. More information can be found at:
+            <a class="govuk-link" href="http://siri.org.uk/">http://siri.org.uk/</a>
+        {% endblocktrans %}
+    </p>
 
-<h2 data-qa="how-siri-header" class="govuk-heading-l">
-  {% trans 'How can I produce SIRI-VM?' %}
-</h2>
-<p class="govuk-body">
-  {% blocktrans %}
-  Operators with electronic ticket machine (ETM), location system or real time
-  supplier should contact them to discuss their ability to provide a feed that aligns
-  with the Department for Transport SIRI-VM Profile.
-  {% endblocktrans %}
-</p>
+    <h2 data-qa="how-siri-header" class="govuk-heading-l">
+        {% trans 'How can I produce SIRI-VM?' %}
+    </h2>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Operators with electronic ticket machine (ETM), location system or real time
+            supplier should contact them to discuss their ability to provide a feed that aligns
+            with the Department for Transport SIRI-VM Profile.
+        {% endblocktrans %}
+    </p>
 
-<p class="govuk-body">
-  {% blocktrans %}
-  Operators without ETM suppliers should contact their Local Transport Authority to
-  discuss solutions, such as hardware lease agreements, and guidance they can offer.
-  {% endblocktrans %}
-</p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Operators without ETM suppliers should contact their Local Transport Authority to
+            discuss solutions, such as hardware lease agreements, and guidance they can offer.
+        {% endblocktrans %}
+    </p>
 
-<h2 data-qa="crowdedness-header" class="govuk-heading-l">
-  {% trans 'Crowdedness data' %}
-</h2>
-<p class="govuk-body">
-  {% blocktrans %}
-  Information about the crowdedness of public transport options has become a key metric in passengers and their modal
-  decisions. Passengers need to be able to assess their safety, both temporally and spatially. They need to know what time
-  of day, and which journey option is the safest. By providing clear data on crowdedness, operators can enable themselves
-  to balance safety and capacity, and enable potential passengers to modal shift safely towards local bus options.
-  Operators are expected to include this information to ensure the safety of passengers.
-  {% endblocktrans %}
-</p>
-<p class="govuk-body">
-  {% blocktrans %}
-  The fields required in SIRI-VM, and the Department for Transport SIRI VM Profile, for crowdedness data are:
-  {% endblocktrans %}
-</p>
-<p class="govuk-body">
-  {% blocktrans %}
-  <ul class="govuk-list govuk-list--bullet">
-    <li>Monitored Vehicle Journey - Progress Info - Occupancy</li>
-    <li>Monitored Vehicle Journey - Departure Boarding Activity (to be used to set to No Boarding if vehicle is full)</li>
-  </ul>
-  {% endblocktrans %}
-</p>
+    <h2 data-qa="crowdedness-header" class="govuk-heading-l">
+        {% trans 'Crowdedness data' %}
+    </h2>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Information about the crowdedness of public transport options has become a key metric in passengers and their modal
+            decisions. Passengers need to be able to assess their safety, both temporally and spatially. They need to know what time
+            of day, and which journey option is the safest. By providing clear data on crowdedness, operators can enable themselves
+            to balance safety and capacity, and enable potential passengers to modal shift safely towards local bus options.
+            Operators are expected to include this information to ensure the safety of passengers.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            The fields required in SIRI-VM, and the Department for Transport SIRI VM Profile, for crowdedness data are:
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            <ul class="govuk-list govuk-list--bullet">
+                <li>Monitored Vehicle Journey - Progress Info - Occupancy</li>
+                <li>Monitored Vehicle Journey - Departure Boarding Activity (to be used to set to No Boarding if vehicle is full)</li>
+            </ul>
+        {% endblocktrans %}
+    </p>
 
 
-<h2 data-qa="dft-profile-header" class="govuk-heading-l">
-  {% trans 'The Department for Transport SIRI VM Profile' %}
-</h2>
-<p class="govuk-body">
-  {% blocktrans %}
-  The requirement for operators of local bus services across England to openly publish their location data feeds to the Bus Open Data Service comes into effect from 07 January 2021.
-  {% endblocktrans %}
-</p>
+    <h2 data-qa="dft-profile-header" class="govuk-heading-l">
+        {% trans 'The Department for Transport SIRI VM Profile' %}
+    </h2>
+    <p class="govuk-body">
+        {% blocktrans %}
+            The requirement for operators of local bus services across England to openly publish their location data feeds to the Bus Open Data Service comes into effect from 07 January 2021.
+        {% endblocktrans %}
+    </p>
 
-<p class="govuk-body">
-  {% blocktrans %}
-  The table below gives an overview of the mandatory and optional elements included in the profile.
-  {% endblocktrans %}
-</p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            The table below gives an overview of the mandatory and optional elements included in the profile.
+        {% endblocktrans %}
+    </p>
 
-<table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">Mandatory</th>
-      <th scope="col" class="govuk-table__header">Optional</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">Bearing</td>
-      <td class="govuk-table__cell">Departure Boarding Activity</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">BlockRef</td>
-      <td class="govuk-table__cell">DestinationAimedArrivalTime</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">DestinationRef</td>
-      <td class="govuk-table__cell">DestinationName</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">DirectionRef</td>
-      <td class="govuk-table__cell">ItemIdentifier</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">LineRef</td>
-      <td class="govuk-table__cell">MonitoredCall (Departure Boarding Activity)</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">MonitoredVehicleJourney</td>
-      <td class="govuk-table__cell">Occupancy</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">OperatorRef</td>
-      <td class="govuk-table__cell">OriginAimedDepartureTime</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">OriginName</td>
-      <td class="govuk-table__cell">VehicleActivity</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">OriginRef</td>
-      <td class="govuk-table__cell">Velocity</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">ProducerRef</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">PublishedLineName</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">RecordedAtTime</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">ResponseTimestamp</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">ValidUntilTime</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">VehicleJourneyRef</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">VehicleLocation (Logitude, Latitude)</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">VehicleMonitoringDelivery (Vehicle Activity)</td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-  </tbody>
-</table>
+    <table class="govuk-table">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Mandatory</th>
+                <th scope="col" class="govuk-table__header">Optional</th>
+            </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Bearing</td>
+                <td class="govuk-table__cell">Departure Boarding Activity</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">BlockRef</td>
+                <td class="govuk-table__cell">DestinationAimedArrivalTime</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">DestinationRef</td>
+                <td class="govuk-table__cell">DestinationName</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">DirectionRef</td>
+                <td class="govuk-table__cell">ItemIdentifier</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">LineRef</td>
+                <td class="govuk-table__cell">MonitoredCall (Departure Boarding Activity)</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">MonitoredVehicleJourney</td>
+                <td class="govuk-table__cell">Occupancy</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">OperatorRef</td>
+                <td class="govuk-table__cell">OriginAimedDepartureTime</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">OriginName</td>
+                <td class="govuk-table__cell">VehicleActivity</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">OriginRef</td>
+                <td class="govuk-table__cell">Velocity</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">ProducerRef</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">PublishedLineName</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">RecordedAtTime</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">ResponseTimestamp</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">ValidUntilTime</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">VehicleJourneyRef</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">VehicleLocation (Logitude, Latitude)</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">VehicleMonitoringDelivery (Vehicle Activity)</td>
+                <td class="govuk-table__cell"></td>
+            </tr>
+        </tbody>
+    </table>
 
 {% endblock %}

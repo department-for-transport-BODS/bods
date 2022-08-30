@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.core.files.base import File
 from django.utils import timezone
 
+from transit_odp.feedback.models import Feedback
 from transit_odp.site_admin.constants import (
     ARCHIVE_CATEGORY_FILENAME,
     OperationalMetrics,
@@ -31,6 +32,7 @@ from transit_odp.site_admin.stats import (
 
 logger = logging.getLogger(__name__)
 DATA_RETENTION_POLICY_MONTHS = 3
+FEEDBACK_RETENTION_POLICY_MONTHS = 24
 
 
 @shared_task()
@@ -131,35 +133,18 @@ def task_create_operational_exports_archive():
 
 @shared_task()
 def task_delete_unwanted_data():
-    """
-    Deletes data according to BODS data retention policy in chunks to avoid hitting
-    the database too hard
-
-      |----A----------B----|
-    now                   oldest
-
-    Keep deleting data from the end Q(created__lt=B) until deleting such data violates
-    the BODS data retention policy in which case obey the policy Q(created__lt=A)
-    where A and B are the two types of boundary:
-    A - now - policy
-    B - oldest + policy
-
-    """
-    policy = relativedelta(months=DATA_RETENTION_POLICY_MONTHS)
     now = timezone.now()
-    oldest_request = APIRequest.objects.order_by("created").first()
-    if not oldest_request:
-        return
+    api_request_cutoff = now - relativedelta(months=DATA_RETENTION_POLICY_MONTHS)
 
-    oldest_request_created = oldest_request.created
-    cut_off = min(oldest_request_created + policy, now - policy)
-
-    deleted, _ = APIRequest.objects.filter(created__lt=cut_off).delete()
+    deleted, _ = APIRequest.objects.filter(created__lt=api_request_cutoff).delete()
     logger.info(f"Deleted {deleted} API request logs")
 
-    # After v1.17.2 we can change the above to simplify the code. The database should
-    # have been trimmed nicely by then.
-    cut_off = now - policy
-
-    deleted, _ = ResourceRequestCounter.objects.filter(date__lt=cut_off.date()).delete()
+    deleted, _ = ResourceRequestCounter.objects.filter(
+        date__lt=api_request_cutoff.date()
+    ).delete()
     logger.info(f"Deleted {deleted} Resource request logs")
+
+    website_feedback_policy = relativedelta(months=FEEDBACK_RETENTION_POLICY_MONTHS)
+    website_feedback_cutoff = now.date() - website_feedback_policy
+    deleted, _ = Feedback.objects.filter(date__lte=website_feedback_cutoff).delete()
+    logger.info(f"Deleted {deleted} website feedback instances")

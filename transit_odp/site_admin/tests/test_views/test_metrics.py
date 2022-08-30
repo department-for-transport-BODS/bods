@@ -8,6 +8,7 @@ from django_hosts.resolvers import reverse, reverse_host
 
 from config.hosts import ADMIN_HOST
 from transit_odp.fares.factories import FaresMetadataFactory
+from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     ConsumerFeedbackFactory,
@@ -76,6 +77,7 @@ class TestOperationalMetricsFileView:
         ConsumerFeedbackFactory(
             consumer=consumer, dataset=revision.dataset, organisation=org
         )
+        FeedbackFactory()
         task_create_operational_exports_archive()
 
         expected_disposition = "attachment; filename=operationalexports.zip"
@@ -86,6 +88,7 @@ class TestOperationalMetricsFileView:
             "agents.csv",
             "datasetpublishing.csv",
             "feedback_report_operator_breakdown.csv",
+            "websiteFeedbackResponses.csv",
             "organisations_data_catalogue.csv",
             "timetables_data_catalogue.csv",
             "overall_data_catalogue.csv",
@@ -115,6 +118,7 @@ class TestOperationalMetricsFileView:
             "agents.csv",
             "datasetpublishing.csv",
             "feedback_report_operator_breakdown.csv",
+            "websiteFeedbackResponses.csv",
         ]
 
         response = client.get(url)

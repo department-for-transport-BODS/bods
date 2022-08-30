@@ -1,7 +1,9 @@
 import pytest
 
 from transit_odp.data_quality import factories, models, views
-from transit_odp.data_quality.tests.base_warning_test import (
+
+# allow tests to access db
+from transit_odp.data_quality.tests.test_warnings.base_warning_test import (
     DetailPageBaseTest,
     ListPageBaseTest,
 )
@@ -22,7 +24,7 @@ def warning():
         common_service_pattern=timing_pattern.service_pattern,
     )
 
-    return factories.TimingLastWarningFactory.create(
+    return factories.SlowTimingWarningFactory.create(
         timing_pattern=timing_pattern,
         # 5 of the 10 timing pattern stops should be considered "effected" by the
         # warning and stored as timings
@@ -32,35 +34,38 @@ def warning():
     )
 
 
-class TestTimingLastListPage(ListPageBaseTest):
-    model = models.TimingLastWarning
-    factory = factories.TimingLastWarningFactory
-    view = views.LastStopNotTimingListView
+class TestSlowTimingListPage(ListPageBaseTest):
+    """Test Slow Timing Warnings list page"""
+
+    model = models.SlowTimingWarning
+    factory = factories.SlowTimingWarningFactory
+    view = views.SlowTimingsListView
     expected_output = {
         "test_get_queryset_adds_correct_message_annotation": (
-            "There is at least one journey where the last stop is not a timing point"
+            "There is at least one journey with "
+            "slow timing link between timing points"
         ),
         "test_get_table_creates_correct_column_headers": ["Line", "Timing pattern (1)"],
         "test_preamble_text": (
-            "Last stop in the following timing pattern(s) "
-            "have been observed to not have timing points."
+            "Following timing pattern(s) have been observed to "
+            "have slow timing links."
         ),
     }
 
 
-class TestTimingLastDetailPage(DetailPageBaseTest):
-    model = models.TimingLastWarning
-    factory = factories.TimingLastWarningFactory
-    view = views.LastStopNotTimingDetailView
-    list_url_name = "dq:last-stop-not-timing-point-list"
+class TestSlowTimingDetailPage(DetailPageBaseTest):
+    """Test Slow Timing Warnings detail page"""
+
+    model = models.SlowTimingWarning
+    factory = factories.SlowTimingWarningFactory
+    view = views.SlowTimingsDetailView
+    list_url_name = "dq:slow-timings-list"
 
     expected_output = {
         "test_timing_pattern_table_caption": (
-            "{last_effected_stop_name} is the last stop in a timing "
-            "pattern but is not designated a timing point"
+            "between {first_effected_stop_name} and " "{last_effected_stop_name}"
         ),
         "test_subtitle_text": (
-            "Line {service_name} has at least one journey where "
-            "the last stop is not a timing point"
+            "Line {service_name} has slow timing between " "timing points"
         ),
     }

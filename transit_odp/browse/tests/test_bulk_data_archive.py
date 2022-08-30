@@ -6,14 +6,14 @@ import pytest
 from django.test import override_settings
 from django.utils import timezone
 
+from transit_odp.browse.data_archive import bulk_data_archive
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
 from transit_odp.pipelines.models import BulkDataArchive
-from transit_odp.pipelines.pipelines.data_archive import bulk_data_archive
 
 pytestmark = pytest.mark.django_db
 
-mut = "transit_odp.pipelines.pipelines.data_archive.bulk_data_archive"
+mut = "transit_odp.browse.data_archive.bulk_data_archive"
 
 
 def test_get_datasets(mocker):

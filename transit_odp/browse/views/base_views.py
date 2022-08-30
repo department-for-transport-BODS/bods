@@ -4,10 +4,14 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ChoiceField
 from django.views.generic import ListView, TemplateView
+from django.views.generic.edit import CreateView
 from django_filters.constants import EMPTY_VALUES
 from django_filters.views import FilterView
+from django_hosts import reverse
 
 from transit_odp.common.view_mixins import BODSBaseView
+from transit_odp.feedback.forms import GlobalFeedbackForm
+from transit_odp.feedback.models import Feedback
 
 
 class BaseFilterView(BODSBaseView, FilterView):
@@ -98,3 +102,28 @@ class BaseSearchView(BaseFilterView):
         kwargs["q"] = self.request.GET.get("q", "")
         kwargs["ordering"] = self.request.GET.get("ordering", "name")
         return kwargs
+
+
+class GlobalFeedbackView(CreateView):
+    template_name = "pages/feedback.html"
+    form_class = GlobalFeedbackForm
+    model = Feedback
+
+    def get_success_url(self):
+        return reverse(
+            "global-feedback-success",
+        )
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["url"] = self.request.GET.get("url", "")
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["hide_global_feedback"] = True
+        return context
+
+
+class GlobalFeedbackThankYouView(TemplateView):
+    template_name = "pages/thank_you_page.html"

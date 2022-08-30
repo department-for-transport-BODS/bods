@@ -4,18 +4,18 @@
 {% load i18n %}
 
 {% block extra_content %}
-  <h1 data-qa="local-authority-header" class="govuk-heading-l">
-    {% trans 'Providing data for Local Authority operated buses' %}
-  </h1>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Bus operators owned or managed by Local Authorities must comply with the new
-    legal requirements to publish open data - please see our
-    {% endblocktrans %}
+    <h1 data-qa="local-authority-header" class="govuk-heading-l">
+        {% trans 'Providing data for Local Authority operated buses' %}
+    </h1>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Bus operators owned or managed by Local Authorities must comply with the new
+            legal requirements to publish open data - please see our
+        {% endblocktrans %}
 
-    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-      operator requirements.
-    </a>
-  </p>
+        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+            operator requirements.
+        </a>
+    </p>
 
 {% endblock %}

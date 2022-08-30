@@ -5,6 +5,7 @@ from django.utils import timezone
 from factory import (
     DjangoModelFactory,
     Faker,
+    LazyAttributeSequence,
     SubFactory,
     lazy_attribute,
     post_generation,
@@ -29,7 +30,9 @@ class UserFactory(DjangoModelFactory):
         django_get_or_create = ["username"]
 
     username = Faker("user_name")
-    email = Faker("email")
+    email = LazyAttributeSequence(
+        lambda obj, n: f"{obj.first_name}.{obj.last_name}{n}@example.com"
+    )
     account_type = DeveloperType
     first_name = Faker("first_name")
     last_name = Faker("last_name")

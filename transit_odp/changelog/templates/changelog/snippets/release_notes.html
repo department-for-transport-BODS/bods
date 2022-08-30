@@ -1,6 +1,57 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "August 2022 (1.19.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        The team has worked on a number of high-value updates that
+        will be available to everyone including:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An addition of a feedback page wherein any user can give
+            a rating and a feedback on the user experience of the web
+            pages on BODS. The feedback in turn can be accessed readily
+            by DfT admin users. This will enable our team to
+            continuously improve the BODS website experience. (Note
+            that this is different from the feedback function on
+            specific data sets/feeds on BODS).
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A small update to the PTI logic of BODS where the as is
+            functionality is: Review all files in new zip with same
+            service code that have changed (hash
+            of file changes) &rarr; Identify highest revision number from
+            previous zip for that service code &rarr; Fail any amended
+            files in new zip that do not have a higher revision number
+            than highest from previous zip. This will be changed to
+            the new updated PTI logic which will be: Review all files
+            in new zip with same service code/line combination that
+            have changed (hash of file changes) &rarr;
+            Identify highest revision number from previous zip for
+            that service code/line combination &rarr; Fail all new or
+            amended files in new zip (with that service code/line
+            combination) that
+            do not have a higher revision number than highest from
+            previous zip.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Some generic content updates to the entire website (in
+            particular the guidance section) along with a few other
+            high priority bugs (and some back-end updates) to
+            improve the overall performance of the service.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "June 2022 (1.18.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

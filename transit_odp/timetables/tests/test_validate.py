@@ -137,6 +137,77 @@ def test_revision_get_by_service_code_non_unique():
     assert expected == actual
 
 
+def test_revision_get_by_service_code_and_lines():
+    """
+    GIVEN a DatasetRevision with two TXCFileAttributes with the same service_code and
+    lines.
+    WHEN `get_live_attribute_by_service_code` is called.
+    THEN a list of TXCFileAttributes are returned ordered in ascending order by
+    revision_number
+    """
+    revision = DatasetRevisionFactory(upload_file=None)
+    service_code = "ABC"
+    lines = ["1", "2"]
+    t1 = TXCFileAttributesFactory(
+        revision=revision,
+        service_code=service_code,
+        revision_number=0,
+        line_names=lines,
+    )
+    t2 = TXCFileAttributesFactory(
+        revision=revision,
+        service_code=service_code,
+        revision_number=2,
+        line_names=lines,
+    )
+
+    TXCFileAttributesFactory(
+        revision=revision,
+        service_code=service_code,
+        revision_number=2,
+    )
+
+    validator = TXCRevisionValidator(revision)
+    expected = [t1, t2]
+    actual = validator.get_live_attribute_by_service_code_and_lines(service_code, lines)
+    assert expected == actual
+
+
+def test_filter_by_service_code_and_lines_matches_lines_in_any_order():
+    """
+    GIVEN a DatasetRevision with two TXCFileAttributes with the same service_code and
+    lines that are not in order.
+    WHEN `get_live_attribute_by_service_code` is called.
+    THEN a list of TXCFileAttributes are returned ordered in ascending order by
+    revision_number
+    """
+    revision = DatasetRevisionFactory(upload_file=None)
+    service_code = "ABC"
+    t1 = TXCFileAttributesFactory(
+        revision=revision,
+        service_code=service_code,
+        revision_number=0,
+        line_names=["1", "2"],
+    )
+    t2 = TXCFileAttributesFactory(
+        revision=revision,
+        service_code=service_code,
+        revision_number=2,
+        line_names=["2", "1"],
+    )
+
+    validator = TXCRevisionValidator(revision)
+    expected = [t1, t2]
+    actual = validator.get_live_attribute_by_service_code_and_lines(
+        service_code, t1.line_names
+    )
+    assert expected == actual
+    actual = validator.get_live_attribute_by_service_code_and_lines(
+        service_code, t2.line_names
+    )
+    assert expected == actual
+
+
 @pytest.mark.parametrize(
     ("live_number", "draft_number", "modification_datetime_changed", "violation_count"),
     [
@@ -194,6 +265,80 @@ def test_revision_number_violation(
         service_code=service_code,
         revision_number=draft_number,
         modification_datetime=draft_modification_datetime,
+    )
+
+    validator = TXCRevisionValidator(
+        TimetableDatasetRevision.objects.get(id=draft_revision.id)
+    )
+    validator._live_hashes = list(
+        live_revision.txc_file_attributes.values_list("hash", flat=True)
+    )
+    validator.validate_revision_number()
+    assert len(validator.violations) == violation_count
+
+
+@pytest.mark.parametrize(
+    (
+        "live_number",
+        "draft_number",
+        "live_lines",
+        "draft_lines",
+        "violation_count",
+    ),
+    [
+        (0, 1, ["line1", "line2"], ["line1", "line2"], 0),
+        (2, 2, ["line1", "line2"], ["line1", "line2"], 1),
+        (2, 3, ["line1", "line2"], ["line2", "line1"], 0),
+        (2, 1, ["line1", "line2"], ["line1", "line2"], 1),
+        (2, 1, ["line1", "line2"], ["line2", "line1"], 1),
+        (1, 2, ["34"], ["34"], 0),
+        (1, 1, ["33"], ["34"], 0),
+    ],
+)
+def test_revision_number_service_and_line_violation(
+    live_number, draft_number, live_lines, draft_lines, violation_count
+):
+    """
+    Given a Dataset with live revision and a draft revision
+
+    When the lines match and revision_number has been decremented
+    Then a violation is generated
+
+    When the lines dont match and revision_number has been decremented
+    Then a violation is not generated
+
+    When the lines match and revision_number has been incremented
+    Then a violation is not generated
+
+    """
+    dataset = DatasetFactory()
+    live_revision = DatasetRevisionFactory(
+        dataset=dataset, upload_file=None, is_published=True
+    )
+    draft_revision = DatasetRevisionFactory(
+        dataset=dataset, upload_file=None, is_published=False
+    )
+    dataset.live_revision = live_revision
+    dataset.save()
+
+    now = timezone.now()
+    live_modification_datetime = now - timedelta(days=1)
+    draft_modification_datetime = now
+
+    service_code = "ABC"
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=service_code,
+        revision_number=live_number,
+        line_names=live_lines,
+        modification_datetime=live_modification_datetime,
+    )
+    TXCFileAttributesFactory(
+        revision=draft_revision,
+        service_code=service_code,
+        revision_number=draft_number,
+        modification_datetime=draft_modification_datetime,
+        line_names=draft_lines,
     )
 
     validator = TXCRevisionValidator(

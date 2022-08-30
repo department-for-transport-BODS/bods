@@ -6,12 +6,9 @@ from django.core.files import File
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
+from transit_odp.browse.data_archive.bulk_data_archive import get_datasets, zip_datasets
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.pipelines.models import ChangeDataArchive
-from transit_odp.pipelines.pipelines.data_archive.bulk_data_archive import (
-    get_datasets,
-    zip_datasets,
-)
 
 logger = get_task_logger(__name__)
 

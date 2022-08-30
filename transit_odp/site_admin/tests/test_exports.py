@@ -1,7 +1,7 @@
 import csv
 import io
 import zipfile
-from datetime import timedelta
+from datetime import date, timedelta
 
 import pytest
 from django.utils import timezone
@@ -11,6 +11,8 @@ from config.hosts import DATA_HOST
 from transit_odp.browse.exports import get_feed_status
 from transit_odp.common.utils import reverse_path
 from transit_odp.common.utils.cast import to_int_or_value
+from transit_odp.feedback.factories import FeedbackFactory
+from transit_odp.feedback.models import SatisfactionRating
 from transit_odp.organisation.constants import DatasetType, FaresType, TimetableType
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
@@ -29,6 +31,7 @@ from transit_odp.site_admin.exports import (
     OperationalStatsCSV,
     PublisherCSV,
     RawConsumerRequestCSV,
+    WebsiteFeedbackCSV,
     create_metrics_archive,
     pretty_account_name,
 )
@@ -433,16 +436,16 @@ class TestDailyConsumerRequestCSV:
     def test_download_requests_from_multiple_users(self):
         ResourceRequestCounterFactory(requestor=None, counter=10)
         consumer1 = UserFactory()
-        ResourceRequestCounterFactory.create_batch(5, requestor=consumer1)
+        ResourceRequestCounterFactory(counter=5, requestor=consumer1)
 
         consumer2 = UserFactory()
-        ResourceRequestCounterFactory.create_batch(
-            3, requestor=consumer2, path_info="/fares/download/bulk_archive"
+        ResourceRequestCounterFactory(
+            counter=3, requestor=consumer2, path_info="/fares/download/bulk_archive"
         )
 
         yesterday = timezone.now() - timedelta(days=1)
-        ResourceRequestCounterFactory.create_batch(
-            4,
+        ResourceRequestCounterFactory(
+            counter=4,
             requestor=consumer2,
             date=yesterday.date(),
             path_info="/avl/download/bulk_archive",
@@ -581,3 +584,33 @@ class TestAPIRequestArchive:
         assert archive_qs.count() == 2
         for archive in archive_qs:
             assert self.count_entries_in_csv(archive.archive) == 1
+
+
+class TestWebsiteFeedbackCSV:
+    @freeze_time("2022-02-01")
+    def test_website_feedback_to_string(self):
+        num_rows = 3
+        for i in range(num_rows):
+            FeedbackFactory(date=date.today() - timedelta(days=i))
+
+        feedback_csv = WebsiteFeedbackCSV()
+        actual = feedback_csv.to_string()
+        csvfile = io.StringIO(actual)
+        reader = csv.reader(csvfile.getvalue().splitlines())
+        lines = list(reader)
+        assert len(lines) == num_rows + 1
+
+        header = lines[0]
+        assert header == [
+            "Date",
+            "Rating",
+            "Page URL",
+            "Comments",
+        ]
+        assert lines[1][0] == "30-Jan-22"
+        assert lines[2][0] == "31-Jan-22"
+        assert lines[3][0] == "01-Feb-22"
+
+        ratings = [s.label for s in SatisfactionRating]
+        for i in range(1, num_rows + 1):
+            assert lines[i][1] in ratings

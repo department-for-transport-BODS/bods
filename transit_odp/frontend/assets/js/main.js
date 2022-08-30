@@ -19,6 +19,7 @@ import { initMap } from "./feed-detail-map";
 import { initTimeoutWarning } from "./timeout-warning";
 import { initWarningDetailMap } from "./data-quality-detail-map";
 import { refresh } from "./dqs-review-panel";
+import { CounterCharactersInTextBox } from "./counter-characters-text-box";
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
@@ -33,6 +34,7 @@ window.CrispyFormsGovUK = CrispyFormsGovUK;
 export {
   APIService,
   AutoCompleteSearch,
+  CounterCharactersInTextBox,
   DisableInputs,
   LicenceCheckbox,
   MyAccountMenu,

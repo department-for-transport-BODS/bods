@@ -15,6 +15,12 @@ from freezegun import freeze_time
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import AVLValidationReportFactory
 from transit_odp.browse.tasks import task_create_data_catalogue_archive
+from transit_odp.browse.tests.comments_test import (
+    DATA_LONG_MAXLENGTH_WITH_CARRIAGE_RETURN,
+    DATA_LONGER_THAN_MAXLENGTH,
+    DATA_LONGER_THAN_MAXLENGTH_WITH_CARRIAGE_RETURN,
+    DATA_SHORTER_MAXLENGTH_WITH_CARRIAGE_RETURN,
+)
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
@@ -24,6 +30,7 @@ from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.fares.factories import FaresMetadataFactory
+from transit_odp.feedback.models import Feedback
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.factories import (
@@ -902,3 +909,89 @@ class TestOperatorDetailView:
             f"?{noc_query_param}&{token_query_param}"
         )
         assert context["fares_feed_url"] == fares_url
+
+
+class TestGlobalFeedbackView:
+    view_name = "global-feedback"
+    feedback_message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+
+    def test_global_feedback_form_fake_page_url(self, client):
+        feedback_url = reverse(self.view_name)
+        previous_url = "http://previous.url.bods/"
+        response = client.post(
+            feedback_url + "?url=" + previous_url,
+            data={
+                "page_url": "FAKE_URL",
+                "satisfaction_rating": 3,
+                "comment": self.feedback_message,
+                "submit": "submit",
+            },
+            follow=True,
+        )
+
+        feedback = Feedback.objects.last()
+
+        assert response.status_code == 200
+        assert (
+            response.context_data["view"].template_name == "pages/thank_you_page.html"
+        )
+        assert feedback.comment == self.feedback_message
+        assert feedback.satisfaction_rating == 3
+        assert feedback.page_url == previous_url
+
+    def len_comment_number_carriage(self, comment: str) -> int:
+        return len(comment.replace("\r", ""))
+
+    @pytest.mark.parametrize(
+        "comment",
+        [
+            DATA_SHORTER_MAXLENGTH_WITH_CARRIAGE_RETURN,
+            DATA_LONG_MAXLENGTH_WITH_CARRIAGE_RETURN,
+        ],
+    )
+    def test_global_feedback(self, comment, client):
+        feedback_url = reverse(self.view_name)
+        previous_url = "http://previous.url.bods/"
+        response = client.post(
+            feedback_url + "?url=" + previous_url,
+            data={
+                "page_url": previous_url,
+                "satisfaction_rating": 5,
+                "comment": comment,
+                "submit": "submit",
+            },
+            follow=True,
+        )
+
+        feedback = Feedback.objects.last()
+        len_comment = self.len_comment_number_carriage(comment)
+
+        assert response.status_code == 200
+        assert len(feedback.comment) == len_comment
+        assert feedback.satisfaction_rating == 5
+        assert feedback.page_url == previous_url
+
+    @pytest.mark.parametrize(
+        "comment",
+        [
+            DATA_LONGER_THAN_MAXLENGTH_WITH_CARRIAGE_RETURN,
+            DATA_LONGER_THAN_MAXLENGTH,
+        ],
+    )
+    def test_global_feedback_fail(self, comment, client):
+        feedback_url = reverse(self.view_name)
+        previous_url = "http://previous.url.bods/"
+        client.post(
+            feedback_url + "?url=" + previous_url,
+            data={
+                "page_url": previous_url,
+                "satisfaction_rating": 5,
+                "comment": comment,
+                "submit": "submit",
+            },
+            follow=True,
+        )
+
+        feedback = Feedback.objects.last()
+
+        assert feedback is None

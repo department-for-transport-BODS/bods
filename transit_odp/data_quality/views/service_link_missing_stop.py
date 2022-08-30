@@ -20,7 +20,13 @@ class ServiceLinkMissingStopListView(TimingPatternsListBaseView):
     table_class = TimingPatternListTable
 
     def get_queryset(self):
-        qs = super().get_queryset().add_line().add_message().distinct("id")
+        qs = (
+            super()
+            .get_queryset()
+            .add_line(self.kwargs["report_id"])
+            .add_message()
+            .distinct("id")
+        )
         return qs
 
     def get_context_data(self, **kwargs):

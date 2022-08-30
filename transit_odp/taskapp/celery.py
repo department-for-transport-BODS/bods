@@ -69,13 +69,13 @@ class CeleryAppConfig(AppConfig):
             # scheduled 1 hour after task_set_expired_feeds to ensure archive
             # excluded newly expired datasets
             "create_bulk_data_archive": {
-                "task": PIPELINE_TASKS + "task_create_bulk_data_archive",
+                "task": BROWSE_TASKS + "task_create_bulk_data_archive",
                 "schedule": crontab(minute=0, hour=6),
             },
             # scheduled 1 hour after task_set_expired_feeds to ensure archive
             # excluded newly expired datasets
             "create_change_data_archive": {
-                "task": PIPELINE_TASKS + "task_create_change_data_archive",
+                "task": BROWSE_TASKS + "task_create_change_data_archive",
                 "schedule": crontab(minute=0, hour=6),
             },
             # scheduled at 1am and this task should be the first that runs

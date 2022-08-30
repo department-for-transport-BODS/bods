@@ -6,9 +6,9 @@ import pytest
 from django.utils import timezone
 from freezegun import freeze_time
 
+from transit_odp.browse.data_archive import change_data_archive
 from transit_odp.organisation.factories import DatasetFactory
 from transit_odp.pipelines.models import ChangeDataArchive
-from transit_odp.pipelines.pipelines.data_archive import change_data_archive
 
 pytestmark = pytest.mark.django_db
 

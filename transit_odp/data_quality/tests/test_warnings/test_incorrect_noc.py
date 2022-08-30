@@ -1,7 +1,7 @@
 import pytest
 
 from transit_odp.data_quality import factories, models, views
-from transit_odp.data_quality.tests.base_warning_test import (
+from transit_odp.data_quality.tests.test_warnings.base_warning_test import (
     ListPageBaseTest,
     get_initialised_view,
 )

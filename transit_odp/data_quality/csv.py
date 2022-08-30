@@ -39,7 +39,7 @@ class ObservationCSV:
         )
 
         if hasattr(qs, "add_line"):
-            qs = qs.add_line()
+            qs = qs.add_line(self._report_id)
         else:
             qs = qs.annotate(line=Value("", output_field=CharField()))
 

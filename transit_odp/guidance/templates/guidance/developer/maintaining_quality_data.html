@@ -50,7 +50,7 @@
             that would adversely impact the passenger experience, if
             unaddressed. The full list of checks can be found
         {% endblocktrans %}
-        <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-definitions' host hosts.publish %}" target="_blank">{% trans 'here' %}</a>.
+        <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-definitions' host hosts.publish %}">{% trans 'here' %}</a>.
     </p>
 
     <p class="govuk-body">
@@ -61,7 +61,7 @@
             Catalogue, and the API). The mechanism which the BODS algorithm
             uses to generate a data quality score can be found
         {% endblocktrans %}
-        <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-score-description' host hosts.publish %}" target="_blank">{% trans 'here' %}</a>.
+        <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-score-description' host hosts.publish %}">{% trans 'here' %}</a>.
     </p>
 
     <h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Fares data' %}</h2>
@@ -74,10 +74,11 @@
                 Open data site very soon. Please
             {% endblocktrans %}
         {% endfilter %}
-        <a class="govuk-link dont-break-out"
-            href="{% url 'contact' %}"
-            target="_blank"
-            rel="noopener noreferrer">{% filter force_escape %}{% trans 'contact us' %}{% endfilter %}</a>
+        <a class="govuk-link dont-break-out" href="{% url 'contact' %}">
+            {% filter force_escape %}
+                {% trans 'contact us' %}
+            {% endfilter %}
+        </a>
         {% filter force_escape %}
             {% blocktrans %}
                 for any further queries on this.

@@ -5,46 +5,46 @@
 {% load breadcrumbs %}
 
 {% block page %}
-  {% block header %}
-    {% include "header.html" %}
-  {% endblock %}
+    {% block header %}
+        {% include "header.html" %}
+    {% endblock %}
 
-  <main id="main-content" role="main">
-      <div class="govuk-width-container">
-          {% include "banner.html" %}
+    <main id="main-content" role="main">
+        <div class="govuk-width-container">
+            {% include "banner.html" with current_host=request.get_host current_path=request.get_full_path|urlencode %}
 
-      {% block breadcrumb %}
-        <div class="govuk-breadcrumbs">
-          <ol class="govuk-breadcrumbs__list">
-              {% block breadcrumb.content %}
-                  {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
-                  {% if host.name == 'admin' %}
-                    {% breadcrumb_url 'BODS admin home' 'home' host host.name %}
-                  {% else %}
-                    {% breadcrumb_url site.name 'home' host host.name %}
-                  {% endif %}
-              {% endblock %}
-          </ol>
-        </div>
-      {% endblock %}
-
-      {% block backlink %}
-      {% endblock %}
-
-      </div>
-      {% block full_width_content %}
-      {% endblock %}
-
-      <div class="govuk-width-container">
-        <div class="govuk-main-wrapper app-main-class">
-            {% include 'snippets/timeout_warning_modal.html' %}
-            {% block content %}
+            {% block breadcrumb %}
+                <div class="govuk-breadcrumbs">
+                    <ol class="govuk-breadcrumbs__list">
+                        {% block breadcrumb.content %}
+                            {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
+                            {% if host.name == 'admin' %}
+                                {% breadcrumb_url 'BODS admin home' 'home' host host.name %}
+                            {% else %}
+                                {% breadcrumb_url site.name 'home' host host.name %}
+                            {% endif %}
+                        {% endblock %}
+                    </ol>
+                </div>
             {% endblock %}
-        </div>
-      </div>
-  </main>
 
-  {% block footer %}
-    {% include "footer.html" %}
-  {% endblock %}
+            {% block backlink %}
+            {% endblock %}
+
+        </div>
+        {% block full_width_content %}
+        {% endblock %}
+
+        <div class="govuk-width-container">
+            <div class="govuk-main-wrapper app-main-class">
+                {% include 'snippets/timeout_warning_modal.html' %}
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+
+    {% block footer %}
+        {% include "footer.html" %}
+    {% endblock %}
 {% endblock %}

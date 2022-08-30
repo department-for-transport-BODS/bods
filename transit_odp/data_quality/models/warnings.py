@@ -1,5 +1,6 @@
 import uuid
 
+import numpy as np
 from django.db import models
 from django_hosts import reverse
 
@@ -28,6 +29,7 @@ from transit_odp.data_quality.models.querysets import (
 )
 from transit_odp.data_quality.models.report import DataQualityReport
 from transit_odp.data_quality.models.transmodel import TimingPatternStop
+from transit_odp.organisation.models.data import TXCFileAttributes
 
 
 class DataQualityWarningBase(models.Model):
@@ -163,7 +165,16 @@ class ServiceLinkMissingStopWarning(DataQualityWarningBase):
 
     # choose one arbitrary service pattern and timing pattern for use in frontend
     def get_service_pattern(self):
-        return self.service_link.service_patterns.earliest("ito_id")
+        txc_files = TXCFileAttributes.objects.filter(revision__report=self.report_id)
+        txc_line_names = list(
+            np.concatenate([txc.line_names for txc in txc_files]).flat
+        )
+        for service_pattern in self.service_link.service_patterns.all().order_by(
+            "service__name"
+        ):
+            if service_pattern.service.name.split(":")[0] in txc_line_names:
+                return service_pattern
+        return None
 
     def get_timing_pattern(self):
         return self.get_service_pattern().timing_patterns.earliest("ito_id")

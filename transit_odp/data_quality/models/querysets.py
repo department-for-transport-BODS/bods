@@ -1,3 +1,4 @@
+import numpy as np
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CharField, F, OuterRef, Subquery, TextField
@@ -5,6 +6,8 @@ from django.db.models.aggregates import Min
 from django.db.models.expressions import Func, RawSQL, Value
 from django.db.models.functions.comparison import Greatest
 from django.db.models.functions.text import Concat
+
+from transit_odp.organisation.models.data import TXCFileAttributes
 
 
 class TimingPatternStopQueryset(models.QuerySet):
@@ -20,7 +23,7 @@ class TimingPatternStopQueryset(models.QuerySet):
 
 
 class TimingPatternLineQuerySet(models.QuerySet):
-    def add_line(self):
+    def add_line(self, *args):
         return self.annotate(line=F("timing_pattern__service_pattern__service__name"))
 
 
@@ -71,7 +74,7 @@ class IncorrectNOCQuerySet(models.QuerySet):
 
 
 class JourneyStopInappropriateQuerySet(models.QuerySet):
-    def add_line(self):
+    def add_line(self, *args):
         return self.annotate(line=Min("stop__service_patterns__service__name"))
 
     def add_message(self):
@@ -89,7 +92,7 @@ class StopMissingNaptanQuerySet(models.QuerySet):
         message = "There is at least one journey where stop(s) are not in NaPTAN"
         return self.annotate(message=Value(message, CharField()))
 
-    def add_line(self):
+    def add_line(self, *args):
         # Using Min to make the first line name appear
         return self.annotate(line=Min("service_patterns__service__name"))
 
@@ -117,7 +120,7 @@ class TimingMissingPointQueryset(TimingPatternLineQuerySet):
 
 
 class TimingQuerySet(models.QuerySet):
-    def add_line(self):
+    def add_line(self, *args):
         return self.annotate(line=F("timing_pattern__service_pattern__service__name"))
 
 
@@ -132,7 +135,7 @@ class JourneyQuerySet(models.QuerySet):
         )
         return self.annotate(first_stop_name=Subquery(vj_subquery))
 
-    def add_line(self):
+    def add_line(self, *args):
         return self.annotate(
             line=F("vehicle_journey__timing_pattern__service_pattern__service__name")
         )
@@ -253,16 +256,42 @@ class ServiceLinkMissingStopQuerySet(models.QuerySet):
             )
         )
 
-    def add_line(self):
+    def add_line(self, report_id, *args):
         from transit_odp.data_quality.models import ServicePattern
 
-        subquery = (
-            ServicePattern.objects.filter(id=OuterRef("service_link__service_patterns"))
-            .order_by("ito_id")
-            .values_list("service__name")[:1]
+        # The line (or service) name is obtained via the service pattern referencing
+        # the warning's service link. There are multiple potential matches, and since
+        # the DQ pipeline treats service patterns as global, some of the service
+        # patterns referencing the service link in the warning may pertain to other
+        # datasets in other organisations. So, we use the dataset revision on which the
+        # report is based to get a list of valid line names from the TXC data, and use
+        # this list to filter down to applicable service links.
+        subquery_line = ServicePattern.objects.filter(
+            id=OuterRef("service_link__service_patterns")
+        ).values_list("service__name")
+        # Get a list of valid line names in the dataset
+        txc_files = TXCFileAttributes.objects.filter(revision__report=report_id)
+        txc_line_names = list(np.concatenate([t.line_names for t in txc_files]).flat)
+        # Slightly clumsily, extract the line number from the line name string in the
+        # DQS data, by splitting the string on the first colon. For example,
+        # line name "26:Seaford - Eastbourne Town Ctr" becomes line number "26"
+        qs = (
+            self.annotate(
+                line=Subquery(subquery_line),
+                line_number=Func(
+                    F("line"),
+                    Value(":"),
+                    Value(1),
+                    function="split_part",
+                    output_field=CharField(),
+                ),
+            )
+            .filter(line_number__in=txc_line_names)
+            .order_by("id", "line")
+            .distinct("id")
         )
 
-        return self.annotate(line=Subquery(subquery)).distinct("id")
+        return qs
 
 
 class TimingFirstQuerySet(TimingPatternLineQuerySet):
@@ -398,7 +427,7 @@ class JourneyConflictQuerySet(JourneyQuerySet):
 
 
 class LineExpiredQuerySet(models.QuerySet):
-    def add_line(self):
+    def add_line(self, *args):
         return self.annotate(line=F("service__name"))
 
     def add_message(self):
@@ -407,7 +436,7 @@ class LineExpiredQuerySet(models.QuerySet):
 
 
 class LineMissingBlockIDQuerySet(models.QuerySet):
-    def add_line(self):
+    def add_line(self, *args):
         return self.annotate(line=F("service__name"))
 
     def add_message(self):

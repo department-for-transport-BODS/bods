@@ -31,7 +31,7 @@ def get_dataset_type_from_path_info(path_info: str) -> str:
 
 
 def round_down(value: float):
-    return math.floor(value * 100.0) / 100.0
+    return math.floor(value * 1000.0) / 1000.0
 
 
 def reverse_path(*args, **kwargs) -> str:

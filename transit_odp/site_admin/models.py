@@ -4,7 +4,7 @@ from typing import Optional
 
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q, UniqueConstraint
 from django.http import HttpRequest
 from django.http.response import FileResponse
 from django_extensions.db.models import TimeStampedModel
@@ -77,6 +77,19 @@ class ResourceRequestCounter(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=["date"], name="requestcounter_date_idx")]
+        # have to do this over 2 constraints because unique constraints do not work
+        # for nullable fields
+        constraints = [
+            UniqueConstraint(
+                fields=["date", "requestor_id", "path_info"],
+                name="requestcounter_unique_with_requestor",
+            ),
+            UniqueConstraint(
+                fields=["date", "path_info"],
+                condition=Q(requestor_id=None),
+                name="requestcounter_unique_without_requestor",
+            ),
+        ]
 
     def __str__(self):
         return nice_repr(self)

@@ -610,6 +610,7 @@ class BasePublishListView(OrgUserViewMixin, BaseTemplateView):
             )
             .select_related("organisation")
             .select_related("live_revision")
+            .order_by("id")
         )
 
     def get_active_qs(self):

@@ -1,9 +1,13 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 import pytest
 import pytz
 from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+from freezegun import freeze_time
 
+from transit_odp.feedback.factories import FeedbackFactory
+from transit_odp.feedback.models import Feedback
 from transit_odp.site_admin.factories import (
     APIRequestFactory,
     ResourceRequestCounterFactory,
@@ -43,7 +47,7 @@ def test_task_backfill_metrics_archive():
 
 
 def test_task_delete_unwanted_data():
-    now = datetime.now()
+    now = timezone.now()
     the_past = now - relativedelta(months=DATA_RETENTION_POLICY_MONTHS, days=1)
     APIRequestFactory()
     ResourceRequestCounterFactory()
@@ -55,36 +59,8 @@ def test_task_delete_unwanted_data():
     assert APIRequest.objects.count() == 1
 
 
-def test_delete_data_from_far_away_from_policy():
-    now = datetime.now()
-    policy = relativedelta(months=DATA_RETENTION_POLICY_MONTHS)
-    old = now - policy
-    really_old = old - policy
-    APIRequestFactory()
-    APIRequestFactory(created=old)
-    deleted = APIRequestFactory(created=really_old)
-
-    task_delete_unwanted_data()
-    assert APIRequest.objects.count() == 2
-    assert not APIRequest.objects.filter(id=deleted.id).exists()
-
-
-def test_delete_data_from_nearer_to_policy():
-    now = datetime.now()
-    policy = relativedelta(months=DATA_RETENTION_POLICY_MONTHS)
-    old = now - policy
-    older = old - relativedelta(days=3)
-    APIRequestFactory()
-    APIRequestFactory(created=old)
-    deleted = APIRequestFactory(created=older)
-
-    task_delete_unwanted_data()
-    assert APIRequest.objects.count() == 2
-    assert not APIRequest.objects.filter(id=deleted.id).exists()
-
-
 def test_delete_data_from_near_to_policy():
-    now = datetime.now()
+    now = timezone.now()
     policy = relativedelta(months=DATA_RETENTION_POLICY_MONTHS)
     boundary = now - policy
     inside_boundary = boundary + relativedelta(days=1)
@@ -94,5 +70,17 @@ def test_delete_data_from_near_to_policy():
     deleted = APIRequestFactory(created=outside_boundary)
 
     task_delete_unwanted_data()
-    assert APIRequest.objects.count() == 2
+    assert APIRequest.objects.count() == 1
     assert not APIRequest.objects.filter(id=deleted.id).exists()
+
+
+@freeze_time("2022-01-02")
+def test_delete_website_feedback():
+    base_date = date(2020, 1, 1)
+    FeedbackFactory(date=base_date)
+    FeedbackFactory(date=base_date + timedelta(days=1))
+    fb = FeedbackFactory(date=base_date + timedelta(days=2))
+
+    task_delete_unwanted_data()
+    assert Feedback.objects.count() == 1
+    assert Feedback.objects.first() == fb

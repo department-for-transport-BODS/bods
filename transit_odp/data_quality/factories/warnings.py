@@ -26,6 +26,7 @@ from transit_odp.data_quality.models.warnings import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     LineMissingBlockIDWarning,
+    ServiceLinkMissingStopWarning,
     SlowLinkWarning,
     SlowTimingWarning,
     StopMissingNaptanWarning,
@@ -145,6 +146,26 @@ class SlowLinkWarningFactory(TimingPatternTimingWarningBaseFactory):
     report = factory.SubFactory(
         DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
     )
+
+
+class ServiceLinkMissingStopWarningFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = ServiceLinkMissingStopWarning
+
+    service_link = factory.SubFactory(ServiceLinkFactory)
+    stops = factory.SubFactory(StopPointFactory)
+    report = factory.SubFactory(
+        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
+    )
+
+    @factory.post_generation
+    def stops(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for stop in extracted:
+                self.stops.add(stop)
 
 
 class SlowTimingWarningFactory(TimingPatternTimingWarningBaseFactory):

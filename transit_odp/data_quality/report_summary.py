@@ -12,7 +12,7 @@ CRITICAL_INTRO = (
 ADVISORY_INTRO = (
     "These observations suggest there may be an error in the data. "
     "However, for some types of services these may be intended by the operator. "
-    "Advisory observation should be investigated and addressed."
+    "Advisory observations should be investigated and addressed."
 )
 
 

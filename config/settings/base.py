@@ -152,6 +152,7 @@ LOCAL_APPS = [
     "transit_odp.changelog.apps.ChangelogConfig",
     "transit_odp.common.apps.CommonConfig",
     "transit_odp.data_quality.apps.DataQualityConfig",
+    "transit_odp.feedback.apps.FeedbackConfig",
     "transit_odp.fares.apps.FaresConfig",
     "transit_odp.frontend.apps.FrontendConfig",
     "transit_odp.guidance.apps.GuidanceConfig",
@@ -497,7 +498,7 @@ NAPTAN_IMPORT_URL = env(
 
 # NPTG import URL
 NPTG_IMPORT_URL = env(
-    "NPTG_IMPORT_URL", default="http://naptan.app.dft.gov.uk/datarequest/nptg.ashx"
+    "NPTG_IMPORT_URL", default="https://beta-naptan.dft.gov.uk/Download/File/NPTG.xml"
 )
 
 # Google Analytics Key

@@ -3,6 +3,7 @@ import logging
 from celery import shared_task
 from django.core.files.base import File
 
+from transit_odp.browse.data_archive import bulk_data_archive, change_data_archive
 from transit_odp.browse.exports import create_data_catalogue_file
 from transit_odp.site_admin.constants import ARCHIVE_CATEGORY_FILENAME, DataCatalogue
 from transit_odp.site_admin.models import DocumentArchive
@@ -26,3 +27,13 @@ def task_create_data_catalogue_archive():
         DocumentArchive.objects.create(archive=archive, category=DataCatalogue)
     else:
         catalogue.archive.save(filename, archive)
+
+
+@shared_task(ignore_result=True)
+def task_create_bulk_data_archive():
+    bulk_data_archive.run()
+
+
+@shared_task(ignore_result=True)
+def task_create_change_data_archive():
+    change_data_archive.run()

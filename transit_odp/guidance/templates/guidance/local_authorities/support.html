@@ -3,102 +3,102 @@
 {% load i18n %}
 
 {% block extra_content %}
-  <h1 data-qa="timetables-support-header" class="govuk-heading-l">
-    {% trans 'Timetables data support' %}
-  </h1>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Local transport authorities may support operators by sending them the digitised
-    TranXChange files made from their paper registration. The operator can then publish
-    it on the service.
-    {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
-    A number of smaller bus operators may wish to post bus information to you,
-    as many are currently doing whilst registering a service. You may offer to send
-    these files to operators or support them in producing their TransXChange files for
-    the service.
-    {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Methods of producing TransXChange 2.4 include procuring scheduling software or
-    using the free TxC 2.4 tool provided by DfT, from the following website:
-    {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    <a href="https://www.gov.uk/guidance/publish-bus-open-data">
-      https://www.gov.uk/guidance/publish-bus-open-data
-    </a>
-  </p >
-  <p class="govuk-body">
-    {% blocktrans %}
-    If you require additional support, DfT can support the creation of TxC using the tool.
-    For more information please contact
-    {% endblocktrans %}
-    <a href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Please ensure the timetables data provided aligns with TransXChange version 2.4.
-    {% endblocktrans %}
-  </p>
+    <h1 data-qa="timetables-support-header" class="govuk-heading-l">
+        {% trans 'Timetables data support' %}
+    </h1>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Local transport authorities may support operators by sending them the digitised
+            TranXChange files made from their paper registration. The operator can then publish
+            it on the service.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            A number of smaller bus operators may wish to post bus information to you,
+            as many are currently doing whilst registering a service. You may offer to send
+            these files to operators or support them in producing their TransXChange files for
+            the service.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Methods of producing TransXChange 2.4 include procuring scheduling software or
+            using the free TxC 2.4 tool provided by DfT, from the following website:
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.gov.uk/guidance/publish-bus-open-data">
+            https://www.gov.uk/guidance/publish-bus-open-data
+        </a>
+    </p >
+    <p class="govuk-body">
+        {% blocktrans %}
+            If you require additional support, DfT can support the creation of TxC using the tool.
+            For more information please contact
+        {% endblocktrans %}
+        <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Please ensure the timetables data provided aligns with TransXChange version 2.4.
+        {% endblocktrans %}
+    </p>
 
-  <h2 data-qa="bus-location-support-header" class="govuk-heading-l">
-    {% trans 'Bus location data support' %}
-  </h2>
-  <p class="govuk-body">
-    {% blocktrans %}
-    A limited number of operators still do not have ETMs that can provide SIRI-VM
-    data which aligns with the Department for Transport SIRI-VM Profile. This also
-    enables crowding information to be provided to the service.
-    {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Please ensure ETM suppliers procured can provide bus location data in feeds that
-    align with the standards documented in the
-    {% endblocktrans %}
+    <h2 data-qa="bus-location-support-header" class="govuk-heading-l">
+        {% trans 'Bus location data support' %}
+    </h2>
+    <p class="govuk-body">
+        {% blocktrans %}
+            A limited number of operators still do not have ETMs that can provide SIRI-VM
+            data which aligns with the Department for Transport SIRI-VM Profile. This also
+            enables crowding information to be provided to the service.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Please ensure ETM suppliers procured can provide bus location data in feeds that
+            align with the standards documented in the
+        {% endblocktrans %}
 
-    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-      operator requirements.
-    </a>
+        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+            operator requirements.
+        </a>
 
-    {% blocktrans %}
-    Once a supplier has been procured, operators may require support getting set up.
-    {% endblocktrans %}
-  </p>
+        {% blocktrans %}
+            Once a supplier has been procured, operators may require support getting set up.
+        {% endblocktrans %}
+    </p>
 
 
-  <h2 data-qa="fares-support-header" class="govuk-heading-l">
-    {% trans 'Fares data support' %}
-  </h2>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Operators who have ETM suppliers can talk with them about hosted NeTEx solutions.
-    A large proportion of fares data already resides within ETM systems.
-    This can be leveraged to provide NeTEx to BODS. There may be a need for
-    additional product development, so ensure your needs are understood by your supplier.
-    {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Alternatively, you can support operators using the free Fare Data Build Tool to
-    produce NeTEx which can be found here:
-    {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    <a class="govuk-link" href="https://fares-data.dft.gov.uk/">
-      https://fares-data.dft.gov.uk/
-    </a>
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
-    Please ensure fares data provided aligns to the standards in the
-    {% endblocktrans %}
-    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-      operator requirements.
-    </a>
-  </p>
+    <h2 data-qa="fares-support-header" class="govuk-heading-l">
+        {% trans 'Fares data support' %}
+    </h2>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Operators who have ETM suppliers can talk with them about hosted NeTEx solutions.
+            A large proportion of fares data already resides within ETM systems.
+            This can be leveraged to provide NeTEx to BODS. There may be a need for
+            additional product development, so ensure your needs are understood by your supplier.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Alternatively, you can support operators using the free Fare Data Build Tool to
+            produce NeTEx which can be found here:
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://fares-data.dft.gov.uk/">
+            https://fares-data.dft.gov.uk/
+        </a>
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Please ensure fares data provided aligns to the standards in the
+        {% endblocktrans %}
+        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+            operator requirements.
+        </a>
+    </p>
 {% endblock %}

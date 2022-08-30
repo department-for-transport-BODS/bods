@@ -27,6 +27,7 @@ from transit_odp.common.utils import (
     get_dataset_type_from_path_info,
     remove_query_string_param,
 )
+from transit_odp.feedback.models import Feedback, SatisfactionRating
 from transit_odp.organisation.constants import EXPIRED, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackAdminCSV
@@ -229,6 +230,21 @@ class AgentUserCSV(CSVBuilder):
         )
 
 
+class WebsiteFeedbackCSV(CSVBuilder):
+    columns = [
+        CSVColumn(header="Date", accessor=lambda fb: fb.date.strftime("%d-%b-%y")),
+        CSVColumn(
+            header="Rating",
+            accessor=lambda fb: SatisfactionRating(fb.satisfaction_rating).label,
+        ),
+        CSVColumn(header="Page URL", accessor="page_url"),
+        CSVColumn(header="Comments", accessor="comment"),
+    ]
+
+    def get_queryset(self):
+        return Feedback.objects.order_by("date")
+
+
 class RawConsumerRequestCSV(CSVBuilder):
     columns = [
         CSVColumn(
@@ -314,6 +330,7 @@ def create_operational_exports_file() -> BinaryIO:
         CSVFile("agents.csv", AgentUserCSV),
         CSVFile("datasetpublishing.csv", DatasetPublishingCSV),
         CSVFile("feedback_report_operator_breakdown.csv", ConsumerFeedbackAdminCSV),
+        CSVFile("websiteFeedbackResponses.csv", WebsiteFeedbackCSV),
     )
 
     with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
