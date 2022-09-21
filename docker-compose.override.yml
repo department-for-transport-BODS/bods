@@ -10,8 +10,8 @@ services:
       context: .
       dockerfile: ./docker/local/django/Dockerfile
       args:
-        - UID=${UID:?UID not set. Add to .env or export using `UID=$(id -u)`}
-        - GID=${GID:?GID not set. Add to .env or export using `GID=$(id -g)`}
+        - UID=${UID:?UID not set. Add to .env or export using `UID=$$(id -u)`}
+        - GID=${GID:?GID not set. Add to .env or export using `GID=$$(id -g)`}
     command: /start
     depends_on:
       - mailhog
