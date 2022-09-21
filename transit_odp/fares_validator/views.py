@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 def FaresXmlValidator(request, pk1):
 
-    with open('fares_validator/xml_schema/fares.xml', 'r') as f:
+    with open('transit_odp/fares_validator/xml_schema/fares.xml', 'r') as f:
         source  = f.read()
     
-    with open('fares_validator/xml_schema/netex_dataObjectRequest_service.xsd', 'r') as f:
+    with open('transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd', 'r') as f:
         schema = f.read()
 
-    path_xml = 'fares_validator/xml_schema/fares.xml'
+    path_xml = 'transit_odp/fares_validator/xml_schema/fares.xml'
 
     if schema is not None:
         lxml_schema = get_lxml_schema(schema)
@@ -50,6 +50,6 @@ def get_lxml_schema(schema):
 
     if not isinstance(schema, etree.XMLSchema):
         logger.info(f"[XML] => Parsing {schema}.")
-        root = etree.parse('fares_validator/xml_schema/netex_dataObjectRequest_service.xsd')
+        root = etree.parse('transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd')
         schema = etree.XMLSchema(root)
     return schema
