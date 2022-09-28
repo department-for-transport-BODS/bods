@@ -1,10 +1,10 @@
-<PublicationDelivery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="fares.xsd">
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.10/xsd/NeTEx_publication.xsd">
   <PublicationTimestamp>2022-09-20T11:35:00.868Z</PublicationTimestamp>
   <ParticipantRef>SYS001</ParticipantRef>
   <PublicationRequest version="1.0">
     <RequestTimestamp>2022-09-20T11:35:00.868Z</RequestTimestamp>
     <ParticipantRef>SYS002</ParticipantRef>
+    <Description>Request for SPSV SPSV:PK1007823:51:236 bus pass fares</Description>
     <topics>
       <NetworkFrameTopic>
         <selectionValidityConditions>
@@ -26,7 +26,6 @@
       <RequestDetail>AllWithXref</RequestDetail>
     </RequestPolicy>
   </PublicationRequest>
-  <Description>Request for SPSV SPSV:PK1007823:51:236 bus pass fares</Description>
   <dataObjects>
     <CompositeFrame version="1.0" id="epd:UK:SPSV:CompositeFrame_UK_PI_LINE_FARE_OFFER:Trip@SPSV:PK1007823:51:236:op" dataSourceRef="op:operator" responsibilitySetRef="tariffs">
       <Name>Fares for SPSV:PK1007823:51:236</Name>
@@ -884,14 +883,13 @@
                 </ValidBetween>
               </validityConditions>
               <Name>SPSV - SPSV:PK1007823:51:236 - Fares for Single ticket</Name>
-              <OperatorRef version="1.0" ref="">noc:137709</OperatorRef>
+              <OperatorRef version="1.0" ref="noc:SPSV">noc:137709</OperatorRef>
               <LineRef version="1.0" ref="236"/>
-              <TypeOfTariffRef version="fxc:v1.0" ref="fxc:point_to_point_wrong"/>
               <TariffBasis>zoneToZone</TariffBasis>
               <fareStructureElements>
                 <FareStructureElement version="1.0" id="Tariff@single@lines">
                   <Name>O/D pairs for 236</Name>
-                  <TypeOfFareStructureElementRef ref="fxc:access" version="fxc:v1.0" />
+		             <TypeOfFareStructureElementRef versionRef="fxc:v1.0" ref="fxc:access"/>
                   <distanceMatrixElements>
                     <DistanceMatrixElement version="1.0" id="Acomb_Green_Lane+Mattison_Way">
                       <priceGroups>
@@ -1100,7 +1098,7 @@
                 </FareStructureElement>
                 <FareStructureElement version="1.0" id="Tariff@single@eligibility">
                   <Name>eligible user types</Name>
-                  <TypeOfFareStructureElementRef ref="fxc:eligibility" version="fxc:v1.0" />
+		             <TypeOfFareStructureElementRef versionRef="fxc:v1.0" ref="fxc:eligibility"/>
                   <GenericParameterAssignment version="1.0" order="1" id="Tariff@single@eligibility">
                     <TypeOfAccessRightAssignmentRef version="fxc:v1.0" ref="fxc:eligible"/>
                     <LimitationGroupingType>XOR</LimitationGroupingType>
@@ -1108,14 +1106,13 @@
                       <UserProfile version="1.0" id="op:adult-0">
                         <Name>adult</Name>
                         <TypeOfConcessionRef version="fxc:v1.0" ref="fxc:none"/>
-                        <UserType>adult</UserType>
                       </UserProfile>
                     </limitations>
                   </GenericParameterAssignment>
                 </FareStructureElement>
                 <FareStructureElement version="1.0" id="Tariff@single@conditions_of_travel">
                   <Name>Conditions of travel</Name>
-                  <TypeOfFareStructureElementRef ref="fxc:travel_conditions" version="fxc:v1.0" />
+		             <TypeOfFareStructureElementRef versionRef="fxc:v1.0" ref="fxc:travel_conditions"/>
                   <GenericParameterAssignment version="1.0" order="1" id="Tariff@single@conditions_of_travel">
                     <TypeOfAccessRightAssignmentRef version="fxc:v1.0" ref="fxc:condition_of_use"/>
                     <LimitationGroupingType>AND</LimitationGroupingType>
@@ -1126,7 +1123,7 @@
                       </RoundTrip>
                       <FrequencyOfUse version="1.0" id="Tariff@single@oneTrip">
                         <Name>One trip no transfers</Name>
-                        <FrequencyOfUseType>single</FrequencyOfUseType>
+                        <FrequencyOfUseType>none</FrequencyOfUseType>
                         <MaximalFrequency>1</MaximalFrequency>
                       </FrequencyOfUse>
                     </limitations>
@@ -1136,10 +1133,9 @@
             </Tariff>
           </tariffs>
           <fareProducts>
-            <PreassignedFareProduct id="" version="1.0">
+            <PreassignedFareProduct id="Trip@adult_single" version="1.0">
               <Name>adult single</Name>
               <TypeOfFareProductRef version="1.0" ref="fxc:standard_product@trip@single"/>
-              <ChargingMomentType>beforeTravel</ChargingMomentType>
               <validableElements>
                 <ValidableElement id="Trip@adult_single@travel" version="1.0">
                   <Name>single Ride</Name>
