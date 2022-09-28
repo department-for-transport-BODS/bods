@@ -1,1624 +1,227 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.netex.org.uk/netex" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="PublicationDelivery">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element type="xs:dateTime" name="PublicationTimestamp"/>
-        <xs:element type="xs:string" name="ParticipantRef"/>
-        <xs:element name="PublicationRequest">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element type="xs:dateTime" name="RequestTimestamp"/>
-              <xs:element type="xs:string" name="ParticipantRef"/>
-              <xs:element name="topics">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="NetworkFrameTopic">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="selectionValidityConditions">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="AvailabilityCondition">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element type="xs:dateTime" name="FromDate"/>
-                                    </xs:sequence>
-                                    <xs:attribute type="xs:float" name="version"/>
-                                    <xs:attribute type="xs:string" name="id"/>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="TypeOfFrameRef">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="version"/>
-                                  <xs:attribute type="xs:string" name="ref"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="NetworkFilterByValue">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="objectReferences">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="OperatorRef">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:float" name="version"/>
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="LineRef">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:float" name="version"/>
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute type="xs:float" name="version"/>
-          </xs:complexType>
-        </xs:element>
-        <xs:element type="xs:string" name="Description"/>
-        <xs:element name="dataObjects">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="CompositeFrame" maxOccurs="unbounded" minOccurs="0">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="ValidBetween">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element type="xs:dateTime" name="FromDate"/>
-                          <xs:element type="xs:dateTime" name="ToDate" minOccurs="0"/>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element type="xs:string" name="Name"/>
-                    <xs:element type="xs:string" name="Description" minOccurs="0"/>
-                    <xs:element name="TypeOfFrameRef">
-                      <xs:complexType>
-                        <xs:simpleContent>
-                          <xs:extension base="xs:string">
-                            <xs:attribute type="xs:string" name="ref" use="optional"/>
-                            <xs:attribute type="xs:string" name="version" use="optional"/>
-                          </xs:extension>
-                        </xs:simpleContent>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="codespaces" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="CodespaceRef" maxOccurs="unbounded" minOccurs="0">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="FrameDefaults">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="DefaultCodespaceRef">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="DefaultDataSourceRef">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                  <xs:attribute type="xs:string" name="version" use="optional"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element type="xs:string" name="DefaultCurrency" minOccurs="0"/>
-                          <xs:element name="DefaultResponsibilitySetRef" minOccurs="0">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="ref"/>
-                                  <xs:attribute type="xs:string" name="version"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="frames">
-                      <xs:complexType>
-                        <xs:choice maxOccurs="unbounded" minOccurs="0">
-                          <xs:element name="ResourceFrame">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="Name"/>
-                                <xs:element name="TypeOfFrameRef" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute type="xs:string" name="ref"/>
-                                        <xs:attribute type="xs:string" name="version"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="codespaces">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="Codespace" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Xmlns"/>
-                                            <xs:element type="xs:anyURI" name="XmlnsUrl" minOccurs="0"/>
-                                            <xs:element type="xs:string" name="Description"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="FrameDefaults" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="DefaultCodespaceRef">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="DefaultDataSourceRef">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                              <xs:attribute type="xs:string" name="version"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="DefaultResponsibilitySetRef">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                              <xs:attribute type="xs:string" name="version"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="DefaultLocale">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:byte" name="TimeZoneOffset"/>
-                                            <xs:element type="xs:string" name="TimeZone"/>
-                                            <xs:element type="xs:byte" name="SummerTimeZoneOffset"/>
-                                            <xs:element type="xs:string" name="SummerTimeZone"/>
-                                            <xs:element type="xs:string" name="DefaultLanguage"/>
-                                          </xs:sequence>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element type="xs:string" name="DefaultLocationSystem"/>
-                                      <xs:element type="xs:string" name="DefaultSystemOfUnits"/>
-                                      <xs:element type="xs:string" name="DefaultCurrency"/>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="versions" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="Version">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Description"/>
-                                            <xs:element type="xs:string" name="VersionType"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                          <xs:attribute type="xs:string" name="version"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="dataSources">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="DataSource">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Email"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="responsibilitySets" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="ResponsibilitySet">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="roles">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="ResponsibilityRoleAssignment">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="DataRoleType"/>
-                                                        <xs:element type="xs:string" name="StakeholderRoleType"/>
-                                                        <xs:element name="ResponsibleOrganisationRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                                <xs:attribute type="xs:string" name="version"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                        <xs:element name="ResponsibleAreaRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version"/>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="version"/>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="typesOfValue" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="ValueSet" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="values">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="TypeOfFrame" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                        <xs:element name="FrameClassRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="nameOfClass" use="optional"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="PointOfInterestClassification" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfZone" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfProductCategory" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="PurposeOfGrouping" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version"/>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="ChargingMoment" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfFareProduct" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfSalesOfferPackage" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="ClassOfUse" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfProjection" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version"/>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfFareContractEntry" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfConcession" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfTariff" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfAccessRightAssignment" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfFareStructureElement" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="classOfValues" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="organisations">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="GeneralOrganisation" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element type="xs:string" name="ShortName"/>
-                                            <xs:element type="xs:string" name="OrganisationType"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="version"/>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="Operator" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="PublicCode" minOccurs="0"/>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element type="xs:string" name="ShortName" minOccurs="0"/>
-                                            <xs:element name="ValidityPeriod" minOccurs="0">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element type="xs:dateTime" name="FromDate"/>
-                                                  <xs:element type="xs:dateTime" name="ToDate"/>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="CountryRef" minOccurs="0">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                    <xs:attribute type="xs:string" name="refPrincipality" use="optional"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="version" use="optional"/>
-                              <xs:attribute type="xs:string" name="id" use="optional"/>
-                              <xs:attribute type="xs:string" name="dataSourceRef" use="optional"/>
-                              <xs:attribute type="xs:string" name="responsibilitySetRef" use="optional"/>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="ServiceFrame">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="Description"/>
-                                <xs:element name="TypeOfFrameRef">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute type="xs:string" name="ref"/>
-                                        <xs:attribute type="xs:string" name="version"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="lines">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="Line">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element type="xs:string" name="Description"/>
-                                            <xs:element type="xs:byte" name="PublicCode"/>
-                                            <xs:element type="xs:string" name="PrivateCode"/>
-                                            <xs:element name="OperatorRef">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:float" name="version"/>
-                                                    <xs:attribute type="xs:string" name="ref"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element type="xs:string" name="LineType"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:float" name="version"/>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="scheduledStopPoints">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="ScheduledStopPoint" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="TopographicPlaceView">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="TopographicPlaceRef">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:string" name="versionRef" use="optional"/>
-                                                          <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element type="xs:string" name="Name"/>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                              <xs:attribute type="xs:float" name="version"/>
-                              <xs:attribute type="xs:string" name="id"/>
-                              <xs:attribute type="xs:string" name="dataSourceRef"/>
-                              <xs:attribute type="xs:string" name="responsibilitySetRef"/>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="FareFrame" minOccurs="1" nillable="false">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="TypeOfFrameRef" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute name="ref" use="required">
-                                        <xs:simpleType>
-                                          <xs:restriction base = "xs:string">
-                                            <xs:pattern value = "([U][K][/_][P][I][/_][F][A][R][E][/_][P][R][O][D][U][C][T])"/>
-                                          </xs:restriction>
-                                        </xs:simpleType>
-                                        </xs:attribute>
-                                      <xs:attribute type="xs:string" name="version" use="required"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="fareZones" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="FareZone" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="members">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="ScheduledStopPointRef" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:float" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="tariffs" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="Tariff">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element name="validityConditions">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="ValidBetween">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:dateTime" name="FromDate"/>
-                                                        <xs:element type="xs:dateTime" name="ToDate"/>
-                                                      </xs:sequence>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="OperatorRef">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:float" name="version"/>
-                                                    <xs:attribute name="ref" use="required">
-                                                      <xs:simpleType>
-                                                        <xs:restriction base = "xs:string">
-                                                          <xs:minLength value = "1"/>
-                                                        </xs:restriction>
-                                                      </xs:simpleType>
-                                                    </xs:attribute>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="LineRef">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:string" name="ref"/>
-                                                    <xs:attribute type="xs:float" name="version"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="TypeOfTariffRef">
-                                            <xs:complexType>
-                                            <xs:simpleContent>
-                                              <xs:extension base="xs:string">
-                                                <xs:attribute  name="version" use="optional"> 
-                                                </xs:attribute>
-                                                <xs:attribute  name="ref" use="required">
-                                                  <xs:simpleType>
-                                                    <xs:restriction base = "xs:string">
-                                                      <xs:enumeration value = "fxc:Distance_kilometers"/>
-                                                      <xs:enumeration value = "fxc:flat"/>
-                                                      <xs:enumeration value = "fxc:section"/>
-                                                      <xs:enumeration value = "fxc:point_to_point"/>
-                                                      <xs:enumeration value = "fxc:banded"/>
-                                                      <xs:enumeration value = "fxc:stored_value"/>
-                                                      <xs:enumeration value = "fxc:multitrip"/>
-                                                    </xs:restriction>
-                                                  </xs:simpleType>
-                                              </xs:attribute>
-                                              </xs:extension>
-                                              </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="TariffBasis" minOccurs="1" nillable="false">
-                                              <xs:simpleType>
-                                              <xs:restriction base="xs:string">
-                                                <xs:minLength value="1"/>
-                                              </xs:restriction>
-                                            </xs:simpleType>
-                                            </xs:element>
-                                            <xs:element name="qualityStructureFactors">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="FareDemandFactor">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element name="validityConditions">
-                                                          <xs:complexType>
-                                                            <xs:sequence>
-                                                              <xs:element name="AvailabilityCondition">
-                                                                <xs:complexType>
-                                                                  <xs:sequence>
-                                                                    <xs:element type="xs:string" name="IsAvailable"/>
-                                                                    <xs:element name="dayTypes">
-                                                                      <xs:complexType>
-                                                                        <xs:sequence>
-                                                                          <xs:element name="FareDayType">
-                                                                            <xs:complexType>
-                                                                              <xs:sequence>
-                                                                                <xs:element name="properties">
-                                                                                  <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                      <xs:element name="PropertyOfDay">
-                                                                                        <xs:complexType>
-                                                                                          <xs:sequence>
-                                                                                            <xs:element type="xs:string" name="DaysOfWeek"/>
-                                                                                          </xs:sequence>
-                                                                                        </xs:complexType>
-                                                                                      </xs:element>
-                                                                                    </xs:sequence>
-                                                                                  </xs:complexType>
-                                                                                </xs:element>
-                                                                              </xs:sequence>
-                                                                              <xs:attribute type="xs:string" name="id"/>
-                                                                              <xs:attribute type="xs:float" name="version"/>
-                                                                            </xs:complexType>
-                                                                          </xs:element>
-                                                                        </xs:sequence>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                  </xs:sequence>
-                                                                  <xs:attribute type="xs:string" name="id"/>
-                                                                  <xs:attribute type="xs:float" name="version"/>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                            </xs:sequence>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                      <xs:attribute type="xs:float" name="version"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="fareStructureElements">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="FareStructureElement" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                        <xs:element name="TypeOfFareStructureElementRef" minOccurs="0">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                                <xs:attribute type="xs:string" name="version"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                        <xs:element name="distanceMatrixElements" minOccurs="0">
-                                                          <xs:complexType>
-                                                            <xs:sequence>
-                                                              <xs:element name="DistanceMatrixElement" maxOccurs="unbounded" minOccurs="0">
-                                                                <xs:complexType>
-                                                                  <xs:sequence>
-                                                                    <xs:element name="priceGroups">
-                                                                      <xs:complexType>
-                                                                        <xs:sequence>
-                                                                          <xs:element name="PriceGroupRef">
-                                                                            <xs:complexType>
-                                                                              <xs:simpleContent>
-                                                                                <xs:extension base="xs:string">
-                                                                                  <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                                  <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                                </xs:extension>
-                                                                              </xs:simpleContent>
-                                                                            </xs:complexType>
-                                                                          </xs:element>
-                                                                        </xs:sequence>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                    <xs:element name="StartTariffZoneRef">
-                                                                      <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                          <xs:extension base="xs:string">
-                                                                            <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                            <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                          </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                    <xs:element name="EndTariffZoneRef">
-                                                                      <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                          <xs:extension base="xs:string">
-                                                                            <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                            <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                          </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                  </xs:sequence>
-                                                                  <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                                  <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                            </xs:sequence>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                        <xs:element name="GenericParameterAssignment">
-                                                          <xs:complexType>
-                                                            <xs:sequence>
-                                                              <xs:element name="TypeOfAccessRightAssignmentRef">
-                                                                <xs:complexType>
-                                                                  <xs:simpleContent>
-                                                                    <xs:extension base="xs:string">
-                                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                                      <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                    </xs:extension>
-                                                                  </xs:simpleContent>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                              <xs:element type="xs:string" name="ValidityParameterAssignmentType" minOccurs="0"/>
-                                                              <xs:element name="validityParameters" minOccurs="0">
-                                                                <xs:complexType>
-                                                                  <xs:sequence>
-                                                                    <xs:element name="LineRef">
-                                                                      <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                          <xs:extension base="xs:string">
-                                                                            <xs:attribute type="xs:float" name="version"/>
-                                                                            <xs:attribute type="xs:string" name="ref"/>
-                                                                          </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                  </xs:sequence>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                              <xs:element type="xs:string" name="LimitationGroupingType" minOccurs="0"/>
-                                                              <xs:element name="limitations" minOccurs="0">
-                                                                <xs:complexType>
-                                                                  <xs:sequence>
-                                                                    <xs:element name="PurchaseWindow">
-                                                                      <xs:complexType>
-                                                                        <xs:sequence>
-                                                                          <xs:element type="xs:string" name="PurchaseMoment"/>
-                                                                        </xs:sequence>
-                                                                        <xs:attribute type="xs:float" name="version"/>
-                                                                        <xs:attribute type="xs:string" name="id"/>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                  </xs:sequence>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                              <xs:element name="FareDemandFactorRef" minOccurs="0">
-                                                                <xs:complexType>
-                                                                  <xs:simpleContent>
-                                                                    <xs:extension base="xs:string">
-                                                                      <xs:attribute type="xs:float" name="version"/>
-                                                                      <xs:attribute type="xs:string" name="ref"/>
-                                                                    </xs:extension>
-                                                                  </xs:simpleContent>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                            </xs:sequence>
-                                                            <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                            <xs:attribute type="xs:byte" name="order" use="optional"/>
-                                                            <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                          <xs:attribute type="xs:float" name="version"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="fareProducts" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="PreassignedFareProduct">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="ChargingMomentRef">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:string" name="version"/>
-                                                    <xs:attribute type="xs:string" name="ref"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element type="xs:string" name="ChargingMomentType"/>
-                                            <xs:element name="OperatorRef">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:float" name="version"/>
-                                                    <xs:attribute type="xs:string" name="ref"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="ConditionSummary">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element type="xs:string" name="FareStructureType"/>
-                                                  <xs:element type="xs:string" name="TariffBasis"/>
-                                                  <xs:element type="xs:string" name="IsPersonal"/>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="validableElements">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="ValidableElement">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                        <xs:element name="fareStructureElements">
-                                                          <xs:complexType>
-                                                            <xs:sequence>
-                                                              <xs:element name="FareStructureElementRef" maxOccurs="unbounded" minOccurs="0">
-                                                                <xs:complexType>
-                                                                  <xs:simpleContent>
-                                                                    <xs:extension base="xs:string">
-                                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                      <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                    </xs:extension>
-                                                                  </xs:simpleContent>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                            </xs:sequence>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                      <xs:attribute type="xs:float" name="version"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="accessRightsInProduct">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="AccessRightInProduct">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element name="ValidableElementRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:float" name="version"/>
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                      <xs:attribute type="xs:float" name="version"/>
-                                                      <xs:attribute type="xs:byte" name="order"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element type="xs:string" name="ProductType"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                          <xs:attribute type="xs:float" name="version"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="salesOfferPackages" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="SalesOfferPackage">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element type="xs:string" name="Description"/>
-                                            <xs:element name="distributionAssignments">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="DistributionAssignment">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element name="DistributionChannelRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="version"/>
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                        <xs:element type="xs:string" name="DistributionChannelType"/>
-                                                        <xs:element type="xs:string" name="PaymentMethods"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                      <xs:attribute type="xs:string" name="version"/>
-                                                      <xs:attribute type="xs:byte" name="order"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="salesOfferPackageElements">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="SalesOfferPackageElement">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element name="TypeOfTravelDocumentRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="version"/>
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                        <xs:element name="PreassignedFareProductRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:float" name="version"/>
-                                                                <xs:attribute type="xs:string" name="ref"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id"/>
-                                                      <xs:attribute type="xs:float" name="version"/>
-                                                      <xs:attribute type="xs:byte" name="order"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                          <xs:attribute type="xs:float" name="version"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element type="xs:string" name="Name" minOccurs="0"/>
-                                <xs:element name="FrameDefaults" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element type="xs:string" name="DefaultCurrency" minOccurs="0"/>
-                                      <xs:element name="DefaultCodespaceRef" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="DefaultDataSourceRef" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                              <xs:attribute type="xs:string" name="version"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="DefaultResponsibilitySetRef" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:simpleContent>
-                                            <xs:extension base="xs:string">
-                                              <xs:attribute type="xs:string" name="ref"/>
-                                              <xs:attribute type="xs:string" name="version"/>
-                                            </xs:extension>
-                                          </xs:simpleContent>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="priceGroups" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="PriceGroup" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element name="members">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="GeographicalIntervalPrice">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:float" name="Amount"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:float" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="fareTables" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="FareTable">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element type="xs:string" name="Description"/>
-                                            <xs:element name="pricesFor">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="PreassignedFareProductRef">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:float" name="version"/>
-                                                          <xs:attribute type="xs:string" name="ref"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="SalesOfferPackageRef">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:float" name="version"/>
-                                                          <xs:attribute type="xs:string" name="ref"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="usedIn">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="TariffRef">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:float" name="version"/>
-                                                          <xs:attribute type="xs:string" name="ref"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="specifics">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="LineRef">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:float" name="version"/>
-                                                          <xs:attribute type="xs:string" name="ref"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="TypeOfTravelDocumentRef">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:string" name="version"/>
-                                                          <xs:attribute type="xs:string" name="ref"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="columns">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="FareTableColumn" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                        <xs:element name="representing">
-                                                          <xs:complexType>
-                                                            <xs:sequence>
-                                                              <xs:element name="FareZoneRef">
-                                                                <xs:complexType>
-                                                                  <xs:simpleContent>
-                                                                    <xs:extension base="xs:string">
-                                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                      <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                    </xs:extension>
-                                                                  </xs:simpleContent>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                            </xs:sequence>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:byte" name="order" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="rows">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="FareTableRow" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:byte" name="order" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="includes">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="FareTable" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="Name"/>
-                                                        <xs:element type="xs:string" name="Description"/>
-                                                        <xs:element name="cells">
-                                                          <xs:complexType>
-                                                            <xs:sequence>
-                                                              <xs:element name="Cell" maxOccurs="unbounded" minOccurs="0">
-                                                                <xs:complexType>
-                                                                  <xs:sequence>
-                                                                    <xs:element name="DistanceMatrixElementPrice">
-                                                                      <xs:complexType>
-                                                                        <xs:sequence>
-                                                                          <xs:element name="GeographicalIntervalPriceRef">
-                                                                            <xs:complexType>
-                                                                              <xs:simpleContent>
-                                                                                <xs:extension base="xs:string">
-                                                                                  <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                                  <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                                </xs:extension>
-                                                                              </xs:simpleContent>
-                                                                            </xs:complexType>
-                                                                          </xs:element>
-                                                                          <xs:element name="DistanceMatrixElementRef">
-                                                                            <xs:complexType>
-                                                                              <xs:simpleContent>
-                                                                                <xs:extension base="xs:string">
-                                                                                  <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                                  <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                                </xs:extension>
-                                                                              </xs:simpleContent>
-                                                                            </xs:complexType>
-                                                                          </xs:element>
-                                                                        </xs:sequence>
-                                                                        <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                        <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                    <xs:element name="ColumnRef">
-                                                                      <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                          <xs:extension base="xs:string">
-                                                                            <xs:attribute type="xs:float" name="versionRef" use="optional"/>
-                                                                            <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                          </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                    <xs:element name="RowRef">
-                                                                      <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                          <xs:extension base="xs:string">
-                                                                            <xs:attribute type="xs:float" name="versionRef" use="optional"/>
-                                                                            <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                          </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                      </xs:complexType>
-                                                                    </xs:element>
-                                                                  </xs:sequence>
-                                                                  <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                                  <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                                  <xs:attribute type="xs:byte" name="order" use="optional"/>
-                                                                </xs:complexType>
-                                                              </xs:element>
-                                                            </xs:sequence>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                      <xs:attribute type="xs:float" name="version" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id"/>
-                                          <xs:attribute type="xs:float" name="version"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="PricingParameterSet" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="priceUnits">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element name="PriceUnit" maxOccurs="unbounded" minOccurs="0">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element type="xs:string" name="Name"/>
-                                                  <xs:element type="xs:string" name="PrivateCode"/>
-                                                  <xs:element type="xs:byte" name="Precision"/>
-                                                </xs:sequence>
-                                                <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                <xs:attribute type="xs:string" name="version" use="optional"/>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                    <xs:attribute type="xs:string" name="id"/>
-                                    <xs:attribute type="xs:string" name="version"/>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="geographicalUnits" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="GeographicalUnit" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="usageParameters" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="UserProfile" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:choice maxOccurs="unbounded" minOccurs="0">
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element name="TypeOfConcessionRef">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                    <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="companionProfiles">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="CompanionProfile">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element name="UserProfileRef">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                                <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                        <xs:element type="xs:byte" name="MinimumNumberOfPersons"/>
-                                                        <xs:element type="xs:byte" name="MaximumNumberOfPersons"/>
-                                                        <xs:element type="xs:string" name="DiscountBasis" minOccurs="0"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element type="xs:byte" name="MinimumAge"/>
-                                            <xs:element type="xs:byte" name="MaximumAge"/>
-                                            <xs:element type="xs:string" name="Description"/>
-                                            <xs:element type="xs:string" name="DiscountBasis"/>
-                                            <xs:element type="xs:string" name="ProofRequired"/>
-                                          </xs:choice>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="distributionChannels" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="DistributionChannel" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="ShortName"/>
-                                            <xs:element name="alternativeNames" minOccurs="0">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="AlternativeName" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element name="Name">
-                                                          <xs:complexType>
-                                                            <xs:simpleContent>
-                                                              <xs:extension base="xs:string">
-                                                                <xs:attribute type="xs:string" name="lang" use="optional"/>
-                                                              </xs:extension>
-                                                            </xs:simpleContent>
-                                                          </xs:complexType>
-                                                        </xs:element>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:byte" name="order" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                      <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element type="xs:string" name="DistributionChannelType"/>
-                                            <xs:element type="xs:string" name="IsObligatory" minOccurs="0"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="fulfilmentMethods" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="FulfilmentMethod" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name"/>
-                                            <xs:element type="xs:string" name="FulfilmentMethodType"/>
-                                            <xs:element type="xs:string" name="RequiresBookingReference" minOccurs="0"/>
-                                            <xs:element name="typesOfTravelDocument">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="TypeOfTravelDocumentRef" maxOccurs="unbounded" minOccurs="0">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:string" name="ref" use="optional"/>
-                                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="typesOfTravelDocuments" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="TypeOfTravelDocument" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="Name" minOccurs="0"/>
-                                            <xs:element type="xs:string" name="MediaType"/>
-                                            <xs:element type="xs:string" name="MachineReadable" minOccurs="0"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="id" use="optional"/>
-                                          <xs:attribute type="xs:string" name="version" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="id" use="optional"/>
-                              <xs:attribute type="xs:string" name="version" use="optional"/>
-                              <xs:attribute type="xs:string" name="dataSourceRef" use="optional"/>
-                              <xs:attribute type="xs:string" name="responsibilitySetRef" use="optional"/>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:choice>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                  <xs:attribute type="xs:string" name="version" use="optional"/>
-                  <xs:attribute type="xs:string" name="id" use="optional"/>
-                  <xs:attribute type="xs:string" name="dataSourceRef" use="optional"/>
-                  <xs:attribute type="xs:string" name="responsibilitySetRef" use="optional"/>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute type="xs:float" name="version"/>
-    </xs:complexType>
-  </xs:element>
-</xs:schema>
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsd:schema xmlns="http://www.netex.org.uk/netex" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- ============================================================================ -->
+	<xsd:element name="PublicationDelivery"></xsd:element>
+	<xsd:element name="ParticipantRef" type="ParticipantCodeType"></xsd:element>
+	<xsd:element name="PublicationRequest" type="PublicationRequestStructure"></xsd:element>
+	<xsd:complexType name="PublicationRequestStructure">
+		<xsd:sequence>
+			<xsd:element name="RequestTimestamp" type="xsd:dateTime"></xsd:element>
+			<xsd:element ref="ParticipantRef" minOccurs="0" />
+			<xsd:element name="Description" minOccurs="0" />
+			<xsd:element name="topics" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="NetworkFrameTopic" maxOccurs="unbounded"></xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RequestPolicy" minOccurs="0"></xsd:element>
+			<xsd:element name="SubscriptionPolicy" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="version" type="xsd:NMTOKEN" default="1.0" />
+	</xsd:complexType>
+	<xsd:simpleType name="ParticipantCodeType">
+    <xsd:annotation>
+        <xsd:documentation>Type for Unique identifier of participant.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NMTOKEN"/>
+</xsd:simpleType>
+<xsd:complexType name="ParticipantRefStructure">
+    <xsd:annotation>
+        <xsd:documentation>Reference to Unique identifier of participant.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+        <xsd:extension base="ParticipantCodeType"/>
+    </xsd:simpleContent>
+</xsd:complexType>
+	<!-- ============================================================================ -->
+	<xsd:element name="tariffs">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Tariff" type="TariffRequest"></xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="TariffRequest">
+		<xsd:sequence>
+			<xsd:element name="validityConditions">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ValidBetween">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element type="xsd:dateTime" name="FromDate" />
+									<xsd:element type="xsd:dateTime" name="ToDate" />
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Name" minOccurs="0" />
+			<xsd:element name="OperatorRef">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute type="xsd:float" name="version" />
+							<xsd:attribute name="ref" use="required">
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:string">
+										<xsd:minLength value="1" />
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="LineRef" minOccurs="0" />
+			<xsd:element name="TypeOfTariffRef" minOccurs="0">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute name="version" use="optional" />
+							<xsd:attribute name="ref" use="required">
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:string">
+										<xsd:enumeration value="fxc:Distance_kilometers" />
+										<xsd:enumeration value="fxc:flat" />
+										<xsd:enumeration value="fxc:section" />
+										<xsd:enumeration value="fxc:point_to_point" />
+										<xsd:enumeration value="fxc:banded" />
+										<xsd:enumeration value="fxc:stored_value" />
+										<xsd:enumeration value="fxc:multitrip" />
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TariffBasis" minOccurs="1" nillable="false">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:minLength value="1" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="qualityStructureFactors" minOccurs="0" />
+			<xsd:element name="fareStructureElements" minOccurs="0" />
+		</xsd:sequence>
+		<xsd:attribute type="xsd:float" name="version" />
+		<xsd:attribute name="id" use="required" />
+	</xsd:complexType>
+	<!-- ============================================================================ -->
+	<xsd:element name="fareProducts">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="PreassignedFareProduct" type="FareProductRequestStructure"></xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="FareProductRequestStructure">
+		<xsd:sequence>
+			<xsd:element name="Name" />
+			<xsd:element name="TypeOfFareProductRef" minOccurs="0" />
+			<xsd:element name="ChargingMomentType" minOccurs="0" />
+			<xsd:element name="validableElements" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ValidableElement">
+							<xsd:complexType>
+								<xsd:all>
+									<xsd:element name="Name" />
+									<xsd:element name="fareStructureElements">
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="FareStructureElementRef" minOccurs="1" maxOccurs="unbounded">
+													<xsd:complexType>
+														<xsd:attribute type="xsd:float" name="version" />
+														<xsd:attribute name="ref" use="required" />
+													</xsd:complexType>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:all>
+								<xsd:attribute type="xsd:float" name="version" />
+								<xsd:attribute name="id" use="required" />
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="accessRightsInProduct">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="AccessRightInProduct">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="ValidableElementRef" />
+								</xsd:sequence>
+								<xsd:attribute type="xsd:float" name="version" />
+								<xsd:attribute name="id" use="required" />
+								<xsd:attribute name="order" use="required" />
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ProductType" minOccurs="1"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute type="xsd:float" name="version" />
+		<xsd:attribute name="id" use="required" />
+	</xsd:complexType>
+	<!-- ============================================================================ -->
+	<xsd:element name="salesOfferPackages">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element name="SalesOfferPackage" type="SalesOfferStructure"></xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+<xsd:complexType name="SalesOfferStructure">
+	<xsd:sequence>
+		<xsd:element name="Name" />
+		<xsd:element name="distributionAssignments" minOccurs="0">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="DistributionAssignment">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="DistributionChannelRef" />
+								<xsd:element name="DistributionChannelType" />
+								<xsd:element name="PaymentMethods" />
+							</xsd:sequence>
+							<xsd:attribute name="version" />
+							<xsd:attribute name="id" use="required" />
+							<xsd:attribute name="order" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		<xsd:element name="salesOfferPackageElements">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="SalesOfferPackageElement">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="TypeOfTravelDocumentRef" />
+								<xsd:element name="PreassignedFareProductRef" />
+							</xsd:sequence>
+							<xsd:attribute name="version" />
+							<xsd:attribute name="id" use="required" />
+							<xsd:attribute name="order" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:sequence>
+	<xsd:attribute type="xsd:float" name="version" />
+	<xsd:attribute name="id" use="required" />
+</xsd:complexType>
+</xsd:schema>
+<!-- ============================================================================ -->

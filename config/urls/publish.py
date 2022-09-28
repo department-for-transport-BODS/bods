@@ -105,7 +105,7 @@ urlpatterns = [
                         ]
                     ),
                 ),
-                path("fares-validator/", include("fares_validator.urls"))
+                path("fares-validator/", include("transit_odp.fares_validator.urls"))
             ]
         ),
     ),

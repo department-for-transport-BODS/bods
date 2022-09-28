@@ -4,5 +4,5 @@ from fares_validator import views
 
 
 urlpatterns = [
-    path('validate/', views.FaresXmlValidator, name='fares_validator'),
+    path('validate/', views.FaresXmlValidator, name='transit_odp.fares_validator'),
 ]
