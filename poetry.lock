@@ -756,14 +756,6 @@ toml = "*"
 pipenv = ["pipenv"]
 
 [[package]]
-name = "et-xmlfile"
-version = "1.1.0"
-description = "An implementation of lxml.xmlfile for the standard library"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[[package]]
 name = "execnet"
 version = "1.9.0"
 description = "execnet: rapid multi-Python deployment"
@@ -1246,9 +1238,6 @@ description = "A Python library to read/write Excel 2010 xlsx/xlsm files"
 category = "main"
 optional = false
 python-versions = ">=3.6"
-
-[package.dependencies]
-et-xmlfile = "*"
 
 [[package]]
 name = "packaging"
