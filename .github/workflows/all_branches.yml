@@ -1,0 +1,33 @@
+on:
+  push:
+    branches:
+    - '**'
+    - '!dev'
+    - '!test'
+    - '!main'
+  workflow_dispatch:
+
+name: 'all_features'
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+
+  all_features:
+    name: 'all_features'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: lint
+      uses: psf/black@stable
+      with:
+        options: "--check --config .black.toml"
+        src: "."
+        version: "22.3.0"
+
+    

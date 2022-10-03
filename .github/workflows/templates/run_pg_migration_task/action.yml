@@ -1,0 +1,28 @@
+name: update_task_definition
+
+# Were we can define the inputs that our action will accept
+inputs:
+  security_groups: 
+    required: true
+  environment:
+    required: true
+  subnets:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Run PG migration task
+    shell: bash
+    run: |
+      run_result=$(aws ecs run-task \
+          --cluster bodds-${{ inputs.environment }} \
+          --task-definition bodds_pg_migration_${{ inputs.environment }} --count 1 \
+          --network-configuration "awsvpcConfiguration={subnets=[${{ inputs.subnets }}],securityGroups=[${{ inputs.security_groups }}]}")
+      echo ${run_result}
+      container_arn=$(echo $run_result | jq -r '.tasks[0].taskArn')
+      aws ecs wait tasks-stopped \
+          --cluster bodds-${{ inputs.environment }} \
+          --tasks "${container_arn}"
+
