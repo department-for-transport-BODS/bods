@@ -13,6 +13,7 @@ from ..serializers import FaresSerializer
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
 category = ""  # Itr2 To be extratced from the xml path
+schema_path = "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd"
 
 
 class FaresXmlValidator(APIView):
@@ -32,7 +33,7 @@ class FaresXmlValidator(APIView):
         file_name = file_obj
 
         with open(
-            "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd",
+            schema_path,
             "r",
         ) as f:
             schema = f.read()
@@ -44,10 +45,8 @@ class FaresXmlValidator(APIView):
         try:
             lxml_schema.assertValid(xmlschema_doc)
         except etree.DocumentInvalid:
-            print("Validation error(s):")
             for error in lxml_schema.error_log:
-                print("  Line {}: {}".format(error.line, error.message))
-                b1 = FaresValidation(
+                fares_validator_model_object = FaresValidation(
                     dataset_id=pk2,
                     organisation_id=pk1,
                     file_name=file_name,
@@ -56,7 +55,7 @@ class FaresXmlValidator(APIView):
                     type_of_observation=type_of_observation,
                     category=category,
                 )
-                b1.save()
+                fares_validator_model_object.save()
 
         validations = FaresValidation.objects.filter(dataset_id=pk2)
         serializer = FaresSerializer(validations, many=True)
@@ -71,7 +70,7 @@ class FaresXmlValidator(APIView):
         if not isinstance(schema, etree.XMLSchema):
             logger.info(f"[XML] => Parsing {schema}.")
             root = etree.parse(
-                "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd"
+                schema_path
             )
             schema = etree.XMLSchema(root)
         return schema
