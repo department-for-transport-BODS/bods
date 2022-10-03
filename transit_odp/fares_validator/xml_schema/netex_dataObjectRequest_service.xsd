@@ -5,7 +5,7 @@
 	<xsd:element name="ParticipantRef" type="ParticipantCodeType"></xsd:element>
 	<xsd:element name="PublicationRequest" type="PublicationRequestStructure"></xsd:element>
 	<xsd:complexType name="PublicationRequestStructure">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element name="RequestTimestamp" type="xsd:dateTime"></xsd:element>
 			<xsd:element ref="ParticipantRef" minOccurs="0" />
 			<xsd:element name="Description" minOccurs="0" />
@@ -18,45 +18,45 @@
 			</xsd:element>
 			<xsd:element name="RequestPolicy" minOccurs="0"></xsd:element>
 			<xsd:element name="SubscriptionPolicy" minOccurs="0"></xsd:element>
-		</xsd:sequence>
+		</xsd:all>
 		<xsd:attribute name="version" type="xsd:NMTOKEN" default="1.0" />
 	</xsd:complexType>
 	<xsd:simpleType name="ParticipantCodeType">
-    <xsd:annotation>
-        <xsd:documentation>Type for Unique identifier of participant.</xsd:documentation>
-    </xsd:annotation>
-    <xsd:restriction base="xsd:NMTOKEN"/>
-</xsd:simpleType>
-<xsd:complexType name="ParticipantRefStructure">
-    <xsd:annotation>
-        <xsd:documentation>Reference to Unique identifier of participant.</xsd:documentation>
-    </xsd:annotation>
-    <xsd:simpleContent>
-        <xsd:extension base="ParticipantCodeType"/>
-    </xsd:simpleContent>
-</xsd:complexType>
+		<xsd:annotation>
+			<xsd:documentation>Type for Unique identifier of participant.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKEN" />
+	</xsd:simpleType>
+	<xsd:complexType name="ParticipantRefStructure">
+		<xsd:annotation>
+			<xsd:documentation>Reference to Unique identifier of participant.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="ParticipantCodeType" />
+		</xsd:simpleContent>
+	</xsd:complexType>
 	<!-- ============================================================================ -->
 	<xsd:element name="tariffs">
 		<xsd:complexType>
-			<xsd:sequence>
+			<xsd:all>
 				<xsd:element name="Tariff" type="TariffRequest"></xsd:element>
-			</xsd:sequence>
+			</xsd:all>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:complexType name="TariffRequest">
-		<xsd:sequence>
-			<xsd:element name="validityConditions">
+		<xsd:all>
+			<xsd:element name="validityConditions" minOccurs="1">
 				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="ValidBetween">
+					<xsd:all>
+						<xsd:element name="ValidBetween" minOccurs="1">
 							<xsd:complexType>
-								<xsd:sequence>
-									<xsd:element type="xsd:dateTime" name="FromDate" />
+								<xsd:all>
+									<xsd:element type="xsd:dateTime" name="FromDate" minOccurs="1"/>
 									<xsd:element type="xsd:dateTime" name="ToDate" />
-								</xsd:sequence>
+								</xsd:all>
 							</xsd:complexType>
 						</xsd:element>
-					</xsd:sequence>
+					</xsd:all>
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element name="Name" minOccurs="0" />
@@ -76,8 +76,7 @@
 					</xsd:simpleContent>
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element name="LineRef" minOccurs="0" />
-			<xsd:element name="TypeOfTariffRef" minOccurs="0">
+			<xsd:element name="TypeOfTariffRef" minOccurs="1">
 				<xsd:complexType>
 					<xsd:simpleContent>
 						<xsd:extension base="xsd:string">
@@ -106,33 +105,169 @@
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:element>
+			<xsd:element name="LineRef" minOccurs="0" />
 			<xsd:element name="qualityStructureFactors" minOccurs="0" />
-			<xsd:element name="fareStructureElements" minOccurs="0" />
-		</xsd:sequence>
+			<xsd:element name="alternativeTexts" minOccurs="0" />
+			<xsd:element name="keyList" minOccurs="0" />
+			<xsd:element name="Extensions" minOccurs="0" />
+			<xsd:element name="BrandingRef" minOccurs="0" />
+			<xsd:element name="alternativeNames" minOccurs="0" />
+			<xsd:element name="Description" minOccurs="0" />
+			<xsd:element name="noticeAssignments" minOccurs="0" />
+			<xsd:element name="documentLinks" minOccurs="0" />
+			<xsd:element name="PrivateCode" minOccurs="0" />
+			<xsd:element name="OrganisationRef" minOccurs="0" />
+			<xsd:element name="GroupOfOperatorsRef" minOccurs="0" />
+			<xsd:element name="GroupOfLinesRef" minOccurs="0" />
+			<xsd:element name="ReturnFareTwiceSingle" minOccurs="0" />
+			<xsd:element name="GeographicalUnitRef" minOccurs="0" />
+			<xsd:element name="geographicalIntervals" minOccurs="0" />
+			<xsd:element name="geographicalStructureFactors" minOccurs="0" />
+			<xsd:element name="TimeUnitRef" minOccurs="0" />
+			<xsd:element name="timeIntervals" minOccurs="0" />
+			<xsd:element name="timeStructureFactors" minOccurs="0" />
+			<xsd:element name="distanceMatrixElements" minOccurs="0" />
+			<xsd:element name="groupsOfDistanceMatrixElements" minOccurs="0" />
+			<xsd:element name="PriceUnitRef" minOccurs="0" />
+			<xsd:element name="priceGroups" minOccurs="0" />
+			<xsd:element name="fareTables" minOccurs="0" />
+			<xsd:element name="fareStructureElements">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="FareStructureElement" minOccurs="3" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:all>
+									<xsd:element name="TypeOfFareStructureElementRef">
+										<xsd:complexType>
+											<xsd:attribute name="version" />
+											<xsd:attribute name="ref" use="required" >
+											<xsd:simpleType>
+												<xsd:restriction base="xsd:string">
+													<xsd:enumeration value="fxc:access" />
+													<xsd:enumeration value="fxc:eligibility" />
+													<xsd:enumeration value="fxc:travel_conditions" />
+													<xsd:enumeration value="fxc:durations" />
+													<xsd:enumeration value="fxc:access_when" />
+													<xsd:enumeration value="fxc:carnet_units" />
+													<xsd:enumeration value="fxc:accepted_by" />
+													<xsd:enumeration value="fxc:quotas" />
+													<xsd:enumeration value="fxc:groups" />
+													<xsd:enumeration value="fxc:prerequisites" />
+													<xsd:enumeration value="fxc:steps" />
+													<xsd:enumeration value="fxc:sales_conditions" />
+												</xsd:restriction>
+											</xsd:simpleType>
+										</xsd:attribute>
+										</xsd:complexType>
+									</xsd:element>
+									<xsd:element name="Name" minOccurs="0"/>
+									<xsd:element name="Description" minOccurs="0"/>
+									<xsd:element name="timeIntervals" minOccurs="0"/>
+									<xsd:element name="GenericParameterAssignment">
+										<xsd:complexType>
+											<xsd:all>
+												<xsd:element name="TypeOfAccessRightAssignmentRef" >
+												<xsd:complexType>
+													<xsd:attribute name="version" />
+													<xsd:attribute name="ref" use="required" >
+													<xsd:simpleType>
+														<xsd:restriction base="xsd:string">
+															<xsd:enumeration value="fxc:eligible" />
+															<xsd:enumeration value="fxc:can_access" />
+															<xsd:enumeration value="fxc:cannot_access" />
+															<xsd:enumeration value="fxc:must_access" />
+															<xsd:enumeration value="fxc:can_access_if_purchased" />
+															<xsd:enumeration value="fxc:can_use_with_type_of_travel_document" />
+															<xsd:enumeration value="fxc:condition_of_use" />
+															<xsd:enumeration value="fxc:condition_of_sale" />
+															<xsd:enumeration value="fxc:can_purchase" />
+															<xsd:enumeration value="fxc:can_purchase_when" />
+															<xsd:enumeration value="fxc:can_purchase_where" />
+															<xsd:enumeration value="fxc:gives_entitlement" />
+															<xsd:enumeration value="fxc:prerequisites" />
+															<xsd:enumeration value="fxc:penalties" />
+															<xsd:enumeration value="fxc:can_use_to_pay_for" />
+															<xsd:enumeration value="fxc:payment_schedules" />
+															<xsd:enumeration value="fxc:reservation_condition" />
+															<xsd:enumeration value="fxc:distribution_channel_restriction" />
+															<xsd:enumeration value="fxc:use_before" />
+															<xsd:enumeration value="fxc:quota_applies" />
+															<xsd:enumeration value="fxc:promotion_applies" />
+															<xsd:enumeration value="fxc:validity_chaining" />
+														</xsd:restriction>
+													</xsd:simpleType>
+												</xsd:attribute>
+												</xsd:complexType>
+												</xsd:element>
+												<xsd:element name="Description" minOccurs="0"/>
+												<xsd:element name="FareDemandFactorRef" minOccurs="0"/>
+												<xsd:element name="ValidityParameterGroupingType" minOccurs="0"/>
+												<xsd:element name="ValidityParameterAssignmentType" minOccurs="0"/>
+												<xsd:element name="LimitationGroupingType" minOccurs="0"/>
+												<xsd:element name="validityParameters" minOccurs="0"/>
+												<xsd:element name="limitations" minOccurs="0"/>
+											</xsd:all>
+											<xsd:attribute type="xsd:float" name="version" />
+											<xsd:attribute name="id" use="required" />
+											<xsd:attribute name="order" />
+										</xsd:complexType>
+									</xsd:element>
+									<xsd:element name="distanceMatrixElements" minOccurs="0"/>
+								</xsd:all>
+							<xsd:attribute type="xsd:float" name="version" />
+							<xsd:attribute name="id" use="required" />
+						</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:all>
 		<xsd:attribute type="xsd:float" name="version" />
 		<xsd:attribute name="id" use="required" />
 	</xsd:complexType>
 	<!-- ============================================================================ -->
 	<xsd:element name="fareProducts">
 		<xsd:complexType>
-			<xsd:sequence>
+			<xsd:all>
 				<xsd:element name="PreassignedFareProduct" type="FareProductRequestStructure"></xsd:element>
-			</xsd:sequence>
+			</xsd:all>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:complexType name="FareProductRequestStructure">
-		<xsd:sequence>
-			<xsd:element name="Name" />
-			<xsd:element name="TypeOfFareProductRef" minOccurs="0" />
-			<xsd:element name="ChargingMomentType" minOccurs="0" />
-			<xsd:element name="validableElements" minOccurs="0">
+		<xsd:all>
+			<xsd:element name="Name" minOccurs="1"/>
+			<xsd:element name="TypeOfFareProductRef" minOccurs="1">
 				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="ValidableElement">
+					<xsd:attribute name="version" />
+					<xsd:attribute name="ref" use="required">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="fxc:standard_product@trip@short_hop" />
+								<xsd:enumeration value="fxc:standard_product@trip@single" />
+								<xsd:enumeration value="fxc:era:standard_product@trip@time_limited" />
+								<xsd:enumeration value="fxc:special_product@trip@period_return" />
+								<xsd:enumeration value="fxc:era:special_produc@trip@day_return" />
+								<xsd:enumeration value="fxc:standard_product@pass@day" />
+								<xsd:enumeration value="fxc:standard_product@pass@24H" />
+								<xsd:enumeration value="fxc:standard_product@pass@period" />
+								<xsd:enumeration value="fxc:standard_product@carnet@trips" />
+								<xsd:enumeration value="fxc:standard_product@carnet@days" />
+								<xsd:enumeration value="fxc:standard_product@discount@sales" />
+								<xsd:enumeration value="fxc:standard_product@discount@usage" />
+								<xsd:enumeration value="fxc:standard_product@stored_value@epurse" />
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="validableElements" minOccurs="1">
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="ValidableElement" minOccurs="1">
 							<xsd:complexType>
 								<xsd:all>
 									<xsd:element name="Name" />
-									<xsd:element name="fareStructureElements">
+									<xsd:element name="fareStructureElements" minOccurs="1">
 										<xsd:complexType>
 											<xsd:sequence>
 												<xsd:element name="FareStructureElementRef" minOccurs="1" maxOccurs="unbounded">
@@ -144,84 +279,164 @@
 											</xsd:sequence>
 										</xsd:complexType>
 									</xsd:element>
+									<xsd:element name="discountRights" minOccurs="0" />
+									<xsd:element name="amountOfPriceUnits" minOccurs="0" />
+									<xsd:element name="thirdPartyProducts" minOccurs="0" /> 
+									<xsd:element name="validityParameterAssignments" minOccurs="0" />
+									<xsd:element name="prices" minOccurs="0" />
 								</xsd:all>
 								<xsd:attribute type="xsd:float" name="version" />
 								<xsd:attribute name="id" use="required" />
-							</xsd:complexType>
+							 </xsd:complexType>
 						</xsd:element>
-					</xsd:sequence>
+						<xsd:element name="fareElementsInSequence" minOccurs="0" />
+						<xsd:element name="discountRights" minOccurs="0" />
+						<xsd:element name="amountOfPriceUnits" minOccurs="0" />
+						<xsd:element name="thirdPartyProducts" minOccurs="0" />
+						<xsd:element name="validityParameterAssignments" minOccurs="0" />
+						<xsd:element name="prices" minOccurs="0" />
+					</xsd:all>
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element name="accessRightsInProduct">
+			<xsd:element name="accessRightsInProduct" minOccurs="1">
 				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="AccessRightInProduct">
+					<xsd:all>
+						<xsd:element name="AccessRightInProduct" minOccurs="1">
 							<xsd:complexType>
-								<xsd:sequence>
-									<xsd:element name="ValidableElementRef" />
-								</xsd:sequence>
+								<xsd:all>
+									<xsd:element name="ValidableElementRef" minOccurs="1"/>
+								</xsd:all>
 								<xsd:attribute type="xsd:float" name="version" />
 								<xsd:attribute name="id" use="required" />
 								<xsd:attribute name="order" use="required" />
 							</xsd:complexType>
 						</xsd:element>
-					</xsd:sequence>
+					</xsd:all>
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element name="ProductType" minOccurs="1"></xsd:element>
-		</xsd:sequence>
+			<xsd:element name="ChargingMomentType" minOccurs="1" />
+			<xsd:element name="Url" minOccurs="0" />
+			<xsd:element name="infoLinks" minOccurs="0" />
+			<xsd:element name="alternativeNames" minOccurs="0" />
+			<xsd:element name="noticeAssignments" minOccurs="0" />
+			<xsd:element name="PricingServiceRef" minOccurs="0" />
+			<xsd:element name="PricingRuleRef" minOccurs="0" />
+			<xsd:element name="priceGroups" minOccurs="0" />
+			<xsd:element name="fareTables" minOccurs="0" />
+			<xsd:element name="documentLinks" minOccurs="0" />
+			<xsd:element name="PrivateCode" minOccurs="0" />
+			<xsd:element name="InfoUrl" minOccurs="0" />
+			<xsd:element name="ChargingMomentRef" minOccurs="0" />
+			<xsd:element name="typesOfFareProduct" minOccurs="0" />
+			<xsd:element name="TransportOrganisationRef" minOccurs="0" />
+			<xsd:element name="ConditionSummary" minOccurs="0" />
+			<xsd:element name="FareProductRef" minOccurs="0" />
+			<xsd:element name="validityParameterAssignments" minOccurs="0" />
+			<xsd:element name="GenericParameterAssignment" minOccurs="0" />
+			<xsd:element name="GenericParameterAssignmentInContext" minOccurs="0" />
+			<xsd:element name="tariffs" minOccurs="0" />
+			<xsd:element name="prices" minOccurs="0" />
+			<xsd:element name="OperatorRef" minOccurs="0" />
+		</xsd:all>
 		<xsd:attribute type="xsd:float" name="version" />
 		<xsd:attribute name="id" use="required" />
 	</xsd:complexType>
 	<!-- ============================================================================ -->
 	<xsd:element name="salesOfferPackages">
-	<xsd:complexType>
-		<xsd:sequence>
-			<xsd:element name="SalesOfferPackage" type="SalesOfferStructure"></xsd:element>
-		</xsd:sequence>
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element name="SalesOfferPackage" type="SalesOfferStructure"></xsd:element>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="SalesOfferStructure">
+		<xsd:all>
+			<xsd:element name="Name" />
+			<xsd:element name="distributionAssignments" minOccurs="1">
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="DistributionAssignment" minOccurs="1">
+							<xsd:complexType>
+								<xsd:all>
+									<xsd:element name="DistributionChannelRef" />
+									<xsd:element name="DistributionChannelType" minOccurs="1" />
+									<xsd:element name="PaymentMethods" minOccurs="1" />
+								</xsd:all>
+								<xsd:attribute name="version" />
+								<xsd:attribute name="id" use="required" />
+								<xsd:attribute name="order" use="required" />
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="salesOfferPackageElements" minOccurs="1">
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="SalesOfferPackageElement" minOccurs="1">
+							<xsd:complexType>
+								<xsd:all>
+									<xsd:element name="TypeOfTravelDocumentRef" minOccurs="1"/>
+									<xsd:element name="PreassignedFareProductRef" minOccurs="1"/>
+								</xsd:all>
+								<xsd:attribute name="version" />
+								<xsd:attribute name="id" use="required" />
+								<xsd:attribute name="order" use="required" />
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="validityConditions" minOccurs="0" />
+			<xsd:element name="ValidBetween" minOccurs="0" />
+			<xsd:element name="alternativeTexts" minOccurs="0" />
+			<xsd:element name="keyList" minOccurs="0" />
+			<xsd:element name="Extensions" minOccurs="0" />
+			<xsd:element name="BrandingRef" minOccurs="0" />
+			<xsd:element name="Description" minOccurs="0" />
+			<xsd:element name="Url" minOccurs="0" />
+			<xsd:element name="infoLinks" minOccurs="0" />
+			<xsd:element name="alternativeNames" minOccurs="0" />
+			<xsd:element name="noticeAssignments" minOccurs="0" />
+			<xsd:element name="PricingServiceRef" minOccurs="0" />
+			<xsd:element name="PricingRuleRef" minOccurs="0" />
+			<xsd:element name="priceGroups" minOccurs="0" />
+			<xsd:element name="fareTables" minOccurs="0" />
+			<xsd:element name="PrivateCode" minOccurs="0" />
+			<xsd:element name="TypeOfSalesOfferPackageRef" minOccurs="0" />
+			<xsd:element name="ConditionSummary" minOccurs="0" />
+			<xsd:element name="validityParameterAssignments" minOccurs="0" />
+			<xsd:element name="prices" minOccurs="0" />
+			<xsd:element name="RoundingRef" minOccurs="0" />
+			<xsd:element name="GroupOfSalesOfferPackagesRef" minOccurs="0" />
+			<xsd:element name="groupsOfSaleOfferPackages" minOccurs="0" />
+			<xsd:element name="salesOfferPackageSubstitutions" minOccurs="0" />
+		</xsd:all>
+		<xsd:attribute type="xsd:float" name="version" />
+		<xsd:attribute name="id" use="required" />
 	</xsd:complexType>
-</xsd:element>
-<xsd:complexType name="SalesOfferStructure">
-	<xsd:sequence>
-		<xsd:element name="Name" />
-		<xsd:element name="distributionAssignments" minOccurs="0">
-			<xsd:complexType>
-				<xsd:sequence>
-					<xsd:element name="DistributionAssignment">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="DistributionChannelRef" />
-								<xsd:element name="DistributionChannelType" />
-								<xsd:element name="PaymentMethods" />
-							</xsd:sequence>
-							<xsd:attribute name="version" />
-							<xsd:attribute name="id" use="required" />
-							<xsd:attribute name="order" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:sequence>
-			</xsd:complexType>
-		</xsd:element>
-		<xsd:element name="salesOfferPackageElements">
-			<xsd:complexType>
-				<xsd:sequence>
-					<xsd:element name="SalesOfferPackageElement">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="TypeOfTravelDocumentRef" />
-								<xsd:element name="PreassignedFareProductRef" />
-							</xsd:sequence>
-							<xsd:attribute name="version" />
-							<xsd:attribute name="id" use="required" />
-							<xsd:attribute name="order" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:sequence>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:sequence>
-	<xsd:attribute type="xsd:float" name="version" />
+	<!-- ============================================================================ -->
+	<xsd:element name="fareTables">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element name="FareTable" type="FareTablesStructure"></xsd:element>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="FareTablesStructure">
+		<xsd:all>
+			<xsd:element name="Name" minOccurs="0" />
+			<xsd:element name="Description" minOccurs="0" />
+			<xsd:element name="pricesFor" minOccurs="1" />
+			<xsd:element name="usedIn" minOccurs="0" />
+			<xsd:element name="rows" minOccurs="0" />
+			<xsd:element name="includes" minOccurs="0" />
+			<xsd:element name="specifics" minOccurs="0" />
+			<xsd:element name="columns" minOccurs="0" />
+		</xsd:all>
+		<xsd:attribute type="xsd:float" name="version" />
 	<xsd:attribute name="id" use="required" />
-</xsd:complexType>
+	</xsd:complexType>
 </xsd:schema>
-<!-- ============================================================================ -->
+	<!-- ============================================================================ -->
