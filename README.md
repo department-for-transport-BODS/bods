@@ -4,18 +4,22 @@ Bus Open Data Service
 
 ## Deployment
 We now have 4 environments:
+```txt
 -dev
 -test
 -uat
 -prod
+```
 
 Your branch should be merged in the following order:
 Feature_branch -> dev -> test -> main -> tagging (with the relevent version)
 
+```txt
 The dev branch deploys into the dev environment 
 The test branch deploys into the test environment 
 The main branch deploys into the uat environment 
 Tags deploy to the prod environment
+```
 
 When pushing to the dev branch, an image will be built and pushed up the ECR, tagging it
 with the version specified in 'version.txt' (so make sure you change this when pushing
