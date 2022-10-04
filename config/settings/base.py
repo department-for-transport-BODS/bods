@@ -168,6 +168,7 @@ LOCAL_APPS = [
     "transit_odp.transmodel.apps.TransmodelConfig",
     "transit_odp.users.apps.UsersAppConfig",
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
+    "transit_odp.fares_validator.apps.FaresValidatorConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
