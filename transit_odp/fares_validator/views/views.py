@@ -13,7 +13,9 @@ from ..serializers import FaresSerializer
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
 category = ""  # Itr2 To be extratced from the xml path
-schema_path = "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd"
+schema_path = (
+    "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd"
+)
 
 
 class FaresXmlValidator(APIView):
@@ -69,8 +71,6 @@ class FaresXmlValidator(APIView):
 
         if not isinstance(schema, etree.XMLSchema):
             logger.info(f"[XML] => Parsing {schema}.")
-            root = etree.parse(
-                schema_path
-            )
+            root = etree.parse(schema_path)
             schema = etree.XMLSchema(root)
         return schema
