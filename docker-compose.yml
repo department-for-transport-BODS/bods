@@ -49,5 +49,8 @@ services:
       - "3310:3310"
     restart: unless-stopped
     volumes:
-      - /srv/opt/clam/store:/store
+      # - /srv/opt/clam/store:/store
+      - clam:/var/lib/clamav
       - ./docker/local/clamav/clamd.conf:/etc/clamav/clamd.conf
+volumes:
+  clam:
