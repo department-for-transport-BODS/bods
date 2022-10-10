@@ -1,4 +1,5 @@
 import logging
+import zipfile
 
 from django.http import JsonResponse
 from lxml import etree
@@ -32,7 +33,7 @@ class FaresXmlValidator(APIView):
         if "file" not in request.data:
             raise ParseError("Empty content")
         file_obj = request.data["file"]
-        file_name = file_obj
+        etree_obj_list = {}
 
         with open(
             schema_path,
@@ -42,27 +43,35 @@ class FaresXmlValidator(APIView):
 
         if schema is not None:
             lxml_schema = self.get_lxml_schema(schema)
-            xmlschema_doc = etree.parse(file_obj)
 
-        try:
-            lxml_schema.assertValid(xmlschema_doc)
-        except etree.DocumentInvalid:
-            for error in lxml_schema.error_log:
-                fares_validator_model_object = FaresValidation(
-                    dataset_id=pk2,
-                    organisation_id=pk1,
-                    file_name=file_name,
-                    error_line_no=error.line,
-                    error=error.message,
-                    type_of_observation=type_of_observation,
-                    category=category,
-                )
-                fares_validator_model_object.save()
-                validations = FaresValidation.objects.filter(dataset_id=pk2)
-                serializer = FaresSerializer(validations, many=True)
-                return JsonResponse(
-                    serializer.data, safe=False, status=status.HTTP_201_CREATED
-                )
+        file_name = file_obj.name
+        if file_name.endswith(".xml"):
+            xmlschema_doc = etree.parse(file_obj)
+            etree_obj_list[file_name] = xmlschema_doc
+        elif file_name.endswith(".zip"):
+            with zipfile.ZipFile(file_obj, "r") as zout:
+                filenames = [name for name in zout.namelist() if name.endswith("xml")]
+                for file_name in filenames:
+                    if not file_name.startswith("__"):
+                        with zout.open(file_name) as xmlout:
+                            xmlschema_doc = etree.parse(xmlout)
+                            etree_obj_list[file_name] = xmlschema_doc
+
+        for xmlschema_doc in etree_obj_list:
+            try:
+                lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
+            except etree.DocumentInvalid:
+                for error in lxml_schema.error_log:
+                    fares_validator_model_object = FaresValidation(
+                        dataset_id=pk2,
+                        organisation_id=pk1,
+                        file_name=xmlschema_doc,
+                        error_line_no=error.line,
+                        error=error.message,
+                        type_of_observation=type_of_observation,
+                        category=category,
+                    )
+                    fares_validator_model_object.save()
 
         return JsonResponse(status=status.HTTP_200_OK)
 
