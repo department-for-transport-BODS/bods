@@ -48,9 +48,17 @@ class FaresXmlValidator(APIView):
         try:
             # lxml_schema.assertValid(xmlschema_doc)
             get_root = NeTExDocument(file_name)
-            print("root", get_root)
+            product_type = get_root.get_product_type()
+            print("ProductTypes:::from main>>>>", product_type)
+            if product_type in ["dayPass", "periodPass"]:
+                time_intervals = get_root.get_tariff_time_intervals()
+                if time_intervals:
+                    print("time_intervals>>>>", time_intervals)
+                    return JsonResponse({"errors": "No errors"}) 
+                return JsonResponse({"errors": "TimeInterval tag Is Missing inside tariff tag"}) 
+            
         except Exception as err:
-            print("Error", err)
+            print("Error>>>", err)
         # except etree.DocumentInvalid:
         #     for error in lxml_schema.error_log:
         #         fares_validator_model_object = FaresValidation(
@@ -67,8 +75,7 @@ class FaresXmlValidator(APIView):
         # validations = FaresValidation.objects.filter(dataset_id=pk2)
         # serializer = FaresSerializer(validations, many=True)
         # return JsonResponse({"errors": serializer.data}, status=status.HTTP_201_CREATED)
-        error = err
-        return JsonResponse({"errors": error})
+        return JsonResponse({"errors": "error"})
 
     def get_lxml_schema(self, schema):
         """Creates an lxml XMLSchema object from a file"""
