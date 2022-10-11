@@ -1,5 +1,4 @@
 import logging
-import zipfile
 
 from django.http import JsonResponse
 from lxml import etree
@@ -7,6 +6,8 @@ from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 from rest_framework.views import APIView
+
+from transit_odp.fares_validator.utils.files_parser import file_to_etree
 
 from ..models import FaresValidation
 from ..serializers import FaresSerializer
@@ -44,34 +45,26 @@ class FaresXmlValidator(APIView):
         if schema is not None:
             lxml_schema = self.get_lxml_schema(schema)
 
-        file_name = file_obj.name
-        if file_name.endswith(".xml"):
-            xmlschema_doc = etree.parse(file_obj)
-            etree_obj_list[file_name] = xmlschema_doc
-        elif file_name.endswith(".zip"):
-            with zipfile.ZipFile(file_obj, "r") as zout:
-                filenames = [name for name in zout.namelist() if name.endswith("xml")]
-                for file_name in filenames:
-                    if not file_name.startswith("__"):
-                        with zout.open(file_name) as xmlout:
-                            xmlschema_doc = etree.parse(xmlout)
-                            etree_obj_list[file_name] = xmlschema_doc
+        etree_obj_list = file_to_etree(file_obj)
 
-        for xmlschema_doc in etree_obj_list:
-            try:
-                lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
-            except etree.DocumentInvalid:
-                for error in lxml_schema.error_log:
-                    fares_validator_model_object = FaresValidation(
-                        dataset_id=pk2,
-                        organisation_id=pk1,
-                        file_name=xmlschema_doc,
-                        error_line_no=error.line,
-                        error=error.message,
-                        type_of_observation=type_of_observation,
-                        category=category,
-                    )
-                    fares_validator_model_object.save()
+        if etree_obj_list:
+            for xmlschema_doc in etree_obj_list:
+                try:
+                    lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
+                except etree.DocumentInvalid:
+                    for error in lxml_schema.error_log:
+                        fares_validator_model_object = FaresValidation(
+                            dataset_id=pk2,
+                            organisation_id=pk1,
+                            file_name=xmlschema_doc,
+                            error_line_no=error.line,
+                            error=error.message,
+                            type_of_observation=type_of_observation,
+                            category=category,
+                        )
+                        fares_validator_model_object.save()
+        else:
+            return JsonResponse({}, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
         validations = FaresValidation.objects.filter(dataset_id=pk2)
         serializer = FaresSerializer(validations, many=True)
