@@ -3,7 +3,36 @@
 
 
 {# Preview Section #}
-<div id="preview-section">
+<div class="govuk-!-margin-top-6" id="preview-section">
+  {# Fares Validator Section - Succes/Fail Message #}
+  <div class="app-dqs-panel govuk-!-margin-bottom-7">
+    <div class="app-dqs-panel__body">
+      <div class="app-dqs-panel__success">
+        {% if validator_error %}
+        <h2 class="govuk-heading-m">Validation Check - Failed</h2>
+        <p class="govuk-body govuk-!-margin-bottom-0">
+          {% blocktrans %}
+          The validation report checks for compliance against the mandated NeTEx Profile.
+          {% endblocktrans %}
+          <br />
+          <br />
+          <a class="govuk-link" href="{% url 'transit_odp.fares_exporter' pk1 pk2 %}">Download validation report</a>
+          <br />
+          <br />
+          {% blocktrans %}
+          The fares data supplied is non-compliant. It does not meet the data format required as specified in
+          the <a class="govuk-link" href="">guidance</a> and from Monday XX August XX it will be rejected from BODS. <br />
+          <br />
+          To pass the validation please address all outstanding issues in the validation report.
+          {% endblocktrans %}
+        </p>
+        {% else %}
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Validation Check - Passed</h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
   {# Publish form #}
   <div class="govuk-!-margin-bottom-6">
     {% crispy form %}

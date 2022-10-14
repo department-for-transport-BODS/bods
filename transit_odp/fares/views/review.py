@@ -1,10 +1,11 @@
 import logging
 from typing import List, Optional, Tuple, Type, TypedDict
 
+import requests
 from django.db import transaction
 from django.db.models import Q
 from django.forms import Form
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django_hosts import reverse
@@ -89,6 +90,45 @@ class ReviewView(ReviewBaseView):
 
         return error_message
 
+    def get_revision(self):
+        dataset_id = self.object.dataset_id
+        revision = DatasetRevision.objects.get(id=dataset_id)
+        return revision
+
+    def get_upload_file(self):
+        revision = self.get_revision()
+        upload_file = revision.upload_file
+        return upload_file
+
+    def get_validator_response(self):
+        upload_file = self.get_upload_file()
+        revision = self.get_revision()
+        dataset_id = revision.id
+
+        headers = { 'Content-Type': 'application/xml', 'Content-Disposition': 'attachment; filename="errors.xml"' }
+        url = reverse(
+            "transit_odp.fares_validator",
+            kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
+            host=config.hosts.PUBLISH_HOST
+        )
+        fares_validator_response = requests.post(url, data=upload_file, headers=headers)
+
+        if fares_validator_response.status_code == 201:
+            content = fares_validator_response.json()
+            return content
+        else:
+            return HttpResponse('Error: ', fares_validator_response.text)
+
+    def set_validator_error(self):
+        fares_validator_content = self.get_validator_response()
+
+        if fares_validator_content.get("errors") == []:
+            fares_validator_error = False
+        else:
+            fares_validator_error = True
+
+        return fares_validator_error
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         revision = self.object
@@ -101,6 +141,10 @@ class ReviewView(ReviewBaseView):
 
         # Get the error info
         context["error"] = self.get_error()
+
+        # Get the fares-validator error info
+        context["validator_error"] = self.set_validator_error()
+        context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
@@ -138,7 +182,6 @@ class ReviewView(ReviewBaseView):
             kwargs={"pk": dataset_id, "pk1": self.kwargs["pk1"]},
             host=config.hosts.PUBLISH_HOST,
         )
-
 
 class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
     template_name = "fares/revision_publish_success.html"
