@@ -5,7 +5,7 @@ import requests
 from django.db import transaction
 from django.db.models import Q
 from django.forms import Form
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django_hosts import reverse
@@ -105,11 +105,14 @@ class ReviewView(ReviewBaseView):
         revision = self.get_revision()
         dataset_id = revision.id
 
-        headers = { 'Content-Type': 'application/xml', 'Content-Disposition': 'attachment; filename="errors.xml"' }
+        headers = {
+            "Content-Type": "application/xml",
+            "Content-Disposition": 'attachment; filename="errors.xml"',
+        }
         url = reverse(
             "transit_odp.fares_validator",
             kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
-            host=config.hosts.PUBLISH_HOST
+            host=config.hosts.PUBLISH_HOST,
         )
         fares_validator_response = requests.post(url, data=upload_file, headers=headers)
 
@@ -117,7 +120,7 @@ class ReviewView(ReviewBaseView):
             content = fares_validator_response.json()
             return content
         else:
-            return HttpResponse('Error: ', fares_validator_response.text)
+            return HttpResponse("Error: ", fares_validator_response.text)
 
     def set_validator_error(self):
         fares_validator_content = self.get_validator_response()
@@ -182,6 +185,7 @@ class ReviewView(ReviewBaseView):
             kwargs={"pk": dataset_id, "pk1": self.kwargs["pk1"]},
             host=config.hosts.PUBLISH_HOST,
         )
+
 
 class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
     template_name = "fares/revision_publish_success.html"
