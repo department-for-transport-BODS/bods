@@ -5,7 +5,7 @@ import requests
 from django.db import transaction
 from django.db.models import Q
 from django.forms import Form
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django_hosts import reverse
@@ -100,14 +100,12 @@ class ReviewView(ReviewBaseView):
         upload_file = revision.upload_file
         return upload_file
 
-    def get_validator_response(self):
+    def set_validator_error(self, dataset_id):
         upload_file = self.get_upload_file()
-        revision = self.get_revision()
-        dataset_id = revision.id
 
         headers = {
             "Content-Type": "application/xml",
-            "Content-Disposition": 'attachment; filename="errors.xml"',
+            "Content-Disposition": f'attachment; filename="{upload_file}"',
         }
         url = reverse(
             "transit_odp.fares_validator",
@@ -122,20 +120,32 @@ class ReviewView(ReviewBaseView):
         fares_validator_response = requests.post(url, data=upload_file, headers=headers)
 
         if fares_validator_response.status_code == 201:
-            content = fares_validator_response.json()
-            return content
+            return True
         else:
-            return HttpResponse("Error: ", fares_validator_response.text)
+            return False
 
-    def set_validator_error(self):
-        fares_validator_content = self.get_validator_response()
+    def get_validator_error(self, dataset_id):
 
-        if fares_validator_content.get("errors") == []:
-            fares_validator_error = False
+        headers = {
+            "Content-Type": "application/xml",
+        }
+        url = reverse(
+            "transit_odp.fares_validator",
+            kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
+            host=config.hosts.PUBLISH_HOST,
+        )
+
+        user = self.request.user
+        if user.is_authenticated:
+            url = f"{url}?api_key={user.auth_token}"
+
+        fares_validator_response = requests.get(url, headers=headers)
+        fares_validator_content = fares_validator_response.json()
+
+        if fares_validator_content == []:
+            return False
         else:
-            fares_validator_error = True
-
-        return fares_validator_error
+            return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -151,7 +161,10 @@ class ReviewView(ReviewBaseView):
         context["error"] = self.get_error()
 
         # Get the fares-validator error info
-        context["validator_error"] = self.set_validator_error()
+        if not self.get_validator_error(revision.dataset.id):
+            context["validator_error"] = self.set_validator_error(revision.dataset.id)
+        else:
+            context["validator_error"] = self.get_validator_error(revision.dataset.id)
         context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
