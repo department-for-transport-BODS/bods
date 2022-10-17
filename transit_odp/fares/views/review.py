@@ -114,6 +114,11 @@ class ReviewView(ReviewBaseView):
             kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
             host=config.hosts.PUBLISH_HOST,
         )
+
+        user = self.request.user
+        if user.is_authenticated:
+            url = f"{url}?api_key={user.auth_token}"
+
         fares_validator_response = requests.post(url, data=upload_file, headers=headers)
 
         if fares_validator_response.status_code == 201:
