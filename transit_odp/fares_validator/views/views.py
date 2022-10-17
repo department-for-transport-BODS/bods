@@ -28,7 +28,7 @@ class FaresXmlValidator(APIView):
             dataset_id=pk2, organisation_id=pk1
         )
         serializer = FaresSerializer(validations, many=True)
-        return JsonResponse({"errors": serializer.data}, safe=False)
+        return JsonResponse(serializer.data, safe=False)
 
     def post(self, request, pk1, pk2, format=None):
         if "file" not in request.data:
@@ -63,12 +63,16 @@ class FaresXmlValidator(APIView):
                             category=category,
                         )
                         fares_validator_model_object.save()
+                        validations = FaresValidation.objects.filter(dataset_id=pk2)
+                        serializer = FaresSerializer(validations, many=True)
+                        return JsonResponse(
+                            serializer.data, safe=False, status=status.HTTP_201_CREATED
+                        )
+
+                return JsonResponse(status=status.HTTP_200_OK)
+
         else:
             return JsonResponse({}, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-
-        validations = FaresValidation.objects.filter(dataset_id=pk2)
-        serializer = FaresSerializer(validations, many=True)
-        return JsonResponse({"errors": serializer.data}, status=status.HTTP_201_CREATED)
 
     def get_lxml_schema(self, schema):
         """Creates an lxml XMLSchema object from a file, file path or url."""
