@@ -39,4 +39,3 @@ class Violation(BaseModel):
     name: str
     element_text: Optional[str] = None
     observation: Observation
-
