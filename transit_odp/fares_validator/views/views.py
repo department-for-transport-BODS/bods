@@ -54,7 +54,9 @@ class FaresXmlValidator(APIView):
             for xmlschema_doc in etree_obj_list:
                 try:
                     fares_validator = fares_validation.get_fares_validator()
-                    violations = fares_validator.get_violations(file_obj, pk1) # Not plugged to API response
+                    violations = fares_validator.get_violations(
+                        file_obj, pk1
+                    )  # Not plugged to API response
                     print("Violations>>>>", violations)
 
                     lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
