@@ -1,6 +1,7 @@
 import logging
 from typing import List, Optional, Tuple, Type, TypedDict
 
+import requests
 from django.db import transaction
 from django.db.models import Q
 from django.forms import Form
@@ -89,6 +90,63 @@ class ReviewView(ReviewBaseView):
 
         return error_message
 
+    def get_revision(self):
+        dataset_id = self.object.dataset_id
+        revision = DatasetRevision.objects.get(id=dataset_id)
+        return revision
+
+    def get_upload_file(self):
+        revision = self.get_revision()
+        upload_file = revision.upload_file
+        return upload_file
+
+    def set_validator_error(self, dataset_id):
+        upload_file = self.get_upload_file()
+
+        headers = {
+            "Content-Type": "application/xml",
+            "Content-Disposition": f'attachment; filename="{upload_file}"',
+        }
+        url = reverse(
+            "transit_odp.fares_validator",
+            kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
+            host=config.hosts.PUBLISH_HOST,
+        )
+
+        user = self.request.user
+        if user.is_authenticated:
+            url = f"{url}?api_key={user.auth_token}"
+
+        fares_validator_response = requests.post(url, data=upload_file, headers=headers)
+
+        if fares_validator_response.status_code == 201:
+            return True
+        else:
+            return False
+
+    def get_validator_error(self, dataset_id):
+
+        headers = {
+            "Content-Type": "application/xml",
+        }
+        url = reverse(
+            "transit_odp.fares_validator",
+            kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
+            host=config.hosts.PUBLISH_HOST,
+        )
+
+        user = self.request.user
+        if user.is_authenticated:
+            url = f"{url}?api_key={user.auth_token}"
+
+        fares_validator_response = requests.get(url, headers=headers)
+        fares_validator_content = fares_validator_response.json()
+
+        if fares_validator_content == []:
+            return False
+        else:
+            return True
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         revision = self.object
@@ -101,6 +159,13 @@ class ReviewView(ReviewBaseView):
 
         # Get the error info
         context["error"] = self.get_error()
+
+        # Get the fares-validator error info
+        if not self.get_validator_error(revision.dataset.id):
+            context["validator_error"] = self.set_validator_error(revision.dataset.id)
+        else:
+            context["validator_error"] = self.get_validator_error(revision.dataset.id)
+        context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
