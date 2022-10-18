@@ -6,17 +6,16 @@ from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 from rest_framework.views import APIView
+from pathlib import Path
 
 from ..models import FaresValidation
 from ..serializers import FaresSerializer
-from .conditionals import NeTExDocument
+from .fares_validation import get_fares_validator
 
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
 category = ""  # Itr2 To be extratced from the xml path
-schema_path = (
-    "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd"
-)
+FARES_SCHEMA = Path(__file__).parent.parent / "schema" / "netex_dataObjectRequest_service.xsd"
 
 
 class FaresXmlValidator(APIView):
@@ -36,7 +35,7 @@ class FaresXmlValidator(APIView):
         file_name = file_obj
 
         with open(
-            schema_path,
+            str(FARES_SCHEMA),
             "r",
         ) as f:
             schema = f.read()
@@ -46,36 +45,26 @@ class FaresXmlValidator(APIView):
             xmlschema_doc = etree.parse(file_obj)
 
         try:
-            # lxml_schema.assertValid(xmlschema_doc)
-            get_root = NeTExDocument(file_name)
-            product_type = get_root.get_product_type()
-            print("ProductTypes:::from main>>>>", product_type)
-            if product_type in ["dayPass", "periodPass"]:
-                time_intervals = get_root.get_tariff_time_intervals()
-                if time_intervals:
-                    print("time_intervals>>>>", time_intervals)
-                    return JsonResponse({"errors": "No errors"}) 
-                return JsonResponse({"errors": "TimeInterval tag Is Missing inside tariff tag"}) 
-            
-        except Exception as err:
-            print("Error>>>", err)
-        # except etree.DocumentInvalid:
-        #     for error in lxml_schema.error_log:
-        #         fares_validator_model_object = FaresValidation(
-        #             dataset_id=pk2,
-        #             organisation_id=pk1,
-        #             file_name=file_name,
-        #             error_line_no=error.line,
-        #             error=error.message,
-        #             type_of_observation=type_of_observation,
-        #             category=category,
-        #         )
-        #         fares_validator_model_object.save()
+            fares_validator = get_fares_validator()
+            violations = fares_validator.get_violations(file_obj, pk1)
+            lxml_schema.assertValid(xmlschema_doc)
 
-        # validations = FaresValidation.objects.filter(dataset_id=pk2)
-        # serializer = FaresSerializer(validations, many=True)
-        # return JsonResponse({"errors": serializer.data}, status=status.HTTP_201_CREATED)
-        return JsonResponse({"errors": "error"})
+        except etree.DocumentInvalid:
+            for error in lxml_schema.error_log:
+                fares_validator_model_object = FaresValidation(
+                    dataset_id=pk2,
+                    organisation_id=pk1,
+                    file_name=file_name,
+                    error_line_no=error.line,
+                    error=error.message,
+                    type_of_observation=type_of_observation,
+                    category=category,
+                )
+                fares_validator_model_object.save()
+
+        validations = FaresValidation.objects.filter(dataset_id=pk2)
+        serializer = FaresSerializer(validations, many=True)
+        return JsonResponse({"errors": serializer.data}, status=status.HTTP_201_CREATED)
 
     def get_lxml_schema(self, schema):
         """Creates an lxml XMLSchema object from a file"""
@@ -85,6 +74,6 @@ class FaresXmlValidator(APIView):
 
         if not isinstance(schema, etree.XMLSchema):
             logger.info(f"[XML] => Parsing {schema}.")
-            root = etree.parse(schema_path)
+            root = etree.parse(str(FARES_SCHEMA))
             schema = etree.XMLSchema(root)
         return schema
