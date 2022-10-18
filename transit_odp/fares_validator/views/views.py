@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from pathlib import Path
 
 from transit_odp.fares_validator.utils.files_parser import file_to_etree
+from . import fares_validation
 
 from ..models import FaresValidation
 from ..serializers import FaresSerializer
@@ -52,6 +53,10 @@ class FaresXmlValidator(APIView):
         if etree_obj_list:
             for xmlschema_doc in etree_obj_list:
                 try:
+                    fares_validator = fares_validation.get_fares_validator()
+                    violations = fares_validator.get_violations(file_obj, pk1) # Not plugged to API response
+                    print("Violations>>>>", violations)
+
                     lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
                 except etree.DocumentInvalid:
                     for error in lxml_schema.error_log:

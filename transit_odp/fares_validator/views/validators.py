@@ -30,7 +30,6 @@ class FaresValidator:
 
     def add_violation(self, violation: Violation) -> None:
         self.violations.append(violation)
-        print("Violations>>>>", self.violations)
 
     def check_observation(
         self, observation: Observation, element: etree._Element

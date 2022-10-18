@@ -43,7 +43,7 @@ class DatasetFaresValidator:
 
         for xml in self.iter_get_files(file, revision=revision):
             xml.seek(0)
-            self._validator.is_valid(file)
+            self._validator.is_valid(xml)
 
         adapter.info(f"Revision contains {len(self._validator.violations)} violations.")
         return self._validator.violations
