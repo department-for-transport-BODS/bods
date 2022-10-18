@@ -4,16 +4,6 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
-# from transit_odp.data_quality.pti.constants import (
-#     NO_REF,
-#     REF_PREFIX,
-#     REF_SUFFIX,
-#     REF_URL,
-#     get_important_note,
-# )
-
-# GENERAL_REF = NO_REF + REF_URL
-
 
 class Rule(BaseModel):
     test: str
@@ -50,21 +40,3 @@ class Violation(BaseModel):
     element_text: Optional[str] = None
     observation: Observation
 
-    # def to_pandas_dict(self):
-    #     if self.observation.reference != "0":
-    #         ref = REF_PREFIX + self.observation.reference + REF_SUFFIX + REF_URL
-    #     else:
-    #         ref = GENERAL_REF
-
-    #     return {
-    #         "observation_number": self.observation.number,
-    #         "filename": self.filename,
-    #         "line": self.line,
-    #         "name": self.name,
-    #         "observation_category": self.observation.category,
-    #         "observation_details": self.observation.details.format(
-    #             element_text=self.element_text
-    #         ),
-    #         "reference": ref,
-    #         "note": get_important_note(),
-    #     }
