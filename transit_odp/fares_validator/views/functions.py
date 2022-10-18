@@ -1,5 +1,6 @@
 from lxml import etree
 
+
 def _extract_text(elements, default=None):
     """
     Extract text from element
@@ -33,6 +34,7 @@ def has_name(context, elements, *args):
             return False
     return True
 
+
 def get_tariff_time_intervals(element):
     """
     Checks if the tarrif element has timeIntervals
@@ -41,14 +43,14 @@ def get_tariff_time_intervals(element):
     ns = {"x": element.nsmap.get(None)}
     xpath = "string(//x:tariffs/x:Tariff/x:timeIntervals/x:TimeInterval/x:Name)"
     result = element.xpath(xpath, namespaces=ns)
-    if (not result):
+    if not result:
         return False
     return True
 
 
 def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     """
-    Check if ProductType is dayPass or periodPass. 
+    Check if ProductType is dayPass or periodPass.
     If true, timeIntervals element should be present in tarrifs
     """
     fare_frame = fare_frames[0]
@@ -60,4 +62,3 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
         if is_time_intervals_tag_present:
             return True
     return False
-

@@ -15,7 +15,9 @@ from .fares_validation import get_fares_validator
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
 category = ""  # Itr2 To be extratced from the xml path
-FARES_SCHEMA = Path(__file__).parent.parent / "schema" / "netex_dataObjectRequest_service.xsd"
+FARES_SCHEMA = (
+    Path(__file__).parent.parent / "schema" / "netex_dataObjectRequest_service.xsd"
+)
 
 
 class FaresXmlValidator(APIView):

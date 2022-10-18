@@ -9,8 +9,9 @@ from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 
 from transit_odp.fares_validator.views.functions import (
-    is_time_intervals_present_in_tarrifs
+    is_time_intervals_present_in_tarrifs,
 )
+
 
 class FaresValidator:
     def __init__(self, source: JSONFile):
@@ -20,7 +21,9 @@ class FaresValidator:
         self.violations = []
 
         self.fns = etree.FunctionNamespace(None)
-        self.register_function("is_time_intervals_present_in_tarrifs", is_time_intervals_present_in_tarrifs)
+        self.register_function(
+            "is_time_intervals_present_in_tarrifs", is_time_intervals_present_in_tarrifs
+        )
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
