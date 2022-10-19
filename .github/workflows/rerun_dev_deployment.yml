@@ -1,4 +1,7 @@
 on:
+  push:
+    branches:
+    - 'rerun-dev-pipeline'
   workflow_dispatch:
 
 name: 'rerun_dev_deployment'
