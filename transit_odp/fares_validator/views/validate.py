@@ -5,7 +5,6 @@ from lxml import etree
 from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
-from rest_framework.views import APIView
 
 from transit_odp.fares_validator.utils.files_parser import file_to_etree
 
