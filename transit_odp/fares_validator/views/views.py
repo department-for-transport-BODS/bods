@@ -52,7 +52,8 @@ class FaresXmlValidator(APIView):
                 try:
                     lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
                 except etree.DocumentInvalid:
-                    for error in lxml_schema.error_log:
+                    error_log_list = list(lxml_schema.error_log)
+                    for error in error_log_list:
                         fares_validator_model_object = FaresValidation(
                             dataset_id=pk2,
                             organisation_id=pk1,
@@ -63,12 +64,15 @@ class FaresXmlValidator(APIView):
                             category=category,
                         )
                         fares_validator_model_object.save()
-                        validations = FaresValidation.objects.filter(dataset_id=pk2)
-                        serializer = FaresSerializer(validations, many=True)
-                        return JsonResponse(
-                            serializer.data, safe=False, status=status.HTTP_201_CREATED
+                        validations = FaresValidation.objects.filter(
+                            dataset_id=pk2, organisation_id=pk1
                         )
+                        serializer = FaresSerializer(validations, many=True)
 
+                if error_log_list:
+                    return JsonResponse(
+                        serializer.data, safe=False, status=status.HTTP_201_CREATED
+                    )
                 return JsonResponse(status=status.HTTP_200_OK)
 
         else:
