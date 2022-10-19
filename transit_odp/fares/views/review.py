@@ -104,10 +104,12 @@ class ReviewView(ReviewBaseView):
     def set_validator_error(self, dataset_id):
         upload_file = self.get_upload_file()
 
-        fares_validator_obj = FaresXmlValidator(upload_file, self.kwargs["pk1"], dataset_id)
+        fares_validator_obj = FaresXmlValidator(
+            upload_file, self.kwargs["pk1"], dataset_id
+        )
         fares_validator_response = fares_validator_obj.set_errors()
         print("fares_validator_response", fares_validator_response)
-    
+
         if fares_validator_response.status_code == 201:
             return True
         else:

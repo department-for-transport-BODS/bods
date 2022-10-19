@@ -68,7 +68,9 @@ class FaresXmlValidator:
                             category=category,
                         )
                         fares_validator_model_object.save()
-                        validations = FaresValidation.objects.filter(dataset_id=self.pk2)
+                        validations = FaresValidation.objects.filter(
+                            dataset_id=self.pk2
+                        )
                         serializer = FaresSerializer(validations, many=True)
                         return JsonResponse(
                             serializer.data, safe=False, status=status.HTTP_201_CREATED
