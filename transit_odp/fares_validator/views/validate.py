@@ -3,7 +3,6 @@ import logging
 from django.http import JsonResponse
 from lxml import etree
 from rest_framework import status
-from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 
 from transit_odp.fares_validator.utils.files_parser import file_to_etree
@@ -56,7 +55,8 @@ class FaresXmlValidator:
                 try:
                     lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
                 except etree.DocumentInvalid:
-                    for error in lxml_schema.error_log:
+                    error_log_list = list(lxml_schema.error_log)
+                    for error in error_log_list:
                         fares_validator_model_object = FaresValidation(
                             dataset_id=self.pk2,
                             organisation_id=self.pk1,
@@ -68,13 +68,14 @@ class FaresXmlValidator:
                         )
                         fares_validator_model_object.save()
                         validations = FaresValidation.objects.filter(
-                            dataset_id=self.pk2
+                            dataset_id=self.pk2, organisation_id=self.pk1
                         )
                         serializer = FaresSerializer(validations, many=True)
-                        return JsonResponse(
-                            serializer.data, safe=False, status=status.HTTP_201_CREATED
-                        )
 
+                if error_log_list:
+                    return JsonResponse(
+                        serializer.data, safe=False, status=status.HTTP_201_CREATED
+                    )
                 return JsonResponse(status=status.HTTP_200_OK)
 
         else:

@@ -1,7 +1,6 @@
 import logging
 from typing import List, Optional, Tuple, Type, TypedDict
 
-import requests
 from django.db import transaction
 from django.db.models import Q
 from django.forms import Form
@@ -14,6 +13,7 @@ import config.hosts
 from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import DatasetMetadata, DatasetRevision
 from transit_odp.pipelines.models import DatasetETLTaskResult
@@ -21,7 +21,6 @@ from transit_odp.publish.forms import FeedPublishCancelForm
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 from transit_odp.validate.errors import XMLErrorMessageRenderer
-from transit_odp.fares_validator.views.validate import FaresXmlValidator
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +127,7 @@ class ReviewView(ReviewBaseView):
         context["error"] = self.get_error()
 
         # Get the fares-validator error info
-        if not is_loading:
+        if not is_loading and context["error"] is None:
             context["validator_error"] = self.set_validator_error(revision.dataset.id)
 
         context["pk2"] = revision.id
