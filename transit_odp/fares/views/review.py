@@ -21,6 +21,7 @@ from transit_odp.publish.forms import FeedPublishCancelForm
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.users.views.mixins import OrgUserViewMixin
 from transit_odp.validate.errors import XMLErrorMessageRenderer
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 
 logger = logging.getLogger(__name__)
 
@@ -103,22 +104,10 @@ class ReviewView(ReviewBaseView):
     def set_validator_error(self, dataset_id):
         upload_file = self.get_upload_file()
 
-        headers = {
-            "Content-Type": "application/xml",
-            "Content-Disposition": f'attachment; filename="{upload_file}"',
-        }
-        url = reverse(
-            "transit_odp.fares_validator",
-            kwargs={"pk1": self.kwargs["pk1"], "pk2": dataset_id},
-            host=config.hosts.PUBLISH_HOST,
-        )
-
-        user = self.request.user
-        if user.is_authenticated:
-            url = f"{url}?api_key={user.auth_token}"
-
-        fares_validator_response = requests.post(url, data=upload_file, headers=headers)
-
+        fares_validator_obj = FaresXmlValidator(upload_file, self.kwargs["pk1"], dataset_id)
+        fares_validator_response = fares_validator_obj.set_errors()
+        print("fares_validator_response", fares_validator_response)
+    
         if fares_validator_response.status_code == 201:
             return True
         else:
