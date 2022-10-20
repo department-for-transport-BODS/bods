@@ -31,6 +31,7 @@ from transit_odp.data_quality.pti.functions import (
 )
 from transit_odp.data_quality.pti.models import Observation, Schema, Violation
 from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
+from transit_odp.naptan.models import StopPoint
 from transit_odp.otc.models import Service
 
 
@@ -49,9 +50,11 @@ def has_destination_display(context, patterns):
     return validator.validate()
 
 
-def validate_lines(context, lines):
+def get_lines_validator(context, lines: List[etree._Element]) -> bool:
     lines = lines[0]
-    validator = LinesValidator(lines)
+    stops = StopPoint.objects.exclude(stop_areas=[]).values("atco_code", "stop_areas")
+    stop_area_map = {stop["atco_code"]: stop["stop_areas"] for stop in stops}
+    validator = LinesValidator(lines, stop_area_map=stop_area_map)
     return validator.validate()
 
 
@@ -271,7 +274,17 @@ class DestinationDisplayValidator:
 
 
 class LinesValidator(BaseValidator):
-    def check_for_common_journey_patterns(self):
+    def __init__(self, *args, stop_area_map=None, **kwargs):
+        self._stop_area_map = stop_area_map or {}
+        super().__init__(*args, **kwargs)
+
+    def _flatten_stop_areas(self, stops: list[str]) -> set[str]:
+        stop_areas = []
+        for stop in stops:
+            stop_areas += self._stop_area_map.get(stop, [])
+        return set(stop_areas)
+
+    def check_for_common_journey_patterns(self) -> bool:
         """
         Check whether related lines share a JourneyPattern with the
         designated main line.
@@ -290,7 +303,7 @@ class LinesValidator(BaseValidator):
                 return False
         return True
 
-    def check_for_common_stops_points(self):
+    def check_for_common_stops_points(self) -> bool:
         """
         Check if all lines share common stop points.
         """
@@ -305,6 +318,10 @@ class LinesValidator(BaseValidator):
         for line1, line2 in combinations:
             line1_stops = line_to_stops.get(line1, [])
             line2_stops = line_to_stops.get(line2, [])
+            line1_stop_areas = self._flatten_stop_areas(line1_stops)
+            line2_stop_areas = self._flatten_stop_areas(line2_stops)
+
+            disjointed_stop_areas = line1_stop_areas.isdisjoint(line2_stop_areas)
             disjointed_stops = set(line1_stops).isdisjoint(line2_stops)
 
             line1_localities = [
@@ -319,12 +336,12 @@ class LinesValidator(BaseValidator):
             line2_localities = [name for name in line2_localities if name]
             disjointed_localities = set(line1_localities).isdisjoint(line2_localities)
 
-            if disjointed_stops and disjointed_localities:
+            if all([disjointed_stop_areas, disjointed_stops, disjointed_localities]):
                 return False
 
         return True
 
-    def validate(self):
+    def validate(self) -> bool:
         """
         Validates that all Line that appears in Lines are related.
 
@@ -462,7 +479,7 @@ class PTIValidator:
         self.register_function("strip", strip)
         self.register_function("today", today)
         self.register_function("validate_line_id", validate_line_id)
-        self.register_function("validate_lines", validate_lines)
+        self.register_function("validate_lines", get_lines_validator)
         self.register_function(
             "validate_modification_date_time", validate_modification_date_time
         )

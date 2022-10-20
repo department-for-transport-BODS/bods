@@ -6,9 +6,20 @@ from django.contrib.auth import get_user_model
 from django_hosts.resolvers import reverse
 
 import config.hosts
-from transit_odp.organisation.factories import OperatorCodeFactory, OrganisationFactory
-from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.constants import (
+    ORG_ACTIVE,
+    ORG_INACTIVE,
+    ORG_NOT_YET_INVITED,
+    ORG_PENDING_INVITE,
+)
+from transit_odp.organisation.factories import (
+    OperatorCodeFactory,
+    OrganisationFactory,
+    ServiceCodeExemptionFactory,
+)
+from transit_odp.organisation.models import Organisation, ServiceCodeExemption
 from transit_odp.site_admin.forms import CHECKBOX_FIELD_KEY
+from transit_odp.site_admin.forms.service_code_exemptions import DUPLICATE_SERVICE_CODE
 from transit_odp.site_admin.views import (
     OrganisationArchiveView,
     OrganisationCreateView,
@@ -16,7 +27,7 @@ from transit_odp.site_admin.views import (
     OrganisationListView,
     OrganisationUsersManageView,
 )
-from transit_odp.users.constants import AccountType, SiteAdminType
+from transit_odp.users.constants import AccountType, OrgAdminType, SiteAdminType
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -28,6 +39,11 @@ from transit_odp.users.views.mixins import SiteAdminViewMixin
 
 pytestmark = pytest.mark.django_db
 User = get_user_model()
+
+TEST_NUMBER_ACTIVE_ORGS = 6
+TEST_NUMBER_INACTIVE_ORGS = 5
+TEST_NUMBER_PENDING_ORGS = 4
+TEST_NUMBER_NOT_YET_INVITED_ORGS = 3
 
 
 class TestOrganisationListView:
@@ -73,7 +89,7 @@ class TestOrganisationListView:
         queryset = response.context_data["object_list"]
         assert list(queryset) == [organisation]
         expected_org = queryset.first()
-        assert expected_org.status == "active"
+        assert expected_org.status == ORG_ACTIVE
         assert expected_org.first_letter == organisation.name[0].upper()
 
     def test_filter_by_operator(self, user_factory, client_factory):
@@ -94,12 +110,12 @@ class TestOrganisationListView:
         admin = user_factory(account_type=AccountType.site_admin.value)
 
         active = []
-        for _ in range(4):
+        for _ in range(TEST_NUMBER_ACTIVE_ORGS):
             org = OrganisationFactory.create(is_active=True)
             active.append(org)
 
         inactive = []
-        for _ in range(3):
+        for _ in range(TEST_NUMBER_INACTIVE_ORGS):
             org = OrganisationFactory.create(is_active=False)
             UserFactory.create(
                 account_type=AccountType.org_admin.value, organisations=[org]
@@ -107,29 +123,48 @@ class TestOrganisationListView:
             inactive.append(org)
 
         pending = []
-        for _ in range(3):
-            org = OrganisationFactory.create(is_active=False)
+        for _ in range(TEST_NUMBER_PENDING_ORGS):
+            org = OrganisationFactory.create(
+                is_active=False,
+            )
+            InvitationFactory.create(
+                organisation=org,
+                account_type=OrgAdminType,
+            )
             pending.append(org)
+
+        not_yet_invited = []
+        for _ in range(TEST_NUMBER_NOT_YET_INVITED_ORGS):
+            org = OrganisationFactory.create(
+                is_active=False,
+            )
+            not_yet_invited.append(org)
 
         client = client_factory(host=self.host)
         client.force_login(user=admin)
 
-        response = client.get(self.url, {"status": "active"})
+        response = client.get(self.url, {"status": ORG_ACTIVE})
         context = response.context
         orgs = context["organisation_list"]
-        assert len(orgs) == 4
+        assert len(orgs) == TEST_NUMBER_ACTIVE_ORGS
         assert list(orgs.order_by("id")) == active
 
-        response = client.get(self.url, {"status": "inactive"})
+        response = client.get(self.url, {"status": ORG_INACTIVE})
         context = response.context
         orgs = context["organisation_list"]
-        assert len(orgs) == 3
+        assert len(orgs) == TEST_NUMBER_INACTIVE_ORGS
         assert list(orgs.order_by("id")) == inactive
 
-        response = client.get(self.url, {"status": "pending"})
+        response = client.get(self.url, {"status": ORG_NOT_YET_INVITED})
         context = response.context
         orgs = context["organisation_list"]
-        assert len(orgs) == 3
+        assert len(orgs) == TEST_NUMBER_NOT_YET_INVITED_ORGS
+        assert list(orgs.order_by("id")) == not_yet_invited
+
+        response = client.get(self.url, {"status": ORG_PENDING_INVITE})
+        context = response.context
+        orgs = context["organisation_list"]
+        assert len(orgs) == TEST_NUMBER_PENDING_ORGS
         assert list(orgs.order_by("id")) == pending
 
     def test_bucket_counts(self, client_factory, user_factory):
@@ -177,6 +212,8 @@ class TestOrganisationCreateView:
         "nocs-INITIAL_FORMS": "0",
         "nocs-MIN_NUM_FORMS": "1",
         "nocs-MAX_NUM_FORMS": "1000",
+        "licences-TOTAL_FORMS": "3",
+        "licences-INITIAL_FORMS": "0",
         "name": test_organisation_name,
         "short_name": test_organisation_short_name,
         "email": invitee_email,
@@ -223,7 +260,7 @@ class TestOrganisationCreateView:
         invite = Invitation.objects.get(email=self.invitee_email)
         assert (
             response.status_code == 302
-        ), "assert we get successfully get redirected on POST "
+        ), "assert we get successfully redirected on POST "
         assert (
             organisation.short_name == self.test_organisation_short_name
         ), "assert we created the correct organisation"
@@ -301,7 +338,7 @@ class TestOrganisationCreateView:
         expected = "Operator code with this National Operator Code already exists."
         assert response.context_data["form"].nested_noc.errors[0]["noc"][0] == expected
 
-    def test_clashing_email_already_exists_fail_loudly(self, client_factory):
+    def test_clashing_email_already_exists_fails_loudly(self, client_factory):
         email = self.invitee_email
         Invitation.objects.create(email=email)
 
@@ -340,6 +377,85 @@ class TestOrganisationCreateView:
         assert invitation.organisation.short_name == self.test_organisation_short_name
         assert invitation.sent.day == datetime.now().day, "sent out today"
         assert invitation.inviter == admin
+
+    def test_create_org_without_key_contact(self, client_factory):
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        data.update({"email": "", "nocs-0-noc": f"{data['short_name']}1"})
+
+        response = client.post(self.url, data)
+        assert response.status_code == 302
+        orgs = Organisation.objects.all()
+        assert orgs.count() == 1
+        assert orgs.first().name == "Test Organisation"
+        assert Invitation.objects.count() == 0
+
+    def test_create_org_with_psv_licence(self, client_factory):
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        licence_number = "PS0000001"
+        data.update(
+            {
+                "email": "",
+                "nocs-0-noc": f"{data['short_name']}1",
+                "licences-0-number": licence_number,
+            }
+        )
+
+        response = client.post(self.url, data)
+        assert response.status_code == 302
+        org = Organisation.objects.first()
+        assert org.licences.count() == 1
+        assert org.licences.first().number == licence_number
+
+    def test_badly_formatted_licence_fails_loudly(self, client_factory):
+        OrganisationFactory()
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        data.update(
+            {
+                "email": "",
+                "nocs-0-noc": f"{data['short_name']}1",
+                "licences-0-number": "INVALID",
+            }
+        )
+
+        response = client.post(self.url, data)
+        assert response.status_code == 200
+        expected_error = "Licence number entered with the wrong format"
+        assert (
+            response.context_data["form"].nested_psv.errors[0]["number"][0]
+            == expected_error
+        )
+
+    def test_clashing_licence_fails_loudly(self, client_factory):
+        licence_number = "PS0000001"
+        OrganisationFactory(licences=[licence_number])
+        client = client_factory(host=self.host)
+        user = UserFactory(account_type=AccountType.site_admin.value)
+        client.force_login(user=user)
+        data = self.default_form_data.copy()
+        data.update(
+            {
+                "email": "",
+                "nocs-0-noc": f"{data['short_name']}1",
+                "licences-0-number": licence_number,
+            }
+        )
+
+        response = client.post(self.url, data)
+        assert response.status_code == 200
+        expected_error = "Licence with this PSV Licence Number already exists."
+        assert (
+            response.context_data["form"].nested_psv.errors[0]["number"][0]
+            == expected_error
+        )
 
 
 class TestOrganisationDetailView:
@@ -388,9 +504,10 @@ class TestOrganisationEditView:
         "licences-INITIAL_FORMS": ["0"],
         "licences-MIN_NUM_FORMS": ["0"],
         "licences-MAX_NUM_FORMS": ["1000"],
-        "licences-__prefix__- id": "",
-        "licences - __prefix__-number": "",
-        "licences - __prefix__-DELETE": "",
+        "licences-__prefix__-id": "",
+        "licences-__prefix__-number": "",
+        "licences-__prefix__-DELETE": "",
+        "licence_required": "off",
     }
 
     def test_unsafe_get_doesnt_edit_organisation(self, client_factory):
@@ -403,6 +520,36 @@ class TestOrganisationEditView:
         response = client.get(url)
         Organisation.objects.get(pk=org.id)
         assert response.status_code == 200
+
+    def test_cancel_button_update_page(self, client_factory):
+        host = config.hosts.ADMIN_HOST
+        org = OrganisationFactory.create(name="TestOrganisation", short_name="TestOrg")
+        OperatorCodeFactory.create(id=9, noc="2", organisation=org)
+        org_user = UserFactory.create(
+            id=10, account_type=AccountType.org_admin.value, organisations=(org,)
+        )
+        org.key_contact = org_user
+        org.save()
+
+        user = UserFactory(account_type=AccountType.site_admin.value)
+
+        url_update = reverse(
+            "users:organisation-update",
+            host=config.hosts.ADMIN_HOST,
+            kwargs={"pk": org.id},
+        )
+        url_cancel = reverse(
+            "users:organisation-detail",
+            host=config.hosts.ADMIN_HOST,
+            kwargs={"pk": org.id},
+        )
+
+        client = client_factory(host=host)
+        client.force_login(user=user)
+
+        response = client.get(url_update)
+        assert response.status_code == 200
+        assert response.context["form"].cancel_url == url_cancel
 
     def test_edit_name_short_name(self, client_factory):
         host = config.hosts.ADMIN_HOST
@@ -492,6 +639,43 @@ class TestOrganisationEditView:
         assert response.status_code == 302
         assert modified_org.key_contact.id == 11
         assert modified_org.key_contact.email == "org_user2@org_user2.com"
+
+    def test_edit_no_licence_back_to_organisation_datail(self, client_factory):
+        host = config.hosts.ADMIN_HOST
+        org = OrganisationFactory.create(name="TestOrganisation", short_name="TestOrg")
+        OperatorCodeFactory.create(id=9, noc="2", organisation=org)
+        org_user = UserFactory.create(
+            id=10, account_type=AccountType.org_admin.value, organisations=(org,)
+        )
+        org.key_contact = org_user
+        org.save()
+
+        user = UserFactory(account_type=AccountType.site_admin.value)
+
+        url = reverse(
+            "users:organisation-update",
+            host=config.hosts.ADMIN_HOST,
+            kwargs={"pk": org.id},
+        )
+
+        client = client_factory(host=host)
+        client.force_login(user=user)
+
+        data = self.default_management_form_data.copy()
+        data.update(
+            {
+                "key_contact": "",
+                "licence_required": "on",
+            }
+        )
+
+        response = client.post(url, data=data)
+
+        modified_org = Organisation.objects.get(id=org.id)
+
+        assert response.status_code == 200
+        assert modified_org.name == "TestOrganisation"
+        assert modified_org.short_name == "TestOrg"
 
 
 class TestOrganisationArchiveView:
@@ -610,6 +794,239 @@ class TestOrganisationArchiveView:
         assert organisation.is_active
         assert user1.is_active
         assert not agent_user.is_active
+
+
+class TestOrganisationServiceCodeExemptionView:
+    host = config.hosts.ADMIN_HOST
+    url_name = "users:service-code-exemptions-edit"
+    test_organisation_name = "Test Organisation"
+    test_organisation_short_name = "testO"
+    prefix = "service_code_exemptions"
+    default_form_data = {
+        f"{prefix}-TOTAL_FORMS": "1",
+        f"{prefix}-INITIAL_FORMS": "0",
+        f"{prefix}-MIN_NUM_FORMS": "0",
+        f"{prefix}-MAX_NUM_FORMS": "1000",
+    }
+
+    def test_add_one_exemption(self, client_factory):
+        org = OrganisationFactory(
+            name=self.test_organisation_name,
+            short_name=self.test_organisation_short_name,
+            licences=1,
+        )
+        url = reverse(
+            self.url_name,
+            host=self.host,
+            kwargs={"pk": org.id},
+        )
+
+        form_data = {
+            f"{self.prefix}-0-id": "",
+            f"{self.prefix}-0-licence": org.licences.first().id,
+            f"{self.prefix}-0-registration_code": 88,
+            f"{self.prefix}-0-justification": "because",
+        }
+
+        data = {**form_data, **self.default_form_data}
+
+        admin = UserFactory(account_type=SiteAdminType)
+        client = client_factory(host=self.host)
+        client.force_login(user=admin)
+
+        response = client.post(url, data)
+        licence = org.licences.first()
+        exemption = licence.service_code_exemptions.first()
+
+        assert response.status_code == 302
+        assert exemption.justification == "because"
+        assert exemption.exempted_by == admin
+        assert exemption.registration_code == 88
+
+    def test_add_many_exemption_to_existing(self, client_factory):
+        org = OrganisationFactory(
+            name=self.test_organisation_name,
+            short_name=self.test_organisation_short_name,
+            licences=2,
+        )
+
+        for licence in org.licences.all():
+            ServiceCodeExemptionFactory.create_batch(2, licence=licence)
+
+        url = reverse(
+            self.url_name,
+            host=self.host,
+            kwargs={"pk": org.id},
+        )
+        form_data = {
+            f"{self.prefix}-TOTAL_FORMS": "6",
+            f"{self.prefix}-INITIAL_FORMS": "4",
+        }
+        for index, exemption in enumerate(ServiceCodeExemption.objects.all()):
+            prepend = f"{self.prefix}-{index}"
+            form_data.update(
+                {
+                    f"{prepend}-id": exemption.id,
+                    f"{prepend}-licence": exemption.licence.id,
+                    f"{prepend}-registration_code": exemption.registration_code,
+                    f"{prepend}-justification": exemption.justification,
+                }
+            )
+
+        total = ServiceCodeExemption.objects.count()
+
+        for index, licence in enumerate(org.licences.all()):
+            prepend = f"{self.prefix}-{total + index}"
+            form_data.update(
+                {
+                    f"{prepend}-id": "",
+                    f"{prepend}-licence": licence.id,
+                    f"{prepend}-registration_code": index + 1,
+                    f"{prepend}-justification": f"reason: {licence.number}",
+                }
+            )
+
+        data = {**self.default_form_data, **form_data}
+
+        admin = UserFactory(account_type=SiteAdminType)
+        client = client_factory(host=self.host)
+        client.force_login(user=admin)
+
+        response = client.post(url, data)
+        assert response.status_code == 302
+        assert ServiceCodeExemption.objects.count() == 6
+
+    def test_modify_one_exemption(self, client_factory):
+        org = OrganisationFactory(
+            name=self.test_organisation_name,
+            short_name=self.test_organisation_short_name,
+            licences=1,
+        )
+        exemption = ServiceCodeExemptionFactory(
+            licence=org.licences.first(),
+            registration_code=1,
+            justification="first",
+        )
+
+        url = reverse(
+            self.url_name,
+            host=self.host,
+            kwargs={"pk": org.id},
+        )
+
+        form_data = {
+            f"{self.prefix}-TOTAL_FORMS": "1",
+            f"{self.prefix}-INITIAL_FORMS": "1",
+            f"{self.prefix}-0-id": exemption.id,
+            f"{self.prefix}-0-licence": exemption.licence.id,
+            f"{self.prefix}-0-registration_code": 88,
+            f"{self.prefix}-0-justification": "changed",
+        }
+
+        data = {**self.default_form_data, **form_data}
+
+        admin = UserFactory(account_type=SiteAdminType)
+        client = client_factory(host=self.host)
+        client.force_login(user=admin)
+
+        response = client.post(url, data)
+        licence = org.licences.first()
+        exemption = licence.service_code_exemptions.first()
+
+        assert response.status_code == 302
+        assert exemption.justification == "changed"
+        assert exemption.exempted_by == admin
+        assert exemption.registration_code == 88
+
+    def test_delete_one_from_many(self, client_factory):
+        org = OrganisationFactory(
+            name=self.test_organisation_name,
+            short_name=self.test_organisation_short_name,
+            licences=2,
+        )
+
+        for licence in org.licences.all():
+            ServiceCodeExemptionFactory.create_batch(2, licence=licence)
+
+        url = reverse(
+            self.url_name,
+            host=self.host,
+            kwargs={"pk": org.id},
+        )
+        form_data = {
+            f"{self.prefix}-TOTAL_FORMS": "4",
+            f"{self.prefix}-INITIAL_FORMS": "4",
+        }
+        for index, exemption in enumerate(ServiceCodeExemption.objects.all()):
+            prepend = f"{self.prefix}-{index}"
+            form_data.update(
+                {
+                    f"{prepend}-id": exemption.id,
+                    f"{prepend}-licence": exemption.licence.id,
+                    f"{prepend}-registration_code": exemption.registration_code,
+                    f"{prepend}-justification": exemption.justification,
+                }
+            )
+
+        deletion_candidate = form_data[f"{self.prefix}-0-id"]
+        form_data[f"{self.prefix}-0-DELETE"] = "on"
+
+        data = {**self.default_form_data, **form_data}
+
+        admin = UserFactory(account_type=SiteAdminType)
+        client = client_factory(host=self.host)
+        client.force_login(user=admin)
+
+        assert ServiceCodeExemption.objects.filter(id=deletion_candidate).exists()
+        response = client.post(url, data)
+        assert response.status_code == 302
+        assert not ServiceCodeExemption.objects.filter(id=deletion_candidate).exists()
+
+    def test_clash_service_codes(self, client_factory):
+        total_clashing_service_codes = 3
+        org = OrganisationFactory(
+            name=self.test_organisation_name,
+            short_name=self.test_organisation_short_name,
+            licences=1,
+        )
+        url = reverse(
+            self.url_name,
+            host=self.host,
+            kwargs={"pk": org.id},
+        )
+
+        form_data = {
+            f"{self.prefix}-TOTAL_FORMS": "3",
+            f"{self.prefix}-INITIAL_FORMS": "0",
+        }
+        for index in range(total_clashing_service_codes):
+            form_data.update(
+                {
+                    f"{self.prefix}-{index}-id": "",
+                    f"{self.prefix}-{index}-licence": org.licences.first().id,
+                    f"{self.prefix}-{index}-registration_code": 88,
+                    f"{self.prefix}-{index}-justification": "changed",
+                }
+            )
+
+        data = {**self.default_form_data, **form_data}
+
+        admin = UserFactory(account_type=SiteAdminType)
+        client = client_factory(host=self.host)
+        client.force_login(user=admin)
+
+        response = client.post(url, data)
+
+        assert response.status_code == 200
+        errors = response.context_data["form"].errors
+        assert len(errors)
+        counter = 0
+        for error in errors:
+            # we want to make sure we have the same number of errors as we do
+            # clashing service codes
+            if error["registration_code"][0] == DUPLICATE_SERVICE_CODE:
+                counter += 1
+        assert counter == total_clashing_service_codes
 
 
 class TestOrganisationUsersManageView:

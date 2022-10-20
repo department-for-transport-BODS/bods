@@ -14,7 +14,12 @@ pytestmark = pytest.mark.django_db
 
 @pytest.mark.parametrize(
     "score,percent,rag",
-    ((0.91, "91.0%", "amber"), (1, "100.0%", "green"), (0.33, "33.0%", "red")),
+    (
+        (0.91, "91.0%", "amber"),
+        (1, "100.0%", "green"),
+        (0.33, "33.0%", "red"),
+        (0.90005, "90.0%", "red"),
+    ),
 )
 def test_dq_rag(client_factory, user_factory, score, percent, rag):
     developer = user_factory(account_type=DeveloperType)

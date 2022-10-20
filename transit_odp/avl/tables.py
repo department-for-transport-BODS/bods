@@ -8,7 +8,7 @@ from transit_odp.organisation.tables import FeedStatusColumn, get_feed_name_link
 
 class AVLDataFeedTable(GovUkTable):
     status = FeedStatusColumn(show_update_link=False, app_name="avl")
-    avl_compliance = tables.Column(verbose_name="BODS compliant data")
+    avl_compliance_status_cached = tables.Column(verbose_name="BODS compliant data")
     name = tables.Column(
         verbose_name="Data feed name",
         attrs={
@@ -25,7 +25,7 @@ class AVLDataFeedTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         attrs = {"th": {"class": "govuk-table__header"}}
 
-    def render_avl_compliance(self, value):
+    def render_avl_compliance_status_cached(self, value):
         if value in [NON_COMPLIANT, PARTIALLY_COMPLIANT]:
             return format_html('<i class="fas fa-info-circle"></i> {}', value)
         else:

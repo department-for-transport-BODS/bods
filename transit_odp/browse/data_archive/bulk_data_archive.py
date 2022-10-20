@@ -1,6 +1,7 @@
 import os
 import zipfile
 from collections import defaultdict
+from pathlib import Path
 from shutil import copyfileobj
 
 from celery.utils.log import get_task_logger
@@ -54,7 +55,6 @@ def zip_datasets(datasets, outpath):
         f"[bulk_data_archive] creating zip of {len(datasets)} datasets at {outpath}"
     )
     # Get the name of the zip to use of the parent directory in the zip.
-    inner_directory = os.path.splitext(os.path.basename(outpath))[0]
     orgs = defaultdict(list)
     for dataset in datasets:
         org = dataset.organisation
@@ -66,13 +66,11 @@ def zip_datasets(datasets, outpath):
                 upload = dataset.live_revision.upload_file
                 # Open dataset upload file
                 with upload.open("rb") as fin:
-                    relative_path_upload_file = os.path.join(
-                        inner_directory, directory_name, upload.name
-                    )
+                    relative_path_upload_file = Path(directory_name, upload.name)
                     # Write files into inner directory to keep all the files together
                     # when the user unzips
                     with zf.open(
-                        relative_path_upload_file,
+                        relative_path_upload_file.as_posix(),
                         "w",
                     ) as fout:
                         # efficiently copy data from fin into fout

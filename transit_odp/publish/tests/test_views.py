@@ -1075,7 +1075,7 @@ class TestFeedArchiveView:
 
         for email in bods_mailoutbox:
             line_of_interest = email.body.splitlines()[-4]
-            expired_on = line_of_interest[11:]
+            expired_on = line_of_interest[13:]
             assert expired_on == "29-02-2020 18:00"
 
     def test_archive_datasets_sends_one_email_when_contact_is_agent(
@@ -1094,6 +1094,29 @@ class TestFeedArchiveView:
         assert mail.subject == "Published data set has been deactivated"
         assert mail.to[0] == self.agent.email
         assert self.org.name in mail.body
+
+
+def test_report_dq_and_score_report_id_are_none_no_summary(client_factory):
+    org_user = create_verified_org_user()
+    dataset = DatasetFactory.create(organisation=org_user.organisation)
+    revision = DatasetRevisionFactory.create(
+        dataset=dataset, status=FeedStatus.live.value
+    )
+    DatasetETLTaskResultFactory(revision=revision)
+    DataQualityReportFactory(revision=revision, summary=None, score=0)
+    client = client_factory(host=PUBLISH_HOST)
+    client.force_login(org_user)
+    url = reverse(
+        "feed-detail",
+        kwargs={"pk1": org_user.organisation.id, "pk": dataset.id},
+        host=PUBLISH_HOST,
+    )
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response.context_data["dq_score"] is None
+    assert response.context_data["report_id"] is None
 
 
 class TestFeedDeleteView:

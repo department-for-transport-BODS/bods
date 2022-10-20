@@ -1,0 +1,35 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/spacing";
+@import "govuk-frontend/govuk/helpers/colour";
+
+.service-code-widget {
+  display: flex;
+  align-items: center;
+  @extend .govuk-input;
+
+  p {
+    color: $govuk-secondary-text-colour;
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  input {
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  input:focus {
+    outline: unset;
+    outline-offset: unset;
+    box-shadow: unset;
+  }
+}
+
+.service-code-widget:focus-within {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 2px;
+}

@@ -6,6 +6,7 @@ from freezegun import freeze_time
 
 from transit_odp.data_quality.factories import PTIValidationResultFactory
 from transit_odp.fares.factories import FaresMetadataFactory
+from transit_odp.organisation.constants import ORG_ACTIVE
 from transit_odp.organisation.csv.organisation import (
     _get_organisation_catalogue_dataframe,
 )
@@ -16,6 +17,7 @@ from transit_odp.organisation.factories import (
     LicenceFactory,
     OperatorCodeFactory,
     OrganisationFactory,
+    ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.otc.constants import SCHOOL_OR_WORKS, SubsidiesDescription
@@ -39,9 +41,21 @@ def test_df_organisations():
     valid_operating_service_count = 3
     future_operating_services_count = 2
     no_of_licences = 3
+    published_exempted_service_codes_count = 2
     published_otc_services = 5
     unpublished_otc_services = 3
+    unpublished_exempted_Service_codes_count = unpublished_otc_services
+    total_exempted_service_codes_count = (
+        published_exempted_service_codes_count
+        + unpublished_exempted_Service_codes_count
+    )
     total_otc_services = published_otc_services + unpublished_otc_services
+    services_registered_in_scope = (
+        total_otc_services - total_exempted_service_codes_count
+    )
+    compliant_reg_services_ratio = (
+        f"{published_otc_services / services_registered_in_scope * 100:.2f}%"
+    )
     no_of_fares_products = 10
     avl_revisions = 2
 
@@ -97,7 +111,7 @@ def test_df_organisations():
     org_licences = [lic.number for lic in licences]
     otc_licences = [LicenceModelFactory(number=lic) for lic in org_licences]
 
-    for licence in otc_licences + otc_licences[:2]:
+    for idx, licence in enumerate(otc_licences + otc_licences[:2]):
         # registered services in BODS
         service = ServiceModelFactory(
             licence=licence,
@@ -110,12 +124,24 @@ def test_df_organisations():
             service_code=service.registration_number.replace("/", ":"),
             revision=timetable_revision,
         )
+        if idx < published_exempted_service_codes_count:
+            org_licence = next(lic for lic in licences if lic.number == licence.number)
+            ServiceCodeExemptionFactory(
+                licence=org_licence, registration_code=service.registration_code
+            )
+
     # registered services not in BODS
-    ServiceModelFactory.create_batch(
+    not_published_sc = ServiceModelFactory.create_batch(
         unpublished_otc_services,
         licence=otc_licences[2],
         registration_code=factory.sequence(lambda n: n + 100),
     )
+    for x in not_published_sc:
+        org_licence = next(lic for lic in licences if lic.number == x.licence.number)
+        ServiceCodeExemptionFactory(
+            licence=org_licence, registration_code=x.registration_code
+        )
+
     # makes all service compliant
     PTIValidationResultFactory(revision=timetable_revision, count=0)
     expected_licence_string = ";".join(org_licences)
@@ -123,7 +149,7 @@ def test_df_organisations():
     df = _get_organisation_catalogue_dataframe()
     row = df.iloc[0]
     assert row["Name"] == organisation.name
-    assert row["Status"] == "Active"
+    assert row["Status"] == ORG_ACTIVE
     assert row["Date Invite Accepted"].isoformat()[:-6] == now.isoformat()
     assert row["Date Invited"].isoformat()[:-6] == now.isoformat()
     assert row["Last Log-In"].isoformat()[:-6] == now.isoformat()
@@ -133,9 +159,14 @@ def test_df_organisations():
     assert row["Number of Licences"] == no_of_licences
     assert row["Unregistered Services"] == unregistered_service_count
     assert row["OTC Registered Services"] == total_otc_services
+    assert row["Organisation creation date"].isoformat()[:-6] == now.isoformat()
     assert row["Registered Services Published"] == published_otc_services
+    assert row["Out of scope services(exempted)"] == total_exempted_service_codes_count
+    assert row["Registered Services in scope(for BODS)"] == services_registered_in_scope
     assert row["Compliant Registered Services Published"] == published_otc_services
-    assert row["% Compliant Registered Services Published"] == "100.00%"
+    assert (
+        row["% Compliant Registered Services Published"] == compliant_reg_services_ratio
+    )
     assert row["Number of School or Works Services"] == published_otc_services
     assert row["School or Works Services Subsidised"] == 0
     assert row["School or Works Services Subsidised In Part"] == 0
@@ -259,7 +290,7 @@ def test_df_non_otc_data():
     df = _get_organisation_catalogue_dataframe()
     row = df.iloc[0]
     assert row["Name"] == organisation.name
-    assert row["Status"] == "Active"
+    assert row["Status"] == ORG_ACTIVE
     assert row["Unregistered Services"] == unregistered_service_count
     assert (
         row["Number of Published Services with Valid Operating Dates"]

@@ -21,3 +21,11 @@ def wgs_stop():
     with ukos_stop_path.open("r") as f:
         stop = etree.parse(f)
         yield stop.getroot()
+
+
+@pytest.fixture()
+def multiple_stop_areas_stop():
+    ukos_stop_path = _DATA / "multiple_stop_areas_stop.xml"
+    with ukos_stop_path.open("r") as f:
+        stop = etree.parse(f)
+        yield stop.getroot()

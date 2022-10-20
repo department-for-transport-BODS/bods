@@ -159,12 +159,7 @@ def task_scan_timetables(revision_id: int, task_id: int) -> int:
         task.save()
         raise PipelineException(exc.message) from exc
     except Exception as exc:
-        message = str(exc)
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
+        task.handle_general_pipeline_exception(exc, adapter)
 
     task.update_progress(20)
     adapter.info("Scanning complete. No viruses.")
@@ -191,12 +186,7 @@ def task_timetable_file_check(revision_id: int, task_id: int) -> int:
         task.save()
         raise PipelineException(message) from exc
     except Exception as exc:
-        message = str(exc)
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
+        task.handle_general_pipeline_exception(exc, adapter)
 
     return revision_id
 
@@ -273,12 +263,9 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
         TXCFileAttributes.objects.bulk_create(attributes, batch_size=BATCH_SIZE)
         adapter.info(f"Attributes extracted from {len(attributes)} files.")
     except Exception as exc:
-        message = "An unexpected exception has occurred."
-        adapter.error(str(exc), exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
+        task.handle_general_pipeline_exception(
+            exc, adapter, message="An unexpected exception has occurred."
+        )
 
     task.update_progress(45)
     return revision_id
@@ -317,12 +304,7 @@ def task_pti_validation(revision_id: int, task_id: int):
         task.save()
         raise PipelineException(message) from exc
     except Exception as exc:
-        message = str(exc)
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
+        task.handle_general_pipeline_exception(exc, adapter)
 
     if settings.PTI_ENFORCED_DATE.date() <= timezone.localdate() and violations:
         message = "PTI Validation failed."
@@ -358,10 +340,12 @@ def task_dataset_etl(revision_id: int, task_id: int):
         adapter.info("Data successfully loaded into BODS.")
         task.update_progress(90)
     except Exception as exc:
-        message = "Unknown timetable ETL pipeline error."
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_etl", task.SYSTEM_ERROR)
-        raise PipelineException(message) from exc
+        task.handle_general_pipeline_exception(
+            exc,
+            adapter,
+            message="Unknown timetable ETL pipeline error.",
+            task_name="dataset_etl",
+        )
 
     adapter.info("Timetable ETL pipeline task completed.")
     return revision_id

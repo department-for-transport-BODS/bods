@@ -1,5 +1,7 @@
 import logging
 
+from django.core.files.base import ContentFile
+from django.core.validators import FileExtensionValidator
 from django.db import models, transaction
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +9,8 @@ from django_extensions.db.fields import CreationDateTimeField
 from django_extensions.db.models import TimeStampedModel
 
 from transit_odp.common.enums import FeedErrorCategory, FeedErrorSeverity
+from transit_odp.common.loggers import PipelineAdapter
+from transit_odp.common.utils import sha1sum
 from transit_odp.data_quality.models import DataQualityReport
 from transit_odp.organisation.constants import DatasetType, TravelineRegions
 from transit_odp.organisation.models import DatasetRevision
@@ -14,6 +18,8 @@ from transit_odp.organisation.notifications import (
     send_endpoint_validation_error_notification,
 )
 from transit_odp.pipelines import managers
+from transit_odp.pipelines.constants import SchemaCategory
+from transit_odp.pipelines.exceptions import PipelineException
 
 logger = logging.getLogger(__name__)
 
@@ -186,6 +192,20 @@ class DatasetETLTaskResult(TaskResult):
 
             self.save()
 
+    def handle_general_pipeline_exception(
+        self,
+        exception: Exception,
+        adapter: PipelineAdapter,
+        message: str = None,
+        task_name="dataset_validate",
+    ):
+        message = message or str(exception)
+        adapter.error(message, exc_info=True)
+        self.to_error(task_name, DatasetETLTaskResult.SYSTEM_ERROR)
+        self.additional_info = message
+        self.save()
+        raise PipelineException(message) from exception
+
     def update_progress(self, progress: int):
         self.progress = progress
         self.save()
@@ -302,3 +322,26 @@ class ChangeDataArchive(models.Model):
             f"ChangeDataArchive(published_at={self.published_at}, "
             f"data={self.data.name!r})"
         )
+
+
+class SchemaDefinition(TimeStampedModel):
+    category = models.CharField(
+        null=False, unique=True, max_length=6, choices=SchemaCategory.choices
+    )
+    checksum = models.CharField(null=False, max_length=40)
+    schema = models.FileField(null=False, validators=[FileExtensionValidator([".zip"])])
+
+    @transaction.atomic
+    def update_definition(self, content: bytes, name: str):
+        """
+        Replaces schema zip with new content. Note this will delete the file in the
+        file manager
+
+        Args:
+            content: zip file in bytes to be saved
+            name: filename of new zip file
+        """
+        self.schema.delete()
+        self.schema = ContentFile(content, name)
+        self.checksum = sha1sum(content)
+        self.save()

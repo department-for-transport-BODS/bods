@@ -98,6 +98,10 @@ PSV_LICENCE_ERROR_HINT_MESSAGE = (
     "zeros between the letters and numbers."
 )
 PSV_LICENCE_ERROR_MESSAGE = "Licence number entered with the wrong format"
+PSV_LICENCE_AND_CHECKBOX = (
+    "Enter a PSV licence number or check the box to confirm that there "
+    "is no PSV licence number for this organisation"
+)
 
 
 class TravelineRegions(TextChoices):
@@ -113,3 +117,17 @@ class TravelineRegions(TextChoices):
     WALES = ("W", _("Wales"))
     WEST_MIDLANDS = ("WM", _("West Midlands"))
     YORKSHIRE = ("Y", _("Yorkshire"))
+
+
+@enum.unique
+class OrganisationStatus(ChoiceEnum):
+    not_yet_invited = "Not yet invited"
+    pending_invite = "Pending invite"
+    active = "Active"
+    inactive = "Inactive"
+
+
+ORG_NOT_YET_INVITED = OrganisationStatus.not_yet_invited.value
+ORG_PENDING_INVITE = OrganisationStatus.pending_invite.value
+ORG_ACTIVE = OrganisationStatus.active.value
+ORG_INACTIVE = OrganisationStatus.inactive.value

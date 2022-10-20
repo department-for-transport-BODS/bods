@@ -208,6 +208,38 @@ def test_only_bulk_downloads():
     assert pd.Series.all(df["dataset_id"] == revision.dataset.id)
 
 
+def test_only_bulk_gtfs_downloads():
+    admin = UserFactory(account_type=OrgAdminType)
+    org = OrganisationFactory(key_contact=admin)
+    consumer = UserFactory()
+    now = datetime.now()
+    revision = DatasetRevisionFactory(
+        dataset__contact=admin,
+        dataset__subscribers=[consumer],
+        dataset__organisation=org,
+    )
+    ResourceRequestCounterFactory(
+        date=now.date(),
+        path_info=BULK_DOWNLOAD_URLS[1],
+        counter=1,
+        requestor=consumer,
+    )
+    ResourceRequestCounterFactory(
+        date=now.date() - timedelta(days=1),
+        path_info=BULK_DOWNLOAD_URLS[1],
+        counter=1,
+        requestor=consumer,
+    )
+    df = get_all_monthly_breakdown_stats()
+    df = filter_interactions_to_organisation(df, org.id)
+    assert len(df) == 2
+
+    assert pd.Series.all(df["bulk_downloads"] == 1)
+    assert pd.Series.all(df["direct_downloads"] == 0)
+    assert pd.Series.all(df["dataset_type_pretty"] == "Timetables")
+    assert pd.Series.all(df["dataset_id"] == revision.dataset.id)
+
+
 def test_only_api_hits():
     admin = UserFactory(account_type=OrgAdminType)
     org = OrganisationFactory(key_contact=admin)

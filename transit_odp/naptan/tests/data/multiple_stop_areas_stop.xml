@@ -1,0 +1,42 @@
+<StopPoint xmlns="http://www.naptan.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2008-02-16T10:05:00.000" ModificationDateTime="2008-02-16T00:00:00.000" Modification="revise" RevisionNumber="1" Status="active">
+  <AtcoCode>036000003079</AtcoCode>
+  <NaptanCode>wingdjw</NaptanCode>
+  <Descriptor>
+    <CommonName xml:lang="en">Square Deal Cafe</CommonName>
+    <Landmark xml:lang="en">Knowl Hill Common</Landmark>
+    <Street xml:lang="en">Bath Road A4</Street>
+    <Indicator xml:lang="en">adj</Indicator>
+  </Descriptor>
+  <Place>
+    <NptgLocalityRef>E0043279</NptgLocalityRef>
+    <LocalityCentre>1</LocalityCentre>
+    <Location>
+      <Translation>
+        <GridType>UKOS</GridType>
+        <Easting>482276</Easting>
+        <Northing>179455</Northing>
+        <Longitude>-0.815883</Longitude>
+        <Latitude>51.508047</Latitude>
+      </Translation>
+    </Location>
+  </Place>
+  <StopClassification>
+    <StopType>BCT</StopType>
+    <OnStreet>
+      <Bus>
+        <BusStopType>MKD</BusStopType>
+        <TimingStatus>TIP</TimingStatus>
+        <MarkedPoint>
+          <Bearing>
+            <CompassPoint>NE</CompassPoint>
+          </Bearing>
+        </MarkedPoint>
+      </Bus>
+    </OnStreet>
+  </StopClassification>
+  <StopAreas>
+    <StopAreaRef Modification="new" Status="active">036G00006160</StopAreaRef>
+    <StopAreaRef Modification="new" Status="active">036G00006161</StopAreaRef>
+  </StopAreas>
+  <AdministrativeAreaRef>065</AdministrativeAreaRef>
+</StopPoint>

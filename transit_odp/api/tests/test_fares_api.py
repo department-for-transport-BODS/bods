@@ -158,3 +158,26 @@ class FaresAPITests(APITestCase):
         response = self.client.get(url, HTTP_HOST=self.hostname)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, expected)
+
+    def test_is_dummy_field_not_displayed_in_fares_dataset_response(self) -> None:
+        """
+        Ensures API doesn't return 'is_dummy' field in response
+        """
+        # Set up
+        self.assertTrue(
+            # Login into browser session as organisation user
+            self.client.login(username=self.org_user.username, password="password")
+        )
+        url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST)
+
+        hidden_key = "is_dummy"
+
+        response = self.client.get(url, HTTP_HOST=self.hostname)
+
+        results_with_hidden_key_displayed = [
+            result for result in response.data["results"] if hidden_key in result
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["results"]), 2)  # 2 entries created in SetUp
+        self.assertEqual(len(results_with_hidden_key_displayed), 0)
