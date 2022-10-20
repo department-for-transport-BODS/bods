@@ -90,21 +90,16 @@ class ReviewView(ReviewBaseView):
 
         return error_message
 
-    def get_revision(self):
-        dataset_id = self.object.dataset_id
-        revision = DatasetRevision.objects.get(id=dataset_id)
-        return revision
-
-    def get_upload_file(self):
-        revision = self.get_revision()
+    def get_upload_file(self, revision_id):
+        revision = DatasetRevision.objects.get(id=revision_id)
         upload_file = revision.upload_file
         return upload_file
 
-    def set_validator_error(self, dataset_id):
-        upload_file = self.get_upload_file()
+    def set_validator_error(self, revision_id):
+        upload_file = self.get_upload_file(revision_id)
 
         fares_validator_obj = FaresXmlValidator(
-            upload_file, self.kwargs["pk1"], dataset_id
+            upload_file, self.kwargs["pk1"], revision_id
         )
         fares_validator_response = fares_validator_obj.set_errors()
 
@@ -112,6 +107,22 @@ class ReviewView(ReviewBaseView):
             return True
         else:
             return False
+
+    def get_validator_error(self, revision_id):
+        upload_file = self.get_upload_file(revision_id)
+
+        fares_validator_obj = FaresXmlValidator(
+            upload_file, self.kwargs["pk1"], revision_id
+        )
+        fares_validator_errors = fares_validator_obj.get_errors()
+        fares_validator_errors_list = fares_validator_errors.content.decode(
+            "utf8"
+        ).replace("'", '"')
+
+        if fares_validator_errors_list == "[]":
+            return False
+        else:
+            return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -127,8 +138,14 @@ class ReviewView(ReviewBaseView):
         context["error"] = self.get_error()
 
         # Get the fares-validator error info
-        if not is_loading and context["error"] is None:
-            context["validator_error"] = self.set_validator_error(revision.dataset.id)
+        if (
+            not is_loading
+            and context["error"] is None
+            and not self.get_validator_error(revision.id)
+        ):
+            context["validator_error"] = self.set_validator_error(revision.id)
+        else:
+            context["validator_error"] = self.get_validator_error(revision.id)
 
         context["pk2"] = revision.id
 
