@@ -64,10 +64,19 @@ class FaresXmlValidator(APIView):
                             category=category,
                         )
                         fares_validator_model_object.save()
+                        validations = FaresValidation.objects.filter(
+                            dataset_id=pk2, organisation_id=pk1
+                        )
+                        serializer = FaresSerializer(validations, many=True)
+
+                if error_log_list:
+                    return JsonResponse(
+                        serializer.data, safe=False, status=status.HTTP_201_CREATED
+                    )
+                return JsonResponse(status=status.HTTP_200_OK)
+
         else:
             return JsonResponse({}, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-
-        return JsonResponse(status=status.HTTP_200_OK)
 
     def get_lxml_schema(self, schema):
         """Creates an lxml XMLSchema object from a file, file path or url."""
