@@ -2,11 +2,10 @@ import zipfile
 
 from lxml import etree
 
-xml_file_list = []
-etree_obj_list = {}
-
 
 def file_to_etree(file_obj):
+    xml_file_list = []
+    etree_obj_list = {}
     file_name = file_obj.name
     if file_name.endswith(".xml"):
         xmlschema_doc = etree.parse(file_obj)
