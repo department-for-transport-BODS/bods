@@ -105,8 +105,7 @@ class ReviewView(ReviewBaseView):
 
         if fares_validator_response.status_code == 201:
             return True
-        else:
-            return False
+        return False
 
     def get_validator_error(self, revision_id):
         upload_file = self.get_upload_file(revision_id)
@@ -121,8 +120,7 @@ class ReviewView(ReviewBaseView):
 
         if fares_validator_errors_list == "[]":
             return False
-        else:
-            return True
+        return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
