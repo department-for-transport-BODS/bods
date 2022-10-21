@@ -22,11 +22,19 @@ export class HelpModal {
 
   onOpen() {
     document.querySelector("html").classList.add("disable-scroll");
+    this.overlay.addEventListener("click", this.onClickAnywhere.bind(this));
     this.overlay.style.display = "flex";
   }
 
   onClose() {
     document.querySelector("html").classList.remove("disable-scroll");
     this.overlay.style.display = "none";
+    this.overlay.removeEventListener("click", this.onClickAnywhere.bind(this));
+  }
+
+  onClickAnywhere(event) {
+    if (this.overlay.style.display === "flex" && event.target.classList.contains("overlay") && !event.target.classList.contains("window")) {
+      this.onClose();
+    }
   }
 }

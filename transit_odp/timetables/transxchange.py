@@ -13,10 +13,7 @@ from transit_odp.common.xmlelements.exceptions import NoElement
 from transit_odp.timetables.constants import (
     TRANSXCAHNGE_NAMESPACE,
     TRANSXCHANGE_NAMESPACE_PREFIX,
-    TXC_21,
-    TXC_24,
 )
-from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate import ZippedValidator
 
 logger = logging.getLogger(__name__)
@@ -312,25 +309,6 @@ class TransXChangeZip(ZippedValidator):
         self._schema_21 = None
         self._schema_24 = None
         self.docs = []
-
-    def _get_schema(self, version):
-        """Get an lxml schema for a specific TxC version.
-
-        Args:
-            version (str): TxC version string, either '2.1' or '2.4'.
-
-        Returns:
-            TxC schema as an lxml schema object
-
-        """
-        if TXC_21 == version:
-            if self._schema_21 is None:
-                self._schema_21 = get_transxchange_schema(TXC_21)
-            return self._schema_21
-        else:
-            if self._schema_24 is None:
-                self._schema_24 = get_transxchange_schema(TXC_24)
-            return self._schema_24
 
     def get_transxchange_docs(self, validate=False):
         """Get all the TransXChangeDocuments in a zip file.

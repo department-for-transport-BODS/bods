@@ -8,6 +8,7 @@ from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
 from transit_odp.data_quality.pti.validators import PTIValidator
+from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.timetables.pti import PTI_PATH
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -370,3 +371,23 @@ def test_related_lines(filename, expected):
     with txc_path.open("r") as txc:
         is_valid = pti.is_valid(txc)
     assert is_valid == expected
+
+
+def test_non_related_with_stop_areas():
+    # The following atco codes come from nonrelatedlines.xml one stop in each line
+    l1stop = 9990000001
+    l1Nstop = 9990000026
+    stop_areas_in_common = ["match"]
+    StopPointFactory(atco_code=l1stop, stop_areas=stop_areas_in_common)
+    StopPointFactory(atco_code=l1Nstop, stop_areas=stop_areas_in_common)
+    StopPointFactory.create_batch(3, stop_areas=[])
+
+    OBSERVATION_ID = 23
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / "nonrelatedlines.xml"
+    with txc_path.open("r") as txc:
+        assert pti.is_valid(txc)

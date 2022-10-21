@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import F, Func, Q
 from django_filters import rest_framework as filters
 
 from transit_odp.common.utils.date_validator import validate
@@ -89,14 +89,24 @@ class DatasetSearchFilterSet(filters.FilterSet):
         return queryset
 
     def rag_filter(self, queryset, name, value):
+        """
+        Rounded score used here for consistency with DataQualityRAG.from_score.
+        Used Func for solving this issue. As we upgrade to django 4.0
+        it can be substituted with
+        'Round(F("score"), precision=3)' - precision parameter is added in dj 4.0
+        from django.db.models.functions module.
+        """
         query_map = {
-            "green": Q(score__gte=GREEN_THRESHOLD),
-            "amber": Q(score__lt=GREEN_THRESHOLD, score__gt=AMBER_THRESHOLD),
-            "red": Q(score__gt=0, score__lte=AMBER_THRESHOLD),
+            "green": Q(rounded_score__gte=GREEN_THRESHOLD),
+            "amber": Q(
+                rounded_score__lt=GREEN_THRESHOLD, rounded_score__gt=AMBER_THRESHOLD
+            ),
+            "red": Q(rounded_score__gt=0, rounded_score__lte=AMBER_THRESHOLD),
         }
         if value:
-            queryset = queryset.filter(query_map[value])
-
+            return queryset.annotate(
+                rounded_score=Func(F("score") * 1000, function="FLOOR") / 1000
+            ).filter(query_map[value])
         return queryset
 
 

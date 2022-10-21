@@ -1,4 +1,5 @@
 import datetime
+from logging import getLogger
 
 import pytest
 from django.conf import settings
@@ -7,7 +8,10 @@ from django_hosts import reverse
 from config.hosts import DATA_HOST
 from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.factories import AVLValidationReportFactory
+from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.tasks import cache_avl_compliance_status
 from transit_odp.browse.forms import ConsumerFeedbackForm
+from transit_odp.common.loggers import PipelineAdapter
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import AVLType, FeedStatus
@@ -206,6 +210,10 @@ class TestAVLSearchView(BaseAVLSearchView):
                 non_critical_score=UPPER_THRESHOLD + 0.1,
             )
 
+        adapter = PipelineAdapter(getLogger("pytest"), {})
+        for dataset in AVLDataset.objects.all():
+            cache_avl_compliance_status(adapter, dataset.id)
+
         client = client_factory(host=self.host)
         response = client.get(
             self.url,
@@ -213,7 +221,7 @@ class TestAVLSearchView(BaseAVLSearchView):
                 "q": "",
                 "area": "",
                 "organisation": "",
-                "avl_compliance": "Non-compliant",
+                "avl_compliance_status_cached": "Non-compliant",
                 "status": "",
                 "start": "",
             },

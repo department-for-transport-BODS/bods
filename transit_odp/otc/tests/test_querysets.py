@@ -8,8 +8,10 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
     OrganisationFactory,
+    ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
+from transit_odp.organisation.models.data import ServiceCodeExemption
 from transit_odp.otc.constants import (
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -170,6 +172,43 @@ def test_get_all_in_organisation():
     assert queryset.count() == num_org2_services
     otc_service_codes = [s.service_code for s in queryset]
     assert sorted(otc_service_codes) == sorted(org2_service_codes)
+
+
+def test_get_all_without_exempted_ones() -> None:
+    org = OrganisationFactory()
+    org_licence_number = "PD000001"
+    num_org_services = 4
+    org_service_codes = [f"{org_licence_number}:{n}" for n in range(num_org_services)]
+
+    bods_lic = BODSLicenceFactory(organisation=org, number=org_licence_number)
+    dataset1 = DatasetFactory(organisation=org)
+    dataset2 = DatasetFactory(organisation=org)
+
+    for code in org_service_codes[:2]:
+        TXCFileAttributesFactory(revision__dataset=dataset1, service_code=code)
+    for code in org_service_codes[2:]:
+        TXCFileAttributesFactory(revision__dataset=dataset2, service_code=code)
+
+    otc_lic = LicenceModelFactory(number=org_licence_number)
+    for code in org_service_codes:
+        ServiceModelFactory(licence=otc_lic, registration_number=code)
+
+    ServiceCodeExemptionFactory(
+        licence=bods_lic, registration_code=org_service_codes[0].split(":")[1]
+    )
+
+    queryset = OTCService.objects.get_all_without_exempted_ones(org.id)
+
+    assert queryset.count() == num_org_services - 1
+
+    otc_service_codes = [s.service_code for s in queryset]
+
+    exempted_service_code = (
+        ServiceCodeExemption.objects.add_service_code().first().service_code
+    )
+    org_service_codes.remove(exempted_service_code)
+
+    assert sorted(otc_service_codes) == sorted(org_service_codes)
 
 
 def test_get_missing_from_organisation():

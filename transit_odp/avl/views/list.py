@@ -19,6 +19,6 @@ class ListView(BasePublishListView):
         return (
             super()
             .get_datasets()
-            .add_avl_compliance_status()
+            .add_avl_compliance_status_cached()
             .order_by("avl_feed_status", "-modified")
         )

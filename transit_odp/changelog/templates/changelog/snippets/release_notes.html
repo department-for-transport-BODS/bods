@@ -1,6 +1,53 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "October 2022 (1.20.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        The team has worked on a number of high-value feature updates
+        that will be available to all publishers and consumers
+        including:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            A list of your services which are marked as exempt by the
+            BODS admin team so that they do not appear in the 'Service
+            codes requiring attention' section. A publisher can notify
+            the service desk if there are unexpected services so that
+            they are removed from this report.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Functionality within the DfT Admin Portal has been updated
+            to maintain the service code exemption list.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            The data catalogues have been updated to ensure service
+            codes that are out of scope will not show as missing.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the publish process for Fares which were
+            impacting some users and their ability to publish fares
+            data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the publish process for Timetables which were
+            impacting the ability to upload some circular services.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "August 2022 (1.19.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

@@ -24,6 +24,7 @@ from .datasets import (
 )
 from .invites import (
     BulkResendInviteView,
+    InviteFirstView,
     InviteSuccessView,
     InviteView,
     ResendInvitationView,
@@ -42,6 +43,7 @@ from .organisations import (
     ManageOrganisationView,
     OrganisationArchiveSuccessView,
     OrganisationArchiveView,
+    OrganisationCreateSuccessInvitedView,
     OrganisationCreateSuccessView,
     OrganisationCreateView,
     OrganisationDetailView,
@@ -66,6 +68,7 @@ __all__ = [
     "BulkResendInviteView",
     "ConsumerDetailView",
     "ConsumerListView",
+    "InviteFirstView",
     "InviteSuccessView",
     "InviteView",
     "ManageOrganisationView",
@@ -77,6 +80,7 @@ __all__ = [
     "OrganisationAVLListView",
     "OrganisationArchiveSuccessView",
     "OrganisationArchiveView",
+    "OrganisationCreateSuccessInvitedView",
     "OrganisationCreateSuccessView",
     "OrganisationCreateView",
     "OrganisationDetailView",

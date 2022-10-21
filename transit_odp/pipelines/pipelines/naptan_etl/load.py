@@ -24,6 +24,7 @@ def load_new_stops(new_stops):
                 location=Point(
                     x=float(row.longitude), y=float(row.latitude), srid=4326
                 ),
+                stop_areas=row.stop_areas,
             )
         )
 
@@ -43,6 +44,7 @@ def load_existing_stops(existing_stops):
         obj.locality_id = row.locality_id
         obj.admin_area_id = int(row.admin_area_id)
         obj.location = Point(x=float(row.longitude), y=float(row.latitude), srid=4326)
+        obj.stop_areas = row.stop_areas
 
     StopPoint.objects.bulk_update(
         existing_stops["obj"],
@@ -55,6 +57,7 @@ def load_existing_stops(existing_stops):
             "locality_id",
             "admin_area_id",
             "location",
+            "stop_areas",
         ),
         batch_size=5000,
     )

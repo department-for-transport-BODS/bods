@@ -43,6 +43,7 @@ class StopPointFactory(factory.DjangoModelFactory):
 
     locality = factory.SubFactory(LocalityFactory)
     admin_area = factory.SubFactory(AdminAreaFactory)
+    stop_areas = ["area1"]
 
     @factory.lazy_attribute
     def location(self):

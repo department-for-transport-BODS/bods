@@ -2,12 +2,13 @@ from collections import OrderedDict
 from datetime import datetime
 
 from django.db.models.expressions import F
-from pandas import DataFrame, NamedAgg, Series
+from pandas import DataFrame, NamedAgg, Series, isna
 
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import FaresMetadata
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import Licence, Organisation, TXCFileAttributes
+from transit_odp.organisation.models.data import ServiceCodeExemption
 from transit_odp.otc.models import Licence as OTCLicence
 from transit_odp.otc.models import Service as OTCService
 
@@ -45,6 +46,7 @@ ORG_USER_FIELDS = [
 ORG_FIELDS = [
     "id",
     "name",
+    "created",
     "permit_holder",
     "nocs_string",
     "licence_string",
@@ -58,14 +60,21 @@ ORG_COLUMN_MAP = OrderedDict(
         ),
         "status": Column(
             "Status",
-            "The registration status of the operator/publisher on BODS. ‘Active’ "
-            "are signed up on BODS, ‘Inactive’ no longer have functioning accounts "
-            "on BODS and ‘Pending Invite’ have still haven’t signed up.",
+            "The registration status of the operator/publisher on BODS. 'Active' "
+            "are signed up on BODS, 'Inactive' no longer have functioning accounts "
+            "on BODS, 'Pending Invite' still haven't signed up and 'Not yet invited' "
+            "have been added to BODS but not yet invited to complete the full sign "
+            "up procedure",
         ),
         "invite_accepted": Column(
             "Date Invite Accepted",
             "The date at which the operator/publisher accepted their "
             "invite and signed up",
+        ),
+        "created": Column(
+            "Organisation creation date",
+            "The date at which the Operator/publisher organisation are added to "
+            "BODS which may or may not be the same date as the invited date.",
         ),
         "invite_sent": Column(
             "Date Invited",
@@ -107,34 +116,36 @@ ORG_COLUMN_MAP = OrderedDict(
         ),
         "distinct_service_count": Column(
             "OTC Registered Services",
-            (
-                "The total count of services of the operator/publisher as "
-                "extracted from the database of the Office of the Traffic "
-                "Commissioner (OTC). This informs us to understand the total "
-                "number of services expected to be published from the licences "
-                "associated in the organisational profile."
-            ),
+            "The total count of services of the operator/publisher as "
+            "extracted from the database of the Office of the Traffic "
+            "Commissioner (OTC). This informs us to understand the total "
+            "number of services expected to be published from the licences "
+            "associated in the organisational profile.",
+        ),
+        "exempted_services_count": Column(
+            "Out of scope services(exempted)",
+            "The total number of registered services that have been marked as "
+            "exempt from publishing to BODS by the DVSA/DfT admin user.",
+        ),
+        "services_registered_in_bods_count": Column(
+            "Registered Services in scope(for BODS)",
+            "The total number of in scope, registered services for the "
+            "organisation that require data in BODS",
         ),
         "published_registered_service_count": Column(
             "Registered Services Published",
-            (
-                "The total number of registered services that an organisation "
-                "has published."
-            ),
+            "The total number of registered services that an organisation "
+            "has published.",
         ),
         "compliant_service_count": Column(
             "Compliant Registered Services Published",
-            (
-                "The total number of compliant registered services are "
-                "published in total by the operator/publisher to BODS."
-            ),
+            "The total number of compliant, in scope, registered services "
+            "are published in total by the operator/publisher to BODS.",
         ),
         "compliant_service_ratio": Column(
             "% Compliant Registered Services Published",
-            (
-                "The percentage of an organisation’s "
-                "registered services that are PTI compliant."
-            ),
+            "The percentage of an organisation's in scope, "
+            "registered services that are PTI compliant.",
         ),
         "school_or_work_count": Column(
             "Number of School or Works Services",
@@ -211,11 +222,24 @@ ORG_COLUMN_MAP = OrderedDict(
 
 def _get_compliance_percentage(row: Series) -> str:
     percentage = 0.0
-    if row.published_registered_service_count:
-        percentage = (
-            row.compliant_service_count / row.published_registered_service_count
-        )
+    if (
+        isna(row.services_registered_in_bods_count)
+        or isna(row.compliant_service_count)
+        or not row.services_registered_in_bods_count
+    ):
+        return str(percentage)
+
+    percentage = row.compliant_service_count / row.services_registered_in_bods_count
     return f"{percentage * 100:.2f}%"
+
+
+def _get_services_registered_in_bods(row: Series) -> int:
+    if row.distinct_service_count:
+        if isna(row.exempted_services_count):
+            return row.distinct_service_count
+        else:
+            return row.distinct_service_count - row.exempted_services_count
+    return 0
 
 
 def _get_fares_dataframe() -> DataFrame:
@@ -242,6 +266,9 @@ def _get_fares_dataframe() -> DataFrame:
 
 
 def _is_valid_operating_date(row: Series) -> bool:
+    if not row.is_published:
+        return False
+
     today = datetime.now().date()
     if row.operating_period_end_date is None or row.operating_period_start_date is None:
         return False
@@ -254,32 +281,58 @@ def _get_service_stats() -> DataFrame:
     otc_services = DataFrame.from_records(
         OTCService.objects.add_service_code().values(SERVICE_CODE)
     )
+
     if otc_services.empty:
         raise EmptyDataFrame()
+
+    exempted_services = DataFrame.from_records(
+        ServiceCodeExemption.objects.add_service_code()
+        .add_organisation_id()
+        .values("service_code", "org_id"),
+        columns=["service_code", "org_id"],
+    )
 
     otc_services["is_registered"] = True
     txc_files = DataFrame.from_records(
         TXCFileAttributes.objects.get_organisation_data_catalogue().values(*TXC_FIELDS)
     )
-    txc_files["unregistered_service_count"] = txc_files["service_code"].str.startswith(
-        "UZ"
-    )
-    txc_files["number_of_services_valid_operating_date"] = txc_files.apply(
-        lambda x: _is_valid_operating_date(x), axis=1
-    )
-    txc_files["published_services_with_future_start_date"] = (
-        txc_files["operating_period_start_date"] > today
-    )
-
     merged_services = otc_services.merge(txc_files, on=SERVICE_CODE, how="outer")
+
+    merged_services["is_published"] = merged_services["organisation_id"].notna()
+    merged_services["is_registered_and_published"] = (
+        merged_services["is_registered"] & merged_services["is_published"]
+    )
     merged_services["is_registered_and_compliant"] = (
         merged_services["is_registered"] & merged_services["bods_compliant"]
     )
+
+    merged_services["unregistered_service_count"] = merged_services[
+        "service_code"
+    ].str.startswith("UZ")
+    merged_services["number_of_services_valid_operating_date"] = merged_services.apply(
+        lambda x: _is_valid_operating_date(x), axis=1
+    )
+    merged_services["published_services_with_future_start_date"] = (
+        merged_services["operating_period_start_date"] > today
+    ) & merged_services["is_published"]
+    merged_services["is_exempted"] = merged_services["service_code"].isin(
+        exempted_services["service_code"]
+    )
+
+    # Initially organisation_id column can have NaN values inside.
+    # We override it here with org_id for entries with exempted service codes
+    # to be able to properly sum all exempted service codes in .agg(..) method.
+    merged_services = merged_services.merge(
+        exempted_services, on=SERVICE_CODE, how="outer"
+    )
+    merged_services.organisation_id.fillna(merged_services["org_id"], inplace=True)
+    del merged_services["org_id"]
+
     service_code_count = (
-        merged_services.groupby("organisation_id")
+        merged_services.groupby(["organisation_id"])
         .agg(
             published_registered_service_count=NamedAgg(
-                column="is_registered", aggfunc="sum"
+                column="is_registered_and_published", aggfunc="sum"
             ),
             compliant_service_count=NamedAgg(
                 column="is_registered_and_compliant", aggfunc="sum"
@@ -293,17 +346,15 @@ def _get_service_stats() -> DataFrame:
             published_services_with_future_start_date=NamedAgg(
                 column="published_services_with_future_start_date", aggfunc="sum"
             ),
+            exempted_services_count=NamedAgg(column="is_exempted", aggfunc="sum"),
         )
         .astype(int)
     )
 
-    if service_code_count is not None:
-        service_code_count["compliant_service_ratio"] = service_code_count.apply(
-            lambda x: _get_compliance_percentage(x), axis=1
-        )
-        return service_code_count
-    else:
+    if service_code_count is None:
         raise EmptyDataFrame()
+
+    return service_code_count
 
 
 def _get_organisation_details_dataframe() -> DataFrame:
@@ -326,7 +377,7 @@ def _get_organisation_details_dataframe() -> DataFrame:
     )
     orgs_with_users = DataFrame.from_records(
         Organisation.objects.values("id")
-        .add_catalogue_status()
+        .add_status()
         .add_invite_accepted()
         .add_invite_sent()
         .add_last_active()
@@ -336,6 +387,26 @@ def _get_organisation_details_dataframe() -> DataFrame:
     orgs = orgs.merge(orgs_with_datasets, on="id")
     orgs = orgs.merge(orgs_with_users, on="id")
     return orgs
+
+
+def _prepare_calculated_columns(df: DataFrame) -> None:
+    df["services_registered_in_bods_count"] = df.apply(
+        lambda x: _get_services_registered_in_bods(x), axis=1
+    )
+    df["compliant_service_ratio"] = df.apply(
+        lambda x: _get_compliance_percentage(x), axis=1
+    )
+
+
+def _populate_nan_with_zeros(df: DataFrame):
+    pti_columns = ["compliant_service_count", "compliant_service_ratio"]
+    fares_columns = ["published_fares_count", "total_fare_products"]
+    # we don't need to fill 'number' in OTC_LICENCE_FIELDS
+    otc_columns = OTC_LICENCE_FIELDS[1:] + OTC_SERVICES_FIELDS
+    services_columns = ["services_registered_in_bods_count", "exempted_services_count"]
+
+    fillna_columns = otc_columns + pti_columns + fares_columns + services_columns
+    df[fillna_columns] = df[fillna_columns].fillna(0)
 
 
 def _get_organisation_catalogue_dataframe() -> DataFrame:
@@ -348,25 +419,20 @@ def _get_organisation_catalogue_dataframe() -> DataFrame:
     if otc_licences.empty or orgs.empty or org_licences.empty:
         raise EmptyDataFrame()
 
+    licences = org_licences.merge(otc_licences, how="left", on="number")
+    licences = licences.groupby("organisation_id").sum()
+    orgs = orgs.merge(licences, how="outer", left_on="id", right_on="organisation_id")
+
+    fares = _get_fares_dataframe()
+    orgs = orgs.merge(fares, how="outer", left_on="id", right_on="organisation_id")
+
     service_stats = _get_service_stats()
     orgs = orgs.merge(
         service_stats, how="left", left_on="id", right_on="organisation_id"
     )
 
-    licences = org_licences.merge(otc_licences, how="left", on="number")
-    licences = licences.groupby("organisation_id").sum()
-
-    orgs = orgs.merge(licences, how="outer", left_on="id", right_on="organisation_id")
-    fares = _get_fares_dataframe()
-    orgs = orgs.merge(fares, how="outer", left_on="id", right_on="organisation_id")
-
-    pti_columns = ["compliant_service_count", "compliant_service_ratio"]
-    fares_columns = ["published_fares_count", "total_fare_products"]
-    # we don't need to fill 'number' in OTC_LICENCE_FIELDS
-    otc_columns = OTC_LICENCE_FIELDS[1:] + OTC_SERVICES_FIELDS
-
-    fillna_columns = otc_columns + pti_columns + fares_columns
-    orgs[fillna_columns] = orgs[fillna_columns].fillna(0)
+    _prepare_calculated_columns(orgs)
+    _populate_nan_with_zeros(orgs)
 
     drop_columns = ["id"]
     orgs.drop(columns=drop_columns, inplace=True)

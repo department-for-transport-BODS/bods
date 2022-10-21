@@ -124,7 +124,7 @@ class AVLSearchFilterForm(GOVUKForm):
         required=False,
     )
 
-    avl_compliance = forms.ChoiceField(
+    avl_compliance_status_cached = forms.ChoiceField(
         choices=(
             ("", "All statuses"),
             (UNDERGOING, UNDERGOING),
@@ -142,7 +142,7 @@ class AVLSearchFilterForm(GOVUKForm):
         super().__init__(*args, **kwargs)
         # Change field labels
         self.fields["organisation"].label_from_instance = lambda obj: obj.name
-        self.fields["avl_compliance"].label += mark_safe(
+        self.fields["avl_compliance_status_cached"].label += mark_safe(
             render_to_string("browse/snippets/help_modals/AVL_bods_compliance.html")
         )
 
@@ -150,7 +150,7 @@ class AVLSearchFilterForm(GOVUKForm):
         return Layout(
             Field("organisation", css_class="govuk-!-width-full"),
             Field("status", css_class="govuk-!-width-full"),
-            Field("avl_compliance", css_class="govuk-!-width-full"),
+            Field("avl_compliance_status_cached", css_class="govuk-!-width-full"),
             ButtonSubmit("submitform", "submit", content=_("Apply filter")),
         )
 

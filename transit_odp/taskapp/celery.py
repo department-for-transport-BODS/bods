@@ -88,6 +88,16 @@ class CeleryAppConfig(AppConfig):
                 "task": PIPELINE_TASKS + "task_dqs_monitor",
                 "schedule": 60.0,
             },
+            "update_bods_xsd_zip_files": {
+                "task": PIPELINE_TASKS + "task_update_xsd_zip_cache",
+                "schedule": crontab(
+                    minute=0,
+                    hour=0,
+                    day_of_month=1,
+                    month_of_year="*/3",
+                    day_of_week="*",
+                ),
+            },
             "monitor_avl_feeds": {
                 "task": AVL_TASKS + "task_monitor_avl_feeds",
                 "schedule": 30.0,
