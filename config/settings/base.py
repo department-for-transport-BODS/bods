@@ -559,6 +559,23 @@ PTI_PDF_URL = env(
     default="https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf",
 )
 
+# Microsoft Auth
+# ------------------------------------------------------------------------------
+MS_TENANT_ID = env("MS_TENANT_ID", default="")
+MS_LOGIN_URL = env("MS_LOGIN_URL", default="https://login.microsoftonline.com")
+MS_CLIENT_ID = env("MS_CLIENT_ID", default="")
+MS_SCOPE = env(
+    "MS_SCOPE", default=f"https://DVSAUK.onmicrosoft.com/{MS_CLIENT_ID}/.default"
+)
+
+# OTC API
+# ------------------------------------------------------------------------------
+OTC_CLIENT_SECRET = env("OTC_CLIENT_SECRET", default="")
+OTC_API_URL = env(
+    "OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice"
+)
+OTC_API_KEY = env("OTC_API_KEY", default="")
+
 # Crispy forms
 # ------------------------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = (
@@ -587,3 +604,7 @@ CRISPY_CLASS_CONVERTERS = {
     "radioinput": "govuk-radios__input ",
     # 'button': "govuk-button ",
 }
+
+# Post Publishing Checks
+# ------------------------------------------------------------------------------
+FEATURE_PPC_ENABLED = env.bool("FEATURE_PPC_ENABLED", default=False)

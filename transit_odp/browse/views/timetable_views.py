@@ -20,6 +20,7 @@ import config.hosts
 from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
+from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.views.base_views import BaseSearchView, BaseTemplateView
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
@@ -209,7 +210,9 @@ class DatasetSubscriptionView(DatasetSubscriptionBaseView, UpdateView):
         return redirect(success_url)
 
 
-class DatasetSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
+class DatasetSubscriptionSuccessView(
+    DatasetPaginatorTable, DatasetSubscriptionBaseView, DetailView
+):
     template_name = "browse/timetables/feed_subscription_success.html"
 
     def get_queryset(self):
@@ -236,14 +239,15 @@ class DatasetSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
             )
 
     def get_back_button_text(self, previous_url):
-        if previous_url == reverse("users:feeds-manage", host=config.hosts.DATA_HOST):
+        sub_manage_url = reverse("users:feeds-manage", host=config.hosts.DATA_HOST)
+        if sub_manage_url in previous_url:
             return _("Go back to manage subscriptions")
         else:
             return _("Go back to data set")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        back_url = self.get_back_url()
+        back_url = self._get_or_update_url(self.request.user, self.get_back_url())
         context.update(
             {
                 "subscribe": self.get_is_subscribed(),

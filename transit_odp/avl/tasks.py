@@ -2,7 +2,7 @@ import io
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -40,6 +40,8 @@ from transit_odp.avl.notifications import (
     send_avl_schema_check_fail,
     send_avl_status_changed_notification,
 )
+from transit_odp.avl.post_publishing_checks.checker import PostPublishingChecker
+from transit_odp.avl.post_publishing_checks.reports.weekly import WeeklyReport
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.validation import get_validation_client
 from transit_odp.bods.interfaces.plugins import get_cavl_service
@@ -336,3 +338,22 @@ def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):
     avl_compliance = AVLComplianceCache.objects.get_or_create(dataset_id=feed_id)[0]
     avl_compliance.status = avl_dataset.avl_compliance
     avl_compliance.save()
+
+
+@shared_task()
+def task_daily_post_publishing_checks(feed_id: int, num_activities: int = 20):
+    if settings.FEATURE_PPC_ENABLED:
+        logger.info(f"Perform daily post publishing checks for AVL feed ID {feed_id}")
+        checker = PostPublishingChecker()
+        checker.perform_checks(feed_id, num_activities)
+
+
+@shared_task()
+def task_weekly_assimilate_post_publishing_check_reports(
+    start_date: str = None,
+):
+    if settings.FEATURE_PPC_ENABLED:
+        start_date = date.today() if not start_date else date.fromisoformat(start_date)
+
+        report = WeeklyReport(start_date)
+        report.generate()

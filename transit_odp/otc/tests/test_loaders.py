@@ -1,29 +1,40 @@
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
-from transit_odp.otc.constants import CSV_FILE_TEMPLATE, TrafficAreas
+from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.factories import (
     LicenceFactory,
     LicenceModelFactory,
     OperatorFactory,
     OperatorModelFactory,
+    RegistrationFactory,
     ServiceFactory,
     ServiceModelFactory,
     flatten_data,
 )
-from transit_odp.otc.loaders import Loader
+from transit_odp.otc.loaders import Loader, LoadFailedException
 from transit_odp.otc.models import Licence, Operator, Service
 from transit_odp.otc.registry import Registry
-from transit_odp.otc.tests.conftest import CSV_DATA
 
 pytestmark = pytest.mark.django_db
 HERE = Path(__file__)
-CSV_PATH = HERE.parent / Path("data")
+CLIENT = "transit_odp.otc.client.otc_client.OTCAPIClient"
 
 
-def test_can_successfully_load_models_empty_database():
+def test_empty_database_raises():
+    registry = Registry()
+    loader = Loader(registry)
+    with pytest.raises(LoadFailedException):
+        loader.load()
+
+
+@patch(f"{CLIENT}.get_latest_variations_since")
+def test_simple_load(fake_client):
+    # Need something in the database so we know when to request from
+    ServiceModelFactory(operator__operator_id=99, licence__number="DF9999999")
     operator = OperatorFactory()
     l1 = LicenceFactory(number="LD0000007")
     l2 = LicenceFactory(number="LD0000008")
@@ -31,17 +42,19 @@ def test_can_successfully_load_models_empty_database():
     services += ServiceFactory.create_batch(3, operator=operator, licence=l2)
     services += ServiceFactory.create_batch(4)
 
-    registrations = flatten_data(services)
-    registry = Registry(registrations)
+    fake_client.return_value = flatten_data(services)
+    registry = Registry()
     loader = Loader(registry)
     loader.load()
 
-    assert Operator.objects.count() == 5
-    assert Service.objects.count() == 10
-    assert Licence.objects.count() == 6
+    assert Operator.objects.count() == 5 + 1
+    assert Service.objects.count() == 10 + 1
+    assert Licence.objects.count() == 6 + 1
 
 
-def test_services_types_on_same_registrations_are_added():
+@patch(f"{CLIENT}.get_latest_variations_since")
+def test_services_types_on_same_registrations_are_added(fake_client):
+    ServiceModelFactory(operator__operator_id=99, licence__number="DF9999999")
     o = OperatorFactory()
     l1 = LicenceFactory(number="LD0000007")
     reg_number = l1.number + "/42"
@@ -64,17 +77,18 @@ def test_services_types_on_same_registrations_are_added():
         service_type_description="",
     )
 
-    registrations = flatten_data([s1, s2, s3])
-    registry = Registry(registrations)
+    fake_client.return_value = flatten_data([s1, s2, s3])
+    registry = Registry()
     loader = Loader(registry)
     loader.load()
 
-    assert Operator.objects.count() == 1
-    assert Service.objects.count() == 3
-    assert Licence.objects.count() == 1
+    assert Operator.objects.count() == 1 + 1
+    assert Service.objects.count() == 3 + 1
+    assert Licence.objects.count() == 1 + 1
 
 
-def test_services_types_on_same_registrations_are_updated():
+@patch(f"{CLIENT}.get_latest_variations_since")
+def test_services_types_on_same_registrations_are_updated(fake_client):
     new_op = OperatorFactory()
     new_lic = LicenceFactory(number="LD0000007")
     o = OperatorModelFactory(**new_op.dict())
@@ -130,8 +144,8 @@ def test_services_types_on_same_registrations_are_updated():
         public_text="Updated",
     )
 
-    registrations = flatten_data([s1, s2, s3])
-    registry = Registry(registrations)
+    fake_client.return_value = flatten_data([s1, s2, s3])
+    registry = Registry()
     loader = Loader(registry)
     loader.load()
 
@@ -141,7 +155,8 @@ def test_services_types_on_same_registrations_are_updated():
         assert service.operator.address == "North Pole"
 
 
-def test_can_create_new_services_with_existing_services():
+@patch(f"{CLIENT}.get_latest_variations_since")
+def test_can_create_new_services_with_existing_services(fake_client):
     operator = OperatorFactory()
     operator_model = OperatorModelFactory(**operator.dict())
     l1 = LicenceFactory(number="LD0000007")
@@ -166,8 +181,8 @@ def test_can_create_new_services_with_existing_services():
         op = OperatorModelFactory(**operator_kwargs)
         ServiceModelFactory(**service_kwargs, operator=op, licence=licence_model)
 
-    registrations = flatten_data(absent + present + more_present)
-    registry = Registry(registrations)
+    fake_client.return_value = flatten_data(absent + present + more_present)
+    registry = Registry()
     loader = Loader(registry)
 
     db_operators = set(Operator.objects.values_list("operator_id", flat=True))
@@ -181,7 +196,8 @@ def test_can_create_new_services_with_existing_services():
     assert db_licences.isdisjoint(loader.get_missing_licences())
 
 
-def test_can_update_modified_variations():
+@patch(f"{CLIENT}.get_latest_variations_since")
+def test_can_update_modified_variations(fake_client):
     OperatorModelFactory.reset_sequence(1)
     LicenceModelFactory.reset_sequence(1)
     ServiceModelFactory.create_batch(5)
@@ -215,8 +231,10 @@ def test_can_update_modified_variations():
         service.public_text = "An update happened"
         service.licence.expiry_date = datetime(2021, 12, 25, 12, 1, 1).date()
 
-    registrations = flatten_data(new_services_updated + new_services_not_updated)
-    registry = Registry(registrations)
+    fake_client.return_value = flatten_data(
+        new_services_updated + new_services_not_updated
+    )
+    registry = Registry()
     loader = Loader(registry)
     loader.load()
 
@@ -238,16 +256,86 @@ def test_can_update_modified_variations():
         assert not service.operator.operator_name.startswith("UPDATED")
 
 
-def test_load_all_registrations():
-    files = [CSV_PATH / CSV_FILE_TEMPLATE.format(ta) for ta in TrafficAreas.values]
-    registry = Registry.from_filepath(files)
-    loader = Loader(registry)
-    loader.load()
+@patch(f"{CLIENT}.get_latest_variations_since")
+def test_can_delete_cancelled_variations(fake_client):
+    OperatorModelFactory.reset_sequence(1)
+    LicenceModelFactory.reset_sequence(1)
+    ServiceFactory.reset_sequence(5)
+    OperatorFactory.reset_sequence(10)
+    LicenceFactory.reset_sequence(10)
+    existing_services = ServiceFactory.create_batch(5)
+    services_to_delete = ServiceFactory.create_batch(5)
+    licence_expiry_date = datetime(2021, 12, 25, 12, 1, 1).date()
 
-    assert Operator.objects.count() == 908
-    # expected 922 (sum of all CSVs) but there are duplicates across CSV's
-    # 908 unique operator ids in total.
-    assert Service.objects.count() == sum(row[3] for row in CSV_DATA) == 14268
-    # all services accounted for, perhaps operators have services that span traffic
-    # areas
-    assert Licence.objects.count() == sum(row[4] for row in CSV_DATA) == 922
+    # Need to create data both in the database and in the API
+    for service in existing_services:
+        service_kwargs = service.dict()
+        operator_kwargs = service_kwargs.pop("operator")
+        licence_kwargs = service_kwargs.pop("licence")
+        operator = OperatorModelFactory(**operator_kwargs)
+        licence = LicenceModelFactory(**licence_kwargs)
+        ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
+
+    # Cause a delete to trigger the delete code
+    for service in services_to_delete:
+        service_kwargs = service.dict()
+        operator_kwargs = service_kwargs.pop("operator")
+        operator = OperatorModelFactory(**operator_kwargs)
+        licence_kwargs = service_kwargs.pop("licence")
+        licence = LicenceModelFactory(**licence_kwargs)
+        ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
+
+        operator_name = service.operator.operator_name
+        service.operator.operator_name = f"DELETED - {operator_name}"
+        service.variation_number += 1
+        service.public_text = "A delete happened"
+        service.licence.expiry_date = licence_expiry_date
+        service.registration_status = RegistrationStatusEnum.CANCELLED.value
+
+    registrations = flatten_data(services_to_delete + existing_services)
+    registry = Registry()
+    for registration in registrations:
+        registry.update(registration)
+
+    loader = Loader(registry)
+    loader.load_licences()
+    loader.load_operators()
+    loader.load_services()
+    assert Service.objects.count() == len(
+        existing_services + services_to_delete
+    ), "no new objects created"
+
+    loader.update_services_and_operators()
+    assert (
+        Service.objects.filter(public_text="A delete happened").count() == 0
+    ), "test no service update happened"
+    assert (
+        Licence.objects.filter(expiry_date=licence_expiry_date).count() == 0
+    ), "test no licence update happened"
+    assert (
+        Operator.objects.filter(operator_name__startswith="Deleted").count() == 0
+    ), "test no operator update happened"
+
+    loader.delete_bad_data()
+
+    assert Service.objects.count() == len(existing_services)
+
+
+@patch("transit_odp.otc.registry.Registry.add_all_latest_registered_variations")
+@patch("transit_odp.otc.registry.Registry.add_all_older_registered_variations")
+def test_long_start_point_is_accepted(mock1, mock2):
+    mock1.return_value = []
+    mock2.return_value = []
+    registry = Registry()
+    registrations = RegistrationFactory.create_batch(5)
+    registrations.append(
+        RegistrationFactory(
+            start_point="a place with a reallyreallyreallyreallyreallyreallyreally"
+            "reallyreallyreallyreallyreallyreallyreallyreally long name"
+        )
+    )
+    for registration in registrations:
+        registry.update(registration)
+
+    loader = Loader(registry)
+    loader.load_into_fresh_database()
