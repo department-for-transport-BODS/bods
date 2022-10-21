@@ -16,7 +16,7 @@ from transit_odp.fares.models import FaresMetadata
 from transit_odp.fares.netex import (
     NeTExValidator,
     get_documents_from_file,
-    validate_netex_files_in_zip,
+    get_netex_schema,
 )
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
@@ -32,6 +32,7 @@ from transit_odp.validate import (
     ValidationException,
     ZippedValidator,
 )
+from transit_odp.validate.xml import validate_xml_files_in_zip
 
 logger = logging.getLogger(__name__)
 
@@ -126,6 +127,9 @@ def task_run_antivirus_check(task_id: int):
         task.additional_info = exc.message
         task.save()
         raise PipelineException(exc.message) from exc
+    except Exception as exc:
+        task.handle_general_pipeline_exception(exc, adapter)
+
     task.update_progress(30)
 
 
@@ -143,21 +147,24 @@ def task_run_fares_validation(task_id):
     # generic exception and update the task with the exception code.
     # All the exception codes match those in DatasetETLTaskResult.
     try:
+        schema = get_netex_schema()
         if zipfile.is_zipfile(file_):
             adapter.info("Validating fares zip file.")
             with ZippedValidator(file_) as validator:
                 validator.validate()
             adapter.info("Validating fares NeTEx file.")
-            validate_netex_files_in_zip(file_)
+            validate_xml_files_in_zip(file_, schema=schema)
         else:
             adapter.info("Validating fares NeTEx file.")
-            NeTExValidator(file_).validate()
+            NeTExValidator(file_, schema=schema).validate()
     except ValidationException as exc:
         adapter.error(exc.message, exc_info=True)
         task.to_error("dataset_validate", exc.code)
         task.additional_info = exc.message
         task.save()
         raise PipelineException(exc.message) from exc
+    except Exception as exc:
+        task.handle_general_pipeline_exception(exc, adapter)
 
     task.update_progress(40)
     revision.upload_file = file_
@@ -185,6 +192,8 @@ def task_run_fares_etl(task_id):
         adapter.error("Metadata extraction failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)
         raise PipelineException(exc.message) from exc
+    except Exception as exc:
+        task.handle_general_pipeline_exception(exc, adapter)
 
     task.update_progress(70)
     try:
@@ -195,6 +204,8 @@ def task_run_fares_etl(task_id):
         adapter.error("Metadata transformation failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)
         raise PipelineException(exc.message) from exc
+    except Exception as exc:
+        task.handle_general_pipeline_exception(exc, adapter)
 
     task.update_progress(90)
 

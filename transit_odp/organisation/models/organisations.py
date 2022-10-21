@@ -2,10 +2,18 @@ from datetime import datetime
 from typing import Optional
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 
+from transit_odp.organisation.constants import (
+    ORG_ACTIVE,
+    ORG_INACTIVE,
+    ORG_NOT_YET_INVITED,
+    ORG_PENDING_INVITE,
+)
 from transit_odp.organisation.managers import (
+    BODSLicenceManager,
     ConsumerFeedbackManager,
     OrganisationManager,
 )
@@ -57,21 +65,22 @@ class Organisation(TimeStampedModel):
         Returns the most recent login date.
         """
         dates = [user.last_login for user in self.users.all() if user.last_login]
-        if len(dates) > 0:
-            return max(dates)
-        return None
+        return max(dates) if dates else None
 
     def get_status(self) -> str:
         """
         Returns the status of the Organisation.
         """
         user_count = self.users.count()
+        invitations = self.invitation_set.count()
         if self.is_active:
-            return "Active"
+            return ORG_ACTIVE
+        elif not self.is_active and invitations == 0 and user_count == 0:
+            return ORG_NOT_YET_INVITED
         elif not self.is_active and user_count > 0:
-            return "Inactive"
-        elif not self.is_active and user_count == 0:
-            return "Pending invite"
+            return ORG_INACTIVE
+        elif not self.is_active and user_count == 0 and invitations > 0:
+            return ORG_PENDING_INVITE
         else:
             return ""
 
@@ -80,20 +89,17 @@ class Organisation(TimeStampedModel):
         Gets the earliest date that an invite was sent.
         """
         dates = [invite.sent for invite in self.invitation_set.all() if invite.sent]
-        if len(dates) > 0:
-            return min(dates)
-        else:
-            return None
+        return min(dates) if dates else None
 
     def get_invite_accepted_date(self) -> Optional[datetime]:
         """
         Gets the earliest date that an invite was sent.
         """
         dates = [user.date_joined for user in self.users.all() if user.date_joined]
-        if len(dates) > 0:
-            return min(dates)
-        else:
-            return None
+        return min(dates) if dates else None
+
+    def get_absolute_url(self):
+        return reverse("users:organisation-profile", kwargs={"pk": self.id})
 
 
 class OperatorCode(models.Model):
@@ -111,6 +117,8 @@ class Licence(models.Model):
     organisation = models.ForeignKey(
         Organisation, on_delete=models.CASCADE, related_name="licences"
     )
+
+    objects = BODSLicenceManager()
 
     def __str__(self):
         return f"id={self.id}, number={self.number!r}"

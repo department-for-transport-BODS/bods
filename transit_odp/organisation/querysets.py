@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import TypeVar
 
 import pytz
 from django.conf import settings
@@ -34,6 +35,10 @@ from transit_odp.organisation.constants import (
     INACTIVE,
     LIVE,
     NO_ACTIVITY,
+    ORG_ACTIVE,
+    ORG_INACTIVE,
+    ORG_NOT_YET_INVITED,
+    ORG_PENDING_INVITE,
     AVLType,
     DatasetType,
     FaresType,
@@ -41,13 +46,17 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
-from transit_odp.timetables.constants import TXC_21
 from transit_odp.users.constants import AccountType
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
 GENERAL_LEVEL = "General"
 DATASET_LEVEL = "Data set level"
+
+TServiceCodeExemptionQuerySet = TypeVar(
+    "TServiceCodeExemptionQuerySet", bound="ServiceCodeExemptionQuerySet"
+)
+TBODSLicenceQuerySet = TypeVar("TBODSLicenceQuerySet", bound="BODSLicenceQuerySet")
 
 
 class OrganisationQuerySet(models.QuerySet):
@@ -152,28 +161,25 @@ class OrganisationQuerySet(models.QuerySet):
         return self.annotate(invite_sent=Min("invitation__sent"))
 
     def add_status(self):
-        qs = self.annotate(total_users=Count("users", distinct=True))
-        is_inactive = Q(is_active=False) & Q(total_users__gt=0)
-        is_pending = Q(is_active=False) & Q(total_users=0)
-        return qs.annotate(
-            status=Case(
-                When(is_active=True, then=Value("active", output_field=CharField())),
-                When(is_inactive, then=Value("inactive", output_field=CharField())),
-                When(is_pending, then=Value("pending", output_field=CharField())),
-                output_field=CharField(),
-            )
+        qs = self.annotate(
+            total_users=Count("users", distinct=True),
+            total_invitations=Count("invitation", distinct=True),
         )
-
-    def add_catalogue_status(self):
-        qs = self.annotate(total_users=Count("users", distinct=True))
         is_inactive = Q(is_active=False) & Q(total_users__gt=0)
-        is_pending = Q(is_active=False) & Q(total_users=0)
+        is_pending = Q(is_active=False) & Q(total_users=0) & Q(total_invitations__gt=0)
+        is_not_yet_invited = (
+            Q(is_active=False) & Q(total_users=0) & Q(total_invitations=0)
+        )
         return qs.annotate(
             status=Case(
-                When(is_active=True, then=Value("Active", output_field=CharField())),
-                When(is_inactive, then=Value("Inactive", output_field=CharField())),
+                When(is_active=True, then=Value(ORG_ACTIVE, output_field=CharField())),
+                When(is_inactive, then=Value(ORG_INACTIVE, output_field=CharField())),
                 When(
-                    is_pending, then=Value("Pending invite", output_field=CharField())
+                    is_pending, then=Value(ORG_PENDING_INVITE, output_field=CharField())
+                ),
+                When(
+                    is_not_yet_invited,
+                    then=Value(ORG_NOT_YET_INVITED, output_field=CharField()),
                 ),
                 output_field=CharField(),
             )
@@ -181,23 +187,6 @@ class OrganisationQuerySet(models.QuerySet):
 
     def add_first_letter(self):
         return self.annotate(first_letter=Upper(Substr("name", 1, 1)))
-
-    def get_organisations_with_txc21_datasets(self):
-        orgs_with_published_datasets = Q(
-            dataset__live_revision__transxchange_version__contains=TXC_21,
-            dataset__live_revision__status=FeedStatus.live.value,
-            dataset__live_revision__is_published=True,
-        )
-        orgs_with_draft_datasets = Q(
-            dataset__revisions__transxchange_version__contains=TXC_21,
-            dataset__live_revision__isnull=True,
-            dataset__revisions__is_published=False,
-            dataset__revisions__status=FeedStatus.success.value,
-        )
-
-        return self.filter(
-            orgs_with_published_datasets | orgs_with_draft_datasets
-        ).distinct()
 
     def add_unregistered_service_count(self):
         unregistered_service_count = Count(
@@ -308,7 +297,7 @@ class OrganisationQuerySet(models.QuerySet):
 
     def add_data_catalogue_fields(self):
         return (
-            self.add_catalogue_status()
+            self.add_status()
             .add_invite_accepted()
             .add_invite_sent()
             .add_last_active()
@@ -1176,3 +1165,47 @@ class ConsumerFeedbackQuerySet(models.QuerySet):
 
     def add_organisation_name(self):
         return self.annotate(organisation_name=F("organisation__name"))
+
+
+class ServiceCodeExemptionQuerySet(models.QuerySet):
+    def add_registration_number(self) -> TServiceCodeExemptionQuerySet:
+        """Annotate the complete service code including licence prefix"""
+        return self.annotate(
+            registration_number=Concat(
+                "licence__number",
+                Value("/"),
+                "registration_code",
+                output_field=CharField(),
+            )
+        )
+
+    def add_service_code(self) -> TServiceCodeExemptionQuerySet:
+        return self.annotate(
+            service_code=Concat(
+                "licence__number",
+                Value(":"),
+                "registration_code",
+                output_field=CharField(),
+            )
+        )
+
+    def add_organisation_id(self) -> TServiceCodeExemptionQuerySet:
+        return self.annotate(org_id=F("licence__organisation"))
+
+
+class BODSLicenceQuerySet(models.QuerySet):
+    def add_exempted_service_codes(self) -> TBODSLicenceQuerySet:
+        """
+        This annotation simply does JOIN on ServiceCodeExemption.
+        Be aware that Licence objects in the query will be duplicated
+        by each ServiceCodeExemption related.
+        """
+        self.prefetch_related("service_code_exemptions")
+        return self.annotate(
+            exempted_service_code=Concat(
+                "number",
+                Value(":"),
+                "service_code_exemptions__registration_code",
+                output_field=CharField(),
+            )
+        )

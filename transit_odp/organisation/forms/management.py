@@ -24,6 +24,7 @@ from invitations.forms import CleanEmailMixin
 from invitations.utils import get_invitation_model
 
 import config.hosts
+from transit_odp.organisation.constants import ORG_NOT_YET_INVITED
 from transit_odp.users.constants import AccountType
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.models import User as UserModel
@@ -32,25 +33,15 @@ User: UserModel = auth.get_user_model()
 Invitation = get_invitation_model()
 
 
-class InvitationForm(CleanEmailMixin, GOVUKModelForm):
-    ADMIN_ID = "admin"
-    STAFF_ID = "staff"
-    AGENT_ID = "agent"
-
+class InvitationFirstForm(CleanEmailMixin, GOVUKModelForm):
     class Meta:
         model = Invitation
-        fields = ["email", "account_type"]
+        fields = ["email"]
 
     email = forms.EmailField(
         label=_("Email"),
         required=True,
         widget=forms.TextInput(attrs={"type": "email", "size": "30"}),
-    )
-
-    account_type = forms.CharField(
-        label=_("User type"),
-        required=True,
-        widget=forms.HiddenInput(),
     )
 
     def __init__(
@@ -79,17 +70,140 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
             )
 
         super().__init__(*args, instance=instance, **kwargs)
+        # The organisation's first invited user is forced to be an org admin as well as
+        # the key contact
+        self.instance.is_key_contact = (
+            False
+            if organisation is None
+            else (organisation.get_status() == ORG_NOT_YET_INVITED)
+        )
+        self.instance.account_type = AccountType.org_admin.value
         self.cancel_url = cancel_url
 
-        # self.helper.form_show_errors = False
-        # don't show generic form errors, which include those from Model.clean.
-        # When account_type is empty you end up with both errors from form field as
-        # well as model validation, which is weird.
         email = self.fields["email"]
         email.widget.attrs.update(
             {"placeholder": "", "class": "govuk-!-width-three-quarters"}
         )
         email.error_messages.update({"required": _("Enter a valid email address")})
+
+    def get_layout(self):
+        return Layout(
+            "email",
+            HTML(
+                """<div style="display: inline-flex;" class="govuk-!-padding-bottom-5">
+                <i class="fas fa-exclamation-circle fa-3x"></i>
+                <p class="govuk-body
+                          govuk-!-font-weight-bold
+                          govuk-!-padding-left-2">
+                    Please note that the first user invited to an organisation will be
+                    assigned the Admin status automatically.<br>
+                    <br>
+                    Admin users will be able to add and/or remove other user's accounts
+                    from the open data service.
+                </p>
+                </div>"""
+            ),
+            ButtonHolder(
+                ButtonSubmit("submit", "submit", content=_("Send invitation")),
+                LinkButton(url=self.cancel_url, content=_("Cancel")),
+            ),
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # make sure inviter belongs to organisation
+        inviter = self.instance.inviter
+        organisation = self.instance.organisation
+
+        if inviter is not None and inviter.is_site_admin:
+            return cleaned_data
+
+        if (
+            inviter is None
+            or organisation is None
+            or (inviter.organisation != organisation)
+        ):
+            return HttpResponseServerError()
+        else:
+            return cleaned_data
+
+    def validate_invitation(self, email):
+        if User.objects.filter(email=email).exists():
+            raise AlreadyAccepted
+        try:
+            # This is by definition an old invite if it exists
+            self._existing_invite = Invitation.objects.get(email=email)
+        except Invitation.DoesNotExist:
+            pass
+
+        return True
+
+    def _post_clean(self):
+        if self.errors:
+            # Skip _post_clean if the form is already invalid, don't want to have
+            # Model.clean non-field errors
+            return
+        self._validate_unique = False
+        super()._post_clean()
+
+    def _get_or_create_standard_invite(self, *args, **kwargs):
+        """Get or create a standard user invitation."""
+        site = get_current_site(self.request)
+        if self._existing_invite is None:
+            standard_invite = super().save(*args, **kwargs)
+        else:
+            standard_invite = self._existing_invite
+            standard_invite.accepted = False
+            standard_invite.organisation = self.instance.organisation
+            standard_invite.account_type = self.instance.account_type
+            standard_invite.inviter = self.instance.inviter
+            standard_invite.key = get_random_string(64).lower()
+            standard_invite.is_key_contact = self.instance.is_key_contact
+            standard_invite.save()
+        standard_invite.send_invitation(self.request, *args, site=site, **kwargs)
+        return standard_invite
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        """Save an invitation."""
+        standard_invite = self._get_or_create_standard_invite(*args, **kwargs)
+        return standard_invite
+
+
+class InvitationSubsequentForm(InvitationFirstForm):
+    ADMIN_ID = "admin"
+    STAFF_ID = "staff"
+    AGENT_ID = "agent"
+
+    class Meta:
+        model = Invitation
+        fields = ["email", "account_type"]
+
+    account_type = forms.CharField(
+        label=_("User type"),
+        required=True,
+        widget=forms.HiddenInput(),
+    )
+
+    def __init__(
+        self,
+        cancel_url,
+        *args,
+        request=None,
+        instance=None,
+        organisation=None,
+        **kwargs,
+    ):
+        super().__init__(
+            cancel_url,
+            *args,
+            request=request,
+            instance=instance,
+            organisation=organisation,
+            **kwargs,
+        )
+        self.instance.is_key_contact = False
 
     def get_layout(self):
         agent_guidance_link = (
@@ -143,28 +257,9 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
             ),
         )
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        # make sure inviter belongs to organisation
-        inviter = self.instance.inviter
-        organisation = self.instance.organisation
-
-        if inviter is not None and inviter.is_site_admin:
-            return cleaned_data
-
-        if (
-            inviter is None
-            or organisation is None
-            or (inviter.organisation != organisation)
-        ):
-            return HttpResponseServerError()
-        else:
-            return cleaned_data
-
     def clean_email(self):
         """
-        Overides CleanEmailMixin so we can invite agent users
+        Overrides CleanEmailMixin so we can invite agent users
         to multiple organisations without there being an exception
         :returns str email
         """
@@ -210,25 +305,6 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
         self.cleaned_data["account_type"] = account_type
         return account_type
 
-    def validate_invitation(self, email):
-        if User.objects.filter(email=email).exists():
-            raise AlreadyAccepted
-        try:
-            # This is by definition an old invite if it exists
-            self._existing_invite = Invitation.objects.get(email=email)
-        except Invitation.DoesNotExist:
-            pass
-
-        return True
-
-    def _post_clean(self):
-        if self.errors:
-            # Skip _post_clean if the form is already invalid, don't want to have
-            # Model.clean non-field errors
-            return
-        self._validate_unique = False
-        super()._post_clean()
-
     def _send_existing_agent_user_invite(self):
         """Send an agent invite to an agent user that already exists on the system.
 
@@ -248,22 +324,6 @@ class InvitationForm(CleanEmailMixin, GOVUKModelForm):
         agent_invite.status = AgentUserInvite.PENDING
         agent_invite.save()
         agent_invite.send_confirmation()
-        return standard_invite
-
-    def _get_or_create_standard_invite(self, *args, **kwargs):
-        """Get or create a standard user invitation."""
-        site = get_current_site(self.request)
-        if self._existing_invite is None:
-            standard_invite = super().save(*args, **kwargs)
-        else:
-            standard_invite = self._existing_invite
-            standard_invite.accepted = False
-            standard_invite.organisation = self.instance.organisation
-            standard_invite.account_type = self.instance.account_type
-            standard_invite.inviter = self.instance.inviter
-            standard_invite.key = get_random_string(64).lower()
-            standard_invite.save()
-        standard_invite.send_invitation(self.request, *args, site=site, **kwargs)
         return standard_invite
 
     def _update_or_create_agent_invite(self, standard_invite):

@@ -1,9 +1,11 @@
 from transit_odp.organisation.models.data import (
+    AVLComplianceCache,
     ConsumerStats,
     Dataset,
     DatasetMetadata,
     DatasetRevision,
     DatasetSubscription,
+    ServiceCodeExemption,
     TXCFileAttributes,
 )
 from transit_odp.organisation.models.organisations import (
@@ -18,10 +20,12 @@ __all__ = [
     OperatorCode,
     ConsumerStats,
     Licence,
+    AVLComplianceCache,
     ConsumerFeedback,
     Dataset,
     DatasetRevision,
     DatasetMetadata,
     DatasetSubscription,
+    ServiceCodeExemption,
     TXCFileAttributes,
 ]

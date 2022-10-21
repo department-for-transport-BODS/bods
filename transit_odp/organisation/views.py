@@ -18,9 +18,13 @@ from transit_odp.common.forms import (
 )
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
-from transit_odp.organisation.forms.management import InvitationForm, UserEditForm
+from transit_odp.organisation.forms.management import (
+    InvitationSubsequentForm,
+    UserEditForm,
+)
 from transit_odp.organisation.forms.organisation_profile import OrganisationProfileForm
 from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models.data import ServiceCodeExemption
 from transit_odp.users.constants import AccountType
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import (
@@ -61,7 +65,7 @@ class ManageView(OrgAdminViewMixin, BaseDetailView, ContextMixin):
 
 class InviteView(OrgAdminViewMixin, BODSBaseView, CreateView):
     template_name = "users/users_invite.html"
-    form_class = InvitationForm
+    form_class = InvitationSubsequentForm
 
     def get_success_url(self):
         return reverse("users:invite-success", host=self.request.host.name)
@@ -80,7 +84,7 @@ class InviteView(OrgAdminViewMixin, BODSBaseView, CreateView):
                 "cancel_url": self.get_cancel_url(),
                 "request": self.request,
                 # Create empty instance to avoid error in form clean() method,
-                # caused by GOVUKModelForm calling clean before InvitationForm
+                # caused by GOVUKModelForm calling clean before InvitationSubsequentForm
                 # is fully instantiated
                 "instance": self.form_class.Meta.model(),
             }
@@ -108,7 +112,16 @@ class OrgProfileView(OrgUserViewMixin, BaseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        licences = self.object.licences.all()
+        service_code_exemptions = (
+            ServiceCodeExemption.objects.add_registration_number()
+            .filter(licence__in=licences)
+            .all()
+        )
         context["current_url"] = self.request.build_absolute_uri(self.request.path)
+        context["service_code_exemptions"] = service_code_exemptions.order_by(
+            "licence__number", "registration_code"
+        )
         return context
 
 
@@ -158,7 +171,7 @@ class OrgProfileEditView(AgentOrgAdminViewMixin, BaseUpdateView):
 
         org = self.get_object()
         account_types = [AccountType.org_admin.value, AccountType.agent_user.value]
-        recipients = org.users.filter(account_type__in=account_types)
+        recipients = org.users.filter(account_type__in=account_types, is_active=True)
         for recipient in recipients:
             if recipient.is_agent_user:
                 notifier.send_agent_noc_changed_notification(org.name, recipient.email)
@@ -168,8 +181,10 @@ class OrgProfileEditView(AgentOrgAdminViewMixin, BaseUpdateView):
         return response
 
 
-class OrgProfileEditSuccessView(AgentOrgAdminViewMixin, BaseTemplateView):
+class OrgProfileEditSuccessView(AgentOrgAdminViewMixin, BaseDetailView):
     template_name = "organisation/organisation_form_success.html"
+    model = Organisation
+    context_object_name = "organisation_object"
 
 
 class InviteSuccessView(OrgAdminViewMixin, BaseTemplateView):

@@ -10,7 +10,10 @@ from django_hosts import reverse
 
 from config.hosts import ADMIN_HOST
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.organisation.forms.management import InvitationForm
+from transit_odp.organisation.forms.management import (
+    InvitationFirstForm,
+    InvitationSubsequentForm,
+)
 from transit_odp.organisation.models import Organisation
 from transit_odp.users.models import Invitation
 from transit_odp.users.views.mixins import SiteAdminViewMixin
@@ -20,6 +23,7 @@ User = get_user_model()
 
 __all__ = [
     "BulkResendInviteView",
+    "InviteFirstView",
     "InviteSuccessView",
     "InviteView",
     "ResendInvitationView",
@@ -188,10 +192,16 @@ class BulkInviteSuccessView(SiteAdminViewMixin, TemplateView):
 class InviteSuccessView(SiteAdminViewMixin, TemplateView):
     template_name = "site_admin/users_invite_success.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        email = get_adapter(self.request).unstash_invite_email(self.request)
+        context.update({"invite_email": email})
+        return context
+
 
 class InviteView(SiteAdminViewMixin, CreateView):
     template_name = "site_admin/users_invite.html"
-    form_class = InvitationForm
+    form_class = InvitationSubsequentForm
 
     def get_organisation(self):
         try:
@@ -230,7 +240,7 @@ class InviteView(SiteAdminViewMixin, CreateView):
                 "request": self.request,
                 # Create empty instance to avoid error in form clean() method,
                 # caused by GOVUKModelForm calling clean
-                # before InvitationForm is fully instantiated
+                # before InvitationSubsequentForm is fully instantiated
                 "instance": self.form_class.Meta.model(),
                 "organisation": self.get_organisation(),
             }
@@ -247,6 +257,10 @@ class InviteView(SiteAdminViewMixin, CreateView):
         get_adapter(self.request).stash_invite_email(
             self.request, form.cleaned_data["email"]
         )
+
+
+class InviteFirstView(InviteView):
+    form_class = InvitationFirstForm
 
 
 class ResendInvitationView(SiteAdminViewMixin, UpdateView):

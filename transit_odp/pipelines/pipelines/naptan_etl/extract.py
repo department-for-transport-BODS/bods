@@ -101,6 +101,7 @@ def extract_stops(xml_file_path):
                 "admin_area_id": int(point.administrative_area_ref),
                 "latitude": point.place.location.translation.latitude,
                 "longitude": point.place.location.translation.longitude,
+                "stop_areas": point.stop_areas,
             }
 
     df = pd.DataFrame(
@@ -115,6 +116,7 @@ def extract_stops(xml_file_path):
             "admin_area_id",
             "latitude",
             "longitude",
+            "stop_areas",
         ],
     )
     logger.info(f"A total of {len(df)} NaPTAN stops extracted.")

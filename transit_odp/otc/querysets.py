@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from django.db.models import CharField, F, QuerySet, Subquery, Value
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace
@@ -11,9 +13,11 @@ from transit_odp.otc.constants import (
     SubsidiesDescription,
 )
 
+TServiceQuerySet = TypeVar("TServiceQuerySet", bound="ServiceQuerySet")
+
 
 class ServiceQuerySet(QuerySet):
-    def add_service_code(self):
+    def add_service_code(self) -> TServiceQuerySet:
         return self.annotate(
             service_code=Replace(
                 "registration_number",
@@ -22,14 +26,14 @@ class ServiceQuerySet(QuerySet):
             )
         )
 
-    def add_operator_details(self):
+    def add_operator_details(self) -> TServiceQuerySet:
         return self.annotate(
             otc_operator_id=F("operator__operator_id"),
             operator_name=F("operator__operator_name"),
             address=F("operator__address"),
         )
 
-    def add_licence_details(self):
+    def add_licence_details(self) -> TServiceQuerySet:
         return self.annotate(
             otc_licence_number=F("licence__number"),
             licence_status=F("licence__status"),
@@ -37,18 +41,36 @@ class ServiceQuerySet(QuerySet):
             granted_date=F("licence__granted_date"),
         )
 
-    def add_timetable_data_annotations(self):
+    def add_timetable_data_annotations(self) -> TServiceQuerySet:
         return self.add_service_code().add_operator_details().add_licence_details()
 
-    def get_all_in_organisation(self, organisation_id):
+    def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation=organisation_id)
         return (
             self.filter(licence__number__in=Subquery(org_licences.values("number")))
+            .add_service_code()
             .order_by("licence__number", "registration_number")
             .distinct("licence__number", "registration_number")
         )
 
-    def get_missing_from_organisation(self, organisation_id):
+    def get_all_without_exempted_ones(self, organisation_id: int) -> TServiceQuerySet:
+        org_licences = BODSLicence.objects.filter(organisation=organisation_id)
+
+        return (
+            self.filter(licence__number__in=Subquery(org_licences.values("number")))
+            .add_service_code()
+            .exclude(
+                service_code__in=Subquery(
+                    org_licences.add_exempted_service_codes().values(
+                        "exempted_service_code"
+                    )
+                )
+            )
+            .order_by("licence__number", "registration_number")
+            .distinct("licence__number", "registration_number")
+        )
+
+    def get_missing_from_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation=organisation_id)
         org_timetables = TXCFileAttributes.objects.filter(
             revision__dataset__organisation_id=organisation_id
@@ -57,11 +79,18 @@ class ServiceQuerySet(QuerySet):
             self.filter(licence__number__in=Subquery(org_licences.values("number")))
             .add_service_code()
             .exclude(service_code__in=Subquery(org_timetables.values("service_code")))
+            .exclude(
+                service_code__in=Subquery(
+                    org_licences.add_exempted_service_codes().values(
+                        "exempted_service_code"
+                    )
+                )
+            )
             .order_by("licence__number", "registration_number", "service_number")
             .distinct("licence__number", "registration_number", "service_number")
         )
 
-    def search(self, keywords: str):
+    def search(self, keywords: str) -> TServiceQuerySet:
         """Searches License code, service number, and line number in
         OTCService using keywords.
         """

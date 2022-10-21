@@ -1,6 +1,6 @@
-import os
 import zipfile
 from datetime import timedelta
+from pathlib import Path
 
 import pytest
 from django.utils import timezone
@@ -107,12 +107,10 @@ def test_run():
 
         # assert archive contains name of the dataset
         upload = expected.live_revision.upload_file
-        assert zf.namelist() == [f"{basename}/{directory_name}/{upload.name}"]
+        assert zf.namelist() == [f"{directory_name}/{upload.name}"]
 
         # Access zip file with upload filename
-        with zf.open(
-            os.path.join(basename, directory_name, upload.name), "r"
-        ) as zipped:
+        with zf.open(Path(directory_name, upload.name).as_posix(), "r") as zipped:
             with upload.open("rb") as orig:
                 # Test the upload file data can be read from the zip
                 assert zipped.read() == orig.read()

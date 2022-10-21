@@ -282,6 +282,21 @@ class AVLDatasetQuerySet(DatasetQuerySet):
             )
         )
 
+    def add_avl_compliance_status_cached(self):
+        """
+        Adds cached value of the status calculated in add_avl_compliance_status().
+        """
+        return self.annotate(
+            avl_compliance_status_cached=Case(
+                When(
+                    Q(avl_compliance_cached__status__isnull=False),
+                    then=F("avl_compliance_cached__status"),
+                ),
+                default=Value(UNDERGOING, output_field=CharField()),
+                output_field=CharField(),
+            ),
+        )
+
     def add_old_avl_compliance_status(self):
         """
         Adds the avl compliance level to the AVLDataset based on the following rules.
@@ -376,9 +391,9 @@ class AVLDatasetQuerySet(DatasetQuerySet):
         requires attention.
         """
         count = (
-            self.add_avl_compliance_status()
+            self.add_avl_compliance_status_cached()
             .filter(
-                Q(avl_compliance__in=NEEDS_ATTENTION_STATUSES)
+                Q(avl_compliance_status_cached__in=NEEDS_ATTENTION_STATUSES)
                 | Q(live_revision__status=ERROR)
             )
             .count()

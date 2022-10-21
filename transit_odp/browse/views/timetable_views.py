@@ -78,14 +78,17 @@ class DatasetDetailView(DetailView):
         dataset = self.object
         live_revision = dataset.live_revision
         report = live_revision.report.order_by("-created").first()
+        summary = getattr(report, "summary", None)
         user = self.request.user
 
-        kwargs["report_id"] = report.id if report else None
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         kwargs["admin_areas"] = self.object.admin_area_names
         # Once all the reports are generated we should probably use the queryset
         # annotation get_live_dq_score and calculate the rag from that.
-        kwargs["dq_score"] = get_data_quality_rag(report) if report else None
+        kwargs["report_id"] = getattr(report, "id", None)
+        kwargs["dq_score"] = (
+            get_data_quality_rag(report) if report and summary else None
+        )
 
         # Handle errors produced by pipeline
         task = live_revision.etl_results.latest()

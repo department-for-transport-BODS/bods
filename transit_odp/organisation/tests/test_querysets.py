@@ -19,6 +19,10 @@ from transit_odp.organisation.constants import (
     INACTIVE,
     LIVE,
     NO_ACTIVITY,
+    ORG_ACTIVE,
+    ORG_INACTIVE,
+    ORG_NOT_YET_INVITED,
+    ORG_PENDING_INVITE,
     AVLType,
     FaresType,
     FeedStatus,
@@ -48,8 +52,8 @@ from transit_odp.pipelines.factories import (
 )
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.transmodel.factories import ServicePatternFactory
-from transit_odp.users.constants import AccountType
-from transit_odp.users.factories import UserFactory
+from transit_odp.users.constants import AccountType, OrgAdminType, OrgStaffType
+from transit_odp.users.factories import InvitationFactory, UserFactory
 from transit_odp.users.models import User
 
 pytestmark = pytest.mark.django_db
@@ -257,6 +261,34 @@ class TestOrganisationQuerySet:
         org = Organisation.objects.add_total_subscriptions().first()
 
         assert org.total_subscriptions == 4
+
+    @pytest.mark.parametrize(
+        ("is_active", "accounts_type", "expected"),
+        [
+            (False, [], ORG_NOT_YET_INVITED),
+            (
+                False,
+                [
+                    OrgAdminType,
+                ],
+                ORG_PENDING_INVITE,
+            ),
+            (False, [OrgAdminType, OrgStaffType], ORG_INACTIVE),
+            (True, [OrgAdminType, OrgStaffType], ORG_ACTIVE),
+        ],
+    )
+    def test_statuses(self, is_active, accounts_type, expected):
+        org = OrganisationFactory.create(is_active=is_active)
+        organisations = (org,) if expected != ORG_PENDING_INVITE else None
+        for account_type in accounts_type:
+            inviter = UserFactory(
+                account_type=account_type, organisations=organisations
+            )
+            InvitationFactory.create(
+                organisation=org, account_type=OrgAdminType, inviter=inviter
+            )
+
+        assert org.get_status() == expected
 
 
 @pytest.fixture

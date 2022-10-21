@@ -59,6 +59,8 @@ def get_consumer_breakdown_df(start, end):
         consumer_breakdown = api_df.merge(
             request_df, how="outer", on=["date", "requestor_id", "requestor__email"]
         )
+        # We need to sort the final df after merging
+        consumer_breakdown = consumer_breakdown.sort_values(by=["date"])
         consumer_breakdown.fillna(0, inplace=True)
         # Not sure why but fields that are not joining fields are cast to float
         # this casts them back to integers

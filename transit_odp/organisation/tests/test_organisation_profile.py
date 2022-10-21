@@ -2,7 +2,11 @@ import pytest
 from django_hosts import reverse
 
 from config.hosts import PUBLISH_HOST
-from transit_odp.organisation.factories import LicenceFactory, OrganisationFactory
+from transit_odp.organisation.factories import (
+    LicenceFactory,
+    OrganisationFactory,
+    ServiceCodeExemptionFactory,
+)
 from transit_odp.organisation.models import Organisation
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import UserFactory
@@ -186,3 +190,18 @@ class TestOrganisationProfile:
         errors = response.context_data["form"].nested_psv.errors
         assert len(errors) == 1
         assert errors[0]["number"][0] == expected_message
+
+    def test_service_code_exemptions(self, client_factory):
+        client = client_factory(host=self.host)
+        client.force_login(user=self.user)
+        url = reverse(
+            "users:organisation-profile",
+            host=self.host,
+            kwargs={"pk": self.org.id},
+        )
+        licences = LicenceFactory.create_batch(3, organisation=self.org)
+        for licence in licences:
+            ServiceCodeExemptionFactory(licence=licence)
+        response = client.get(url)
+        assert response.status_code == 200
+        assert len(response.context_data["service_code_exemptions"]) == 3

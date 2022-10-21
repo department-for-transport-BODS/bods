@@ -2,6 +2,7 @@ import factory
 from django.utils import timezone
 
 from transit_odp.common.enums import FeedErrorCategory, FeedErrorSeverity
+from transit_odp.common.utils import sha1sum
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.pipelines.models import (
@@ -11,6 +12,7 @@ from transit_odp.pipelines.models import (
     DatasetETLError,
     DatasetETLTaskResult,
     RemoteDatasetHealthCheckCount,
+    SchemaDefinition,
     TaskResult,
 )
 
@@ -74,3 +76,17 @@ class DataQualityTaskFactory(TaskResultFactory):
 
     revision = factory.SubFactory(DatasetRevisionFactory)
     task_id = factory.Faker("uuid4")
+
+
+class SchemaDefinitionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SchemaDefinition
+
+    category = "TxC"
+    schema = factory.django.FileField(
+        filename="TransXChange_schema_2.4.zip", data=b"old data"
+    )
+
+    @factory.lazy_attribute
+    def checksum(self):
+        return sha1sum(self.schema.read())
