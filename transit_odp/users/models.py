@@ -308,10 +308,11 @@ class AgentUserInvite(models.Model):
         client.send_agent_invite_accepted_notification(
             self.organisation.name, self.agent.email
         )
-        client.send_operator_agent_accepted_invite_notification(
-            self.agent.agent_organisation,
-            self.inviter.email,
-        )
+        if self.inviter.is_active:
+            client.send_operator_agent_accepted_invite_notification(
+                self.agent.agent_organisation,
+                self.inviter.email,
+            )
 
     def reject_invite(self):
         """Reject an invitation from an organisation."""

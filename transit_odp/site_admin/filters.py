@@ -1,7 +1,13 @@
 import django_filters as filters
 from django.contrib.auth import get_user_model
 
-from transit_odp.organisation.constants import FeedStatus
+from transit_odp.organisation.constants import (
+    ORG_ACTIVE,
+    ORG_INACTIVE,
+    ORG_NOT_YET_INVITED,
+    ORG_PENDING_INVITE,
+    FeedStatus,
+)
 from transit_odp.organisation.models import DatasetRevision, Organisation
 from transit_odp.site_admin.forms import (
     LETTER_CHOICES,
@@ -22,9 +28,10 @@ class OrganisationFilter(filters.FilterSet):
         form = OperatorFilterForm
 
     STATUS_CHOICES = (
-        ("active", "Active"),
-        ("inactive", "Inactive"),
-        ("pending", "Pending Invite"),
+        (ORG_ACTIVE, ORG_ACTIVE),
+        (ORG_INACTIVE, ORG_INACTIVE),
+        (ORG_PENDING_INVITE, ORG_PENDING_INVITE),
+        (ORG_NOT_YET_INVITED, ORG_NOT_YET_INVITED),
     )
     status = filters.ChoiceFilter(
         label="Status",

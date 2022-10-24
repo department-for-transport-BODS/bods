@@ -51,6 +51,7 @@ class StopPointAdmin(admin.ModelAdmin):
         "longitude",
         "locality_name",
         "admin_area_name",
+        "stop_areas",
     )
     exclude = ("locality", "admin_area", "location")
     readonly_fields = (
@@ -63,6 +64,7 @@ class StopPointAdmin(admin.ModelAdmin):
         "longitude",
         "locality_name",
         "admin_area_name",
+        "stop_areas",
     )
 
     def get_queryset(self, request):

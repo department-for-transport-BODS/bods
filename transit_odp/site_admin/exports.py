@@ -3,7 +3,7 @@ import logging
 import tempfile
 import zipfile
 from collections import namedtuple
-from datetime import datetime
+from datetime import date, datetime
 from typing import BinaryIO, Optional
 from zipfile import ZIP_DEFLATED
 
@@ -33,7 +33,7 @@ from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackAdminCSV
 from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
 from transit_odp.organisation.csv.overall import get_overall_data_catalogue_csv
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Dataset, ServiceCodeExemption
 from transit_odp.site_admin.csv import (
     DAILY_AGGREGATES_FILENAME,
     DAILY_CONSUMER_FILENAME,
@@ -245,6 +245,85 @@ class WebsiteFeedbackCSV(CSVBuilder):
         return Feedback.objects.order_by("date")
 
 
+class ServiceCodeExemptionsCSV(CSVBuilder):
+    columns = [
+        CSVColumn(
+            header="Organisation", accessor=lambda exem: exem.licence.organisation.name
+        ),
+        CSVColumn(header="Licence Number", accessor=lambda exem: exem.licence.number),
+        CSVColumn(header="Service Code", accessor="registration_number"),
+        CSVColumn(header="Justification", accessor="justification"),
+        CSVColumn(
+            header="Date of exemption",
+            accessor=lambda exem: exem.created.isoformat(sep=" "),
+        ),
+        CSVColumn(header="Exempted by", accessor=lambda exem: exem.exempted_by.email),
+    ]
+
+    def get_queryset(self):
+        return (
+            ServiceCodeExemption.objects.select_related(
+                "licence__organisation", "exempted_by"
+            )
+            .add_registration_number()
+            .order_by(
+                "licence__organisation__name", "licence__number", "registration_code"
+            )
+        )
+
+
+def create_operational_exports_file() -> BinaryIO:
+    buffer_ = io.BytesIO()
+    today = date.today().isoformat()
+    files = (
+        CSVFile("publishers.csv", PublisherCSV),
+        CSVFile("consumers.csv", ConsumerCSV),
+        CSVFile("stats.csv", OperationalStatsCSV),
+        CSVFile("agents.csv", AgentUserCSV),
+        CSVFile("datasetpublishing.csv", DatasetPublishingCSV),
+        CSVFile("feedback_report_operator_breakdown.csv", ConsumerFeedbackAdminCSV),
+        CSVFile("websiteFeedbackResponses.csv", WebsiteFeedbackCSV),
+        CSVFile(
+            f"{today}-Service codes exempt from BODS reporting.csv",
+            ServiceCodeExemptionsCSV,
+        ),
+    )
+
+    with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
+        for file_ in files:
+            Builder = file_.builder
+            zin.writestr(file_.name, Builder().to_string())
+
+        prefix = "Pandas - to_csv - "
+        logger.info(prefix + f"Generating {ORGANISATION_FILENAME}")
+        try:
+            zin.writestr(ORGANISATION_FILENAME, get_organisation_catalogue_csv())
+        except EmptyDataFrame as exc:
+            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
+
+        logger.info(prefix + f"Generating {TIMETABLE_FILENAME}")
+        try:
+            zin.writestr(TIMETABLE_FILENAME, get_timetable_catalogue_csv())
+
+        except EmptyDataFrame as exc:
+            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
+
+        logger.info(prefix + f"Generating {OVERALL_FILENAME}")
+        try:
+            zin.writestr(OVERALL_FILENAME, get_overall_data_catalogue_csv())
+        except EmptyDataFrame:
+            pass
+
+        logger.info(prefix + f"Generating {LOCATION_FILENAME}")
+        try:
+            zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
+        except EmptyDataFrame:
+            pass
+
+    buffer_.seek(0)
+    return buffer_
+
+
 class RawConsumerRequestCSV(CSVBuilder):
     columns = [
         CSVColumn(
@@ -319,50 +398,3 @@ def create_metrics_archive(start, end):
     with tempfile.TemporaryFile() as tmpfile:
         defaults = {"end": end.date(), "archive": archive.zip_as_file(archive=tmpfile)}
         MetricsArchive.objects.update_or_create(start=start.date(), defaults=defaults)
-
-
-def create_operational_exports_file() -> BinaryIO:
-    buffer_ = io.BytesIO()
-    files = (
-        CSVFile("publishers.csv", PublisherCSV),
-        CSVFile("consumers.csv", ConsumerCSV),
-        CSVFile("stats.csv", OperationalStatsCSV),
-        CSVFile("agents.csv", AgentUserCSV),
-        CSVFile("datasetpublishing.csv", DatasetPublishingCSV),
-        CSVFile("feedback_report_operator_breakdown.csv", ConsumerFeedbackAdminCSV),
-        CSVFile("websiteFeedbackResponses.csv", WebsiteFeedbackCSV),
-    )
-
-    with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
-        for file_ in files:
-            Builder = file_.builder
-            zin.writestr(file_.name, Builder().to_string())
-
-        prefix = "Pandas - to_csv - "
-        logger.info(prefix + f"Generating {ORGANISATION_FILENAME}")
-        try:
-            zin.writestr(ORGANISATION_FILENAME, get_organisation_catalogue_csv())
-        except EmptyDataFrame as exc:
-            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
-
-        logger.info(prefix + f"Generating {TIMETABLE_FILENAME}")
-        try:
-            zin.writestr(TIMETABLE_FILENAME, get_timetable_catalogue_csv())
-
-        except EmptyDataFrame as exc:
-            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
-
-        logger.info(prefix + f"Generating {OVERALL_FILENAME}")
-        try:
-            zin.writestr(OVERALL_FILENAME, get_overall_data_catalogue_csv())
-        except EmptyDataFrame:
-            pass
-
-        logger.info(prefix + f"Generating {LOCATION_FILENAME}")
-        try:
-            zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
-        except EmptyDataFrame:
-            pass
-
-    buffer_.seek(0)
-    return buffer_

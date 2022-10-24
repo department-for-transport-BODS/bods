@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block button_href %}
-  {% url 'users:organisation-profile' pk=user.organisation.id host hosts.publish %}
+  {{ organisation_object.get_absolute_url }}
 {% endblock %}
 
 {% block button_text %}

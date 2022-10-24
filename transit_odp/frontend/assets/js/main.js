@@ -20,6 +20,7 @@ import { initTimeoutWarning } from "./timeout-warning";
 import { initWarningDetailMap } from "./data-quality-detail-map";
 import { refresh } from "./dqs-review-panel";
 import { CounterCharactersInTextBox } from "./counter-characters-text-box";
+import { FormSet } from "./django-formset";
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
@@ -50,4 +51,5 @@ export {
   initMap,
   initWarningDetailMap,
   refresh,
+  FormSet,
 };

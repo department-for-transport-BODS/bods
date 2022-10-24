@@ -4,7 +4,6 @@ from django_hosts import reverse
 import config.hosts
 from transit_odp.common.enums import FeedErrorSeverity
 from transit_odp.common.views import BaseDetailView
-from transit_odp.data_quality.models.report import DataQualityReport
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset
@@ -35,6 +34,8 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
 
         dataset = self.object
         live_revision = dataset.live_revision
+        report = live_revision.report.order_by("-created").first()
+        summary = getattr(report, "summary", None)
 
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         kwargs["admin_areas"] = self.object.admin_area_names
@@ -58,12 +59,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
 
-        try:
-            report = live_revision.report.latest()
-        except DataQualityReport.DoesNotExist:
-            return kwargs
-
-        kwargs["report_id"] = report.id
-        kwargs["dq_score"] = get_data_quality_rag(report)
+        kwargs["report_id"] = report.id if summary else None
+        kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
 
         return kwargs

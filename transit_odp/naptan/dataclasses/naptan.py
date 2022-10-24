@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 from pyproj import CRS, Transformer
@@ -124,6 +124,7 @@ class StopPoint(BaseModel):
     administrative_area_ref: str
     descriptor: Descriptor
     place: Place
+    stop_areas: List[str]
 
     @classmethod
     def from_xml(cls, xml):
@@ -139,4 +140,8 @@ class StopPoint(BaseModel):
             ),
             descriptor=Descriptor.from_xml(xml.find("./x:Descriptor", namespaces=ns)),
             place=Place.from_xml(xml.find("./x:Place", namespaces=ns)),
+            stop_areas=[
+                element.text
+                for element in xml.findall(".//x:StopAreaRef", namespaces=ns)
+            ],
         )

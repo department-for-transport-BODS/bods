@@ -208,7 +208,7 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
                     dataset_name=revision.name,
                     contact_email=self.request.user.email,
                 )
-                if dataset.contact != self.request.user:
+                if dataset.contact != self.request.user and dataset.contact.is_active:
                     client.send_data_endpoint_deleted_updater_notification(
                         dataset_id=dataset.id,
                         contact_email=dataset.contact.email,
@@ -306,7 +306,7 @@ class FeedArchiveBaseView(OrgUserViewMixin, BaseUpdateView):
             )
 
         for agent in dataset.organisation.agentuserinvite_set.filter(
-            status=AgentUserInvite.ACCEPTED
+            status=AgentUserInvite.ACCEPTED, agent__is_active=True
         ):
             client.send_agent_data_endpoint_deactivated_notification(
                 dataset_id=dataset.id,

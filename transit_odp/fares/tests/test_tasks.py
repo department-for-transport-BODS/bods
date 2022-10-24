@@ -1,6 +1,7 @@
 import pytest
 from django.core.files import File
 from django.utils import timezone
+from lxml.etree import XMLSchemaParseError
 
 from transit_odp.fares.extract import ExtractionError
 from transit_odp.fares.tasks import (
@@ -80,7 +81,9 @@ def test_validate_xml_files_from_zip_exception(mocker, tmp_path):
     with open(testzip, "rb") as zout:
         task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
 
-    zip_validator = "transit_odp.fares.tasks.validate_netex_files_in_zip"
+    zip_validator = "transit_odp.fares.tasks.validate_xml_files_in_zip"
+    schema = "transit_odp.fares.tasks.get_netex_schema"
+    mocker.patch(schema, return_value=None)
     mocker.patch(
         zip_validator,
         side_effect=XMLSyntaxError(task.revision.upload_file.name),
@@ -92,6 +95,31 @@ def test_validate_xml_files_from_zip_exception(mocker, tmp_path):
     assert task.error_code == task.XML_SYNTAX_ERROR
 
 
+def test_validate_xml_files_from_zip_general_exception(mocker, tmp_path):
+    """Given a zip file with an invalid xml a PipelineException is raised."""
+
+    file1 = tmp_path / "file1.xml"
+    testzip = tmp_path / "testzip.zip"
+    create_text_file(file1, "not xml")
+    create_zip_file(testzip, [file1])
+
+    with open(testzip, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
+
+    zip_validator = "transit_odp.fares.tasks.validate_xml_files_in_zip"
+    schema = "transit_odp.fares.tasks.get_netex_schema"
+    mocker.patch(schema, return_value=None)
+    mocker.patch(
+        zip_validator,
+        side_effect=XMLSchemaParseError(task.revision.upload_file.name),
+    )
+    with pytest.raises(PipelineException):
+        task_run_fares_validation(task.id)
+
+    task.refresh_from_db()
+    assert task.error_code == task.SYSTEM_ERROR
+
+
 def test_xml_validation_error(mocker, tmp_path):
     """Given an invalid xml a PipelineException should be raised."""
 
@@ -100,11 +128,14 @@ def test_xml_validation_error(mocker, tmp_path):
         "for the validation root."
     )
     netex_validator = "transit_odp.fares.tasks.NeTExValidator.validate"
+    schema = "transit_odp.fares.tasks.get_netex_schema"
     task = create_task(revision__upload_file__data=b"<html></html>")
     mocker.patch(
         netex_validator,
         side_effect=XMLSyntaxError(task.revision.upload_file.name, message=expected),
     )
+    mocker.patch(schema, return_value=None)
+
     with pytest.raises(PipelineException) as exc_info:
         task_run_fares_validation(task.id)
 
