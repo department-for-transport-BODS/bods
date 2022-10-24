@@ -61,7 +61,7 @@ class FaresXmlValidator:
                         file_obj, self.pk1
                     )  # Not plugged to API response
                     print("Violations>>>>", violations)
-                    
+
                     lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
                 except etree.DocumentInvalid:
                     error_log_list = list(lxml_schema.error_log)
