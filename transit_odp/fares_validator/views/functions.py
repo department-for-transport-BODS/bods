@@ -61,4 +61,5 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
         is_time_intervals_tag_present = get_tariff_time_intervals(fare_frames)
         if is_time_intervals_tag_present:
             return True
-    return False
+        return False
+    return True
