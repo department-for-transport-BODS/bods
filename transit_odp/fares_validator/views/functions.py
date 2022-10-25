@@ -1,6 +1,3 @@
-from lxml import etree
-
-
 def _extract_text(elements, default=None):
     """
     Extract text from element
@@ -63,3 +60,25 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
             return True
         return False
     return True
+
+
+def check_value_of_type_of_frame_ref(context, type_of_frame_ref, *args):
+    allowed_substring = ["UK_PI_LINE_FARE_OFFER", "UK_PI_NETWORK_OFFER"]
+    for ref_value in allowed_substring:
+        if ref_value in type_of_frame_ref[0].attrib["ref"]:
+            return True
+        return False
+
+
+def check_operator_id_format(context, operator, *args):
+    operator_id = operator[0].attrib["id"]
+    if "noc:" in operator_id and len(operator_id) == 8:
+        return True
+    return False
+
+
+def check_public_code_length(context, public_code, *args):
+    public_code_value = public_code[0].text
+    if len(public_code_value) == 4:
+        return True
+    return False
