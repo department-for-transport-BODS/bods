@@ -6,17 +6,20 @@ from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 from rest_framework.views import APIView
+from pathlib import Path
 
 from transit_odp.fares_validator.utils.files_parser import file_to_etree
+from . import fares_validation
 
 from ..models import FaresValidation
 from ..serializers import FaresSerializer
+from .fares_validation import get_fares_validator
 
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
 category = ""  # Itr2 To be extratced from the xml path
-schema_path = (
-    "transit_odp/fares_validator/xml_schema/netex_dataObjectRequest_service.xsd"
+FARES_SCHEMA = (
+    Path(__file__).parent.parent / "schema" / "netex_dataObjectRequest_service.xsd"
 )
 
 
@@ -38,7 +41,7 @@ class FaresXmlValidator(APIView):
         error_log_list = []
 
         with open(
-            schema_path,
+            str(FARES_SCHEMA),
             "r",
         ) as f:
             schema = f.read()
@@ -51,6 +54,12 @@ class FaresXmlValidator(APIView):
         if etree_obj_list:
             for xmlschema_doc in etree_obj_list:
                 try:
+                    fares_validator = fares_validation.get_fares_validator()
+                    violations = fares_validator.get_violations(
+                        file_obj, pk1
+                    )  # Not plugged to API response
+                    print("Violations>>>>", violations)
+
                     lxml_schema.assertValid(etree_obj_list[xmlschema_doc])
                 except etree.DocumentInvalid:
                     error_log_list = list(lxml_schema.error_log)
@@ -80,13 +89,13 @@ class FaresXmlValidator(APIView):
             return JsonResponse({}, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def get_lxml_schema(self, schema):
-        """Creates an lxml XMLSchema object from a file, file path or url."""
+        """Creates an lxml XMLSchema object from a file"""
 
         if schema is None:
             return
 
         if not isinstance(schema, etree.XMLSchema):
             logger.info(f"[XML] => Parsing {schema}.")
-            root = etree.parse(schema_path)
+            root = etree.parse(str(FARES_SCHEMA))
             schema = etree.XMLSchema(root)
         return schema

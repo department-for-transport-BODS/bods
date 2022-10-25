@@ -1,0 +1,40 @@
+{
+  "header": {
+    "namespaces": { "x": "http://www.netex.org.uk/netex" }
+  },
+  "observations": [
+    {
+      "details": "Mandatory element 'TariffBasis' missing",
+      "category": "Mandatory Element",
+      "reference": "0",
+      "number": 131,
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:TariffBasis) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'validityConditions' missing",
+      "category": "Mandatory Element",
+      "reference": "0",
+      "number": 131,
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:validityConditions) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in tarrifs",
+      "category": "Notes",
+      "reference": "2.5",
+      "context": "//x:frames//x:FareFrame",
+      "number": 7,
+      "rules": [{ "test": "is_time_intervals_present_in_tarrifs(.)" }]
+    }
+   
+  ]
+}
