@@ -59,5 +59,6 @@ class FaresValidator:
         document = etree.parse(source)
         for observation in self.schema.observations:
             elements = document.xpath(observation.context, namespaces=self.namespaces)
-            self.check_observation(observation, elements[0])
+            for element in elements:
+                self.check_observation(observation, element)
         return len(self.violations) == 0

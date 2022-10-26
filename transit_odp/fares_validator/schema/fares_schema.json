@@ -42,7 +42,7 @@
     {
       "details": "Mandatory element 'FromDate' missing",
       "category": "Mandatory Element",
-      "context": "//x:CompositeFrame//x:ValidBetween",
+      "context": "//x:CompositeFrame/x:ValidBetween",
       "rules": [
         {
           "test": "count(x:FromDate) > 0"
@@ -50,9 +50,19 @@
       ]
     },
     {
-      "details": "'TypeOfFrameRef' attribute 'ref' value should be either UK_PI_LINE_FARE_OFFER or UK_PI_NETWORK_OFFER",
+      "details": "Mandatory element 'TypeOfFrameRef' missing'",
       "category": "Mandatory Element",
-      "context": "//x:CompositeFrame//x:TypeOfFrameRef",
+      "context": "//x:CompositeFrame",
+      "rules": [
+        {
+          "test": "count(x:TypeOfFrameRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:TypeOfFrameRef",
       "rules": [
         {
           "test": "check_value_of_type_of_frame_ref(.)"
@@ -62,7 +72,7 @@
     {
       "details": "Mandatory element 'Organisations' missing",
       "category": "Mandatory Element",
-      "context": "//x:CompositeFrame//x:ResourceFrame",
+      "context": "//x:CompositeFrame/x:frames/x:ResourceFrame",
       "rules": [
         {
           "test": "count(x:organisations) > 0"
@@ -70,9 +80,19 @@
       ]
     },
     {
+      "details": "Mandatory element 'Operator' missing",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations",
+      "rules": [
+        {
+          "test": "count(x:Operator) > 0"
+        }
+      ]
+    },
+    {
       "details": "'Operator' attribute 'id' format should be noc:xxxx",
       "category": "Mandatory Element",
-      "context": "//x:ResourceFrame//x:organisations/x:Operator",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator",
       "rules": [
         {
           "test": "check_operator_id_format(.)"
@@ -80,9 +100,19 @@
       ]
     },
     {
-      "details": "Mandatory element 'Public Code' missing or should be 4 characters long",
+      "details": "Mandatory element 'Public Code' missing",
       "category": "Mandatory Element",
-      "context": "//x:ResourceFrame//x:organisations//x:Operator/x:PublicCode",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator",
+      "rules": [
+        {
+          "test": "count(x:PublicCode) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Element 'Public Code' should be 4 characters long",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator/x:PublicCode",
       "rules": [
         {
           "test": "check_public_code_length(.)"
@@ -92,7 +122,7 @@
     {
       "details": "Mandatory element 'Name' missing",
       "category": "Mandatory Element",
-      "context": "//x:ResourceFrame//x:organisations/x:Operator",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator",
       "rules": [
         {
           "test": "count(x:Name) > 0"
