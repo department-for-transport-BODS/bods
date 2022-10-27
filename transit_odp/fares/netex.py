@@ -2,15 +2,20 @@ import zipfile
 from typing import List
 
 from dateutil.parser import parse as parse_datetime_str
+from django.conf import settings
 from lxml import etree
 
 from transit_odp.common.xmlelements import XMLElement
+from transit_odp.pipelines.constants import SchemaCategory
+from transit_odp.pipelines.models import SchemaDefinition
+from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.validate import XMLValidator
-from transit_odp.validate.xml import validate_xml_files_in_zip
 
 _NETEX_NAMESPACE_PREFIX = "netex"
 _NETEX_NAMESPACE = "http://www.netex.org.uk/netex"
 NETEX_SCHEMA_URL = "http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd"
+NETEX_SCHEMA_ZIP_URL = settings.NETEX_SCHEMA_ZIP_URL
+NETEX_XSD_PATH = settings.NETEX_XSD_PATH
 
 
 class NeTExValidator(XMLValidator):
@@ -182,5 +187,10 @@ def get_documents_from_file(source) -> List[NeTExDocument]:
         return [doc]
 
 
-def validate_netex_files_in_zip(zipfile_):
-    return validate_xml_files_in_zip(zipfile_, schema=NETEX_SCHEMA_URL)
+def get_netex_schema() -> etree.XMLSchema:
+    """
+    Helper method to return netex scheme object
+    """
+    definition = SchemaDefinition.objects.get(category=SchemaCategory.NETEX)
+    schema_loader = SchemaLoader(definition, NETEX_XSD_PATH)
+    return schema_loader.schema

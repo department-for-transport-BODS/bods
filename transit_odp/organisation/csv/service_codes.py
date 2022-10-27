@@ -22,13 +22,7 @@ class ServiceCodesCSV:
         )
 
     def get_queryset(self):
-        return (
-            OTCService.objects.get_all_in_organisation(self._organisation_id)
-            .select_related("licence")
-            .add_service_code()
-            .order_by("licence__number", "service_code")
-            .distinct("licence__number", "service_code")
-        )
+        return OTCService.objects.get_all_without_exempted_ones(self._organisation_id)
 
     def to_csv(self):
         string_ = io.StringIO()

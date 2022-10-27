@@ -6,8 +6,6 @@
     {
       "details": "Mandatory element 'TariffBasis' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff",
       "rules": [
         {
@@ -18,8 +16,6 @@
     {
       "details": "Mandatory element 'validityConditions' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff",
       "rules": [
         {
@@ -498,10 +494,108 @@
     {
       "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in tarrifs",
       "category": "Notes",
-      "reference": "2.5",
       "context": "//x:frames//x:FareFrame",
-      "number": 7,
       "rules": [{ "test": "is_time_intervals_present_in_tarrifs(.)" }]
+    },
+    {
+      "details": "Mandatory element 'ValidBetween' missing",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame",
+      "rules": [
+        {
+          "test": "count(x:ValidBetween) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FromDate' missing",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:ValidBetween",
+      "rules": [
+        {
+          "test": "count(x:FromDate) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfFrameRef' missing'",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame",
+      "rules": [
+        {
+          "test": "count(x:TypeOfFrameRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:TypeOfFrameRef",
+      "rules": [
+        {
+          "test": "check_value_of_type_of_frame_ref(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'Organisations' missing",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:frames/x:ResourceFrame",
+      "rules": [
+        {
+          "test": "count(x:organisations) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'Operator' missing",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations",
+      "rules": [
+        {
+          "test": "count(x:Operator) > 0"
+        }
+      ]
+    },
+    {
+      "details": "'Operator' attribute 'id' format should be noc:xxxx",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator",
+      "rules": [
+        {
+          "test": "check_operator_id_format(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'Public Code' missing",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator",
+      "rules": [
+        {
+          "test": "count(x:PublicCode) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Element 'Public Code' should be 4 characters long",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator/x:PublicCode",
+      "rules": [
+        {
+          "test": "check_public_code_length(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'Name' missing",
+      "category": "Mandatory Element",
+      "context": "//x:ResourceFrame/x:organisations/x:Operator",
+      "rules": [
+        {
+          "test": "count(x:Name) > 0"
+        }
+      ]
     }
   ]
 }

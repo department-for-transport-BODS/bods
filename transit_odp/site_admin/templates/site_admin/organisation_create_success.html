@@ -5,24 +5,23 @@
 {% block breadcrumb.content %}
 {% endblock %}
 
+{% block backlink %}
+    {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
+    {% include 'snippets/backlink.html' with url=backlink_url %}
+{% endblock %}
+
 {% block title_tag %}
-  {% trans 'Organisation invited' %}
+    {% trans 'Organisation added' %}
 {% endblock %}
 
 {% block title_text %}
-  {% trans 'Invite new organisation' %}
+    {% trans 'New organisation added' %}
 {% endblock %}
 
 {% block body_text %}
     {% blocktrans %}
-        An email invite has been sent
+        Organisation has been added
     {% endblocktrans %}
-    {% if invite_email %}
-        to
-        {{ invite_email }}.
-    {% else %}
-        .
-    {% endif %}
 {% endblock %}
 
 {% block button_href %}

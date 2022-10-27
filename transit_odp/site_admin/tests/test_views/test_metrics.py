@@ -5,6 +5,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django_hosts.resolvers import reverse, reverse_host
+from freezegun import freeze_time
 
 from config.hosts import ADMIN_HOST
 from transit_odp.fares.factories import FaresMetadataFactory
@@ -58,6 +59,7 @@ class TestOperationalMetricsFileView:
         response = client.get(url)
         assert response.status_code == 403
 
+    @freeze_time("2022-01-31")
     def test_site_admin_can_download_zip(self, client_factory, user_factory):
         client = client_factory(host=self.host)
         user = user_factory(account_type=SiteAdminType)
@@ -89,6 +91,7 @@ class TestOperationalMetricsFileView:
             "datasetpublishing.csv",
             "feedback_report_operator_breakdown.csv",
             "websiteFeedbackResponses.csv",
+            "2022-01-31-Service codes exempt from BODS reporting.csv",
             "organisations_data_catalogue.csv",
             "timetables_data_catalogue.csv",
             "overall_data_catalogue.csv",
@@ -103,6 +106,7 @@ class TestOperationalMetricsFileView:
             files = [name for name in zout.namelist()]
         assert files == expected_files
 
+    @freeze_time("2022-02-28")
     def test_site_admin_empty_dataframes(self, client_factory, user_factory):
         client = client_factory(host=self.host)
         user = user_factory(account_type=SiteAdminType)
@@ -119,6 +123,7 @@ class TestOperationalMetricsFileView:
             "datasetpublishing.csv",
             "feedback_report_operator_breakdown.csv",
             "websiteFeedbackResponses.csv",
+            "2022-02-28-Service codes exempt from BODS reporting.csv",
         ]
 
         response = client.get(url)

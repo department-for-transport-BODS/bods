@@ -12,9 +12,7 @@ class Rule(BaseModel):
 class Observation(BaseModel):
     details: str
     category: str
-    reference: str
     context: str
-    number: int
     rules: List[Rule]
 
 

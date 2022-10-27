@@ -72,3 +72,13 @@
     content: "\f0dc";
   }
 }
+
+.licence-dropdown {
+  .select-wrapper {
+    font-size: unset;
+    height: unset;
+    select {
+      width: 100%;
+    }
+  }
+}

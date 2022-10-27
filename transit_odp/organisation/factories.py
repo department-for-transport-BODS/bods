@@ -23,9 +23,10 @@ from transit_odp.organisation.models import (
     Licence,
     OperatorCode,
     Organisation,
+    ServiceCodeExemption,
     TXCFileAttributes,
 )
-from transit_odp.users.constants import DeveloperType
+from transit_odp.users.constants import DeveloperType, OrgAdminType
 
 FAKER = faker.Faker()
 
@@ -63,6 +64,25 @@ class OrganisationFactory(factory.django.DjangoModelFactory):
             # Create list of NOCs from args
             for noc in extracted:
                 OperatorCodeFactory(organisation=obj, noc=noc)
+
+    @factory.post_generation
+    def licences(obj, create, extracted: Union[int, List[str]] = None, **kwargs):
+        """
+        Examples:
+            1. OrganisationFactory() => creates no licences
+            2. OrganisationFactory(licences=['PS0000001', 'PS0000002') => creates two
+                licences with the specified numbers
+            3. OrganisationFactory(licences=4)  => creates four random licences
+        """
+        if not create:
+            return
+
+        if isinstance(extracted, int):
+            for i in range(extracted):
+                LicenceFactory(organisation=obj)
+        elif isinstance(extracted, list):
+            for li in extracted:
+                LicenceFactory(organisation=obj, number=li)
 
 
 class OperatorCodeFactory(factory.django.DjangoModelFactory):
@@ -249,3 +269,15 @@ class ConsumerFeedbackFactory(factory.django.DjangoModelFactory):
     dataset = factory.SubFactory(DatasetFactory)
     feedback = factory.Faker("sentence", nb_words=10)
     organisation = factory.SubFactory(OrganisationFactory)
+
+
+class ServiceCodeExemptionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ServiceCodeExemption
+
+    licence = factory.SubFactory(LicenceFactory)
+    registration_code = factory.Faker("pyint", min_value=1, max_value=4000)
+    justification = factory.Faker("text", max_nb_chars=50)
+    exempted_by = factory.SubFactory(
+        "transit_odp.users.factories.UserFactory", account_type=OrgAdminType
+    )

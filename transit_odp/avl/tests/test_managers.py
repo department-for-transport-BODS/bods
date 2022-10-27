@@ -1,5 +1,6 @@
 import random
 from datetime import datetime, timedelta
+from logging import getLogger
 
 import pytest
 from django.db.models.aggregates import Sum
@@ -22,6 +23,7 @@ from transit_odp.avl.factories import (
 )
 from transit_odp.avl.models import AVLValidationReport
 from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.tasks import cache_avl_compliance_status
 from transit_odp.avl.tests.utils import (
     get_awaiting_review_revision,
     get_compliant_revision,
@@ -31,6 +33,7 @@ from transit_odp.avl.tests.utils import (
     get_partially_compliant_revision,
     get_undergoing_validation_revision,
 )
+from transit_odp.common.loggers import PipelineAdapter
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -266,7 +269,8 @@ def test_compliant_scenario():
 
 def test_validation_terminated_scenario():
     """
-    GIVEN that an AVL dataset has more than 7 reports with no report having an error but status is INACTIVE
+    GIVEN that an AVL dataset has more than 7 reports with no report having an error
+    but status is INACTIVE
     WHEN add_avl_compliance_status is called
     THEN the dataset will have an avl_compliance of "Validation terminated"
     """
@@ -681,6 +685,10 @@ def test_needs_attention_count():
     for _ in range(feed_down):
         get_feed_down_revision()
     expected += feed_down
+
+    adapter = PipelineAdapter(getLogger("pytest"), {})
+    for dataset in AVLDataset.objects.all():
+        cache_avl_compliance_status(adapter, dataset.id)
 
     actual = AVLDataset.objects.get_needs_attention_count()
 

@@ -9,6 +9,8 @@ from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
+    LicenceFactory,
+    ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset
@@ -63,7 +65,7 @@ def test_service_in_bods_and_otc():
         operator = service.operator
         licence = service.licence
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Registered"
+        assert row["Service Statuses"] == "Published (Registered)"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -133,7 +135,7 @@ def test_unregistered_services_in_bods():
     for index, row in df[:5].iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Unregistered"
+        assert row["Service Statuses"] == "Published (Unregistered)"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -146,6 +148,30 @@ def test_unregistered_services_in_bods():
         assert row["Line Name"] == "line1 line2"
         assert row["Origin"] == txc_file_attributes.origin
         assert row["Destination"] == txc_file_attributes.destination
+
+
+def test_exempted_services_in_bods() -> None:
+    """
+    In exported data when Registration Number is included in ExemptedServiceCodes
+    the Service Status should be "Published (Out of scope)".
+    In this test all existing entries's reg. numbers are exempted.
+    """
+
+    for service in ServiceModelFactory.create_batch(5):
+        fa = TXCFileAttributesFactory(
+            licence_number=service.licence.number,
+            service_code=service.registration_number.replace("/", ":"),
+        )
+        DataQualityReportFactory(revision=fa.revision)
+        PTIValidationResultFactory(revision=fa.revision)
+        bods_lic = LicenceFactory(number=service.licence.number)
+        ServiceCodeExemptionFactory(
+            licence=bods_lic, registration_code=service.registration_code
+        )
+
+    df = _get_timetable_catalogue_dataframe()
+    for _, row in df.iterrows():
+        assert row["Service Statuses"] == "Published (Out of scope)"
 
 
 def test_empty_otc_services():

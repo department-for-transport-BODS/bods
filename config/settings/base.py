@@ -436,10 +436,12 @@ INVITATIONS_EMAIL_SUBJECT_PREFIX = env.bool(
 )
 INVITATION_MODEL = "users.Invitation"
 INVITATIONS_INVITATION_MODEL = (
-    INVITATION_MODEL  # invitations settings are not used self-consistently
+    INVITATION_MODEL  # invitations settings are not used self-consisten    tly
 )
 INVITATIONS_ADMIN_ADD_FORM = "transit_odp.users.forms.admin.InvitationAdminAddForm"
-INVITATIONS_INVITE_FORM = "transit_odp.organisation.forms.management.InvitationForm"
+INVITATIONS_INVITE_FORM = (
+    "transit_odp.organisation.forms.management.InvitationSubsequentForm"
+)
 # If we need to provide different invitation forms for different views,  we could override SendInvite view in urls.py
 # rather than this static setting
 INVITATIONS_ACCEPT_INVITE_AFTER_SIGNUP = True
@@ -527,8 +529,20 @@ ITO_GTFS_AWS_REGION = env("DJANGO_ITO_GTFS_AWS_REGION", default="eu-west-2")
 
 # TxC Schema
 # ------------------------------------------------------------------------------
-TXC_BASE_URL = env("TXC_BASE_URL", default="http://www.transxchange.org.uk")
-TXC_V24_OVERRIDE = env("TXC_V24_OVERRIDE", default=None)
+TXC_SCHEMA_ZIP_URL = env(
+    "TXC_SCHEMA_ZIP_URL",
+    default="http://www.transxchange.org.uk/schema/2.4/TransXChange_schema_2.4.zip",
+)
+TXC_XSD_PATH = env("TXC_XSD_PATH", default="TransXChange_general.xsd")
+
+
+# NeTeX Schema
+# ------------------------------------------------------------------------------
+NETEX_SCHEMA_ZIP_URL = env(
+    "NETEX_SCHEMA_ZIP_URL",
+    default="http://netex.uk/netex/schema/1.09c/NeTEx_Xml-v1.09c_2019.05.17.zip",
+)
+NETEX_XSD_PATH = env("NETEX_XSD_PATH", default="xsd/NeTEx_publication.xsd")
 
 # PTI
 # ------------------------------------------------------------------------------

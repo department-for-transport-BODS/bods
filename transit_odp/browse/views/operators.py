@@ -85,7 +85,6 @@ class OperatorDetailView(BaseDetailView):
             .annotate(status=F("live_revision__status"))
             .exclude(status__in=[EXPIRED, INACTIVE])
             .add_draft_revisions()
-            .add_avl_compliance_status()
         )
         avl_non_compliant_count = avl_datasets.get_needs_attention_count()
         context["avl_total_datasets"] = avl_dataset_revisions["dataset_count"]

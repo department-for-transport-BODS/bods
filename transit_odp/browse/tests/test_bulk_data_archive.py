@@ -1,6 +1,6 @@
-import os
 import zipfile
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 from django.test import override_settings
@@ -60,9 +60,7 @@ def test_zip_timetable_datasets(tmp_path):
             # Access zip file with upload filename
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
-            with zf.open(
-                os.path.join("bulk", directory_name, upload.name), "r"
-            ) as zipped:
+            with zf.open(Path(directory_name, upload.name).as_posix(), "r") as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -91,9 +89,7 @@ def test_zip_fares_datasets(tmp_path):
             # Access zip file with upload filename
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
-            with zf.open(
-                os.path.join("bulk", directory_name, upload.name), "r"
-            ) as zipped:
+            with zf.open(Path(directory_name, upload.name).as_posix(), "r") as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -184,7 +180,7 @@ def test_timetable_bulk_data_archive():
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
             expected_names.append(
-                f"{basename}/{directory_name}/{dataset.live_revision.upload_file.name}"
+                f"{directory_name}/{dataset.live_revision.upload_file.name}"
             )
 
         for name in zf.namelist():
@@ -195,9 +191,7 @@ def test_timetable_bulk_data_archive():
             # Access zip file with upload filename
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
-            with zf.open(
-                os.path.join(basename, directory_name, upload.name), "r"
-            ) as zipped:
+            with zf.open(Path(directory_name, upload.name).as_posix(), "r") as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -234,7 +228,7 @@ def test_fares_bulk_data_archive():
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
             expected_names.append(
-                f"{basename}/{directory_name}/{dataset.live_revision.upload_file.name}"
+                f"{directory_name}/{dataset.live_revision.upload_file.name}"
             )
 
         for name in zf.namelist():
@@ -245,9 +239,7 @@ def test_fares_bulk_data_archive():
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
             # Access zip file with upload filename
-            with zf.open(
-                os.path.join(basename, directory_name, upload.name), "r"
-            ) as zipped:
+            with zf.open(Path(directory_name, upload.name).as_posix(), "r") as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()
@@ -323,7 +315,7 @@ def test_compliant_timetable_bulk_data_archive():
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
             expected_names.append(
-                f"{basename}/{directory_name}/{dataset.live_revision.upload_file.name}"
+                f"{directory_name}/{dataset.live_revision.upload_file.name}"
             )
 
         for name in zf.namelist():
@@ -334,9 +326,7 @@ def test_compliant_timetable_bulk_data_archive():
             org = dataset.organisation
             directory_name = f"{org.short_name}_{org.id}"
             # Access zip file with upload filename
-            with zf.open(
-                os.path.join(basename, directory_name, upload.name), "r"
-            ) as zipped:
+            with zf.open(Path(directory_name, upload.name).as_posix(), "r") as zipped:
                 with upload.open("rb") as orig:
                     # Test the upload file data can be read from the zip
                     assert zipped.read() == orig.read()

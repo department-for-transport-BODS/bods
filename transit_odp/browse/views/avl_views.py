@@ -51,7 +51,7 @@ class AVLSearchView(BaseSearchView):
             .get_published()
             .get_active_org()
             .add_organisation_name()
-            .add_avl_compliance_status()
+            .add_avl_compliance_status_cached()
             .add_live_data()
             .order_by(*self.get_ordering())
         )
@@ -73,10 +73,9 @@ class AVLDatasetDetailView(BaseDetailView):
             .get_queryset()
             .get_active_org()
             .get_published()
-            .add_avl_compliance_status()
+            .add_avl_compliance_status_cached()
             .add_admin_area_names()
             .add_live_data()
-            .add_avl_compliance_status()
             .select_related("live_revision")
         )
 
@@ -86,7 +85,7 @@ class AVLDatasetDetailView(BaseDetailView):
         dataset = self.object
         user = self.request.user
 
-        show_url = dataset.avl_compliance in (
+        show_url = dataset.avl_compliance_status_cached in (
             PARTIALLY_COMPLIANT,
             AWAITING_REVIEW,
             NON_COMPLIANT,

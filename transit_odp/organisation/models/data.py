@@ -17,6 +17,7 @@ from django_hosts import reverse
 from model_utils import FieldTracker
 
 from config import hosts
+from transit_odp.avl.constants import COMPLIANCE_STATUS_CHOICES, UNDERGOING
 from transit_odp.bods.interfaces.plugins import get_cavl_service
 from transit_odp.common.validators import validate_profanity
 from transit_odp.organisation import signals
@@ -27,7 +28,11 @@ from transit_odp.organisation.constants import (
     DatasetType,
     FeedStatus,
 )
-from transit_odp.organisation.managers import DatasetManager, DatasetRevisionManager
+from transit_odp.organisation.managers import (
+    DatasetManager,
+    DatasetRevisionManager,
+    ServiceCodeExemptionManager,
+)
 from transit_odp.organisation.mixins import (
     DatasetPayloadMetadataMixin,
     DatasetPayloadMixin,
@@ -593,3 +598,57 @@ class ConsumerStats(models.Model):
     weekly_api_hits = models.IntegerField(
         _("Number of api hits in the last 7 days"), default=0
     )
+
+
+class AVLComplianceCache(models.Model):
+    dataset = models.OneToOneField(
+        Dataset,
+        on_delete=models.CASCADE,
+        help_text="The data feed",
+        related_name="avl_compliance_cached",
+    )
+
+    status = models.CharField(
+        help_text="AVL compliance string",
+        choices=COMPLIANCE_STATUS_CHOICES,
+        blank=False,
+        default=UNDERGOING,
+        max_length=50,
+    )
+
+
+class ServiceCodeExemption(TimeStampedModel):
+    class Meta:
+        unique_together = ("licence", "registration_code")
+
+    licence = models.ForeignKey(
+        "Licence",
+        on_delete=models.CASCADE,
+        help_text="Organisation licence",
+        related_name="service_code_exemptions",
+    )
+    registration_code = models.IntegerField(
+        blank=False,
+        null=False,
+        help_text="The part of the service code after the licence prefix",
+    )
+    justification = models.CharField(
+        blank=True,
+        max_length=140,
+        help_text="Justification for exemption",
+    )
+    exempted_by = models.ForeignKey(
+        User,
+        related_name="service_code_exemptions",
+        on_delete=models.PROTECT,
+        help_text="The user that added this exemption",
+    )
+
+    objects = ServiceCodeExemptionManager()
+
+    def __str__(self) -> str:
+        return (
+            f"licence_id={self.licence}, "
+            f"registration_code={self.registration_code}, "
+            f"justification='{self.justification}'"
+        )

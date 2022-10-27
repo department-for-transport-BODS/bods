@@ -13,6 +13,7 @@ FARES_EXCLUDED_FIELDS = (
     "live_revision",
     "organisation",
     "dataset_type",
+    "is_dummy",
 )
 GMT_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
 

@@ -1,11 +1,12 @@
 INTRO = """
+
 Bus Open Data Service Data Catalogue
  GOV.UK
 
 ________________________________________
 
 Data Catalogue
-The data catalogue zip contains a series of CSVs which would gives a machine-readable
+The data catalogue zip contains a series of CSVs which gives a machine-readable
 overview of all the data that resides in BODS currently.
 
 Note that the data catalogue only covers the data from primary data sources on BODS

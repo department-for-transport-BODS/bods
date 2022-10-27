@@ -41,9 +41,10 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
                 organisation_id=self.organisation.id,
             )
             .add_has_schema_violation_reports()
-            .add_avl_compliance_status()
+            .add_avl_report_count()
             .add_first_error_date()
             .get_published()
+            .add_avl_compliance_status_cached()
             .select_related("live_revision")
         )
 
@@ -89,7 +90,7 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             last_server_update=last_server_update,
             published_by=published_by,
             published_at=revision.published_at,
-            avl_compliance_status=dataset.avl_compliance,
+            avl_compliance_status_cached=dataset.avl_compliance_status_cached,
             has_schema_violations=dataset.has_schema_violations,
             days_to_go=7 - dataset.avl_report_count,
             first_error_date=dataset.first_error_date,

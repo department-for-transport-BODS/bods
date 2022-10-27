@@ -28,7 +28,7 @@ class ListView(BasePublishListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = context["pk1"]
-        context["all_service_codes"] = OTCService.objects.get_all_in_organisation(
+        context["all_service_codes"] = OTCService.objects.get_all_without_exempted_ones(
             org_id
         ).count()
         context[

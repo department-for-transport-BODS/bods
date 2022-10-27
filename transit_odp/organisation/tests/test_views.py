@@ -8,7 +8,7 @@ from transit_odp.common.tests.utils import add_session_middleware
 from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.organisation.forms.management import (
     Invitation,
-    InvitationForm,
+    InvitationSubsequentForm,
     UserEditForm,
 )
 from transit_odp.organisation.views import (
@@ -155,7 +155,7 @@ class TestInviteView:
         view = InviteView()
         view.request = request
         kwargs = view.get_form_kwargs()
-        assert view.form_class == InvitationForm
+        assert view.form_class == InvitationSubsequentForm
         assert "cancel_url" in kwargs
         assert (
             reverse(

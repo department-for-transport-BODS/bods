@@ -2,6 +2,7 @@ import csv
 import datetime
 import io
 import zipfile
+from logging import getLogger
 from unittest.mock import Mock, patch
 
 import pytest
@@ -14,6 +15,8 @@ from freezegun import freeze_time
 
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import AVLValidationReportFactory
+from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.tasks import cache_avl_compliance_status
 from transit_odp.browse.tasks import task_create_data_catalogue_archive
 from transit_odp.browse.tests.comments_test import (
     DATA_LONG_MAXLENGTH_WITH_CARRIAGE_RETURN,
@@ -28,6 +31,8 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.loggers import PipelineAdapter
+from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.feedback.models import Feedback
@@ -104,6 +109,34 @@ class TestFeedDetailsView:
         DatasetETLTaskResultFactory(revision=revision)
 
         DatasetSubscriptionFactory.create(dataset=dataset, user=org_user)
+
+        request = request_factory.get("/feed/")
+        request.user = org_user
+
+        response = DatasetDetailView.as_view()(request, pk=dataset.id)
+
+        assert response.status_code == 200
+        assert (
+            response.context_data["view"].template_name
+            == "browse/timetables/dataset_detail/index.html"
+        )
+        assert response.context_data[
+            "notification"
+        ]  # notification option turned on for authenticated users
+        assert response.context_data["object"].id == dataset.id
+        assert response.context_data["object"].live_revision.name == revision.name
+
+    def test_dq_report_without_summary(
+        self, user: settings.AUTH_USER_MODEL, request_factory: RequestFactory
+    ):
+        org_user = create_verified_org_user()
+        dataset = DatasetFactory.create(organisation=org_user.organisation)
+        revision = DatasetRevisionFactory.create(
+            dataset=dataset, status=FeedStatus.live.value
+        )
+        DatasetETLTaskResultFactory(revision=revision)
+        DatasetSubscriptionFactory(dataset=dataset, user=org_user)
+        DataQualityReportFactory(revision=revision, summary=None, score=0)
 
         request = request_factory.get("/feed/")
         request.user = org_user
@@ -843,6 +876,10 @@ class TestOperatorDetailView:
             revision=revisions[0],
             critical_count=2,
         )
+
+        adapter = PipelineAdapter(getLogger("pytest"), {})
+        for dataset in AVLDataset.objects.all():
+            cache_avl_compliance_status(adapter, dataset.id)
 
         request = request_factory.get("/operators/")
         request.user = UserFactory()

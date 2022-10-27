@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 
 from transit_odp.common.utils.repr import nice_repr
 from transit_odp.naptan.managers import (
@@ -72,6 +73,10 @@ class StopPoint(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+    )
+    stop_areas = ArrayField(
+        models.CharField(max_length=255),
+        default=list,
     )
 
     objects = StopPointManager()

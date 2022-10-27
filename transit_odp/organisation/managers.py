@@ -3,10 +3,12 @@ import logging
 from django.db import models
 
 from transit_odp.organisation.querysets import (
+    BODSLicenceQuerySet,
     ConsumerFeedbackQuerySet,
     DatasetQuerySet,
     DatasetRevisionQuerySet,
     OrganisationQuerySet,
+    ServiceCodeExemptionQuerySet,
 )
 
 logger = logging.getLogger(__name__)
@@ -25,4 +27,14 @@ class DatasetRevisionManager(models.Manager.from_queryset(DatasetRevisionQuerySe
 
 
 class ConsumerFeedbackManager(models.Manager.from_queryset(ConsumerFeedbackQuerySet)):
+    pass
+
+
+class ServiceCodeExemptionManager(
+    models.Manager.from_queryset(ServiceCodeExemptionQuerySet)
+):
+    pass
+
+
+class BODSLicenceManager(models.Manager.from_queryset(BODSLicenceQuerySet)):
     pass

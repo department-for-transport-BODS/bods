@@ -46,7 +46,7 @@ REVISION_NUMBER_OBSERVATION = Observation(
 
 class DatasetTXCValidator:
     def __init__(self):
-        self._schema = get_transxchange_schema("2.4")
+        self._schema = get_transxchange_schema()
 
     def iter_get_files(self, revision: DatasetRevision):
         context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)

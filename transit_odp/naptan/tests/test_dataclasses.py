@@ -52,3 +52,13 @@ def test_wgs_stop_from_xml(wgs_stop):
     assert point.place.location.translation.easting == 482276
     assert point.place.location.translation.northing == 179455
     assert point.administrative_area_ref == "065"
+
+
+def test_stop_with_multiple_stop_areas_xml(multiple_stop_areas_stop):
+    """
+    GIVEN an lxml naptan:StopPoint with multiple stop areas
+    WHEN I call `from_xml`
+    THEN a StopPoint is created with a list of stop areas
+    """
+    point = StopPoint.from_xml(multiple_stop_areas_stop)
+    assert sorted(point.stop_areas) == ["036G00006160", "036G00006161"]

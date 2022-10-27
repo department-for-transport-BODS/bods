@@ -1,4 +1,9 @@
-from lxml import etree
+from ..constants import (
+    LENGTH_OF_OPERATOR,
+    LENGTH_OF_PUBLIC_CODE,
+    ORG_OPERATOR_ID_SUBSTRING,
+    TYPE_OF_FRAME_REF_SUBSTRING,
+)
 
 
 def _extract_text(elements, default=None):
@@ -20,19 +25,27 @@ def _extract_text(elements, default=None):
     return text
 
 
-def has_name(context, elements, *args):
+def _extract_attribute(elements, attribute_name, default=None):
     """
-    Checks if elements are in the list of names.
+    Extract attribute from element
     """
-    if not isinstance(elements, list):
-        elements = [elements]
+    if isinstance(elements, list) and len(elements) > 0:
+        item = elements[0]
+        try:
+            element_attribute = item.attrib[attribute_name]
+        except KeyError:
+            element_attribute = ""
+            raise KeyError
 
-    for el in elements:
-        namespaces = {"x": el.nsmap.get(None)}
-        local_name = el.xpath("local-name()", namespaces=namespaces)
-        if local_name not in args:
-            return False
-    return True
+    elif isinstance(elements, str):
+        try:
+            element_attribute = elements.attrib[attribute_name]
+        except KeyError:
+            element_attribute = ""
+            raise KeyError
+    else:
+        element_attribute = default
+    return element_attribute
 
 
 def get_tariff_time_intervals(element):
@@ -60,5 +73,50 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     if product_type in ["dayPass", "periodPass"]:
         is_time_intervals_tag_present = get_tariff_time_intervals(fare_frames)
         if is_time_intervals_tag_present:
+            return True
+        return False
+    return True
+
+
+def check_value_of_type_of_frame_ref(context, type_of_frame_ref, *args):
+    """
+    Check if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
+    UK_PI_NETWORK_OFFER in it.
+    """
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        return False
+    is_present = False
+    for ref_value in TYPE_OF_FRAME_REF_SUBSTRING:
+        if ref_value in type_of_frame_ref_ref:
+            is_present = True
+            break
+    return is_present
+
+
+def check_operator_id_format(context, operators, *args):
+    """
+    Check if Operator element's id attribute in in the format - noc:xxxx
+    """
+    try:
+        operators_id = _extract_attribute(operators, "id")
+    except KeyError:
+        return False
+    if (
+        ORG_OPERATOR_ID_SUBSTRING in operators_id
+        and len(operators_id) == LENGTH_OF_OPERATOR
+    ):
+        return True
+    return False
+
+
+def check_public_code_length(context, public_code, *args):
+    """
+    Check if PublicCode is 4 characters long
+    """
+    public_code_value = _extract_text(public_code)
+    if public_code_value is not None:
+        if len(public_code_value) == LENGTH_OF_PUBLIC_CODE:
             return True
     return False

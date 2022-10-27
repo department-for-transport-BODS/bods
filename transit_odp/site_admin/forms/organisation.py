@@ -1,6 +1,3 @@
-from collections import Counter
-from string import ascii_uppercase
-
 from crispy_forms.layout import ButtonHolder, Field, Layout
 from crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
 from crispy_forms_govuk.layout import ButtonSubmit, LinkButton
@@ -11,23 +8,26 @@ from crispy_forms_govuk.layout.fields import (
 )
 from django import forms
 from django.contrib import auth
-from django.core.exceptions import ValidationError
-from django.db.models.functions.text import Substr, Upper
-from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
 from invitations.forms import CleanEmailMixin
 from invitations.utils import get_invitation_model
 
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.common.layout import InlineFormset
-from transit_odp.organisation.constants import FeedStatus
+from transit_odp.organisation.constants import PSV_LICENCE_AND_CHECKBOX
 from transit_odp.organisation.forms.organisation_profile import (
     NOCFormset,
     OrganisationProfileForm,
+    PSVFormset,
 )
 from transit_odp.organisation.models import Organisation
+from transit_odp.site_admin.forms.base import (
+    CHECKBOX_FIELD_KEY,
+    STATUS_CHOICES,
+    CheckboxFilterForm,
+)
 from transit_odp.site_admin.validators import validate_email_unique
-from transit_odp.users.constants import AccountType, AgentUserType, DeveloperType
+from transit_odp.users.constants import AccountType
 from transit_odp.users.forms.admin import (
     EMAIL_HELP_TEXT,
     EMAIL_INVALID,
@@ -37,15 +37,6 @@ from transit_odp.users.forms.admin import (
 
 User = auth.get_user_model()
 Invitation = get_invitation_model()
-
-LETTER_CHOICES = [("0-9", "0 - 9")] + [(letter, letter) for letter in ascii_uppercase]
-STATUS_CHOICES = (
-    ("", "All statuses"),
-    ("active", "Active"),
-    ("inactive", "Inactive"),
-    ("pending", "Pending Invite"),
-)
-CHECKBOX_FIELD_KEY = "letters"
 
 
 class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
@@ -57,8 +48,8 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
         fields = ("name", "short_name")
 
     email = forms.EmailField(
-        label=_("Key contact email"),
-        required=True,
+        label=_("Key contact email (optional)"),
+        required=False,
         widget=forms.TextInput(
             attrs={
                 "type": "email",
@@ -66,7 +57,6 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
                 "class": "govuk-!-width-three-quarters",
             }
         ),
-        error_messages={"required": _("Enter the email address of the key contact")},
         validators=[validate_email_unique],
     )
 
@@ -92,9 +82,15 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             files=self.files if self.is_bound else None,
         )
 
+        self.nested_psv = PSVFormset(
+            instance=self.instance,
+            data=self.data if self.is_bound else None,
+            files=self.files if self.is_bound else None,
+        )
+
     def get_helper_properties(self):
         props = super().get_helper_properties()
-        props.update({"nested_noc": self.nested_noc})
+        props.update({"nested_noc": self.nested_noc, "nested_psv": self.nested_psv})
         return props
 
     def get_layout(self):
@@ -103,8 +99,9 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             "short_name",
             "email",
             InlineFormset("nested_noc"),
+            InlineFormset("nested_psv"),
             ButtonHolder(
-                ButtonSubmit(name="submit", content=_("Send Invitation")),
+                ButtonSubmit(name="submit", content=_("Submit")),
                 LinkButton(url=self.cancel_url, content="Cancel"),
             ),
         )
@@ -115,11 +112,13 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
         """
         is_valid = super().is_valid()
         noc = self.nested_noc.is_valid()
-        return all((is_valid, noc))
+        psv_licence = self.nested_psv.is_valid()
+        return all((is_valid, noc, psv_licence))
 
     def save(self, commit=True):
         inst = super().save(commit=commit)
         self.nested_noc.save(commit=commit)
+        self.nested_psv.save(commit=commit)
         return inst
 
 
@@ -186,7 +185,8 @@ class OrganisationForm(OrganisationProfileForm):
                         account_type=AccountType.org_admin.value
                     ),
                     initial=instance.key_contact,
-                    label=_("Key contact email"),
+                    label=_("Key contact email (optional)"),
+                    required=False,
                 )
             }
         )
@@ -200,11 +200,13 @@ class OrganisationForm(OrganisationProfileForm):
                 "licence_required",
                 small_boxes=True,
                 disabled=True,
+                template="site_admin/snippets/licence_checkbox_field.html",
             )
         else:
             checkbox = CheckboxSingleField(
                 "licence_required",
                 small_boxes=True,
+                template="site_admin/snippets/licence_checkbox_field.html",
             )
         return Layout(
             Field("name", wrapper_class="govuk-form-group govuk-!-margin-bottom-4"),
@@ -223,6 +225,39 @@ class OrganisationForm(OrganisationProfileForm):
                 LinkButton(url=self.cancel_url, content="Cancel"),
             ),
         )
+
+    def clean(self):
+        # At this point "licence required" is inverted from db
+        org_data = self.cleaned_data
+
+        # ☑ licence_required == False
+        # ☐ licence_required == True
+        licence_required = org_data.get("licence_required")
+
+        if [error for error in self.nested_psv.errors if error != {}]:
+            return org_data
+
+        new_or_existing = []
+        for data in self.nested_psv.cleaned_data:
+            # filter out deleted or empty forms
+            if data and not data["DELETE"]:
+                new_or_existing.append(data)
+
+        if new_or_existing and not licence_required:
+            self.add_error(
+                field="licence_required",
+                error=(
+                    'Untick "I do not have a PSV licence number" '
+                    "checkbox to add licences"
+                ),
+            )
+
+        if not new_or_existing and licence_required:
+            self.add_error(
+                field="licence_required",
+                error=PSV_LICENCE_AND_CHECKBOX,
+            )
+        return org_data
 
 
 class OrganisationFilterForm(GOVUKForm):
@@ -246,151 +281,6 @@ class OrganisationFilterForm(GOVUKForm):
         )
 
 
-class BulkResendInvitesForm(forms.Form):
-    form_method = "get"
-    bulk_invite = forms.BooleanField(required=False, initial=False)
-    invites = forms.IntegerField(required=False)
-
-    def __init__(self, *args, orgs=None, **kwargs):
-        self.orgs_qs = orgs
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        if self.data.get("bulk_invite", False) and not self.data.getlist("invites"):
-            raise ValidationError(
-                _("Please select organisation(s) from below to resend invitation")
-            )
-
-    def clean_invites(self):
-        org_ids = [int(org_id) for org_id in self.data.getlist("invites", [])]
-        return org_ids
-
-    def _post_clean(self):
-        if (
-            self.orgs_qs.filter(id__in=self.cleaned_data["invites"])
-            .exclude(status="pending")
-            .exists()
-        ):
-            self.add_error(
-                None,
-                ValidationError(
-                    _(
-                        "You cannot send invites to already active organisations, "
-                        "please select pending ones"
-                    )
-                ),
-            )
-
-
-class BaseDatasetSearchFilterForm(GOVUKForm):
-    form_method = "get"
-    form_tag = False
-
-    status = forms.ChoiceField(
-        choices=(
-            ("", "All statuses"),
-            (FeedStatus.live.value, "Published"),
-            (FeedStatus.success.value, "Draft"),
-            (FeedStatus.inactive.value, "Inactive"),
-        ),
-        required=False,
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["status"].widget.attrs.update({"aria-label": "Filter by"})
-
-    def get_layout(self):
-        return Layout(
-            Field("status", css_class="govuk-!-width-full"),
-            ButtonSubmit("submitform", "submit", content=_("Apply filter")),
-        )
-
-
-class TimetableSearchFilterForm(BaseDatasetSearchFilterForm):
-    pass
-
-
-class AVLSearchFilterForm(BaseDatasetSearchFilterForm):
-    status = forms.ChoiceField(
-        choices=(
-            ("", "All statuses"),
-            (FeedStatus.live.value, "Published"),
-            (FeedStatus.error.value, "No vehicle activity"),
-            (FeedStatus.inactive.value, "Inactive"),
-            (FeedStatus.success.value, "Draft"),
-        ),
-        required=False,
-    )
-
-
-class EditNotesForm(GOVUKModelForm):
-    class Meta:
-        model = User
-        fields = ["notes"]
-        labels = {"notes": "Notes"}
-        widgets = {
-            "notes": forms.Textarea(attrs={"rows": 5, "cols": 20}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class CheckboxFilterForm(GOVUKForm):
-    form_method = "get"
-    letters = forms.MultipleChoiceField(
-        choices=LETTER_CHOICES, widget=CheckboxSelectMultiple(), required=False
-    )
-    form_label = None
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        field = self.fields[CHECKBOX_FIELD_KEY]
-        if self.form_label is not None:
-            field.label = self.form_label
-
-        qs = self.get_queryset()
-        field.first_letter_count = Counter(qs.values_list("first_letter", flat=True))
-        digits = [str(i) for i in range(10)]
-        digits_count = qs.filter(first_letter__in=digits).count()
-        field.first_letter_count["0 - 9"] = digits_count
-
-    def get_queryset(self):
-        # Implement this in the derived class
-        raise NotImplementedError()
-
-    def get_layout(self):
-        template = "common/forms/checkbox_filter_field.html"
-
-        return Layout(
-            CheckboxMultipleField(
-                CHECKBOX_FIELD_KEY, legend_size=LegendSize.s, template=template
-            ),
-            ButtonSubmit("submitform", "submit", content=_("Apply filter")),
-        )
-
-    def clean_letters(self):
-        letters = self.cleaned_data[CHECKBOX_FIELD_KEY]
-        if not letters:
-            return []
-
-        if letters[0] == "0-9":
-            letters.pop(0)
-            return letters + list(map(str, range(10)))
-
-        return letters
-
-
-class ConsumerFilterForm(CheckboxFilterForm):
-    form_label = "Email"
-
-    def get_queryset(self):
-        return User.objects.filter(account_type=DeveloperType).annotate(
-            first_letter=Upper(Substr("email", 1, 1))
-        )
-
-
 class OperatorFilterForm(CheckboxFilterForm):
     form_label = "Operators"
     status = forms.ChoiceField(
@@ -411,13 +301,4 @@ class OperatorFilterForm(CheckboxFilterForm):
             ),
             "status",
             ButtonSubmit("submitform", "submit", content=_("Apply filter")),
-        )
-
-
-class AgentOrganisationFilterForm(CheckboxFilterForm):
-    form_label = "Agents"
-
-    def get_queryset(self):
-        return User.objects.filter(account_type=AgentUserType).annotate(
-            first_letter=Upper(Substr("agent_organisation", 1, 1))
         )
