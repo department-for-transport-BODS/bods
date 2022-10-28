@@ -12,7 +12,7 @@ from ..constants import (
 
 def _extract_text(elements, default=None):
     """
-    Extract text from element
+    Extract attribute from element    
     """
     if isinstance(elements, list) and len(elements) > 0:
         item = elements[0]
