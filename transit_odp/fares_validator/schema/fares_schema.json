@@ -24,10 +24,54 @@
       ]
     },
     {
-      "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in tarrifs",
-      "category": "Notes",
+      "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in Tariff",
+      "category": "Conditional Check",
       "context": "//x:frames//x:FareFrame",
-      "rules": [{ "test": "is_time_intervals_present_in_tarrifs(.)" }]
+      "rules": [
+        { 
+          "test": "is_time_intervals_present_in_tarrifs(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check if ProductType is dayPass or periodPass. If true, FareStructureElement elements should be present in Tariff.FareStructureElements",
+      "category": "Conditional Check",
+      "context": "//x:frames//x:FareFrame//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:TypeOfFareStructureElementRef",
+      "rules": [
+        { 
+          "test": "is_fare_structure_element_present(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check if ProductType is singleTrip, dayReturnTrip or periodReturnTrip. If true, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements",
+      "category": "Conditional Check",
+      "context": "//x:frames//x:FareFrame//x:fareProducts//x:PreassignedFareProduct//x:ProductType",
+      "rules": [
+        { 
+          "test": "is_generic_parameter_limitions_present(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check if fareZones is present in FareFrame. If true, additional fareZones properties should be present",
+      "category": "Conditional Check",
+      "context": "//x:frames//x:FareFrame//x:TypeOfFrameRef",
+      "rules": [
+        { 
+          "test": "is_fare_zones_present_in_fare_frame(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check for validityParameters. It should either be nested within GenericParameterAssignment.ValidityParameterGroupingType or GenericParameterAssignment.ValidityParameterAssignmentType",
+      "category": "Conditional Check",
+      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:TypeOfAccessRightAssignmentRef",
+      "rules": [
+        { 
+          "test": "check_placement_validity_parameters(.)" 
+        }
+      ]
     },
     {
       "details": "Mandatory element 'ValidBetween' missing",
