@@ -109,13 +109,13 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     product_type = fare_frame.xpath(xpath, namespaces=ns)
     if product_type in ["dayPass", "periodPass"]:
         return get_tariff_time_intervals(fare_frames)
-    return True  
+    return True
 
 
 def is_fare_structure_element_present(context, fare_structure_elements, *args):
     """
     Check if ProductType is dayPass or periodPass.
-    If true, FareStructureElement elements 
+    If true, FareStructureElement elements
     should be present in Tariff.FareStructureElements
     """
     try:
@@ -129,25 +129,25 @@ def is_fare_structure_element_present(context, fare_structure_elements, *args):
     if product_type in ["dayPass", "periodPass"]:
         if FARE_STRUCTURE_ELEMENT_REF == ref:
             return get_fare_structure_elements(fare_structure_elements)
-        return False    
-    return True    
+        return False
+    return True
 
 
 def is_generic_parameter_limitions_present(context, element, *args):
     """
-    Check if ProductType is singleTrip, dayReturnTrip, periodReturnTrip. 
+    Check if ProductType is singleTrip, dayReturnTrip, periodReturnTrip.
     If true, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements
     """
     product_type = _extract_text(element)
     if product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]:
         return get_generic_parameter_assignment_properties(element)
     return False
- 
+
 
 def check_placement_validity_parameters(context, element, *args):
     """
-    Check for validityParameters. 
-    It should either be nested within GenericParameterAssignment.ValidityParameterGroupingType 
+    Check for validityParameters.
+    It should either be nested within GenericParameterAssignment.ValidityParameterGroupingType
     or GenericParameterAssignment.ValidityParameterAssignmentType",
     """
     try:
@@ -155,7 +155,7 @@ def check_placement_validity_parameters(context, element, *args):
     except KeyError:
         return False
     if TYPE_OF_ACCESS_RIGHT_REF == access_right_assignment_ref:
-        element=element[0]
+        element = element[0]
         ns = {"x": element.nsmap.get(None)}
         xpath = "string(..//x:ValidityParameterGroupingType//x:validityParameters)"
         in_grouping_type = element.xpath(xpath, namespaces=ns)
@@ -172,12 +172,12 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
     Check if fareZones is present in FareFrame.
     If true, then fareZones properties should be present
     """
-    try:    
+    try:
         ref = _extract_attribute(fare_zones, "ref")
     except KeyError:
         return False
     if TYPE_OF_FRAME_REF_FARE_FRAME_SUBSTRING in ref:
-        ns = {"x": fare_zones[0].nsmap.get(None)}        
+        ns = {"x": fare_zones[0].nsmap.get(None)}
         xpath = "string(..//x:fareZones)"
         is_fare_zones = fare_zones[0].xpath(xpath, namespaces=ns)
         if is_fare_zones:
@@ -190,8 +190,14 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
                     xpath = "string(..//x:fareZones//x:FareZone//x:members)"
                     is_fare_zone_members = fare_zone.xpath(xpath, namespaces=ns)
                     xpath = "string(..//x:fareZones//x:FareZone//x:members//x:ScheduledStopPointRef)"
-                    is_fare_zone_members_stop_ref = fare_zone.xpath(xpath, namespaces=ns)
-                    if is_fare_zone_name and is_fare_zone_members and is_fare_zone_members_stop_ref:
+                    is_fare_zone_members_stop_ref = fare_zone.xpath(
+                        xpath, namespaces=ns
+                    )
+                    if (
+                        is_fare_zone_name
+                        and is_fare_zone_members
+                        and is_fare_zone_members_stop_ref
+                    ):
                         return True
                     return False
                 return False
