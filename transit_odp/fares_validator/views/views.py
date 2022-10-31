@@ -37,7 +37,6 @@ class FaresXmlValidator(APIView):
 
         fares_validator = fares_validation.get_fares_validator()
         violations = fares_validator.get_violations(file_obj, self.pk1)
-        print("Violations>>>>", violations)
         if violations:
             for error in violations:
                 fares_validator_model_object = FaresValidation(
