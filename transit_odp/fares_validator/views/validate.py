@@ -47,7 +47,7 @@ class FaresXmlValidator:
                     error_line_no=error.line,
                     error=error.observation.details,
                     type_of_observation=error.observation.category,
-                    category=error.observation.context,
+                    category=category,
                 )
                 fares_validator_model_object.save()
 
