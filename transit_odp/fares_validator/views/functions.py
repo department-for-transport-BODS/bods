@@ -89,12 +89,10 @@ def check_value_of_type_of_frame_ref(context, type_of_frame_ref, *args):
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
         return False
-    is_present = False
     for ref_value in TYPE_OF_FRAME_REF_SUBSTRING:
         if ref_value in type_of_frame_ref_ref:
-            is_present = True
-            break
-    return is_present
+            return True
+    return False
 
 
 def check_operator_id_format(context, operators, *args):
@@ -122,14 +120,10 @@ def check_type_of_frame_ref_ref(context, type_of_frame_ref, *args):
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
         return False
-    is_present = False
     for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
         if ref_value in type_of_frame_ref_ref:
-            print("type_of_frame_ref_ref", type_of_frame_ref_ref)
-            print("ref_value", ref_value)
-            is_present = True
-            break
-    return is_present
+            return True
+    return False
 
 
 def all_fare_structure_element_checks(context, fare_structure_elements, *args):
