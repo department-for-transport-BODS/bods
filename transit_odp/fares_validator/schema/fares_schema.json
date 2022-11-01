@@ -24,9 +24,9 @@
       ]
     },
     {
-      "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in Tariff",
+      "details": "If ProductType is dayPass or periodPass, timeIntervals element should be present in Tariff",
       "category": "Conditional Check",
-      "context": "//x:frames//x:FareFrame",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         { 
           "test": "is_time_intervals_present_in_tarrifs(.)" 
@@ -34,9 +34,9 @@
       ]
     },
     {
-      "details": "Check if ProductType is dayPass or periodPass. If true, FareStructureElement elements should be present in Tariff.FareStructureElements",
+      "details": "If ProductType is dayPass or periodPass, FareStructureElement elements should be present in Tariff.FareStructureElements",
       "category": "Conditional Check",
-      "context": "//x:frames//x:FareFrame//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:TypeOfFareStructureElementRef",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         { 
           "test": "is_fare_structure_element_present(.)" 
@@ -44,9 +44,9 @@
       ]
     },
     {
-      "details": "Check if ProductType is singleTrip, dayReturnTrip or periodReturnTrip. If true, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements",
+      "details": "If ProductType is singleTrip, dayReturnTrip or periodReturnTrip, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements",
       "category": "Conditional Check",
-      "context": "//x:frames//x:FareFrame//x:fareProducts//x:PreassignedFareProduct//x:ProductType",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         { 
           "test": "is_generic_parameter_limitions_present(.)" 
@@ -54,9 +54,19 @@
       ]
     },
     {
-      "details": "Check if fareZones is present in FareFrame. If true, additional fareZones properties should be present",
+      "details": "validityParameters should either be nested within GenericParameterAssignment.ValidityParameterGroupingType or GenericParameterAssignment.ValidityParameterAssignmentType",
       "category": "Conditional Check",
-      "context": "//x:frames//x:FareFrame//x:fareZones",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
+      "rules": [
+        { 
+          "test": "check_placement_validity_parameters(.)" 
+        }
+      ]
+    },
+    {
+      "details": "If fareZones is present in FareFrame, additional fareZones properties should be present",
+      "category": "Conditional Check",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame/x:fareZones",
       "rules": [
         { 
           "test": "is_fare_zones_present_in_fare_frame(.)" 
@@ -64,9 +74,9 @@
       ]
     },
     {
-      "details": "Check if ServiceFrame is present. If true, TypeOfFrameRef should include UK_PI_NETWORK",
+      "details": "If ServiceFrame is present, TypeOfFrameRef should include UK_PI_NETWORK",
       "category": "Conditional Check",
-      "context": "//x:frames//x:ServiceFrame",
+      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame",
       "rules": [
         { 
           "test": "is_service_frame_present(.)" 
@@ -74,7 +84,7 @@
       ]
     },
     {
-      "details": "Check if lines present in ServiceFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK",
+      "details": "If lines present in ServiceFrame, TypeOfFrameRef should include UK_PI_NETWORK",
       "category": "Conditional Check",
       "context": "//x:frames//x:ServiceFrame//x:lines",
       "rules": [
@@ -84,22 +94,12 @@
       ]
     },
     {
-      "details": "Check if scheduledStopPoints is present in ServiceFrame. If true, other properties should be present",
+      "details": "If scheduledStopPoints is present in ServiceFrame, it's other properties should be present",
       "category": "Conditional Check",
       "context": "//x:frames//x:ServiceFrame//x:scheduledStopPoints",
       "rules": [
         { 
           "test": "is_schedule_stop_points(.)" 
-        }
-      ]
-    },
-    {
-      "details": "Check for validityParameters. It should either be nested within GenericParameterAssignment.ValidityParameterGroupingType or GenericParameterAssignment.ValidityParameterAssignmentType",
-      "category": "Conditional Check",
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:TypeOfAccessRightAssignmentRef",
-      "rules": [
-        { 
-          "test": "check_placement_validity_parameters(.)" 
         }
       ]
     },

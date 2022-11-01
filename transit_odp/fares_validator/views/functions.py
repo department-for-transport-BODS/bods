@@ -1,5 +1,6 @@
 from ast import operator
 from asyncio.format_helpers import extract_stack
+from lib2to3.pgen2.token import NAME
 from xml.dom.expatbuilder import Namespaces
 from xml.etree.ElementTree import tostring
 from lxml import etree
@@ -70,24 +71,31 @@ def get_tariff_time_intervals(element):
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
-        xpath = "string(//x:tariffs//x:Tariff//x:timeIntervals//x:TimeInterval//x:Name)"
-        result = element.xpath(xpath, namespaces=NAMESPACE)
-        if not result:
+        xpath = "x:tariffs/x:Tariff/x:timeIntervals"
+        time_intervals = element.xpath(xpath, namespaces=NAMESPACE)
+        if not time_intervals:
             return False
+        xpath = "x:TimeInterval"
+        intervals = time_intervals[0].xpath(xpath, namespaces=NAMESPACE)
+        if not intervals:
+            return False
+        for interval in intervals:
+            xpath = "string(x:Name)"
+            name = interval.xpath(xpath, namespaces=NAMESPACE)
+            if not name:
+                return False
         return True
     return True
 
 
-def get_fare_structure_elements(element):
+def get_fare_structure_time_intervals(element):
     """
     Checks if the fareStructureElements properties are present
     """
     element = element[0]
-    xpath = "string(..//x:timeIntervals)"
+    xpath = "../x:timeIntervals/x:TimeIntervalRef"
     time_intervals = element.xpath(xpath, namespaces=NAMESPACE)
-    xpath = "string(..//x:timeIntervals//x:TimeIntervalRef)"
-    time_interval_ref = element.xpath(xpath, namespaces=NAMESPACE)
-    if time_intervals and time_interval_ref:
+    if time_intervals:
         return True
     return False
 
@@ -96,10 +104,9 @@ def get_generic_parameter_assignment_properties(element):
     """
     Checks if the fareStructureElements properties are present
     """
-    element = element[0]
-    xpath = "string(..//..//..//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:RoundTrip)"
+    xpath = "string(//x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:RoundTrip)"
     round_trip = element.xpath(xpath, namespaces=NAMESPACE)
-    xpath = "string(..//..//..//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:RoundTrip//x:TripType)"
+    xpath = "string(//x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:RoundTrip/x:TripType)"
     trip_type = element.xpath(xpath, namespaces=NAMESPACE)
     if round_trip and trip_type:
         return True
@@ -112,41 +119,44 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     If true, timeIntervals element should be present in tarrifs
     """
     fare_frame = fare_frames[0]
-    xpath = "string(//x:fareProducts//x:PreassignedFareProduct//x:ProductType)"
+    xpath = "string(//x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["dayPass", "periodPass"]:
         return get_tariff_time_intervals(fare_frames)
     return True
 
 
-def is_fare_structure_element_present(context, fare_structure_elements, *args):
+def is_fare_structure_element_present(context, fare_frames, *args):
     """
     Check if ProductType is dayPass or periodPass.
     If true, FareStructureElement elements
     should be present in Tariff.FareStructureElements
     """
-    try:
-        ref = _extract_attribute(fare_structure_elements, "ref")
-    except KeyError:
-        return False
-    fare_structure_element = fare_structure_elements[0]
-    xpath = "string(..//..//..//..//..//x:fareProducts//x:PreassignedFareProduct//x:ProductType)"
-    product_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+    fare_frame = fare_frames[0]
+    xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
+    product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["dayPass", "periodPass"]:
-        if FARE_STRUCTURE_ELEMENT_REF == ref:
-            return get_fare_structure_elements(fare_structure_elements)
-        return False
+        xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:TypeOfFareStructureElementRef"
+        fare_structure_ref = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+        try:
+            fare_structure_ref_ref = _extract_attribute(fare_structure_ref, "ref")
+        except KeyError:
+            return False
+        if FARE_STRUCTURE_ELEMENT_REF == fare_structure_ref_ref:
+            return get_fare_structure_time_intervals(fare_structure_ref)
     return True
 
 
-def is_generic_parameter_limitions_present(context, element, *args):
+def is_generic_parameter_limitions_present(context, fare_frames, *args):
     """
     Check if ProductType is singleTrip, dayReturnTrip, periodReturnTrip.
     If true, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements
     """
-    product_type = _extract_text(element)
+    fare_frame = fare_frames[0]
+    xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
+    product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]:
-        return get_generic_parameter_assignment_properties(element)
+        return get_generic_parameter_assignment_properties(fare_frame)
     return True
 
 
@@ -156,15 +166,17 @@ def check_placement_validity_parameters(context, element, *args):
     It should either be nested within GenericParameterAssignment.ValidityParameterGroupingType
     or GenericParameterAssignment.ValidityParameterAssignmentType",
     """
+    element = element[0]
+    xpath = "x:TypeOfAccessRightAssignmentRef"
+    assignment_ref = element.xpath(xpath, namespaces=NAMESPACE)
     try:
-        access_right_assignment_ref = _extract_attribute(element, "ref")
+        assignment_ref_ref = _extract_attribute(assignment_ref, "ref")
     except KeyError:
         return False
-    if TYPE_OF_ACCESS_RIGHT_REF == access_right_assignment_ref:
-        element = element[0]
-        xpath = "string(..//x:ValidityParameterGroupingType//x:validityParameters)"
+    if TYPE_OF_ACCESS_RIGHT_REF == assignment_ref_ref:
+        xpath = "string(x:ValidityParameterGroupingType/x:validityParameters)"
         in_grouping_type = element.xpath(xpath, namespaces=NAMESPACE)
-        xpath = "string(..//x:ValidityParameterAssignmentType//x:validityParameters)"
+        xpath = "string(x:ValidityParameterAssignmentType/x:validityParameters)"
         in_assignment_type = element.xpath(xpath, namespaces=NAMESPACE)
         if in_grouping_type or in_assignment_type:
             return True
