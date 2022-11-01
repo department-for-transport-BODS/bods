@@ -1,8 +1,6 @@
 import logging
-from pathlib import Path
 
 from django.http import JsonResponse
-from lxml import etree
 from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
@@ -15,9 +13,6 @@ from . import fares_validation
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
 category = ""  # Itr2 To be extratced from the xml path
-FARES_SCHEMA = (
-    Path(__file__).parent.parent / "schema" / "netex_dataObjectRequest_service.xsd"
-)
 
 
 class FaresXmlValidator(APIView):
@@ -58,15 +53,3 @@ class FaresXmlValidator(APIView):
                 serializer.data, safe=False, status=status.HTTP_201_CREATED
             )
         return JsonResponse({}, status=status.HTTP_200_OK)
-
-    def get_lxml_schema(self, schema):
-        """Creates an lxml XMLSchema object from a file"""
-
-        if schema is None:
-            return
-
-        if not isinstance(schema, etree.XMLSchema):
-            logger.info(f"[XML] => Parsing {schema}.")
-            root = etree.parse(str(FARES_SCHEMA))
-            schema = etree.XMLSchema(root)
-        return schema
