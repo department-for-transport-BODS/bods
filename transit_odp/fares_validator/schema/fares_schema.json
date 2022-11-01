@@ -4,6 +4,16 @@
   },
   "observations": [
     {
+      "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
+      "category": "Mandatory Element",
+      "context": "//x:frames/x:FareFrame/x:TypeOfFrameRef",
+      "rules": [
+        {
+          "test": "check_type_of_frame_ref_ref(.)"
+        }
+      ]
+    },
+    {
       "details": "Mandatory element 'TariffBasis' missing",
       "category": "Mandatory Element",
       "context": "//x:tariffs//x:Tariff",
@@ -28,7 +38,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:validityConditions",
+      "context": "//x:tariffs//x:Tariff/x:validityConditions",
       "rules": [
         {
           "test": "count(x:ValidBetween) > 0"
@@ -40,7 +50,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:validityConditions//x:ValidBetween",
+      "context": "//x:tariffs//x:Tariff/x:validityConditions/x:ValidBetween",
       "rules": [
         {
           "test": "count(x:FromDate) > 0"
@@ -60,11 +70,33 @@
       ]
     },
     {
+      "details": "Mandatory element 'TypeOfTariffRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:TypeOfTariffRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfTariffRef' does not have an acceptable 'ref' value",
+      "category": "Mandatory Element",
+      "reference": "0",
+      "number": 131,
+      "context": "//x:tariffs//x:Tariff/x:TypeOfTariffRef",
+      "rules": [
+        {
+          "test": "check_type_of_tariff_ref_values(.)"
+        }
+      ]
+    },
+    {
       "details": "Mandatory element 'fareStructureElements' missing",
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff",
       "rules": [
         {
           "test": "count(x:fareStructureElements) > 0"
@@ -72,23 +104,17 @@
       ]
     },
     {
-      "details": "Mandatory element 'FareStructureElement' missing",
+      "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements",
-      "rules": [
-        {
-          "test": "count(x:FareStructureElement) > 0"
-        }
-      ]
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements",
+      "rules": [{ "test": "all_fare_structure_element_checks(.)" }]
     },
     {
       "details": "Mandatory element 'GenericParameterAssignment' missing",
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
       "rules": [
         {
           "test": "count(x:GenericParameterAssignment) > 0"
@@ -100,7 +126,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
       "rules": [
         {
           "test": "count(x:ValidityParameterGroupingType) > 0"
@@ -112,7 +138,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
       "rules": [
         {
           "test": "count(x:validityParameters) > 0"
@@ -124,7 +150,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
       "rules": [
         {
           "test": "count(x:limitations) > 0"
@@ -136,7 +162,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
       "rules": [
         {
           "test": "count(x:UserProfile) > 0"
@@ -148,7 +174,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:UserProfile",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
       "rules": [
         {
           "test": "count(x:Name) > 0"
@@ -160,7 +186,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:UserProfile",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
       "rules": [
         {
           "test": "count(x:UserType) > 0"
@@ -172,7 +198,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
       "rules": [
         {
           "test": "count(x:FrequencyOfUse) > 0"
@@ -184,7 +210,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:FrequencyOfUse",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse",
       "rules": [
         {
           "test": "count(x:FrequencyOfUseType) > 0"
@@ -196,7 +222,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:frames//x:FareFrame",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
           "test": "count(x:fareProducts) > 0"
@@ -220,7 +246,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
           "test": "count(x:Name) > 0"
@@ -232,7 +258,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
           "test": "count(x:TypeOfFareProductRef) > 0"
@@ -244,7 +270,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
           "test": "count(x:ChargingMomentType) > 0"
@@ -256,7 +282,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
           "test": "count(x:validableElements) > 0"
@@ -268,7 +294,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct//x:validableElements",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements",
       "rules": [
         {
           "test": "count(x:ValidableElement) > 0"
@@ -280,7 +306,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct//x:validableElements//x:ValidableElement",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement",
       "rules": [
         {
           "test": "count(x:fareStructureElements) > 0"
@@ -292,7 +318,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct//x:validableElements//x:ValidableElement//x:fareStructureElements",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement/x:fareStructureElements",
       "rules": [
         {
           "test": "count(x:FareStructureElementRef) > 0"
@@ -304,7 +330,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
           "test": "count(x:accessRightsInProduct) > 0"
@@ -316,7 +342,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct//x:accessRightsInProduct//x:AccessRightInProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct/x:AccessRightInProduct",
       "rules": [
         {
           "test": "count(x:ValidableElementRef) > 0"
@@ -328,7 +354,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts//x:PreassignedFareProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
           "test": "count(x:ProductType) > 0"
@@ -340,7 +366,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:frames//x:FareFrame",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
           "test": "count(x:salesOfferPackages) > 0"
@@ -364,7 +390,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage",
       "rules": [
         {
           "test": "count(x:distributionAssignments) > 0"
@@ -376,7 +402,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage//x:distributionAssignments",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments",
       "rules": [
         {
           "test": "count(x:DistributionAssignment) > 0"
@@ -388,7 +414,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage//x:distributionAssignments//x:DistributionAssignment",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
       "rules": [
         {
           "test": "count(x:DistributionChannelType) > 0"
@@ -400,7 +426,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage//x:distributionAssignments//x:DistributionAssignment",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
       "rules": [
         {
           "test": "count(x:PaymentMethods) > 0"
@@ -412,7 +438,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage",
       "rules": [
         {
           "test": "count(x:salesOfferPackageElements) > 0"
@@ -424,7 +450,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage//x:salesOfferPackageElements",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements",
       "rules": [
         {
           "test": "count(x:SalesOfferPackageElement) > 0"
@@ -436,7 +462,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage//x:salesOfferPackageElements//x:SalesOfferPackageElement",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
       "rules": [
         {
           "test": "count(x:TypeOfTravelDocumentRef) > 0"
@@ -448,7 +474,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages//x:SalesOfferPackage//x:salesOfferPackageElements//x:SalesOfferPackageElement",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
       "rules": [
         {
           "test": "count(x:PreassignedFareProductRef) > 0"
@@ -460,7 +486,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:frames//x:FareFrame",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
           "test": "count(x:fareTables) > 0"
@@ -484,7 +510,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareTables//x:FareTable",
+      "context": "//x:fareTables/x:FareTable",
       "rules": [
         {
           "test": "count(x:pricesFor) > 0"

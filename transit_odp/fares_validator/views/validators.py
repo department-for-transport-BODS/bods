@@ -8,8 +8,11 @@ from lxml import etree
 from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
+    all_fare_structure_element_checks,
     check_operator_id_format,
     check_public_code_length,
+    check_type_of_frame_ref_ref,
+    check_type_of_tariff_ref_values,
     check_value_of_type_of_frame_ref,
     is_time_intervals_present_in_tarrifs,
 )
@@ -31,6 +34,15 @@ class FaresValidator:
         )
         self.register_function("check_operator_id_format", check_operator_id_format)
         self.register_function("check_public_code_length", check_public_code_length)
+        self.register_function(
+            "all_fare_structure_element_checks", all_fare_structure_element_checks
+        )
+        self.register_function(
+            "check_type_of_tariff_ref_values", check_type_of_tariff_ref_values
+        )
+        self.register_function(
+            "check_type_of_frame_ref_ref", check_type_of_frame_ref_ref
+        )
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function

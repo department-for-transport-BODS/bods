@@ -1,8 +1,10 @@
 from ..constants import (
+    FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
     LENGTH_OF_OPERATOR,
     LENGTH_OF_PUBLIC_CODE,
     ORG_OPERATOR_ID_SUBSTRING,
     TYPE_OF_FRAME_REF_SUBSTRING,
+    TYPE_OF_TARIFF_REF_SUBSTRING,
 )
 
 
@@ -109,6 +111,116 @@ def check_operator_id_format(context, operators, *args):
     ):
         return True
     return False
+
+
+def check_type_of_frame_ref_ref(context, type_of_frame_ref, *args):
+    """
+    Check if TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
+    UK_PI_FARE_PRICE in it.
+    """
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        return False
+    is_present = False
+    for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
+        if ref_value in type_of_frame_ref_ref:
+            print("type_of_frame_ref_ref", type_of_frame_ref_ref)
+            print("ref_value", ref_value)
+            is_present = True
+            break
+    return is_present
+
+
+def all_fare_structure_element_checks(context, fare_structure_elements, *args):
+    """
+    1st Check: Check 'FareStructureElement' appears minimum 3 times.
+
+    2nd Check - If 'TypeOfAccessRightAssignmentRef' and 'TypeOfFareStructureElementRef'
+    elements have the correct combination of 'ref' values:
+
+    fxc:access and fxc:can_access,
+    fxc:eligibility and fxc:eligible,
+    fxc:travel_conditions and fxc:condition_of_use
+    """
+    list_type_of_fare_structure_element_ref_ref = []
+    list_type_of_access_right_assignment_ref_ref = []
+    result = False
+
+    fare_structure_element = fare_structure_elements[0]
+    ns = {"x": fare_structure_element.nsmap.get(None)}
+    xpath = "//x:FareStructureElement"
+    all_fare_structure_elements = fare_structure_element.xpath(xpath, namespaces=ns)
+    length_all_fare_structure_elements = len(all_fare_structure_elements)
+
+    if length_all_fare_structure_elements > 2:
+        for element in all_fare_structure_elements:
+            type_of_fare_structure_element_ref = element.xpath(
+                "x:TypeOfFareStructureElementRef", namespaces=ns
+            )
+            type_of_fare_structure_element_ref_ref = _extract_attribute(
+                type_of_fare_structure_element_ref, "ref"
+            )
+            list_type_of_fare_structure_element_ref_ref.append(
+                type_of_fare_structure_element_ref_ref
+            )
+            type_of_access_right_assignment_ref = element.xpath(
+                "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
+                namespaces=ns,
+            )
+            type_of_access_right_assignment_ref_ref = _extract_attribute(
+                type_of_access_right_assignment_ref, "ref"
+            )
+            list_type_of_access_right_assignment_ref_ref.append(
+                type_of_access_right_assignment_ref_ref
+            )
+
+        try:
+            access_index = list_type_of_fare_structure_element_ref_ref.index(
+                "fxc:access"
+            )
+            can_access_index = list_type_of_access_right_assignment_ref_ref.index(
+                "fxc:can_access"
+            )
+            eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
+                "fxc:eligibility"
+            )
+            eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
+                "fxc:eligible"
+            )
+            travel_conditions_index = list_type_of_fare_structure_element_ref_ref.index(
+                "fxc:travel_conditions"
+            )
+            condition_of_use_index = list_type_of_access_right_assignment_ref_ref.index(
+                "fxc:condition_of_use"
+            )
+
+            # Compare indexes
+            if (
+                access_index == can_access_index
+                and eligibility_index == eligibile_index
+                and travel_conditions_index == condition_of_use_index
+            ):
+                result = True
+        except ValueError:
+            result = False
+    return result
+
+
+def check_type_of_tariff_ref_values(context, elements, *args):
+    """
+    Checks if 'TypeOfTariffRef' element has acceptable 'ref' values
+    """
+    try:
+        type_of_tariff_ref_ref = _extract_attribute(elements, "ref")
+    except KeyError:
+        return False
+    is_present = False
+    for ref_value in TYPE_OF_TARIFF_REF_SUBSTRING:
+        if type_of_tariff_ref_ref in ref_value:
+            is_present = True
+            break
+    return is_present
 
 
 def check_public_code_length(context, public_code, *args):
