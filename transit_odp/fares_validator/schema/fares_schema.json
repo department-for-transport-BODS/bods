@@ -342,7 +342,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct/x:AccessRightInProduct",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct",
       "rules": [
         {
           "test": "count(x:ValidableElementRef) > 0"
@@ -378,7 +378,7 @@
       "category": "Mandatory Element",
       "reference": "0",
       "number": 131,
-      "context": "//x:salesOfferPackages",
+      "context": "//x:FareFrame/x:salesOfferPackages",
       "rules": [
         {
           "test": "count(x:SalesOfferPackage) > 0"

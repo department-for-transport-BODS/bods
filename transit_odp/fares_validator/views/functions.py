@@ -155,55 +155,59 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
 
     if length_all_fare_structure_elements > 2:
         for element in all_fare_structure_elements:
-            type_of_fare_structure_element_ref = element.xpath(
-                "x:TypeOfFareStructureElementRef", namespaces=ns
-            )
-            type_of_fare_structure_element_ref_ref = _extract_attribute(
-                type_of_fare_structure_element_ref, "ref"
-            )
-            list_type_of_fare_structure_element_ref_ref.append(
-                type_of_fare_structure_element_ref_ref
-            )
-            type_of_access_right_assignment_ref = element.xpath(
-                "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
-                namespaces=ns,
-            )
-            type_of_access_right_assignment_ref_ref = _extract_attribute(
-                type_of_access_right_assignment_ref, "ref"
-            )
-            list_type_of_access_right_assignment_ref_ref.append(
-                type_of_access_right_assignment_ref_ref
-            )
+            try:
+                type_of_fare_structure_element_ref = element.xpath(
+                    "x:TypeOfFareStructureElementRef", namespaces=ns
+                )
+                type_of_fare_structure_element_ref_ref = _extract_attribute(
+                    type_of_fare_structure_element_ref, "ref"
+                )
+                list_type_of_fare_structure_element_ref_ref.append(
+                    type_of_fare_structure_element_ref_ref
+                )
+                type_of_access_right_assignment_ref = element.xpath(
+                    "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
+                    namespaces=ns,
+                )
+                type_of_access_right_assignment_ref_ref = _extract_attribute(
+                    type_of_access_right_assignment_ref, "ref"
+                )
+                list_type_of_access_right_assignment_ref_ref.append(
+                    type_of_access_right_assignment_ref_ref
+                )
 
-        try:
-            access_index = list_type_of_fare_structure_element_ref_ref.index(
-                "fxc:access"
-            )
-            can_access_index = list_type_of_access_right_assignment_ref_ref.index(
-                "fxc:can_access"
-            )
-            eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
-                "fxc:eligibility"
-            )
-            eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
-                "fxc:eligible"
-            )
-            travel_conditions_index = list_type_of_fare_structure_element_ref_ref.index(
-                "fxc:travel_conditions"
-            )
-            condition_of_use_index = list_type_of_access_right_assignment_ref_ref.index(
-                "fxc:condition_of_use"
-            )
+                access_index = list_type_of_fare_structure_element_ref_ref.index(
+                    "fxc:access"
+                )
+                can_access_index = list_type_of_access_right_assignment_ref_ref.index(
+                    "fxc:can_access"
+                )
+                eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
+                    "fxc:eligibility"
+                )
+                eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
+                    "fxc:eligible"
+                )
+                travel_conditions_index = (
+                    list_type_of_fare_structure_element_ref_ref.index(
+                        "fxc:travel_conditions"
+                    )
+                )
+                condition_of_use_index = (
+                    list_type_of_access_right_assignment_ref_ref.index(
+                        "fxc:condition_of_use"
+                    )
+                )
 
-            # Compare indexes
-            if (
-                access_index == can_access_index
-                and eligibility_index == eligibile_index
-                and travel_conditions_index == condition_of_use_index
-            ):
-                result = True
-        except ValueError:
-            result = False
+                # Compare indexes
+                if (
+                    access_index == can_access_index
+                    and eligibility_index == eligibile_index
+                    and travel_conditions_index == condition_of_use_index
+                ):
+                    result = True
+            except ValueError:
+                result = False
     return result
 
 
