@@ -16,6 +16,9 @@ from transit_odp.fares_validator.views.functions import (
     is_generic_parameter_limitions_present,
     check_placement_validity_parameters,
     is_fare_zones_present_in_fare_frame,
+    is_service_frame_present,
+    is_lines_present_in_service_frame,
+    is_schedule_stop_points,
 )
 
 
@@ -48,6 +51,11 @@ class FaresValidator:
         )
         self.register_function("check_operator_id_format", check_operator_id_format)
         self.register_function("check_public_code_length", check_public_code_length)
+        self.register_function("is_service_frame_present", is_service_frame_present)
+        self.register_function(
+            "is_lines_present_in_service_frame", is_lines_present_in_service_frame
+        )
+        self.register_function("is_schedule_stop_points", is_schedule_stop_points)
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function

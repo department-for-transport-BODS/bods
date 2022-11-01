@@ -56,10 +56,40 @@
     {
       "details": "Check if fareZones is present in FareFrame. If true, additional fareZones properties should be present",
       "category": "Conditional Check",
-      "context": "//x:frames//x:FareFrame//x:TypeOfFrameRef",
+      "context": "//x:frames//x:FareFrame//x:fareZones",
       "rules": [
         { 
           "test": "is_fare_zones_present_in_fare_frame(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check if ServiceFrame is present. If true, TypeOfFrameRef should include UK_PI_NETWORK",
+      "category": "Conditional Check",
+      "context": "//x:frames//x:ServiceFrame",
+      "rules": [
+        { 
+          "test": "is_service_frame_present(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check if lines present in ServiceFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK",
+      "category": "Conditional Check",
+      "context": "//x:frames//x:ServiceFrame//x:lines",
+      "rules": [
+        { 
+          "test": "is_lines_present_in_service_frame(.)" 
+        }
+      ]
+    },
+    {
+      "details": "Check if scheduledStopPoints is present in ServiceFrame. If true, other properties should be present",
+      "category": "Conditional Check",
+      "context": "//x:frames//x:ServiceFrame//x:scheduledStopPoints",
+      "rules": [
+        { 
+          "test": "is_schedule_stop_points(.)" 
         }
       ]
     },
