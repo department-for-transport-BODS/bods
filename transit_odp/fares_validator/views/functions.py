@@ -13,6 +13,7 @@ from ..constants import (
     FARE_STRUCTURE_ELEMENT_REF,
     TYPE_OF_ACCESS_RIGHT_REF,
     STOP_POINT_ID_SUBSTRING,
+    NAMESPACE,
 )
 
 
@@ -63,15 +64,14 @@ def get_tariff_time_intervals(element):
     Checks if the tarrif element has timeIntervals
     """
     element = element[0]
-    ns = {"x": element.nsmap.get(None)}
     xpath = "x:TypeOfFrameRef"
-    type_of_frame_ref = element.xpath(xpath, namespaces=ns)
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
     type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
         xpath = "string(//x:tariffs//x:Tariff//x:timeIntervals//x:TimeInterval//x:Name)"
-        result = element.xpath(xpath, namespaces=ns)
+        result = element.xpath(xpath, namespaces=NAMESPACE)
         if not result:
             return False
         return True
@@ -83,11 +83,10 @@ def get_fare_structure_elements(element):
     Checks if the fareStructureElements properties are present
     """
     element = element[0]
-    ns = {"x": element.nsmap.get(None)}
     xpath = "string(..//x:timeIntervals)"
-    time_intervals = element.xpath(xpath, namespaces=ns)
+    time_intervals = element.xpath(xpath, namespaces=NAMESPACE)
     xpath = "string(..//x:timeIntervals//x:TimeIntervalRef)"
-    time_interval_ref = element.xpath(xpath, namespaces=ns)
+    time_interval_ref = element.xpath(xpath, namespaces=NAMESPACE)
     if time_intervals and time_interval_ref:
         return True
     return False
@@ -98,11 +97,10 @@ def get_generic_parameter_assignment_properties(element):
     Checks if the fareStructureElements properties are present
     """
     element = element[0]
-    ns = {"x": element.nsmap.get(None)}
     xpath = "string(..//..//..//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:RoundTrip)"
-    round_trip = element.xpath(xpath, namespaces=ns)
+    round_trip = element.xpath(xpath, namespaces=NAMESPACE)
     xpath = "string(..//..//..//x:tariffs//x:Tariff//x:fareStructureElements//x:FareStructureElement//x:GenericParameterAssignment//x:limitations//x:RoundTrip//x:TripType)"
-    trip_type = element.xpath(xpath, namespaces=ns)
+    trip_type = element.xpath(xpath, namespaces=NAMESPACE)
     if round_trip and trip_type:
         return True
     return False
@@ -114,9 +112,8 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     If true, timeIntervals element should be present in tarrifs
     """
     fare_frame = fare_frames[0]
-    ns = {"x": fare_frame.nsmap.get(None)}
     xpath = "string(//x:fareProducts//x:PreassignedFareProduct//x:ProductType)"
-    product_type = fare_frame.xpath(xpath, namespaces=ns)
+    product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["dayPass", "periodPass"]:
         return get_tariff_time_intervals(fare_frames)
     return True
@@ -133,9 +130,8 @@ def is_fare_structure_element_present(context, fare_structure_elements, *args):
     except KeyError:
         return False
     fare_structure_element = fare_structure_elements[0]
-    ns = {"x": fare_structure_element.nsmap.get(None)}
     xpath = "string(..//..//..//..//..//x:fareProducts//x:PreassignedFareProduct//x:ProductType)"
-    product_type = fare_structure_element.xpath(xpath, namespaces=ns)
+    product_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["dayPass", "periodPass"]:
         if FARE_STRUCTURE_ELEMENT_REF == ref:
             return get_fare_structure_elements(fare_structure_elements)
@@ -166,11 +162,10 @@ def check_placement_validity_parameters(context, element, *args):
         return False
     if TYPE_OF_ACCESS_RIGHT_REF == access_right_assignment_ref:
         element = element[0]
-        ns = {"x": element.nsmap.get(None)}
         xpath = "string(..//x:ValidityParameterGroupingType//x:validityParameters)"
-        in_grouping_type = element.xpath(xpath, namespaces=ns)
+        in_grouping_type = element.xpath(xpath, namespaces=NAMESPACE)
         xpath = "string(..//x:ValidityParameterAssignmentType//x:validityParameters)"
-        in_assignment_type = element.xpath(xpath, namespaces=ns)
+        in_assignment_type = element.xpath(xpath, namespaces=NAMESPACE)
         if in_grouping_type or in_assignment_type:
             return True
         return False
@@ -183,34 +178,32 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
     If true, then fareZones properties should be present
     """
     if fare_zones:
-        ns = {"x": fare_zones[0].nsmap.get(None)}
         xpath = "..//x:TypeOfFrameRef"
-        type_of_frame_ref = fare_zones[0].xpath(xpath, namespaces=ns)
+        type_of_frame_ref = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
             return False
-        print("typeof ref---->", type_of_frame_ref_ref)
         if TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING not in type_of_frame_ref_ref:
             return False
         xpath = "//x:FareZone"
-        zones = fare_zones[0].xpath(xpath, namespaces=ns)
+        zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
         if not zones:
             return False
         for zone in zones:
             xpath = "string(x:Name)"
-            name = zone.xpath(xpath, namespaces=ns)
+            name = zone.xpath(xpath, namespaces=NAMESPACE)
             xpath = "x:members"
-            members = zone.xpath(xpath, namespaces=ns)
-            print("members>>>>", name)
+            members = zone.xpath(xpath, namespaces=NAMESPACE)
             if not name or not members:
                 return False
-            xpath = "//x:ScheduledStopPointRef"
-            schedule_stop_points = members[0].xpath(xpath, namespaces=ns)
+            xpath = "x:ScheduledStopPointRef"
+            schedule_stop_points = members[0].xpath(xpath, namespaces=NAMESPACE)
+            if not schedule_stop_points:
+                return False
             for stop_point in schedule_stop_points:
                 stop_point_text = _extract_text(stop_point)
                 if not stop_point_text:
-                    print("I am here!!!!!!!")
                     return False
         return True
 
@@ -264,9 +257,8 @@ def is_service_frame_present(context, service_frame, *args):
     Check if ServiceFrame is present in FareFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK
     """
     if service_frame:
-        ns = {"x": service_frame[0].nsmap.get(None)}
         xpath = "x:TypeOfFrameRef"
-        type_of_frame_ref = service_frame[0].xpath(xpath, namespaces=ns)
+        type_of_frame_ref = service_frame[0].xpath(xpath, namespaces=NAMESPACE)
         try:
             ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
@@ -281,16 +273,15 @@ def is_lines_present_in_service_frame(context, lines, *args):
     Check if ServiceFrame is present in FareFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK
     """
     if lines:
-        ns = {"x": lines[0].nsmap.get(None)}
         xpath = "//x:Line"
-        service_frame_lines = lines[0].xpath(xpath, namespaces=ns)
+        service_frame_lines = lines[0].xpath(xpath, namespaces=NAMESPACE)
         if service_frame_lines:
             xpath = "string(x:Name)"
-            name = service_frame_lines[0].xpath(xpath, namespaces=ns)
+            name = service_frame_lines[0].xpath(xpath, namespaces=NAMESPACE)
             xpath = "string(x:PublicCode)"
-            public_code = service_frame_lines[0].xpath(xpath, namespaces=ns)
+            public_code = service_frame_lines[0].xpath(xpath, namespaces=NAMESPACE)
             xpath = "x:OperatorRef"
-            operator_ref = service_frame_lines[0].xpath(xpath, namespaces=ns)
+            operator_ref = service_frame_lines[0].xpath(xpath, namespaces=NAMESPACE)
             if name and public_code and operator_ref:
                 return True
             return False
@@ -302,14 +293,13 @@ def is_schedule_stop_points(context, schedule_stop_points, *args):
     Check if ServiceFrame is present in FareFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK
     """
     if schedule_stop_points:
-        ns = {"x": schedule_stop_points[0].nsmap.get(None)}
         xpath = "//x:ScheduledStopPoint"
-        stop_points = schedule_stop_points[0].xpath(xpath, namespaces=ns)
+        stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
         if stop_points:
             for stop in stop_points:
                 id = _extract_attribute([stop], "id")
                 xpath = "string(x:Name)"
-                name = stop.xpath(xpath, namespaces=ns)
+                name = stop.xpath(xpath, namespaces=NAMESPACE)
                 if STOP_POINT_ID_SUBSTRING not in id or not name:
                     return False
             return True

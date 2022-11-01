@@ -7,3 +7,4 @@ ORG_OPERATOR_ID_SUBSTRING = "noc:"
 STOP_POINT_ID_SUBSTRING = "atco:"
 LENGTH_OF_OPERATOR = 8
 LENGTH_OF_PUBLIC_CODE = 4
+NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
