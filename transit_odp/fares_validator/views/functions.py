@@ -102,7 +102,7 @@ def get_fare_structure_time_intervals(element):
 
 def get_generic_parameter_assignment_properties(element):
     """
-    Checks if the fareStructureElements properties are present
+    Checks if the FareStructureElement.GenericParameterAssignment properties are present
     """
     xpath = "string(//x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:RoundTrip)"
     round_trip = element.xpath(xpath, namespaces=NAMESPACE)
