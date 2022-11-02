@@ -84,9 +84,9 @@
       ]
     },
     {
-      "details": "If lines present in ServiceFrame, TypeOfFrameRef should include UK_PI_NETWORK",
+      "details": "If lines present in ServiceFrame, corresponding Line properties should be present",
       "category": "Conditional Check",
-      "context": "//x:frames//x:ServiceFrame//x:lines",
+      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:lines",
       "rules": [
         { 
           "test": "is_lines_present_in_service_frame(.)" 
@@ -96,7 +96,7 @@
     {
       "details": "If scheduledStopPoints is present in ServiceFrame, it's other properties should be present",
       "category": "Conditional Check",
-      "context": "//x:frames//x:ServiceFrame//x:scheduledStopPoints",
+      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:scheduledStopPoints",
       "rules": [
         { 
           "test": "is_schedule_stop_points(.)" 

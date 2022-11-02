@@ -282,10 +282,10 @@ def is_service_frame_present(context, service_frame, *args):
 
 def is_lines_present_in_service_frame(context, lines, *args):
     """
-    Check if ServiceFrame is present in FareFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK
+    Check if ServiceFrame is present in FareFrame, corresponding Line properties should be present
     """
     if lines:
-        xpath = "//x:Line"
+        xpath = "x:Line"
         service_frame_lines = lines[0].xpath(xpath, namespaces=NAMESPACE)
         if service_frame_lines:
             xpath = "string(x:Name)"
@@ -302,10 +302,10 @@ def is_lines_present_in_service_frame(context, lines, *args):
 
 def is_schedule_stop_points(context, schedule_stop_points, *args):
     """
-    Check if ServiceFrame is present in FareFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK
+    Check if ServiceFrame is present in FareFrame, it's other properties should be presen
     """
     if schedule_stop_points:
-        xpath = "//x:ScheduledStopPoint"
+        xpath = "x:ScheduledStopPoint"
         stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
         if stop_points:
             for stop in stop_points:
