@@ -1,20 +1,18 @@
-from ast import operator
-from asyncio.format_helpers import extract_stack
-from lib2to3.pgen2.token import NAME
-from xml.dom.expatbuilder import Namespaces
-from xml.etree.ElementTree import tostring
 from lxml import etree
+
 from ..constants import (
+    FARE_STRUCTURE_ELEMENT_REF,
+    FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
     LENGTH_OF_OPERATOR,
     LENGTH_OF_PUBLIC_CODE,
-    ORG_OPERATOR_ID_SUBSTRING,
-    TYPE_OF_FRAME_REF_SUBSTRING,
-    TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING,
-    TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING,
-    FARE_STRUCTURE_ELEMENT_REF,
-    TYPE_OF_ACCESS_RIGHT_REF,
-    STOP_POINT_ID_SUBSTRING,
     NAMESPACE,
+    ORG_OPERATOR_ID_SUBSTRING,
+    STOP_POINT_ID_SUBSTRING,
+    TYPE_OF_ACCESS_RIGHT_REF,
+    TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING,
+    TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING,
+    TYPE_OF_FRAME_REF_SUBSTRING,
+    TYPE_OF_TARIFF_REF_SUBSTRING,
 )
 
 
@@ -150,7 +148,8 @@ def is_fare_structure_element_present(context, fare_frames, *args):
 def is_generic_parameter_limitions_present(context, fare_frames, *args):
     """
     Check if ProductType is singleTrip, dayReturnTrip, periodReturnTrip.
-    If true, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements
+    If true, FareStructureElement.GenericParameterAssignment elements
+    should be present in Tariff.FareStructureElements
     """
     fare_frame = fare_frames[0]
     xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
@@ -163,7 +162,8 @@ def is_generic_parameter_limitions_present(context, fare_frames, *args):
 def check_placement_validity_parameters(context, element, *args):
     """
     Check for validityParameters.
-    It should either be nested within GenericParameterAssignment.ValidityParameterGroupingType
+    It should either be nested within
+    GenericParameterAssignment.ValidityParameterGroupingType
     or GenericParameterAssignment.ValidityParameterAssignmentType",
     """
     element = element[0]
@@ -270,7 +270,8 @@ def check_public_code_length(context, public_code, *args):
 
 def is_service_frame_present(context, service_frame, *args):
     """
-    Check if ServiceFrame is present in FareFrame. If true, TypeOfFrameRef should include UK_PI_NETWORK
+    Check if ServiceFrame is present in FareFrame.
+    If true, TypeOfFrameRef should include UK_PI_NETWORK
     """
     if service_frame:
         xpath = "x:TypeOfFrameRef"
@@ -286,7 +287,8 @@ def is_service_frame_present(context, service_frame, *args):
 
 def is_lines_present_in_service_frame(context, lines, *args):
     """
-    Check if ServiceFrame is present in FareFrame, corresponding Line properties should be present
+    Check if ServiceFrame is present in FareFrame,
+    corresponding Line properties should be present
     """
     if lines:
         xpath = "x:Line"
@@ -306,7 +308,8 @@ def is_lines_present_in_service_frame(context, lines, *args):
 
 def is_schedule_stop_points(context, schedule_stop_points, *args):
     """
-    Check if ServiceFrame is present in FareFrame, it's other properties should be presen
+    Check if ServiceFrame is present in FareFrame,
+    it's other properties should be present
     """
     if schedule_stop_points:
         xpath = "x:ScheduledStopPoint"
@@ -320,3 +323,117 @@ def is_schedule_stop_points(context, schedule_stop_points, *args):
                     return False
             return True
         return False
+
+
+def check_type_of_frame_ref_ref(context, composite_frames, *args):
+    """
+    Check if FareFrame TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
+    UK_PI_FARE_PRICE in it.
+    """
+    composite_frame = composite_frames[0]
+    ns = {"x": composite_frame.nsmap.get(None)}
+    xpath = "//x:frames/x:FareFrame"
+    fare_frames = composite_frame.xpath(xpath, namespaces=ns)
+    for fare_frame in fare_frames:
+        xpath = "x:TypeOfFrameRef"
+        type_of_frame_ref = fare_frame.xpath(xpath, namespaces=ns)
+        try:
+            type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+        except KeyError:
+            return False
+        for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
+            if ref_value in type_of_frame_ref_ref:
+                return True
+
+
+def all_fare_structure_element_checks(context, fare_structure_elements, *args):
+    """
+    1st Check: Check 'FareStructureElement' appears minimum 3 times.
+
+    2nd Check - If 'TypeOfAccessRightAssignmentRef' and 'TypeOfFareStructureElementRef'
+    elements have the correct combination of 'ref' values:
+
+    fxc:access and fxc:can_access,
+    fxc:eligibility and fxc:eligible,
+    fxc:travel_conditions and fxc:condition_of_use
+    """
+    list_type_of_fare_structure_element_ref_ref = []
+    list_type_of_access_right_assignment_ref_ref = []
+    result = False
+
+    fare_structure_element = fare_structure_elements[0]
+    ns = {"x": fare_structure_element.nsmap.get(None)}
+    xpath = "//x:FareStructureElement"
+    all_fare_structure_elements = fare_structure_element.xpath(xpath, namespaces=ns)
+    length_all_fare_structure_elements = len(all_fare_structure_elements)
+
+    if length_all_fare_structure_elements > 2:
+        for element in all_fare_structure_elements:
+            try:
+                type_of_fare_structure_element_ref = element.xpath(
+                    "x:TypeOfFareStructureElementRef", namespaces=ns
+                )
+                type_of_fare_structure_element_ref_ref = _extract_attribute(
+                    type_of_fare_structure_element_ref, "ref"
+                )
+                list_type_of_fare_structure_element_ref_ref.append(
+                    type_of_fare_structure_element_ref_ref
+                )
+                type_of_access_right_assignment_ref = element.xpath(
+                    "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
+                    namespaces=ns,
+                )
+                type_of_access_right_assignment_ref_ref = _extract_attribute(
+                    type_of_access_right_assignment_ref, "ref"
+                )
+                list_type_of_access_right_assignment_ref_ref.append(
+                    type_of_access_right_assignment_ref_ref
+                )
+
+                access_index = list_type_of_fare_structure_element_ref_ref.index(
+                    "fxc:access"
+                )
+                can_access_index = list_type_of_access_right_assignment_ref_ref.index(
+                    "fxc:can_access"
+                )
+                eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
+                    "fxc:eligibility"
+                )
+                eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
+                    "fxc:eligible"
+                )
+                travel_conditions_index = (
+                    list_type_of_fare_structure_element_ref_ref.index(
+                        "fxc:travel_conditions"
+                    )
+                )
+                condition_of_use_index = (
+                    list_type_of_access_right_assignment_ref_ref.index(
+                        "fxc:condition_of_use"
+                    )
+                )
+
+                # Compare indexes
+                if (
+                    access_index == can_access_index
+                    and eligibility_index == eligibile_index
+                    and travel_conditions_index == condition_of_use_index
+                ):
+                    result = True
+            except ValueError:
+                result = False
+    return result
+
+
+def check_type_of_tariff_ref_values(context, elements, *args):
+    """
+    Checks if 'TypeOfTariffRef' element has acceptable 'ref' values
+    """
+    try:
+        type_of_tariff_ref_ref = _extract_attribute(elements, "ref")
+    except KeyError:
+        return False
+    for ref_value in TYPE_OF_TARIFF_REF_SUBSTRING:
+        if type_of_tariff_ref_ref in ref_value:
+            return True
+    return False
