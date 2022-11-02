@@ -119,7 +119,7 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     If true, timeIntervals element should be present in tarrifs
     """
     fare_frame = fare_frames[0]
-    xpath = "string(//x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
+    xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["dayPass", "periodPass"]:
         return get_tariff_time_intervals(fare_frames)
