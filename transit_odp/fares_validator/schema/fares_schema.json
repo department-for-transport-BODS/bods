@@ -4,32 +4,12 @@
   },
   "observations": [
     {
-      "details": "Mandatory element 'TariffBasis' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:TariffBasis) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'validityConditions' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:validityConditions) > 0"
-        }
-      ]
-    },
-    {
       "details": "If ProductType is dayPass or periodPass, timeIntervals element should be present in Tariff",
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        { 
-          "test": "is_time_intervals_present_in_tarrifs(.)" 
+        {
+          "test": "is_time_intervals_present_in_tarrifs(.)"
         }
       ]
     },
@@ -38,8 +18,8 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        { 
-          "test": "is_fare_structure_element_present(.)" 
+        {
+          "test": "is_fare_structure_element_present(.)"
         }
       ]
     },
@@ -48,8 +28,8 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        { 
-          "test": "is_generic_parameter_limitions_present(.)" 
+        {
+          "test": "is_generic_parameter_limitions_present(.)"
         }
       ]
     },
@@ -58,8 +38,8 @@
       "category": "Conditional Check",
       "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
       "rules": [
-        { 
-          "test": "check_placement_validity_parameters(.)" 
+        {
+          "test": "check_placement_validity_parameters(.)"
         }
       ]
     },
@@ -68,8 +48,8 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame/x:fareZones",
       "rules": [
-        { 
-          "test": "is_fare_zones_present_in_fare_frame(.)" 
+        {
+          "test": "is_fare_zones_present_in_fare_frame(.)"
         }
       ]
     },
@@ -78,8 +58,8 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame",
       "rules": [
-        { 
-          "test": "is_service_frame_present(.)" 
+        {
+          "test": "is_service_frame_present(.)"
         }
       ]
     },
@@ -88,8 +68,8 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:lines",
       "rules": [
-        { 
-          "test": "is_lines_present_in_service_frame(.)" 
+        {
+          "test": "is_lines_present_in_service_frame(.)"
         }
       ]
     },
@@ -98,8 +78,8 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:scheduledStopPoints",
       "rules": [
-        { 
-          "test": "is_schedule_stop_points(.)" 
+        {
+          "test": "is_schedule_stop_points(.)"
         }
       ]
     },
@@ -202,6 +182,438 @@
           "test": "count(x:Name) > 0"
         }
       ]
+    },
+    {
+      "details": "**Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame",
+      "rules": [
+        {
+          "test": "check_type_of_frame_ref_ref(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TariffBasis' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:TariffBasis) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'validityConditions' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:validityConditions) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FromDate' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:validityConditions/x:ValidBetween",
+      "rules": [
+        {
+          "test": "count(x:FromDate) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'OperatorRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:OperatorRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfTariffRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:TypeOfTariffRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfTariffRef' does not have an acceptable 'ref' value",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:TypeOfTariffRef",
+      "rules": [
+        {
+          "test": "check_type_of_tariff_ref_values(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'fareStructureElements' missing",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff",
+      "rules": [
+        {
+          "test": "count(x:fareStructureElements) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements",
+      "rules": [{ "test": "all_fare_structure_element_checks(.)" }]
+    },
+    {
+      "details": "Mandatory element 'GenericParameterAssignment' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "rules": [
+        {
+          "test": "count(x:GenericParameterAssignment) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'ValidityParameterGroupingType' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "rules": [
+        {
+          "test": "count(x:ValidityParameterGroupingType) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'validityParameters' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
+      "rules": [
+        {
+          "test": "count(x:validityParameters) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'limitations' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
+      "rules": [
+        {
+          "test": "count(x:limitations) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'UserProfile' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
+      "rules": [
+        {
+          "test": "count(x:UserProfile) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'Name' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
+      "rules": [
+        {
+          "test": "count(x:Name) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'UserType' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
+      "rules": [
+        {
+          "test": "count(x:UserType) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FrequencyOfUse' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
+      "rules": [
+        {
+          "test": "count(x:FrequencyOfUse) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FrequencyOfUseType' missing",
+      "category": "Mandatory Element",
+      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse",
+      "rules": [
+        {
+          "test": "count(x:FrequencyOfUseType) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'fareProducts' missing",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "count(x:fareProducts) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'PreassignedFareProduct' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts",
+      "rules": [
+        {
+          "test": "count(x:PreassignedFareProduct) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'Name' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
+        {
+          "test": "count(x:Name) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfFareProductRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
+        {
+          "test": "count(x:TypeOfFareProductRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'ChargingMomentType' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
+        {
+          "test": "count(x:ChargingMomentType) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'validableElements' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
+        {
+          "test": "count(x:validableElements) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'ValidableElement' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements",
+      "rules": [
+        {
+          "test": "count(x:ValidableElement) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'fareStructureElements' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement",
+      "rules": [
+        {
+          "test": "count(x:fareStructureElements) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FareStructureElementRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement/x:fareStructureElements",
+      "rules": [
+        {
+          "test": "count(x:FareStructureElementRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'accessRightsInProduct' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
+        {
+          "test": "count(x:accessRightsInProduct) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'ValidableElementRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct",
+      "rules": [
+        {
+          "test": "count(x:ValidableElementRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'ProductType' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
+        {
+          "test": "count(x:ProductType) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'salesOfferPackages' missing",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "count(x:salesOfferPackages) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'SalesOfferPackage' missing",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:salesOfferPackages",
+      "rules": [
+        {
+          "test": "count(x:SalesOfferPackage) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'distributionAssignments' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage",
+      "rules": [
+        {
+          "test": "count(x:distributionAssignments) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'DistributionAssignment' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments",
+      "rules": [
+        {
+          "test": "count(x:DistributionAssignment) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'DistributionChannelType' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
+      "rules": [
+        {
+          "test": "count(x:DistributionChannelType) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'PaymentMethods' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
+      "rules": [
+        {
+          "test": "count(x:PaymentMethods) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'salesOfferPackageElements' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage",
+      "rules": [
+        {
+          "test": "count(x:salesOfferPackageElements) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'SalesOfferPackageElement' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements",
+      "rules": [
+        {
+          "test": "count(x:SalesOfferPackageElement) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfTravelDocumentRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
+      "rules": [
+        {
+          "test": "count(x:TypeOfTravelDocumentRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'PreassignedFareProductRef' missing",
+      "category": "Mandatory Element",
+      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
+      "rules": [
+        {
+          "test": "count(x:PreassignedFareProductRef) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'fareTables' missing",
+      "category": "Mandatory Element",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "count(x:fareTables) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FareTable' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareTables",
+      "rules": [
+        {
+          "test": "count(x:FareTable) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'pricesFor' missing",
+      "category": "Mandatory Element",
+      "context": "//x:fareTables/x:FareTable",
+      "rules": [
+        {
+          "test": "count(x:pricesFor) > 0"
+        }
+      ]
+    },
+    {
+      "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in tarrifs",
+      "category": "Notes",
+      "context": "//x:frames//x:FareFrame",
+      "rules": [{ "test": "is_time_intervals_present_in_tarrifs(.)" }]
     }
   ]
 }

@@ -8,17 +8,20 @@ from lxml import etree
 from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
+    all_fare_structure_element_checks,
     check_operator_id_format,
-    check_public_code_length,
-    check_value_of_type_of_frame_ref,
-    is_time_intervals_present_in_tarrifs,
-    is_fare_structure_element_present,
-    is_generic_parameter_limitions_present,
     check_placement_validity_parameters,
+    check_public_code_length,
+    check_type_of_frame_ref_ref,
+    check_type_of_tariff_ref_values,
+    check_value_of_type_of_frame_ref,
+    is_fare_structure_element_present,
     is_fare_zones_present_in_fare_frame,
-    is_service_frame_present,
+    is_generic_parameter_limitions_present,
     is_lines_present_in_service_frame,
     is_schedule_stop_points,
+    is_service_frame_present,
+    is_time_intervals_present_in_tarrifs,
 )
 
 
@@ -56,6 +59,15 @@ class FaresValidator:
             "is_lines_present_in_service_frame", is_lines_present_in_service_frame
         )
         self.register_function("is_schedule_stop_points", is_schedule_stop_points)
+        self.register_function(
+            "all_fare_structure_element_checks", all_fare_structure_element_checks
+        )
+        self.register_function(
+            "check_type_of_frame_ref_ref", check_type_of_frame_ref_ref
+        )
+        self.register_function(
+            "check_type_of_tariff_ref_values", check_type_of_tariff_ref_values
+        )
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
