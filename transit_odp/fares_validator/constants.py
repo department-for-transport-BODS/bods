@@ -5,8 +5,11 @@ TYPE_OF_TARIFF_REF_SUBSTRING = [
     "fxc:flat",
     "fxc:section",
     "fxc:point_to_point",
+    "fxc:zone_to_zone",
+    "fxc:zonal",
     "fxc:banded",
     "fxc:stored_value",
+    "fxc:discount",
     "fxc:multitrip",
 ]
 ORG_OPERATOR_ID_SUBSTRING = "noc:"

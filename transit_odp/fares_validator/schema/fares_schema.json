@@ -36,8 +36,6 @@
     {
       "details": "Mandatory element 'ValidBetween' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:validityConditions",
       "rules": [
         {
@@ -48,8 +46,6 @@
     {
       "details": "Mandatory element 'FromDate' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:validityConditions/x:ValidBetween",
       "rules": [
         {
@@ -60,8 +56,6 @@
     {
       "details": "Mandatory element 'OperatorRef' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff",
       "rules": [
         {
@@ -82,8 +76,6 @@
     {
       "details": "Mandatory element 'TypeOfTariffRef' does not have an acceptable 'ref' value",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:TypeOfTariffRef",
       "rules": [
         {
@@ -94,8 +86,6 @@
     {
       "details": "Mandatory element 'fareStructureElements' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:FareFrame/x:tariffs/x:Tariff",
       "rules": [
         {
@@ -112,8 +102,6 @@
     {
       "details": "Mandatory element 'GenericParameterAssignment' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
       "rules": [
         {
@@ -124,8 +112,6 @@
     {
       "details": "Mandatory element 'ValidityParameterGroupingType' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
       "rules": [
         {
@@ -136,8 +122,6 @@
     {
       "details": "Mandatory element 'validityParameters' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
       "rules": [
         {
@@ -148,8 +132,6 @@
     {
       "details": "Mandatory element 'limitations' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
       "rules": [
         {
@@ -160,8 +142,6 @@
     {
       "details": "Mandatory element 'UserProfile' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
       "rules": [
         {
@@ -172,8 +152,6 @@
     {
       "details": "Mandatory element 'Name' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
       "rules": [
         {
@@ -184,8 +162,6 @@
     {
       "details": "Mandatory element 'UserType' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
       "rules": [
         {
@@ -196,8 +172,6 @@
     {
       "details": "Mandatory element 'FrequencyOfUse' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
       "rules": [
         {
@@ -208,8 +182,6 @@
     {
       "details": "Mandatory element 'FrequencyOfUseType' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse",
       "rules": [
         {
@@ -220,8 +192,6 @@
     {
       "details": "Mandatory element 'fareProducts' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
@@ -232,8 +202,6 @@
     {
       "details": "Mandatory element 'PreassignedFareProduct' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts",
       "rules": [
         {
@@ -244,8 +212,6 @@
     {
       "details": "Mandatory element 'Name' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
@@ -256,8 +222,6 @@
     {
       "details": "Mandatory element 'TypeOfFareProductRef' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
@@ -268,8 +232,6 @@
     {
       "details": "Mandatory element 'ChargingMomentType' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
@@ -280,8 +242,6 @@
     {
       "details": "Mandatory element 'validableElements' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
@@ -292,8 +252,6 @@
     {
       "details": "Mandatory element 'ValidableElement' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements",
       "rules": [
         {
@@ -304,8 +262,6 @@
     {
       "details": "Mandatory element 'fareStructureElements' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement",
       "rules": [
         {
@@ -316,8 +272,6 @@
     {
       "details": "Mandatory element 'FareStructureElementRef' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement/x:fareStructureElements",
       "rules": [
         {
@@ -328,8 +282,6 @@
     {
       "details": "Mandatory element 'accessRightsInProduct' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
@@ -340,8 +292,6 @@
     {
       "details": "Mandatory element 'ValidableElementRef' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct",
       "rules": [
         {
@@ -352,8 +302,6 @@
     {
       "details": "Mandatory element 'ProductType' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
@@ -364,8 +312,6 @@
     {
       "details": "Mandatory element 'salesOfferPackages' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
@@ -376,8 +322,6 @@
     {
       "details": "Mandatory element 'SalesOfferPackage' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:FareFrame/x:salesOfferPackages",
       "rules": [
         {
@@ -388,8 +332,6 @@
     {
       "details": "Mandatory element 'distributionAssignments' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage",
       "rules": [
         {
@@ -400,8 +342,6 @@
     {
       "details": "Mandatory element 'DistributionAssignment' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments",
       "rules": [
         {
@@ -412,8 +352,6 @@
     {
       "details": "Mandatory element 'DistributionChannelType' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
       "rules": [
         {
@@ -424,8 +362,6 @@
     {
       "details": "Mandatory element 'PaymentMethods' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
       "rules": [
         {
@@ -436,8 +372,6 @@
     {
       "details": "Mandatory element 'salesOfferPackageElements' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage",
       "rules": [
         {
@@ -448,8 +382,6 @@
     {
       "details": "Mandatory element 'SalesOfferPackageElement' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements",
       "rules": [
         {
@@ -460,8 +392,6 @@
     {
       "details": "Mandatory element 'TypeOfTravelDocumentRef' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
       "rules": [
         {
@@ -472,8 +402,6 @@
     {
       "details": "Mandatory element 'PreassignedFareProductRef' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
       "rules": [
         {
@@ -484,8 +412,6 @@
     {
       "details": "Mandatory element 'fareTables' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
@@ -496,8 +422,6 @@
     {
       "details": "Mandatory element 'FareTable' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareTables",
       "rules": [
         {
@@ -508,8 +432,6 @@
     {
       "details": "Mandatory element 'pricesFor' missing",
       "category": "Mandatory Element",
-      "reference": "0",
-      "number": 131,
       "context": "//x:fareTables/x:FareTable",
       "rules": [
         {

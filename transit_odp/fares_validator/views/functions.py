@@ -113,7 +113,7 @@ def check_operator_id_format(context, operators, *args):
 
 def check_type_of_frame_ref_ref(context, type_of_frame_ref, *args):
     """
-    Check if TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
+    Check if FareFrame TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
     UK_PI_FARE_PRICE in it.
     """
     try:
@@ -213,12 +213,10 @@ def check_type_of_tariff_ref_values(context, elements, *args):
         type_of_tariff_ref_ref = _extract_attribute(elements, "ref")
     except KeyError:
         return False
-    is_present = False
     for ref_value in TYPE_OF_TARIFF_REF_SUBSTRING:
         if type_of_tariff_ref_ref in ref_value:
-            is_present = True
-            break
-    return is_present
+            return True
+    return False
 
 
 def check_public_code_length(context, public_code, *args):
