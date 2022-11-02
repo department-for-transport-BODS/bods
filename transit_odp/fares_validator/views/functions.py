@@ -111,18 +111,25 @@ def check_operator_id_format(context, operators, *args):
     return False
 
 
-def check_type_of_frame_ref_ref(context, type_of_frame_ref, *args):
+def check_type_of_frame_ref_ref(context, composite_frames, *args):
     """
     Check if FareFrame TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
     UK_PI_FARE_PRICE in it.
     """
-    try:
-        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
-    except KeyError:
-        return False
-    for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
-        if ref_value in type_of_frame_ref_ref:
-            return True
+    compostie_frame = composite_frames[0]
+    ns = {"x": compostie_frame.nsmap.get(None)}
+    xpath = "//x:frames/x:FareFrame"
+    fare_frames = compostie_frame.xpath(xpath, namespaces=ns)
+    for fare_frame in fare_frames:
+        xpath = "x:TypeOfFrameRef"
+        type_of_frame_ref = fare_frame.xpath(xpath, namespaces=ns)
+        try:
+            type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+        except KeyError:
+            return False
+        for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
+            if ref_value in type_of_frame_ref_ref:
+                return True
     return False
 
 

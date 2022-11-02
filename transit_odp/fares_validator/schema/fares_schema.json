@@ -4,9 +4,9 @@
   },
   "observations": [
     {
-      "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
+      "details": "Attribute 'ref' of FareFrame element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
       "category": "Mandatory Element",
-      "context": "//x:frames/x:FareFrame/x:TypeOfFrameRef",
+      "context": "//x:CompositeFrame",
       "rules": [
         {
           "test": "check_type_of_frame_ref_ref(.)"
