@@ -78,21 +78,26 @@ def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
     return True
 
 
-def check_value_of_type_of_frame_ref(context, type_of_frame_ref, *args):
+def check_value_of_type_of_frame_ref(context, data_objects, *args):
     """
     Check if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
     UK_PI_NETWORK_OFFER in it.
     """
-    try:
-        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
-    except KeyError:
-        return False
-    is_present = False
-    for ref_value in TYPE_OF_FRAME_REF_SUBSTRING:
-        if ref_value in type_of_frame_ref_ref:
-            is_present = True
-            break
-    return is_present
+    data_object = data_objects[0]
+    ns = {"x": data_object.nsmap.get(None)}
+    xpath = "x:CompositeFrame"
+    composite_frames = data_object.xpath(xpath, namespaces=ns)
+    for composite_frame in composite_frames:
+        xpath = "x:TypeOfFrameRef"
+        type_of_frame_ref = composite_frame.xpath(xpath, namespaces=ns)
+        try:
+            type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+        except KeyError:
+            return False
+        for ref_value in TYPE_OF_FRAME_REF_SUBSTRING:
+            if ref_value in type_of_frame_ref_ref:
+                return True
+    return False
 
 
 def check_operator_id_format(context, operators, *args):
