@@ -62,7 +62,7 @@
     {
       "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
       "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:TypeOfFrameRef",
+      "context": "//x:dataObjects",
       "rules": [
         {
           "test": "check_value_of_type_of_frame_ref(.)"
