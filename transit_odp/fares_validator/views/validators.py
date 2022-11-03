@@ -18,7 +18,7 @@ from transit_odp.fares_validator.views.functions import (
     check_value_of_type_of_frame_ref,
     is_fare_structure_element_present,
     is_fare_zones_present_in_fare_frame,
-    is_generic_parameter_limitions_present,
+    is_generic_parameter_limitations_present,
     is_lines_present_in_service_frame,
     is_schedule_stop_points,
     is_service_frame_present,
@@ -33,7 +33,7 @@ from transit_odp.fares_validator.views.functions import (
     check_sales_offer_package,
     check_distribution_assignments_elements,
     check_sales_offer_elements,
-
+    check_frequency_of_use,
 )
 
 
@@ -52,8 +52,8 @@ class FaresValidator:
             "is_fare_structure_element_present", is_fare_structure_element_present
         )
         self.register_function(
-            "is_generic_parameter_limitions_present",
-            is_generic_parameter_limitions_present,
+            "is_generic_parameter_limitations_present",
+            is_generic_parameter_limitations_present,
         )
         self.register_function(
             "is_fare_zones_present_in_fare_frame", is_fare_zones_present_in_fare_frame
@@ -80,9 +80,7 @@ class FaresValidator:
         self.register_function(
             "is_uk_pi_fare_price_frame_present", is_uk_pi_fare_price_frame_present
         )
-        self.register_function(
-            "check_fare_products", check_fare_products
-        )
+        self.register_function("check_fare_products", check_fare_products)
         self.register_function(
             "check_preassigned_fare_products", check_preassigned_fare_products
         )
@@ -92,21 +90,14 @@ class FaresValidator:
         self.register_function(
             "check_access_right_elements", check_access_right_elements
         )
+        self.register_function("check_product_type", check_product_type)
+        self.register_function("check_sales_offer_packages", check_sales_offer_packages)
+        self.register_function("check_sales_offer_package", check_sales_offer_package)
         self.register_function(
-            "check_product_type", check_product_type
+            "check_distribution_assignments_elements",
+            check_distribution_assignments_elements,
         )
-        self.register_function(
-            "check_sales_offer_packages", check_sales_offer_packages
-        )
-        self.register_function(
-            "check_sales_offer_package", check_sales_offer_package
-        )
-        self.register_function(
-            "check_distribution_assignments_elements", check_distribution_assignments_elements
-        )
-        self.register_function(
-            "check_sales_offer_elements", check_sales_offer_elements
-        )
+        self.register_function("check_sales_offer_elements", check_sales_offer_elements)
 
         self.register_function(
             "check_generic_parameters_for_access", check_generic_parameters_for_access
@@ -114,6 +105,10 @@ class FaresValidator:
         self.register_function(
             "check_generic_parameters_for_eligibility",
             check_generic_parameters_for_eligibility,
+        )
+        self.register_function(
+            "check_frequency_of_use",
+            check_frequency_of_use,
         )
 
     def register_function(self, key: str, function: Callable) -> None:

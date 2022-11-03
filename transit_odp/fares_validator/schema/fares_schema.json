@@ -29,10 +29,10 @@
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
-          "test": "is_generic_parameter_limitions_present(.)"
+          "test": "is_generic_parameter_limitations_present(.)"
         }
       ]
-    },
+    },  
     {
       "details": "If fareZones is present in FareFrame, additional fareZones properties should be present",
       "category": "Conditional Check",
@@ -280,26 +280,6 @@
       ]
     },
     {
-      "details": "Mandatory element 'FrequencyOfUse' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
-      "rules": [
-        {
-          "test": "count(x:FrequencyOfUse) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'FrequencyOfUseType' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse",
-      "rules": [
-        {
-          "test": "count(x:FrequencyOfUseType) > 0"
-        }
-      ]
-    },
-    {
       "details": "Mandatory fareTables elements missing for FareFrame - UK_PI_FARE_PRICE",
       "category": "Mandatory Element",
       "context": "//x:dataObjects",
@@ -396,6 +376,16 @@
       "rules": [
         {
           "test": "check_sales_offer_elements(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FrequencyOfUse' or it's child missing in FareStructureElement with TypeOfFareStructureElementRef - fxc:travel_conditions",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects",
+      "rules": [
+        {
+          "test": "check_frequency_of_use(.)"
         }
       ]
     }

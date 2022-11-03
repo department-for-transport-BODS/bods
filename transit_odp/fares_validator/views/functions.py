@@ -12,7 +12,11 @@ from ..constants import (
     TYPE_OF_TARIFF_REF_SUBSTRING,
     TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING,
     FARE_STRUCTURE_ELEMENT_ACCESS_REF,
-    FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
+    FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF,
+    FARE_STRUCTURE_ELEMENT_TRAVEL_REF,
+    FARE_STRUCTURE_ACCESS_RIGHT_REF,
+    FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF,
+    FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
 )
 
 
@@ -145,7 +149,7 @@ def is_fare_structure_element_present(context, fare_frames, *args):
     return True
 
 
-def is_generic_parameter_limitions_present(context, fare_frames, *args):
+def is_generic_parameter_limitations_present(context, fare_frames, *args):
     """
     Check if ProductType is singleTrip, dayReturnTrip, periodReturnTrip.
     If true, FareStructureElement.GenericParameterAssignment elements
@@ -366,25 +370,25 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                 )
 
                 access_index = list_type_of_fare_structure_element_ref_ref.index(
-                    "fxc:access"  # Move to constants
+                    FARE_STRUCTURE_ELEMENT_ACCESS_REF
                 )
                 can_access_index = list_type_of_access_right_assignment_ref_ref.index(
-                    "fxc:can_access"  # Move to constants
+                    FARE_STRUCTURE_ACCESS_RIGHT_REF
                 )
                 eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
-                    "fxc:eligibility"  # Move to constants
+                    FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
                 )
                 eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
-                    "fxc:eligible"  # Move to constants
+                    FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF
                 )
                 travel_conditions_index = (
                     list_type_of_fare_structure_element_ref_ref.index(
-                        "fxc:travel_conditions"  # Move to constants
+                        FARE_STRUCTURE_ELEMENT_TRAVEL_REF
                     )
                 )
                 condition_of_use_index = (
                     list_type_of_access_right_assignment_ref_ref.index(
-                        "fxc:condition_of_use"  # Move to constants
+                        FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF
                     )
                 )
 
@@ -427,7 +431,10 @@ def is_uk_pi_fare_price_frame_present(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:fareTables"
             fare_tables = data_object.xpath(xpath, namespaces=NAMESPACE)
             print("fare_tables}}}}}", fare_tables)
@@ -459,7 +466,10 @@ def check_fare_products(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:fareProducts"
             fare_products = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not fare_products:
@@ -482,7 +492,10 @@ def check_preassigned_fare_products(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct"
             preassigned_fare_product = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not preassigned_fare_product:
@@ -517,7 +530,10 @@ def check_preassigned_validable_elements(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:validableElements"
             validable_elements = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not validable_elements:
@@ -552,7 +568,10 @@ def check_access_right_elements(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct"
             access_right = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not access_right:
@@ -579,7 +598,10 @@ def check_product_type(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:ProductType"
             product_type = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not product_type:
@@ -602,7 +624,10 @@ def check_sales_offer_packages(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:salesOfferPackages"
             sales_offer_packages = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not sales_offer_packages:
@@ -625,7 +650,10 @@ def check_sales_offer_package(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:salesOfferPackages/x:SalesOfferPackage"
             sales_offer_package = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not sales_offer_package:
@@ -648,7 +676,10 @@ def check_distribution_assignments_elements(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments"
             distribution_assignments = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not distribution_assignments:
@@ -683,7 +714,10 @@ def check_sales_offer_elements(context, data_objects, *args):
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
             return False
-        if type_of_frame_ref_ref is not None and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
             xpath = f"{base_xpath}x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements"
             sales_offer_elements = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not sales_offer_elements:
@@ -697,7 +731,9 @@ def check_sales_offer_elements(context, data_objects, *args):
             if not type_of_travel_document_ref:
                 return False
             xpath = f"{base_xpath}x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement/x:PreassignedFareProductRef"
-            preassigned_fare_product_ref = data_object.xpath(xpath, namespaces=NAMESPACE)
+            preassigned_fare_product_ref = data_object.xpath(
+                xpath, namespaces=NAMESPACE
+            )
             if not preassigned_fare_product_ref:
                 return False
             return True
@@ -760,7 +796,10 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
             )
         except KeyError:
             return False
-        if FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF == type_of_fare_structure_element_ref_ref:
+        if (
+            FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
+            == type_of_fare_structure_element_ref_ref
+        ):
             xpath = "x:GenericParameterAssignment/x:limitations/x:UserProfile"
             user_profile = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
 
@@ -777,3 +816,32 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 return True
             return False
     return True
+
+
+def check_frequency_of_use(context, data_objects, *args):
+    """
+    Mandatory element 'FrequencyOfUse' or it's child missing in FareStructureElement with TypeOfFareStructureElementRef - fxc:travel_conditions
+    """
+    data_object = data_objects[0]
+    base_xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/"
+    xpath = f"{base_xpath}x:TypeOfFareStructureElementRef"
+    type_of_frame_refs = data_object.xpath(xpath, namespaces=NAMESPACE)
+    for ref in type_of_frame_refs:
+        try:
+            type_of_frame_ref_ref = _extract_attribute([ref], "ref")
+        except KeyError:
+            return False
+        if (
+            type_of_frame_ref_ref is not None
+            and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
+        ):
+            xpath = f"{base_xpath}x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse"
+            frequency_of_use = data_object.xpath(xpath, namespaces=NAMESPACE)
+            if not frequency_of_use:
+                return False
+            xpath = f"{base_xpath}x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse/x:FrequencyOfUseType"
+            frequency_of_use_type = data_object.xpath(xpath, namespaces=NAMESPACE)
+            if not frequency_of_use_type:
+                return False
+            return True
+    return False
