@@ -9,8 +9,9 @@ from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
     all_fare_structure_element_checks,
+    check_generic_parameters_for_access,
+    check_generic_parameters_for_eligibility,
     check_operator_id_format,
-    check_placement_validity_parameters,
     check_public_code_length,
     check_type_of_frame_ref_ref,
     check_type_of_tariff_ref_values,
@@ -49,9 +50,6 @@ class FaresValidator:
         )
         self.register_function(
             "is_fare_structure_element_present", is_fare_structure_element_present
-        )
-        self.register_function(
-            "check_placement_validity_parameters", check_placement_validity_parameters
         )
         self.register_function(
             "is_generic_parameter_limitions_present",
@@ -110,7 +108,13 @@ class FaresValidator:
             "check_sales_offer_elements", check_sales_offer_elements
         )
 
-
+        self.register_function(
+            "check_generic_parameters_for_access", check_generic_parameters_for_access
+        )
+        self.register_function(
+            "check_generic_parameters_for_eligibility",
+            check_generic_parameters_for_eligibility,
+        )
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
