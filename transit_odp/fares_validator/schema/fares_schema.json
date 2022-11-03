@@ -360,260 +360,104 @@
       ]
     },
     {
-      "details": "Mandatory element 'fareProducts' missing",
+      "details": "Mandatory fareTables elements missing for FareFrame - UK_PI_FARE_PRICE",
       "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:fareProducts) > 0"
+          "test": "is_uk_pi_fare_price_frame_present(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'PreassignedFareProduct' missing",
+      "details": "Mandatory element 'fareProducts' missing for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:PreassignedFareProduct) > 0"
+          "test": "check_fare_products(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'Name' missing",
+      "details": "Mandatory element 'PreassignedFareProduct' or it's children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:Name) > 0"
+          "test": "check_preassigned_fare_products(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'TypeOfFareProductRef' missing",
+      "details": "Mandatory element 'validableElements' or it's children missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:TypeOfFareProductRef) > 0"
+          "test": "check_preassigned_validable_elements(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'ChargingMomentType' missing",
+      "details": "Mandatory element 'AccessRightInProduct' or it's children missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:ChargingMomentType) > 0"
+          "test": "check_access_right_elements(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'validableElements' missing",
+      "details": "Mandatory element 'ProductType' is missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:validableElements) > 0"
+          "test": "check_product_type(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'ValidableElement' missing",
+      "details": "Mandatory salesOfferPackages elements missing for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:ValidableElement) > 0"
+          "test": "check_sales_offer_packages(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'fareStructureElements' missing",
+      "details": "Mandatory element 'SalesOfferPackage' salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:fareStructureElements) > 0"
+          "test": "check_sales_offer_package(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'FareStructureElementRef' missing",
+      "details": "Mandatory element 'distributionAssignments' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct/x:validableElements/x:ValidableElement/x:fareStructureElements",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:FareStructureElementRef) > 0"
+          "test": "check_distribution_assignments_elements(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'accessRightsInProduct' missing",
+      "details": "Mandatory element 'salesOfferPackageElements' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct",
+      "context": "//x:dataObjects",
       "rules": [
         {
-          "test": "count(x:accessRightsInProduct) > 0"
+          "test": "check_sales_offer_elements(.)"
         }
       ]
-    },
-    {
-      "details": "Mandatory element 'ValidableElementRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct",
-      "rules": [
-        {
-          "test": "count(x:ValidableElementRef) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'ProductType' missing",
-      "category": "Mandatory Element",
-      "context": "//x:fareProducts/x:PreassignedFareProduct",
-      "rules": [
-        {
-          "test": "count(x:ProductType) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'salesOfferPackages' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
-        {
-          "test": "count(x:salesOfferPackages) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'SalesOfferPackage' missing",
-      "category": "Mandatory Element",
-      "context": "//x:FareFrame/x:salesOfferPackages",
-      "rules": [
-        {
-          "test": "count(x:SalesOfferPackage) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'distributionAssignments' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage",
-      "rules": [
-        {
-          "test": "count(x:distributionAssignments) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'DistributionAssignment' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments",
-      "rules": [
-        {
-          "test": "count(x:DistributionAssignment) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'DistributionChannelType' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
-      "rules": [
-        {
-          "test": "count(x:DistributionChannelType) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'PaymentMethods' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
-      "rules": [
-        {
-          "test": "count(x:PaymentMethods) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'salesOfferPackageElements' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage",
-      "rules": [
-        {
-          "test": "count(x:salesOfferPackageElements) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'SalesOfferPackageElement' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements",
-      "rules": [
-        {
-          "test": "count(x:SalesOfferPackageElement) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'TypeOfTravelDocumentRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
-      "rules": [
-        {
-          "test": "count(x:TypeOfTravelDocumentRef) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'PreassignedFareProductRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
-      "rules": [
-        {
-          "test": "count(x:PreassignedFareProductRef) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'fareTables' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
-        {
-          "test": "count(x:fareTables) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'FareTable' missing",
-      "category": "Mandatory Element",
-      "context": "//x:fareTables",
-      "rules": [
-        {
-          "test": "count(x:FareTable) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'pricesFor' missing",
-      "category": "Mandatory Element",
-      "context": "//x:fareTables/x:FareTable",
-      "rules": [
-        {
-          "test": "count(x:pricesFor) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Check if ProductType is dayPass or periodPass. If true, timeIntervals element should be present in tarrifs",
-      "category": "Notes",
-      "context": "//x:frames//x:FareFrame",
-      "rules": [{ "test": "is_time_intervals_present_in_tarrifs(.)" }]
     }
   ]
 }

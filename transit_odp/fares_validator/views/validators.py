@@ -22,6 +22,17 @@ from transit_odp.fares_validator.views.functions import (
     is_schedule_stop_points,
     is_service_frame_present,
     is_time_intervals_present_in_tarrifs,
+    is_uk_pi_fare_price_frame_present,
+    check_fare_products,
+    check_preassigned_fare_products,
+    check_preassigned_validable_elements,
+    check_access_right_elements,
+    check_product_type,
+    check_sales_offer_packages,
+    check_sales_offer_package,
+    check_distribution_assignments_elements,
+    check_sales_offer_elements,
+
 )
 
 
@@ -68,6 +79,38 @@ class FaresValidator:
         self.register_function(
             "check_type_of_tariff_ref_values", check_type_of_tariff_ref_values
         )
+        self.register_function(
+            "is_uk_pi_fare_price_frame_present", is_uk_pi_fare_price_frame_present
+        )
+        self.register_function(
+            "check_fare_products", check_fare_products
+        )
+        self.register_function(
+            "check_preassigned_fare_products", check_preassigned_fare_products
+        )
+        self.register_function(
+            "check_preassigned_validable_elements", check_preassigned_validable_elements
+        )
+        self.register_function(
+            "check_access_right_elements", check_access_right_elements
+        )
+        self.register_function(
+            "check_product_type", check_product_type
+        )
+        self.register_function(
+            "check_sales_offer_packages", check_sales_offer_packages
+        )
+        self.register_function(
+            "check_sales_offer_package", check_sales_offer_package
+        )
+        self.register_function(
+            "check_distribution_assignments_elements", check_distribution_assignments_elements
+        )
+        self.register_function(
+            "check_sales_offer_elements", check_sales_offer_elements
+        )
+
+
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
