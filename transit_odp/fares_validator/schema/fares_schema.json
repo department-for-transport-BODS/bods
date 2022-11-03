@@ -34,16 +34,6 @@
       ]
     },
     {
-      "details": "validityParameters should either be nested within GenericParameterAssignment.ValidityParameterGroupingType or GenericParameterAssignment.ValidityParameterAssignmentType",
-      "category": "Conditional Check",
-      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
-      "rules": [
-        {
-          "test": "check_placement_validity_parameters(.)"
-        }
-      ]
-    },
-    {
       "details": "If fareZones is present in FareFrame, additional fareZones properties should be present",
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame/x:fareZones",
@@ -270,72 +260,22 @@
       "rules": [{ "test": "all_fare_structure_element_checks(.)" }]
     },
     {
-      "details": "Mandatory element 'GenericParameterAssignment' missing",
+      "details": "Check if 'GenericParameterAssignment' has acceptable elements within it when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'",
       "category": "Mandatory Element",
-      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements",
       "rules": [
         {
-          "test": "count(x:GenericParameterAssignment) > 0"
+          "test": "check_generic_parameters_for_access(.)"
         }
       ]
     },
     {
-      "details": "Mandatory element 'ValidityParameterGroupingType' missing",
+      "details": "Check if 'GenericParameterAssignment' has acceptable elements within it when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:eligibility'",
       "category": "Mandatory Element",
-      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements",
       "rules": [
         {
-          "test": "count(x:ValidityParameterGroupingType) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'validityParameters' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
-      "rules": [
-        {
-          "test": "count(x:validityParameters) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'limitations' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
-      "rules": [
-        {
-          "test": "count(x:limitations) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'UserProfile' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations",
-      "rules": [
-        {
-          "test": "count(x:UserProfile) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Name' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
-      "rules": [
-        {
-          "test": "count(x:Name) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'UserType' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:UserProfile",
-      "rules": [
-        {
-          "test": "count(x:UserType) > 0"
+          "test": "check_generic_parameters_for_eligibility(.)"
         }
       ]
     },
