@@ -1,5 +1,3 @@
-from lxml import etree
-
 from ..constants import (
     FARE_STRUCTURE_ELEMENT_REF,
     FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
@@ -8,7 +6,6 @@ from ..constants import (
     NAMESPACE,
     ORG_OPERATOR_ID_SUBSTRING,
     STOP_POINT_ID_SUBSTRING,
-    TYPE_OF_ACCESS_RIGHT_REF,
     TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING,
     TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING,
     TYPE_OF_FRAME_REF_SUBSTRING,
@@ -159,31 +156,6 @@ def is_generic_parameter_limitions_present(context, fare_frames, *args):
     return True
 
 
-def check_placement_validity_parameters(context, element, *args):
-    """
-    Check for validityParameters.
-    It should either be nested within
-    GenericParameterAssignment.ValidityParameterGroupingType
-    or GenericParameterAssignment.ValidityParameterAssignmentType",
-    """
-    element = element[0]
-    xpath = "x:TypeOfAccessRightAssignmentRef"
-    assignment_ref = element.xpath(xpath, namespaces=NAMESPACE)
-    try:
-        assignment_ref_ref = _extract_attribute(assignment_ref, "ref")
-    except KeyError:
-        return False
-    if TYPE_OF_ACCESS_RIGHT_REF == assignment_ref_ref:
-        xpath = "string(x:ValidityParameterGroupingType/x:validityParameters)"
-        in_grouping_type = element.xpath(xpath, namespaces=NAMESPACE)
-        xpath = "string(x:ValidityParameterAssignmentType/x:validityParameters)"
-        in_assignment_type = element.xpath(xpath, namespaces=NAMESPACE)
-        if in_grouping_type or in_assignment_type:
-            return True
-        return False
-    return True
-
-
 def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
     """
     Check if fareZones is present in FareFrame.
@@ -331,12 +303,11 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
     UK_PI_FARE_PRICE in it.
     """
     composite_frame = composite_frames[0]
-    ns = {"x": composite_frame.nsmap.get(None)}
     xpath = "//x:frames/x:FareFrame"
-    fare_frames = composite_frame.xpath(xpath, namespaces=ns)
+    fare_frames = composite_frame.xpath(xpath, namespaces=NAMESPACE)
     for fare_frame in fare_frames:
         xpath = "x:TypeOfFrameRef"
-        type_of_frame_ref = fare_frame.xpath(xpath, namespaces=ns)
+        type_of_frame_ref = fare_frame.xpath(xpath, namespaces=NAMESPACE)
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
@@ -362,16 +333,17 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
     result = False
 
     fare_structure_element = fare_structure_elements[0]
-    ns = {"x": fare_structure_element.nsmap.get(None)}
     xpath = "//x:FareStructureElement"
-    all_fare_structure_elements = fare_structure_element.xpath(xpath, namespaces=ns)
+    all_fare_structure_elements = fare_structure_element.xpath(
+        xpath, namespaces=NAMESPACE
+    )
     length_all_fare_structure_elements = len(all_fare_structure_elements)
 
     if length_all_fare_structure_elements > 2:
         for element in all_fare_structure_elements:
             try:
                 type_of_fare_structure_element_ref = element.xpath(
-                    "x:TypeOfFareStructureElementRef", namespaces=ns
+                    "x:TypeOfFareStructureElementRef", namespaces=NAMESPACE
                 )
                 type_of_fare_structure_element_ref_ref = _extract_attribute(
                     type_of_fare_structure_element_ref, "ref"
@@ -381,7 +353,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                 )
                 type_of_access_right_assignment_ref = element.xpath(
                     "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
-                    namespaces=ns,
+                    namespaces=NAMESPACE,
                 )
                 type_of_access_right_assignment_ref_ref = _extract_attribute(
                     type_of_access_right_assignment_ref, "ref"
@@ -391,25 +363,25 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                 )
 
                 access_index = list_type_of_fare_structure_element_ref_ref.index(
-                    "fxc:access"
+                    "fxc:access"  # Move to constants
                 )
                 can_access_index = list_type_of_access_right_assignment_ref_ref.index(
-                    "fxc:can_access"
+                    "fxc:can_access"  # Move to constants
                 )
                 eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
-                    "fxc:eligibility"
+                    "fxc:eligibility"  # Move to constants
                 )
                 eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
-                    "fxc:eligible"
+                    "fxc:eligible"  # Move to constants
                 )
                 travel_conditions_index = (
                     list_type_of_fare_structure_element_ref_ref.index(
-                        "fxc:travel_conditions"
+                        "fxc:travel_conditions"  # Move to constants
                     )
                 )
                 condition_of_use_index = (
                     list_type_of_access_right_assignment_ref_ref.index(
-                        "fxc:condition_of_use"
+                        "fxc:condition_of_use"  # Move to constants
                     )
                 )
 
@@ -437,3 +409,81 @@ def check_type_of_tariff_ref_values(context, elements, *args):
         if type_of_tariff_ref_ref in ref_value:
             return True
     return False
+
+
+def check_generic_parameters_for_access(context, elements, *args):
+    """
+    Checks if 'GenericParameterAssignment' has acceptable elements within it when
+    'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'
+    """
+    element = elements[0]
+    xpath = "x:FareStructureElement"
+    fare_structure_elements = element.xpath(xpath, namespaces=NAMESPACE)
+    for fare_structure_element in fare_structure_elements:
+        xpath = "x:TypeOfFareStructureElementRef"
+        type_of_fare_structure_element_ref = fare_structure_element.xpath(
+            xpath, namespaces=NAMESPACE
+        )
+        try:
+            type_of_fare_structure_element_ref_ref = _extract_attribute(
+                type_of_fare_structure_element_ref, "ref"
+            )
+        except KeyError:
+            return False
+        if "fxc:access" in type_of_fare_structure_element_ref_ref:
+            # Move fxc:access to constants
+            xpath = "x:GenericParameterAssignment/x:ValidityParameterGroupingType"
+            grouping_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+
+            xpath = "x:GenericParameterAssignment/x:ValidityParameterAssignmentType"
+            assignment_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+
+            xpath = "x:GenericParameterAssignment/x:validityParameters"
+            validity_parameters = fare_structure_element.xpath(
+                xpath, namespaces=NAMESPACE
+            )
+
+            if (grouping_type or assignment_type) and validity_parameters:
+                return True
+            return False
+    return True
+
+
+def check_generic_parameters_for_eligibility(context, elements, *args):
+    """
+    Checks if 'GenericParameterAssignment' has acceptable elements within it when
+    'TypeOfFareStructureElementRef' has a ref value of 'fxc:eligibility'
+    """
+    element = elements[0]
+    xpath = "x:FareStructureElement"
+    fare_structure_elements = element.xpath(xpath, namespaces=NAMESPACE)
+    for fare_structure_element in fare_structure_elements:
+        xpath = "x:TypeOfFareStructureElementRef"
+        type_of_fare_structure_element_ref = fare_structure_element.xpath(
+            xpath, namespaces=NAMESPACE
+        )
+        try:
+            type_of_fare_structure_element_ref_ref = _extract_attribute(
+                type_of_fare_structure_element_ref, "ref"
+            )
+        except KeyError:
+            return False
+        if "fxc:eligibility" in type_of_fare_structure_element_ref_ref:
+            # Move fxc:eligibility to constants
+            xpath = "x:GenericParameterAssignment/x:limitations/x:UserProfile"
+            user_profile = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+
+            xpath = "x:GenericParameterAssignment/x:limitations/x:UserProfile/x:Name"
+            user_profile_name = fare_structure_element.xpath(
+                xpath, namespaces=NAMESPACE
+            )
+
+            xpath = (
+                "x:GenericParameterAssignment/x:limitations/x:UserProfile/x:UserType"
+            )
+            user_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+
+            if user_profile and user_profile_name and user_type:
+                return True
+            return False
+    return True
