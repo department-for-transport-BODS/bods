@@ -17,6 +17,7 @@ from ..constants import (
     FARE_STRUCTURE_ACCESS_RIGHT_REF,
     FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF,
     FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
+    TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING,
 )
 
 
@@ -259,7 +260,7 @@ def is_service_frame_present(context, service_frame, *args):
             ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
             return False
-        if TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING in ref:
+        if TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING in ref:
             return True
         return False
 
