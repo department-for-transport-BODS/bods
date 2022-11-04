@@ -1,23 +1,23 @@
 from ..constants import (
+    FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF,
+    FARE_STRUCTURE_ACCESS_RIGHT_REF,
+    FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
+    FARE_STRUCTURE_ELEMENT_ACCESS_REF,
     FARE_STRUCTURE_ELEMENT_DURATION_REF,
+    FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF,
+    FARE_STRUCTURE_ELEMENT_TRAVEL_REF,
     FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
     LENGTH_OF_OPERATOR,
     LENGTH_OF_PUBLIC_CODE,
     NAMESPACE,
     ORG_OPERATOR_ID_SUBSTRING,
     STOP_POINT_ID_SUBSTRING,
+    TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING,
     TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING,
     TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING,
+    TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING,
     TYPE_OF_FRAME_REF_SUBSTRING,
     TYPE_OF_TARIFF_REF_SUBSTRING,
-    TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING,
-    FARE_STRUCTURE_ELEMENT_ACCESS_REF,
-    FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF,
-    FARE_STRUCTURE_ELEMENT_TRAVEL_REF,
-    FARE_STRUCTURE_ACCESS_RIGHT_REF,
-    FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF,
-    FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
-    TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING,
 )
 
 
@@ -481,7 +481,8 @@ def check_fare_products(context, data_objects, *args):
 
 def check_preassigned_fare_products(context, data_objects, *args):
     """
-    Mandatory element 'PreassignedFareProduct' or it's children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'PreassignedFareProduct' or it's children missing in 
+    fareProducts for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -501,6 +502,10 @@ def check_preassigned_fare_products(context, data_objects, *args):
             preassigned_fare_product = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not preassigned_fare_product:
                 return False
+            xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:ProductType"
+            product_type = data_object.xpath(xpath, namespaces=NAMESPACE)
+            if not product_type:
+                return False
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:Name"
             name = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not name:
@@ -519,7 +524,8 @@ def check_preassigned_fare_products(context, data_objects, *args):
 
 def check_preassigned_validable_elements(context, data_objects, *args):
     """
-    Mandatory element 'validableElements' or it's children missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'validableElements' or it's children missing in 
+    fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -557,7 +563,8 @@ def check_preassigned_validable_elements(context, data_objects, *args):
 
 def check_access_right_elements(context, data_objects, *args):
     """
-    Mandatory element 'AccessRightInProduct' or it's children missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'AccessRightInProduct' or it's children missing in 
+    fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -580,32 +587,6 @@ def check_access_right_elements(context, data_objects, *args):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct/x:AccessRightInProduct/x:ValidableElementRef"
             validable_element_ref = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not validable_element_ref:
-                return False
-            return True
-    return False
-
-
-def check_product_type(context, data_objects, *args):
-    """
-    Mandatory element 'ProductType'is missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
-    FareFrame UK_PI_FARE_PRODUCT is mandatory
-    """
-    data_object = data_objects[0]
-    base_xpath = "x:CompositeFrame/x:frames/x:FareFrame/"
-    xpath = f"{base_xpath}x:TypeOfFrameRef"
-    type_of_frame_refs = data_object.xpath(xpath, namespaces=NAMESPACE)
-    for ref in type_of_frame_refs:
-        try:
-            type_of_frame_ref_ref = _extract_attribute([ref], "ref")
-        except KeyError:
-            return False
-        if (
-            type_of_frame_ref_ref is not None
-            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
-        ):
-            xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:ProductType"
-            product_type = data_object.xpath(xpath, namespaces=NAMESPACE)
-            if not product_type:
                 return False
             return True
     return False
@@ -639,7 +620,8 @@ def check_sales_offer_packages(context, data_objects, *args):
 
 def check_sales_offer_package(context, data_objects, *args):
     """
-    Mandatory element 'SalesOfferPackage' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'SalesOfferPackage' or it's children missing in 
+    salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -665,7 +647,8 @@ def check_sales_offer_package(context, data_objects, *args):
 
 def check_distribution_assignments_elements(context, data_objects, *args):
     """
-    Mandatory element 'distributionAssignments' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'distributionAssignments' or it's children missing in 
+    salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -703,7 +686,8 @@ def check_distribution_assignments_elements(context, data_objects, *args):
 
 def check_sales_offer_elements(context, data_objects, *args):
     """
-    Mandatory element 'salesOfferPackageElements' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'salesOfferPackageElements' or it's children missing in 
+    salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -821,7 +805,8 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
 
 def check_frequency_of_use(context, data_objects, *args):
     """
-    Mandatory element 'FrequencyOfUse' or it's child missing in FareStructureElement with TypeOfFareStructureElementRef - fxc:travel_conditions
+    Mandatory element 'FrequencyOfUse' or it's child missing in 
+    FareStructureElement with TypeOfFareStructureElementRef - fxc:travel_conditions
     """
     data_object = data_objects[0]
     base_xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/"
