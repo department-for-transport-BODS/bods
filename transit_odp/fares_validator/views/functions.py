@@ -159,8 +159,19 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
     fare_frame = fare_frames[0]
     xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-    if product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]:
-        return get_generic_parameter_assignment_properties(fare_frame)
+    xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:TypeOfFareStructureElementRef"
+    type_of_frame_refs = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    for type_of_frame_ref in type_of_frame_refs:
+        try:
+            type_of_frame_ref_ref = _extract_attribute([type_of_frame_ref], "ref")
+        except KeyError:
+            return False
+        if (
+            type_of_frame_ref_ref is not None
+            and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
+            and product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]
+        ):
+            return get_generic_parameter_assignment_properties(fare_frame)
     return True
 
 
