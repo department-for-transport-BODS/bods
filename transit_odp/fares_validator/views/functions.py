@@ -481,7 +481,7 @@ def check_fare_products(context, data_objects, *args):
 
 def check_preassigned_fare_products(context, data_objects, *args):
     """
-    Mandatory element 'PreassignedFareProduct' or it's children missing in 
+    Mandatory element 'PreassignedFareProduct' or it's children missing in
     fareProducts for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
@@ -524,7 +524,7 @@ def check_preassigned_fare_products(context, data_objects, *args):
 
 def check_preassigned_validable_elements(context, data_objects, *args):
     """
-    Mandatory element 'validableElements' or it's children missing in 
+    Mandatory element 'validableElements' or it's children missing in
     fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
@@ -563,7 +563,7 @@ def check_preassigned_validable_elements(context, data_objects, *args):
 
 def check_access_right_elements(context, data_objects, *args):
     """
-    Mandatory element 'AccessRightInProduct' or it's children missing in 
+    Mandatory element 'AccessRightInProduct' or it's children missing in
     fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
@@ -620,7 +620,7 @@ def check_sales_offer_packages(context, data_objects, *args):
 
 def check_sales_offer_package(context, data_objects, *args):
     """
-    Mandatory element 'SalesOfferPackage' or it's children missing in 
+    Mandatory element 'SalesOfferPackage' or it's children missing in
     salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
@@ -647,7 +647,7 @@ def check_sales_offer_package(context, data_objects, *args):
 
 def check_distribution_assignments_elements(context, data_objects, *args):
     """
-    Mandatory element 'distributionAssignments' or it's children missing in 
+    Mandatory element 'distributionAssignments' or it's children missing in
     salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
@@ -686,7 +686,7 @@ def check_distribution_assignments_elements(context, data_objects, *args):
 
 def check_sales_offer_elements(context, data_objects, *args):
     """
-    Mandatory element 'salesOfferPackageElements' or it's children missing in 
+    Mandatory element 'salesOfferPackageElements' or it's children missing in
     salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
@@ -805,7 +805,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
 
 def check_frequency_of_use(context, data_objects, *args):
     """
-    Mandatory element 'FrequencyOfUse' or it's child missing in 
+    Mandatory element 'FrequencyOfUse' or it's child missing in
     FareStructureElement with TypeOfFareStructureElementRef - fxc:travel_conditions
     """
     data_object = data_objects[0]
