@@ -449,7 +449,6 @@ def is_uk_pi_fare_price_frame_present(context, data_objects, *args):
         ):
             xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:fareTables"
             fare_tables = data_object.xpath(xpath, namespaces=NAMESPACE)
-            print("fare_tables}}}}}", fare_tables)
             if not fare_tables:
                 return False
             xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:fareTables/x:FareTable"
