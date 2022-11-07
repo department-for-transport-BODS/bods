@@ -1,8 +1,12 @@
+from io import BytesIO
+from typing import List
+
 import openpyxl
-from django.http import HttpResponse
 from rest_framework.views import APIView
 
-from ..models import FaresValidation
+from transit_odp.fares_validator.types import Violation
+
+from ..models import FaresValidation, FaresValidationResult
 
 FARES_VALIDATOR_REPORT_COLUMNS = {
     "file_name": "File Name",
@@ -17,15 +21,21 @@ REPORT_SHEET_TITLE = "Warnings"
 
 
 class FaresXmlExporter(APIView):
-    def get(self, request, pk1, pk2):
-        fares_validator_report_name = f"BODS_fares_validation_{pk1}_{pk2}.xlsx"
-        response = HttpResponse(content_type="application/ms-excel")
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{fares_validator_report_name}"'
+    def __init__(
+        self,
+        revision_id: int,
+        org_id: int,
+        fares_validator_report_name: str,
+        violations: List[Violation],
+    ):
+        self.fares_validator_report_name = fares_validator_report_name
+        self.xlsx_columns = list(FARES_VALIDATOR_REPORT_COLUMNS.values())
+        self.revision_id = revision_id
+        self.org_id = org_id
 
+    def get_fares_validator_report(self) -> str:
         validations = FaresValidation.objects.filter(
-            dataset_id=pk2, organisation_id=pk1
+            revision_id=self.revision_id, organisation_id=self.org_id
         ).values_list(
             "file_name",
             "error_line_no",
@@ -41,11 +51,14 @@ class FaresXmlExporter(APIView):
         ws.title = REPORT_SHEET_TITLE
 
         row_num = 0
-        columns = list(FARES_VALIDATOR_REPORT_COLUMNS.values())
-        ws.append(columns)
+        ws.append(self.xlsx_columns)
         for row in validations:
             row_num = row_num + 1
             ws.append(row)
 
-        wb.save(response)
-        return response
+        wb.save(self.fares_validator_report_name)
+        return BytesIO(wb.read())
+
+    def get(self, request, pk1, pk2):
+        validation_result = FaresValidationResult.objects.filter(revision_id=pk1)
+        return validation_result.to_http_response()

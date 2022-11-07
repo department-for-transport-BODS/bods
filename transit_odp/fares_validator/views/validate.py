@@ -4,13 +4,11 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.parsers import FileUploadParser
 
-from ..models import FaresValidation
+from ..models import FaresValidation, FaresValidationResult
 from ..serializers import FaresSerializer
 from . import fares_validation
 
 logger = logging.getLogger(__name__)
-type_of_observation = "Simple fares validation failure"
-category = ""  # Itr2 To be extratced from the xml path
 
 
 class FaresXmlValidator:
@@ -23,7 +21,7 @@ class FaresXmlValidator:
 
     def get_errors(self):
         validations = FaresValidation.objects.filter(
-            dataset_id=self.pk2, organisation_id=self.pk1
+            revision_id=self.pk2, organisation_id=self.pk1
         )
         serializer = FaresSerializer(validations, many=True)
         return JsonResponse(serializer.data, safe=False)
@@ -33,23 +31,18 @@ class FaresXmlValidator:
 
         fares_validator = fares_validation.get_fares_validator()
         violations = fares_validator.get_violations(file_obj, self.pk1)
-        if violations:
-            for error in violations:
-                fares_validator_model_object = FaresValidation(
-                    dataset_id=self.pk2,
-                    organisation_id=self.pk1,
-                    file_name=error.filename,
-                    error_line_no=error.line,
-                    error=error.observation.details,
-                    type_of_observation=error.observation.category,
-                    category=category,
+        if violations and len(violations) > 0:
+            fares_violations = [
+                FaresValidation.save_observations(
+                    revision_id=self.pk2, org_id=self.pk1, violation=error
                 )
-                fares_validator_model_object.save()
-
-            validations = FaresValidation.objects.filter(
-                dataset_id=self.pk2, organisation_id=self.pk1
+                for error in violations
+            ]
+            FaresValidationResult.save_validation_result(
+                revision_id=self.pk2, org_id=self.pk1, violation=violations
             )
-            serializer = FaresSerializer(validations, many=True)
+
+            serializer = FaresSerializer(fares_violations, many=True)
             return JsonResponse(
                 serializer.data, safe=False, status=status.HTTP_201_CREATED
             )
