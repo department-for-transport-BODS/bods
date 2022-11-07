@@ -94,6 +94,11 @@ class FaresSearchView(BaseSearchView):
 
         return qs
 
+    def get_context_data(self, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context["validator_error"] = True
+        return context
+
 
 class FaresDatasetDetailView(DetailView):
     template_name = "browse/fares/feed_detail/index.html"
@@ -125,6 +130,10 @@ class FaresDatasetDetailView(DetailView):
         )
         kwargs["last_modified_username"] = last_modified_username
         kwargs["show_map"] = dataset.status in (EXPIRED, INACTIVE, LIVE)
+        kwargs["validator_error"] = True
+
+        kwargs["pk1"] = dataset.organisation_id
+        kwargs["pk2"] = dataset.id
 
         is_subscribed = None
         feed_api = None

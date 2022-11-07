@@ -2,55 +2,71 @@
 {% load tz %}
 
 <table class="govuk-table consumer-property-table">
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
-      <td colspan="2" class="govuk-table__cell dont-break-out">{% trans property.name %}</td>
-    </tr>
-     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Data type' %}</th>
-      <td colspan="2" class="govuk-table__cell dont-break-out">
-        {% block dataset_type %}
-          {{ property.pretty_dataset_type }}
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+            <td colspan="2" class="govuk-table__cell dont-break-out">{% trans property.name %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Data type' %}</th>
+            <td colspan="2" class="govuk-table__cell dont-break-out">
+                {% block dataset_type %}
+                    {{ property.pretty_dataset_type }}
+                {% endblock %}
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">
+                {% if property.dataset_type == 2 %}
+                    {% trans 'Data feed ID' %}
+                {% else %}
+                    {% trans 'Data set ID' %}
+                {% endif %}
+            </th>
+            <td colspan="2" class="govuk-table__cell dont-break-out">{{ property.id }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
+            <td colspan="2" class="govuk-table__cell dont-break-out">{% trans property.description %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+            <td colspan="2" class="govuk-table__cell dont-break-out">
+                <div class="stacked">
+                    <a class="govuk-link" href="{% block owner_search_link %}{% endblock %}">
+                        {% trans property.organisation.name %}
+                    </a>
+                    {% blocktrans %}
+                        Access all data uploaded by this publisher
+                    {% endblocktrans %}
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'BODS Compliant data' %}</th>
+            {% if validator_error %}
+                <td colspan="2" class="govuk-table__cell">
+                    <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
+                        <span class="govuk-warning-text__icon" aria-hidden="true" style="min-width: 20px; min-height: 20px; font-size: 15px; line-height: 15px; top: 16px;">!</span>
+                        <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans 'Non compliant' %}</span>
+                        <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
+                    </div>
+                </td>
+            {% else %}
+                <td colspan="2" class="govuk-table__cell">
+                    <span class="item__value">{% trans 'Compliant' %}</span>
+                </td>
+            {% endif %}
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
+            <td colspan="2" class="govuk-table__cell">
+                <div class="flex-between">
+                    {% include 'organisation/snippets/status_indicator.html' with status=property.status record=property %}
+                </div>
+            </td>
+        </tr>
+        {% block datatype_content %}
         {% endblock %}
-      </td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% if property.dataset_type == 2 %}
-          {% trans 'Data feed ID' %}
-        {% else %}
-          {% trans 'Data set ID' %}
-        {% endif %}
-      </th>
-      <td colspan="2" class="govuk-table__cell dont-break-out">{{ property.id }}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
-      <td colspan="2" class="govuk-table__cell dont-break-out">{% trans property.description %}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
-      <td colspan="2" class="govuk-table__cell dont-break-out">
-        <div class="stacked">
-          <a class="govuk-link" href="{% block owner_search_link %}{% endblock %}">
-            {% trans property.organisation.name %}
-          </a>
-            {% blocktrans %}
-            Access all data uploaded by this publisher
-            {% endblocktrans %}
-        </div>
-      </td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
-      <td colspan="2" class="govuk-table__cell">
-        <div class="flex-between">
-          {% include 'organisation/snippets/status_indicator.html' with status=property.status record=property %}
-        </div>
-      </td>
-    </tr>
-    {% block datatype_content %}
-    {% endblock %}
-</tbody>
+    </tbody>
 </table>
