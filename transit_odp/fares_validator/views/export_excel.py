@@ -1,12 +1,9 @@
-from io import BytesIO
-from typing import List
-
 import openpyxl
+from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework.views import APIView
 
-from transit_odp.fares_validator.types import Violation
-
-from ..models import FaresValidation, FaresValidationResult
+from ..models import FaresValidation
 
 FARES_VALIDATOR_REPORT_COLUMNS = {
     "file_name": "File Name",
@@ -21,21 +18,18 @@ REPORT_SHEET_TITLE = "Warnings"
 
 
 class FaresXmlExporter(APIView):
-    def __init__(
-        self,
-        revision_id: int,
-        org_id: int,
-        fares_validator_report_name: str,
-        violations: List[Violation],
-    ):
-        self.fares_validator_report_name = fares_validator_report_name
-        self.xlsx_columns = list(FARES_VALIDATOR_REPORT_COLUMNS.values())
-        self.revision_id = revision_id
-        self.org_id = org_id
+    def get(self, request, pk1, pk2):
+        now = timezone.now()
+        fares_validator_report_name = (
+            f"BODS_Fares_Validation_{pk1}_{pk2}_{now:%H_%M_%d%m%Y}.xlsx"
+        )
+        response = HttpResponse(content_type="application/ms-excel")
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="{fares_validator_report_name}"'
 
-    def get_fares_validator_report(self) -> str:
         validations = FaresValidation.objects.filter(
-            revision_id=self.revision_id, organisation_id=self.org_id
+            revision_id=pk2, organisation_id=pk1
         ).values_list(
             "file_name",
             "error_line_no",
@@ -51,14 +45,11 @@ class FaresXmlExporter(APIView):
         ws.title = REPORT_SHEET_TITLE
 
         row_num = 0
-        ws.append(self.xlsx_columns)
+        columns = list(FARES_VALIDATOR_REPORT_COLUMNS.values())
+        ws.append(columns)
         for row in validations:
             row_num = row_num + 1
             ws.append(row)
 
-        wb.save(self.fares_validator_report_name)
-        return BytesIO(wb.read())
-
-    def get(self, request, pk1, pk2):
-        validation_result = FaresValidationResult.objects.filter(revision_id=pk1)
-        return validation_result.to_http_response()
+        wb.save(response)
+        return response
