@@ -32,7 +32,7 @@
           "test": "is_generic_parameter_limitations_present(.)"
         }
       ]
-    },  
+    },
     {
       "details": "If fareZones is present in FareFrame, additional fareZones properties should be present",
       "category": "Conditional Check",
@@ -292,7 +292,7 @@
     {
       "details": "Mandatory element 'fareProducts' missing for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
-      "context": "//x:dataObjects",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
           "test": "check_fare_products(.)"

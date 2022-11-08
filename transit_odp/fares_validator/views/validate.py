@@ -40,8 +40,8 @@ class FaresXmlValidator:
                     organisation_id=self.pk1,
                     file_name=error.filename,
                     error_line_no=error.line,
-                    error=error.observation.details,
-                    type_of_observation=error.observation.category,
+                    error=error.observation,
+                    type_of_observation=type_of_observation,
                     category=category,
                 )
                 fares_validator_model_object.save()
