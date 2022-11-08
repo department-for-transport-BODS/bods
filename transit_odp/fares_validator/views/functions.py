@@ -19,6 +19,8 @@ from ..constants import (
     TYPE_OF_FRAME_REF_SUBSTRING,
     TYPE_OF_TARIFF_REF_SUBSTRING,
 )
+from .response import XMLViolationDetail
+from .validation_messages import MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING
 
 
 def _extract_text(elements, default=None):
@@ -469,8 +471,7 @@ def check_fare_products(context, data_objects, *args):
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
-    base_xpath = "x:CompositeFrame/x:frames/x:FareFrame/"
-    xpath = f"{base_xpath}x:TypeOfFrameRef"
+    xpath = "x:TypeOfFrameRef"
     type_of_frame_refs = data_object.xpath(xpath, namespaces=NAMESPACE)
     for ref in type_of_frame_refs:
         try:
@@ -481,12 +482,15 @@ def check_fare_products(context, data_objects, *args):
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
-            xpath = f"{base_xpath}x:fareProducts"
+            xpath = "x:fareProducts"
             fare_products = data_object.xpath(xpath, namespaces=NAMESPACE)
+            sourceline = data_object.sourceline
             if not fare_products:
-                return False
-            return True
-    return False
+                response_details = XMLViolationDetail(
+                    "violation", sourceline, MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING
+                )
+                response = response_details.__list__()
+                return response
 
 
 def check_preassigned_fare_products(context, data_objects, *args):
@@ -597,6 +601,33 @@ def check_access_right_elements(context, data_objects, *args):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:accessRightsInProduct/x:AccessRightInProduct/x:ValidableElementRef"
             validable_element_ref = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not validable_element_ref:
+                return False
+            return True
+    return False
+
+
+def check_product_type(context, data_objects, *args):
+    """
+    Mandatory element 'ProductType'is missing in
+    fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
+    FareFrame UK_PI_FARE_PRODUCT is mandatory
+    """
+    data_object = data_objects[0]
+    base_xpath = "x:CompositeFrame/x:frames/x:FareFrame/"
+    xpath = f"{base_xpath}x:TypeOfFrameRef"
+    type_of_frame_refs = data_object.xpath(xpath, namespaces=NAMESPACE)
+    for ref in type_of_frame_refs:
+        try:
+            type_of_frame_ref_ref = _extract_attribute([ref], "ref")
+        except KeyError:
+            return False
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+        ):
+            xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:ProductType"
+            product_type = data_object.xpath(xpath, namespaces=NAMESPACE)
+            if not product_type:
                 return False
             return True
     return False

@@ -120,13 +120,13 @@ class FaresValidator:
     ) -> None:
         for rule in observation.rules:
             result = element.xpath(rule.test, namespaces=self.namespaces)
-            if not result:
+            if len(result):
                 name = element.xpath("local-name(.)", namespaces=self.namespaces)
                 violation = Violation(
-                    line=element.sourceline,
+                    line=result[1],
                     name=name,
                     filename=unquote(Path(element.base).name),
-                    observation=observation,
+                    observation=result[2],
                     element_text=element.text,
                 )
                 self.add_violation(violation)
