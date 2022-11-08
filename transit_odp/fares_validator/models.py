@@ -1,15 +1,11 @@
-from typing import List, Optional
+from typing import List
 
-from django.core.files.base import File
-from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.http.response import FileResponse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
 
 from transit_odp.fares_validator.types import Violation
-from transit_odp.fares_validator.views.export_excel import FaresXmlExporter
 from transit_odp.organisation.models import DatasetRevision
 
 type_of_observation = "Simple fares validation failure"
@@ -24,18 +20,14 @@ class FaresValidationResult(models.Model):
         help_text=_("The revision being validated."),
     )
     count = models.IntegerField(help_text=_("Number of fare violations."))
-    report = models.FileField(validators=[FileExtensionValidator([".xlsx"])])
+    report_file_name = models.CharField(
+        max_length=256, help_text=_("The name of the report file.")
+    )
     created = CreationDateTimeField(_("created"))
 
     @property
     def is_compliant(self):
         return self.count == 0
-
-    def to_http_response(self) -> Optional[FileResponse]:
-        self.report.seek(0)
-        response = FileResponse(self.report.open("rb"), as_attachment=True)
-        response["Content-Disposition"] = f"attachment; filename={self.report}"
-        return response
 
     @classmethod
     def save_validation_result(
@@ -52,11 +44,11 @@ class FaresValidationResult(models.Model):
         fares_validator_report_name = (
             f"BODS_Fares_Validation_{org_id}_{revision_id}_{now:%H_%M_%d%m%Y}.xlsx"
         )
-        results = FaresXmlExporter(
-            revision_id, org_id, fares_validator_report_name, violations
+        return cls(
+            revision_id=revision_id,
+            count=len(violations),
+            report_file_name=fares_validator_report_name,
         )
-        report = File(results, name=fares_validator_report_name)
-        return cls(revision_id=revision_id, count=len(violations), report=report)
 
 
 class FaresValidation(models.Model):
