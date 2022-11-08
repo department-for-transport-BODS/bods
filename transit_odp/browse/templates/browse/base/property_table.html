@@ -44,7 +44,7 @@
         </tr>
         <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans 'BODS Compliant data' %}</th>
-            {% if validator_error %}
+            {% if status %}
                 <td colspan="2" class="govuk-table__cell">
                     <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
                         <span class="govuk-warning-text__icon" aria-hidden="true" style="min-width: 20px; min-height: 20px; font-size: 15px; line-height: 15px; top: 16px;">!</span>

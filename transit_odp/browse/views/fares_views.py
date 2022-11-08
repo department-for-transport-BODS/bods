@@ -96,7 +96,7 @@ class FaresSearchView(BaseSearchView):
 
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context["validator_error"] = True
+        context["status"] = True
         return context
 
 
@@ -130,7 +130,7 @@ class FaresDatasetDetailView(DetailView):
         )
         kwargs["last_modified_username"] = last_modified_username
         kwargs["show_map"] = dataset.status in (EXPIRED, INACTIVE, LIVE)
-        kwargs["validator_error"] = True
+        kwargs["status"] = True
 
         kwargs["pk1"] = dataset.organisation_id
         kwargs["pk2"] = dataset.id

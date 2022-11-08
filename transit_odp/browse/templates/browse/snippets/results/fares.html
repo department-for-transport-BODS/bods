@@ -27,7 +27,7 @@
         <span class="item__key">{% trans 'Last updated:' %}</span>
         <span class="item__value">{{ item.modified|date:"j M Y G:i:s" }}</span>
     </li>
-    {% if validator_error %}
+    {% if status %}
         <li>
             <span class="item__key">{% trans 'BODS compliant data:' %}</span>
             <div class="govuk-warning-text item__value govuk-!-margin-bottom-0" style="padding: 0px;">
