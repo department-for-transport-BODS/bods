@@ -36,4 +36,4 @@ class Violation(BaseModel):
     filename: str
     name: str
     element_text: Optional[str] = None
-    observation: Observation
+    observation: str
