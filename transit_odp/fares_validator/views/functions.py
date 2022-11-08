@@ -19,6 +19,8 @@ from ..constants import (
     FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
     TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING,
 )
+from .validation_messages import MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING
+from .response import (XMLViolationDetail)
 
 
 def _extract_text(elements, default=None):
@@ -473,10 +475,11 @@ def check_fare_products(context, data_objects, *args):
         ):
             xpath = f"{base_xpath}x:fareProducts"
             fare_products = data_object.xpath(xpath, namespaces=NAMESPACE)
+            sourceline = type_of_frame_refs[0].sourceline
             if not fare_products:
-                return False
-            return True
-    return False
+                response_details = XMLViolationDetail("violation", sourceline, MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING)
+                response = response_details.__list__()
+                return response
 
 
 def check_preassigned_fare_products(context, data_objects, *args):
