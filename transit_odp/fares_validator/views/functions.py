@@ -161,8 +161,19 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
     fare_frame = fare_frames[0]
     xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-    if product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]:
-        return get_generic_parameter_assignment_properties(fare_frame)
+    xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:TypeOfFareStructureElementRef"
+    type_of_frame_refs = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    for type_of_frame_ref in type_of_frame_refs:
+        try:
+            type_of_frame_ref_ref = _extract_attribute([type_of_frame_ref], "ref")
+        except KeyError:
+            return False
+        if (
+            type_of_frame_ref_ref is not None
+            and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
+            and product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]
+        ):
+            return get_generic_parameter_assignment_properties(fare_frame)
     return True
 
 
@@ -440,7 +451,6 @@ def is_uk_pi_fare_price_frame_present(context, data_objects, *args):
         ):
             xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:fareTables"
             fare_tables = data_object.xpath(xpath, namespaces=NAMESPACE)
-            print("fare_tables}}}}}", fare_tables)
             if not fare_tables:
                 return False
             xpath = "x:CompositeFrame/x:frames/x:FareFrame/x:fareTables/x:FareTable"
@@ -485,8 +495,8 @@ def check_fare_products(context, data_objects, *args):
 
 def check_preassigned_fare_products(context, data_objects, *args):
     """
-    Mandatory element 'PreassignedFareProduct' or it's children missing in fareProducts
-    for FareFrame - UK_PI_FARE_PRODUCT
+    Mandatory element 'PreassignedFareProduct' or it's children missing in
+    fareProducts for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     data_object = data_objects[0]
@@ -505,6 +515,10 @@ def check_preassigned_fare_products(context, data_objects, *args):
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct"
             preassigned_fare_product = data_object.xpath(xpath, namespaces=NAMESPACE)
             if not preassigned_fare_product:
+                return False
+            xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:ProductType"
+            product_type = data_object.xpath(xpath, namespaces=NAMESPACE)
+            if not product_type:
                 return False
             xpath = f"{base_xpath}x:fareProducts/x:PreassignedFareProduct/x:Name"
             name = data_object.xpath(xpath, namespaces=NAMESPACE)

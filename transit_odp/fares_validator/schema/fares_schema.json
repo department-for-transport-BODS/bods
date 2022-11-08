@@ -330,16 +330,6 @@
       ]
     },
     {
-      "details": "Mandatory element 'ProductType' is missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_product_type(.)"
-        }
-      ]
-    },
-    {
       "details": "Mandatory salesOfferPackages elements missing for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
       "context": "//x:dataObjects",

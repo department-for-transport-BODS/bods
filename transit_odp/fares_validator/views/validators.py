@@ -9,10 +9,19 @@ from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
     all_fare_structure_element_checks,
+    check_access_right_elements,
+    check_distribution_assignments_elements,
+    check_fare_products,
+    check_frequency_of_use,
     check_generic_parameters_for_access,
     check_generic_parameters_for_eligibility,
     check_operator_id_format,
+    check_preassigned_fare_products,
+    check_preassigned_validable_elements,
     check_public_code_length,
+    check_sales_offer_elements,
+    check_sales_offer_package,
+    check_sales_offer_packages,
     check_type_of_frame_ref_ref,
     check_type_of_tariff_ref_values,
     check_value_of_type_of_frame_ref,
@@ -24,16 +33,6 @@ from transit_odp.fares_validator.views.functions import (
     is_service_frame_present,
     is_time_intervals_present_in_tarrifs,
     is_uk_pi_fare_price_frame_present,
-    check_fare_products,
-    check_preassigned_fare_products,
-    check_preassigned_validable_elements,
-    check_access_right_elements,
-    check_product_type,
-    check_sales_offer_packages,
-    check_sales_offer_package,
-    check_distribution_assignments_elements,
-    check_sales_offer_elements,
-    check_frequency_of_use,
 )
 
 
@@ -90,7 +89,6 @@ class FaresValidator:
         self.register_function(
             "check_access_right_elements", check_access_right_elements
         )
-        self.register_function("check_product_type", check_product_type)
         self.register_function("check_sales_offer_packages", check_sales_offer_packages)
         self.register_function("check_sales_offer_package", check_sales_offer_package)
         self.register_function(
