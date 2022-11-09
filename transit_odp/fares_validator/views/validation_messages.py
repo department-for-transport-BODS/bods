@@ -20,7 +20,7 @@ MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
     "TypeOfAccessRightAssignmentRef' missing"
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
-    "'FareStructureElement' checks failed: Present at least 3 times,"
+    "'FareStructureElement' checks failed: Present at least 3 times, "
     "check the 'ref' values are in the correct combination for both "
     "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
 )

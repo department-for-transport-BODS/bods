@@ -385,15 +385,6 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     type_of_access_right_assignment_ref_ref
                 )
 
-            print(
-                "list_type_of_fare_structure_element_ref_ref ",
-                list_type_of_fare_structure_element_ref_ref,
-            )
-            print(
-                "list_type_of_access_right_assignment_ref_ref ",
-                list_type_of_access_right_assignment_ref_ref,
-            )
-
             access_index = list_type_of_fare_structure_element_ref_ref.index(
                 FARE_STRUCTURE_ELEMENT_ACCESS_REF
             )
