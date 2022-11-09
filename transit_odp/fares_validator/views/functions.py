@@ -21,11 +21,16 @@ from ..constants import (
 )
 from .response import XMLViolationDetail
 from .validation_messages import (
+    MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
     MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
     MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
     MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING,
+    MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+    MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT,
+    MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF,
     MESSAGE_OBSERVATION_FARE_ZONES_MISSING,
     MESSAGE_OBSERVATION_FARE_ZONES_NAME_MEMEBERS_MISSING,
+    MESSAGE_OBSERVATION_GENERIC_PARAMETER,
     MESSAGE_OBSERVATION_LINES_MISSING,
     MESSAGE_OBSERVATION_NAME_PUBLICCODE_OPERATORREF_MISSING,
     MESSAGE_OBSERVATION_OPERATOR_ID,
@@ -41,12 +46,6 @@ from .validation_messages import (
     MESSAGE_OBSERVATION_TARIFF_TIME_INTERVALS_MISSING,
     MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING,
     MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
-    MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
-    MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING,
-    MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
-    MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT,
-    MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF,
-    MESSAGE_OBSERVATION_GENERIC_PARAMETER,
 )
 
 
@@ -105,8 +104,10 @@ def get_tariff_time_intervals(element):
     ):
         xpath = "x:tariffs/x:Tariff/x:timeIntervals"
         time_intervals = element.xpath(xpath, namespaces=NAMESPACE)
-        sourceline_time_intervals = time_intervals.sourceline
         if not time_intervals:
+            xpath = "x:tariffs/x:Tariff"
+            tariff = element.xpath(xpath, namespaces=NAMESPACE)
+            sourceline_time_intervals = tariff[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_time_intervals,
@@ -114,22 +115,47 @@ def get_tariff_time_intervals(element):
             )
             response = response_details.__list__()
             return response
-        xpath = "x:TimeInterval"
-        intervals = time_intervals[0].xpath(xpath, namespaces=NAMESPACE)
-        sourceline_intervals = intervals.sourceline
-        if not intervals:
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline_intervals,
-                MESSAGE_OBSERVATION_TARIFF_TIME_INTERVAL_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+
+
+def get_individual_tariff_time_interval(element):
+    element = element[0]
+    xpath = "x:TypeOfFrameRef"
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    if type_of_frame_ref_ref is not None and (
+        TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+    ):
+        xpath = "x:tariffs/x:Tariff/x:timeIntervals/x:TimeInterval"
+        time_interval = element.xpath(xpath, namespaces=NAMESPACE)
+        if not time_interval:
+            xpath = "x:tariffs/x:Tariff/x:timeIntervals"
+            intervals = element.xpath(xpath, namespaces=NAMESPACE)
+            if intervals:
+                sourceline_time_interval = intervals[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_time_interval,
+                    MESSAGE_OBSERVATION_TARIFF_TIME_INTERVAL_MISSING,
+                )
+                response = response_details.__list__()
+                return response
+
+
+def get_tariff_time_interval_name(element):
+    element = element[0]
+    xpath = "x:TypeOfFrameRef"
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    if type_of_frame_ref_ref is not None and (
+        TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+    ):
+        xpath = "x:tariffs/x:Tariff/x:timeIntervals/x:TimeInterval"
+        intervals = element.xpath(xpath, namespaces=NAMESPACE)
         for interval in intervals:
             xpath = "string(x:Name)"
             name = interval.xpath(xpath, namespaces=NAMESPACE)
-            sourceline_name = name.sourceline
             if not name:
+                sourceline_name = interval.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_name,
@@ -137,6 +163,30 @@ def get_tariff_time_intervals(element):
                 )
                 response = response_details.__list__()
                 return response
+
+
+def is_individual_time_interval_present_in_tariffs(context, fare_frames, *args):
+    """
+    Check if ProductType is dayPass or periodPass.
+    If true, timeIntervals element should be present in tarrifs
+    """
+    fare_frame = fare_frames[0]
+    xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
+    product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    if product_type in ["dayPass", "periodPass"]:
+        return get_individual_tariff_time_interval(fare_frames)
+
+
+def is_time_interval_name_present_in_tariffs(context, fare_frames, *args):
+    """
+    Check if ProductType is dayPass or periodPass.
+    If true, timeIntervals element should be present in tarrifs
+    """
+    fare_frame = fare_frames[0]
+    xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
+    product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    if product_type in ["dayPass", "periodPass"]:
+        return get_tariff_time_interval_name(fare_frames)
 
 
 def get_fare_structure_time_intervals(element):

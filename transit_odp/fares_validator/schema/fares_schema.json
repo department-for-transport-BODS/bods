@@ -8,9 +8,9 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        {
-          "test": "is_time_intervals_present_in_tarrifs(.)"
-        }
+        {"test": "is_time_intervals_present_in_tarrifs(.)"},
+        {"test": "is_individual_time_interval_present_in_tariffs(.)"},
+        {"test": "is_time_interval_name_present_in_tariffs(.)"}
       ]
     },
     {
