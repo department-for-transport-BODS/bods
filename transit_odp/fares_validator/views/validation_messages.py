@@ -55,6 +55,9 @@ MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_TEXT_MISSING = (
 MESSAGE_OBSERVATION_ROUND_TRIP_MISSING = (
     "Element 'RoundTrip' or 'TripType' is missing within 'limitations'"
 )
+MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING = (
+    "Element 'timeIntervals' is missing within 'FareStructureElement'"
+)
 MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING = (
     "Element 'TimeIntervalRef' is missing within 'timeIntervals'"
 )
@@ -84,4 +87,7 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
     "'FareStructureElement' checks failed: Present at least 3 times, "
     "check the 'ref' values are in the correct combination for both "
     "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
+)
+MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
+    "Attribute 'ref' of element 'FareStructureElement' missing"
 )

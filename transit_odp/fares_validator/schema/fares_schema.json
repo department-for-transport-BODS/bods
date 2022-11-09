@@ -8,16 +8,9 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        {"test": "is_time_intervals_present_in_tarrifs(.)"},
-        {"test": "is_individual_time_interval_present_in_tariffs(.)"},
-        {"test": "is_time_interval_name_present_in_tariffs(.)"}
-      ]
-    },
-    {
-      "details": "If ProductType is dayPass or periodPass, FareStructureElement elements should be present in Tariff.FareStructureElements",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
+        { "test": "is_time_intervals_present_in_tarrifs(.)" },
+        { "test": "is_individual_time_interval_present_in_tariffs(.)" },
+        { "test": "is_time_interval_name_present_in_tariffs(.)" },
         {
           "test": "is_fare_structure_element_present(.)"
         }

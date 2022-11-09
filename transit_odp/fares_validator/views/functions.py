@@ -45,7 +45,9 @@ from .validation_messages import (
     MESSAGE_OBSERVATION_TARIFF_TIME_INTERVAL_MISSING,
     MESSAGE_OBSERVATION_TARIFF_TIME_INTERVALS_MISSING,
     MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING,
+    MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING,
     MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
+    MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
 )
 
 
@@ -193,16 +195,25 @@ def get_fare_structure_time_intervals(element):
     """
     Checks if the fareStructureElements properties are present
     """
-    element = element[0]
-    xpath = "../x:timeIntervals/x:TimeIntervalRef"
+    xpath = "x:timeIntervals"
     time_intervals = element.xpath(xpath, namespaces=NAMESPACE)
-    sourceline = element.sourceline
     if not time_intervals:
+        sourceline = element.sourceline
         response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING
+            "violation", sourceline, MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING
         )
         response = response_details.__list__()
         return response
+    for element in time_intervals:
+        xpath = "string(x:TimeIntervalRef)"
+        time_interval_ref = element.xpath(xpath, namespaces=NAMESPACE)
+        if not time_interval_ref:
+            sourceline = element.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING
+            )
+            response = response_details.__list__()
+            return response
 
 
 def get_generic_parameter_assignment_properties(element):
@@ -244,14 +255,24 @@ def is_fare_structure_element_present(context, fare_frames, *args):
     xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     if product_type in ["dayPass", "periodPass"]:
-        xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:TypeOfFareStructureElementRef"
-        fare_structure_ref = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-        try:
-            fare_structure_ref_ref = _extract_attribute(fare_structure_ref, "ref")
-        except KeyError:
-            return False
-        if FARE_STRUCTURE_ELEMENT_DURATION_REF == fare_structure_ref_ref:
-            return get_fare_structure_time_intervals(fare_structure_ref)
+        xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement"
+        fare_structure_element = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+        for element in fare_structure_element:
+            xpath = "x:TypeOfFareStructureElementRef"
+            fare_structure_ref = element.xpath(xpath, namespaces=NAMESPACE)
+            try:
+                fare_structure_ref_ref = _extract_attribute(fare_structure_ref, "ref")
+            except KeyError:
+                sourceline = fare_structure_ref[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline,
+                    MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
+                )
+                response = response_details.__list__()
+                return response
+            if FARE_STRUCTURE_ELEMENT_DURATION_REF == fare_structure_ref_ref:
+                return get_fare_structure_time_intervals(element)
 
 
 def is_generic_parameter_limitations_present(context, fare_frames, *args):
