@@ -9,10 +9,13 @@ from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
     all_fare_structure_element_checks,
+    check_access_right_assignment_ref,
     check_access_right_elements,
     check_distribution_assignments_elements,
     check_fare_products,
+    check_fare_structure_element,
     check_frequency_of_use,
+    check_generic_parameter,
     check_generic_parameters_for_access,
     check_generic_parameters_for_eligibility,
     check_operator_id_format,
@@ -22,6 +25,7 @@ from transit_odp.fares_validator.views.functions import (
     check_sales_offer_elements,
     check_sales_offer_package,
     check_sales_offer_packages,
+    check_type_of_fare_structure_element_ref,
     check_type_of_frame_ref_ref,
     check_type_of_tariff_ref_values,
     check_value_of_type_of_frame_ref,
@@ -69,6 +73,17 @@ class FaresValidator:
         self.register_function("is_schedule_stop_points", is_schedule_stop_points)
         self.register_function(
             "all_fare_structure_element_checks", all_fare_structure_element_checks
+        )
+        self.register_function(
+            "check_fare_structure_element", check_fare_structure_element
+        )
+        self.register_function(
+            "check_type_of_fare_structure_element_ref",
+            check_type_of_fare_structure_element_ref,
+        )
+        self.register_function("check_generic_parameter", check_generic_parameter)
+        self.register_function(
+            "check_access_right_assignment_ref", check_access_right_assignment_ref
         )
         self.register_function(
             "check_type_of_frame_ref_ref", check_type_of_frame_ref_ref
@@ -130,7 +145,6 @@ class FaresValidator:
                     element_text=element.text,
                 )
                 self.add_violation(violation)
-                break
 
     def is_valid(self, source: XMLFile) -> bool:
         document = etree.parse(source)

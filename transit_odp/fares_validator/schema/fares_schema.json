@@ -257,7 +257,20 @@
       "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
       "category": "Mandatory Element",
       "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements",
-      "rules": [{ "test": "all_fare_structure_element_checks(.)" }]
+      "rules": [
+        { "test": "all_fare_structure_element_checks(.)" },
+        { "test": "check_fare_structure_element(.)" }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "rules": [
+        { "test": "check_type_of_fare_structure_element_ref(.)" },
+        { "test": "check_generic_parameter(.)" },
+        { "test": "check_access_right_assignment_ref(.)" }
+      ]
     },
     {
       "details": "Check if 'GenericParameterAssignment' has acceptable elements within it when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'",
