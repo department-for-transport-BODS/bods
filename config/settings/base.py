@@ -144,6 +144,7 @@ THIRD_PARTY_APPS = [
     "formtools",
     "django_celery_beat",
     "django_celery_results",
+    "waffle",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -238,6 +239,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django_hosts.middleware.HostsResponseMiddleware",
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
+    "waffle.middleware.WaffleMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
 ]
 
