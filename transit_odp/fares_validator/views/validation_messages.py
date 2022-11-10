@@ -11,17 +11,24 @@ MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING = (
     "attribute 'ref' value does not contain "
     "'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'"
 )
-MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_NAME_MISSING = (
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_MISSING = (
     "From 'scheduledStopPoints' element in ServiceFrame, "
-    "attribute 'id' of element 'ScheduledStopPoint' "
-    "is missing or element 'Name' is missing"
+    "attribute 'id' of element 'ScheduledStopPoint' is missing"
+)
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING = (
+    "From 'scheduledStopPoints' element in ServiceFrame, " "element 'Name' is missing"
 )
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINTS_MISSING = (
     "Element 'scheduledStopPoints' is missing"
 )
-MESSAGE_OBSERVATION_NAME_PUBLICCODE_OPERATORREF_MISSING = (
-    "From 'lines' element in ServiceFrame, "
-    "element 'Name', 'PublicCode' or 'OperatorRef' is missing"
+MESSAGE_OBSERVATION_NAME_MISSING = (
+    "From 'Line' element in ServiceFrame, " "element 'Name' is missing"
+)
+MESSAGE_OBSERVATION_PUBLICCODE_MISSING = (
+    "From 'Line' element in ServiceFrame, " "element 'PublicCode' is missing"
+)
+MESSAGE_OBSERVATION_OPERATORREF_MISSING = (
+    "From 'Line' element in ServiceFrame, " "element'OperatorRef' is missing"
 )
 MESSAGE_OBSERVATION_LINES_MISSING = "Element 'lines' is missing in ServiceFrame"
 MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING = (
@@ -32,19 +39,20 @@ MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH = (
 )
 MESSAGE_OBSERVATION_OPERATOR_ID = "'Operator' attribute 'id' format should be noc:xxxx"
 MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
-    "Attribute 'ref' of element 'TypeOfFrameRef' is missing "
-    "or attribute 'ref' value does not contain "
+    "Attribute 'ref' value does not contain "
     "'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'"
 )
 MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
-    "Attribute 'ref' of element 'TypeOfFrameRef' is missing "
-    "or attribute 'ref' value does not contain 'UK_PI_FARE_NETWORK'"
+    "Attribute 'ref' value does not contain 'UK_PI_FARE_NETWORK'"
 )
-MESSAGE_OBSERVATION_FARE_ZONES_MISSING = (
-    "Element 'fareZones' is missing within FareFrame"
+MESSAGE_OBSERVATION_FARE_ZONE_MISSING = (
+    "Element 'FareZone' is missing within 'fareZones'"
 )
-MESSAGE_OBSERVATION_FARE_ZONES_NAME_MEMEBERS_MISSING = (
-    "Element 'Name' or 'members' is missing within the element 'FareZone'"
+MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING = (
+    "Element 'Name' is missing within the element 'FareZone'"
+)
+MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING = (
+    "Element 'members' is missing within the element 'FareZone'"
 )
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING = (
     "Element 'ScheduledStopPointRef' is missing within the element 'members'"
@@ -74,17 +82,17 @@ MESSAGE_OBSERVATION_TARIFF_NAME_MISSING = (
     "Element 'Name' is missing within 'TimeInterval'"
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT = (
-    "Mandatory element 'FareStructureElement' missing"
+    "Mandatory element 'FareStructureElement' is missing"
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
-    "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' missing"
+    "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' is missing"
 )
 MESSAGE_OBSERVATION_GENERIC_PARAMETER = (
-    "Mandatory element 'FareStructureElement.GenericParameterAssignment' missing"
+    "Mandatory element 'FareStructureElement.GenericParameterAssignment' is missing"
 )
 MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
     "Mandatory element 'GenericParameterAssignment."
-    "TypeOfAccessRightAssignmentRef' missing"
+    "TypeOfAccessRightAssignmentRef' is missing"
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
     "'FareStructureElement' checks failed: Present at least 3 times, "
@@ -92,8 +100,12 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
     "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
 )
 MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
-    "Attribute 'ref' of element 'FareStructureElement' missing"
+    "Attribute 'ref' of element 'FareStructureElement' is missing"
 )
 MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
-    "Attribute 'ref' of element 'TypeOfFareStructureElementRef' missing"
+    "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"
 )
+MESSAGE_TYPE_OF_FRAME_REF_MISSING = (
+    "Attribute 'ref' of element 'TypeOfFrameRef' is missing"
+)
+MESSAGE_OPERATORS_ID_MISSING = "'Operator' attribute 'id' is missing"
