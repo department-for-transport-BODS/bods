@@ -343,7 +343,10 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
             )
             response = response_details.__list__()
             return response
-        if TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING not in type_of_frame_ref_ref:
+        if (
+            type_of_frame_ref_ref is not None
+            and TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING not in type_of_frame_ref_ref
+        ):
             sourceline_type_of_frame_ref = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
@@ -355,7 +358,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
         xpath = "//x:FareZone"
         zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
         if not zones:
-            sourceline_fare_zone = zones[0].sourceline
+            sourceline_fare_zone = fare_zones[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_fare_zone,
@@ -516,7 +519,6 @@ def is_service_frame_present(context, service_frame, *args):
     if service_frame:
         xpath = "x:TypeOfFrameRef"
         type_of_frame_ref = service_frame[0].xpath(xpath, namespaces=NAMESPACE)
-        sourceline_frame_ref = type_of_frame_ref[0].sourceline
         try:
             ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
@@ -528,7 +530,11 @@ def is_service_frame_present(context, service_frame, *args):
             )
             response = response_details.__list__()
             return response
-        if TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING not in ref:
+        if (
+            ref is not None
+            and TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING not in ref
+        ):
+            sourceline_frame_ref = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_frame_ref,
