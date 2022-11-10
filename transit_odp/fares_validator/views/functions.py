@@ -433,6 +433,7 @@ def check_value_of_type_of_frame_ref(context, data_objects, *args):
     Check if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
     UK_PI_NETWORK_OFFER in it.
     """
+    is_frame_ref_value_valid = False
     data_object = data_objects[0]
     xpath = "x:CompositeFrame"
     composite_frames = data_object.xpath(xpath, namespaces=NAMESPACE)
@@ -451,16 +452,17 @@ def check_value_of_type_of_frame_ref(context, data_objects, *args):
             response = response_details.__list__()
             return response
         for ref_value in TYPE_OF_FRAME_REF_SUBSTRING:
-            if ref_value not in type_of_frame_ref_ref:
-                print(">>>", type_of_frame_ref_ref)
-                sourceline_composite_frame = type_of_frame_ref[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_composite_frame,
-                    MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+            if ref_value in type_of_frame_ref_ref:
+                is_frame_ref_value_valid = True
+        if not is_frame_ref_value_valid:
+            sourceline_composite_frame = type_of_frame_ref[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_composite_frame,
+                MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
+            )
+            response = response_details.__list__()
+            return response
 
 
 def check_operator_id_format(context, operators, *args):
@@ -639,6 +641,7 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
     Check if FareFrame TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
     UK_PI_FARE_PRICE in it.
     """
+    is_frame_ref_value_valid = False
     composite_frame = composite_frames[0]
     xpath = "//x:frames/x:FareFrame"
     fare_frames = composite_frame.xpath(xpath, namespaces=NAMESPACE)
@@ -657,15 +660,17 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
             response = response_details.__list__()
             return response
         for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
-            if ref_value not in type_of_frame_ref_ref:
-                sourceline_fare_frame = fare_frame.sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_fare_frame,
-                    MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+            if ref_value in type_of_frame_ref_ref:
+                is_frame_ref_value_valid = True
+        if not is_frame_ref_value_valid:
+            sourceline_fare_frame = fare_frame[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_fare_frame,
+                MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
+            )
+            response = response_details.__list__()
+            return response
 
 
 def all_fare_structure_element_checks(context, fare_structure_elements, *args):
