@@ -21,6 +21,7 @@ from ..constants import (
 )
 from .response import XMLViolationDetail
 from .validation_messages import (
+    MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
     MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
     MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
     MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
@@ -46,6 +47,7 @@ from .validation_messages import (
     MESSAGE_OBSERVATION_TARIFF_TIME_INTERVALS_MISSING,
     MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING,
     MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING,
+    MESSAGE_OBSERVATION_TRIP_TYPE_MISSING,
     MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
     MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
 )
@@ -224,13 +226,26 @@ def get_generic_parameter_assignment_properties(element):
     round_trip = element.xpath(xpath, namespaces=NAMESPACE)
     xpath = "string(//x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:RoundTrip/x:TripType)"
     trip_type = element.xpath(xpath, namespaces=NAMESPACE)
-    sourceline = element.sourceline
-    if not round_trip or not trip_type:
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_ROUND_TRIP_MISSING
-        )
-        response = response_details.__list__()
-        return response
+    xpath = "//x:FareStructureElement/x:GenericParameterAssignment/x:limitations"
+    limitations = element.xpath(xpath, namespaces=NAMESPACE)
+    xpath = "//x:FareStructureElement/x:GenericParameterAssignment/x:limitations/x:RoundTrip"
+    round_trip = element.xpath(xpath, namespaces=NAMESPACE)
+
+    for limitation in limitations:
+        if not round_trip:
+            sourceline = limitation.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_ROUND_TRIP_MISSING
+            )
+            response = response_details.__list__()
+            return response
+        if not trip_type:
+            sourceline = round_trip[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_TRIP_TYPE_MISSING
+            )
+            response = response_details.__list__()
+            return response
 
 
 def is_time_intervals_present_in_tarrifs(context, fare_frames, *args):
@@ -290,7 +305,14 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute([type_of_frame_ref], "ref")
         except KeyError:
-            return False
+            sourceline = type_of_frame_ref.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline,
+                MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
+            )
+            response = response_details.__list__()
+            return response
         if (
             type_of_frame_ref_ref is not None
             and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref

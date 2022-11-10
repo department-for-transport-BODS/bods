@@ -53,7 +53,10 @@ MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_TEXT_MISSING = (
     "Value missing within element 'ScheduledStopPointRef'"
 )
 MESSAGE_OBSERVATION_ROUND_TRIP_MISSING = (
-    "Element 'RoundTrip' or 'TripType' is missing within 'limitations'"
+    "Element 'RoundTrip' is missing within 'limitations'"
+)
+MESSAGE_OBSERVATION_TRIP_TYPE_MISSING = (
+    "Element 'TripType' is missing within 'RoundTrip'"
 )
 MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING = (
     "Element 'timeIntervals' is missing within 'FareStructureElement'"
@@ -90,4 +93,7 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
 )
 MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
     "Attribute 'ref' of element 'FareStructureElement' missing"
+)
+MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
+    "Attribute 'ref' of element 'TypeOfFareStructureElementRef' missing"
 )
