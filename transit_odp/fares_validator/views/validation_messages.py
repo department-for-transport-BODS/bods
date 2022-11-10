@@ -32,7 +32,8 @@ MESSAGE_OBSERVATION_OPERATORREF_MISSING = (
 )
 MESSAGE_OBSERVATION_LINES_MISSING = "Element 'lines' is missing in ServiceFrame"
 MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING = (
-    "If 'ServiceFrame' is present, TypeOfFrameRef should include UK_PI_NETWORK"
+    "If 'ServiceFrame' is present, mandatory element 'TypeOfFrameRef' "
+    "should be included and TypeOfFrameRef should include UK_PI_NETWORK"
 )
 MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH = (
     "Element 'Public Code' should be 4 characters long"
