@@ -21,7 +21,6 @@ from ..constants import (
 )
 from .response import XMLViolationDetail
 from .validation_messages import (
-    MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
     MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
     MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
     MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
@@ -313,7 +312,7 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
+                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
             )
             response = response_details.__list__()
             return response

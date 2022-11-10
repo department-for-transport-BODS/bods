@@ -100,9 +100,6 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
     "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
 )
 MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
-    "Attribute 'ref' of element 'FareStructureElement' is missing"
-)
-MESSAGE_GENERIC_PARA_ASSIGNEMENT_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
     "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"
 )
 MESSAGE_TYPE_OF_FRAME_REF_MISSING = (
