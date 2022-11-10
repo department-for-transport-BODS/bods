@@ -262,6 +262,9 @@
       "rules": [
         {
           "test": "all_fare_structure_element_checks(.)"
+        },
+        {
+          "test": "check_fare_structure_element(.)"
         }
       ]
     },
@@ -334,6 +337,22 @@
         },
         {
           "test": "check_fare_product_ref(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "rules": [
+        {
+          "test": "check_type_of_fare_structure_element_ref(.)"
+        },
+        {
+          "test": "check_generic_parameter(.)"
+        },
+        {
+          "test": "check_access_right_assignment_ref(.)"
         }
       ]
     },

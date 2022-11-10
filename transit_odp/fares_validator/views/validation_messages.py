@@ -50,3 +50,22 @@ MESSAGE_OBSERVATION_GENERIC_PARAMETER_ACCESS_PROPS_MISSING = "ValidityParameterG
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING = "UserProfile and it's child elements 'Name' and 'UserType' are missing from GenericParameterAssignment when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:eligibility'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING = "FrequencyOfUse is missing from GenericParameterAssignment when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:travel_conditions'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING = "FrequencyOfUseType is missing from GenericParameterAssignment/limitations/FrequencyOfUse when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:travel_conditions'"
+
+MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT = (
+    "Mandatory element 'FareStructureElement' missing"
+)
+MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
+    "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' missing"
+)
+MESSAGE_OBSERVATION_GENERIC_PARAMETER = (
+    "Mandatory element 'FareStructureElement.GenericParameterAssignment' missing"
+)
+MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
+    "Mandatory element 'GenericParameterAssignment."
+    "TypeOfAccessRightAssignmentRef' missing"
+)
+MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
+    "'FareStructureElement' checks failed: Present at least 3 times, "
+    "check the 'ref' values are in the correct combination for both "
+    "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
+)

@@ -161,8 +161,19 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
     fare_frame = fare_frames[0]
     xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-    if product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]:
-        return get_generic_parameter_assignment_properties(fare_frame)
+    xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:TypeOfFareStructureElementRef"
+    type_of_frame_refs = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    for type_of_frame_ref in type_of_frame_refs:
+        try:
+            type_of_frame_ref_ref = _extract_attribute([type_of_frame_ref], "ref")
+        except KeyError:
+            return False
+        if (
+            type_of_frame_ref_ref is not None
+            and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
+            and product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]
+        ):
+            return get_generic_parameter_assignment_properties(fare_frame)
     return True
 
 
@@ -340,20 +351,16 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
     """
     list_type_of_fare_structure_element_ref_ref = []
     list_type_of_access_right_assignment_ref_ref = []
-    result = False
+    sourceline = fare_structure_elements[0].sourceline
 
-    fare_structure_element = fare_structure_elements[0]
-    xpath = "//x:FareStructureElement"
-    all_fare_structure_elements = fare_structure_element.xpath(
-        xpath, namespaces=NAMESPACE
-    )
+    all_fare_structure_elements = get_fare_structure_element(fare_structure_elements)
     length_all_fare_structure_elements = len(all_fare_structure_elements)
 
-    if length_all_fare_structure_elements > 2:
-        for element in all_fare_structure_elements:
-            try:
-                type_of_fare_structure_element_ref = element.xpath(
-                    "x:TypeOfFareStructureElementRef", namespaces=NAMESPACE
+    try:
+        if length_all_fare_structure_elements > 2:
+            for element in all_fare_structure_elements:
+                type_of_fare_structure_element_ref = (
+                    get_type_of_fare_structure_element_ref(element)
                 )
                 type_of_fare_structure_element_ref_ref = _extract_attribute(
                     type_of_fare_structure_element_ref, "ref"
@@ -361,9 +368,8 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                 list_type_of_fare_structure_element_ref_ref.append(
                     type_of_fare_structure_element_ref_ref
                 )
-                type_of_access_right_assignment_ref = element.xpath(
-                    "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
-                    namespaces=NAMESPACE,
+                type_of_access_right_assignment_ref = get_access_right_assignment_ref(
+                    element
                 )
                 type_of_access_right_assignment_ref_ref = _extract_attribute(
                     type_of_access_right_assignment_ref, "ref"
@@ -372,40 +378,124 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     type_of_access_right_assignment_ref_ref
                 )
 
-                access_index = list_type_of_fare_structure_element_ref_ref.index(
-                    FARE_STRUCTURE_ELEMENT_ACCESS_REF
-                )
-                can_access_index = list_type_of_access_right_assignment_ref_ref.index(
-                    FARE_STRUCTURE_ACCESS_RIGHT_REF
-                )
-                eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
-                    FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
-                )
-                eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
-                    FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF
-                )
-                travel_conditions_index = (
-                    list_type_of_fare_structure_element_ref_ref.index(
-                        FARE_STRUCTURE_ELEMENT_TRAVEL_REF
-                    )
-                )
-                condition_of_use_index = (
-                    list_type_of_access_right_assignment_ref_ref.index(
-                        FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF
-                    )
-                )
+            access_index = list_type_of_fare_structure_element_ref_ref.index(
+                FARE_STRUCTURE_ELEMENT_ACCESS_REF
+            )
+            can_access_index = list_type_of_access_right_assignment_ref_ref.index(
+                FARE_STRUCTURE_ACCESS_RIGHT_REF
+            )
+            eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
+                FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
+            )
+            eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
+                FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF
+            )
+            travel_conditions_index = list_type_of_fare_structure_element_ref_ref.index(
+                FARE_STRUCTURE_ELEMENT_TRAVEL_REF
+            )
+            condition_of_use_index = list_type_of_access_right_assignment_ref_ref.index(
+                FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF
+            )
+    except ValueError:
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+        )
+        response = response_details.__list__()
+        return response
+
+    # Compare indexes
+    if not (
+        access_index == can_access_index
+        and eligibility_index == eligibile_index
+        and travel_conditions_index == condition_of_use_index
+    ):
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+        )
+        response = response_details.__list__()
+        return response
 
 
-                # Compare indexes
-                if (
-                    access_index == can_access_index
-                    and eligibility_index == eligibile_index
-                    and travel_conditions_index == condition_of_use_index
-                ):
-                    result = True
-            except ValueError:
-                result = False
-    return result
+def check_fare_structure_element(context, fare_structure_elements, *args):
+    all_fare_structure_elements = get_fare_structure_element(fare_structure_elements)
+    sourceline = fare_structure_elements[0].sourceline
+    if not all_fare_structure_elements:
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_type_of_fare_structure_element_ref(context, fare_structure_element, *args):
+    element = fare_structure_element[0]
+    type_of_fare_structure_element_ref = get_type_of_fare_structure_element_ref(element)
+    sourceline = element.sourceline
+    if not type_of_fare_structure_element_ref:
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_generic_parameter(context, fare_structure_element, *args):
+    element = fare_structure_element[0]
+    generic_parameter = element.xpath(
+        "x:GenericParameterAssignment", namespaces=NAMESPACE
+    )
+    sourceline = element.sourceline
+    if not generic_parameter:
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_GENERIC_PARAMETER
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_access_right_assignment_ref(context, fare_structure_element, *args):
+    element = fare_structure_element[0]
+    access_right_assignment = get_access_right_assignment_ref(element)
+    if not access_right_assignment:
+        generic_parameter = element.xpath(
+            "x:GenericParameterAssignment", namespaces=NAMESPACE
+        )
+        if generic_parameter:
+            sourceline = generic_parameter[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT
+            )
+            response = response_details.__list__()
+            return response
+        sourceline = element.sourceline
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT
+        )
+        response = response_details.__list__()
+        return response
+
+
+def get_fare_structure_element(fare_structure_elements):
+    fare_structure_element = fare_structure_elements[0]
+    xpath = "//x:FareStructureElement"
+    return fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+
+
+def get_type_of_fare_structure_element_ref(fare_structure_element):
+    return fare_structure_element.xpath(
+        "x:TypeOfFareStructureElementRef", namespaces=NAMESPACE
+    )
+
+
+def get_access_right_assignment_ref(fare_structure_element):
+    return fare_structure_element.xpath(
+        "x:GenericParameterAssignment/x:TypeOfAccessRightAssignmentRef",
+        namespaces=NAMESPACE,
+    )
 
 
 def check_type_of_tariff_ref_values(context, elements, *args):
@@ -425,7 +515,13 @@ def check_type_of_tariff_ref_values(context, elements, *args):
     try:
         type_of_tariff_ref_ref = _extract_attribute(is_type_of_tariff_ref, "ref")
     except KeyError:
-        return False
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline,
+                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
+            )
+            response = response_details.__list__()
+            return response
     if not type_of_tariff_ref_ref in TYPE_OF_TARIFF_REF_STRING:
         response_details = XMLViolationDetail(
             "violation", sourceline, MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
@@ -446,7 +542,13 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
-            return False
+                response_details = XMLViolationDetail(
+                "violation",
+                sourceline_fare_frame,
+                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
+            )
+                response = response_details.__list__()
+                return response
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING in type_of_frame_ref_ref
@@ -496,6 +598,7 @@ def check_fare_products(context, fare_frames, *args):
     type_of_frame_refs = fare_frame.xpath(xpath, namespaces=NAMESPACE)
     sourceline_fare_frame = fare_frame[0].sourceline
     for ref in type_of_frame_refs:
+        sourceline = fare_frame.sourceline
         try:
             type_of_frame_ref_ref = _extract_attribute([ref], "ref")
         except KeyError:
