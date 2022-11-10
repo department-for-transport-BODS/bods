@@ -43,7 +43,8 @@ MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
     "'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'"
 )
 MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
-    "Attribute 'ref' value does not contain 'UK_PI_FARE_NETWORK'"
+    "Mandatory element 'TypeOfFrameRef' is missing or "
+    "'ref' value does not contain 'UK_PI_FARE_NETWORK'"
 )
 MESSAGE_OBSERVATION_FARE_ZONE_MISSING = (
     "Element 'FareZone' is missing within 'fareZones'"

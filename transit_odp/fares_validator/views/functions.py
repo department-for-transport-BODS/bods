@@ -369,6 +369,10 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
 
 
 def is_name_present_in_fare_frame(context, fare_zones, *args):
+    """
+    Check if fareZones is present in FareFrame.
+    If true, then fareZones properties should be present
+    """
     if fare_zones:
         xpath = "//x:FareZone"
         zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
@@ -387,6 +391,10 @@ def is_name_present_in_fare_frame(context, fare_zones, *args):
 
 
 def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *args):
+    """
+    Check if fareZones is present in FareFrame.
+    If true, then fareZones properties should be present
+    """
     if fare_zones:
         xpath = "//x:FareZone"
         zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
@@ -418,6 +426,10 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
 
 
 def get_scheduled_point_ref_text(stop_point):
+    """
+    Check if fareZones is present in FareFrame.
+    If true, then fareZones properties should be present
+    """
     sourceline_stop_point = stop_point.sourceline
     stop_point_text = _extract_text(stop_point)
     if not stop_point_text:
@@ -530,10 +542,7 @@ def is_service_frame_present(context, service_frame, *args):
             )
             response = response_details.__list__()
             return response
-        if (
-            ref is not None
-            and TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING not in ref
-        ):
+        if ref is not None and TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING not in ref:
             sourceline_frame_ref = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
