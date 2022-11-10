@@ -9,8 +9,6 @@ from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
     all_fare_structure_element_checks,
-    check_generic_parameters_for_access,
-    check_generic_parameters_for_eligibility,
     check_operator_id_format,
     check_public_code_length,
     check_type_of_frame_ref_ref,
@@ -26,13 +24,22 @@ from transit_odp.fares_validator.views.functions import (
     is_uk_pi_fare_price_frame_present,
     check_fare_products,
     check_preassigned_fare_products,
+    check_preassigned_fare_products_name,
+    check_preassigned_fare_products_type_ref,
+    check_preassigned_fare_products_charging_type,
     check_preassigned_validable_elements,
     check_access_right_elements,
     check_product_type,
     check_sales_offer_packages,
     check_sales_offer_package,
     check_distribution_assignments_elements,
+    check_distribution_channel_type,
+    check_payment_methods,
     check_sales_offer_elements,
+    check_type_of_travel_doc,
+    check_fare_product_ref,
+    check_generic_parameters_for_access,
+    check_generic_parameters_for_eligibility,
     check_frequency_of_use,
 )
 
@@ -85,6 +92,17 @@ class FaresValidator:
             "check_preassigned_fare_products", check_preassigned_fare_products
         )
         self.register_function(
+            "check_preassigned_fare_products_name", check_preassigned_fare_products_name
+        )
+        self.register_function(
+            "check_preassigned_fare_products_type_ref",
+            check_preassigned_fare_products_type_ref,
+        )
+        self.register_function(
+            "check_preassigned_fare_products_charging_type",
+            check_preassigned_fare_products_charging_type,
+        )
+        self.register_function(
             "check_preassigned_validable_elements", check_preassigned_validable_elements
         )
         self.register_function(
@@ -97,8 +115,16 @@ class FaresValidator:
             "check_distribution_assignments_elements",
             check_distribution_assignments_elements,
         )
+        self.register_function(
+            "check_distribution_channel_type", check_distribution_channel_type
+        )
+        self.register_function(
+            "check_payment_methods",
+            check_payment_methods,
+        )
         self.register_function("check_sales_offer_elements", check_sales_offer_elements)
-
+        self.register_function("check_type_of_travel_doc", check_type_of_travel_doc)
+        self.register_function("check_fare_product_ref", check_fare_product_ref)
         self.register_function(
             "check_generic_parameters_for_access", check_generic_parameters_for_access
         )
@@ -132,7 +158,6 @@ class FaresValidator:
                     element_text=element.text,
                 )
                 self.add_violation(violation)
-                break
 
     def is_valid(self, source: XMLFile) -> bool:
         document = etree.parse(source)
