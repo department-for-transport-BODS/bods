@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.fares.constants import ERROR_CODE_MAP
@@ -135,17 +136,21 @@ class ReviewView(ReviewBaseView):
         # Get the error info
         context["error"] = self.get_error()
 
-        # Get the fares-validator error info
-        if (
-            not is_loading
-            and context["error"] is None
-            and not self.get_validator_error(revision.id)
-        ):
-            context["validator_error"] = self.set_validator_error(revision.id)
-        else:
-            context["validator_error"] = self.get_validator_error(revision.id)
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            # Get the fares-validator error info
+            if (
+                not is_loading
+                and context["error"] is None
+                and not self.get_validator_error(revision.id)
+            ):
+                context["validator_error"] = self.set_validator_error(revision.id)
+            else:
+                context["validator_error"] = self.get_validator_error(revision.id)
 
-        context["pk2"] = revision.id
+            context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
