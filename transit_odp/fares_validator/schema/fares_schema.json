@@ -8,29 +8,13 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        {
-          "test": "is_time_intervals_present_in_tarrifs(.)"
-        }
-      ]
-    },
-    {
-      "details": "If ProductType is dayPass or periodPass, FareStructureElement elements should be present in Tariff.FareStructureElements",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
+        { "test": "is_time_intervals_present_in_tarrifs(.)" },
+        { "test": "is_individual_time_interval_present_in_tariffs(.)" },
+        { "test": "is_time_interval_name_present_in_tariffs(.)" },
         {
           "test": "is_fare_structure_element_present(.)"
-        }
-      ]
-    },
-    {
-      "details": "If ProductType is singleTrip, dayReturnTrip or periodReturnTrip, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
-        {
-          "test": "is_generic_parameter_limitations_present(.)"
-        }
+        },
+        { "test": "is_generic_parameter_limitations_present(.)" }
       ]
     },
     {
@@ -38,9 +22,9 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame/x:fareZones",
       "rules": [
-        {
-          "test": "is_fare_zones_present_in_fare_frame(.)"
-        }
+        { "test": "is_fare_zones_present_in_fare_frame(.)" },
+        { "test": "is_name_present_in_fare_frame(.)" },
+        { "test": "is_members_scheduled_point_ref_present_in_fare_frame(.)" }
       ]
     },
     {
@@ -48,29 +32,9 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame",
       "rules": [
-        {
-          "test": "is_service_frame_present(.)"
-        }
-      ]
-    },
-    {
-      "details": "If lines present in ServiceFrame, corresponding Line properties should be present",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:lines",
-      "rules": [
-        {
-          "test": "is_lines_present_in_service_frame(.)"
-        }
-      ]
-    },
-    {
-      "details": "If scheduledStopPoints is present in ServiceFrame, it's other properties should be present",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:scheduledStopPoints",
-      "rules": [
-        {
-          "test": "is_schedule_stop_points(.)"
-        }
+        { "test": "is_service_frame_present(.)" },
+        { "test": "is_lines_present_in_service_frame(.)" },
+        { "test": "is_schedule_stop_points(.)" }
       ]
     },
     {
