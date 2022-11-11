@@ -478,50 +478,6 @@ def check_value_of_type_of_frame_ref(context, data_objects, *args):
             return response
 
 
-def check_operator_id_format(context, operators, *args):
-    """
-    Check if Operator element's id attribute in in the format - noc:xxxx
-    """
-    try:
-        operators_id = _extract_attribute(operators, "id")
-    except KeyError:
-        sourceline = operators[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_OPERATORS_ID_MISSING,
-        )
-        response = response_details.__list__()
-        return response
-    if (
-        ORG_OPERATOR_ID_SUBSTRING not in operators_id
-        and len(operators_id) != LENGTH_OF_OPERATOR
-    ):
-        sourceline_operator = operators[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline_operator, MESSAGE_OBSERVATION_OPERATOR_ID
-        )
-        response = response_details.__list__()
-        return response
-
-
-def check_public_code_length(context, public_code, *args):
-    """
-    Check if PublicCode is 4 characters long
-    """
-    public_code_value = _extract_text(public_code)
-    if public_code_value is not None:
-        if len(public_code_value) != LENGTH_OF_PUBLIC_CODE:
-            sourceline_public_code = public_code[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline_public_code,
-                MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH,
-            )
-            response = response_details.__list__()
-            return response
-
-
 def is_service_frame_present(context, service_frame, *args):
     """
     Check if ServiceFrame is present in FareFrame.
@@ -560,49 +516,49 @@ def is_lines_present_in_service_frame(context, service_frame, *args):
     if service_frame:
         xpath = "x:lines"
         lines = service_frame[0].xpath(xpath, namespaces=NAMESPACE)
-        if lines:
-            xpath = "x:Line"
-            service_frame_line = lines[0].xpath(xpath, namespaces=NAMESPACE)
-            if service_frame_line:
-                xpath = "string(x:Name)"
-                name = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
-                if not name:
-                    sourceline_line = service_frame_line[0].sourceline
-                    response_details = XMLViolationDetail(
-                        "violation",
-                        sourceline_line,
-                        MESSAGE_OBSERVATION_NAME_MISSING,
-                    )
-                    response = response_details.__list__()
-                    return response
-                xpath = "string(x:PublicCode)"
-                public_code = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
-                if not public_code:
-                    sourceline_line = service_frame_line[0].sourceline
-                    response_details = XMLViolationDetail(
-                        "violation",
-                        sourceline_line,
-                        MESSAGE_OBSERVATION_PUBLICCODE_MISSING,
-                    )
-                    response = response_details.__list__()
-                    return response
-                xpath = "x:OperatorRef"
-                operator_ref = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
-                if not operator_ref:
-                    sourceline_line = service_frame_line[0].sourceline
-                    response_details = XMLViolationDetail(
-                        "violation",
-                        sourceline_line,
-                        MESSAGE_OBSERVATION_OPERATORREF_MISSING,
-                    )
-                    response = response_details.__list__()
-                    return response
-        sourceline_service_frame = service_frame[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline_service_frame, MESSAGE_OBSERVATION_LINES_MISSING
-        )
-        response = response_details.__list__()
-        return response
+        if not lines:
+            sourceline_service_frame = service_frame[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline_service_frame, MESSAGE_OBSERVATION_LINES_MISSING
+            )
+            response = response_details.__list__()
+            return response
+        xpath = "x:Line"
+        service_frame_line = lines[0].xpath(xpath, namespaces=NAMESPACE)
+        if service_frame_line:
+            xpath = "string(x:Name)"
+            name = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
+            if not name:
+                sourceline_line = service_frame_line[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_line,
+                    MESSAGE_OBSERVATION_NAME_MISSING,
+                )
+                response = response_details.__list__()
+                return response
+            xpath = "string(x:PublicCode)"
+            public_code = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
+            if not public_code:
+                sourceline_line = service_frame_line[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_line,
+                    MESSAGE_OBSERVATION_PUBLICCODE_MISSING,
+                )
+                response = response_details.__list__()
+                return response
+            xpath = "x:OperatorRef"
+            operator_ref = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
+            if not operator_ref:
+                sourceline_line = service_frame_line[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_line,
+                    MESSAGE_OBSERVATION_OPERATORREF_MISSING,
+                )
+                response = response_details.__list__()
+                return response
 
 
 def is_schedule_stop_points(context, service_frame, *args):
@@ -613,50 +569,50 @@ def is_schedule_stop_points(context, service_frame, *args):
     if service_frame:
         xpath = "x:scheduledStopPoints"
         schedule_stop_points = service_frame[0].xpath(xpath, namespaces=NAMESPACE)
-        if schedule_stop_points:
-            xpath = "x:ScheduledStopPoint"
-            stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
-            if stop_points:
-                for stop in stop_points:
-                    try:
-                        id = _extract_attribute([stop], "id")
-                    except KeyError:
-                        sourceline = stop_points[0].sourceline
-                        response_details = XMLViolationDetail(
-                            "violation",
-                            sourceline,
-                            MESSAGE_STOP_POINT_ATTR_ID_MISSING,
-                        )
-                        response = response_details.__list__()
-                        return response
-                    if STOP_POINT_ID_SUBSTRING not in id:
-                        sourceline_stop_point = stop.sourceline
-                        response_details = XMLViolationDetail(
-                            "violation",
-                            sourceline_stop_point,
-                            MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_MISSING,
-                        )
-                        response = response_details.__list__()
-                        return response
-                    xpath = "string(x:Name)"
-                    name = stop.xpath(xpath, namespaces=NAMESPACE)
-                    if not name:
-                        sourceline_stop_point = stop.sourceline
-                        response_details = XMLViolationDetail(
-                            "violation",
-                            sourceline_stop_point,
-                            MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING,
-                        )
-                        response = response_details.__list__()
-                        return response
-        sourceline_service_frame = service_frame[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline_service_frame,
-            MESSAGE_OBSERVATION_SCHEDULED_STOP_POINTS_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        if not schedule_stop_points:
+            sourceline_service_frame = service_frame[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_service_frame,
+                MESSAGE_OBSERVATION_SCHEDULED_STOP_POINTS_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        xpath = "x:ScheduledStopPoint"
+        stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
+        if stop_points:
+            for stop in stop_points:
+                try:
+                    id = _extract_attribute([stop], "id")
+                except KeyError:
+                    sourceline = stop_points[0].sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline,
+                        MESSAGE_STOP_POINT_ATTR_ID_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                if STOP_POINT_ID_SUBSTRING not in id:
+                    sourceline_stop_point = stop.sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_stop_point,
+                        MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                xpath = "string(x:Name)"
+                name = stop.xpath(xpath, namespaces=NAMESPACE)
+                if not name:
+                    sourceline_stop_point = stop.sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_stop_point,
+                        MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
 
 
 def check_type_of_frame_ref_ref(context, fare_frames, *args):
@@ -752,7 +708,6 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                 list_type_of_access_right_assignment_ref_ref.append(
                     type_of_access_right_assignment_ref_ref
                 )
-
             access_index = list_type_of_fare_structure_element_ref_ref.index(
                 FARE_STRUCTURE_ELEMENT_ACCESS_REF
             )
@@ -898,10 +853,73 @@ def check_type_of_tariff_ref_values(context, elements, *args):
         )
         response = response_details.__list__()
         return response
-    if not type_of_tariff_ref_ref in TYPE_OF_TARIFF_REF_STRING:
+    if type_of_tariff_ref_ref not in TYPE_OF_TARIFF_REF_STRING:
         sourceline = element.sourceline
         response_details = XMLViolationDetail(
             "violation", sourceline, MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_tariff_operator_ref(context, tariffs, *args):
+    tariff = tariffs[0]
+    xpath = "string(x:OperatorRef)"
+    operator_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
+    if not operator_ref:
+        sourceline = tariff.sourceline
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_tariff_basis(context, tariffs, *args):
+    tariff = tariffs[0]
+    xpath = "x:TariffBasis"
+    tariff_basis = tariff.xpath(xpath, namespaces=NAMESPACE)
+    if not tariff_basis:
+        sourceline = tariff.sourceline
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_tariff_validity_conditions(context, tariffs, *args):
+    tariff = tariffs[0]
+    xpath = "x:validityConditions"
+    validity_conditions = tariff.xpath(xpath, namespaces=NAMESPACE)
+    if not validity_conditions:
+        validity_conditions_sourceline = tariff.sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            validity_conditions_sourceline,
+            MESSAGE_OBSERVATION_TARIFF_VALIDITY_CONDITIONS_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    xpath = "x:ValidBetween"
+    valid_between = validity_conditions[0].xpath(xpath, namespaces=NAMESPACE)
+    if not valid_between:
+        valid_between_sourceline = validity_conditions[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            valid_between_sourceline,
+            MESSAGE_OBSERVATION_TARIFF_VALID_BETWEEN_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    xpath = "string(x:FromDate)"
+    from_date = valid_between[0].xpath(xpath, namespaces=NAMESPACE)
+    if not from_date:
+        from_date_sourceline = valid_between[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            from_date_sourceline,
+            MESSAGE_OBSERVATION_TARIFF_FROM_DATE_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -1789,3 +1807,116 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
                 )
                 response = response_details.__list__()
                 return response
+
+
+def check_composite_frame_valid_between(context, composite_frames, *args):
+    composite_frame = composite_frames[0]
+    xpath = "x:ValidBetween"
+    valid_between = composite_frame.xpath(xpath, namespaces=NAMESPACE)
+    if not valid_between:
+        source_line_valid_between = composite_frame.sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            source_line_valid_between,
+            MESSAGE_OBSERVATION_COMPOSITE_FRAME_VALID_BETWEEN_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    xpath = "string(x:FromDate)"
+    from_date = valid_between[0].xpath(xpath, namespaces=NAMESPACE)
+    if not from_date:
+        source_line_from_date = valid_between[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            source_line_from_date,
+            MESSAGE_OBSERVATION_COMPOSITE_FRAME_FROM_DATE,
+        )
+        response = response_details.__list__()
+        return response
+
+
+def check_resource_frame_organisation_elements(context, resource_frames, *args):
+    resource_frame = resource_frames[0]
+    xpath = "x:organisations"
+    organisations = resource_frame.xpath(xpath, namespaces=NAMESPACE)
+    if not organisations:
+        source_line_organisations = resource_frame.sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            source_line_organisations,
+            MESSAGE_OBSERVATION_RESOURCE_FRAME_ORG_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    xpath = "x:Operator"
+    operators = organisations[0].xpath(xpath, namespaces=NAMESPACE)
+    if not operators:
+        source_line_operators = organisations[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            source_line_operators,
+            MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    for operator in operators:
+        try:
+            operator_id = _extract_attribute([operator], "id")
+        except KeyError:
+            sourceline_operator = operator.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_operator,
+                MESSAGE_OPERATORS_ID_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        if (
+            ORG_OPERATOR_ID_SUBSTRING not in operator_id
+            and len(operator_id) != LENGTH_OF_OPERATOR
+        ):
+            sourceline_operator = operator.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline_operator, MESSAGE_OBSERVATION_OPERATOR_ID
+            )
+            response = response_details.__list__()
+            return response
+        xpath = "x:PublicCode"
+        public_code = operator.xpath(xpath, namespaces=NAMESPACE)
+        if not public_code:
+            source_line_public_code = operator.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                source_line_public_code,
+                MESSAGE_OBSERVATION_RESOURCE_FRAME_PUBLIC_CODE_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        public_code_value = _extract_text(public_code)
+        if len(public_code_value) != LENGTH_OF_PUBLIC_CODE:
+            sourceline_public_code = public_code[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_public_code,
+                MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH,
+            )
+            response = response_details.__list__()
+            return response
+
+
+def check_resource_frame_operator_name(context, organisations, *args):
+    organisation = organisations[0]
+    xpath = "x:Operator"
+    operators = organisation.xpath(xpath, namespaces=NAMESPACE)
+    for operator in operators:
+        xpath = "string(x:Name)"
+        name = operator.xpath(xpath, namespaces=NAMESPACE)
+        if not name:
+            source_line_name = operator.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                source_line_name,
+                MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_NAME_MISSING,
+            )
+            response = response_details.__list__()
+            return response
