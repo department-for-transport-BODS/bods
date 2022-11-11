@@ -146,10 +146,10 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
     "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' is missing"
 )
 MESSAGE_OBSERVATION_GENERIC_PARAMETER = (
-    "Mandatory element 'FareStructureElement.'GenericParameterAssignment'' is missing"
+    "Mandatory element 'FareStructureElement.GenericParameterAssignment' is missing"
 )
 MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
-    "Mandatory element ''GenericParameterAssignment'."
+    "Mandatory element 'GenericParameterAssignment."
     "TypeOfAccessRightAssignmentRef' is missing"
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (

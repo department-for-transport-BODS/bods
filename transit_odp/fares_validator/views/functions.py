@@ -207,7 +207,7 @@ def get_fare_structure_time_intervals(element):
         response = response_details.__list__()
         return response
     for element in time_intervals:
-        xpath = "string(x:TimeIntervalRef)"
+        xpath = "x:TimeIntervalRef"
         time_interval_ref = element.xpath(xpath, namespaces=NAMESPACE)
         if not time_interval_ref:
             sourceline = element.sourceline
@@ -778,8 +778,8 @@ def check_generic_parameter(context, fare_structure_element, *args):
     generic_parameter = element.xpath(
         "x:GenericParameterAssignment", namespaces=NAMESPACE
     )
-    sourceline = element.sourceline
     if not generic_parameter:
+        sourceline = element.sourceline
         response_details = XMLViolationDetail(
             "violation", sourceline, MESSAGE_OBSERVATION_GENERIC_PARAMETER
         )
