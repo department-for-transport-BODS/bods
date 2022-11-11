@@ -70,26 +70,6 @@
       ]
     },
     {
-      "details": "'Operator' attribute 'id' format should be noc:xxxx",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator",
-      "rules": [
-        {
-          "test": "check_operator_id_format(.)"
-        }
-      ]
-    },
-    {
-      "details": "Element 'Public Code' should be 4 characters long",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator/x:PublicCode",
-      "rules": [
-        {
-          "test": "check_public_code_length(.)"
-        }
-      ]
-    },
-    {
       "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
       "category": "Mandatory Element",
       "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
@@ -100,12 +80,21 @@
       ]
     },
     {
-      "details": "Mandatory element 'TypeOfTariffRef' does not have an acceptable 'ref' value",
+      "details": "Mandatory elements 'OperatorRef','TariffBasis' present and 'TypeOfTariffRef' present and have an acceptable 'ref' value",
       "category": "Mandatory Element",
       "context": "//x:tariffs//x:Tariff",
       "rules": [
         {
           "test": "check_type_of_tariff_ref_values(.)"
+        },
+        {
+          "test": "check_tariff_operator_ref(.)"
+        },
+        {
+          "test": "check_tariff_basis(.)"
+        },
+        {
+          "test": "check_tariff_validity_conditions(.)"
         }
       ]
     },
@@ -201,12 +190,6 @@
       "rules": [
         {
           "test": "check_type_of_fare_structure_element_ref(.)"
-        },
-        {
-          "test": "check_generic_parameter(.)"
-        },
-        {
-          "test": "check_access_right_assignment_ref(.)"
         }
       ]
     },
