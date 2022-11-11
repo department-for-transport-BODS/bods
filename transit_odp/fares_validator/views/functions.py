@@ -207,7 +207,7 @@ def get_fare_structure_time_intervals(element):
         response = response_details.__list__()
         return response
     for element in time_intervals:
-        xpath = "string(x:TimeIntervalRef)"
+        xpath = "x:TimeIntervalRef"
         time_interval_ref = element.xpath(xpath, namespaces=NAMESPACE)
         if not time_interval_ref:
             sourceline = element.sourceline
@@ -694,7 +694,7 @@ def check_type_of_frame_ref_ref(context, fare_frames, *args):
             return response
 
 
-def all_fare_structure_element_checks(context, fare_structure_elements, *args):
+def all_fare_structure_element_checks(context, fare_structure_elements, *args): #Needs fix
     """
     1st Check: Check 'FareStructureElement' appears minimum 3 times.
 
@@ -726,7 +726,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                        MESSAGE_TYPE_OF_FARE_ELEMENT_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -744,7 +744,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                        MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response

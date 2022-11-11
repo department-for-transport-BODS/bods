@@ -156,3 +156,5 @@ MESSAGE_OPERATORS_ID_MISSING = "'Operator' attribute 'id' is missing"
 MESSAGE_STOP_POINT_ATTR_ID_MISSING = (
     "Attribute 'id' of element 'ScheduledStopPoint' is missing"
 )
+MESSAGE_TYPE_OF_FARE_ELEMENT_REF_MISSING = ( "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing")
+MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING = ( "Attribute 'ref' of element 'TypeOfAccessRightAssignmentRef' is missing")
