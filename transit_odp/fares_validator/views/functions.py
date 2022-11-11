@@ -235,7 +235,7 @@ def get_generic_parameter_assignment_properties(element):
             )
             response = response_details.__list__()
             return response
-        xpath = "x:TripType"
+        xpath = "x:RoundTrip/x:TripType"
         trip_type = limitation.xpath(xpath, namespaces=NAMESPACE)
         if not trip_type:
             sourceline = round_trip[0].sourceline
@@ -1696,7 +1696,7 @@ def check_generic_parameters_for_access(context, elements, *args):
                 xpath, namespaces=NAMESPACE
             )
             if not ((grouping_type or assignment_type) and validity_parameters):
-                sourceline_fare_structure = fare_structure_elements[0].sourceline
+                sourceline_fare_structure = fare_structure_element.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure,
@@ -1749,7 +1749,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
             user_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
 
             if not (user_profile and user_profile_name and user_type):
-                sourceline_fare_structure = fare_structure_elements[0].sourceline
+                sourceline_fare_structure = fare_structure_element.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure,
