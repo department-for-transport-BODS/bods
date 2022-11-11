@@ -153,3 +153,6 @@ MESSAGE_TYPE_OF_FRAME_REF_MISSING = (
     "Attribute 'ref' of element 'TypeOfFrameRef' is missing"
 )
 MESSAGE_OPERATORS_ID_MISSING = "'Operator' attribute 'id' is missing"
+MESSAGE_STOP_POINT_ATTR_ID_MISSING = (
+    "Attribute 'id' of element 'ScheduledStopPoint' is missing"
+)

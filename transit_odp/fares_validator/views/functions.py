@@ -72,7 +72,17 @@ def get_tariff_time_intervals(element):
     element = element[0]
     xpath = "x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
-    type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        sourceline = type_of_frame_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
@@ -95,7 +105,17 @@ def get_individual_tariff_time_interval(element):
     element = element[0]
     xpath = "x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
-    type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        sourceline = type_of_frame_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
@@ -119,7 +139,17 @@ def get_tariff_time_interval_name(element):
     element = element[0]
     xpath = "x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
-    type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        sourceline = type_of_frame_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
@@ -588,7 +618,17 @@ def is_schedule_stop_points(context, service_frame, *args):
             stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
             if stop_points:
                 for stop in stop_points:
-                    id = _extract_attribute([stop], "id")
+                    try:
+                        id = _extract_attribute([stop], "id")
+                    except KeyError:
+                        sourceline = stop_points[0].sourceline
+                        response_details = XMLViolationDetail(
+                            "violation",
+                            sourceline,
+                            MESSAGE_STOP_POINT_ATTR_ID_MISSING,
+                        )
+                        response = response_details.__list__()
+                        return response
                     if STOP_POINT_ID_SUBSTRING not in id:
                         sourceline_stop_point = stop.sourceline
                         response_details = XMLViolationDetail(
@@ -678,18 +718,37 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                 type_of_fare_structure_element_ref = (
                     get_type_of_fare_structure_element_ref(element)
                 )
-                type_of_fare_structure_element_ref_ref = _extract_attribute(
-                    type_of_fare_structure_element_ref, "ref"
-                )
+                try:
+                    type_of_fare_structure_element_ref_ref = _extract_attribute(
+                        type_of_fare_structure_element_ref, "ref"
+                    )
+                except KeyError:
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline,
+                        MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
                 list_type_of_fare_structure_element_ref_ref.append(
                     type_of_fare_structure_element_ref_ref
                 )
                 type_of_access_right_assignment_ref = get_access_right_assignment_ref(
                     element
                 )
-                type_of_access_right_assignment_ref_ref = _extract_attribute(
-                    type_of_access_right_assignment_ref, "ref"
-                )
+                try:
+                    type_of_access_right_assignment_ref_ref = _extract_attribute(
+                        type_of_access_right_assignment_ref, "ref"
+                    )
+                except KeyError:
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline,
+                        MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+
                 list_type_of_access_right_assignment_ref_ref.append(
                     type_of_access_right_assignment_ref_ref
                 )
