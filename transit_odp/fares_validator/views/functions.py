@@ -772,6 +772,7 @@ def check_type_of_fare_structure_element_ref(context, fare_structure_element, *a
         response = response_details.__list__()
         return response
 
+
 def get_fare_structure_element(fare_structure_elements):
     fare_structure_element = fare_structure_elements[0]
     xpath = "//x:FareStructureElement"
@@ -1648,7 +1649,10 @@ def check_generic_parameters_for_access(context, elements, *args):
             response = response_details.__list__()
             return response
         if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
-            generic_parameter = fare_structure_element.xpath("x:GenericParameterAssignment", namespaces=NAMESPACE)
+            xpath = "x:GenericParameterAssignment"
+            generic_parameter = fare_structure_element.xpath(
+                xpath, namespaces=NAMESPACE
+            )
             if not generic_parameter:
                 sourceline_generic_parameter = fare_structure_element.sourceline
                 response_details = XMLViolationDetail(
@@ -1658,7 +1662,9 @@ def check_generic_parameters_for_access(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
-            access_right_assignment = generic_parameter[0].xpath("TypeOfAccessRightAssignmentRef", namespaces=NAMESPACE)
+            access_right_assignment = generic_parameter[0].xpath(
+                "TypeOfAccessRightAssignmentRef", namespaces=NAMESPACE
+            )
             if not access_right_assignment:
                 sourceline_access_right_assignment = generic_parameter[0].sourceline
                 response_details = XMLViolationDetail(
@@ -1675,7 +1681,7 @@ def check_generic_parameters_for_access(context, elements, *args):
             assignment_type = generic_parameter[0].xpath(xpath, namespaces=NAMESPACE)
 
             xpath = "x:validityParameters"
-            validity_parameters =  generic_parameter[0].xpath(
+            validity_parameters = generic_parameter[0].xpath(
                 xpath, namespaces=NAMESPACE
             )
             if not ((grouping_type or assignment_type) and validity_parameters):
@@ -1687,6 +1693,7 @@ def check_generic_parameters_for_access(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
+
 
 def check_generic_parameters_for_eligibility(context, elements, *args):
     """
@@ -1718,7 +1725,9 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
             FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
             == type_of_fare_structure_element_ref_ref
         ):
-            generic_parameter = fare_structure_element.xpath("x:GenericParameterAssignment", namespaces=NAMESPACE)
+            generic_parameter = fare_structure_element.xpath(
+                "x:GenericParameterAssignment", namespaces=NAMESPACE
+            )
             if not generic_parameter:
                 sourceline_generic_parameter = fare_structure_element.sourceline
                 response_details = XMLViolationDetail(
@@ -1728,7 +1737,9 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
-            limitations = generic_parameter[0].xpath("x:limitations", namespaces=NAMESPACE)
+            limitations = generic_parameter[0].xpath(
+                "x:limitations", namespaces=NAMESPACE
+            )
             if not limitations:
                 sourceline_limitations = generic_parameter[0].sourceline
                 response_details = XMLViolationDetail(
@@ -1750,9 +1761,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 response = response_details.__list__()
                 return response
             xpath = "string(x:Name)"
-            user_profile_name = user_profile[0].xpath(
-                xpath, namespaces=NAMESPACE
-            )
+            user_profile_name = user_profile[0].xpath(xpath, namespaces=NAMESPACE)
             xpath = "string(x:UserType)"
             user_type = user_profile[0].xpath(xpath, namespaces=NAMESPACE)
             if not (user_profile_name and user_type):

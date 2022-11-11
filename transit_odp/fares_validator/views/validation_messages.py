@@ -149,9 +149,7 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
 MESSAGE_OBSERVATION_GENERIC_PARAMETER = (
     "Mandatory element 'FareStructureElement.GenericParameterAssignment' is missing"
 )
-MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION = (
-    "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"
-)
+MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION = "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"
 MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
     "Mandatory element 'GenericParameterAssignment."
     "TypeOfAccessRightAssignmentRef' is missing"
