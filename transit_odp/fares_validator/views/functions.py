@@ -650,7 +650,9 @@ def check_type_of_frame_ref_ref(context, fare_frames, *args):
             return response
 
 
-def all_fare_structure_element_checks(context, fare_structure_elements, *args): #Needs fix
+def all_fare_structure_element_checks(
+    context, fare_structure_elements, *args
+):  # Needs fix
     """
     1st Check: Check 'FareStructureElement' appears minimum 3 times.
 
@@ -1662,8 +1664,9 @@ def check_generic_parameters_for_access(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
+            xpath = "TypeOfAccessRightAssignmentRef"
             access_right_assignment = generic_parameter[0].xpath(
-                "TypeOfAccessRightAssignmentRef", namespaces=NAMESPACE
+                xpath, namespaces=NAMESPACE
             )
             if not access_right_assignment:
                 sourceline_access_right_assignment = generic_parameter[0].sourceline
