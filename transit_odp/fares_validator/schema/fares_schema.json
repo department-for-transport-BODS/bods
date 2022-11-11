@@ -190,12 +190,6 @@
       "rules": [
         {
           "test": "check_type_of_fare_structure_element_ref(.)"
-        },
-        {
-          "test": "check_generic_parameter(.)"
-        },
-        {
-          "test": "check_access_right_assignment_ref(.)"
         }
       ]
     },

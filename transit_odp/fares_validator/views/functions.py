@@ -510,7 +510,7 @@ def is_service_frame_present(context, service_frame, *args):
 
 def is_lines_present_in_service_frame(context, service_frame, *args):
     """
-    Check if ServiceFrame is present in FareFrame,
+    Check if ServiceFrame is present,
     corresponding Line properties should be present
     """
     if service_frame:
@@ -563,7 +563,7 @@ def is_lines_present_in_service_frame(context, service_frame, *args):
 
 def is_schedule_stop_points(context, service_frame, *args):
     """
-    Check if ServiceFrame is present in FareFrame,
+    Check if ServiceFrame is present,
     it's other properties should be present
     """
     if service_frame:
@@ -771,43 +771,6 @@ def check_type_of_fare_structure_element_ref(context, fare_structure_element, *a
         )
         response = response_details.__list__()
         return response
-
-
-def check_generic_parameter(context, fare_structure_element, *args):
-    element = fare_structure_element[0]
-    generic_parameter = element.xpath(
-        "x:GenericParameterAssignment", namespaces=NAMESPACE
-    )
-    if not generic_parameter:
-        sourceline = element.sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_GENERIC_PARAMETER
-        )
-        response = response_details.__list__()
-        return response
-
-
-def check_access_right_assignment_ref(context, fare_structure_element, *args):
-    element = fare_structure_element[0]
-    access_right_assignment = get_access_right_assignment_ref(element)
-    if not access_right_assignment:
-        generic_parameter = element.xpath(
-            "x:GenericParameterAssignment", namespaces=NAMESPACE
-        )
-        if generic_parameter:
-            sourceline = generic_parameter[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT
-            )
-            response = response_details.__list__()
-            return response
-        sourceline = element.sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT
-        )
-        response = response_details.__list__()
-        return response
-
 
 def get_fare_structure_element(fare_structure_elements):
     fare_structure_element = fare_structure_elements[0]
@@ -1685,18 +1648,38 @@ def check_generic_parameters_for_access(context, elements, *args):
             response = response_details.__list__()
             return response
         if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
-            xpath = "x:GenericParameterAssignment/x:ValidityParameterGroupingType"
-            grouping_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+            generic_parameter = fare_structure_element.xpath("x:GenericParameterAssignment", namespaces=NAMESPACE)
+            if not generic_parameter:
+                sourceline_generic_parameter = fare_structure_element.sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_generic_parameter,
+                    MESSAGE_OBSERVATION_GENERIC_PARAMETER,
+                )
+                response = response_details.__list__()
+                return response
+            access_right_assignment = generic_parameter[0].xpath("TypeOfAccessRightAssignmentRef", namespaces=NAMESPACE)
+            if not access_right_assignment:
+                sourceline_access_right_assignment = generic_parameter[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_access_right_assignment,
+                    MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
+                )
+                response = response_details.__list__()
+                return response
+            xpath = "x:ValidityParameterGroupingType"
+            grouping_type = generic_parameter[0].xpath(xpath, namespaces=NAMESPACE)
 
-            xpath = "x:GenericParameterAssignment/x:ValidityParameterAssignmentType"
-            assignment_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+            xpath = "x:ValidityParameterAssignmentType"
+            assignment_type = generic_parameter[0].xpath(xpath, namespaces=NAMESPACE)
 
-            xpath = "x:GenericParameterAssignment/x:validityParameters"
-            validity_parameters = fare_structure_element.xpath(
+            xpath = "x:validityParameters"
+            validity_parameters =  generic_parameter[0].xpath(
                 xpath, namespaces=NAMESPACE
             )
             if not ((grouping_type or assignment_type) and validity_parameters):
-                sourceline_fare_structure = fare_structure_element.sourceline
+                sourceline_fare_structure = generic_parameter[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure,
@@ -1704,7 +1687,6 @@ def check_generic_parameters_for_access(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
-
 
 def check_generic_parameters_for_eligibility(context, elements, *args):
     """
@@ -1736,23 +1718,48 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
             FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
             == type_of_fare_structure_element_ref_ref
         ):
-            xpath = "x:GenericParameterAssignment/x:limitations/x:UserProfile"
-            user_profile = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
-
-            xpath = "x:GenericParameterAssignment/x:limitations/x:UserProfile/x:Name"
-            user_profile_name = fare_structure_element.xpath(
-                xpath, namespaces=NAMESPACE
-            )
-            xpath = (
-                "x:GenericParameterAssignment/x:limitations/x:UserProfile/x:UserType"
-            )
-            user_type = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
-
-            if not (user_profile and user_profile_name and user_type):
-                sourceline_fare_structure = fare_structure_element.sourceline
+            generic_parameter = fare_structure_element.xpath("x:GenericParameterAssignment", namespaces=NAMESPACE)
+            if not generic_parameter:
+                sourceline_generic_parameter = fare_structure_element.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
-                    sourceline_fare_structure,
+                    sourceline_generic_parameter,
+                    MESSAGE_OBSERVATION_GENERIC_PARAMETER,
+                )
+                response = response_details.__list__()
+                return response
+            limitations = generic_parameter[0].xpath("x:limitations", namespaces=NAMESPACE)
+            if not limitations:
+                sourceline_limitations = generic_parameter[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_limitations,
+                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION,
+                )
+                response = response_details.__list__()
+                return response
+            xpath = "x:UserProfile"
+            user_profile = limitations[0].xpath(xpath, namespaces=NAMESPACE)
+            if not user_profile:
+                sourceline_user_profile = limitations[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_user_profile,
+                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATIONS_USER,
+                )
+                response = response_details.__list__()
+                return response
+            xpath = "string(x:Name)"
+            user_profile_name = user_profile[0].xpath(
+                xpath, namespaces=NAMESPACE
+            )
+            xpath = "string(x:UserType)"
+            user_type = user_profile[0].xpath(xpath, namespaces=NAMESPACE)
+            if not (user_profile_name and user_type):
+                sourceline = user_profile[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline,
                     MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING,
                 )
                 response = response_details.__list__()

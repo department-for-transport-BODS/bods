@@ -9,7 +9,6 @@ from transit_odp.common.types import JSONFile, XMLFile
 from transit_odp.fares_validator.types import Observation, Schema, Violation
 from transit_odp.fares_validator.views.functions import (
     all_fare_structure_element_checks,
-    check_access_right_assignment_ref,
     check_access_right_elements,
     check_composite_frame_valid_between,
     check_distribution_assignments_elements,
@@ -18,7 +17,6 @@ from transit_odp.fares_validator.views.functions import (
     check_fare_products,
     check_fare_structure_element,
     check_frequency_of_use,
-    check_generic_parameter,
     check_generic_parameters_for_access,
     check_generic_parameters_for_eligibility,
     check_payment_methods,
@@ -102,10 +100,6 @@ class FaresValidator:
         self.register_function(
             "check_type_of_fare_structure_element_ref",
             check_type_of_fare_structure_element_ref,
-        )
-        self.register_function("check_generic_parameter", check_generic_parameter)
-        self.register_function(
-            "check_access_right_assignment_ref", check_access_right_assignment_ref
         )
         self.register_function(
             "check_type_of_frame_ref_ref", check_type_of_frame_ref_ref
