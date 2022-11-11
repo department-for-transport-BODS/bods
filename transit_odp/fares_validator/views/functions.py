@@ -235,7 +235,7 @@ def get_generic_parameter_assignment_properties(element):
             )
             response = response_details.__list__()
             return response
-        xpath = "x:TripType"
+        xpath = "x:RoundTrip/x:TripType"
         trip_type = limitation.xpath(xpath, namespaces=NAMESPACE)
         if not trip_type:
             sourceline = round_trip[0].sourceline
