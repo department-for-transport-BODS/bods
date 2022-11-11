@@ -295,7 +295,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
     If true, then fareZones properties should be present
     """
     if fare_zones:
-        xpath = "..//x:TypeOfFrameRef"
+        xpath = "../x:TypeOfFrameRef"
         type_of_frame_ref = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
@@ -308,10 +308,14 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
             )
             response = response_details.__list__()
             return response
-        if (
+        if not (
             type_of_frame_ref_ref is not None
-            and TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING not in type_of_frame_ref_ref
+            and (
+                TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING in type_of_frame_ref_ref
+                or TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING in type_of_frame_ref_ref
+            )
         ):
+
             sourceline_type_of_frame_ref = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
@@ -615,7 +619,7 @@ def is_schedule_stop_points(context, service_frame, *args):
         return response
 
 
-def check_type_of_frame_ref_ref(context, composite_frames, *args):
+def check_type_of_frame_ref_ref(context, composite_frames, *args):  # Need to be fixed
     """
     Check if FareFrame TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
     UK_PI_FARE_PRICE in it.
@@ -629,6 +633,7 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
         type_of_frame_ref = fare_frame.xpath(xpath, namespaces=NAMESPACE)
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+            print("type_of_frame_ref---->>>>", type_of_frame_ref_ref)
         except KeyError:
             sourceline = type_of_frame_ref.sourceline
             response_details = XMLViolationDetail(
@@ -829,14 +834,14 @@ def check_type_of_tariff_ref_values(context, elements, *args):
     try:
         type_of_tariff_ref_ref = _extract_attribute(is_type_of_tariff_ref, "ref")
     except KeyError:
-            sourceline = is_type_of_tariff_ref[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+        sourceline = is_type_of_tariff_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
     if not type_of_tariff_ref_ref in TYPE_OF_TARIFF_REF_STRING:
         sourceline = element.sourceline
         response_details = XMLViolationDetail(
@@ -854,17 +859,18 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
     fare_frame = fare_frames[0]
     xpath = "x:TypeOfFrameRef"
     type_of_frame_refs = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    print("type_offre)))))", fare_frame)
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs[0], "ref")
     except KeyError:
-            sourceline_fare_frame_ref = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
+        sourceline_fare_frame_ref = type_of_frame_refs[0].sourceline
+        response_details = XMLViolationDetail(
             "violation",
             sourceline_fare_frame_ref,
             MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
         )
-            response = response_details.__list__()
-            return response
+        response = response_details.__list__()
+        return response
     if (
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING in type_of_frame_ref_ref
@@ -1081,7 +1087,7 @@ def check_preassigned_fare_products_charging_type(context, fare_frames, *args):
             xpath = "x:fareProducts/x:PreassignedFareProduct/x:ChargingMomentType"
             charging_moment_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
             if not charging_moment_type:
-                sourceline_preassigned = fare_frame[0].sourceline    
+                sourceline_preassigned = fare_frame[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
@@ -1644,7 +1650,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 type_of_fare_structure_element_ref, "ref"
             )
         except KeyError:
-            sourceline= type_of_fare_structure_element_ref[0].sourceline
+            sourceline = type_of_fare_structure_element_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,

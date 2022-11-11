@@ -10,13 +10,21 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
-        { "test": "is_time_intervals_present_in_tarrifs(.)" },
-        { "test": "is_individual_time_interval_present_in_tariffs(.)" },
-        { "test": "is_time_interval_name_present_in_tariffs(.)" },
+        {
+          "test": "is_time_intervals_present_in_tarrifs(.)"
+        },
+        {
+          "test": "is_individual_time_interval_present_in_tariffs(.)"
+        },
+        {
+          "test": "is_time_interval_name_present_in_tariffs(.)"
+        },
         {
           "test": "is_fare_structure_element_present(.)"
         },
-        { "test": "is_generic_parameter_limitations_present(.)" }
+        {
+          "test": "is_generic_parameter_limitations_present(.)"
+        }
       ]
     },
     {
@@ -24,9 +32,15 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame/x:fareZones",
       "rules": [
-        { "test": "is_fare_zones_present_in_fare_frame(.)" },
-        { "test": "is_name_present_in_fare_frame(.)" },
-        { "test": "is_members_scheduled_point_ref_present_in_fare_frame(.)" }
+        {
+          "test": "is_fare_zones_present_in_fare_frame(.)"
+        },
+        {
+          "test": "is_name_present_in_fare_frame(.)"
+        },
+        {
+          "test": "is_members_scheduled_point_ref_present_in_fare_frame(.)"
+        }
       ]
     },
     {
@@ -34,38 +48,14 @@
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame",
       "rules": [
-        { "test": "is_service_frame_present(.)" },
-        { "test": "is_lines_present_in_service_frame(.)" },
-        { "test": "is_schedule_stop_points(.)" }
-      ]
-    },
-    {
-      "details": "Mandatory element 'ValidBetween' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame",
-      "rules": [
         {
-          "test": "count(x:ValidBetween) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'FromDate' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:ValidBetween",
-      "rules": [
+          "test": "is_service_frame_present(.)"
+        },
         {
-          "test": "count(x:FromDate) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'TypeOfFrameRef' missing'",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame",
-      "rules": [
+          "test": "is_lines_present_in_service_frame(.)"
+        },
         {
-          "test": "count(x:TypeOfFrameRef) > 0"
+          "test": "is_schedule_stop_points(.)"
         }
       ]
     },
@@ -80,42 +70,12 @@
       ]
     },
     {
-      "details": "Mandatory element 'Organisations' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:frames/x:ResourceFrame",
-      "rules": [
-        {
-          "test": "count(x:organisations) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Operator' missing",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations",
-      "rules": [
-        {
-          "test": "count(x:Operator) > 0"
-        }
-      ]
-    },
-    {
       "details": "'Operator' attribute 'id' format should be noc:xxxx",
       "category": "Mandatory Element",
       "context": "//x:ResourceFrame/x:organisations/x:Operator",
       "rules": [
         {
           "test": "check_operator_id_format(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Public Code' missing",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator",
-      "rules": [
-        {
-          "test": "count(x:PublicCode) > 0"
         }
       ]
     },
@@ -130,16 +90,6 @@
       ]
     },
     {
-      "details": "Mandatory element 'Name' missing",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator",
-      "rules": [
-        {
-          "test": "count(x:Name) > 0"
-        }
-      ]
-    },
-    {
       "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
       "category": "Mandatory Element",
       "context": "//x:CompositeFrame",
@@ -150,72 +100,12 @@
       ]
     },
     {
-      "details": "Mandatory element 'TariffBasis' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:TariffBasis) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'validityConditions' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:validityConditions) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'FromDate' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:validityConditions/x:ValidBetween",
-      "rules": [
-        {
-          "test": "count(x:FromDate) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'OperatorRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:OperatorRef) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'TypeOfTariffRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:TypeOfTariffRef) > 0"
-        }
-      ]
-    },
-    {
       "details": "Mandatory element 'TypeOfTariffRef' does not have an acceptable 'ref' value",
       "category": "Mandatory Element",
       "context": "//x:tariffs//x:Tariff",
       "rules": [
         {
           "test": "check_type_of_tariff_ref_values(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'fareStructureElements' missing",
-      "category": "Mandatory Element",
-      "context": "//x:FareFrame/x:tariffs/x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:fareStructureElements) > 0"
         }
       ]
     },

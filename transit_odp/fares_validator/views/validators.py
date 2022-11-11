@@ -135,9 +135,7 @@ class FaresValidator:
         self.register_function(
             "check_access_right_elements", check_access_right_elements
         )
-        self.register_function(
-            "check_product_type", check_product_type
-        )
+        self.register_function("check_product_type", check_product_type)
         self.register_function("check_sales_offer_packages", check_sales_offer_packages)
         self.register_function("check_sales_offer_package", check_sales_offer_package)
         self.register_function(
