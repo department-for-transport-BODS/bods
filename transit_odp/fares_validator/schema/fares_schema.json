@@ -1,6 +1,8 @@
 {
   "header": {
-    "namespaces": { "x": "http://www.netex.org.uk/netex" }
+    "namespaces": {
+      "x": "http://www.netex.org.uk/netex"
+    }
   },
   "observations": [
     {
@@ -10,29 +12,21 @@
       "rules": [
         {
           "test": "is_time_intervals_present_in_tarrifs(.)"
-        }
-      ]
-    },
-    {
-      "details": "If ProductType is dayPass or periodPass, FareStructureElement elements should be present in Tariff.FareStructureElements",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
+        },
+        {
+          "test": "is_individual_time_interval_present_in_tariffs(.)"
+        },
+        {
+          "test": "is_time_interval_name_present_in_tariffs(.)"
+        },
         {
           "test": "is_fare_structure_element_present(.)"
-        }
-      ]
-    },
-    {
-      "details": "If ProductType is singleTrip, dayReturnTrip or periodReturnTrip, FareStructureElement.GenericParameterAssignment elements should be present in Tariff.FareStructureElements",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:FareFrame",
-      "rules": [
+        },
         {
           "test": "is_generic_parameter_limitations_present(.)"
         }
       ]
-    },  
+    },
     {
       "details": "If fareZones is present in FareFrame, additional fareZones properties should be present",
       "category": "Conditional Check",
@@ -40,6 +34,12 @@
       "rules": [
         {
           "test": "is_fare_zones_present_in_fare_frame(.)"
+        },
+        {
+          "test": "is_name_present_in_fare_frame(.)"
+        },
+        {
+          "test": "is_members_scheduled_point_ref_present_in_fare_frame(.)"
         }
       ]
     },
@@ -50,56 +50,12 @@
       "rules": [
         {
           "test": "is_service_frame_present(.)"
-        }
-      ]
-    },
-    {
-      "details": "If lines present in ServiceFrame, corresponding Line properties should be present",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:lines",
-      "rules": [
+        },
         {
           "test": "is_lines_present_in_service_frame(.)"
-        }
-      ]
-    },
-    {
-      "details": "If scheduledStopPoints is present in ServiceFrame, it's other properties should be present",
-      "category": "Conditional Check",
-      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:scheduledStopPoints",
-      "rules": [
+        },
         {
           "test": "is_schedule_stop_points(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'ValidBetween' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame",
-      "rules": [
-        {
-          "test": "count(x:ValidBetween) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'FromDate' missing",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:ValidBetween",
-      "rules": [
-        {
-          "test": "count(x:FromDate) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'TypeOfFrameRef' missing'",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame",
-      "rules": [
-        {
-          "test": "count(x:TypeOfFrameRef) > 0"
         }
       ]
     },
@@ -114,69 +70,9 @@
       ]
     },
     {
-      "details": "Mandatory element 'Organisations' missing",
+      "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
       "category": "Mandatory Element",
-      "context": "//x:CompositeFrame/x:frames/x:ResourceFrame",
-      "rules": [
-        {
-          "test": "count(x:organisations) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Operator' missing",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations",
-      "rules": [
-        {
-          "test": "count(x:Operator) > 0"
-        }
-      ]
-    },
-    {
-      "details": "'Operator' attribute 'id' format should be noc:xxxx",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator",
-      "rules": [
-        {
-          "test": "check_operator_id_format(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Public Code' missing",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator",
-      "rules": [
-        {
-          "test": "count(x:PublicCode) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Element 'Public Code' should be 4 characters long",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator/x:PublicCode",
-      "rules": [
-        {
-          "test": "check_public_code_length(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'Name' missing",
-      "category": "Mandatory Element",
-      "context": "//x:ResourceFrame/x:organisations/x:Operator",
-      "rules": [
-        {
-          "test": "count(x:Name) > 0"
-        }
-      ]
-    },
-    {
-      "details": "**Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
-      "category": "Mandatory Element",
-      "context": "//x:CompositeFrame",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
           "test": "check_type_of_frame_ref_ref(.)"
@@ -184,72 +80,21 @@
       ]
     },
     {
-      "details": "Mandatory element 'TariffBasis' missing",
+      "details": "Mandatory elements 'OperatorRef','TariffBasis' present and 'TypeOfTariffRef' present and have an acceptable 'ref' value",
       "category": "Mandatory Element",
       "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:TariffBasis) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'validityConditions' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:validityConditions) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'FromDate' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:validityConditions/x:ValidBetween",
-      "rules": [
-        {
-          "test": "count(x:FromDate) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'OperatorRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:OperatorRef) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'TypeOfTariffRef' missing",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
-      "rules": [
-        {
-          "test": "count(x:TypeOfTariffRef) > 0"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'TypeOfTariffRef' does not have an acceptable 'ref' value",
-      "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff/x:TypeOfTariffRef",
       "rules": [
         {
           "test": "check_type_of_tariff_ref_values(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'fareStructureElements' missing",
-      "category": "Mandatory Element",
-      "context": "//x:FareFrame/x:tariffs/x:Tariff",
-      "rules": [
+        },
         {
-          "test": "count(x:fareStructureElements) > 0"
+          "test": "check_tariff_operator_ref(.)"
+        },
+        {
+          "test": "check_tariff_basis(.)"
+        },
+        {
+          "test": "check_tariff_validity_conditions(.)"
         }
       ]
     },
@@ -257,7 +102,96 @@
       "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
       "category": "Mandatory Element",
       "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements",
-      "rules": [{ "test": "all_fare_structure_element_checks(.)" }]
+      "rules": [
+        {
+          "test": "all_fare_structure_element_checks(.)"
+        },
+        {
+          "test": "check_fare_structure_element(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory fareTables elements missing for FareFrame - UK_PI_FARE_PRICE",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "is_uk_pi_fare_price_frame_present(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'PreassignedFareProduct' or it's children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "check_fare_products(.)"
+        },
+        {
+          "test": "check_preassigned_fare_products(.)"
+        },
+        {
+          "test": "check_preassigned_fare_products_name(.)"
+        },
+        {
+          "test": "check_preassigned_fare_products_type_ref(.)"
+        },
+        {
+          "test": "check_preassigned_fare_products_charging_type(.)"
+        },
+        {
+          "test": "check_preassigned_validable_elements(.)"
+        },
+        {
+          "test": "check_access_right_elements(.)"
+        },
+        {
+          "test": "check_product_type(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory salesOfferPackages elements missing for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "check_sales_offer_packages(.)"
+        },
+        {
+          "test": "check_sales_offer_package(.)"
+        },
+        {
+          "test": "check_distribution_assignments_elements(.)"
+        },
+        {
+          "test": "check_distribution_channel_type(.)"
+        },
+        {
+          "test": "check_payment_methods(.)"
+        },
+        {
+          "test": "check_sales_offer_elements(.)"
+        },
+        {
+          "test": "check_type_of_travel_doc(.)"
+        },
+        {
+          "test": "check_fare_product_ref(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
+      "rules": [
+        {
+          "test": "check_type_of_fare_structure_element_ref(.)"
+        }
+      ]
     },
     {
       "details": "Check if 'GenericParameterAssignment' has acceptable elements within it when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'",
@@ -280,99 +214,9 @@
       ]
     },
     {
-      "details": "Mandatory fareTables elements missing for FareFrame - UK_PI_FARE_PRICE",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "is_uk_pi_fare_price_frame_present(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'fareProducts' missing for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_fare_products(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'PreassignedFareProduct' or it's children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_preassigned_fare_products(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'validableElements' or it's children missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_preassigned_validable_elements(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'AccessRightInProduct' or it's children missing in fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_access_right_elements(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory salesOfferPackages elements missing for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_sales_offer_packages(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'SalesOfferPackage' salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_sales_offer_package(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'distributionAssignments' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_distribution_assignments_elements(.)"
-        }
-      ]
-    },
-    {
-      "details": "Mandatory element 'salesOfferPackageElements' or it's children missing in salesOfferPackages for FareFrame - UK_PI_FARE_PRODUCT",
-      "category": "Mandatory Element",
-      "context": "//x:dataObjects",
-      "rules": [
-        {
-          "test": "check_sales_offer_elements(.)"
-        }
-      ]
-    },
-    {
       "details": "Mandatory element 'FrequencyOfUse' or it's child missing in FareStructureElement with TypeOfFareStructureElementRef - fxc:travel_conditions",
       "category": "Mandatory Element",
-      "context": "//x:dataObjects",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement",
       "rules": [
         {
           "test": "check_frequency_of_use(.)"
