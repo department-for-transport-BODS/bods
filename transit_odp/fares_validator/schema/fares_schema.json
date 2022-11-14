@@ -153,31 +153,43 @@
       ]
     },
     {
-      "details": "Mandatory salesOfferPackages elements missing for FareFrame - UK_PI_FARE_PRODUCT",
+      "details": "Mandatory salesOfferPackage and it's child elements missing for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
       "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
-          "test": "check_sales_offer_packages(.)"
-        },
-        {
           "test": "check_sales_offer_package(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory distributionAssignments and saleOfferPackageElements and their child elements missing for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:salesOfferPackages/x:SalesOfferPackage",
+      "rules": [
+        {
+          "test": "check_dist_assignments(.)"
         },
         {
-          "test": "check_distribution_assignments_elements(.)"
-        },
-        {
-          "test": "check_distribution_channel_type(.)"
-        },
+          "test": "check_sale_offer_package_elements(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element PaymentMethods within distributionAssignments missing for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:salesOfferPackages/x:SalesOfferPackage/x:distributionAssignments/x:DistributionAssignment",
+      "rules": [
         {
           "test": "check_payment_methods(.)"
-        },
-        {
-          "test": "check_sales_offer_elements(.)"
-        },
-        {
-          "test": "check_type_of_travel_doc(.)"
-        },
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element PreassignedFareProductRef within distributionAssignments missing for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
+      "rules": [
         {
           "test": "check_fare_product_ref(.)"
         }
