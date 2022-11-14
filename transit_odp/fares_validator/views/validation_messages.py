@@ -181,9 +181,6 @@ MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_MISSING = (
 MESSAGE_OBSERVATION_RESOURCE_FRAME_PUBLIC_CODE_MISSING = "Mandatory element 'PublicCode' within 'ResourceFrame.organisations.Operator' is missing"
 MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_NAME_MISSING = "Mandatory element 'Name' within 'ResourceFrame.organisations.Operator' is missing or empty"
 
-MESSAGE_TYPE_OF_FARE_ELEMENT_REF_MISSING = (
-    "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"
-)
 MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING = (
     "Attribute 'ref' of element 'TypeOfAccessRightAssignmentRef' is missing"
 )

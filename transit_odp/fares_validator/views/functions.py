@@ -222,9 +222,27 @@ def get_generic_parameter_assignment_properties(element):
     """
     Checks if the FareStructureElement.GenericParameterAssignment properties are present
     """
-    xpath = "//x:FareStructureElement/x:GenericParameterAssignment/x:limitations"
-    limitations = element.xpath(xpath, namespaces=NAMESPACE)
+    xpath = "x:GenericParameterAssignment"
+    generic_parameter_assignment = element.xpath(xpath, namespaces=NAMESPACE)
+    if not generic_parameter_assignment:
+        sourceline_generic_parameter = element.sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline_generic_parameter,
+            MESSAGE_OBSERVATION_GENERIC_PARAMETER,
+        )
+        response = response_details.__list__()
+        return response
+    xpath = "x:limitations"
+    limitations = generic_parameter_assignment[0].xpath(xpath, namespaces=NAMESPACE)
 
+    if not limitations:
+        sourceline = generic_parameter_assignment[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation", sourceline, MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION
+        )
+        response = response_details.__list__()
+        return response
     for limitation in limitations:
         xpath = "x:RoundTrip"
         round_trip = limitation.xpath(xpath, namespaces=NAMESPACE)
@@ -235,8 +253,8 @@ def get_generic_parameter_assignment_properties(element):
             )
             response = response_details.__list__()
             return response
-        xpath = "x:RoundTrip/x:TripType"
-        trip_type = limitation.xpath(xpath, namespaces=NAMESPACE)
+        xpath = "x:TripType"
+        trip_type = round_trip[0].xpath(xpath, namespaces=NAMESPACE)
         if not trip_type:
             sourceline = round_trip[0].sourceline
             response_details = XMLViolationDetail(
@@ -297,13 +315,15 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
     fare_frame = fare_frames[0]
     xpath = "string(x:fareProducts/x:PreassignedFareProduct/x:ProductType)"
     product_type = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-    xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:TypeOfFareStructureElementRef"
-    type_of_frame_refs = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-    for type_of_frame_ref in type_of_frame_refs:
+    xpath = "x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement"
+    fare_structure_elements = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+    for fare_structure_element in fare_structure_elements:
+        xpath = "x:TypeOfFareStructureElementRef"
+        type_of_frame_ref = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
         try:
-            type_of_frame_ref_ref = _extract_attribute([type_of_frame_ref], "ref")
+            type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
-            sourceline = type_of_frame_ref.sourceline
+            sourceline = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
@@ -316,7 +336,7 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
             and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
             and product_type in ["singleTrip", "dayReturnTrip", "periodReturnTrip"]
         ):
-            return get_generic_parameter_assignment_properties(fare_frame)
+            return get_generic_parameter_assignment_properties(fare_structure_element)
 
 
 def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
@@ -684,7 +704,7 @@ def all_fare_structure_element_checks(
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_TYPE_OF_FARE_ELEMENT_REF_MISSING,
+                        MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response
