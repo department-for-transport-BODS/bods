@@ -517,49 +517,43 @@ def is_lines_present_in_service_frame(context, service_frame, *args):
     if service_frame:
         xpath = "x:lines"
         lines = service_frame[0].xpath(xpath, namespaces=NAMESPACE)
-        if not lines:
-            sourceline_service_frame = service_frame[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation", sourceline_service_frame, MESSAGE_OBSERVATION_LINES_MISSING
-            )
-            response = response_details.__list__()
-            return response
-        xpath = "x:Line"
-        service_frame_line = lines[0].xpath(xpath, namespaces=NAMESPACE)
-        if service_frame_line:
-            xpath = "string(x:Name)"
-            name = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
-            if not name:
-                sourceline_line = service_frame_line[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_line,
-                    MESSAGE_OBSERVATION_NAME_MISSING,
-                )
-                response = response_details.__list__()
-                return response
-            xpath = "string(x:PublicCode)"
-            public_code = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
-            if not public_code:
-                sourceline_line = service_frame_line[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_line,
-                    MESSAGE_OBSERVATION_PUBLICCODE_MISSING,
-                )
-                response = response_details.__list__()
-                return response
-            xpath = "x:OperatorRef"
-            operator_ref = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
-            if not operator_ref:
-                sourceline_line = service_frame_line[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_line,
-                    MESSAGE_OBSERVATION_OPERATORREF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+        if lines:
+            xpath = "x:Line"
+            service_frame_line = lines[0].xpath(xpath, namespaces=NAMESPACE)
+            if service_frame_line:
+                xpath = "string(x:Name)"
+                name = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
+                if not name:
+                    sourceline_line = service_frame_line[0].sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_line,
+                        MESSAGE_OBSERVATION_NAME_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                xpath = "string(x:PublicCode)"
+                public_code = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
+                if not public_code:
+                    sourceline_line = service_frame_line[0].sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_line,
+                        MESSAGE_OBSERVATION_PUBLICCODE_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                xpath = "x:OperatorRef"
+                operator_ref = service_frame_line[0].xpath(xpath, namespaces=NAMESPACE)
+                if not operator_ref:
+                    sourceline_line = service_frame_line[0].sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_line,
+                        MESSAGE_OBSERVATION_OPERATORREF_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
 
 
 def is_schedule_stop_points(context, service_frame, *args):
@@ -1861,6 +1855,9 @@ def check_composite_frame_valid_between(context, composite_frames, *args):
 
 
 def check_resource_frame_organisation_elements(context, composite_frames, *args):
+    """
+    Check if mandatory element 'ResourceFrame' or it's child missing from CompositeFrame
+    """
     composite_frame = composite_frames[0]
     try:
         composite_frame_id = _extract_attribute(composite_frames, "id")
@@ -1953,6 +1950,9 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
 
 
 def check_resource_frame_operator_name(context, composite_frames, *args):
+    """
+    Check if mandatory element 'Name' is missing from organisations in ResourceFrame
+    """
     composite_frame = composite_frames[0]
     try:
         composite_frame_id = _extract_attribute(composite_frames, "id")
