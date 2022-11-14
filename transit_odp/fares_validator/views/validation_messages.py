@@ -5,9 +5,7 @@ MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING = (
     "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'"
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING = "'TypeOfFareStructureElementRef' 'ref' attribute is missing from 'FareStructureElement'"
-MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING = (
-    "'fareProducts' element is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
-)
+MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING = "'fareProducts' and it's child elements is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_TARIFF_REF_MISSING = (
     "Mandatory element 'TypeOfTariffRef' is missing in 'Tariff'"
 )
@@ -34,17 +32,17 @@ MESSAGE_OBSERVATION_FARE_TABLE_MISSING = (
 MESSAGE_OBSERVATION_PRICES_FOR_MISSING = (
     "'PricesFor' missing from 'FareTable' in 'FareFrame'- UK_PI_FARE_PRICE"
 )
-MESSAGE_OBSERVATION_PREASSIGNED_FARE_MISSING = "'PreassignedFareProduct' missing in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
+MESSAGE_OBSERVATION_PREASSIGNED_FARE_MISSING = "'PreassignedFareProduct' and it's child elements in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PREASSIGNED_FARE_NAME_MISSING = "'Name' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PREASSIGNED_TYPE_OF_FARE_MISSING = "'TypeOfFareProductRef' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PREASSIGNED_FARE_CHARGING_MISSING = "'ChargingMomentType' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
-MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENTS_MISSING = "'validableElements' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
+MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENTS_MISSING = "'validableElements' and it's child elements missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENT_MISSING = "'ValidableElement' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
-MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_MISSING = "'fareStructureElements' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
+MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_MISSING = "'fareStructureElements' and it's child elements missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_REF_MISSING = "'FareStructureElementRef' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_MISSING = "'accessRightsInProduct' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
-MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_VALIDABLE_MISSING = "'ValidableElementRef' missing from 'PreassignedFareProduct'/'accessRightsInProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
-MESSAGE_OBSERVATION_PREASSIGNED_PRODUCT_TYPE_MISSING = "'ProductType' missing from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
+MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_VALIDABLE_MISSING = "'ValidableElementRef' missing from 'accessRightsInProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
+MESSAGE_OBSERVATION_PREASSIGNED_PRODUCT_TYPE_MISSING = "'ProductType' missing or empty from 'PreassignedFareProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_PACKAGES_MISSING = "'salesOfferPackages' and it's child elements is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_PACKAGE_MISSING = "'salesOfferPackage' and it's child elements is missing from 'salesOfferPackages' in 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_ASSIGNMENTS_MISSING = "'distributionAssignments' and it's child elements is missing from 'salesOfferPackage' in 'FareFrame' - UK_PI_FARE_PRODUCT"

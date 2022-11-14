@@ -13,7 +13,6 @@ from transit_odp.fares_validator.views.functions import (
     check_composite_frame_valid_between,
     check_dist_assignments,
     check_fare_product_ref,
-    check_fare_products,
     check_fare_structure_element,
     check_frequency_of_use,
     check_generic_parameters_for_access,
@@ -23,7 +22,6 @@ from transit_odp.fares_validator.views.functions import (
     check_payment_methods,
     check_preassigned_fare_products,
     check_preassigned_fare_products_charging_type,
-    check_preassigned_fare_products_name,
     check_preassigned_fare_products_type_ref,
     check_preassigned_validable_elements,
     check_product_type,
@@ -120,12 +118,8 @@ class FaresValidator:
         self.register_function(
             "is_uk_pi_fare_price_frame_present", is_uk_pi_fare_price_frame_present
         )
-        self.register_function("check_fare_products", check_fare_products)
         self.register_function(
             "check_preassigned_fare_products", check_preassigned_fare_products
-        )
-        self.register_function(
-            "check_preassigned_fare_products_name", check_preassigned_fare_products_name
         )
         self.register_function(
             "check_preassigned_fare_products_type_ref",

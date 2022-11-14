@@ -135,19 +135,20 @@
       ]
     },
     {
-      "details": "Mandatory element 'PreassignedFareProduct' or it's children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
+      "details": "Mandatory element 'fareProducts' or 'PreassignedFareProduct' in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "Mandatory Element",
       "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
-          "test": "check_fare_products(.)"
-        },
-        {
           "test": "check_preassigned_fare_products(.)"
-        },
-        {
-          "test": "check_preassigned_fare_products_name(.)"
-        },
+        }
+      ]
+    },
+    {
+      "details": "Element 'PreassignedFareProduct'children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct",
+      "rules": [
         {
           "test": "check_preassigned_fare_products_type_ref(.)"
         },
