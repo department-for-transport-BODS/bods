@@ -53,7 +53,8 @@ MESSAGE_OBSERVATION_SALES_OFFER_ELEMENTS_MISSING = "'salesOfferPackageElements' 
 MESSAGE_OBSERVATION_SALES_OFFER_ELEMENT_MISSING = "'SalesOfferPackageElement' and it's child elements is missing from 'salesOfferPackageElements' in 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_TRAVEL_DOC_MISSING = "'TypeOfTravelDocumentRef' element is missing from 'SalesOfferPackageElement' in 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_FARE_PROD_REF_MISSING = "'PreassignedFareProductRef' element is missing from 'SalesOfferPackageElement' in 'FareFrame' - UK_PI_FARE_PRODUCT"
-MESSAGE_OBSERVATION_GENERIC_PARAMETER_ACCESS_PROPS_MISSING = "'ValidityParameterGroupingType' or 'ValidityParameterAssignmentType' and 'validityParameters' elements are missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'"
+MESSAGE_OBSERVATION_VALIDITY_GROUPING_PARAMETER = "'ValidityParameterGroupingType' or 'ValidityParameterAssignmentType' elements are missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'"
+MESSAGE_OBSERVATION_VALIDITY_PARAMETER = "'validityParameters' elements are missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATIONS_USER = "Mandatory element 'UserProfile' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:eligibility'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING = "Mandatory element 'UserProfile.Name' or 'UserProfile.UserType' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:eligibility'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING = "'FrequencyOfUse' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
@@ -137,9 +138,7 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT = (
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
     "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' is missing"
 )
-MESSAGE_OBSERVATION_GENERIC_PARAMETER = (
-    "Mandatory element 'FareStructureElement.GenericParameterAssignment' is missing"
-)
+MESSAGE_OBSERVATION_GENERIC_PARAMETER = "Mandatory element 'FareStructureElement.GenericParameterAssignment' and it's child elements is missing"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION = "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"
 MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
     "Mandatory element 'GenericParameterAssignment."

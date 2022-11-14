@@ -6,7 +6,7 @@
   },
   "observations": [
     {
-      "details": "If ProductType is dayPass or periodPass, timeIntervals element should be present in Tariff",
+      "details": "All ProductType dependent conditional checks",
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
@@ -226,6 +226,19 @@
       "rules": [
         {
           "test": "check_generic_parameters_for_access(.)"
+        }
+      ]
+    },
+    {
+      "details": "Check if 'ValidityParameterGroupingType' or 'ValidityParameterAssignmentType' and 'validityParameters' is present when 'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'",
+      "category": "Mandatory Element",
+      "context": "//x:FareFrame/x:tariffs/x:Tariff/x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
+      "rules": [
+        {
+          "test": "check_validity_grouping_type_for_access(.)"
+        },
+        {
+          "test": "check_validity_parameter_for_access(.)"
         }
       ]
     },
