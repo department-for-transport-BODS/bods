@@ -222,6 +222,29 @@
           "test": "check_frequency_of_use(.)"
         }
       ]
+    },
+    {
+      "details": "Check if 'ValidBetween' and it's child are present in CompositeFrame",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame",
+      "rules": [
+        {
+          "test": "check_composite_frame_valid_between(.)"
+        }
+      ]
+    },
+    {
+      "details": "Check if 'organisations' and it's children are present in ResourceFrame",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame",
+      "rules": [
+        {
+          "test": "check_resource_frame_organisation_elements(.)"
+        },
+        {
+          "test": "check_resource_frame_operator_name(.)"
+        }
+      ]
     }
   ]
 }
