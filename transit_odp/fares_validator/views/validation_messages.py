@@ -4,7 +4,7 @@ This is to manage all the custom error messages from the validator functions
 MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING = (
     "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'"
 )
-MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING = "'TypeOfFareStructureElementRef' 'ref' attribute is missing from 'FareStructureElement'"
+MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING = "'TypeOfFareStructureElementRef' 'ref' attribute is missing from 'FareStructureElement'"
 MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING = (
     "'fareProducts' element is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 )
@@ -177,6 +177,9 @@ MESSAGE_OBSERVATION_COMPOSITE_FRAME_VALID_BETWEEN_MISSING = (
     "Mandatory element 'ValidBetween' within 'CompositeFrame' is missing"
 )
 MESSAGE_OBSERVATION_COMPOSITE_FRAME_FROM_DATE = "Mandatory element 'FromDate' within 'CompositeFrame.ValidBetween' is missing or empty"
+MESSAGE_OBSERVATION_RESOURCE_FRAME_MISSING = (
+    "Mandatory element 'ResourceFrame' missing from 'CompositeFrame'"
+)
 MESSAGE_OBSERVATION_RESOURCE_FRAME_ORG_MISSING = (
     "Mandatory element 'organisations' within 'ResourceFrame' is missing"
 )
@@ -191,4 +194,7 @@ MESSAGE_TYPE_OF_FARE_ELEMENT_REF_MISSING = (
 )
 MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING = (
     "Attribute 'ref' of element 'TypeOfAccessRightAssignmentRef' is missing"
+)
+MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING = (
+    "Attribute 'id' of element 'CompositeFrame' is missing"
 )
