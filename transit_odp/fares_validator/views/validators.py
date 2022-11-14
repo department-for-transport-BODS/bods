@@ -33,6 +33,8 @@ from transit_odp.fares_validator.views.functions import (
     check_type_of_fare_structure_element_ref,
     check_type_of_frame_ref_ref,
     check_type_of_tariff_ref_values,
+    check_validity_grouping_type_for_access,
+    check_validity_parameter_for_access,
     check_value_of_type_of_frame_ref,
     is_fare_structure_element_present,
     is_fare_zones_present_in_fare_frame,
@@ -140,6 +142,13 @@ class FaresValidator:
         self.register_function("check_fare_product_ref", check_fare_product_ref)
         self.register_function(
             "check_generic_parameters_for_access", check_generic_parameters_for_access
+        )
+        self.register_function(
+            "check_validity_grouping_type_for_access",
+            check_validity_grouping_type_for_access,
+        )
+        self.register_function(
+            "check_validity_parameter_for_access", check_validity_parameter_for_access
         )
         self.register_function(
             "check_generic_parameters_for_eligibility",

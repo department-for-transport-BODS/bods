@@ -1565,7 +1565,7 @@ def check_generic_parameters_for_access(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
-            xpath = "TypeOfAccessRightAssignmentRef"
+            xpath = "x:TypeOfAccessRightAssignmentRef"
             access_right_assignment = generic_parameter[0].xpath(
                 xpath, namespaces=NAMESPACE
             )
@@ -1578,25 +1578,92 @@ def check_generic_parameters_for_access(context, elements, *args):
                 )
                 response = response_details.__list__()
                 return response
-            xpath = "x:ValidityParameterGroupingType"
-            grouping_type = generic_parameter[0].xpath(xpath, namespaces=NAMESPACE)
 
-            xpath = "x:ValidityParameterAssignmentType"
-            assignment_type = generic_parameter[0].xpath(xpath, namespaces=NAMESPACE)
 
-            xpath = "x:validityParameters"
-            validity_parameters = generic_parameter[0].xpath(
-                xpath, namespaces=NAMESPACE
+def check_validity_grouping_type_for_access(
+    context, generic_parameter_assignments, *args
+):
+    """
+    Checks if 'GenericParameterAssignment' has either 'ValidityParameterGroupingType'
+    or 'ValidityParameterAssignmentType' elements within it when
+    'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'
+    """
+    generic_parameter_assignment = generic_parameter_assignments[0]
+    xpath = "../x:TypeOfFareStructureElementRef"
+    type_of_fare_structure_element_ref = generic_parameter_assignment.xpath(
+        xpath, namespaces=NAMESPACE
+    )
+    try:
+        type_of_fare_structure_element_ref_ref = _extract_attribute(
+            type_of_fare_structure_element_ref, "ref"
+        )
+    except KeyError:
+        sourceline = type_of_fare_structure_element_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
+        xpath = "string(x:ValidityParameterGroupingType)"
+        grouping_type = generic_parameter_assignment.xpath(xpath, namespaces=NAMESPACE)
+
+        xpath = "string(x:ValidityParameterAssignmentType)"
+        assignment_type = generic_parameter_assignment.xpath(
+            xpath, namespaces=NAMESPACE
+        )
+
+        if not (grouping_type or assignment_type):
+            sourceline_generic_parameter = generic_parameter_assignment.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_generic_parameter,
+                MESSAGE_OBSERVATION_VALIDITY_GROUPING_PARAMETER,
             )
-            if not ((grouping_type or assignment_type) and validity_parameters):
-                sourceline_fare_structure = generic_parameter[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_fare_structure,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_ACCESS_PROPS_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+            response = response_details.__list__()
+            return response
+
+
+def check_validity_parameter_for_access(context, generic_parameter_assignments, *args):
+    """
+    Checks if 'GenericParameterAssignment' has 'validityParameters' elements within it when
+    'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'
+    """
+    generic_parameter_assignment = generic_parameter_assignments[0]
+    xpath = "../x:TypeOfFareStructureElementRef"
+    type_of_fare_structure_element_ref = generic_parameter_assignment.xpath(
+        xpath, namespaces=NAMESPACE
+    )
+    try:
+        type_of_fare_structure_element_ref_ref = _extract_attribute(
+            type_of_fare_structure_element_ref, "ref"
+        )
+    except KeyError:
+        sourceline = type_of_fare_structure_element_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
+        generic_parameter_assignment = generic_parameter_assignments[0]
+        xpath = "x:validityParameters"
+        validity_parameters = generic_parameter_assignment.xpath(
+            xpath, namespaces=NAMESPACE
+        )
+        if not validity_parameters:
+            sourceline_generic_parameter = generic_parameter_assignment.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline_generic_parameter,
+                MESSAGE_OBSERVATION_VALIDITY_PARAMETER,
+            )
+            response = response_details.__list__()
+            return response
 
 
 def check_generic_parameters_for_eligibility(context, elements, *args):
