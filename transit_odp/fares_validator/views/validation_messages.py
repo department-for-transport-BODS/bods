@@ -63,11 +63,7 @@ MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING = "Mandatory ele
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING = "'FrequencyOfUse' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING = "'FrequencyOfUseType' is missing from 'GenericParameterAssignment'/'limitations'/'FrequencyOfUse' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
 
-MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING = (
-    "Attribute 'ref' of element 'TypeOfFrameRef' is missing or "
-    "attribute 'ref' value does not contain "
-    "'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'"
-)
+MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING = "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'"
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_MISSING = (
     "From 'scheduledStopPoints' element in ServiceFrame, "
     "attribute 'id' of element 'ScheduledStopPoint' is missing"
@@ -97,7 +93,7 @@ MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH = (
 )
 MESSAGE_OBSERVATION_OPERATOR_ID = "'Operator' attribute 'id' format should be noc:xxxx"
 MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
-    "Attribute 'ref' value does not contain "
+    "Attribute 'ref' of 'TypeOfFrameRef' in 'CompositeFrame' does not contain "
     "'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'"
 )
 MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
