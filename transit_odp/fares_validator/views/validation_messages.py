@@ -150,8 +150,7 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
     "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
-    "Attribute 'ref' of elements "
-    "'TypeOfFareStructureElementRef' or 'TypeOfAccessRightAssignmentRef' is missing."
+    "Mandatory element 'TypeOfFareStructureElementRef' is missing"
 )
 MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
     "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"
