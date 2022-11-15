@@ -44,7 +44,7 @@
       ]
     },
     {
-      "details": "If ServiceFrame is present, TypeOfFrameRef should include UK_PI_NETWORK",
+      "details": "If ServiceFrame is present, TypeOfFrameRef should include UK_PI_NETWORK, and Line and scheduledStopPoint elements should be present",
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame",
       "rules": [
@@ -60,9 +60,22 @@
       ]
     },
     {
+      "details": "If ServiceFrame is present, ServiceFrame.lines.Line.PublicCode and ServiceFrame.lines.Line.OperatorRef should be present",
+      "category": "Conditional Check",
+      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:lines/x:Line",
+      "rules": [
+        {
+          "test": "check_lines_public_code_present(.)"
+        },
+        {
+          "test": "check_lines_operator_ref_present(.)"
+        }
+      ]
+    },
+    {
       "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
       "category": "Mandatory Element",
-      "context": "//x:dataObjects",
+      "context": "//x:dataObjects/x:CompositeFrame",
       "rules": [
         {
           "test": "check_value_of_type_of_frame_ref(.)"
@@ -72,7 +85,7 @@
     {
       "details": "Attribute 'ref' of element 'TypeOfFrameRef' is missing or attribute 'ref' value does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'",
       "category": "Mandatory Element",
-      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
+      "context": "//x:dataObjects/x:CompositeFrame",
       "rules": [
         {
           "test": "check_type_of_frame_ref_ref(.)"
@@ -246,6 +259,29 @@
       "rules": [
         {
           "test": "check_frequency_of_use(.)"
+        }
+      ]
+    },
+    {
+      "details": "Check if 'ValidBetween' and it's child are present in CompositeFrame",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame",
+      "rules": [
+        {
+          "test": "check_composite_frame_valid_between(.)"
+        }
+      ]
+    },
+    {
+      "details": "Check if 'organisations' and it's children are present in ResourceFrame",
+      "category": "Mandatory Element",
+      "context": "//x:dataObjects/x:CompositeFrame",
+      "rules": [
+        {
+          "test": "check_resource_frame_organisation_elements(.)"
+        },
+        {
+          "test": "check_resource_frame_operator_name(.)"
         }
       ]
     }

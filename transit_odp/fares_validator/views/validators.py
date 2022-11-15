@@ -17,6 +17,8 @@ from transit_odp.fares_validator.views.functions import (
     check_frequency_of_use,
     check_generic_parameters_for_access,
     check_generic_parameters_for_eligibility,
+    check_lines_operator_ref_present,
+    check_lines_public_code_present,
     check_payment_methods,
     check_preassigned_fare_products,
     check_preassigned_fare_products_charging_type,
@@ -88,6 +90,12 @@ class FaresValidator:
             "is_lines_present_in_service_frame", is_lines_present_in_service_frame
         )
         self.register_function("is_schedule_stop_points", is_schedule_stop_points)
+        self.register_function(
+            "check_lines_public_code_present", check_lines_public_code_present
+        )
+        self.register_function(
+            "check_lines_operator_ref_present", check_lines_operator_ref_present
+        )
         self.register_function(
             "all_fare_structure_element_checks", all_fare_structure_element_checks
         )
