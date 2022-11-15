@@ -1840,7 +1840,7 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
                 )
                 response = response_details.__list__()
                 return response
-            xpath = "x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse/x:FrequencyOfUseType"
+            xpath = "string(x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse/x:FrequencyOfUseType)"
             frequency_of_use_type = fare_structure_element.xpath(
                 xpath, namespaces=NAMESPACE
             )
