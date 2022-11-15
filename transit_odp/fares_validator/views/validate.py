@@ -33,8 +33,10 @@ class FaresXmlValidator:
 
         fares_validator = fares_validation.get_fares_validator()
         violations = fares_validator.get_violations(file_obj, self.pk1)
-        if violations:
-            for error in violations:
+        result = []
+        [result.append(violation) for violation in violations if violation not in result]
+        if result:
+            for error in result:
                 fares_validator_model_object = FaresValidation(
                     dataset_id=self.pk2,
                     organisation_id=self.pk1,
