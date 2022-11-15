@@ -44,7 +44,7 @@
       ]
     },
     {
-      "details": "If ServiceFrame is present, TypeOfFrameRef should include UK_PI_NETWORK",
+      "details": "If ServiceFrame is present, TypeOfFrameRef should include UK_PI_NETWORK, and Line and scheduledStopPoint elements should be present",
       "category": "Conditional Check",
       "context": "//x:CompositeFrame/x:frames/x:ServiceFrame",
       "rules": [
@@ -56,6 +56,19 @@
         },
         {
           "test": "is_schedule_stop_points(.)"
+        }
+      ]
+    },
+    {
+      "details": "If ServiceFrame is present, ServiceFrame.lines.Line.PublicCode and ServiceFrame.lines.Line.OperatorRef should be present",
+      "category": "Conditional Check",
+      "context": "//x:CompositeFrame/x:frames/x:ServiceFrame/x:lines/x:Line",
+      "rules": [
+        {
+          "test": "check_lines_public_code_present(.)"
+        },
+        {
+          "test": "check_lines_operator_ref_present(.)"
         }
       ]
     },
