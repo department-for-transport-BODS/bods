@@ -892,7 +892,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
 
 def check_tariff_operator_ref(context, tariffs, *args):
     tariff = tariffs[0]
-    xpath = "string(x:OperatorRef)"
+    xpath = "x:OperatorRef"
     operator_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
     if not operator_ref:
         sourceline = tariff.sourceline
@@ -1664,7 +1664,7 @@ def check_validity_grouping_type_for_access(
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING,
+            MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -1707,7 +1707,7 @@ def check_validity_parameter_for_access(context, generic_parameter_assignments, 
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING,
+            MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
         )
         response = response_details.__list__()
         return response
