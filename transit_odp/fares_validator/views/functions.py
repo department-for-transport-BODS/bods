@@ -602,32 +602,47 @@ def is_schedule_stop_points(context, service_frame, *args):
                         return response
 
 
-def check_type_of_frame_ref_ref(context, fare_frames, *args):
+def check_type_of_frame_ref_ref(context, composite_frames, *args):
     """
     Check if FareFrame TypeOfFrameRef has either UK_PI_FARE_PRODUCT or
     UK_PI_FARE_PRICE in it.
     """
     is_frame_ref_value_valid = False
-    fare_frame = fare_frames[0]
-    xpath = "x:TypeOfFrameRef"
-    type_of_frame_ref = fare_frame.xpath(xpath, namespaces=NAMESPACE)
-    if type_of_frame_ref:
-        try:
-            type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
-        except KeyError:
-            sourceline = type_of_frame_ref.sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
-        for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
-            if ref_value in type_of_frame_ref_ref:
-                is_frame_ref_value_valid = True
+    composite_frame = composite_frames[0]
+    try:
+        composite_frame_id = _extract_attribute(composite_frames, "id")
+    except KeyError:
+        sourceline = composite_frame.sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    if TYPE_OF_FRAME_METADATA_SUBSTRING not in composite_frame_id:
+        xpath = "x:frames/x:FareFrame"
+        fare_frames = composite_frame.xpath(xpath, namespaces=NAMESPACE)
+        for fare_frame in fare_frames:
+            xpath = "x:TypeOfFrameRef"
+            type_of_frame_ref = fare_frame.xpath(xpath, namespaces=NAMESPACE)
+            if type_of_frame_ref:
+                try:
+                    type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+                except KeyError:
+                    sourceline = type_of_frame_ref.sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline,
+                        MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                for ref_value in FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING:
+                    if ref_value in type_of_frame_ref_ref:
+                        is_frame_ref_value_valid = True
         if not is_frame_ref_value_valid:
-            sourceline_fare_frame = fare_frame[0].sourceline
+            sourceline_fare_frame = composite_frame.sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_fare_frame,
