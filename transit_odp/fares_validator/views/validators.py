@@ -11,10 +11,8 @@ from transit_odp.fares_validator.views.functions import (
     all_fare_structure_element_checks,
     check_access_right_elements,
     check_composite_frame_valid_between,
-    check_distribution_assignments_elements,
-    check_distribution_channel_type,
+    check_dist_assignments,
     check_fare_product_ref,
-    check_fare_products,
     check_fare_structure_element,
     check_frequency_of_use,
     check_generic_parameters_for_access,
@@ -22,22 +20,21 @@ from transit_odp.fares_validator.views.functions import (
     check_payment_methods,
     check_preassigned_fare_products,
     check_preassigned_fare_products_charging_type,
-    check_preassigned_fare_products_name,
     check_preassigned_fare_products_type_ref,
     check_preassigned_validable_elements,
     check_product_type,
     check_resource_frame_operator_name,
     check_resource_frame_organisation_elements,
-    check_sales_offer_elements,
+    check_sale_offer_package_elements,
     check_sales_offer_package,
-    check_sales_offer_packages,
     check_tariff_basis,
     check_tariff_operator_ref,
     check_tariff_validity_conditions,
     check_type_of_fare_structure_element_ref,
     check_type_of_frame_ref_ref,
     check_type_of_tariff_ref_values,
-    check_type_of_travel_doc,
+    check_validity_grouping_type_for_access,
+    check_validity_parameter_for_access,
     check_value_of_type_of_frame_ref,
     is_fare_structure_element_present,
     is_fare_zones_present_in_fare_frame,
@@ -115,12 +112,8 @@ class FaresValidator:
         self.register_function(
             "is_uk_pi_fare_price_frame_present", is_uk_pi_fare_price_frame_present
         )
-        self.register_function("check_fare_products", check_fare_products)
         self.register_function(
             "check_preassigned_fare_products", check_preassigned_fare_products
-        )
-        self.register_function(
-            "check_preassigned_fare_products_name", check_preassigned_fare_products_name
         )
         self.register_function(
             "check_preassigned_fare_products_type_ref",
@@ -136,25 +129,26 @@ class FaresValidator:
         self.register_function(
             "check_access_right_elements", check_access_right_elements
         )
-        self.register_function("check_product_type", check_product_type)
-        self.register_function("check_sales_offer_packages", check_sales_offer_packages)
         self.register_function("check_sales_offer_package", check_sales_offer_package)
-        self.register_function(
-            "check_distribution_assignments_elements",
-            check_distribution_assignments_elements,
-        )
-        self.register_function(
-            "check_distribution_channel_type", check_distribution_channel_type
-        )
+        self.register_function("check_product_type", check_product_type)
+        self.register_function("check_dist_assignments", check_dist_assignments)
         self.register_function(
             "check_payment_methods",
             check_payment_methods,
         )
-        self.register_function("check_sales_offer_elements", check_sales_offer_elements)
-        self.register_function("check_type_of_travel_doc", check_type_of_travel_doc)
+        self.register_function(
+            "check_sale_offer_package_elements", check_sale_offer_package_elements
+        )
         self.register_function("check_fare_product_ref", check_fare_product_ref)
         self.register_function(
             "check_generic_parameters_for_access", check_generic_parameters_for_access
+        )
+        self.register_function(
+            "check_validity_grouping_type_for_access",
+            check_validity_grouping_type_for_access,
+        )
+        self.register_function(
+            "check_validity_parameter_for_access", check_validity_parameter_for_access
         )
         self.register_function(
             "check_generic_parameters_for_eligibility",
