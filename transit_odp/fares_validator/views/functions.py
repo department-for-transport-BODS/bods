@@ -442,16 +442,25 @@ def get_scheduled_point_ref_text(stop_point):
         return response
 
 
-def check_value_of_type_of_frame_ref(context, data_objects, *args):
+def check_value_of_type_of_frame_ref(context, composite_frames, *args):
     """
     Check if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
     UK_PI_NETWORK_OFFER in it.
     """
     is_frame_ref_value_valid = False
-    data_object = data_objects[0]
-    xpath = "x:CompositeFrame"
-    composite_frames = data_object.xpath(xpath, namespaces=NAMESPACE)
-    for composite_frame in composite_frames:
+    composite_frame = composite_frames[0]
+    try:
+        composite_frame_id = _extract_attribute(composite_frames, "id")
+    except KeyError:
+        sourceline = composite_frame.sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    if TYPE_OF_FRAME_METADATA_SUBSTRING not in composite_frame_id:
         xpath = "x:TypeOfFrameRef"
         type_of_frame_ref = composite_frame.xpath(xpath, namespaces=NAMESPACE)
         try:
@@ -1892,7 +1901,9 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
             xpath = "x:frames/x:ResourceFrame"
             resource_frame = composite_frame.xpath(xpath, namespaces=NAMESPACE)
             if not resource_frame:
-                source_line_resource_frame = composite_frame.sourceline
+                xpath = "x:frames"
+                frames = composite_frame.xpath(xpath, namespaces=NAMESPACE)
+                source_line_resource_frame = frames[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     source_line_resource_frame,
