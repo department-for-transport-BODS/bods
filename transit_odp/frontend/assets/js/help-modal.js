@@ -8,7 +8,9 @@ export function initHelpModals() {
 export class HelpModal {
   constructor(modal) {
     this.modal = modal;
-    this.helpIcon = modal.getElementsByClassName("help-icon")[0];
+    this.helpIcon =
+      modal.getElementsByClassName("help-icon")[0] ||
+      modal.getElementsByClassName("help-icon-white")[0];
     this.overlay = modal.getElementsByClassName("overlay")[0];
     this.closeButton = this.overlay.getElementsByClassName("close-button")[0];
 
@@ -33,7 +35,11 @@ export class HelpModal {
   }
 
   onClickAnywhere(event) {
-    if (this.overlay.style.display === "flex" && event.target.classList.contains("overlay") && !event.target.classList.contains("window")) {
+    if (
+      this.overlay.style.display === "flex" &&
+      event.target.classList.contains("overlay") &&
+      !event.target.classList.contains("window")
+    ) {
       this.onClose();
     }
   }

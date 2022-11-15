@@ -282,7 +282,7 @@ class TestFeedSubscriptionView:
         )
         back_urls = [
             reverse("feed-detail", kwargs={"pk": dataset.id}, host=host),
-            reverse("users:feeds-manage", host=host),
+            reverse("users:feeds-manage", host=host) + "?page=1&",
         ]
 
         for back_url in back_urls:

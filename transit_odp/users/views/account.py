@@ -13,6 +13,7 @@ from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseUpdateView
 from transit_odp.organisation.models import Dataset
+from transit_odp.users.constants import DATASET_MANAGE_TABLE_PAGINATE_BY
 from transit_odp.users.forms.account import PublishAdminNotifications
 from transit_odp.users.models import AccountType, UserSettings
 
@@ -101,7 +102,7 @@ class DatasetManageView(LoginRequiredMixin, SingleTableView):
     table_class = DatasetSubscriptionTable
     related_model = None
     related_object = None
-    paginate_by = 10
+    paginate_by = DATASET_MANAGE_TABLE_PAGINATE_BY
 
     def get_queryset(self):
         user = self.request.user

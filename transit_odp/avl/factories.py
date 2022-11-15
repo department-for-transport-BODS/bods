@@ -1,5 +1,5 @@
 import io
-from datetime import datetime
+from datetime import date, datetime
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import factory
@@ -10,9 +10,12 @@ from transit_odp.avl.models import (
     AVLValidationReport,
     CAVLDataArchive,
     CAVLValidationTaskResult,
+    PostPublishingCheckReport,
+    PPCReportType,
 )
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
+    DatasetFactory,
     DatasetRevisionFactory,
 )
 from transit_odp.pipelines.factories import TaskResultFactory
@@ -87,3 +90,23 @@ class GTFSRTDataArchiveFactory(DjangoModelFactory):
 
     data = factory.django.FileField(filename="gtfsrt.zip", from_func=zipped_gtfsrt_file)
     data_format = CAVLDataArchive.GTFSRT
+
+
+class PostPublishingCheckReportFactory(DjangoModelFactory):
+    class Meta:
+        model = PostPublishingCheckReport
+
+    file = factory.django.FileField(filename="dummy_file.json")
+    dataset = factory.SubFactory(DatasetFactory)
+    granularity = PPCReportType.DAILY
+    created = date.today()
+
+
+class PPCReportFactory(DjangoModelFactory):
+    class Meta:
+        model = PostPublishingCheckReport
+
+    dataset = factory.SubFactory(DatasetFactory)
+    created = date.today()
+    granularity = PPCReportType.DAILY
+    file = factory.django.FileField(filename="dummy_report.json")

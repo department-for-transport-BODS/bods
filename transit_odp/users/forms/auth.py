@@ -218,6 +218,10 @@ class DeveloperSignupForm(BaseBODSSignupForm):
         intended_use.widget = forms.RadioSelect()
         intended_use.widget.attrs.update(self._attributes)
 
+        regional_areas = self.fields["regional_areas"]
+        regional_areas.widget.attrs.update(
+            {"id": "id_national_interest_0"},
+        )
         description = self.fields["description"]
         description.widget = forms.Textarea(attrs={"rows": "3"})
         description.help_text = _("What does your product/service do? Who is it for?")
