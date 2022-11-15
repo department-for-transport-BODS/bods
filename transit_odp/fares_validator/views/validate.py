@@ -34,7 +34,11 @@ class FaresXmlValidator:
         fares_validator = fares_validation.get_fares_validator()
         violations = fares_validator.get_violations(file_obj, self.pk1)
         result = []
-        [result.append(violation) for violation in violations if violation not in result]
+        [
+            result.append(violation)
+            for violation in violations
+            if violation not in result
+        ]
         if result:
             for error in result:
                 fares_validator_model_object = FaresValidation(
