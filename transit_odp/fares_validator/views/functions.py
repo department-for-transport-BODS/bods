@@ -9,7 +9,6 @@ from ..constants import (
     FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
     LENGTH_OF_OPERATOR,
     LENGTH_OF_PUBLIC_CODE,
-    LENGTH_STOP_POINT_ID,
     NAMESPACE,
     ORG_OPERATOR_ID_SUBSTRING,
     STOP_POINT_ID_SUBSTRING,
@@ -640,9 +639,7 @@ def is_schedule_stop_points(context, service_frame, *args):
                     )
                     response = response_details.__list__()
                     return response
-                if not (
-                    STOP_POINT_ID_SUBSTRING in id and len(id) == LENGTH_STOP_POINT_ID
-                ):
+                if STOP_POINT_ID_SUBSTRING not in id:
                     sourceline_stop_point = stop.sourceline
                     response_details = XMLViolationDetail(
                         "violation",
