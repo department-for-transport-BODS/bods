@@ -4,7 +4,6 @@ This is to manage all the custom error messages from the validator functions
 MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING = (
     "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'"
 )
-MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING = "'TypeOfFareStructureElementRef' 'ref' attribute is missing from 'FareStructureElement'"
 MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING = "'fareProducts' and it's child elements is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_TARIFF_REF_MISSING = (
     "Mandatory element 'TypeOfTariffRef' is missing in 'Tariff'"
@@ -137,9 +136,6 @@ MESSAGE_OBSERVATION_TARIFF_NAME_MISSING = (
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT = (
     "Mandatory element 'FareStructureElement' is missing"
-)
-MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
-    "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' is missing"
 )
 MESSAGE_OBSERVATION_GENERIC_PARAMETER = "Mandatory element 'FareStructureElement.GenericParameterAssignment' and it's child elements is missing"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION = "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"

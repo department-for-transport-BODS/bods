@@ -1606,7 +1606,7 @@ def check_generic_parameters_for_access(context, elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
+                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1661,7 +1661,7 @@ def check_validity_grouping_type_for_access(
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
+            MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -1704,7 +1704,7 @@ def check_validity_parameter_for_access(context, generic_parameter_assignments, 
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
+            MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -1747,7 +1747,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
+                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1821,7 +1821,7 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
+                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
             )
             response = response_details.__list__()
             return response
