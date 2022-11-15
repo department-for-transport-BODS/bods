@@ -9,7 +9,6 @@ from ..constants import (
     FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
     LENGTH_OF_OPERATOR,
     LENGTH_OF_PUBLIC_CODE,
-    LENGTH_STOP_POINT_ID,
     NAMESPACE,
     ORG_OPERATOR_ID_SUBSTRING,
     STOP_POINT_ID_SUBSTRING,
@@ -640,9 +639,7 @@ def is_schedule_stop_points(context, service_frame, *args):
                     )
                     response = response_details.__list__()
                     return response
-                if not (
-                    STOP_POINT_ID_SUBSTRING in id and len(id) == LENGTH_STOP_POINT_ID
-                ):
+                if STOP_POINT_ID_SUBSTRING not in id:
                     sourceline_stop_point = stop.sourceline
                     response_details = XMLViolationDetail(
                         "violation",
@@ -892,7 +889,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
 
 def check_tariff_operator_ref(context, tariffs, *args):
     tariff = tariffs[0]
-    xpath = "string(x:OperatorRef)"
+    xpath = "x:OperatorRef"
     operator_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
     if not operator_ref:
         sourceline = tariff.sourceline
@@ -1664,7 +1661,7 @@ def check_validity_grouping_type_for_access(
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING,
+            MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -1707,7 +1704,7 @@ def check_validity_parameter_for_access(context, generic_parameter_assignments, 
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRCUTURE_REF_MISSING,
+            MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING,
         )
         response = response_details.__list__()
         return response
