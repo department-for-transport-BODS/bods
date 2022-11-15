@@ -4,7 +4,6 @@ This is to manage all the custom error messages from the validator functions
 MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING = (
     "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'"
 )
-MESSAGE_OBSERVATION_FARE_STRUCTURE_REF_MISSING = "'TypeOfFareStructureElementRef' 'ref' attribute is missing from 'FareStructureElement'"
 MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING = "'fareProducts' and it's child elements is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_TARIFF_REF_MISSING = (
     "Mandatory element 'TypeOfTariffRef' is missing in 'Tariff'"
@@ -58,7 +57,7 @@ MESSAGE_OBSERVATION_VALIDITY_PARAMETER = "'validityParameters' elements are miss
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATIONS_USER = "Mandatory element 'UserProfile' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:eligibility'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING = "Mandatory element 'UserProfile.Name' or 'UserProfile.UserType' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:eligibility'"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING = "'FrequencyOfUse' is missing from 'GenericParameterAssignment' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
-MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING = "'FrequencyOfUseType' is missing from 'GenericParameterAssignment'/'limitations'/'FrequencyOfUse' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
+MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING = "'FrequencyOfUseType' is missing or empty from 'GenericParameterAssignment.limitations.FrequencyOfUse' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
 
 MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING = "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'"
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING = (
@@ -138,9 +137,6 @@ MESSAGE_OBSERVATION_TARIFF_NAME_MISSING = (
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT = (
     "Mandatory element 'FareStructureElement' is missing"
 )
-MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
-    "Mandatory element 'FareStructureElement.TypeOfFareStructureElementRef' is missing"
-)
 MESSAGE_OBSERVATION_GENERIC_PARAMETER = "Mandatory element 'FareStructureElement.GenericParameterAssignment' and it's child elements is missing"
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION = "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"
 MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT = (
@@ -153,8 +149,7 @@ MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS = (
     "'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements."
 )
 MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF = (
-    "Attribute 'ref' of elements "
-    "'TypeOfFareStructureElementRef' or 'TypeOfAccessRightAssignmentRef' is missing."
+    "Mandatory element 'TypeOfFareStructureElementRef' is missing"
 )
 MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING = (
     "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"
