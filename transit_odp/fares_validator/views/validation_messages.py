@@ -10,7 +10,7 @@ MESSAGE_OBSERVATION_TARIFF_REF_MISSING = (
     "Mandatory element 'TypeOfTariffRef' is missing in 'Tariff'"
 )
 MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING = (
-    "Mandatory element 'OperatorRef' is missing or empty in 'Tariff'"
+    "Mandatory element 'OperatorRef' is missing in 'Tariff'"
 )
 MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING = (
     "Mandatory element 'TariffBasis' is missing in 'Tariff'"
