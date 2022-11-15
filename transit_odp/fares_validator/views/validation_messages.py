@@ -64,16 +64,15 @@ MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING = "'FrequencyOfUse' is m
 MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING = "'FrequencyOfUseType' is missing from 'GenericParameterAssignment'/'limitations'/'FrequencyOfUse' when 'TypeOfFareStructureElementRef' has a 'ref' value of 'fxc:travel_conditions'"
 
 MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING = "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'"
-MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_MISSING = (
-    "From 'scheduledStopPoints' element in ServiceFrame, "
-    "attribute 'id' of element 'ScheduledStopPoint' is missing"
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_MISSING = "From 'scheduledStopPoints' element in ServiceFrame, element 'ScheduledStopPoint' is missing"
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_FORMAT = (
+    "Attribute 'id' of element 'ScheduledStopPoint' should be in 'atco:xxxx' format"
 )
-MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING = (
-    "From 'scheduledStopPoints' element in ServiceFrame, element 'Name' is missing"
-)
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING = "From 'scheduledStopPoints' element in ServiceFrame, element 'Name' is missing or empty"
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINTS_MISSING = (
     "Element 'scheduledStopPoints' is missing"
 )
+MESSAGE_OBSERVATION_LINE_MISSING = "Mandatory element 'Line' in ServiceFrame is missing"
 MESSAGE_OBSERVATION_NAME_MISSING = (
     "From 'Line' element in ServiceFrame, element 'Name' is missing or empty"
 )
