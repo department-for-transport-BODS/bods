@@ -18,7 +18,7 @@ def form_etree_object(source):
     return document
 
 def test_extract_text():
-    expected = "sometext" #some text
+    expected = "PublicationRequest" #some text
     doc = form_etree_object(TEST_SAMPLE_XML)
     xpath = "//x:PublicationRequest"
     element = doc.xpath(xpath, namespaces = "http://www.netex.org.uk/netex")
