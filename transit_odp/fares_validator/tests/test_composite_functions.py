@@ -14,6 +14,9 @@ from transit_odp.fares_validator.views.functions import (
     [(True, True, False), (False, False, True), (True, False, True)],
 )
 def test_composite_frame_valid_between(valid_between, from_date, expected):
+    """
+    Test if ValidBetween and it's child are present in CompositeFrame
+    """
     actual = False
     valid_between_with_child = """
     <ValidBetween>
@@ -64,6 +67,10 @@ def test_composite_frame_valid_between(valid_between, from_date, expected):
 def test_value_of_type_of_frame_ref(
     type_of_frame_ref, type_of_frame_ref_ref_valid, expected
 ):
+    """
+    Test if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
+    UK_PI_NETWORK_OFFER in it.
+    """
     actual = False
     type_of_frame_ref_ref_contains_valid_ref = """
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_LINE_FARE_OFFER:FXCP" version="fxc:v1.0"/>
@@ -136,6 +143,9 @@ def test_resource_frame_organisation_elements(
     public_code_value_present,
     expected,
 ):
+    """
+    Test if mandatory element 'ResourceFrame' or it's child missing from CompositeFrame
+    """
     actual = False
     resource_frame_with_all_children_properties = """
     <ResourceFrame version="1.0" id="epd:UK:SPSV:ResourceFrame_UK_PI_COMMON:op" dataSourceRef="op:src" responsibilitySetRef="network_data">
@@ -239,6 +249,9 @@ def test_resource_frame_organisation_elements(
 
 @pytest.mark.parametrize(("name", "expected"), [(True, False), (False, True)])
 def test_resource_frame_operator_name(name, expected):
+    """
+    Test if mandatory element 'Name' is missing from organisations in ResourceFrame
+    """
     actual = False
     name_present = """
     <Name>SPSV</Name>
