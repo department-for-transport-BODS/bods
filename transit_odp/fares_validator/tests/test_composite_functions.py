@@ -11,13 +11,33 @@ from transit_odp.fares_validator.views.functions import (
 
 @pytest.mark.parametrize(
     ("valid_between", "from_date", "expected"),
-    [(True, True, False), (False, False, True), (True, False, True)],
+    [
+        (True, True, None),
+        (
+            False,
+            False,
+            [
+                "violation",
+                "4",
+                "Mandatory element 'ValidBetween' within 'CompositeFrame' is missing",
+            ],
+        ),
+        (
+            True,
+            False,
+            [
+                "violation",
+                "6",
+                "Mandatory element 'FromDate' within 'CompositeFrame.ValidBetween' is missing or empty",
+            ],
+        ),
+    ],
 )
 def test_composite_frame_valid_between(valid_between, from_date, expected):
     """
     Test if ValidBetween and it's child are present in CompositeFrame
     """
-    actual = False
+    actual = None
     valid_between_with_child = """
     <ValidBetween>
         <FromDate>442914</FromDate>
@@ -44,8 +64,18 @@ def test_composite_frame_valid_between(valid_between, from_date, expected):
             xml = composite_frames.format(valid_between_with_child)
         else:
             xml = composite_frames.format(valid_between_without_child)
+            actual = [
+                "violation",
+                "6",
+                "Mandatory element 'FromDate' within 'CompositeFrame.ValidBetween' is missing or empty",
+            ]
     else:
         xml = composite_frames.format("")
+        actual = [
+            "violation",
+            "4",
+            "Mandatory element 'ValidBetween' within 'CompositeFrame' is missing",
+        ]
 
     netex_xml = etree.fromstring(xml)
     xpath = "//x:dataObjects/x:CompositeFrame"
@@ -55,14 +85,33 @@ def test_composite_frame_valid_between(valid_between, from_date, expected):
 
     response = check_composite_frame_valid_between("", composite_frames)
     print("response ", response)
-    if response is not None and len(response):
-        actual = True
-    assert actual == expected
+    if response:
+        assert actual == expected
 
 
 @pytest.mark.parametrize(
     ("type_of_frame_ref", "type_of_frame_ref_ref_valid", "expected"),
-    [(True, True, False), (True, False, True), (False, False, True)],
+    [
+        (True, True, None),
+        (
+            True,
+            False,
+            [
+                "violation",
+                "6",
+                "Attribute 'ref' of 'TypeOfFrameRef' in 'CompositeFrame' does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
+            ],
+        ),
+        (
+            False,
+            False,
+            [
+                "violation",
+                "6",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+            ],
+        ),
+    ],
 )
 def test_value_of_type_of_frame_ref(
     type_of_frame_ref, type_of_frame_ref_ref_valid, expected
@@ -71,7 +120,7 @@ def test_value_of_type_of_frame_ref(
     Test if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
     UK_PI_NETWORK_OFFER in it.
     """
-    actual = False
+    actual = None
     type_of_frame_ref_ref_contains_valid_ref = """
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_LINE_FARE_OFFER:FXCP" version="fxc:v1.0"/>
     """
@@ -97,8 +146,18 @@ def test_value_of_type_of_frame_ref(
             xml = composite_frames.format(type_of_frame_ref_ref_contains_valid_ref)
         else:
             xml = composite_frames.format(type_of_frame_ref_ref_contains_invalid_ref)
+            actual = [
+                "violation",
+                "6",
+                "Attribute 'ref' of 'TypeOfFrameRef' in 'CompositeFrame' does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
+            ]
     else:
         xml = composite_frames.format(type_of_frame_ref_without_ref)
+        actual = [
+            "violation",
+            "6",
+            "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+        ]
 
     netex_xml = etree.fromstring(xml)
     xpath = "//x:dataObjects/x:CompositeFrame"
@@ -108,9 +167,8 @@ def test_value_of_type_of_frame_ref(
 
     response = check_value_of_type_of_frame_ref("", composite_frames)
     print("response ", response)
-    if response is not None and len(response):
-        actual = True
-    assert actual == expected
+    if response:
+        assert actual == expected
 
 
 @pytest.mark.parametrize(
@@ -124,14 +182,86 @@ def test_value_of_type_of_frame_ref(
         "expected",
     ),
     [
-        (True, True, True, True, True, True, False),
-        (False, False, False, False, False, False, True),
-        (False, True, False, False, False, False, True),
-        (True, True, False, False, False, False, True),
-        (True, True, True, True, False, False, True),
-        (True, True, True, False, True, True, True),
-        (True, True, True, False, False, False, True),
-        (True, True, True, True, True, False, True),
+        (True, True, True, True, True, True, None),
+        (
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "5",
+                "Mandatory element 'ResourceFrame' missing from 'CompositeFrame'",
+            ],
+        ),
+        (
+            False,
+            True,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "7",
+                "Mandatory element 'organisations' within 'ResourceFrame' is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "8",
+                "Mandatory element 'Operator' within 'ResourceFrame.organisations' is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            False,
+            False,
+            [
+                "violation",
+                "9",
+                "Mandatory element 'PublicCode' within 'ResourceFrame.organisations.Operator' is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            False,
+            True,
+            True,
+            ["violation", "9", "'Operator' attribute 'id' format should be noc:xxxx"],
+        ),
+        (
+            True,
+            True,
+            True,
+            False,
+            False,
+            False,
+            ["violation", "9", "'Operator' attribute 'id' format should be noc:xxxx"],
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            True,
+            False,
+            ["violation", "10", "Element 'Public Code' should be 4 characters long"],
+        ),
     ],
 )
 def test_resource_frame_organisation_elements(
@@ -146,7 +276,7 @@ def test_resource_frame_organisation_elements(
     """
     Test if mandatory element 'ResourceFrame' or it's child missing from CompositeFrame
     """
-    actual = False
+    actual = None
     resource_frame_with_all_children_properties = """
     <ResourceFrame version="1.0" id="epd:UK:SPSV:ResourceFrame_UK_PI_COMMON:op" dataSourceRef="op:src" responsibilitySetRef="network_data">
         <organisations>
@@ -223,16 +353,46 @@ def test_resource_frame_organisation_elements(
                             xml = frames.format(
                                 resource_frame_without_public_code_value_present
                             )
+                            actual = [
+                                "violation",
+                                "10",
+                                "Element 'Public Code' should be 4 characters long",
+                            ]
                     else:
                         xml = frames.format(resource_frame_without_public_code)
+                        actual = [
+                            "violation",
+                            "9",
+                            "Mandatory element 'PublicCode' within 'ResourceFrame.organisations.Operator' is missing",
+                        ]
                 else:
                     xml = frames.format(resource_frame_without_operator_id_valid)
+                    actual = [
+                        "violation",
+                        "9",
+                        "'Operator' attribute 'id' format should be noc:xxxx",
+                    ]
             else:
                 xml = frames.format(resource_frame_without_operators)
+                actual = [
+                    "violation",
+                    "8",
+                    "Mandatory element 'Operator' within 'ResourceFrame.organisations' is missing",
+                ]
         else:
             xml = frames.format(resource_frame_without_organisations)
+            actual = [
+                "violation",
+                "7",
+                "Mandatory element 'organisations' within 'ResourceFrame' is missing",
+            ]
     else:
         xml = frames.format("")
+        actual = [
+            "violation",
+            "5",
+            "Mandatory element 'ResourceFrame' missing from 'CompositeFrame'",
+        ]
 
     netex_xml = etree.fromstring(xml)
     xpath = "//x:dataObjects/x:CompositeFrame"
@@ -242,17 +402,29 @@ def test_resource_frame_organisation_elements(
 
     response = check_resource_frame_organisation_elements("", composite_frames)
     print("response ", response)
-    if response is not None and len(response):
-        actual = True
-    assert actual == expected
+    if response:
+        assert actual == expected
 
 
-@pytest.mark.parametrize(("name", "expected"), [(True, False), (False, True)])
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        (True, None),
+        (
+            False,
+            [
+                "violation",
+                "8",
+                "Mandatory element 'Name' within 'ResourceFrame.organisations.Operator' is missing or empty",
+            ],
+        ),
+    ],
+)
 def test_resource_frame_operator_name(name, expected):
     """
     Test if mandatory element 'Name' is missing from organisations in ResourceFrame
     """
-    actual = False
+    actual = None
     name_present = """
     <Name>SPSV</Name>
     """
@@ -279,6 +451,11 @@ def test_resource_frame_operator_name(name, expected):
         xml = operators.format(name_present)
     else:
         xml = operators.format("")
+        actual = [
+            "violation",
+            "8",
+            "Mandatory element 'Name' within 'ResourceFrame.organisations.Operator' is missing or empty",
+        ]
 
     netex_xml = etree.fromstring(xml)
     xpath = "//x:dataObjects/x:CompositeFrame"
@@ -288,6 +465,5 @@ def test_resource_frame_operator_name(name, expected):
 
     response = check_resource_frame_operator_name("", composite_frames)
     print("response ", response)
-    if response is not None and len(response):
-        actual = True
-    assert actual == expected
+    if response:
+        assert actual == expected
