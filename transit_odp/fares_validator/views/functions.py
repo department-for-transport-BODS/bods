@@ -351,7 +351,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
-            sourceline = type_of_frame_ref.sourceline
+            sourceline = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
@@ -366,7 +366,6 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
                 or TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING in type_of_frame_ref_ref
             )
         ):
-
             sourceline_type_of_frame_ref = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
@@ -375,7 +374,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
             )
             response = response_details.__list__()
             return response
-        xpath = "//x:FareZone"
+        xpath = "x:FareZone"
         zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
         if not zones:
             sourceline_fare_zone = fare_zones[0].sourceline
