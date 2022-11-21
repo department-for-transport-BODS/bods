@@ -6,6 +6,7 @@ from transit_odp.fares_validator.views.functions import (
     is_generic_parameter_limitations_present,
 )
 
+
 @pytest.mark.parametrize(
     (
         "product_type_valid",
@@ -13,18 +14,63 @@ from transit_odp.fares_validator.views.functions import (
         "type_of_fare_structure_element_ref_valid",
         "time_intervals",
         "time_interval_ref",
-        "expected"
+        "expected",
     ),
     [
         (True, True, True, True, True, None),
         (False, False, False, False, False, None),
-        (True, False, False, False, False, ['violation', '13', "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"]),
+        (
+            True,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "13",
+                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
+            ],
+        ),
         (True, True, False, False, False, None),
-        (True, True, True, False, False, ['violation', '11', "Element 'timeIntervals' is missing within 'FareStructureElement'"]),
-        (True, True, True, True, False, ['violation', '14', "Element 'TimeIntervalRef' is missing or empty within 'timeIntervals'"]),
+        (
+            True,
+            True,
+            True,
+            False,
+            False,
+            [
+                "violation",
+                "11",
+                "Element 'timeIntervals' is missing within 'FareStructureElement'",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            False,
+            [
+                "violation",
+                "14",
+                "Element 'TimeIntervalRef' is missing or empty within 'timeIntervals'",
+            ],
+        ),
     ],
 )
-def test_is_fare_structure_element_present(product_type_valid, type_of_fare_structure_element_ref_present, type_of_fare_structure_element_ref_valid, time_intervals, time_interval_ref, expected):
+def test_is_fare_structure_element_present(
+    product_type_valid,
+    type_of_fare_structure_element_ref_present,
+    type_of_fare_structure_element_ref_valid,
+    time_intervals,
+    time_interval_ref,
+    expected,
+):
+    """
+    Test if ProductType is dayPass or periodPass.
+    If true, FareStructureElement elements
+    should be present in Tariff.FareStructureElements
+    """
     actual = None
 
     fare_structure_with_all_children_properties = """
@@ -106,18 +152,43 @@ def test_is_fare_structure_element_present(product_type_valid, type_of_fare_stru
             if type_of_fare_structure_element_ref_valid:
                 if time_intervals:
                     if time_interval_ref:
-                        xml = fare_structure_elements.format(fare_structure_with_all_children_properties, product_type_valid_value)
+                        xml = fare_structure_elements.format(
+                            fare_structure_with_all_children_properties,
+                            product_type_valid_value,
+                        )
                     else:
-                        xml = fare_structure_elements.format(fare_structure_without_time_interval_ref, product_type_valid_value)
-                        actual = ['violation', '14', "Element 'TimeIntervalRef' is missing or empty within 'timeIntervals'"]
+                        xml = fare_structure_elements.format(
+                            fare_structure_without_time_interval_ref,
+                            product_type_valid_value,
+                        )
+                        actual = [
+                            "violation",
+                            "14",
+                            "Element 'TimeIntervalRef' is missing or empty within 'timeIntervals'",
+                        ]
                 else:
-                    xml = fare_structure_elements.format(fare_structure_without_time_intervals, product_type_valid_value)
-                    actual = ['violation', '11', "Element 'timeIntervals' is missing within 'FareStructureElement'"]
+                    xml = fare_structure_elements.format(
+                        fare_structure_without_time_intervals, product_type_valid_value
+                    )
+                    actual = [
+                        "violation",
+                        "11",
+                        "Element 'timeIntervals' is missing within 'FareStructureElement'",
+                    ]
             else:
-                xml = fare_structure_elements.format(fare_structure_with_invalid_fare_structure_ref, product_type_valid_value)
+                xml = fare_structure_elements.format(
+                    fare_structure_with_invalid_fare_structure_ref,
+                    product_type_valid_value,
+                )
         else:
-            xml = fare_structure_elements.format(fare_structure_fare_structure_ref_not_present, product_type_valid_value)
-            actual = ['violation', '13', "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"]
+            xml = fare_structure_elements.format(
+                fare_structure_fare_structure_ref_not_present, product_type_valid_value
+            )
+            actual = [
+                "violation",
+                "13",
+                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
+            ]
     else:
         xml = fare_structure_elements.format("", product_type_invalid_value)
 
@@ -141,19 +212,90 @@ def test_is_fare_structure_element_present(product_type_valid, type_of_fare_stru
         "limitations",
         "round_trip",
         "trip_type",
-        "expected"
+        "expected",
     ),
     [
         (True, True, True, True, True, True, None),
-        (False, False, False, False, False, False, ['violation', '13', "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"]),
+        (
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "13",
+                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
+            ],
+        ),
         (True, False, False, False, False, False, None),
-        (True, True, False, False, False, False, ['violation', '11', "Mandatory element 'FareStructureElement.GenericParameterAssignment' and it's child elements is missing"]),
-        (True, True, True, False, False, False, ['violation', '14', "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"]),
-        (True, True, True, True, False, False, ['violation', '17', "Element 'RoundTrip' is missing within ''limitations''"]),
-        (True, True, True, True, True, False, ['violation', '18', "Element 'TripType' is missing within 'RoundTrip'"]),
+        (
+            True,
+            True,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "11",
+                "Mandatory element 'FareStructureElement.GenericParameterAssignment'"
+                " and it's child elements is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "14",
+                "Mandatory element 'FareStructureElement.GenericParameterAssignment."
+                "limitations' is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            False,
+            False,
+            [
+                "violation",
+                "17",
+                "Element 'RoundTrip' is missing within ''limitations''",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            True,
+            False,
+            ["violation", "18", "Element 'TripType' is missing within 'RoundTrip'"],
+        ),
     ],
 )
-def test_is_generic_parameter_limitations_present(type_of_fare_structure_element_ref_present, product_type_and_type_of_fare_structure_element_ref_valid, generic_parameter_assigmment, limitations, round_trip, trip_type, expected):
+def test_is_generic_parameter_limitations_present(
+    type_of_fare_structure_element_ref_present,
+    product_type_and_type_of_fare_structure_element_ref_valid,
+    generic_parameter_assigmment,
+    limitations,
+    round_trip,
+    trip_type,
+    expected,
+):
+    """
+    Test if ProductType is singleTrip, dayReturnTrip, periodReturnTrip.
+    If true, FareStructureElement.GenericParameterAssignment elements
+    should be present in Tariff.FareStructureElements
+    """
     actual = None
 
     fare_structure_with_all_children_properties = """
@@ -267,32 +409,72 @@ def test_is_generic_parameter_limitations_present(type_of_fare_structure_element
     </PublicationDelivery>
     """
 
-
     if type_of_fare_structure_element_ref_present:
         if product_type_and_type_of_fare_structure_element_ref_valid:
             if generic_parameter_assigmment:
                 if limitations:
                     if round_trip:
                         if trip_type:
-                            xml = fare_structure_elements.format(fare_structure_with_all_children_properties, product_type_valid_value)
+                            xml = fare_structure_elements.format(
+                                fare_structure_with_all_children_properties,
+                                product_type_valid_value,
+                            )
                         else:
-                            xml = fare_structure_elements.format(fare_structure_trip_type_not_present, product_type_valid_value)
-                            actual = ['violation', '18', "Element 'TripType' is missing within 'RoundTrip'"]
+                            xml = fare_structure_elements.format(
+                                fare_structure_trip_type_not_present,
+                                product_type_valid_value,
+                            )
+                            actual = [
+                                "violation",
+                                "18",
+                                "Element 'TripType' is missing within 'RoundTrip'",
+                            ]
                     else:
-                        xml = fare_structure_elements.format(fare_structure_round_trip_not_present, product_type_valid_value)
-                        actual = ['violation', '17', "Element 'RoundTrip' is missing within ''limitations''"]
+                        xml = fare_structure_elements.format(
+                            fare_structure_round_trip_not_present,
+                            product_type_valid_value,
+                        )
+                        actual = [
+                            "violation",
+                            "17",
+                            "Element 'RoundTrip' is missing within ''limitations''",
+                        ]
                 else:
-                    xml = fare_structure_elements.format(fare_structure_limitations_not_present, product_type_valid_value)
-                    actual = ['violation', '14', "Mandatory element 'FareStructureElement.GenericParameterAssignment.limitations' is missing"]
+                    xml = fare_structure_elements.format(
+                        fare_structure_limitations_not_present, product_type_valid_value
+                    )
+                    actual = [
+                        "violation",
+                        "14",
+                        "Mandatory element 'FareStructureElement."
+                        "GenericParameterAssignment.limitations' is missing",
+                    ]
             else:
-                xml = fare_structure_elements.format(fare_structure_generic_parameter_assignment_not_present, product_type_valid_value)
-                actual = ['violation', '11', "Mandatory element 'FareStructureElement.GenericParameterAssignment' and it's child elements is missing"]
+                xml = fare_structure_elements.format(
+                    fare_structure_generic_parameter_assignment_not_present,
+                    product_type_valid_value,
+                )
+                actual = [
+                    "violation",
+                    "11",
+                    "Mandatory element 'FareStructureElement.GenericParameter"
+                    "Assignment' and it's child elements is missing",
+                ]
         else:
-            xml = fare_structure_elements.format(fare_structure_with_invalid_fare_structure_ref, product_type_invalid_value)
+            xml = fare_structure_elements.format(
+                fare_structure_with_invalid_fare_structure_ref,
+                product_type_invalid_value,
+            )
     else:
-        xml = fare_structure_elements.format(fare_structure_fare_structure_ref_not_present, "")
-        actual = ['violation', '13', "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing"]
-    
+        xml = fare_structure_elements.format(
+            fare_structure_fare_structure_ref_not_present, ""
+        )
+        actual = [
+            "violation",
+            "13",
+            "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
+        ]
+
     netex_xml = etree.fromstring(xml)
     xpath = "//x:CompositeFrame/x:frames/x:FareFrame"
     fare_frames = netex_xml.xpath(
