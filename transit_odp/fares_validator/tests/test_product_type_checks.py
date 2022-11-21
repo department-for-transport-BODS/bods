@@ -1,11 +1,19 @@
 import pytest
 
-from transit_odp.fares_validator.views.functions import (is_time_intervals_present_in_tarrifs, is_individual_time_interval_present_in_tariffs, is_time_interval_name_present_in_tariffs)
+from transit_odp.fares_validator.views.functions import (
+    is_time_intervals_present_in_tarrifs,
+    is_individual_time_interval_present_in_tariffs,
+    is_time_interval_name_present_in_tariffs,
+)
 from lxml import etree
+
+from transit_odp.fares_validator.views.functions import (
+    is_time_intervals_present_in_tarrifs,
+)
 
 NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
 
-TIME_INTERVALS_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVALS_PASS_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -50,7 +58,7 @@ TIME_INTERVALS_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocatio
   </FareFrame>
 </PublicationDelivery>"""
 
-TIME_INTERVALS_OTHER_PRODUCT_TYPE_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVALS_OTHER_PRODUCT_TYPE_PASS_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -65,7 +73,7 @@ TIME_INTERVALS_OTHER_PRODUCT_TYPE_PASS_XML ="""<PublicationDelivery version="1.1
   </FareFrame>
 </PublicationDelivery>"""
 
-TIME_INTERVALS_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVALS_MISSING_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -91,7 +99,7 @@ TIME_INTERVALS_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schemaLoca
   </FareFrame>
 </PublicationDelivery>"""
 
-TIME_INTERVALS_REF_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVALS_REF_MISSING_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef version="fxc:v1.0" />
     <tariffs>
@@ -106,7 +114,7 @@ TIME_INTERVALS_REF_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schema
   </FareFrame>
 </PublicationDelivery>"""
 
-TIME_INTERVAL_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVAL_PASS_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -131,7 +139,7 @@ TIME_INTERVAL_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation
   </FareFrame>
 </PublicationDelivery>"""
 
-TIME_INTERVAL_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVAL_MISSING_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -148,7 +156,7 @@ TIME_INTERVAL_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocat
   </FareFrame>
 </PublicationDelivery>"""
 
-TIME_INTERVAL_NAME_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVAL_NAME_MISSING_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -172,11 +180,13 @@ TIME_INTERVAL_NAME_MISSING_XML ="""<PublicationDelivery version="1.1" xsi:schema
   </FareFrame>
 </PublicationDelivery>"""
 
+
 def get_lxml_element(string_xml):
     doc = etree.fromstring(string_xml)
     xpath = "//x:FareFrame"
     fare_frames = doc.xpath(xpath, namespaces=NAMESPACE)
     return fare_frames
+
 
 def test_time_intervals_pass():
     expected = None
@@ -184,23 +194,31 @@ def test_time_intervals_pass():
     result = is_time_intervals_present_in_tarrifs("context", fare_frames)
     assert result == expected
 
+
 def test_time_intervals_product_type_not_expected_pass():
     expected = None
     fare_frames = get_lxml_element(TIME_INTERVALS_OTHER_PRODUCT_TYPE_PASS_XML)
     result = is_time_intervals_present_in_tarrifs("context", fare_frames)
     assert result == expected
 
+
 def test_time_intervals_missing():
-    expected = ['violation', '5', "Element 'timeIntervals' is missing within 'Tariff'"]
+    expected = ["violation", "5", "Element 'timeIntervals' is missing within 'Tariff'"]
     fare_frames = get_lxml_element(TIME_INTERVALS_MISSING_XML)
     result = is_time_intervals_present_in_tarrifs("context", fare_frames)
     assert result == expected
 
+
 def test_time_intervals_ref_missing():
-    expected = ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"]
+    expected = [
+        "violation",
+        "3",
+        "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+    ]
     fare_frames = get_lxml_element(TIME_INTERVALS_REF_MISSING_XML)
     result = is_time_intervals_present_in_tarrifs("context", fare_frames)
     assert result == expected
+
 
 def test_time_interval_pass():
     expected = None
@@ -208,17 +226,28 @@ def test_time_interval_pass():
     result = is_individual_time_interval_present_in_tariffs("context", fare_frames)
     assert result == expected
 
+
 def test_time_interval_missing():
-    expected = ['violation', '6', "Element 'TimeInterval' is missing within 'timeIntervals'"]
+    expected = [
+        "violation",
+        "6",
+        "Element 'TimeInterval' is missing within 'timeIntervals'",
+    ]
     fare_frames = get_lxml_element(TIME_INTERVAL_MISSING_XML)
     result = is_individual_time_interval_present_in_tariffs("context", fare_frames)
     assert result == expected
-  
+
+
 def test_time_interval_missing_ref():
-    expected = ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"]
+    expected = [
+        "violation",
+        "3",
+        "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+    ]
     fare_frames = get_lxml_element(TIME_INTERVALS_REF_MISSING_XML)
     result = is_individual_time_interval_present_in_tariffs("context", fare_frames)
     assert result == expected
+
 
 def test_time_interval_name_pass():
     expected = None
@@ -226,14 +255,20 @@ def test_time_interval_name_pass():
     result = is_time_interval_name_present_in_tariffs("context", fare_frames)
     assert result == expected
 
+
 def test_time_interval_name_missing():
-    expected = ['violation', '11', "Element 'Name' is missing within 'TimeInterval'"]
+    expected = ["violation", "11", "Element 'Name' is missing within 'TimeInterval'"]
     fare_frames = get_lxml_element(TIME_INTERVAL_NAME_MISSING_XML)
     result = is_time_interval_name_present_in_tariffs("context", fare_frames)
     assert result == expected
 
+
 def test_time_interval_name_missing_ref():
-    expected = ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"]
+    expected = [
+        "violation",
+        "3",
+        "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+    ]
     fare_frames = get_lxml_element(TIME_INTERVALS_REF_MISSING_XML)
     result = is_time_interval_name_present_in_tariffs("context", fare_frames)
     assert result == expected
