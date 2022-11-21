@@ -1,11 +1,13 @@
 import pytest
-
-from transit_odp.fares_validator.views.functions import is_time_intervals_present_in_tarrifs
 from lxml import etree
+
+from transit_odp.fares_validator.views.functions import (
+    is_time_intervals_present_in_tarrifs,
+)
 
 NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
 
-TIME_INTERVALS_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+TIME_INTERVALS_PASS_XML = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     <tariffs>
@@ -50,16 +52,16 @@ TIME_INTERVALS_PASS_XML ="""<PublicationDelivery version="1.1" xsi:schemaLocatio
   </FareFrame>
 </PublicationDelivery>"""
 
+
 def get_lxml_element(string_xml):
     doc = etree.fromstring(string_xml)
     xpath = "//x:FareFrame"
     fare_frames = doc.xpath(xpath, namespaces=NAMESPACE)
     return fare_frames
 
+
 def test_time_intervals_none_response():
     expected = None
     fare_frames = get_lxml_element(TIME_INTERVALS_PASS_XML)
     result = is_time_intervals_present_in_tarrifs("context", fare_frames)
     assert result == expected
-
-
