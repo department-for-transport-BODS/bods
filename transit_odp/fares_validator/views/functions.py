@@ -395,20 +395,50 @@ def is_name_present_in_fare_frame(context, fare_zones, *args):
     If true, then fareZones properties should be present
     """
     if fare_zones:
-        xpath = "//x:FareZone"
-        zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
-        for zone in zones:
-            xpath = "string(x:Name)"
-            name = zone.xpath(xpath, namespaces=NAMESPACE)
-            if not name:
-                sourceline_zone = zone.sourceline
+        xpath = "../x:TypeOfFrameRef"
+        type_of_frame_ref = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
+        if type_of_frame_ref:
+            try:
+                type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+            except KeyError:
+                sourceline = type_of_frame_ref[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
-                    sourceline_zone,
-                    MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING,
+                    sourceline,
+                    MESSAGE_TYPE_OF_FRAME_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
+            if not (
+                type_of_frame_ref_ref is not None
+                and (
+                    TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING in type_of_frame_ref_ref
+                    or TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING
+                    in type_of_frame_ref_ref
+                )
+            ):
+                sourceline_type_of_frame_ref = type_of_frame_ref[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_type_of_frame_ref,
+                    MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
+                )
+                response = response_details.__list__()
+                return response
+            xpath = "//x:FareZone"
+            zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
+            for zone in zones:
+                xpath = "string(x:Name)"
+                name = zone.xpath(xpath, namespaces=NAMESPACE)
+                if not name:
+                    sourceline_zone = zone.sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_zone,
+                        MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
 
 
 def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *args):
@@ -417,33 +447,63 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
     If true, then fareZones properties should be present
     """
     if fare_zones:
-        xpath = "//x:FareZone"
-        zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
-        for zone in zones:
-            xpath = "x:members"
-            members = zone.xpath(xpath, namespaces=NAMESPACE)
-            if not members:
-                sourceline_zone = zone.sourceline
+        xpath = "../x:TypeOfFrameRef"
+        type_of_frame_ref = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
+        if type_of_frame_ref:
+            try:
+                type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+            except KeyError:
+                sourceline = type_of_frame_ref[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
-                    sourceline_zone,
-                    MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING,
+                    sourceline,
+                    MESSAGE_TYPE_OF_FRAME_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
-            xpath = "x:ScheduledStopPointRef"
-            schedule_stop_points = members[0].xpath(xpath, namespaces=NAMESPACE)
-            sourceline_schedule_stop_points = members[0].sourceline
-            if not schedule_stop_points:
+            if not (
+                type_of_frame_ref_ref is not None
+                and (
+                    TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING in type_of_frame_ref_ref
+                    or TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING
+                    in type_of_frame_ref_ref
+                )
+            ):
+                sourceline_type_of_frame_ref = type_of_frame_ref[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
-                    sourceline_schedule_stop_points,
-                    MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING,
+                    sourceline_type_of_frame_ref,
+                    MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
-            for stop_point in schedule_stop_points:
-                return get_scheduled_point_ref_text(stop_point)
+            xpath = "//x:FareZone"
+            zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
+            for zone in zones:
+                xpath = "x:members"
+                members = zone.xpath(xpath, namespaces=NAMESPACE)
+                if not members:
+                    sourceline_zone = zone.sourceline
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_zone,
+                        MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                xpath = "x:ScheduledStopPointRef"
+                schedule_stop_points = members[0].xpath(xpath, namespaces=NAMESPACE)
+                sourceline_schedule_stop_points = members[0].sourceline
+                if not schedule_stop_points:
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_schedule_stop_points,
+                        MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
+                for stop_point in schedule_stop_points:
+                    return get_scheduled_point_ref_text(stop_point)
 
 
 def get_scheduled_point_ref_text(stop_point):
