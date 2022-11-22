@@ -5,6 +5,7 @@ from transit_odp.fares_validator.views.functions import (
     check_lines_operator_ref_present,
     check_lines_public_code_present,
     is_lines_present_in_service_frame,
+    is_schedule_stop_points,
     is_service_frame_present,
 )
 
@@ -306,3 +307,186 @@ def test_check_lines_operator_ref_present(line_present, operator_ref_present, ex
         result = check_lines_operator_ref_present("", line_frame)
         assert result == expected
         return
+
+
+@pytest.mark.parametrize(
+    (
+        "scheduled_stop_points_present",
+        "scheduled_stop_point_present",
+        "scheduled_stop_point_id_present",
+        "scheduled_stop_point_id_correct",
+        "scheduled_stop_point_name_present",
+        "expected",
+    ),
+    [
+        (True, True, True, True, True, None),
+        (False, True, True, True, True, None),
+        (
+            True,
+            False,
+            False,
+            False,
+            False,
+            [
+                "violation",
+                "4",
+                "From 'scheduledStopPoints' element in ServiceFrame, element 'ScheduledStopPoint' is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            False,
+            False,
+            True,
+            [
+                "violation",
+                "5",
+                "Attribute 'id' of element 'ScheduledStopPoint' is missing",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            False,
+            False,
+            [
+                "violation",
+                "5",
+                "Attribute 'id' of element 'ScheduledStopPoint' should be in 'atco:xxxx' format",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            False,
+            [
+                "violation",
+                "11",
+                "From 'scheduledStopPoints' element in ServiceFrame, element 'Name' is missing or empty",
+            ],
+        ),
+    ],
+)
+def test_is_schedule_stop_points(
+    scheduled_stop_points_present,
+    scheduled_stop_point_present,
+    scheduled_stop_point_id_present,
+    scheduled_stop_point_id_correct,
+    scheduled_stop_point_name_present,
+    expected,
+):
+    service_frame_with_children = """
+    <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+        <scheduledStopPoints>
+            <ScheduledStopPoint version="any" id="atco:3290">
+              <Name>Wigginton Mill Lane</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+            <ScheduledStopPoint version="any" id="atco:3290">
+              <Name>Wigginton Pond</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+        </scheduledStopPoints>
+    </ServiceFrame>
+    """
+    service_frame_without_child = """
+    <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+    </ServiceFrame>
+    """
+    service_frame_without_schedule_stop_point = """
+    <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+        <scheduledStopPoints>
+        </scheduledStopPoints>
+    </ServiceFrame>
+    """
+    schedule_stop_point_incorrect_format = """
+   <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+        <scheduledStopPoints>
+            <ScheduledStopPoint version="any" id="xxxx:3290">
+              <Name>Wigginton Mill Lane</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+            <ScheduledStopPoint version="any" id="atco:3290">
+              <Name>Wigginton Pond</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+        </scheduledStopPoints>
+    </ServiceFrame>
+    """
+    schedule_stop_point_missing_id = """
+   <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+        <scheduledStopPoints>
+            <ScheduledStopPoint version="any">
+              <Name>Wigginton Mill Lane</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+            <ScheduledStopPoint version="any" id="atco:3290">
+            <Name>Wigginton Pond</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+        </scheduledStopPoints>
+    </ServiceFrame>
+    """
+    schedule_stop_points_missing_name = """
+       <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+        <scheduledStopPoints>
+            <ScheduledStopPoint version="any" id="atco:3290">
+              <Name>Wigginton Mill Lane</Name>
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+            <ScheduledStopPoint version="any" id="atco:3290">
+              <TopographicPlaceView>
+                <TopographicPlaceRef versionRef="nptg:2.4" ref="nptgLocality:E0053942" />
+                <Name>Wigginton</Name>
+              </TopographicPlaceView>
+            </ScheduledStopPoint>
+        </scheduledStopPoints>
+    </ServiceFrame>
+    """
+    service_frames = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            {0}
+    </PublicationDelivery>"""
+    if scheduled_stop_points_present:
+        if scheduled_stop_point_present:
+            if scheduled_stop_point_id_present:
+                if scheduled_stop_point_id_correct:
+                    if scheduled_stop_point_name_present:
+                        xml = service_frames.format(service_frame_with_children)
+                    else:
+                        xml = service_frames.format(schedule_stop_points_missing_name)
+                else:
+                    xml = service_frames.format(schedule_stop_point_incorrect_format)
+            else:
+                xml = service_frames.format(schedule_stop_point_missing_id)
+        else:
+            xml = service_frames.format(service_frame_without_schedule_stop_point)
+    else:
+        xml = service_frames.format(service_frame_without_child)
+    service_frames = get_lxml_element(xml)
+    result = is_schedule_stop_points("", service_frames)
+    assert result == expected
+    return

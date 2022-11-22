@@ -680,7 +680,7 @@ def is_schedule_stop_points(context, service_frame, *args):
             xpath = "x:ScheduledStopPoint"
             stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
             if not stop_points:
-                sourceline_stop_point = stop_points[0].sourceline
+                sourceline_stop_point = schedule_stop_points[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_stop_point,
