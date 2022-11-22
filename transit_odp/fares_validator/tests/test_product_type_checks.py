@@ -336,8 +336,6 @@ def test_is_fare_structure_element_present(
     If true, FareStructureElement elements
     should be present in Tariff.FareStructureElements
     """
-    actual = None
-
     fare_structure_with_all_children_properties = """
     <FareStructureElement id="Tariff@AdultSingle@access" version="1.0">
         <Name>O/D pairs for Line 9 Outbound</Name>
@@ -426,20 +424,10 @@ def test_is_fare_structure_element_present(
                             fare_structure_without_time_interval_ref,
                             product_type_valid_value,
                         )
-                        actual = [
-                            "violation",
-                            "14",
-                            "Element 'TimeIntervalRef' is missing or empty within 'timeIntervals'",
-                        ]
                 else:
                     xml = fare_structure_elements.format(
                         fare_structure_without_time_intervals, product_type_valid_value
                     )
-                    actual = [
-                        "violation",
-                        "11",
-                        "Element 'timeIntervals' is missing within 'FareStructureElement'",
-                    ]
             else:
                 xml = fare_structure_elements.format(
                     fare_structure_with_invalid_fare_structure_ref,
@@ -449,11 +437,6 @@ def test_is_fare_structure_element_present(
             xml = fare_structure_elements.format(
                 fare_structure_fare_structure_ref_not_present, product_type_valid_value
             )
-            actual = [
-                "violation",
-                "13",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ]
     else:
         xml = fare_structure_elements.format("", product_type_invalid_value)
 
@@ -464,9 +447,7 @@ def test_is_fare_structure_element_present(
     )
 
     response = is_fare_structure_element_present("", fare_frames)
-    print("response ", response)
-    if response:
-        assert actual == expected
+    assert response == expected
 
 
 @pytest.mark.parametrize(
@@ -561,8 +542,6 @@ def test_is_generic_parameter_limitations_present(
     If true, FareStructureElement.GenericParameterAssignment elements
     should be present in Tariff.FareStructureElements
     """
-    actual = None
-
     fare_structure_with_all_children_properties = """
     <FareStructureElement version="1.0" id="Tariff@single@conditions_of_travel">
         <Name>Conditions of travel</Name>
@@ -689,42 +668,20 @@ def test_is_generic_parameter_limitations_present(
                                 fare_structure_trip_type_not_present,
                                 product_type_valid_value,
                             )
-                            actual = [
-                                "violation",
-                                "18",
-                                "Element 'TripType' is missing within 'RoundTrip'",
-                            ]
                     else:
                         xml = fare_structure_elements.format(
                             fare_structure_round_trip_not_present,
                             product_type_valid_value,
                         )
-                        actual = [
-                            "violation",
-                            "17",
-                            "Element 'RoundTrip' is missing within ''limitations''",
-                        ]
                 else:
                     xml = fare_structure_elements.format(
                         fare_structure_limitations_not_present, product_type_valid_value
                     )
-                    actual = [
-                        "violation",
-                        "14",
-                        "Mandatory element 'FareStructureElement."
-                        "GenericParameterAssignment.limitations' is missing",
-                    ]
             else:
                 xml = fare_structure_elements.format(
                     fare_structure_generic_parameter_assignment_not_present,
                     product_type_valid_value,
                 )
-                actual = [
-                    "violation",
-                    "11",
-                    "Mandatory element 'FareStructureElement.GenericParameter"
-                    "Assignment' and it's child elements is missing",
-                ]
         else:
             xml = fare_structure_elements.format(
                 fare_structure_with_invalid_fare_structure_ref,
@@ -734,11 +691,6 @@ def test_is_generic_parameter_limitations_present(
         xml = fare_structure_elements.format(
             fare_structure_fare_structure_ref_not_present, ""
         )
-        actual = [
-            "violation",
-            "13",
-            "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-        ]
 
     netex_xml = etree.fromstring(xml)
     xpath = "//x:CompositeFrame/x:frames/x:FareFrame"
@@ -747,6 +699,4 @@ def test_is_generic_parameter_limitations_present(
     )
 
     response = is_generic_parameter_limitations_present("", fare_frames)
-    print("response ", response)
-    if response:
-        assert actual == expected
+    assert response == expected
