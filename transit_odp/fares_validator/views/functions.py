@@ -365,7 +365,8 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
                 type_of_frame_ref_ref is not None
                 and (
                     TYPE_OF_FRAME_REF_FARE_ZONES_SUBSTRING in type_of_frame_ref_ref
-                    or TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING in type_of_frame_ref_ref
+                    or TYPE_OF_FRAME_REF_SERVICE_FRAME_SUBSTRING
+                    in type_of_frame_ref_ref
                 )
             ):
                 sourceline_type_of_frame_ref = type_of_frame_ref[0].sourceline
