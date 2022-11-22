@@ -580,7 +580,7 @@ def is_service_frame_present(context, service_frame, *args):
         try:
             ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
-            sourceline = type_of_frame_ref.sourceline
+            sourceline = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
