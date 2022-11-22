@@ -351,7 +351,6 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
         if type_of_frame_ref:
             try:
                 type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
-                print("type_of_frame_ref", type_of_frame_ref_ref)
             except KeyError:
                 sourceline = type_of_frame_ref[0].sourceline
                 response_details = XMLViolationDetail(
