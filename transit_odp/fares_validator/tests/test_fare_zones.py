@@ -156,7 +156,8 @@ def test_is_fare_zones_present_in_fare_frame(
 
 
 @pytest.mark.parametrize(
-    (   "type_of_frame_ref_attr_present",
+    (
+        "type_of_frame_ref_attr_present",
         "type_of_frame_ref_correct",
         "fare_zone_name_present",
         "fare_zones_present",
@@ -171,7 +172,11 @@ def test_is_fare_zones_present_in_fare_frame(
             False,
             False,
             False,
-            ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"],
+            [
+                "violation",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+            ],
         ),
         (
             False,
@@ -179,7 +184,11 @@ def test_is_fare_zones_present_in_fare_frame(
             True,
             True,
             True,
-            ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"],
+            [
+                "violation",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+            ],
         ),
         (
             True,
@@ -187,7 +196,11 @@ def test_is_fare_zones_present_in_fare_frame(
             True,
             True,
             True,
-            ['violation', '3', "Mandatory element 'TypeOfFrameRef' is missing or 'ref' value does not contain 'UK_PI_FARE_NETWORK'"],
+            [
+                "violation",
+                "3",
+                "Mandatory element 'TypeOfFrameRef' is missing or 'ref' value does not contain 'UK_PI_FARE_NETWORK'",
+            ],
         ),
         (
             True,
@@ -195,7 +208,11 @@ def test_is_fare_zones_present_in_fare_frame(
             False,
             True,
             True,
-            ['violation', '13', "Element 'Name' is missing or empty within the element 'FareZone'"],
+            [
+                "violation",
+                "13",
+                "Element 'Name' is missing or empty within the element 'FareZone'",
+            ],
         ),
         (
             True,
@@ -308,8 +325,10 @@ def test_is_name_present_in_fare_frame(
     result = is_name_present_in_fare_frame("", fare_frames)
     assert result == expected
 
+
 @pytest.mark.parametrize(
-    (   "type_of_frame_ref_attr_present",
+    (
+        "type_of_frame_ref_attr_present",
         "type_of_frame_ref_correct",
         "fare_zone_members_present",
         "fare_zone_schedule_point_ref_present",
@@ -326,7 +345,11 @@ def test_is_name_present_in_fare_frame(
             False,
             False,
             False,
-            ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"],
+            [
+                "violation",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+            ],
         ),
         (
             False,
@@ -335,7 +358,11 @@ def test_is_name_present_in_fare_frame(
             True,
             True,
             True,
-            ['violation', '3', "Attribute 'ref' of element 'TypeOfFrameRef' is missing"],
+            [
+                "violation",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+            ],
         ),
         (
             True,
@@ -344,7 +371,11 @@ def test_is_name_present_in_fare_frame(
             True,
             True,
             True,
-            ['violation', '3', "Mandatory element 'TypeOfFrameRef' is missing or 'ref' value does not contain 'UK_PI_FARE_NETWORK'"],
+            [
+                "violation",
+                "3",
+                "Mandatory element 'TypeOfFrameRef' is missing or 'ref' value does not contain 'UK_PI_FARE_NETWORK'",
+            ],
         ),
         (
             True,
@@ -353,7 +384,11 @@ def test_is_name_present_in_fare_frame(
             True,
             True,
             True,
-            ['violation', '6', "Element 'members' is missing within the element 'FareZone'"],
+            [
+                "violation",
+                "6",
+                "Element 'members' is missing within the element 'FareZone'",
+            ],
         ),
         (
             True,
@@ -362,7 +397,11 @@ def test_is_name_present_in_fare_frame(
             False,
             True,
             True,
-            ['violation', '8', "Element 'ScheduledStopPointRef' is missing within the element 'members'"],
+            [
+                "violation",
+                "8",
+                "Element 'ScheduledStopPointRef' is missing within the element 'members'",
+            ],
         ),
         (
             True,
@@ -373,7 +412,7 @@ def test_is_name_present_in_fare_frame(
             True,
             None,
         ),
-          (
+        (
             True,
             True,
             True,
@@ -381,7 +420,7 @@ def test_is_name_present_in_fare_frame(
             True,
             False,
             None,
-        )
+        ),
     ],
 )
 def test_is_members_scheduled_point_ref_present_in_fare_frame(
