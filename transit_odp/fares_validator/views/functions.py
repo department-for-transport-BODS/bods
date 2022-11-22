@@ -848,6 +848,14 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
             condition_of_use_index = list_type_of_access_right_assignment_ref_ref.index(
                 FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF
             )
+        else:
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline,
+                MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+            )
+            response = response_details.__list__()
+            return response
     except ValueError:
         response_details = XMLViolationDetail(
             "violation",
