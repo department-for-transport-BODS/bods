@@ -580,7 +580,7 @@ def is_service_frame_present(context, service_frame, *args):
         try:
             ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
-            sourceline = type_of_frame_ref.sourceline
+            sourceline = type_of_frame_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
@@ -680,7 +680,7 @@ def is_schedule_stop_points(context, service_frame, *args):
             xpath = "x:ScheduledStopPoint"
             stop_points = schedule_stop_points[0].xpath(xpath, namespaces=NAMESPACE)
             if not stop_points:
-                sourceline_stop_point = stop_points[0].sourceline
+                sourceline_stop_point = schedule_stop_points[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_stop_point,
@@ -848,6 +848,14 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
             condition_of_use_index = list_type_of_access_right_assignment_ref_ref.index(
                 FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF
             )
+        else:
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline,
+                MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+            )
+            response = response_details.__list__()
+            return response
     except ValueError:
         response_details = XMLViolationDetail(
             "violation",
@@ -1893,7 +1901,14 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
             xpath = "x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse"
             frequency_of_use = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
             if not frequency_of_use:
-                sourceline_fare_structure_element = fare_structure_element.sourceline
+                xpath = "x:GenericParameterAssignment/x:limitations"
+                limitations = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+                if limitations:
+                    sourceline_fare_structure_element = limitations[0].sourceline
+                else:
+                    sourceline_fare_structure_element = (
+                        fare_structure_element.sourceline
+                    )
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure_element,
