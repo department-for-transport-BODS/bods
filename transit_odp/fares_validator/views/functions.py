@@ -935,7 +935,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
+            MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING,
         )
         response = response_details.__list__()
         return response
