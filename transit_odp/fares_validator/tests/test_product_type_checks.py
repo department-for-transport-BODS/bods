@@ -12,6 +12,12 @@ from transit_odp.fares_validator.views.functions import (
 NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
 
 
+def get_xml_element(xpath, string_xml):
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath(xpath, namespaces=NAMESPACE)
+    return elements
+
+
 def get_lxml_element(string_xml):
     doc = etree.fromstring(string_xml)
     xpath = "//x:FareFrame"
@@ -537,12 +543,8 @@ def test_is_fare_structure_element_present(
     else:
         xml = fare_structure_elements.format("", product_type_invalid_value)
 
-    netex_xml = etree.fromstring(xml)
     xpath = "//x:CompositeFrame/x:frames/x:FareFrame"
-    fare_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    fare_frames = get_xml_element(xpath, xml)
     response = is_fare_structure_element_present("", fare_frames)
     assert response == expected
 
@@ -789,11 +791,7 @@ def test_is_generic_parameter_limitations_present(
             fare_structure_fare_structure_ref_not_present, ""
         )
 
-    netex_xml = etree.fromstring(xml)
     xpath = "//x:CompositeFrame/x:frames/x:FareFrame"
-    fare_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    fare_frames = get_xml_element(xpath, xml)
     response = is_generic_parameter_limitations_present("", fare_frames)
     assert response == expected

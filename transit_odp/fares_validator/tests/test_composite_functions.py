@@ -8,6 +8,15 @@ from transit_odp.fares_validator.views.functions import (
     check_value_of_type_of_frame_ref,
 )
 
+NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
+X_PATH = "//x:dataObjects/x:CompositeFrame"
+
+
+def get_lxml_element(xpath, string_xml):
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath(xpath, namespaces=NAMESPACE)
+    return elements
+
 
 @pytest.mark.parametrize(
     ("valid_between", "from_date", "expected"),
@@ -28,7 +37,8 @@ from transit_odp.fares_validator.views.functions import (
             [
                 "violation",
                 "6",
-                "Mandatory element 'FromDate' within 'CompositeFrame.ValidBetween' is missing or empty",
+                "Mandatory element 'FromDate' within 'CompositeFrame."
+                "ValidBetween' is missing or empty",
             ],
         ),
     ],
@@ -66,12 +76,7 @@ def test_composite_frame_valid_between(valid_between, from_date, expected):
     else:
         xml = composite_frames.format("")
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame"
-    composite_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    composite_frames = get_lxml_element(X_PATH, xml)
     response = check_composite_frame_valid_between("", composite_frames)
     assert response == expected
 
@@ -136,12 +141,7 @@ def test_value_of_type_of_frame_ref(
     else:
         xml = composite_frames.format(type_of_frame_ref_without_ref)
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame"
-    composite_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    composite_frames = get_lxml_element(X_PATH, xml)
     response = check_value_of_type_of_frame_ref("", composite_frames)
     assert response == expected
 
@@ -339,12 +339,7 @@ def test_resource_frame_organisation_elements(
     else:
         xml = frames.format("")
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame"
-    composite_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    composite_frames = get_lxml_element(X_PATH, xml)
     response = check_resource_frame_organisation_elements("", composite_frames)
     assert response == expected
 
@@ -394,11 +389,6 @@ def test_resource_frame_operator_name(name, expected):
     else:
         xml = operators.format("")
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame"
-    composite_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    composite_frames = get_lxml_element(X_PATH, xml)
     response = check_resource_frame_operator_name("", composite_frames)
     assert response == expected
