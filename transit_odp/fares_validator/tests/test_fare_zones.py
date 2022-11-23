@@ -157,40 +157,74 @@ def test_is_fare_zones_present_in_fare_frame(
 
 @pytest.mark.parametrize(
     (
+        "type_of_frame_ref_attr_present",
+        "type_of_frame_ref_correct",
         "fare_zone_name_present",
         "fare_zones_present",
         "fare_zone_present",
         "expected",
     ),
     [
-        (True, True, True, None),
+        (True, True, True, True, True, None),
         (
+            False,
+            False,
             False,
             False,
             False,
             [
                 "violation",
-                "12",
-                "Element 'Name' is missing or empty within the element 'FareZone'",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
             ],
         ),
         (
             False,
             True,
             True,
+            True,
+            True,
             [
                 "violation",
-                "12",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
+            ],
+        ),
+        (
+            True,
+            False,
+            True,
+            True,
+            True,
+            [
+                "violation",
+                "3",
+                "Mandatory element 'TypeOfFrameRef' is missing or 'ref' value does not contain 'UK_PI_FARE_NETWORK'",
+            ],
+        ),
+        (
+            True,
+            True,
+            False,
+            True,
+            True,
+            [
+                "violation",
+                "13",
                 "Element 'Name' is missing or empty within the element 'FareZone'",
             ],
         ),
         (
+            True,
+            True,
             True,
             False,
             True,
             None,
         ),
         (
+            True,
+            True,
             True,
             True,
             False,
@@ -199,6 +233,8 @@ def test_is_fare_zones_present_in_fare_frame(
     ],
 )
 def test_is_name_present_in_fare_frame(
+    type_of_frame_ref_attr_present,
+    type_of_frame_ref_correct,
     fare_zone_name_present,
     fare_zones_present,
     fare_zone_present,
@@ -238,29 +274,50 @@ def test_is_name_present_in_fare_frame(
       </FareZone>
     </fareZones>"""
 
+    type_of_frame_ref_attr_missing = """<TypeOfFrameRef version="fxc:v1.0" />"""
+    type_of_frame_ref_attr_incorrect = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
+    """
+    type_of_frame_ref_attr_correct = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_NETWORK:FXCP" version="fxc:v1.0" />
+    """
+
     fare_frames = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <FareFrame id="epd:UK:FSYO:FareFrame_UK_PI_FARE_NETWORK:9_Outbound:op" version="1.0" dataSourceRef="data_source" responsibilitySetRef="network_data">
-  <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_NETWORK:FXCP" version="fxc:v1.0" />
     {0}
+    {1}
   </FareFrame>
   </PublicationDelivery>"""
-
-    if fare_zone_name_present:
-        if fare_zones_present:
-            if fare_zone_present:
-                xml = fare_frames.format(
-                    fare_zones,
-                )
+    if type_of_frame_ref_attr_present:
+        if type_of_frame_ref_correct:
+            if fare_zone_name_present:
+                if fare_zones_present:
+                    if fare_zone_present:
+                        xml = fare_frames.format(
+                            type_of_frame_ref_attr_correct,
+                            fare_zones,
+                        )
+                    else:
+                        xml = fare_frames.format(
+                            type_of_frame_ref_attr_correct,
+                            fare_zones_without_fare_zone,
+                        )
+                else:
+                    xml = fare_frames.format(
+                        type_of_frame_ref_attr_correct,
+                        "",
+                    )
             else:
                 xml = fare_frames.format(
-                    fare_zones_without_fare_zone,
+                    type_of_frame_ref_attr_correct,
+                    fare_zones_without_name,
                 )
         else:
             xml = fare_frames.format(
-                "",
+                type_of_frame_ref_attr_incorrect,
+                fare_zones_without_name,
             )
     else:
         xml = fare_frames.format(
+            type_of_frame_ref_attr_missing,
             fare_zones_without_name,
         )
 
@@ -271,6 +328,8 @@ def test_is_name_present_in_fare_frame(
 
 @pytest.mark.parametrize(
     (
+        "type_of_frame_ref_attr_present",
+        "type_of_frame_ref_correct",
         "fare_zone_members_present",
         "fare_zone_schedule_point_ref_present",
         "fare_zones_present",
@@ -278,16 +337,18 @@ def test_is_name_present_in_fare_frame(
         "expected",
     ),
     [
-        (True, True, True, True, None),
+        (True, True, True, True, True, True, None),
         (
+            False,
+            False,
             False,
             False,
             False,
             False,
             [
                 "violation",
-                "5",
-                "Element 'members' is missing within the element 'FareZone'",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
             ],
         ),
         (
@@ -295,10 +356,12 @@ def test_is_name_present_in_fare_frame(
             True,
             True,
             True,
+            True,
+            True,
             [
                 "violation",
-                "5",
-                "Element 'members' is missing within the element 'FareZone'",
+                "3",
+                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
             ],
         ),
         (
@@ -306,22 +369,63 @@ def test_is_name_present_in_fare_frame(
             False,
             True,
             True,
+            True,
+            True,
             [
                 "violation",
-                "7",
+                "3",
+                "Mandatory element 'TypeOfFrameRef' is missing or 'ref' value does not contain 'UK_PI_FARE_NETWORK'",
+            ],
+        ),
+        (
+            True,
+            True,
+            False,
+            True,
+            True,
+            True,
+            [
+                "violation",
+                "6",
+                "Element 'members' is missing within the element 'FareZone'",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            False,
+            True,
+            True,
+            [
+                "violation",
+                "8",
                 "Element 'ScheduledStopPointRef' is missing within the element 'members'",
             ],
         ),
         (
             True,
             True,
+            True,
+            True,
             False,
             True,
+            None,
+        ),
+        (
+            True,
+            True,
+            True,
+            True,
+            True,
+            False,
             None,
         ),
     ],
 )
 def test_is_members_scheduled_point_ref_present_in_fare_frame(
+    type_of_frame_ref_attr_present,
+    type_of_frame_ref_correct,
     fare_zone_members_present,
     fare_zone_schedule_point_ref_present,
     fare_zones_present,
@@ -369,34 +473,57 @@ def test_is_members_scheduled_point_ref_present_in_fare_frame(
       </FareZone>
     </fareZones>"""
 
+    type_of_frame_ref_attr_missing = """<TypeOfFrameRef version="fxc:v1.0" />"""
+    type_of_frame_ref_attr_incorrect = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
+    """
+    type_of_frame_ref_attr_correct = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_NETWORK:FXCP" version="fxc:v1.0" />
+    """
+
     fare_frames = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <FareFrame id="epd:UK:FSYO:FareFrame_UK_PI_FARE_NETWORK:9_Outbound:op" version="1.0" dataSourceRef="data_source" responsibilitySetRef="network_data">
-  <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_NETWORK:FXCP" version="fxc:v1.0" />
     {0}
+    {1}
   </FareFrame>
   </PublicationDelivery>"""
-    if fare_zone_members_present:
-        if fare_zone_schedule_point_ref_present:
-            if fare_zones_present:
-                if fare_zone_present:
-                    xml = fare_frames.format(
-                        fare_zones,
-                    )
+    if type_of_frame_ref_attr_present:
+        if type_of_frame_ref_correct:
+            if fare_zone_members_present:
+                if fare_zone_schedule_point_ref_present:
+                    if fare_zones_present:
+                        if fare_zone_present:
+                            xml = fare_frames.format(
+                                type_of_frame_ref_attr_correct,
+                                fare_zones,
+                            )
+                        else:
+                            xml = fare_frames.format(
+                                type_of_frame_ref_attr_correct,
+                                fare_zones_without_fare_zone,
+                            )
+                    else:
+                        xml = fare_frames.format(
+                            type_of_frame_ref_attr_correct,
+                            "",
+                        )
                 else:
                     xml = fare_frames.format(
-                        fare_zones_without_fare_zone,
+                        type_of_frame_ref_attr_correct,
+                        fare_zones_without_schedule_point_ref,
                     )
             else:
                 xml = fare_frames.format(
-                    "",
+                    type_of_frame_ref_attr_correct,
+                    fare_zones_without_members,
                 )
         else:
             xml = fare_frames.format(
-                fare_zones_without_schedule_point_ref,
+                type_of_frame_ref_attr_incorrect,
+                fare_zones,
             )
     else:
         xml = fare_frames.format(
-            fare_zones_without_members,
+            type_of_frame_ref_attr_missing,
+            fare_zones,
         )
 
     fare_frames = get_lxml_element(xml)
