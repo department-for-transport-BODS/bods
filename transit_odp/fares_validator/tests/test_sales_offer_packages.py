@@ -53,8 +53,8 @@ def get_lxml_element(xpath, string_xml):
         (
             True,
             False,
-            True,
-            True,
+            False,
+            False,
             None,
         ),
         (
@@ -150,7 +150,7 @@ def test_check_sales_offer_package(
         else:
             xml = fare_frames.format(
                 type_of_frame_ref_attr_incorrect,
-                sales_offer_packages,
+                "",
             )
     else:
         xml = fare_frames.format(
@@ -405,12 +405,6 @@ def test_check_dist_assignments(
                 "13",
                 "'PaymentMethods' element is missing or empty from 'DistributionAssignment' in 'FareFrame' - UK_PI_FARE_PRODUCT",
             ],
-        ),
-        (
-            True,
-            True,
-            True,
-            None,
         ),
     ],
 )
