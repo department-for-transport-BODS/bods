@@ -15,27 +15,10 @@ from transit_odp.fares_validator.views.functions import (
 NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
 
 
-def get_lxml_element(string_xml):
+def get_lxml_element(xpath, string_xml):
     doc = etree.fromstring(string_xml)
-    xpath = "//x:fareStructureElements"
-    service_frames = doc.xpath(xpath, namespaces=NAMESPACE)
-    return service_frames
-
-
-def get_lxml_fare_structure_element(string_xml):
-    doc = etree.fromstring(string_xml)
-    xpath = "//x:fareStructureElements/x:FareStructureElement"
-    fare_str_elements = doc.xpath(xpath, namespaces=NAMESPACE)
-    return fare_str_elements
-
-
-def get_lxml_generic_param_element(string_xml):
-    doc = etree.fromstring(string_xml)
-    xpath = (
-        "//x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment"
-    )
-    generic_parameter_element = doc.xpath(xpath, namespaces=NAMESPACE)
-    return generic_parameter_element
+    element = doc.xpath(xpath, namespaces=NAMESPACE)
+    return element
 
 
 @pytest.mark.parametrize(
@@ -354,7 +337,7 @@ def test_all_fare_structure_element_checks(
     else:
         xml = fare_frames.format(type_of_fare_str_element_attr_missing)
 
-    fare_structure_elements = get_lxml_element(xml)
+    fare_structure_elements = get_lxml_element("//x:fareStructureElements", xml)
     result = all_fare_structure_element_checks("", fare_structure_elements)
     assert result == expected
 
@@ -417,7 +400,7 @@ def test_check_fare_structure_element(fare_structure_element_present, expected):
         xml = fare_frames.format(fare_structure_element)
     else:
         xml = fare_frames.format("")
-    fare_structure_elements = get_lxml_element(xml)
+    fare_structure_elements = get_lxml_element("//x:fareStructureElements", xml)
     result = check_fare_structure_element("", fare_structure_elements)
     assert result == expected
 
@@ -464,7 +447,9 @@ def test_check_type_of_fare_structure_element_ref(
         xml = fare_frames.format(fare_structure_element)
     else:
         xml = fare_frames.format("")
-    fare_str_elements = get_lxml_fare_structure_element(xml)
+    fare_str_elements = get_lxml_element(
+        "//x:fareStructureElements/x:FareStructureElement", xml
+    )
     result = check_type_of_fare_structure_element_ref("", fare_str_elements)
     assert result == expected
 
@@ -592,7 +577,7 @@ def test_check_generic_parameters_for_access(
             xml = fare_frames.format(fare_structure_element_not_access)
     else:
         xml = fare_frames.format(fare_structure_element_without_attribute)
-    fare_structure_elements = get_lxml_element(xml)
+    fare_structure_elements = get_lxml_element("//x:fareStructureElements", xml)
     result = check_generic_parameters_for_access("", fare_structure_elements)
     assert result == expected
 
@@ -724,7 +709,10 @@ def test_check_validity_grouping_type_for_access(
         xml = fare_structure_element_without_attribute.format(
             fare_structure_element_with_both_children
         )
-    generic_parameter_frame = get_lxml_generic_param_element(xml)
+    generic_parameter_frame = get_lxml_element(
+        "//x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
+        xml,
+    )
     result = check_validity_grouping_type_for_access("", generic_parameter_frame)
     assert result == expected
 
@@ -830,7 +818,10 @@ def test_check_validity_parameter_for_access(
         xml = fare_structure_element_without_attribute.format(
             fare_structure_element_with_child
         )
-    generic_parameter_frame = get_lxml_generic_param_element(xml)
+    generic_parameter_frame = get_lxml_element(
+        "//x:fareStructureElements/x:FareStructureElement/x:GenericParameterAssignment",
+        xml,
+    )
     result = check_validity_parameter_for_access("", generic_parameter_frame)
     assert result == expected
 
@@ -1032,7 +1023,7 @@ def test_check_generic_parameters_for_eligibility(
             xml = fare_frames.format(fare_structure_element_not_eligibility)
     else:
         xml = fare_frames.format(fare_structure_element_without_attribute)
-    fare_structure_elements = get_lxml_element(xml)
+    fare_structure_elements = get_lxml_element("//x:fareStructureElements", xml)
     result = check_generic_parameters_for_eligibility("", fare_structure_elements)
     assert result == expected
 
@@ -1159,6 +1150,8 @@ def test_check_frequency_of_use(
             xml = fare_frames.format(fare_structure_element_not_travel_condition)
     else:
         xml = fare_frames.format(fare_structure_element_without_attribute)
-    fare_structure_elements = get_lxml_fare_structure_element(xml)
+    fare_structure_elements = get_lxml_element(
+        "//x:fareStructureElements/x:FareStructureElement", xml
+    )
     result = check_frequency_of_use("", fare_structure_elements)
     assert result == expected

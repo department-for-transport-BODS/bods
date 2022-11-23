@@ -12,18 +12,10 @@ from transit_odp.fares_validator.views.functions import (
 NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
 
 
-def get_service_frame_lxml_element(string_xml):
+def get_lxml_element(xpath, string_xml):
     doc = etree.fromstring(string_xml)
-    xpath = "//x:ServiceFrame"
-    service_frames = doc.xpath(xpath, namespaces=NAMESPACE)
-    return service_frames
-
-
-def get_lines_lxml_element(string_xml):
-    doc = etree.fromstring(string_xml)
-    xpath = "//x:ServiceFrame/x:lines/x:Line"
-    lines = doc.xpath(xpath, namespaces=NAMESPACE)
-    return lines
+    element = doc.xpath(xpath, namespaces=NAMESPACE)
+    return element
 
 
 @pytest.mark.parametrize(
@@ -101,7 +93,7 @@ def test_is_service_frame_present(
             xml = service_frames.format(type_of_frame_ref_attr_incorrect, service_frame)
     else:
         xml = service_frames.format(type_of_frame_ref_attr_missing, service_frame)
-    service_frames = get_service_frame_lxml_element(xml)
+    service_frames = get_lxml_element("//x:ServiceFrame", xml)
     result = is_service_frame_present("", service_frames)
     assert result == expected
 
@@ -184,7 +176,7 @@ def test_is_lines_present_in_service_frame(
             xml = service_frames.format(service_frame_without_lines)
     else:
         xml = service_frames.format("")
-    service_frames = get_service_frame_lxml_element(xml)
+    service_frames = get_lxml_element("//x:ServiceFrame", xml)
     result = is_lines_present_in_service_frame("", service_frames)
     assert result == expected
     return
@@ -244,7 +236,7 @@ def test_check_lines_public_code_present(line_present, public_code_present, expe
             xml = service_frames.format(service_frame_without_public_code)
     else:
         xml = service_frames.format(service_frame_without_line)
-    line_frame = get_lines_lxml_element(xml)
+    line_frame = get_lxml_element("//x:ServiceFrame/x:lines/x:Line", xml)
     if line_frame:
         result = check_lines_public_code_present("", line_frame)
         assert result == expected
@@ -305,7 +297,7 @@ def test_check_lines_operator_ref_present(line_present, operator_ref_present, ex
             xml = service_frames.format(service_frame_without_operator_ref)
     else:
         xml = service_frames.format(service_frame_without_line)
-    line_frame = get_lines_lxml_element(xml)
+    line_frame = get_lxml_element("//x:ServiceFrame/x:lines/x:Line", xml)
     if line_frame:
         result = check_lines_operator_ref_present("", line_frame)
         assert result == expected
@@ -489,7 +481,7 @@ def test_is_schedule_stop_points(
             xml = service_frames.format(service_frame_without_schedule_stop_point)
     else:
         xml = service_frames.format(service_frame_without_child)
-    service_frames = get_service_frame_lxml_element(xml)
+    service_frames = get_lxml_element("//x:ServiceFrame", xml)
     result = is_schedule_stop_points("", service_frames)
     assert result == expected
     return
