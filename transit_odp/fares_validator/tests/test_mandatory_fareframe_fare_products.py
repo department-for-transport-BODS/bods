@@ -123,11 +123,6 @@ def test_preassigned_fare_products(
     fare_frame_type_of_frame_ref_not_valid = """
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_NETW:FXCP" version="fxc:v1.0" />
-        <fareProducts>
-            <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-                <Name>Adult Single</Name>
-            </PreassignedFareProduct>
-        </fareProducts>
     </FareFrame>
     """
 
@@ -261,7 +256,6 @@ def test_preassigned_fare_products_type_ref(
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_NETW:FXCP" version="fxc:v1.0" />
         <fareProducts>
             <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-                <TypeOfFareProductRef version="1.0" ref="fxc:standard_product@trip@single"/>
             </PreassignedFareProduct>
         </fareProducts>
     </FareFrame>
@@ -376,7 +370,6 @@ def test_preassigned_fare_products_charging_type(
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_NETW:FXCP" version="fxc:v1.0" />
         <fareProducts>
             <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-                <ChargingMomentType>beforeTravel</ChargingMomentType>
             </PreassignedFareProduct>
         </fareProducts>
     </FareFrame>
@@ -565,16 +558,6 @@ def test_preassigned_validable_elements(
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_NETW:FXCP" version="fxc:v1.0" />
         <fareProducts>
             <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-                <validableElements>
-                    <ValidableElement id="Trip@AdultSingle@travel" version="1.0">
-                        <Name>Adult Single</Name>
-                        <fareStructureElements>
-                            <FareStructureElementRef version="1.0" ref="Tariff@AdultSingle@access" />
-                            <FareStructureElementRef version="1.0" ref="Tariff@AdultSingle@conditions_of_travel" />
-                            <FareStructureElementRef version="1.0" ref="Tariff@AdultSingle@access_when" />
-                        </fareStructureElements>
-                    </ValidableElement>
-                </validableElements>
             </PreassignedFareProduct>
         </fareProducts>
     </FareFrame>
@@ -768,11 +751,6 @@ def test_access_right_elements(
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_NETW:FXCP" version="fxc:v1.0" />
         <fareProducts>
             <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-                <accessRightsInProduct>
-                    <AccessRightInProduct id="Trip@AdultSingle@travel@accessRight" version="1.0" order="1">
-                        <ValidableElementRef version="1.0" ref="Trip@AdultSingle@travel" />
-                    </AccessRightInProduct>
-                </accessRightsInProduct>
             </PreassignedFareProduct>
         </fareProducts>
     </FareFrame>
@@ -901,7 +879,6 @@ def test_product_type(
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_NETW:FXCP" version="fxc:v1.0" />
         <fareProducts>
             <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-                <ProductType>dayPass</ProductType>
             </PreassignedFareProduct>
         </fareProducts>
     </FareFrame>
