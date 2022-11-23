@@ -916,99 +916,193 @@ def get_access_right_assignment_ref(fare_structure_element):
 
 def check_type_of_tariff_ref_values(context, elements, *args):
     """
-    Checks if 'TypeOfTariffRef' element has acceptable 'ref' values
+    Checks if 'ref' of element 'TypeOfFrameRef' is correct and
+    if 'TypeOfTariffRef' element has acceptable 'ref' values
     """
     element = elements[0]
-    xpath = "x:TypeOfTariffRef"
-    is_type_of_tariff_ref = element.xpath(xpath, namespaces=NAMESPACE)
-    if not is_type_of_tariff_ref:
-        sourceline = element.sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_REF_MISSING
-        )
-        response = response_details.__list__()
-        return response
+    xpath = "x:TypeOfFrameRef"
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
     try:
-        type_of_tariff_ref_ref = _extract_attribute(is_type_of_tariff_ref, "ref")
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = is_type_of_tariff_ref[0].sourceline
+        sourceline = type_of_frame_ref[0].sourceline
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
         )
         response = response_details.__list__()
         return response
-    if type_of_tariff_ref_ref not in TYPE_OF_TARIFF_REF_STRING:
-        sourceline = element.sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
-        )
-        response = response_details.__list__()
-        return response
+    if (
+        type_of_frame_ref_ref is not None
+        and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+    ):
+        xpath = "//x:tariffs/x:Tariff"
+        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
+        tariff = tariffs[0]
+        xpath = "x:TypeOfTariffRef"
+        is_type_of_tariff_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
+        if not is_type_of_tariff_ref:
+            sourceline = tariff.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_REF_MISSING
+            )
+            response = response_details.__list__()
+            return response
+        try:
+            type_of_tariff_ref_ref = _extract_attribute(is_type_of_tariff_ref, "ref")
+        except KeyError:
+            sourceline = is_type_of_tariff_ref[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline,
+                MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        if type_of_tariff_ref_ref not in TYPE_OF_TARIFF_REF_STRING:
+            sourceline = tariff.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
+            )
+            response = response_details.__list__()
+            return response
 
 
-def check_tariff_operator_ref(context, tariffs, *args):
-    tariff = tariffs[0]
-    xpath = "x:OperatorRef"
-    operator_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
-    if not operator_ref:
-        sourceline = tariff.sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING
-        )
-        response = response_details.__list__()
-        return response
-
-
-def check_tariff_basis(context, tariffs, *args):
-    tariff = tariffs[0]
-    xpath = "x:TariffBasis"
-    tariff_basis = tariff.xpath(xpath, namespaces=NAMESPACE)
-    if not tariff_basis:
-        sourceline = tariff.sourceline
-        response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING
-        )
-        response = response_details.__list__()
-        return response
-
-
-def check_tariff_validity_conditions(context, tariffs, *args):
-    tariff = tariffs[0]
-    xpath = "x:validityConditions"
-    validity_conditions = tariff.xpath(xpath, namespaces=NAMESPACE)
-    if not validity_conditions:
-        validity_conditions_sourceline = tariff.sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            validity_conditions_sourceline,
-            MESSAGE_OBSERVATION_TARIFF_VALIDITY_CONDITIONS_MISSING,
-        )
-        response = response_details.__list__()
-        return response
-    xpath = "x:ValidBetween"
-    valid_between = validity_conditions[0].xpath(xpath, namespaces=NAMESPACE)
-    if not valid_between:
-        valid_between_sourceline = validity_conditions[0].sourceline
+def check_tariff_operator_ref(context, elements, *args):
+    """
+    Checks if 'ref' of element 'TypeOfFrameRef' is correct and
+    if 'OperatorRef' element is present within 'Tariff'
+    """
+    element = elements[0]
+    xpath = "x:TypeOfFrameRef"
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        sourceline = type_of_frame_ref[0].sourceline
         response_details = XMLViolationDetail(
             "violation",
-            valid_between_sourceline,
-            MESSAGE_OBSERVATION_TARIFF_VALID_BETWEEN_MISSING,
+            sourceline,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
         )
         response = response_details.__list__()
         return response
-    xpath = "string(x:FromDate)"
-    from_date = valid_between[0].xpath(xpath, namespaces=NAMESPACE)
-    if not from_date:
-        from_date_sourceline = valid_between[0].sourceline
+    if (
+        type_of_frame_ref_ref is not None
+        and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+    ):
+        xpath = "//x:tariffs/x:Tariff"
+        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
+        tariff = tariffs[0]
+        xpath = "x:OperatorRef"
+        operator_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
+        if not operator_ref:
+            sourceline = tariff.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING
+            )
+            response = response_details.__list__()
+            return response
+
+
+def check_tariff_basis(context, elements, *args):
+    """
+    Checks if 'ref' of element 'TypeOfFrameRef' is correct and
+    if 'TariffBasis' element is present within 'Tariff'
+    """
+    element = elements[0]
+    xpath = "x:TypeOfFrameRef"
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        sourceline = type_of_frame_ref[0].sourceline
         response_details = XMLViolationDetail(
             "violation",
-            from_date_sourceline,
-            MESSAGE_OBSERVATION_TARIFF_FROM_DATE_MISSING,
+            sourceline,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
         )
         response = response_details.__list__()
         return response
+    if (
+        type_of_frame_ref_ref is not None
+        and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+    ):
+        xpath = "//x:tariffs/x:Tariff"
+        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
+        tariff = tariffs[0]
+        xpath = "x:TariffBasis"
+        tariff_basis = tariff.xpath(xpath, namespaces=NAMESPACE)
+        if not tariff_basis:
+            sourceline = tariff.sourceline
+            response_details = XMLViolationDetail(
+                "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING
+            )
+            response = response_details.__list__()
+            return response
+
+
+def check_tariff_validity_conditions(context, elements, *args):
+    """
+    Checks if 'ref' of element 'TypeOfFrameRef' is correct and
+    if 'ValidityConditions', 'ValidBetween' and 'FromDate'
+    are present within 'Tariff'
+    """
+    element = elements[0]
+    xpath = "x:TypeOfFrameRef"
+    type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
+    try:
+        type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
+    except KeyError:
+        sourceline = type_of_frame_ref[0].sourceline
+        response_details = XMLViolationDetail(
+            "violation",
+            sourceline,
+            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+        )
+        response = response_details.__list__()
+        return response
+    if (
+        type_of_frame_ref_ref is not None
+        and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
+    ):
+        xpath = "//x:tariffs/x:Tariff"
+        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
+        tariff = tariffs[0]
+        xpath = "x:validityConditions"
+        validity_conditions = tariff.xpath(xpath, namespaces=NAMESPACE)
+        if not validity_conditions:
+            validity_conditions_sourceline = tariff.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                validity_conditions_sourceline,
+                MESSAGE_OBSERVATION_TARIFF_VALIDITY_CONDITIONS_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        xpath = "x:ValidBetween"
+        valid_between = validity_conditions[0].xpath(xpath, namespaces=NAMESPACE)
+        if not valid_between:
+            valid_between_sourceline = validity_conditions[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                valid_between_sourceline,
+                MESSAGE_OBSERVATION_TARIFF_VALID_BETWEEN_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        xpath = "string(x:FromDate)"
+        from_date = valid_between[0].xpath(xpath, namespaces=NAMESPACE)
+        if not from_date:
+            from_date_sourceline = valid_between[0].sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                from_date_sourceline,
+                MESSAGE_OBSERVATION_TARIFF_FROM_DATE_MISSING,
+            )
+            response = response_details.__list__()
+            return response
 
 
 def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
