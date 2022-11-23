@@ -10,6 +10,15 @@ from transit_odp.fares_validator.views.functions import (
     check_product_type,
 )
 
+NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
+X_PATH = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct"
+
+
+def get_lxml_element(xpath, string_xml):
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath(xpath, namespaces=NAMESPACE)
+    return elements
+
 
 @pytest.mark.parametrize(
     (
@@ -175,14 +184,9 @@ def test_preassigned_fare_products(
     else:
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
-    netex_xml = etree.fromstring(xml)
     xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame"
-    fare_frames = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    fare_frames = get_lxml_element(xpath, xml)
     response = check_preassigned_fare_products("", fare_frames)
-    print("response", response)
     assert response == expected
 
 
@@ -296,14 +300,8 @@ def test_preassigned_fare_products_type_ref(
     else:
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct"
-    preassigned_fare_products = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    preassigned_fare_products = get_lxml_element(X_PATH, xml)
     response = check_preassigned_fare_products_type_ref("", preassigned_fare_products)
-    print("response", response)
     assert response == expected
 
 
@@ -417,16 +415,10 @@ def test_preassigned_fare_products_charging_type(
     else:
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct"
-    preassigned_fare_products = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    preassigned_fare_products = get_lxml_element(X_PATH, xml)
     response = check_preassigned_fare_products_charging_type(
         "", preassigned_fare_products
     )
-    print("response", response)
     assert response == expected
 
 
@@ -676,14 +668,8 @@ def test_preassigned_validable_elements(
     else:
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct"
-    preassigned_fare_products = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    preassigned_fare_products = get_lxml_element(X_PATH, xml)
     response = check_preassigned_validable_elements("", preassigned_fare_products)
-    print("response", response)
     assert response == expected
 
 
@@ -842,14 +828,8 @@ def test_access_right_elements(
     else:
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct"
-    preassigned_fare_products = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    preassigned_fare_products = get_lxml_element(X_PATH, xml)
     response = check_access_right_elements("", preassigned_fare_products)
-    print("response", response)
     assert response == expected
 
 
@@ -960,12 +940,6 @@ def test_product_type(
     else:
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
-    netex_xml = etree.fromstring(xml)
-    xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct"
-    preassigned_fare_products = netex_xml.xpath(
-        xpath, namespaces={"x": "http://www.netex.org.uk/netex"}
-    )
-
+    preassigned_fare_products = get_lxml_element(X_PATH, xml)
     response = check_product_type("", preassigned_fare_products)
-    print("response", response)
     assert response == expected
