@@ -1901,7 +1901,14 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
             xpath = "x:GenericParameterAssignment/x:limitations/x:FrequencyOfUse"
             frequency_of_use = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
             if not frequency_of_use:
-                sourceline_fare_structure_element = fare_structure_element.sourceline
+                xpath = "x:GenericParameterAssignment/x:limitations"
+                limitations = fare_structure_element.xpath(xpath, namespaces=NAMESPACE)
+                if limitations:
+                    sourceline_fare_structure_element = limitations[0].sourceline
+                else:
+                    sourceline_fare_structure_element = (
+                        fare_structure_element.sourceline
+                    )
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure_element,
