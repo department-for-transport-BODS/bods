@@ -928,7 +928,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
     if 'TypeOfTariffRef' element has acceptable 'ref' values
     """
     element = elements[0]
-    xpath = "x:TypeOfFrameRef"
+    xpath = "../../x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
@@ -945,13 +945,10 @@ def check_type_of_tariff_ref_values(context, elements, *args):
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
-        xpath = "//x:tariffs/x:Tariff"
-        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
-        tariff = tariffs[0]
         xpath = "x:TypeOfTariffRef"
-        is_type_of_tariff_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
+        is_type_of_tariff_ref = element.xpath(xpath, namespaces=NAMESPACE)
         if not is_type_of_tariff_ref:
-            sourceline = tariff.sourceline
+            sourceline = element.sourceline
             response_details = XMLViolationDetail(
                 "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_REF_MISSING
             )
@@ -969,7 +966,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
             response = response_details.__list__()
             return response
         if type_of_tariff_ref_ref not in TYPE_OF_TARIFF_REF_STRING:
-            sourceline = tariff.sourceline
+            sourceline = is_type_of_tariff_ref[0].sourceline
             response_details = XMLViolationDetail(
                 "violation", sourceline, MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
             )
@@ -983,7 +980,7 @@ def check_tariff_operator_ref(context, elements, *args):
     if 'OperatorRef' element is present within 'Tariff'
     """
     element = elements[0]
-    xpath = "x:TypeOfFrameRef"
+    xpath = "../../x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
@@ -1000,13 +997,10 @@ def check_tariff_operator_ref(context, elements, *args):
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
-        xpath = "//x:tariffs/x:Tariff"
-        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
-        tariff = tariffs[0]
         xpath = "x:OperatorRef"
-        operator_ref = tariff.xpath(xpath, namespaces=NAMESPACE)
+        operator_ref = element.xpath(xpath, namespaces=NAMESPACE)
         if not operator_ref:
-            sourceline = tariff.sourceline
+            sourceline = element.sourceline
             response_details = XMLViolationDetail(
                 "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING
             )
@@ -1020,7 +1014,7 @@ def check_tariff_basis(context, elements, *args):
     if 'TariffBasis' element is present within 'Tariff'
     """
     element = elements[0]
-    xpath = "x:TypeOfFrameRef"
+    xpath = "../../x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
@@ -1037,13 +1031,10 @@ def check_tariff_basis(context, elements, *args):
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
-        xpath = "//x:tariffs/x:Tariff"
-        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
-        tariff = tariffs[0]
         xpath = "x:TariffBasis"
-        tariff_basis = tariff.xpath(xpath, namespaces=NAMESPACE)
+        tariff_basis = element.xpath(xpath, namespaces=NAMESPACE)
         if not tariff_basis:
-            sourceline = tariff.sourceline
+            sourceline = element.sourceline
             response_details = XMLViolationDetail(
                 "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING
             )
@@ -1058,7 +1049,7 @@ def check_tariff_validity_conditions(context, elements, *args):
     are present within 'Tariff'
     """
     element = elements[0]
-    xpath = "x:TypeOfFrameRef"
+    xpath = "../../x:TypeOfFrameRef"
     type_of_frame_ref = element.xpath(xpath, namespaces=NAMESPACE)
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
@@ -1075,13 +1066,10 @@ def check_tariff_validity_conditions(context, elements, *args):
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
-        xpath = "//x:tariffs/x:Tariff"
-        tariffs = element.xpath(xpath, namespaces=NAMESPACE)
-        tariff = tariffs[0]
         xpath = "x:validityConditions"
-        validity_conditions = tariff.xpath(xpath, namespaces=NAMESPACE)
+        validity_conditions = element.xpath(xpath, namespaces=NAMESPACE)
         if not validity_conditions:
-            validity_conditions_sourceline = tariff.sourceline
+            validity_conditions_sourceline = element.sourceline
             response_details = XMLViolationDetail(
                 "violation",
                 validity_conditions_sourceline,
