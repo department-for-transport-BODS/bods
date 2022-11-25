@@ -6,7 +6,7 @@ from transit_odp.fares_validator.views.validators import FaresValidator
 from transit_odp.fares_validator.types import Violation
 
 DATA_DIR = Path(__file__).parent / "data"
-FARES_SCHEMA = filepath = DATA_DIR / "fares_schema.json"
+FARES_SCHEMA = Path(__file__).parent.parent / "schema" / "fares_schema.json"
 
 
 @pytest.mark.parametrize(
