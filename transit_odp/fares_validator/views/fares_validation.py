@@ -7,7 +7,6 @@ from typing import BinaryIO, Iterable, List
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.common.types import JSONFile
-from transit_odp.common.utils import sha1sum
 from transit_odp.data_quality.pti.models import Violation
 from transit_odp.fares_validator.views.validators import FaresValidator
 
@@ -31,8 +30,9 @@ class DatasetFaresValidator:
                     adapter.info(
                         f"Fares Validation of file {index} of {file_count} - {name}."
                     )
-                    with zf.open(name) as f:
-                        yield f
+                    if not name.startswith("__"):
+                        with zf.open(name) as f:
+                            yield f
         else:
             file.seek(0)
             yield file
