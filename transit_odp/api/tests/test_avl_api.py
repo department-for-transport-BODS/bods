@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
 import requests
@@ -29,6 +30,7 @@ def test_get_consumer_api_response_non_200(mrequests):
     url = "http://fakeapi.com/datafeed"
     query_params = QueryDict("originRef=12345")
     mresponse = MagicMock(spec=Response, status_code=HTTP_410_GONE)
+    mresponse.elapsed = timedelta(seconds=1)
     mrequests.get.return_value = mresponse
     actual_content, actual_status = _get_consumer_api_response(url, query_params)
     mrequests.get.assert_called_once_with(url, params=query_params, timeout=60)
@@ -45,6 +47,7 @@ def test_get_consumer_api_response(mrequests):
     mresponse = MagicMock(
         spec=Response, status_code=HTTP_200_OK, content=tostring(siri_element)
     )
+    mresponse.elapsed = timedelta(seconds=1)
     mrequests.get.return_value = mresponse
     actual_content, actual_status = _get_consumer_api_response(url, query_params)
     mrequests.get.assert_called_once_with(url, params=query_params, timeout=60)
