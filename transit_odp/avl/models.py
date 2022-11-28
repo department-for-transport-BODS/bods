@@ -1,5 +1,6 @@
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.models.constraints import UniqueConstraint
 from django.db.models.expressions import F
 from django.db.models.query_utils import Q
 from django.utils import timezone
@@ -18,7 +19,7 @@ from transit_odp.avl.validation.models import (
 from transit_odp.common.constants import UTF8
 from transit_odp.common.fields import CallableStorageFileField
 from transit_odp.organisation.constants import AVLType
-from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.pipelines.models import TaskResult
 
 limit_to_query = Q(dataset__dataset_type=AVLType) & Q(dataset__live_revision_id=F("id"))
@@ -189,4 +190,50 @@ class CAVLDataArchive(models.Model):
             f"{self.__class__.__name__}(created={self.created!r}, "
             f"last_updated={self.last_updated!r}, data={self.data.name!r}, "
             f"data_format={self.data_format!r})"
+        )
+
+
+class PPCReportType(models.TextChoices):
+    DAILY = ("daily", "daily")
+    WEEKLY = ("weekly", "weekly")
+
+
+class PostPublishingCheckReport(models.Model):
+    dataset = models.ForeignKey(
+        Dataset,
+        on_delete=models.CASCADE,
+        related_name="ppc_reports",
+        limit_choices_to=Q(dataset_type=AVLType),
+    )
+    created = models.DateField(_("Creation date"))
+    granularity = models.CharField(
+        _("Daily or weekly"),
+        choices=PPCReportType.choices,
+        max_length=6,
+    )
+    file = models.FileField(_("PPC report"))
+    vehicle_activities_analysed = models.PositiveIntegerField(
+        _("Vehicles analysed"), null=True, blank=True, default=0
+    )
+    vehicle_activities_completely_matching = models.PositiveIntegerField(
+        _("Vehicles completely matching (ex. BlockRef)"),
+        null=True,
+        blank=True,
+        default=0,
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["dataset", "granularity", "created"], name="unique_report"
+            )
+        ]
+
+    def __str__(self):
+        return (
+            f"id={self.id}, dataset id={self.dataset.id}, type={self.granularity}, "
+            f"created={self.created.isoformat()}, filename={self.file.name!r}, "
+            f"vehicle_activities_analysed={self.vehicle_activities_analysed}"
+            "vehicle_activities_completely_matching="
+            f"{self.vehicle_activities_completely_matching}"
         )

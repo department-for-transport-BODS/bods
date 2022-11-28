@@ -34,6 +34,4 @@ class Schema(BaseModel):
 class Violation(BaseModel):
     line: int
     filename: str
-    name: str
-    element_text: Optional[str] = None
-    observation: Observation
+    observation: str

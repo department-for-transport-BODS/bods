@@ -1,7 +1,7 @@
-ARG BASE_IMAGE=python:3.9-alpine3.15
+ARG BASE_IMAGE=python:3.9-alpine3.16
 
 # Step 1 - Build frontend assets
-FROM node:16-alpine
+FROM node:19-alpine
 
 WORKDIR /app
 
@@ -38,8 +38,8 @@ WORKDIR /app
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && apk update \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.16/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.16/community \
             --no-cache \
             gdal-dev \
             gdal \
@@ -76,7 +76,7 @@ COPY ./cavl-client /app/cavl-client
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN python --version \
-    && pip install poetry==1.1.12 \
+    && pip install poetry==1.2.2 \
     && poetry config virtualenvs.create false \
     && poetry install --no-dev
 

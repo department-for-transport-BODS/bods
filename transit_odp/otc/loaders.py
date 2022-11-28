@@ -1,10 +1,18 @@
+from functools import cached_property
 from logging import getLogger
 from typing import Set, Tuple, Union
 
+from django.db import transaction
+
+from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.models import Licence, Operator, Service
 from transit_odp.otc.registry import Registry
 
 logger = getLogger(__name__)
+
+
+class LoadFailedException(Exception):
+    pass
 
 
 class Loader:
@@ -23,12 +31,12 @@ class Loader:
 
     def get_missing_operators(self) -> Set[int]:
         stored_ids = set(Operator.objects.values_list("operator_id", flat=True))
-        new_ids = set(self.registry.operator_ids)
+        new_ids = {service.operator.operator_id for service in self.registered_service}
         return new_ids - stored_ids
 
     def get_missing_licences(self) -> Set[str]:
         stored_ids = set(Licence.objects.values_list("number", flat=True))
-        new_ids = set(self.registry.licence_numbers)
+        new_ids = {service.licence.number for service in self.registered_service}
         return new_ids - stored_ids
 
     def get_missing_services(self) -> Set[Tuple[str, str]]:
@@ -37,7 +45,10 @@ class Loader:
                 "registration_number", "service_type_description"
             )
         )
-        new_ids = set(self.registry.service_ids)
+        new_ids = {
+            (service.registration_number, service.service_type_description)
+            for service in self.registered_service
+        }
         return new_ids - stored_ids
 
     def load_licences(self):
@@ -84,7 +95,7 @@ class Loader:
             "Service": {"fields": set(), "items": []},
         }
 
-        for updated_service in self.registry.services:
+        for updated_service in self.registered_service:
             if updated_service.variation_number == 0:
                 # This is a new service and wont need to be updated
                 continue
@@ -125,8 +136,94 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
+    def delete_bad_data(self):
+        services = {
+            service.registration_number
+            for service in self.registry.filter_by_status(
+                *RegistrationStatusEnum.to_delete()
+            )
+        }
+
+        count, _ = Service.objects.filter(registration_number__in=services).delete()
+        logger.info(f"{count} Services removed")
+
+        count, _ = Licence.objects.filter(services=None).delete()
+        logger.info(f"{count} Licences removed")
+        count, _ = Operator.objects.filter(services=None).delete()
+        logger.info(f"{count} Operators removed")
+
     def load(self):
-        self.load_licences()
-        self.load_operators()
-        self.load_services()
-        self.update_services_and_operators()
+        """
+        The method is used to update the database, add and remove unnecessary objects.
+        """
+        most_recently_modified = (
+            Service.objects.filter(last_modified__isnull=False)
+            .order_by("last_modified")
+            .last()
+        )
+        if (
+            most_recently_modified is None
+            or most_recently_modified.last_modified is None
+        ):
+            logger.error("Cant find last modified date in database, giving up")
+            raise LoadFailedException("Cannot calculate last run date of task")
+
+        with transaction.atomic():
+            self.registry.get_variations_since(most_recently_modified.last_modified)
+            self.load_licences()
+            self.load_operators()
+            self.load_services()
+            self.update_services_and_operators()
+            self.delete_bad_data()
+
+    def _delete_all_otc_data(self) -> None:
+        logger.info("Clearing OTC tables")
+        count, _ = Service.objects.all().delete()
+        logger.info(f"Deleted {count} OTC Services")
+        count, _ = Licence.objects.all().delete()
+        logger.info(f"Deleted {count} OTC Licences")
+        count, _ = Operator.objects.all().delete()
+        logger.info(f"Deleted {count} OTC Operators")
+
+    @transaction.atomic
+    def load_into_fresh_database(self):
+        new_otc_objects = []
+        self.registry.add_all_latest_registered_variations()
+        self.registry.add_all_older_registered_variations()
+        self._delete_all_otc_data()
+
+        for licence in self.registry.licences:
+            new_otc_objects.append(Licence.from_registry_licence(licence))
+
+        logger.info(
+            f"loading {len(new_otc_objects)} new licences into database from API"
+        )
+        Licence.objects.bulk_create(new_otc_objects)
+
+        new_otc_objects = []
+        for operator in self.registry.operators:
+            new_otc_objects.append(Operator.from_registry_operator(operator))
+
+        logger.info(
+            f"loading {len(new_otc_objects)} new operators into database from API"
+        )
+        Operator.objects.bulk_create(new_otc_objects)
+
+        new_otc_objects = []
+        operator_map = {op.operator_id: op for op in Operator.objects.all()}
+        licence_map = {lic.number: lic for lic in Licence.objects.all()}
+        for service in self.registry.services:
+            operator = operator_map[service.operator.operator_id]
+            licence = licence_map[service.licence.number]
+            new_otc_objects.append(
+                Service.from_registry_service(service, operator, licence)
+            )
+
+        logger.info(
+            f"loading {len(new_otc_objects)} new services into database from API"
+        )
+        Service.objects.bulk_create(new_otc_objects)
+
+    @cached_property
+    def registered_service(self):
+        return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)

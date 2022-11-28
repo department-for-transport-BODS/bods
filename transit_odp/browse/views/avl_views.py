@@ -18,6 +18,7 @@ from transit_odp.avl.constants import (
 from transit_odp.avl.models import CAVLDataArchive
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.filters import AVLSearchFilter
+from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.views.base_views import BaseSearchView
 from transit_odp.browse.views.timetable_views import (
     DatasetSubscriptionBaseView,
@@ -285,7 +286,9 @@ class AvlSubscriptionView(DatasetSubscriptionBaseView, UpdateView):
         return redirect(success_url)
 
 
-class AvlSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
+class AvlSubscriptionSuccessView(
+    DatasetPaginatorTable, DatasetSubscriptionBaseView, DetailView
+):
     template_name = "browse/avl/feed_subscription_success.html"
 
     def get_queryset(self):
@@ -311,14 +314,15 @@ class AvlSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
             )
 
     def get_back_button_text(self, previous_url):
-        if previous_url == reverse("users:feeds-manage", host=config.hosts.DATA_HOST):
+        sub_manage_url = reverse("users:feeds-manage", host=config.hosts.DATA_HOST)
+        if sub_manage_url in previous_url:
             return _("Go back to manage subscriptions")
         else:
             return _("Go back to data feed")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        back_url = self.get_back_url()
+        back_url = self._get_or_update_url(self.request.user, self.get_back_url())
         context.update(
             {
                 "subscribe": self.get_is_subscribed(),

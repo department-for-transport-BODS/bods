@@ -161,7 +161,7 @@ build-dev:
       -e POSTGRES_USER
       -e POSTGRES_PASSWORD
       $CURRENT_DEV_IMAGE
-      bash -c "pytest --numprocesses=4 ."
+      sh -c "pytest --numprocesses=4 ."
   coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
 
 test-merge-request:
