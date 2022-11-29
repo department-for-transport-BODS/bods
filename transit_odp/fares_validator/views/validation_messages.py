@@ -8,6 +8,9 @@ MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING = "'fareProducts' and it's child eleme
 MESSAGE_OBSERVATION_TARIFF_REF_MISSING = (
     "Mandatory element 'TypeOfTariffRef' is missing in 'Tariff'"
 )
+MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING = (
+    "'TypeOfTariffRef' 'ref' attribute is missing in 'Tariff'"
+)
 MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING = (
     "Mandatory element 'OperatorRef' is missing in 'Tariff'"
 )

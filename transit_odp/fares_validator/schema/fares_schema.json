@@ -95,7 +95,7 @@
     {
       "details": "Mandatory elements 'OperatorRef','TariffBasis' present and 'TypeOfTariffRef' present and have an acceptable 'ref' value",
       "category": "Mandatory Element",
-      "context": "//x:tariffs//x:Tariff",
+      "context": "//x:CompositeFrame/x:frames/x:FareFrame/x:tariffs/x:Tariff",
       "rules": [
         {
           "test": "check_type_of_tariff_ref_values(.)"
