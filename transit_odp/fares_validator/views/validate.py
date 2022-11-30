@@ -40,9 +40,9 @@ class FaresXmlValidator:
         if violations:
             for violation in violations:
                 fares_violations = FaresValidation.save_observations(
-                        revision_id=self.pk2, org_id=self.pk1, violation=violation
-                    ).save()
-                
+                    revision_id=self.pk2, org_id=self.pk1, violation=violation
+                ).save()
+
             FaresValidationResult.save_validation_result(
                 revision_id=self.pk2, org_id=self.pk1, violations=violations
             ).save()
