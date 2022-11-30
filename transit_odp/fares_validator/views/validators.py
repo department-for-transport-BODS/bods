@@ -200,6 +200,7 @@ class FaresValidator:
                     line=result[1],
                     filename=unquote(Path(element.base).name),
                     observation=result[2],
+                    category=observation.category,
                 )
                 self.add_violation(violation)
 
