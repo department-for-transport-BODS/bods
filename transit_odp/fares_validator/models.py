@@ -19,6 +19,11 @@ class FaresValidationResult(models.Model):
         related_name="fares_validation_result",
         help_text=_("The revision being validated."),
     )
+    organisation = models.ForeignKey(
+        "organisation.Organisation",
+        on_delete=models.CASCADE,
+        help_text="Bus portal organisation.",
+    )
     count = models.IntegerField(help_text=_("Number of fare violations."))
     report_file_name = models.CharField(
         max_length=256, help_text=_("The name of the report file.")
@@ -30,7 +35,7 @@ class FaresValidationResult(models.Model):
         return self.count == 0
 
     @classmethod
-    def save_validation_result(
+    def create_validation_result(
         cls, revision_id: int, org_id: int, violations: List[Violation]
     ):
         """
@@ -46,6 +51,7 @@ class FaresValidationResult(models.Model):
         )
         return cls(
             revision_id=revision_id,
+            organisation_id=org_id,
             count=len(violations),
             report_file_name=fares_validator_report_name,
         )
@@ -93,7 +99,7 @@ class FaresValidation(models.Model):
         return "%s %s %s" % (self.file_name, self.revision, self.organisation)
 
     @classmethod
-    def save_observations(cls, revision_id: int, org_id: int, violation: Violation):
+    def create_observations(cls, revision_id: int, org_id: int, violation: Violation):
         return cls(
             revision_id=revision_id,
             organisation_id=org_id,
