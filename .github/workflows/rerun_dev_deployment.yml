@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-    - 'dev'
+    - '**'
     paths:
     - version.txt
   workflow_dispatch:
