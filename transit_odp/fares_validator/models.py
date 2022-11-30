@@ -34,7 +34,7 @@ class FaresValidationResult(models.Model):
         cls, revision_id: int, org_id: int, violations: List[Violation]
     ):
         """
-        Creates a PTIValidationResult from a DatasetRevision and a list of Violations.
+        Creates a FaresValidationResult from a DatasetRevision and a list of Violations.
 
         Args:
             revision (DatasetRevision): The revision containing the violations.
@@ -81,7 +81,7 @@ class FaresValidation(models.Model):
     reference = models.CharField(
         max_length=1024,
         default="Please see BODS Fares Validator Guidance v0.2",
-        help_text=_("The referenc of the observation"),
+        help_text=_("The reference of the observation"),
     )
     important_note = models.CharField(
         max_length=2000,
@@ -90,7 +90,7 @@ class FaresValidation(models.Model):
     )
 
     def __str__(self):
-        return "%s %s %s" % (self.file_name, self.dataset_id, self.organisation)
+        return "%s %s %s" % (self.file_name, self.revision, self.organisation)
 
     @classmethod
     def save_observations(cls, revision_id: int, org_id: int, violation: Violation):
@@ -99,7 +99,7 @@ class FaresValidation(models.Model):
             organisation_id=org_id,
             file_name=violation.filename,
             error_line_no=violation.line,
-            error=violation.observation.details,
-            type_of_observation=violation.observation.category,
+            error=violation.observation,
+            type_of_observation=type_of_observation,
             category=category,
         )

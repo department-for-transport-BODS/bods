@@ -6,4 +6,4 @@ from .models import FaresValidation
 class FaresSerializer(serializers.ModelSerializer):
     class Meta:
         model = FaresValidation
-        fields = ["id", "dataset_id", "file_name", "error_line_no", "error"]
+        fields = ["id", "revision_id", "file_name", "error_line_no", "error"]
