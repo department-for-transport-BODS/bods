@@ -1,5 +1,6 @@
 import openpyxl
 from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework.views import APIView
 
 from ..models import FaresValidation
@@ -18,14 +19,17 @@ REPORT_SHEET_TITLE = "Warnings"
 
 class FaresXmlExporter(APIView):
     def get(self, request, pk1, pk2):
-        fares_validator_report_name = f"BODS_fares_validation_{pk1}_{pk2}.xlsx"
+        now = timezone.now()
+        fares_validator_report_name = (
+            f"BODS_Fares_Validation_{pk1}_{pk2}_{now:%H_%M_%d%m%Y}.xlsx"
+        )
         response = HttpResponse(content_type="application/ms-excel")
         response[
             "Content-Disposition"
         ] = f'attachment; filename="{fares_validator_report_name}"'
 
         validations = FaresValidation.objects.filter(
-            dataset_id=pk2, organisation_id=pk1
+            revision_id=pk2, organisation_id=pk1
         ).values_list(
             "file_name",
             "error_line_no",

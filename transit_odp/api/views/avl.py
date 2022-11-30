@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,6 +14,8 @@ from rest_framework.response import Response
 from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
+
+logger = logging.getLogger(__name__)
 
 API_KEY = "api_key"
 PARAMETERS = (
@@ -136,6 +140,11 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
     except RequestException:
         return content, response_status
 
+    elapsed_time = response.elapsed.total_seconds()
+    logger.info(
+        f"Request to Consumer API with params {dict(params)} took {elapsed_time}s "
+        f"- status {response.status_code}"
+    )
     if response.status_code == 200:
         content = response.content
         response_status = status.HTTP_200_OK

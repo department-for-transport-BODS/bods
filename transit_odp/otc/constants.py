@@ -34,7 +34,3 @@ class SubsidiesDescription(TextChoices):
 
 SCHOOL_OR_WORKS = "School or Works"
 FLEXIBLE_REG = "Flexible Registration"
-
-
-OTC_CSV_URL = "https://content.mgmt.dvsacloud.uk/olcs.prod.dvsa.aws/data-gov-uk-export"
-CSV_FILE_TEMPLATE = "Bus_RegisteredOnly_{}.csv"

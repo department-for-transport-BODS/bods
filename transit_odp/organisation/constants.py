@@ -26,12 +26,13 @@ class FeedStatus(ChoiceEnum):
         return (self == self.live) or (self == self.expiring) or (self == self.warning)
 
 
-PENDING = FeedStatus.pending.value
-EXPIRED = FeedStatus.expired.value
-LIVE = FeedStatus.live.value
-ERROR = FeedStatus.error.value
-INACTIVE = FeedStatus.inactive.value
 DELETED = FeedStatus.deleted.value
+DRAFT = FeedStatus.draft.value
+ERROR = FeedStatus.error.value
+EXPIRED = FeedStatus.expired.value
+INACTIVE = FeedStatus.inactive.value
+LIVE = FeedStatus.live.value
+PENDING = FeedStatus.pending.value
 SUCCESS = FeedStatus.success.value
 COMPLIANT = FeedStatus.compliant.value
 NON_COMPLIANT = FeedStatus.noncompliant.value

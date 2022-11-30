@@ -105,6 +105,9 @@ class ServiceQuerySet(QuerySet):
 
 
 class LicenceQuerySet(QuerySet):
+    def add_service_count(self):
+        return self.annotate(service_count=Count("services"))
+
     def add_distinct_service_count(self):
         return self.annotate(
             distinct_service_count=Count("services__registration_number", distinct=True)
@@ -156,3 +159,8 @@ class LicenceQuerySet(QuerySet):
             .add_school_or_work_and_in_part_count()
             .add_flexible_registration_count()
         )
+
+
+class OperatorQuerySet(QuerySet):
+    def add_service_count(self):
+        return self.annotate(service_count=Count("services"))

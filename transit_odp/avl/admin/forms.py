@@ -1,5 +1,9 @@
+from datetime import date
+
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
 
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.organisation.constants import LIVE, AVLFeedUp, AVLType
@@ -109,3 +113,27 @@ def create_dummy_avl_datafeed(
         datafeed.save()
 
     return datafeed
+
+
+class PostPublishingCheckReportAdminForm(forms.ModelForm):
+    def clean_created(self):
+        if self.cleaned_data["created"] > date.today():
+            raise ValidationError(
+                _("Creation date cannot be in the future"),
+                code="created_future",
+            )
+        return self.cleaned_data["created"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if (
+            not self.has_error("vehicle_activities_completely_matching")
+            and not self.has_error("vehicle_activities_analysed")
+            and cleaned_data["vehicle_activities_completely_matching"]
+            > cleaned_data["vehicle_activities_analysed"]
+        ):
+            raise ValidationError(
+                _("Matching vehicles must be less than or equal to vehicles analysed"),
+                code="matching_gt_total",
+            )
+        return cleaned_data

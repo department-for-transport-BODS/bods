@@ -8,6 +8,7 @@ from django.utils import timezone
 from factory.django import DjangoModelFactory
 from freezegun import freeze_time
 
+from transit_odp.avl.constants import UNDERGOING
 from transit_odp.organisation.constants import (
     AVLType,
     FaresType,
@@ -15,6 +16,7 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.models import (
+    AVLComplianceCache,
     ConsumerFeedback,
     Dataset,
     DatasetMetadata,
@@ -113,6 +115,9 @@ class DatasetFactory(factory.django.DjangoModelFactory):
     # parent Dataset
     live_revision = factory.RelatedFactory(
         "transit_odp.organisation.factories.DatasetRevisionFactory", "dataset"
+    )
+    avl_compliance_cached = factory.RelatedFactory(
+        "transit_odp.organisation.factories.AVLComplianceCacheFactory", "dataset"
     )
 
     @factory.post_generation
@@ -281,3 +286,11 @@ class ServiceCodeExemptionFactory(factory.django.DjangoModelFactory):
     exempted_by = factory.SubFactory(
         "transit_odp.users.factories.UserFactory", account_type=OrgAdminType
     )
+
+
+class AVLComplianceCacheFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = AVLComplianceCache
+
+    dataset = factory.SubFactory(DatasetFactory)
+    status = UNDERGOING
