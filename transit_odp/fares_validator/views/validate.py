@@ -30,17 +30,22 @@ class FaresXmlValidator:
         file_obj = self.file
 
         fares_validator = fares_validation.get_fares_validator()
-        violations = fares_validator.get_violations(file_obj, self.pk1)
-        if violations and len(violations) > 0:
-            fares_violations = [
-                FaresValidation.save_observations(
-                    revision_id=self.pk2, org_id=self.pk1, violation=error
-                )
-                for error in violations
-            ]
+        raw_violations = fares_validator.get_violations(file_obj, self.pk1)
+        violations = []
+        [
+            violations.append(violation)
+            for violation in raw_violations
+            if violation not in violations
+        ]
+        if violations:
+            for violation in violations:
+                fares_violations = FaresValidation.save_observations(
+                        revision_id=self.pk2, org_id=self.pk1, violation=violation
+                    ).save()
+                
             FaresValidationResult.save_validation_result(
-                revision_id=self.pk2, org_id=self.pk1, violation=violations
-            )
+                revision_id=self.pk2, org_id=self.pk1, violations=violations
+            ).save()
 
             serializer = FaresSerializer(fares_violations, many=True)
             return JsonResponse(
