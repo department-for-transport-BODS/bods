@@ -37,12 +37,15 @@ class FaresXmlValidator:
             for violation in raw_violations
             if violation not in violations
         ]
-        logger.info(f"Revision {self.pk2} contains {len(violations)} fares violations.")
         if violations:
             for violation in violations:
-                fares_violations = FaresValidation.create_observations(
-                    revision_id=self.pk2, org_id=self.pk1, violation=violation
-                ).save()
+                fares_violations = FaresValidation.save_observations(
+                        revision_id=self.pk2, org_id=self.pk1, violation=violation
+                    ).save()
+                
+            FaresValidationResult.save_validation_result(
+                revision_id=self.pk2, org_id=self.pk1, violations=violations
+            ).save()
 
             serializer = FaresSerializer(fares_violations, many=True)
             response = JsonResponse(
