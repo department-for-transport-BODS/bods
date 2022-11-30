@@ -10,7 +10,6 @@ from . import fares_validation
 
 logger = logging.getLogger(__name__)
 type_of_observation = "Simple fares validation failure"
-category = ""  # Itr2 To be extratced from the xml path
 
 
 class FaresXmlValidator:
@@ -48,7 +47,7 @@ class FaresXmlValidator:
                     error_line_no=error.line,
                     error=error.observation,
                     type_of_observation=type_of_observation,
-                    category=category,
+                    category=error.category,
                 )
                 fares_validator_model_object.save()
 
