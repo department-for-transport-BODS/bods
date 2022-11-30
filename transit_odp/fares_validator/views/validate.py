@@ -39,13 +39,9 @@ class FaresXmlValidator:
         ]
         if violations:
             for violation in violations:
-                fares_violations = FaresValidation.save_observations(
+                fares_violations = FaresValidation.create_observations(
                     revision_id=self.pk2, org_id=self.pk1, violation=violation
                 ).save()
-
-            FaresValidationResult.save_validation_result(
-                revision_id=self.pk2, org_id=self.pk1, violations=violations
-            ).save()
 
             serializer = FaresSerializer(fares_violations, many=True)
             response = JsonResponse(
