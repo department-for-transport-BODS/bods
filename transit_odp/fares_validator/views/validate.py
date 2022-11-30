@@ -27,8 +27,8 @@ class FaresXmlValidator:
         return JsonResponse(serializer.data, safe=False)
 
     def set_errors(self):
+        response = ""
         file_obj = self.file
-
         fares_validator = fares_validation.get_fares_validator()
         raw_violations = fares_validator.get_violations(file_obj, self.pk1)
         violations = []
@@ -39,16 +39,19 @@ class FaresXmlValidator:
         ]
         if violations:
             for violation in violations:
-                fares_violations = FaresValidation.save_observations(
+                fares_violations = FaresValidation.create_observations(
                     revision_id=self.pk2, org_id=self.pk1, violation=violation
                 ).save()
 
-            FaresValidationResult.save_validation_result(
-                revision_id=self.pk2, org_id=self.pk1, violations=violations
-            ).save()
-
             serializer = FaresSerializer(fares_violations, many=True)
-            return JsonResponse(
+            response = JsonResponse(
                 serializer.data, safe=False, status=status.HTTP_201_CREATED
             )
-        return JsonResponse({}, status=status.HTTP_200_OK)
+        FaresValidationResult.create_validation_result(
+            revision_id=self.pk2, org_id=self.pk1, violations=violations
+        ).save()
+        return (
+            response
+            if response
+            else JsonResponse({}, safe=False, status=status.HTTP_200_OK)
+        )
