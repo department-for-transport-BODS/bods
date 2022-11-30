@@ -11,7 +11,7 @@ name: 'rerun_dev_deployment'
 defaults:
   run:
     working-directory: ./
-
+ 
 env:  
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: dev
