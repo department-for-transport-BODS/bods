@@ -20,6 +20,7 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -86,6 +87,7 @@ class FaresSearchView(BaseSearchView):
             .get_active_org()
             .add_organisation_name()
             .add_live_data()
+            .get_compliant_fares_validation()
             .order_by(*self.get_ordering())
         )
 
@@ -95,10 +97,42 @@ class FaresSearchView(BaseSearchView):
 
         return qs
 
-    def get_context_data(self, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context["status"] = True
-        return context
+    # def get_dataset_ids(self, object_list):
+    #     dataset_list = []
+    #     for obj in object_list:
+    #         dataset_list.append(obj.live_revision_id)
+
+    #     return dataset_list
+
+    # def get_results_ids(self, results):
+    #     result_list = []
+    #     for result in results:
+    #         result_list.append(result.revision_id)
+
+    #     return result_list
+
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     context = super().get_context_data(object_list=object_list, **kwargs)
+    #     results = FaresValidationResult.objects.all()
+    #     is_compliant_error_list = []
+    #     is_compliant_error = None
+
+    #     dataset_ids = self.get_dataset_ids(object_list)
+    #     results_ids = self.get_results_ids(results)
+
+    #     for dataset_id, result_id in zip(dataset_ids, results_ids):
+    #         if dataset_id == result_id:
+    #             for result in results:
+    #                 if result.is_compliant is False:
+    #                     is_compliant_error = True
+    #                 else:
+    #                     is_compliant_error = False
+    #                 is_compliant_error_list.append(is_compliant_error)
+    #                 print("compliant list", is_compliant_error_list)
+
+    #     context["is_compliant_error_list"] = is_compliant_error_list
+
+    #     return context
 
 
 class FaresDatasetDetailView(DetailView):
@@ -131,10 +165,17 @@ class FaresDatasetDetailView(DetailView):
         )
         kwargs["last_modified_username"] = last_modified_username
         kwargs["show_map"] = dataset.status in (EXPIRED, INACTIVE, LIVE)
-        kwargs["status"] = True
 
         kwargs["pk1"] = dataset.organisation_id
-        kwargs["pk2"] = dataset.id
+        kwargs["pk2"] = dataset.live_revision_id
+
+        results = FaresValidationResult.objects.get(
+            revision_id=dataset.live_revision_id
+        )
+        if results.is_compliant is False:
+            kwargs["is_compliant_error"] = True
+        else:
+            kwargs["is_compliant_error"] = False
 
         is_subscribed = None
         feed_api = None

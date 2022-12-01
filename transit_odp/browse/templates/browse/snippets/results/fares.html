@@ -27,18 +27,15 @@
         <span class="item__key">{% trans 'Last updated:' %}</span>
         <span class="item__value">{{ item.modified|date:"j M Y G:i:s" }}</span>
     </li>
-    {% if status %}
-        <li>
-            <span class="item__key">{% trans 'BODS compliant data:' %}</span>
+    <li>
+        <span class="item__key">{% trans 'BODS compliant data:' %}</span>
+        {% if item.compliant_error %}
             <div class="govuk-warning-text item__value govuk-!-margin-bottom-0" style="padding: 0px;">
                 <span class="govuk-warning-text__icon" aria-hidden="true" style="min-width: 20px; min-height: 20px; font-size: 15px; line-height: 15px; top: 7px;">!</span>
                 <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans 'Non compliant' %}</span>
             </div>
-        </li>
-    {% else %}
-        <li>
-            <span class="item__key">{% trans 'BODS compliant data:' %}</span>
+        {% else %}
             <span class="item__value">{% trans 'Compliant' %}</span>
-        </li>
-    {% endif %}
+        {% endif %}
+    </li>
 {% endblock %}
