@@ -5,6 +5,7 @@ from allauth.account.adapter import get_adapter
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import FormMixin
@@ -16,12 +17,13 @@ from config.hosts import ADMIN_HOST
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import RangeFilterContentMixin
 from transit_odp.organisation.forms.organisation_profile import NOCFormset
-from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models import Organisation, ServiceCodeExemption
 from transit_odp.site_admin.filters import OrganisationFilter
 from transit_odp.site_admin.forms import (
     BulkResendInvitesForm,
     OrganisationForm,
     OrganisationNameForm,
+    ServiceCodeExceptionsFormset,
 )
 from transit_odp.site_admin.tables import OrganisationTable
 from transit_odp.users.constants import AccountType, AgentUserType
@@ -140,6 +142,10 @@ class OrganisationArchiveView(SiteAdminViewMixin, UpdateView):
 class OrganisationCreateSuccessView(SiteAdminViewMixin, TemplateView):
     template_name = "site_admin/organisation_create_success.html"
 
+
+class OrganisationCreateSuccessInvitedView(SiteAdminViewMixin, TemplateView):
+    template_name = "site_admin/organisation_create_success_invited.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         invite_email = get_adapter(self.request).unstash_invite_email(self.request)
@@ -152,9 +158,14 @@ class OrganisationCreateView(SiteAdminViewMixin, CreateView):
     template_name = "site_admin/organisation_form.html"
     form_class = OrganisationNameForm
 
-    def get_success_url(self):
+    def get_success_url(self, invited: bool):
+        url_name = (
+            "users:create-organisation-success-invited"
+            if invited
+            else "users:create-organisation-success"
+        )
         return reverse(
-            "users:create-organisation-success",
+            url_name,
             host=ADMIN_HOST,
             args=[self.object.id],
         )
@@ -180,15 +191,16 @@ class OrganisationCreateView(SiteAdminViewMixin, CreateView):
                 noc_codes.save()
 
             self.stash_data(form)
-            invitation = Invitation.create(
-                inviter=self.request.user,
-                email=email,
-                account_type=AccountType.org_admin.value,
-                organisation=self.object,
-                is_key_contact=True,
-            )
-            invitation.send_invitation(self.request)
-        return HttpResponseRedirect(self.get_success_url())
+            if email:
+                invitation = Invitation.create(
+                    inviter=self.request.user,
+                    email=email,
+                    account_type=AccountType.org_admin.value,
+                    organisation=self.object,
+                    is_key_contact=True,
+                )
+                invitation.send_invitation(self.request)
+        return HttpResponseRedirect(self.get_success_url(email))
 
     def stash_data(self, form):
         """Stash valid data in session for subsequent view to unstash"""
@@ -218,17 +230,18 @@ class OrganisationDetailView(SiteAdminViewMixin, DetailView):
         timetables_created: int
 
     def get_queryset(self):
-        qs = (
+        return (
             super()
             .get_queryset()
             .prefetch_related("nocs")
+            .prefetch_related("licences")
+            .prefetch_related("licences__service_code_exemptions")
             .add_key_contact_email()
             .add_registration_complete()
             .add_last_active()
             .add_status()
             .add_published_dataset_count_types()
         )
-        return qs
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -237,16 +250,27 @@ class OrganisationDetailView(SiteAdminViewMixin, DetailView):
             organisation.users.filter(account_type=AgentUserType, is_active=True)
         )
         nocs = [code.noc for code in organisation.nocs.all()]
+        licences = list(organisation.licences.all())
+        service_code_exemptions = (
+            ServiceCodeExemption.objects.add_registration_number().filter(
+                licence__in=organisation.licences.all()
+            )
+        )
+
         properties = {
             "agents": agent_users,
             "avls_created": organisation.published_avl_count,
             "date_added": organisation.created,
             "fares_created": organisation.published_fares_count,
             "is_active": organisation.is_active,
-            "key_contact": organisation.key_contact_email,
+            "key_contact": organisation.key_contact_email
+            if organisation.key_contact_email is not None
+            else _("Key contact not assigned"),
             "last_active": organisation.last_active,
             "name": organisation.name,
             "nocs": nocs,
+            "licences": licences,
+            "service_code_exemptions": service_code_exemptions,
             "operator_id": organisation.id,
             "registration_complete": organisation.registration_complete,
             "short_name": organisation.short_name,
@@ -267,9 +291,11 @@ class OrganisationEditView(SiteAdminViewMixin, UpdateView):
     form_class = OrganisationForm
 
     def get_success_url(self):
+        if self.object.licence_not_required:
+            return self.get_cancel_url()
         org_id = self.kwargs.get("pk", None)
         return reverse(
-            "users:edit-organisation-success",
+            "users:service-code-exemptions-edit",
             kwargs={"pk": org_id},
             host=ADMIN_HOST,
         )
@@ -298,6 +324,48 @@ class OrganisationEditView(SiteAdminViewMixin, UpdateView):
         qs = super().get_queryset()
         qs.add_key_contact_email().add_registration_complete()
         return qs
+
+
+class ServiceCodeExemptionsEditView(SiteAdminViewMixin, UpdateView):
+    template_name = "site_admin/service_code_exemptions_edit.html"
+    model = Organisation
+    form_class = ServiceCodeExceptionsFormset
+
+    def get_success_url(self):
+        if self.request.POST.get("licence_required") == "on":
+            return self.get_cancel_url()
+        org_id = self.kwargs.get("pk", None)
+        return reverse(
+            "users:edit-organisation-success",
+            kwargs={"pk": org_id},
+            host=ADMIN_HOST,
+        )
+
+    def get_exemptions_queryset(self):
+        return ServiceCodeExemption.objects.select_related("licence").filter(
+            licence__organisation=self.object
+        )
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = None
+        kwargs["form_kwargs"] = {"user": self.request.user, "org": self.object}
+        kwargs["queryset"] = self.get_exemptions_queryset()
+        return kwargs
+
+    def get_cancel_url(self):
+        org_id = self.kwargs.get("pk", None)
+        return reverse(
+            "users:organisation-update",
+            kwargs={"pk": org_id},
+            host=ADMIN_HOST,
+        )
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data["formset"] = data["form"]
+        data["cancel_url"] = self.get_cancel_url()
+        return data
 
 
 class OrganisationListView(SiteAdminViewMixin, FilterView, SingleTableView, FormMixin):

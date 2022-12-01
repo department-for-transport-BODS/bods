@@ -24,12 +24,13 @@ class FeedStatus(ChoiceEnum):
         return (self == self.live) or (self == self.expiring) or (self == self.warning)
 
 
-PENDING = FeedStatus.pending.value
-EXPIRED = FeedStatus.expired.value
-LIVE = FeedStatus.live.value
-ERROR = FeedStatus.error.value
-INACTIVE = FeedStatus.inactive.value
 DELETED = FeedStatus.deleted.value
+DRAFT = FeedStatus.draft.value
+ERROR = FeedStatus.error.value
+EXPIRED = FeedStatus.expired.value
+INACTIVE = FeedStatus.inactive.value
+LIVE = FeedStatus.live.value
+PENDING = FeedStatus.pending.value
 SUCCESS = FeedStatus.success.value
 
 EXPIRY_NOTIFY_THRESHOLD = 30
@@ -98,6 +99,10 @@ PSV_LICENCE_ERROR_HINT_MESSAGE = (
     "zeros between the letters and numbers."
 )
 PSV_LICENCE_ERROR_MESSAGE = "Licence number entered with the wrong format"
+PSV_LICENCE_AND_CHECKBOX = (
+    "Enter a PSV licence number or check the box to confirm that there "
+    "is no PSV licence number for this organisation"
+)
 
 
 class TravelineRegions(TextChoices):
@@ -113,3 +118,17 @@ class TravelineRegions(TextChoices):
     WALES = ("W", _("Wales"))
     WEST_MIDLANDS = ("WM", _("West Midlands"))
     YORKSHIRE = ("Y", _("Yorkshire"))
+
+
+@enum.unique
+class OrganisationStatus(ChoiceEnum):
+    not_yet_invited = "Not yet invited"
+    pending_invite = "Pending invite"
+    active = "Active"
+    inactive = "Inactive"
+
+
+ORG_NOT_YET_INVITED = OrganisationStatus.not_yet_invited.value
+ORG_PENDING_INVITE = OrganisationStatus.pending_invite.value
+ORG_ACTIVE = OrganisationStatus.active.value
+ORG_INACTIVE = OrganisationStatus.inactive.value

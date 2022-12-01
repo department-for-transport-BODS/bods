@@ -8,6 +8,7 @@ from transit_odp.common.collections import Column
 from transit_odp.common.utils import round_down
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models.data import ServiceCodeExemption
 from transit_odp.otc.models import Service as OTCService
 
 TXC_COLUMNS = (
@@ -55,11 +56,12 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         "statuses": Column(
             "Service Statuses",
             "The publication status of the publisher’s data set on BODS. "
-            "'Registered/Unregistered' refers to their status of registration with "
-            "the OTC. 'Published/Unpublished' refers to if they have been published "
-            "on BODS. 'Missing data' refers to OTC data we haven't been able to "
-            "match to a BODS data set. 'Unassigned licence' refers to a data set that "
-            "we haven't been able to find the OTC.",
+            "'Registered/Unregistered' refers to their status of registration "
+            "with the OTC. 'Published/Unpublished' refers to if they have been "
+            "published on BODS. 'Missing data' refers to OTC data we haven't been "
+            "able to match to a BODS data set. 'Unassigned licence' refers to a data "
+            "set that we haven't been able to find the OTC. 'Out of scope' refers to "
+            "data deemed exempt from being reported on BODS by the DVSA/DfT Admin",
         ),
         "organisation_name": Column(
             "Organisation Name",
@@ -105,7 +107,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "public_use": Column(
             "Public Use Flag",
-            "The Public Use Fag element as extracted from the files provided by "
+            "The Public Use Flag element as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
         "operating_period_start_date": Column(
@@ -228,13 +230,42 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
 
 
 def add_status_column(df: pd.DataFrame) -> pd.DataFrame:
-    choices = ["Registered", "Unregistered", "Missing data", "Unassigned licence"]
+    choices = [
+        "Published (Out of scope)",
+        "Published (Registered)",
+        "Published (Unregistered)",
+        "Missing data",
+        "Unassigned licence",
+    ]
+
+    exempted_reg_numbers = (
+        ServiceCodeExemption.objects.add_registration_number()
+        .values_list("registration_number", flat=True)
+        .all()
+    )
+
+    registration_number_exempted = np.invert(pd.isna(df["dataset_id"])) & df[
+        "registration_number"
+    ].isin(exempted_reg_numbers)
+    exists_in_otc_and_bods = np.invert(pd.isna(df["dataset_id"])) & np.invert(
+        pd.isna(df["otc_licence_number"])
+    )
+    exists_in_bods_and_service_code_unregistered = np.invert(
+        pd.isna(df["dataset_id"])
+    ) & df["service_code"].str.startswith("UZ")
+    exists_in_otc_and_not_in_bods = pd.isna(df["dataset_id"]) & np.invert(
+        pd.isna(df["otc_licence_number"])
+    )
+    exists_in_bods_and_not_in_otc = np.invert(pd.isna(df["dataset_id"])) & pd.isna(
+        df["otc_licence_number"]
+    )
+
     conditions = [
-        np.invert(pd.isna(df["dataset_id"]))
-        & np.invert(pd.isna(df["otc_licence_number"])),
-        np.invert(pd.isna(df["dataset_id"])) & df["service_code"].str.startswith("UZ"),
-        pd.isna(df["dataset_id"]) & np.invert(pd.isna(df["otc_licence_number"])),
-        np.invert(pd.isna(df["dataset_id"])) & pd.isna(df["otc_licence_number"]),
+        registration_number_exempted,  # Published (Out of scope)
+        exists_in_otc_and_bods,  # Published (Registered)
+        exists_in_bods_and_service_code_unregistered,  # Published (Unregistered)
+        exists_in_otc_and_not_in_bods,  # Missing data
+        exists_in_bods_and_not_in_otc,  # Unassigned licence
     ]
 
     statuses = np.select(

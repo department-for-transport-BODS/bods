@@ -1,6 +1,6 @@
 from django.db import models
 
-from transit_odp.otc.querysets import LicenceQuerySet, ServiceQuerySet
+from transit_odp.otc.querysets import LicenceQuerySet, OperatorQuerySet, ServiceQuerySet
 
 
 class ServiceManager(models.Manager.from_queryset(ServiceQuerySet)):
@@ -8,4 +8,8 @@ class ServiceManager(models.Manager.from_queryset(ServiceQuerySet)):
 
 
 class LicenceManager(models.Manager.from_queryset(LicenceQuerySet)):
+    pass
+
+
+class OperatorManager(models.Manager.from_queryset(OperatorQuerySet)):
     pass

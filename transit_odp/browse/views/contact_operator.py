@@ -43,7 +43,9 @@ class ContactOperatorView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         client = get_notifications()
         response = super().form_valid(form)
-        org_users = self.organisation.users.filter(account_type=OrgAdminType)
+        org_users = self.organisation.users.filter(
+            account_type=OrgAdminType, is_active=True
+        )
         org_users_emails = [org_user["email"] for org_user in org_users.values()]
         developer_email = None if not self.object.consumer else self.request.user.email
         admins = User.objects.filter(account_type=SiteAdminType)

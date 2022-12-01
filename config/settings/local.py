@@ -38,10 +38,14 @@ ALLOWED_HOSTS = [
 # CACHES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
+CACHE_TIMEOUT = 60 * 55  # 55 minutes
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+        "TIMEOUT": CACHE_TIMEOUT,
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "cache",
     }
 }
 
@@ -135,34 +139,3 @@ SHELL_PLUS_IMPORTS = [
     ),
     "from transit_odp.avl.proxies import AVLDataset",
 ]
-
-LOG_LEVEL = env("DJANGO_LOG_LEVEL", default=None)
-
-if LOG_LEVEL:
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{levelname:8s} - {asctime:s} - {name:20s} || {message:s}",
-                "datefmt": "%Y-%m-%d %H:%M:%S",
-                "style": "{",
-            },
-            "simple": {
-                "format": "{levelname:8s} {message:s}",
-                "style": "{",
-            },
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "verbose",
-            },
-        },
-        "loggers": {
-            "root": {
-                "handlers": ["console"],
-                "level": LOG_LEVEL,
-            },
-        },
-    }

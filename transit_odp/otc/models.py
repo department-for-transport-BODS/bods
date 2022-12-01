@@ -6,18 +6,18 @@ from transit_odp.otc.constants import (
     SubsidiesDescription,
     TrafficAreas,
 )
-from transit_odp.otc.managers import LicenceManager, ServiceManager
-from transit_odp.otc.registry import Licence as RegistryLicence
-from transit_odp.otc.registry import Operator as RegistryOperator
-from transit_odp.otc.registry import Service as RegistryService
+from transit_odp.otc.dataclasses import Licence as RegistryLicence
+from transit_odp.otc.dataclasses import Operator as RegistryOperator
+from transit_odp.otc.dataclasses import Service as RegistryService
+from transit_odp.otc.managers import LicenceManager, OperatorManager, ServiceManager
 
 
 class Licence(models.Model):
-    granted_date = models.DateField()
-    expiry_date = models.DateField()
+    granted_date = models.DateField(null=True)
+    expiry_date = models.DateField(null=True)
     number = models.CharField(max_length=9, blank=False, null=False, unique=True)
     status = models.CharField(
-        choices=LicenceStatuses.choices, max_length=15, blank=True, null=False
+        choices=LicenceStatuses.choices, max_length=30, blank=True, null=False
     )
 
     objects = LicenceManager()
@@ -31,8 +31,10 @@ class Operator(models.Model):
     discs_in_possession = models.IntegerField(blank=False, null=True)
     authdiscs = models.IntegerField(blank=False, null=True)
     operator_id = models.IntegerField(unique=True, blank=False, null=False)
-    operator_name = models.CharField(max_length=100, blank=False, null=False)
+    operator_name = models.CharField(max_length=100, blank=True, null=False)
     address = models.TextField(blank=True, null=False)
+
+    objects = OperatorManager()
 
     @classmethod
     def from_registry_operator(cls, registry_operator: RegistryOperator):
@@ -52,8 +54,8 @@ class Service(models.Model):
     current_traffic_area = models.CharField(
         choices=TrafficAreas.choices, max_length=1, blank=True, null=False
     )
-    start_point = models.CharField(max_length=100, blank=True, null=False)
-    finish_point = models.CharField(max_length=100, blank=True, null=False)
+    start_point = models.TextField(blank=True, null=False)
+    finish_point = models.TextField(blank=True, null=False)
     via = models.TextField(blank=True, null=False)
     effective_date = models.DateField(null=True)
     received_date = models.DateField(null=True)
@@ -70,7 +72,8 @@ class Service(models.Model):
     subsidies_description = models.CharField(
         choices=SubsidiesDescription.choices, max_length=7, blank=True, null=False
     )
-    subsidies_details = models.CharField(max_length=100, blank=True, null=False)
+    subsidies_details = models.TextField(blank=True, null=False)
+    last_modified = models.DateTimeField(null=True)
 
     objects = ServiceManager()
 

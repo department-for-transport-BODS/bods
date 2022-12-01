@@ -25,8 +25,9 @@ API_LIST_URLS = [
 
 BULK_DOWNLOAD_URLS = [
     reverse_path("downloads-bulk", host=DATA_HOST),
+    reverse_path("gtfs-file-download", kwargs={"id": "all"}, host=DATA_HOST),
     reverse_path("downloads-avl-bulk", host=DATA_HOST),
-    reverse_path("download-gtfsrt-bulk", host=DATA_HOST),
+    reverse_path("download-gtfsrt-bulk", host=DATA_HOST),  # avl
     reverse_path("downloads-fares-bulk", host=DATA_HOST),
 ]
 
@@ -59,6 +60,7 @@ def get_bulk_downloads_map_df() -> pd.DataFrame:
         {
             "path_info": BULK_DOWNLOAD_URLS,
             "dataset_type_pretty": [
+                "Timetables",
                 "Timetables",
                 "Automatic Vehicle Locations",
                 "Automatic Vehicle Locations",

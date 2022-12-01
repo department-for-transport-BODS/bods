@@ -18,6 +18,7 @@ from transit_odp.avl.constants import (
 from transit_odp.avl.models import CAVLDataArchive
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.filters import AVLSearchFilter
+from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.views.base_views import BaseSearchView
 from transit_odp.browse.views.timetable_views import (
     DatasetSubscriptionBaseView,
@@ -51,7 +52,7 @@ class AVLSearchView(BaseSearchView):
             .get_published()
             .get_active_org()
             .add_organisation_name()
-            .add_avl_compliance_status()
+            .add_avl_compliance_status_cached()
             .add_live_data()
             .order_by(*self.get_ordering())
         )
@@ -73,10 +74,9 @@ class AVLDatasetDetailView(BaseDetailView):
             .get_queryset()
             .get_active_org()
             .get_published()
-            .add_avl_compliance_status()
+            .add_avl_compliance_status_cached()
             .add_admin_area_names()
             .add_live_data()
-            .add_avl_compliance_status()
             .select_related("live_revision")
         )
 
@@ -86,7 +86,7 @@ class AVLDatasetDetailView(BaseDetailView):
         dataset = self.object
         user = self.request.user
 
-        show_url = dataset.avl_compliance in (
+        show_url = dataset.avl_compliance_status_cached in (
             PARTIALLY_COMPLIANT,
             AWAITING_REVIEW,
             NON_COMPLIANT,
@@ -286,7 +286,9 @@ class AvlSubscriptionView(DatasetSubscriptionBaseView, UpdateView):
         return redirect(success_url)
 
 
-class AvlSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
+class AvlSubscriptionSuccessView(
+    DatasetPaginatorTable, DatasetSubscriptionBaseView, DetailView
+):
     template_name = "browse/avl/feed_subscription_success.html"
 
     def get_queryset(self):
@@ -312,14 +314,15 @@ class AvlSubscriptionSuccessView(DatasetSubscriptionBaseView, DetailView):
             )
 
     def get_back_button_text(self, previous_url):
-        if previous_url == reverse("users:feeds-manage", host=config.hosts.DATA_HOST):
+        sub_manage_url = reverse("users:feeds-manage", host=config.hosts.DATA_HOST)
+        if sub_manage_url in previous_url:
             return _("Go back to manage subscriptions")
         else:
             return _("Go back to data feed")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        back_url = self.get_back_url()
+        back_url = self._get_or_update_url(self.request.user, self.get_back_url())
         context.update(
             {
                 "subscribe": self.get_is_subscribed(),

@@ -7,6 +7,7 @@ from transit_odp.organisation.factories import DatasetFactory
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
     OrganisationFactory,
+    ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.otc.constants import FLEXIBLE_REG, SCHOOL_OR_WORKS
@@ -18,7 +19,7 @@ pytestmark = pytest.mark.django_db
 def test_queryset():
     licence_number1 = "PD000001"
     otc_lic1 = LicenceModelFactory(number=licence_number1)
-    service_code1 = f"{licence_number1}:001"
+    service_code1 = f"{licence_number1}:1"
     ServiceModelFactory(
         licence=otc_lic1,
         registration_number=service_code1,
@@ -32,23 +33,30 @@ def test_queryset():
 
     licence_number2 = "PA000002"
     otc_lic2 = LicenceModelFactory(number=licence_number2)
-    service_code2 = f"{licence_number2}:001"
-    service_code3 = f"{licence_number2}:002"
+    service_code2 = f"{licence_number2}:1"
+    service_code3 = f"{licence_number2}:2"
+    service_code6 = f"{licence_number2}:3"
     ServiceModelFactory(licence=otc_lic2, registration_number=service_code2)
     ServiceModelFactory(licence=otc_lic2, registration_number=service_code3)
+    ServiceModelFactory(licence=otc_lic2, registration_number=service_code6)
 
     licence_number3 = "PB000003"
     otc_lic3 = LicenceModelFactory(number=licence_number3)
-    service_code4 = f"{licence_number3}:001"
-    service_code5 = f"{licence_number3}:002"
+    service_code4 = f"{licence_number3}:1"
+    service_code5 = f"{licence_number3}:2"
     ServiceModelFactory(licence=otc_lic3, registration_number=service_code4)
     ServiceModelFactory(licence=otc_lic3, registration_number=service_code5)
 
     org1 = OrganisationFactory()
     BODSLicenceFactory(organisation=org1, number=licence_number1)
-    BODSLicenceFactory(organisation=org1, number=licence_number2)
+    bods_lic = BODSLicenceFactory(organisation=org1, number=licence_number2)
     org2 = OrganisationFactory()
     BODSLicenceFactory(organisation=org2, number=licence_number3)
+
+    # Published but exempted service codes shouldn't be included in response
+    ServiceCodeExemptionFactory(
+        licence=bods_lic, registration_code=int(service_code6.split(":")[1])
+    )
 
     expected_pairs_org1 = [
         (licence_number1, service_code1),

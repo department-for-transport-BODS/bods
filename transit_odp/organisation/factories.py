@@ -8,6 +8,7 @@ from django.utils import timezone
 from factory.django import DjangoModelFactory
 from freezegun import freeze_time
 
+from transit_odp.avl.constants import UNDERGOING
 from transit_odp.organisation.constants import (
     AVLType,
     FaresType,
@@ -15,6 +16,7 @@ from transit_odp.organisation.constants import (
     TimetableType,
 )
 from transit_odp.organisation.models import (
+    AVLComplianceCache,
     ConsumerFeedback,
     Dataset,
     DatasetMetadata,
@@ -23,9 +25,10 @@ from transit_odp.organisation.models import (
     Licence,
     OperatorCode,
     Organisation,
+    ServiceCodeExemption,
     TXCFileAttributes,
 )
-from transit_odp.users.constants import DeveloperType
+from transit_odp.users.constants import DeveloperType, OrgAdminType
 
 FAKER = faker.Faker()
 
@@ -64,6 +67,25 @@ class OrganisationFactory(factory.django.DjangoModelFactory):
             for noc in extracted:
                 OperatorCodeFactory(organisation=obj, noc=noc)
 
+    @factory.post_generation
+    def licences(obj, create, extracted: Union[int, List[str]] = None, **kwargs):
+        """
+        Examples:
+            1. OrganisationFactory() => creates no licences
+            2. OrganisationFactory(licences=['PS0000001', 'PS0000002') => creates two
+                licences with the specified numbers
+            3. OrganisationFactory(licences=4)  => creates four random licences
+        """
+        if not create:
+            return
+
+        if isinstance(extracted, int):
+            for i in range(extracted):
+                LicenceFactory(organisation=obj)
+        elif isinstance(extracted, list):
+            for li in extracted:
+                LicenceFactory(organisation=obj, number=li)
+
 
 class OperatorCodeFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -93,6 +115,9 @@ class DatasetFactory(factory.django.DjangoModelFactory):
     # parent Dataset
     live_revision = factory.RelatedFactory(
         "transit_odp.organisation.factories.DatasetRevisionFactory", "dataset"
+    )
+    avl_compliance_cached = factory.RelatedFactory(
+        "transit_odp.organisation.factories.AVLComplianceCacheFactory", "dataset"
     )
 
     @factory.post_generation
@@ -249,3 +274,23 @@ class ConsumerFeedbackFactory(factory.django.DjangoModelFactory):
     dataset = factory.SubFactory(DatasetFactory)
     feedback = factory.Faker("sentence", nb_words=10)
     organisation = factory.SubFactory(OrganisationFactory)
+
+
+class ServiceCodeExemptionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ServiceCodeExemption
+
+    licence = factory.SubFactory(LicenceFactory)
+    registration_code = factory.Faker("pyint", min_value=1, max_value=4000)
+    justification = factory.Faker("text", max_nb_chars=50)
+    exempted_by = factory.SubFactory(
+        "transit_odp.users.factories.UserFactory", account_type=OrgAdminType
+    )
+
+
+class AVLComplianceCacheFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = AVLComplianceCache
+
+    dataset = factory.SubFactory(DatasetFactory)
+    status = UNDERGOING

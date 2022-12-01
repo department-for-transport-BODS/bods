@@ -99,10 +99,11 @@ def task_backfill_metrics_archive():
     Backfills all the previous months MetricArchive's.
     """
     requests = APIRequest.objects.order_by("id")
-    first_created = requests.first().created
-    last_created = requests.last().created
+    first_created = timezone.localtime(requests.first().created)
+    last_created = timezone.localtime(requests.last().created)
 
     start = first_created.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
     while start < last_created:
         end = (start + relativedelta(months=1)) - timedelta(seconds=1)
         logger.info(

@@ -88,6 +88,16 @@ class CeleryAppConfig(AppConfig):
                 "task": PIPELINE_TASKS + "task_dqs_monitor",
                 "schedule": 60.0,
             },
+            "update_bods_xsd_zip_files": {
+                "task": PIPELINE_TASKS + "task_update_xsd_zip_cache",
+                "schedule": crontab(
+                    minute=0,
+                    hour=0,
+                    day_of_month=1,
+                    month_of_year="*/3",
+                    day_of_week="*",
+                ),
+            },
             "monitor_avl_feeds": {
                 "task": AVL_TASKS + "task_monitor_avl_feeds",
                 "schedule": 30.0,
@@ -134,7 +144,7 @@ class CeleryAppConfig(AppConfig):
             },
             "update_otc_data": {
                 "task": OTC_TASKS + "task_refresh_otc_data",
-                "schedule": crontab(minute=0, hour=2),
+                "schedule": crontab(minute=30, hour=23),
             },
             "refresh_monthly_breakdown_csv": {
                 "task": PUBLISH_TASKS
@@ -144,5 +154,10 @@ class CeleryAppConfig(AppConfig):
             "refresh_weekly_consumer_interactions_stats": {
                 "task": PUBLISH_TASKS + "task_generate_consumer_interaction_stats",
                 "schedule": crontab(minute=55),
+            },
+            "weekly_post_publishing_checks_report": {
+                "task": AVL_TASKS
+                + "task_weekly_assimilate_post_publishing_check_reports",
+                "schedule": crontab(day_of_week=0, hour=23, minute=0),
             },
         }

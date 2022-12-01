@@ -3,11 +3,13 @@ from django.views.generic import RedirectView
 
 from transit_odp.site_admin.views import (
     BulkResendInviteView,
+    InviteFirstView,
     InviteSuccessView,
     InviteView,
     OrganisationArchiveSuccessView,
     OrganisationArchiveView,
     OrganisationAVLListView,
+    OrganisationCreateSuccessInvitedView,
     OrganisationCreateSuccessView,
     OrganisationCreateView,
     OrganisationDetailView,
@@ -32,6 +34,7 @@ from transit_odp.site_admin.views import (
     UserIsActiveView,
 )
 from transit_odp.site_admin.views.invites import BulkInviteSuccessView
+from transit_odp.site_admin.views.organisations import ServiceCodeExemptionsEditView
 
 _agent_invite_paths = [
     path(
@@ -162,6 +165,18 @@ _user_paths = [
             ]
         ),
     ),
+    path(
+        "invite-first/",
+        include(
+            [
+                path(
+                    "",
+                    view=InviteFirstView.as_view(),
+                    name="org-user-invite-first",
+                ),
+            ]
+        ),
+    ),
 ]
 
 _organisation_paths = [
@@ -180,6 +195,11 @@ _organisation_paths = [
                     "",
                     view=OrganisationEditView.as_view(),
                     name="organisation-update",
+                ),
+                path(
+                    "service-code-exemptions",
+                    view=ServiceCodeExemptionsEditView.as_view(),
+                    name="service-code-exemptions-edit",
                 ),
                 path(
                     "success/",
@@ -227,6 +247,11 @@ _organisation_paths = [
         "success/",
         view=OrganisationCreateSuccessView.as_view(),
         name="create-organisation-success",
+    ),
+    path(
+        "success-invited/",
+        view=OrganisationCreateSuccessInvitedView.as_view(),
+        name="create-organisation-success-invited",
     ),
     path(
         "timetables/",

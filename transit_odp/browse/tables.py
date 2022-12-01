@@ -1,11 +1,16 @@
 import django_tables2 as tables
 import pytz
+from django.core.paginator import Paginator
+from django.utils.functional import LazyObject
 from django.utils.html import format_html
 from django_hosts.resolvers import reverse
 
+import config
 from transit_odp.common.tables import GovUkTable, TruncatedTextColumn
 from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models.data import Dataset
 from transit_odp.organisation.tables import FeedStatusColumn
+from transit_odp.users.constants import DATASET_MANAGE_TABLE_PAGINATE_BY
 
 
 def get_absolute_url(record):
@@ -130,3 +135,30 @@ class DatasetSubscriptionTable(GovUkTable):
 
     def render_action(self, value):
         return "Unsubscribe"
+
+
+class DatasetPaginatorTable:
+    """When 'unsubscribe' event is triggered this delete the row in the
+    Dataset, but the `back_url` has not been updated, this could
+    cause an 404 error.
+
+    BUG: https://itoworld.atlassian.net/browse/BODP-5498
+
+    Update the number of page, according with the Dataset, using the
+    class Paginator.
+
+    """
+
+    def _get_paginator(self, user: LazyObject) -> Paginator:
+        datasets = Dataset.objects.filter(subscribers=user).add_live_data()
+        return Paginator(datasets, DATASET_MANAGE_TABLE_PAGINATE_BY)
+
+    def _get_or_update_url(self, user: LazyObject, url: str = "") -> str:
+        sub_manage_url = reverse("users:feeds-manage", host=config.hosts.DATA_HOST)
+        if sub_manage_url in url:
+            paginator = self._get_paginator(user)
+            return (
+                reverse("users:feeds-manage", host=config.hosts.DATA_HOST)
+                + f"?page={paginator.num_pages}&"
+            )
+        return url

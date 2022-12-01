@@ -65,7 +65,7 @@ class AVLSearchFilter(filters.FilterSet):
         ),
     )
 
-    avl_compliance = filters.ChoiceFilter(
+    avl_compliance_status_cached = filters.ChoiceFilter(
         choices=(
             (UNDERGOING, UNDERGOING),
             (PARTIALLY_COMPLIANT, PARTIALLY_COMPLIANT),

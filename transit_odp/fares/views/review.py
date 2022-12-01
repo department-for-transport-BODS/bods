@@ -8,11 +8,13 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import DatasetMetadata, DatasetRevision
 from transit_odp.pipelines.models import DatasetETLTaskResult
@@ -89,6 +91,38 @@ class ReviewView(ReviewBaseView):
 
         return error_message
 
+    def get_upload_file(self, revision_id):
+        revision = DatasetRevision.objects.get(id=revision_id)
+        upload_file = revision.upload_file
+        return upload_file
+
+    def set_validator_error(self, revision_id):
+        upload_file = self.get_upload_file(revision_id)
+
+        fares_validator_obj = FaresXmlValidator(
+            upload_file, self.kwargs["pk1"], revision_id
+        )
+        fares_validator_response = fares_validator_obj.set_errors()
+
+        if fares_validator_response.status_code == 201:
+            return True
+        return False
+
+    def get_validator_error(self, revision_id):
+        upload_file = self.get_upload_file(revision_id)
+
+        fares_validator_obj = FaresXmlValidator(
+            upload_file, self.kwargs["pk1"], revision_id
+        )
+        fares_validator_errors = fares_validator_obj.get_errors()
+        fares_validator_errors_list = fares_validator_errors.content.decode(
+            "utf8"
+        ).replace("'", '"')
+
+        if fares_validator_errors_list == "[]":
+            return False
+        return True
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         revision = self.object
@@ -101,6 +135,22 @@ class ReviewView(ReviewBaseView):
 
         # Get the error info
         context["error"] = self.get_error()
+
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            # Get the fares-validator error info
+            if (
+                not is_loading
+                and context["error"] is None
+                and not self.get_validator_error(revision.id)
+            ):
+                context["validator_error"] = self.set_validator_error(revision.id)
+            else:
+                context["validator_error"] = self.get_validator_error(revision.id)
+
+            context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 

@@ -61,7 +61,6 @@ class GovUKNotifyEmail(NotificationBase):
             ),
             "OPERATOR_DATA_CHANGED": "0d64bbb3-2959-4670-871d-2077d8504f53",
             "AGENT_DATA_CHANGED": "9a6a7ac6-3f2c-4541-8fa8-5325ee05e151",
-            "OPERATOR_EXPIRED_NOTIFICATION": "0bb32cd4-27ab-4fcc-bc94-a5cf9689d7d6",
             "AGENT_INVITE_ACCEPTED": "d5ddb8c7-6ef0-42f3-9333-50aa28f2778f",
             "AGENT_INVITE_EXISTING_ACCOUNT": "ea06ebdf-f5ed-46ba-a094-ef42f2afe21a",
             "AGENT_INVITE_NEW_ACCOUNT": "8866bc7b-5684-45b7-85fb-c300fc939827",

@@ -17,7 +17,9 @@ from transit_odp.organisation.constants import DatasetType, FaresType, Timetable
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     DatasetRevisionFactory,
+    LicenceFactory,
     OrganisationFactory,
+    ServiceCodeExemptionFactory,
 )
 from transit_odp.site_admin.csv.dailyaggregates import (
     get_daily_aggregates_csv,
@@ -31,6 +33,7 @@ from transit_odp.site_admin.exports import (
     OperationalStatsCSV,
     PublisherCSV,
     RawConsumerRequestCSV,
+    ServiceCodeExemptionsCSV,
     WebsiteFeedbackCSV,
     create_metrics_archive,
     pretty_account_name,
@@ -614,3 +617,87 @@ class TestWebsiteFeedbackCSV:
         ratings = [s.label for s in SatisfactionRating]
         for i in range(1, num_rows + 1):
             assert lines[i][1] in ratings
+
+
+class TestServiceCodeExemptionsCSV:
+    def test_headers(self):
+        exemptions_csv = ServiceCodeExemptionsCSV()
+        csv_file = io.StringIO(exemptions_csv.to_string())
+        reader = csv.reader(csv_file.getvalue().splitlines())
+        lines = list(reader)
+        header = lines[0]
+        expected_header = [
+            "Organisation",
+            "Licence Number",
+            "Service Code",
+            "Justification",
+            "Date of exemption",
+            "Exempted by",
+        ]
+        assert header == expected_header
+
+    @freeze_time("2022-10-31 10:11:12.123456")
+    def test_single_row(self):
+        org = OrganisationFactory()
+        lic = LicenceFactory(organisation=org)
+        user = UserFactory(organisations=(org,))
+        exemption = ServiceCodeExemptionFactory(licence=lic, exempted_by=user)
+
+        exemptions_csv = ServiceCodeExemptionsCSV()
+        csv_file = io.StringIO(exemptions_csv.to_string())
+        reader = csv.reader(csv_file.getvalue().splitlines())
+        lines = list(reader)
+
+        assert len(lines) == 2
+        data = lines[1]
+        assert len(data) == 6
+        assert data[0] == org.name
+        assert data[1] == lic.number
+        assert data[2] == lic.number + "/" + str(exemption.registration_code)
+        assert data[3] == exemption.justification
+        assert data[4] == "2022-10-31 10:11:12.123456+00:00"
+        assert data[5] == user.email
+
+    def test_ordering(self):
+        org1_name = "ORGB"
+        org1 = OrganisationFactory(name=org1_name)
+        user1 = UserFactory(organisations=(org1,))
+        org1_lic1 = LicenceFactory(organisation=org1, number="PS000001")
+        org1_lic2 = LicenceFactory(organisation=org1, number="PA000001")
+        service_codes_org1 = [(org1_lic1, 1), (org1_lic2, 1), (org1_lic2, 2)]
+        for lic, code in service_codes_org1:
+            ServiceCodeExemptionFactory(
+                licence=lic,
+                exempted_by=user1,
+                registration_code=code,
+            )
+
+        org2_name = "ORGA"
+        org2 = OrganisationFactory(name=org2_name)
+        user2 = UserFactory(organisations=(org2,))
+        org2_lic1 = LicenceFactory(organisation=org2, number="PS000002")
+        service_codes_org2 = [(org2_lic1, 150), (org2_lic1, 19)]
+        for lic, code in service_codes_org2:
+            ServiceCodeExemptionFactory(
+                licence=lic,
+                exempted_by=user2,
+                registration_code=code,
+            )
+
+        exemptions_csv = ServiceCodeExemptionsCSV()
+        csv_file = io.StringIO(exemptions_csv.to_string())
+        reader = csv.reader(csv_file.getvalue().splitlines())
+        lines = list(reader)
+
+        assert len(lines) == 6
+        assert lines[1][0] == org2_name
+        assert lines[2][0] == org2_name
+        assert lines[3][0] == org1_name
+        assert lines[4][0] == org1_name
+        assert lines[5][0] == org1_name
+
+        assert lines[1][2] == "PS000002/19"
+        assert lines[2][2] == "PS000002/150"
+        assert lines[3][2] == "PA000001/1"
+        assert lines[4][2] == "PA000001/2"
+        assert lines[5][2] == "PS000001/1"

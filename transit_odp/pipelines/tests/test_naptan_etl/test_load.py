@@ -36,6 +36,7 @@ class TestNaptanLoad(TestCase):
                     "admin_area_id": 9,
                     "latitude": "51.4843326109",
                     "longitude": "-2.51701423067",
+                    "stop_areas": ["stop1"],
                 },
             ]
         ).set_index("atco_code")
@@ -54,6 +55,7 @@ class TestNaptanLoad(TestCase):
         self.assertEqual(created_stop.street, "Downend Road")
         self.assertEqual(created_stop.locality_id, "E0035604")
         self.assertEqual(created_stop.admin_area_id, 9)
+        self.assertEqual(created_stop.stop_areas, ["stop1"])
         self.assertEqual(
             created_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),
@@ -68,6 +70,7 @@ class TestNaptanLoad(TestCase):
             locality=locality,
             atco_code="010000001",
             common_name="TestName1",
+            stop_areas=[],
         )
         existing_stops = pd.DataFrame(
             [
@@ -81,6 +84,7 @@ class TestNaptanLoad(TestCase):
                     "admin_area_id": 9,
                     "latitude": "51.4843326109",
                     "longitude": "-2.51701423067",
+                    "stop_areas": ["stop1"],
                     "obj": stop,
                 },
             ]
@@ -100,6 +104,7 @@ class TestNaptanLoad(TestCase):
         self.assertEqual(updated_stop.street, "Downend Road")
         self.assertEqual(updated_stop.locality_id, "E0035604")
         self.assertEqual(updated_stop.admin_area_id, 9)
+        self.assertEqual(updated_stop.stop_areas, ["stop1"])
         self.assertEqual(
             updated_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),

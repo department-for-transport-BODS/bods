@@ -2,7 +2,7 @@ import io
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -40,10 +40,12 @@ from transit_odp.avl.notifications import (
     send_avl_schema_check_fail,
     send_avl_status_changed_notification,
 )
+from transit_odp.avl.post_publishing_checks.checker import PostPublishingChecker
+from transit_odp.avl.post_publishing_checks.reports.weekly import WeeklyReport
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.validation import get_validation_client
 from transit_odp.bods.interfaces.plugins import get_cavl_service
-from transit_odp.common.loggers import get_datafeed_adapter
+from transit_odp.common.loggers import PipelineAdapter, get_datafeed_adapter
 from transit_odp.organisation.constants import (
     AVLFeedDeploying,
     AVLFeedDown,
@@ -51,7 +53,12 @@ from transit_odp.organisation.constants import (
     AVLType,
     FeedStatus,
 )
-from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
+from transit_odp.organisation.models import (
+    AVLComplianceCache,
+    Dataset,
+    DatasetMetadata,
+    DatasetRevision,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -233,6 +240,20 @@ def task_run_avl_validations():
 @shared_task()
 def task_run_feed_validation(feed_id: int):
     adapter = get_datafeed_adapter(logger, feed_id)
+    perform_feed_validation(adapter, feed_id)
+    cache_avl_compliance_status(adapter, feed_id)
+
+
+@shared_task()
+def task_cache_avl_compliance_status():
+    feeds = AVLDataset.objects.get_datafeeds_to_validate()
+    logger.info(f"Cache AVL compliance status for {feeds.count()} feeds")
+    for feed in feeds:
+        adapter = get_datafeed_adapter(logger, feed.id)
+        cache_avl_compliance_status(adapter, feed.id)
+
+
+def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
     client = get_validation_client()
 
     adapter.info("Validating feed against SIRI-VM schema.")
@@ -305,3 +326,34 @@ def task_run_feed_validation(feed_id: int):
         if send_email:
             adapter.info("Sending requires resolution email.")
             send_avl_report_requires_resolution_notification(dataset=feed)
+
+
+def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):
+    adapter.info(
+        f"Recalculating and caching AVL feed compliance status for feed id {feed_id}"
+    )
+    avl_dataset = (
+        AVLDataset.objects.filter(id=feed_id).add_avl_compliance_status().first()
+    )
+    avl_compliance = AVLComplianceCache.objects.get_or_create(dataset_id=feed_id)[0]
+    avl_compliance.status = avl_dataset.avl_compliance
+    avl_compliance.save()
+
+
+@shared_task()
+def task_daily_post_publishing_checks(feed_id: int, num_activities: int = 20):
+    if settings.FEATURE_PPC_ENABLED:
+        logger.info(f"Perform daily post publishing checks for AVL feed ID {feed_id}")
+        checker = PostPublishingChecker()
+        checker.perform_checks(feed_id, num_activities)
+
+
+@shared_task()
+def task_weekly_assimilate_post_publishing_check_reports(
+    start_date: str = None,
+):
+    if settings.FEATURE_PPC_ENABLED:
+        start_date = date.today() if not start_date else date.fromisoformat(start_date)
+
+        report = WeeklyReport(start_date)
+        report.generate()

@@ -1,7 +1,7 @@
 import json
 import re
 import uuid
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from http import HTTPStatus
 from unittest.mock import MagicMock, Mock, patch
 
@@ -25,6 +25,7 @@ from transit_odp.avl.tasks import (
     task_monitor_avl_feeds,
     task_run_feed_validation,
     task_validate_avl_feed,
+    task_weekly_assimilate_post_publishing_check_reports,
 )
 from transit_odp.avl.validation.factories import (
     SchemaErrorFactory,
@@ -658,3 +659,18 @@ def test_send_schema_fails_with_502_bad_gateway(get_client, mailoutbox, **kwargs
     assert AVLSchemaValidationReport.objects.count() == 0
     assert revision.status == LIVE
     assert len(mailoutbox) == 0
+
+
+@freeze_time("2022-05-25")
+@pytest.mark.parametrize(
+    "start_date,expected_date",
+    [("2022-05-24", date(2022, 5, 24)), (None, date(2022, 5, 25))],
+)
+@patch("transit_odp.avl.tasks.WeeklyReport")
+def test_weekly_ppc_report_started_with_correct_date(
+    weekly_report_mock: Mock, start_date: str, expected_date: date
+):
+    if settings.FEATURE_PPC_ENABLED:
+        task_weekly_assimilate_post_publishing_check_reports(start_date)
+
+        weekly_report_mock.assert_called_once_with(expected_date)

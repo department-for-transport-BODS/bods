@@ -144,6 +144,7 @@ THIRD_PARTY_APPS = [
     "formtools",
     "django_celery_beat",
     "django_celery_results",
+    "waffle",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -168,6 +169,7 @@ LOCAL_APPS = [
     "transit_odp.transmodel.apps.TransmodelConfig",
     "transit_odp.users.apps.UsersAppConfig",
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
+    "transit_odp.fares_validator.apps.FaresValidatorConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -237,6 +239,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django_hosts.middleware.HostsResponseMiddleware",
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
+    "waffle.middleware.WaffleMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
 ]
 
@@ -435,10 +438,12 @@ INVITATIONS_EMAIL_SUBJECT_PREFIX = env.bool(
 )
 INVITATION_MODEL = "users.Invitation"
 INVITATIONS_INVITATION_MODEL = (
-    INVITATION_MODEL  # invitations settings are not used self-consistently
+    INVITATION_MODEL  # invitations settings are not used self-consisten    tly
 )
 INVITATIONS_ADMIN_ADD_FORM = "transit_odp.users.forms.admin.InvitationAdminAddForm"
-INVITATIONS_INVITE_FORM = "transit_odp.organisation.forms.management.InvitationForm"
+INVITATIONS_INVITE_FORM = (
+    "transit_odp.organisation.forms.management.InvitationSubsequentForm"
+)
 # If we need to provide different invitation forms for different views,  we could override SendInvite view in urls.py
 # rather than this static setting
 INVITATIONS_ACCEPT_INVITE_AFTER_SIGNUP = True
@@ -526,8 +531,20 @@ ITO_GTFS_AWS_REGION = env("DJANGO_ITO_GTFS_AWS_REGION", default="eu-west-2")
 
 # TxC Schema
 # ------------------------------------------------------------------------------
-TXC_BASE_URL = env("TXC_BASE_URL", default="http://www.transxchange.org.uk")
-TXC_V24_OVERRIDE = env("TXC_V24_OVERRIDE", default=None)
+TXC_SCHEMA_ZIP_URL = env(
+    "TXC_SCHEMA_ZIP_URL",
+    default="http://www.transxchange.org.uk/schema/2.4/TransXChange_schema_2.4.zip",
+)
+TXC_XSD_PATH = env("TXC_XSD_PATH", default="TransXChange_general.xsd")
+
+
+# NeTeX Schema
+# ------------------------------------------------------------------------------
+NETEX_SCHEMA_ZIP_URL = env(
+    "NETEX_SCHEMA_ZIP_URL",
+    default="http://netex.uk/netex/schema/1.09c/NeTEx_Xml-v1.09c_2019.05.17.zip",
+)
+NETEX_XSD_PATH = env("NETEX_XSD_PATH", default="xsd/NeTEx_publication.xsd")
 
 # PTI
 # ------------------------------------------------------------------------------
@@ -541,6 +558,23 @@ PTI_PDF_URL = env(
     "PTI_PDF_URL",
     default="https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf",
 )
+
+# Microsoft Auth
+# ------------------------------------------------------------------------------
+MS_TENANT_ID = env("MS_TENANT_ID", default="")
+MS_LOGIN_URL = env("MS_LOGIN_URL", default="https://login.microsoftonline.com")
+MS_CLIENT_ID = env("MS_CLIENT_ID", default="")
+MS_SCOPE = env(
+    "MS_SCOPE", default=f"https://DVSAUK.onmicrosoft.com/{MS_CLIENT_ID}/.default"
+)
+
+# OTC API
+# ------------------------------------------------------------------------------
+OTC_CLIENT_SECRET = env("OTC_CLIENT_SECRET", default="")
+OTC_API_URL = env(
+    "OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice"
+)
+OTC_API_KEY = env("OTC_API_KEY", default="")
 
 # Crispy forms
 # ------------------------------------------------------------------------------
@@ -570,3 +604,38 @@ CRISPY_CLASS_CONVERTERS = {
     "radioinput": "govuk-radios__input ",
     # 'button': "govuk-button ",
 }
+
+# Post Publishing Checks
+# ------------------------------------------------------------------------------
+FEATURE_PPC_ENABLED = env.bool("FEATURE_PPC_ENABLED", default=False)
+
+LOG_LEVEL = env("DJANGO_LOG_LEVEL", default=None)
+
+if LOG_LEVEL:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname:8s} - {asctime:s} - {name:20s} || {message:s}",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+                "style": "{",
+            },
+            "simple": {
+                "format": "{levelname:8s} {message:s}",
+                "style": "{",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+            },
+        },
+        "loggers": {
+            "root": {
+                "handlers": ["console"],
+                "level": LOG_LEVEL,
+            },
+        },
+    }
