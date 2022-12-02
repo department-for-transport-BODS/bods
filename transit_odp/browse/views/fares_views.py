@@ -97,43 +97,6 @@ class FaresSearchView(BaseSearchView):
 
         return qs
 
-    # def get_dataset_ids(self, object_list):
-    #     dataset_list = []
-    #     for obj in object_list:
-    #         dataset_list.append(obj.live_revision_id)
-
-    #     return dataset_list
-
-    # def get_results_ids(self, results):
-    #     result_list = []
-    #     for result in results:
-    #         result_list.append(result.revision_id)
-
-    #     return result_list
-
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context = super().get_context_data(object_list=object_list, **kwargs)
-    #     results = FaresValidationResult.objects.all()
-    #     is_compliant_error_list = []
-    #     is_compliant_error = None
-
-    #     dataset_ids = self.get_dataset_ids(object_list)
-    #     results_ids = self.get_results_ids(results)
-
-    #     for dataset_id, result_id in zip(dataset_ids, results_ids):
-    #         if dataset_id == result_id:
-    #             for result in results:
-    #                 if result.is_compliant is False:
-    #                     is_compliant_error = True
-    #                 else:
-    #                     is_compliant_error = False
-    #                 is_compliant_error_list.append(is_compliant_error)
-    #                 print("compliant list", is_compliant_error_list)
-
-    #     context["is_compliant_error_list"] = is_compliant_error_list
-
-    #     return context
-
 
 class FaresDatasetDetailView(DetailView):
     template_name = "browse/fares/feed_detail/index.html"

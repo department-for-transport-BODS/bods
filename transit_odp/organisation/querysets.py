@@ -835,6 +835,31 @@ class DatasetQuerySet(models.QuerySet):
     def filter_pti_compliant(self):
         return self.add_is_live_pti_compliant().filter(is_pti_compliant=True)
 
+    # def add_is_fares_validation_compliant(self):
+    #     return (
+    #         self.get_compliant_fares_validation()
+    #         .annotate(
+    #             is_bods_compliance=Case(
+    #                 When(
+    #                     Q(is_fares_compliant=True), then=False,
+    #                 ),
+    #                 When(
+    #                     Q(is_fares_compliant=False), then=True,
+    #                 ),
+    #                 default=None,
+    #                 output_field=BooleanField(),
+    #             ),
+    #         )
+    #     )
+
+    # def filter_fares_bods_compliance(self):
+    #     return self.add_is_fares_validation_compliant().filter(is_bods_compliance=True)
+
+    def filter_compliant_fares(self):
+        # exclude_status = [FeedStatus.noncompliant.value]
+        qs = self.get_compliant_fares_validation().filter(is_fares_compliant=True)
+        return qs
+
     def get_compliant_timetables(self):
         qs = (
             self.get_active_org()
@@ -844,6 +869,16 @@ class DatasetQuerySet(models.QuerySet):
             .filter_pti_compliant()
         )
         return qs
+
+    def get_compliant_fares_validation(self):
+        non_zero_count = Q(live_revision__fares_validation_result__count=0)
+        return self.annotate(
+            is_fares_complaint=Case(
+                When(non_zero_count, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
 
     def get_overall_data_catalogue_annotations(self):
         return (

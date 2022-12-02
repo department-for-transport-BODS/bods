@@ -29,13 +29,13 @@
     </li>
     <li>
         <span class="item__key">{% trans 'BODS compliant data:' %}</span>
-        {% if item.compliant_error %}
+        {% if item.is_fares_complaint %}
+            <span class="item__value">{% trans 'Compliant' %}</span>
+        {% else %}
             <div class="govuk-warning-text item__value govuk-!-margin-bottom-0" style="padding: 0px;">
                 <span class="govuk-warning-text__icon" aria-hidden="true" style="min-width: 20px; min-height: 20px; font-size: 15px; line-height: 15px; top: 7px;">!</span>
                 <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans 'Non compliant' %}</span>
             </div>
-        {% else %}
-            <span class="item__value">{% trans 'Compliant' %}</span>
         {% endif %}
     </li>
 {% endblock %}

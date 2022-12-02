@@ -182,13 +182,17 @@ class FaresSearchFilterForm(GOVUKForm):
         required=False,
     )
 
-    bods_compliance = forms.ChoiceField(
+    # is_bods_compliance = forms.NullBooleanField(
+    #     required=False,
+    #     label=_("BODS compliance"),
+    # )
+    is_bods_compliance = forms.ChoiceField(
         choices=(
             ("", "All statuses"),
             (FeedStatus.compliant.value, "Compliant"),
             (FeedStatus.noncompliant.value, "Non compliant"),
-            # Ask about 'Undergoing validation' status
         ),
+        label=_("BODS compliance"),
         required=False,
     )
 
@@ -203,7 +207,7 @@ class FaresSearchFilterForm(GOVUKForm):
             Field("area", css_class="govuk-!-width-full"),
             Field("organisation", css_class="govuk-!-width-full"),
             Field("status", css_class="govuk-!-width-full"),
-            Field("bods_compliance", css_class="govuk-!-width-full"),
+            Field("is_bods_compliance", css_class="govuk-!-width-full"),
             ButtonSubmit("submitform", "submit", content=_("Apply filter")),
         )
 
