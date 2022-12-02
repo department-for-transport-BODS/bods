@@ -1,9 +1,4 @@
 on:
-  push:
-    branches:
-    - '**'
-    paths:
-    - version.txt
   workflow_dispatch:
   
 name: 'rerun_dev_deployment'
