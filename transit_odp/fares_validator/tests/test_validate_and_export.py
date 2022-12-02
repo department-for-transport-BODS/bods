@@ -4,11 +4,11 @@ import pytest
 from django.core.files import File
 from django.test import RequestFactory
 
-from tests.integration.factories import OrganisationFactory, RevisionFactory
+from tests.integration.factories import OrganisationFactory
 from transit_odp.fares_validator.views.export_excel import FaresXmlExporter
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation import models
-from transit_odp.organisation.factories import OrganisationFactory
+from transit_odp.organisation.factories import DatasetRevisionFactory
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -20,7 +20,7 @@ def create_organisation(**kwargs):
 
 
 def create_revision(**kwargs):
-    return RevisionFactory(**kwargs)
+    return DatasetRevisionFactory(**kwargs)
 
 
 def test_get_errors():
@@ -39,9 +39,8 @@ def test_get_errors():
 def test_set_errors():
     test_values = [True, False]
     organisation: models.Organisation = create_organisation()
-    revision: models.DatasetRevision = create_revision()
-
     for test in test_values:
+        revision: models.DatasetRevision = create_revision()
         if test:
             expected = 200
             filepath = DATA_DIR / "fares_test_xml_pass.xml"
@@ -60,8 +59,8 @@ def test_set_errors():
 def test_fares_validation_zip():
     test_values = [True, False]
     organisation: models.Organisation = create_organisation()
-    revision: models.DatasetRevision = create_revision()
     for test in test_values:
+        revision: models.DatasetRevision = create_revision()
         if test:
             expected = 200
             filepath = DATA_DIR / "fares_test_zip_pass.zip"
