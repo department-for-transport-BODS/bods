@@ -1,7 +1,5 @@
-on:
-  workflow_dispatch:
-  
 name: 'rerun_dev_deployment'
+on: [workflow_dispatch]
 
 defaults:
   run:
