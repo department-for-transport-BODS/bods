@@ -8,6 +8,7 @@ from tests.integration.factories import OrganisationFactory
 from transit_odp.fares_validator.views.export_excel import FaresXmlExporter
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation import models
+from transit_odp.organisation.factories import DatasetRevisionFactory
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -18,12 +19,17 @@ def create_organisation(**kwargs):
     return OrganisationFactory(**kwargs)
 
 
+def create_revision(**kwargs):
+    return DatasetRevisionFactory(**kwargs)
+
+
 def test_get_errors():
     organisation: models.Organisation = create_organisation()
+    revision: models.DatasetRevision = create_revision()
     filepath = DATA_DIR / "fares_test_xml_pass.xml"
     with open(filepath, "rb") as zout:
         fares_xml_validator = FaresXmlValidator(
-            File(zout, name="fares_test_xml.xml"), organisation.id, 100
+            File(zout, name="fares_test_xml.xml"), organisation.id, revision.id
         )
         result = fares_xml_validator.get_errors()
         if result:
@@ -34,6 +40,7 @@ def test_set_errors():
     test_values = [True, False]
     organisation: models.Organisation = create_organisation()
     for test in test_values:
+        revision: models.DatasetRevision = create_revision()
         if test:
             expected = 200
             filepath = DATA_DIR / "fares_test_xml_pass.xml"
@@ -42,7 +49,7 @@ def test_set_errors():
             filepath = DATA_DIR / "fares_test_xml_fail.xml"
         with open(filepath, "rb") as zout:
             fares_xml_validator = FaresXmlValidator(
-                File(zout, name="fares_test_xml.xml"), organisation.id, 1
+                File(zout, name="fares_test_xml.xml"), organisation.id, revision.id
             )
             result = fares_xml_validator.set_errors()
             if result:
@@ -53,6 +60,7 @@ def test_fares_validation_zip():
     test_values = [True, False]
     organisation: models.Organisation = create_organisation()
     for test in test_values:
+        revision: models.DatasetRevision = create_revision()
         if test:
             expected = 200
             filepath = DATA_DIR / "fares_test_zip_pass.zip"
@@ -61,7 +69,7 @@ def test_fares_validation_zip():
             filepath = DATA_DIR / "fares_test_zip_fail.zip"
         with open(filepath, "rb") as zout:
             fares_xml_validator = FaresXmlValidator(
-                File(zout, name="fares_test_xml.xml"), organisation.id, 1
+                File(zout, name="fares_test_xml.xml"), organisation.id, revision.id
             )
             result = fares_xml_validator.set_errors()
             if result:

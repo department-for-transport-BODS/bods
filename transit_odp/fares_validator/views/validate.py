@@ -4,12 +4,11 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.parsers import FileUploadParser
 
-from ..models import FaresValidation
+from ..models import FaresValidation, FaresValidationResult
 from ..serializers import FaresSerializer
 from . import fares_validation
 
 logger = logging.getLogger(__name__)
-type_of_observation = "Simple fares validation failure"
 
 
 class FaresXmlValidator:
@@ -22,40 +21,37 @@ class FaresXmlValidator:
 
     def get_errors(self):
         validations = FaresValidation.objects.filter(
-            dataset_id=self.pk2, organisation_id=self.pk1
+            revision_id=self.pk2, organisation_id=self.pk1
         )
         serializer = FaresSerializer(validations, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     def set_errors(self):
+        response = ""
         file_obj = self.file
-
         fares_validator = fares_validation.get_fares_validator()
-        violations = fares_validator.get_violations(file_obj, self.pk1)
-        result = []
+        raw_violations = fares_validator.get_violations(file_obj, self.pk1)
+        violations = []
         [
-            result.append(violation)
-            for violation in violations
-            if violation not in result
+            violations.append(violation)
+            for violation in raw_violations
+            if violation not in violations
         ]
-        if result:
-            for error in result:
-                fares_validator_model_object = FaresValidation(
-                    dataset_id=self.pk2,
-                    organisation_id=self.pk1,
-                    file_name=error.filename,
-                    error_line_no=error.line,
-                    error=error.observation,
-                    type_of_observation=type_of_observation,
-                    category=error.category,
-                )
-                fares_validator_model_object.save()
+        if violations:
+            for violation in violations:
+                fares_violations = FaresValidation.create_observations(
+                    revision_id=self.pk2, org_id=self.pk1, violation=violation
+                ).save()
 
-            validations = FaresValidation.objects.filter(
-                dataset_id=self.pk2, organisation_id=self.pk1
-            )
-            serializer = FaresSerializer(validations, many=True)
-            return JsonResponse(
+            serializer = FaresSerializer(fares_violations, many=True)
+            response = JsonResponse(
                 serializer.data, safe=False, status=status.HTTP_201_CREATED
             )
-        return JsonResponse({}, status=status.HTTP_200_OK)
+        FaresValidationResult.create_validation_result(
+            revision_id=self.pk2, org_id=self.pk1, violations=violations
+        ).save()
+        return (
+            response
+            if response
+            else JsonResponse({}, safe=False, status=status.HTTP_200_OK)
+        )
