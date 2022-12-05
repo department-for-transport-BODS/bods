@@ -16,6 +16,7 @@ from requests import RequestException
 from urllib3.exceptions import ReadTimeoutError
 
 from transit_odp.avl.archivers import GTFSRTArchiver
+from transit_odp.avl.client import CAVLService
 from transit_odp.avl.constants import (
     AWAITING_REVIEW,
     COMPLIANT,
@@ -25,6 +26,7 @@ from transit_odp.avl.constants import (
     PARTIALLY_COMPLIANT,
     UNDERGOING,
 )
+from transit_odp.avl.enums import AVL_FEED_DEPLOYING, AVL_FEED_DOWN, AVL_FEED_UP
 from transit_odp.avl.models import (
     AVLSchemaValidationReport,
     AVLValidationReport,
@@ -40,19 +42,17 @@ from transit_odp.avl.notifications import (
     send_avl_schema_check_fail,
     send_avl_status_changed_notification,
 )
-from transit_odp.avl.post_publishing_checks.checker import PostPublishingChecker
+from transit_odp.avl.post_publishing_checks.api_checker import (
+    PostPublishingChecker as PostPublishingCheckerAPI,
+)
+from transit_odp.avl.post_publishing_checks.checker import (
+    PostPublishingChecker as PostPublishingCheckerDB,
+)
 from transit_odp.avl.post_publishing_checks.reports.weekly import WeeklyReport
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.validation import get_validation_client
-from transit_odp.bods.interfaces.plugins import get_cavl_service
 from transit_odp.common.loggers import PipelineAdapter, get_datafeed_adapter
-from transit_odp.organisation.constants import (
-    AVLFeedDeploying,
-    AVLFeedDown,
-    AVLFeedUp,
-    AVLType,
-    FeedStatus,
-)
+from transit_odp.organisation.constants import AVLType, FeedStatus
 from transit_odp.organisation.models import (
     AVLComplianceCache,
     Dataset,
@@ -88,7 +88,7 @@ def task_validate_avl_feed(task_id: str):
         return
 
     revision = task.revision
-    cavl_service = get_cavl_service()
+    cavl_service = CAVLService()
     try:
         response = cavl_service.validate_feed(
             url=revision.url_link,
@@ -189,8 +189,14 @@ def task_create_sirivm_tfl_zipfile(self):
 
 @shared_task(ignore_result=True)
 def task_monitor_avl_feeds():
-    cavl_service = get_cavl_service()
-    feed_status_map = {feed.id: feed.status.value for feed in cavl_service.get_feeds()}
+    cavl_service = CAVLService()
+    feeds = cavl_service.get_feeds()
+
+    if not feeds:
+        logger.warning("No AVL data feeds to monitor")
+        return
+
+    feed_status_map = {feed.id: feed.status.value for feed in feeds}
     exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
     datasets = (
         Dataset.objects.select_related("live_revision", "contact")
@@ -198,9 +204,9 @@ def task_monitor_avl_feeds():
         .exclude(live_revision__status__in=exclude_status)
     )
     revision_status_map = {
-        AVLFeedUp: FeedStatus.live.value,
-        AVLFeedDeploying: FeedStatus.live.value,
-        AVLFeedDown: FeedStatus.error.value,
+        AVL_FEED_UP: FeedStatus.live.value,
+        AVL_FEED_DEPLOYING: FeedStatus.live.value,
+        AVL_FEED_DOWN: FeedStatus.error.value,
     }
 
     datasets.update(avl_feed_last_checked=timezone.now())
@@ -225,7 +231,7 @@ def task_monitor_avl_feeds():
 
     for dataset in update_list:
         send_avl_status_changed_notification(dataset)
-        if dataset.avl_feed_status == AVLFeedDown:
+        if dataset.avl_feed_status == AVL_FEED_DOWN:
             send_avl_feed_down_notification(dataset)
 
 
@@ -266,7 +272,7 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
         # Sleeping to give the config api time to be available
         time.sleep(CONFIG_API_WAIT_TIME)
         with transaction.atomic():
-            cavl_service = get_cavl_service()
+            cavl_service = CAVLService()
             deleted = cavl_service.delete_feed(feed_id=feed_id)
             if not deleted:
                 adapter.error("Unable to de-register feed.")
@@ -341,19 +347,20 @@ def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):
 
 
 @shared_task()
-def task_daily_post_publishing_checks(feed_id: int, num_activities: int = 20):
-    if settings.FEATURE_PPC_ENABLED:
-        logger.info(f"Perform daily post publishing checks for AVL feed ID {feed_id}")
-        checker = PostPublishingChecker()
-        checker.perform_checks(feed_id, num_activities)
+def task_daily_post_publishing_checks(
+    feed_id: int, num_activities: int = 20, direct_to_db=False
+):
+    today = date.today()
+    logger.info(f"Perform daily post publishing checks for AVL feed ID {feed_id}")
+    checker = PostPublishingCheckerDB() if direct_to_db else PostPublishingCheckerAPI()
+    checker.perform_checks(today, feed_id, num_activities)
 
 
 @shared_task()
 def task_weekly_assimilate_post_publishing_check_reports(
     start_date: str = None,
 ):
-    if settings.FEATURE_PPC_ENABLED:
-        start_date = date.today() if not start_date else date.fromisoformat(start_date)
+    start_date = date.today() if not start_date else date.fromisoformat(start_date)
 
-        report = WeeklyReport(start_date)
-        report.generate()
+    report = WeeklyReport(start_date)
+    report.generate()

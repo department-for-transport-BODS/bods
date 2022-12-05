@@ -9,11 +9,10 @@ from django_hosts.resolvers import reverse
 from pydantic import validate_arguments
 
 import config.hosts
-from transit_odp.bods.interfaces.notifications import INotifications
+from transit_odp.avl.enums import AVL_FEED_DOWN
 from transit_odp.common.utils.convert_datetime import (
     localize_datetime_and_convert_to_string,
 )
-from transit_odp.organisation.constants import AVLFeedDown
 
 logger = logging.getLogger(__name__)
 ACCOUNT_SETTINGS_VIEW = "users:settings"
@@ -22,7 +21,7 @@ OPERATOR_GUIDANCE = "guidance:support-bus_operators"
 DATA_QUALITY_SECTION = "dataquality"
 
 
-class NotificationBase(INotifications):
+class NotificationBase:
     @property
     @abstractmethod
     def templates(self) -> dict:
@@ -713,7 +712,7 @@ class NotificationBase(INotifications):
             f"<id={dataset_id} >"
         )
         feed_status = (
-            "No vehicle activity" if dataset_status == AVLFeedDown else "Published"
+            "No vehicle activity" if dataset_status == AVL_FEED_DOWN else "Published"
         )
 
         last_updated = localize_datetime_and_convert_to_string(updated_time)

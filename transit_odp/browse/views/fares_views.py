@@ -8,12 +8,15 @@ from django.utils.translation import gettext as _
 from django.views.generic import DetailView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
-from django_tables2 import SingleTableView
 
 import config.hosts
 from transit_odp.browse.filters import FaresSearchFilter
 from transit_odp.browse.tables import DatasetPaginatorTable
-from transit_odp.browse.views.base_views import BaseSearchView, BaseTemplateView
+from transit_odp.browse.views.base_views import (
+    BaseSearchView,
+    BaseTemplateView,
+    ChangeLogView,
+)
 from transit_odp.browse.views.timetable_views import (
     DatasetSubscriptionBaseView,
     UserFeedbackView,
@@ -146,47 +149,10 @@ class FaresDatasetDetailView(DetailView):
         return kwargs
 
 
-class FaresChangeLogView(SingleTableView):
+class FaresChangeLogView(ChangeLogView):
     template_name = "browse/fares/feed_change_log.html"
-    model = DatasetRevision
     table_class = DatasetRevisionTable
-    dataset: Dataset
-    paginate_by = 10
-
-    def get_dataset_queryset(self):
-        return (
-            Dataset.objects.get_active_org()
-            .get_dataset_type(dataset_type=DatasetType.FARES.value)
-            .add_live_data()
-        )
-
-    def get_dataset(self):
-        try:
-            related_pk = self.kwargs["pk"]
-            self.dataset = self.get_dataset_queryset().get(id=related_pk)
-            return self.dataset
-        except Dataset.DoesNotExist:
-            raise Http404(
-                _("No %(verbose_name)s found matching the query")
-                % {"verbose_name": Dataset._meta.verbose_name}
-            )
-
-    def get_queryset(self):
-        self.dataset = self.get_dataset()
-        return (
-            super()
-            .get_queryset()
-            .filter(dataset=self.dataset)
-            .get_published()
-            .add_publisher_email()
-            .order_by("-created")
-        )
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context["object"] = self.dataset
-        context["feed"] = self.dataset
-        return context
+    dataset_type = DatasetType.FARES.value
 
 
 class FaresSubscriptionView(DatasetSubscriptionBaseView, UpdateView):

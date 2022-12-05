@@ -3,12 +3,10 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import celery
-import pytz
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
-from django.db.models.query_utils import Q
 from django.utils import timezone
 
 from transit_odp.common.loggers import (
@@ -21,18 +19,15 @@ from transit_odp.data_quality.models.report import PTIValidationResult
 from transit_odp.data_quality.tasks import upload_dataset_to_dqs
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
-from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.timetables.constants import PTI_COMMENT
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.timetables.etl import TransXChangePipeline
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
-from transit_odp.timetables.updaters import reprocess_live_revision
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     TimetableFileValidator,
@@ -404,26 +399,6 @@ def task_retry_unavailable_timetables() -> None:
     adapter.info(f"{count} datasets to check.")
     for timetable in timetables:
         update_dataset(timetable, task_dataset_pipeline)
-
-
-@shared_task(ignore_result=True)
-def task_reprocess_file_based_datasets() -> None:
-    pti_start_date = settings.PTI_START_DATE.replace(tzinfo=pytz.utc)
-    before_pti = Q(live_revision__created__lt=pti_start_date)
-    timetables = (
-        Dataset.objects.get_active(dataset_type=TimetableType)
-        .add_errored_draft_flag()
-        .filter(before_pti)
-        .exclude(has_errored_draft=True)
-        .order_by("organisation_id", "created")
-    )
-    logger.info(f"DatasetETL => {timetables.count()} Timetables to update.")
-    for timetable in timetables[:5]:
-        reprocess_live_revision(
-            dataset=timetable,
-            comment=PTI_COMMENT,
-            pipeline_task=task_dataset_pipeline,
-        )
 
 
 @shared_task()

@@ -50,10 +50,6 @@ class CeleryAppConfig(AppConfig):
                 "task": TIMETABLE_TASKS + "task_retry_unavailable_timetables",
                 "schedule": crontab(minute=0),
             },
-            "deactivate_txc_2.1_datasets": {
-                "task": TIMETABLE_TASKS + "task_deactivate_txc_2_1",
-                "schedule": crontab(minute=0, hour=2),
-            },
             "monitor_fares_dataset": {
                 "task": FARES_TASKS + "task_update_remote_fares",
                 "schedule": crontab(minute=0, hour=4),
@@ -113,10 +109,6 @@ class CeleryAppConfig(AppConfig):
             "create_siri_tfl_zip": {
                 "task": AVL_TASKS + "task_create_sirivm_tfl_zipfile",
                 "schedule": 10.0,
-            },
-            "timetable_upgrade_task": {
-                "task": TIMETABLE_TASKS + "task_reprocess_file_based_datasets",
-                "schedule": crontab(minute=0, hour="0, 2, 4, 18, 20, 22"),
             },
             "log_stuck_tasks": {
                 "task": TIMETABLE_TASKS + "task_log_stuck_revisions",

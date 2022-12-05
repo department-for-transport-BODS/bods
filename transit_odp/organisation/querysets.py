@@ -1098,6 +1098,9 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_string_lines()
         )
 
+    def filter_by_noc_and_line_name(self, noc, line_name):
+        return self.filter(national_operator_code=noc, line_names__contains=[line_name])
+
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
     def add_feedback_type(self):

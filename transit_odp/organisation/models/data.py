@@ -3,7 +3,6 @@ import logging
 import os
 from typing import Optional, cast
 
-from cavl_client.rest import ApiException
 from django.conf import settings
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.files.base import ContentFile
@@ -17,14 +16,14 @@ from django_hosts import reverse
 from model_utils import FieldTracker
 
 from config import hosts
+from transit_odp.avl.client import CAVLService
 from transit_odp.avl.constants import COMPLIANCE_STATUS_CHOICES, UNDERGOING
-from transit_odp.bods.interfaces.plugins import get_cavl_service
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.common.validators import validate_profanity
 from transit_odp.organisation import signals
 from transit_odp.organisation.constants import (
     DATASET_TYPE_NAMESPACE_MAP,
     DATASET_TYPE_PRETTY_MAP,
-    AVLFeedStatus,
     DatasetType,
     FeedStatus,
 )
@@ -366,32 +365,27 @@ class DatasetRevision(
 
             # register AVL dataset with CAVL
             if self.dataset.dataset_type == DatasetType.AVL:
-                cavl_service = get_cavl_service()
+                cavl_service = CAVLService()
 
                 # if the Dataset is brand new then we must register the feed
                 # with CAVL, else we must update
                 is_new = self.dataset.live_revision_id is None
 
-                try:
-                    if is_new:
-                        cavl_service.register_feed(
-                            feed_id=self.dataset.id,
-                            publisher_id=cast(int, self.dataset.organisation_id),
-                            url=self.url_link,
-                            username=self.username,
-                            password=self.password,
-                        )
-                    else:
-                        cavl_service.update_feed(
-                            feed_id=self.dataset.id,
-                            url=self.url_link,
-                            username=self.username,
-                            password=self.password,
-                        )
-                except ApiException:
-                    # TODO - not sure whether depending on ApiException is a
-                    # layer violation
-                    raise
+                if is_new:
+                    cavl_service.register_feed(
+                        feed_id=self.dataset.id,
+                        publisher_id=cast(int, self.dataset.organisation_id),
+                        url=self.url_link,
+                        username=self.username,
+                        password=self.password,
+                    )
+                else:
+                    cavl_service.update_feed(
+                        feed_id=self.dataset.id,
+                        url=self.url_link,
+                        username=self.username,
+                        password=self.password,
+                    )
 
             self.save()
             signals.revision_publish.send(self, dataset=self.dataset)

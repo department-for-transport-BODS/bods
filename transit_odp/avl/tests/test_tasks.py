@@ -14,6 +14,8 @@ from mocket.mockhttp import Entry
 from requests import RequestException
 from requests.exceptions import ConnectionError, ReadTimeout
 
+from transit_odp.avl.dataclasses import Feed
+from transit_odp.avl.enums import AVL_FEED_DOWN, AVL_FEED_UP
 from transit_odp.avl.factories import (
     AVLValidationReportFactory,
     CAVLValidationTaskResultFactory,
@@ -33,15 +35,7 @@ from transit_odp.avl.validation.factories import (
     ValidationResponseFactory,
     ValidationSummaryFactory,
 )
-from transit_odp.bods.interfaces.gateways import AVLFeed
-from transit_odp.organisation.constants import (
-    LIVE,
-    AVLFeedDown,
-    AVLFeedStatus,
-    AVLFeedUp,
-    AVLType,
-    FeedStatus,
-)
+from transit_odp.organisation.constants import ERROR, INACTIVE, LIVE, AVLType
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     DatasetFactory,
@@ -53,7 +47,7 @@ from transit_odp.users.constants import DeveloperType, OrgAdminType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
-CAVL_PATH = "transit_odp.avl.tasks.get_cavl_service"
+CAVL_PATH = "transit_odp.avl.tasks.CAVLService"
 VALIDATION_PATH = "transit_odp.avl.tasks.get_validation_client"
 
 
@@ -121,14 +115,14 @@ def test_no_change(mocker, mailoutbox):
         user.settings.save()
 
     datasets = DatasetFactory.create_batch(
-        3, dataset_type=AVLType, avl_feed_status=AVLFeedUp, subscribers=subscribers
+        3, dataset_type=AVLType, avl_feed_status=AVL_FEED_UP, subscribers=subscribers
     )
     data = []
     for dataset in datasets:
         dataset.contact.settings.notify_avl_unavailable = True
         dataset.contact.settings.save()
         data.append(
-            AVLFeed(
+            Feed(
                 id=dataset.id,
                 publisher_id=dataset.contact.id,
                 url="www.testurl.com/avl",
@@ -145,7 +139,7 @@ def test_no_change(mocker, mailoutbox):
     assert len(mailoutbox) == 0
     assert (
         Dataset.objects.filter(
-            dataset_type=AVLType, avl_feed_status=AVLFeedDown
+            dataset_type=AVLType, avl_feed_status=AVL_FEED_DOWN
         ).count()
         == 0
     )
@@ -156,20 +150,20 @@ def test_from_down_to_up_only_subscribers(mocker, mailoutbox):
     subscriber.settings.notify_avl_unavailable = True
     subscriber.settings.save()
     dataset = DatasetFactory(
-        dataset_type=AVLType, avl_feed_status=AVLFeedDown, subscribers=[subscriber]
+        dataset_type=AVLType, avl_feed_status=AVL_FEED_DOWN, subscribers=[subscriber]
     )
-    dataset.live_revision.status = FeedStatus.error.value
+    dataset.live_revision.status = ERROR
     dataset.live_revision.save()
     dataset.contact.settings.notify_avl_unavailable = True
     dataset.contact.settings.save()
     data = [
-        AVLFeed(
+        Feed(
             id=dataset.id,
             publisher_id=dataset.contact.id,
             url="www.testurl.com/avl",
             username=dataset.contact.username,
             password="password",
-            status=AVLFeedStatus.FEED_UP,
+            status=AVL_FEED_UP,
         )
     ]
 
@@ -181,8 +175,8 @@ def test_from_down_to_up_only_subscribers(mocker, mailoutbox):
     assert mailoutbox[0].subject == "Data feed status changed"
     assert mailoutbox[0].to[0] == subscriber.email
     db_dataset = Dataset.objects.get(id=dataset.id)
-    assert db_dataset.avl_feed_status == AVLFeedUp
-    assert db_dataset.live_revision.status == FeedStatus.live.value
+    assert db_dataset.avl_feed_status == AVL_FEED_UP
+    assert db_dataset.live_revision.status == LIVE
 
 
 def test_from_up_to_down_email_everyone(mocker, mailoutbox):
@@ -190,18 +184,18 @@ def test_from_up_to_down_email_everyone(mocker, mailoutbox):
     subscriber.settings.notify_avl_unavailable = True
     subscriber.settings.save()
     dataset = DatasetFactory(
-        dataset_type=AVLType, avl_feed_status=AVLFeedUp, subscribers=[subscriber]
+        dataset_type=AVLType, avl_feed_status=AVL_FEED_UP, subscribers=[subscriber]
     )
     dataset.contact.settings.notify_avl_unavailable = True
     dataset.contact.settings.save()
     data = [
-        AVLFeed(
+        Feed(
             id=dataset.id,
             publisher_id=dataset.contact.id,
             url="www.testurl.com/avl",
             username=dataset.contact.username,
             password="password",
-            status=AVLFeedStatus.FEED_DOWN,
+            status=AVL_FEED_DOWN,
         )
     ]
 
@@ -223,8 +217,8 @@ def test_from_up_to_down_email_everyone(mocker, mailoutbox):
     assert publisher.to[0] == dataset.contact.email
 
     db_dataset = Dataset.objects.get(id=dataset.id)
-    assert db_dataset.avl_feed_status == AVLFeedDown
-    assert db_dataset.live_revision.status == FeedStatus.error.value
+    assert db_dataset.avl_feed_status == AVL_FEED_DOWN
+    assert db_dataset.live_revision.status == ERROR
 
 
 class TestValidateAVLTask:
@@ -573,7 +567,7 @@ def test_feed_validation_can_handle_empty_response(get_client):
     assert not report.file
 
 
-@patch("transit_odp.avl.tasks.get_cavl_service")
+@patch("transit_odp.avl.tasks.CAVLService")
 @patch("transit_odp.avl.tasks.get_validation_client")
 def test_send_schema_validation_fails(get_client, get_cavl, mailoutbox):
     user = UserFactory(account_type=OrgAdminType)
@@ -596,7 +590,7 @@ def test_send_schema_validation_fails(get_client, get_cavl, mailoutbox):
     assert len(mailoutbox) == 1
     assert mailoutbox[0].subject == "Error publishing data feed"
     assert AVLSchemaValidationReport.objects.count() == 1
-    assert revision.status == FeedStatus.inactive.value
+    assert revision.status == INACTIVE
     cavl.delete_feed.assert_called_once_with(feed_id=revision.dataset_id)
 
 
@@ -670,7 +664,6 @@ def test_send_schema_fails_with_502_bad_gateway(get_client, mailoutbox, **kwargs
 def test_weekly_ppc_report_started_with_correct_date(
     weekly_report_mock: Mock, start_date: str, expected_date: date
 ):
-    if settings.FEATURE_PPC_ENABLED:
-        task_weekly_assimilate_post_publishing_check_reports(start_date)
+    task_weekly_assimilate_post_publishing_check_reports(start_date)
 
-        weekly_report_mock.assert_called_once_with(expected_date)
+    weekly_report_mock.assert_called_once_with(expected_date)

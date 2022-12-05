@@ -4,7 +4,6 @@ import celery
 from celery.app import shared_task
 from django.db import transaction
 
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.loggers import (
     DatasetPipelineLoggerContext,
     PipelineAdapter,
@@ -24,6 +23,7 @@ from transit_odp.data_quality.utils import (
     upload_file_to_dqs,
 )
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.notifications import get_notifications
 from transit_odp.organisation.notifications import send_report_available_notifications
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DataQualityTask

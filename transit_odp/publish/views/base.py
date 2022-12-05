@@ -17,10 +17,10 @@ from django_tables2 import RequestConfig
 from formtools.wizard.views import SessionWizardView
 
 import config.hosts
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
+from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.publish.forms import (
