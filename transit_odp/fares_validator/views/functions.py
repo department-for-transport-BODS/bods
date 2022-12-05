@@ -274,14 +274,7 @@ def is_fare_structure_element_present(context, fare_frames, *args):
             try:
                 fare_structure_ref_ref = _extract_attribute(fare_structure_ref, "ref")
             except KeyError:
-                sourceline = fare_structure_ref[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline,
-                    MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+                return ""
             if FARE_STRUCTURE_ELEMENT_DURATION_REF == fare_structure_ref_ref:
                 return get_fare_structure_time_intervals(element)
 
@@ -303,14 +296,7 @@ def is_generic_parameter_limitations_present(context, fare_frames, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
-            sourceline = type_of_frame_ref[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
@@ -1599,14 +1585,7 @@ def check_generic_parameters_for_access(context, elements, *args):
                 type_of_fare_structure_element_ref, "ref"
             )
         except KeyError:
-            sourceline = type_of_fare_structure_element_ref[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
             xpath = "x:GenericParameterAssignment"
             generic_parameter = fare_structure_element.xpath(
@@ -1654,14 +1633,7 @@ def check_validity_grouping_type_for_access(
             type_of_fare_structure_element_ref, "ref"
         )
     except KeyError:
-        sourceline = type_of_fare_structure_element_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
         xpath = "string(x:ValidityParameterGroupingType)"
         grouping_type = generic_parameter_assignment.xpath(xpath, namespaces=NAMESPACE)
@@ -1697,14 +1669,7 @@ def check_validity_parameter_for_access(context, generic_parameter_assignments, 
             type_of_fare_structure_element_ref, "ref"
         )
     except KeyError:
-        sourceline = type_of_fare_structure_element_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if FARE_STRUCTURE_ELEMENT_ACCESS_REF == type_of_fare_structure_element_ref_ref:
         generic_parameter_assignment = generic_parameter_assignments[0]
         xpath = "x:validityParameters"
@@ -1740,14 +1705,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 type_of_fare_structure_element_ref, "ref"
             )
         except KeyError:
-            sourceline = type_of_fare_structure_element_ref[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
             == type_of_fare_structure_element_ref_ref
@@ -1814,14 +1772,7 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and FARE_STRUCTURE_ELEMENT_TRAVEL_REF == type_of_frame_ref_ref
