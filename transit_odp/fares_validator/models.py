@@ -9,7 +9,6 @@ from transit_odp.fares_validator.types import Violation
 from transit_odp.organisation.models import DatasetRevision
 
 type_of_observation = "Simple fares validation failure"
-category = ""  # Itr2 To be extratced from the xml path
 
 
 class FaresValidationResult(models.Model):
@@ -107,5 +106,5 @@ class FaresValidation(models.Model):
             error_line_no=violation.line,
             error=violation.observation,
             type_of_observation=type_of_observation,
-            category=category,
+            category=violation.category,
         )
