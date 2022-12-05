@@ -76,14 +76,7 @@ def get_tariff_time_intervals(element):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
@@ -109,14 +102,7 @@ def get_individual_tariff_time_interval(element):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
@@ -143,14 +129,7 @@ def get_tariff_time_interval_name(element):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if type_of_frame_ref_ref is not None and (
         TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
     ):
@@ -352,14 +331,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
             try:
                 type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
             except KeyError:
-                sourceline = type_of_frame_ref[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline,
-                    MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+                return ""
             if not (
                 type_of_frame_ref_ref is not None
                 and (
@@ -401,14 +373,7 @@ def is_name_present_in_fare_frame(context, fare_zones, *args):
             try:
                 type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
             except KeyError:
-                sourceline = type_of_frame_ref[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline,
-                    MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+                return ""
             if not (
                 type_of_frame_ref_ref is not None
                 and (
@@ -453,14 +418,7 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
             try:
                 type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
             except KeyError:
-                sourceline = type_of_frame_ref[0].sourceline
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline,
-                    MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+                return ""
             if not (
                 type_of_frame_ref_ref is not None
                 and (
@@ -750,7 +708,7 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
                 try:
                     type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
                 except KeyError:
-                    sourceline = type_of_frame_ref.sourceline
+                    sourceline = type_of_frame_ref[0].sourceline
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
@@ -933,14 +891,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if (
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -985,14 +936,7 @@ def check_tariff_operator_ref(context, elements, *args):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if (
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1019,14 +963,7 @@ def check_tariff_basis(context, elements, *args):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if (
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1054,14 +991,7 @@ def check_tariff_validity_conditions(context, elements, *args):
     try:
         type_of_frame_ref_ref = _extract_attribute(type_of_frame_ref, "ref")
     except KeyError:
-        sourceline = type_of_frame_ref[0].sourceline
-        response_details = XMLViolationDetail(
-            "violation",
-            sourceline,
-            MESSAGE_TYPE_OF_FRAME_REF_MISSING,
-        )
-        response = response_details.__list__()
-        return response
+        return ""
     if (
         type_of_frame_ref_ref is not None
         and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1113,14 +1043,7 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline_fare_frame_ref = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline_fare_frame_ref,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING in type_of_frame_ref_ref
@@ -1173,14 +1096,7 @@ def check_preassigned_fare_products(context, fare_frames, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline_fare_frame = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline_fare_frame,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1233,14 +1149,7 @@ def check_preassigned_fare_products_type_ref(context, preassigned_fare_products,
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline_fare_frame = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline_fare_frame,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1275,14 +1184,7 @@ def check_preassigned_fare_products_charging_type(
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline_fare_frame = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline_fare_frame,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1315,14 +1217,7 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1392,14 +1287,7 @@ def check_access_right_elements(context, preassigned_fare_products, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1445,14 +1333,7 @@ def check_product_type(context, preassigned_fare_products, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1482,14 +1363,7 @@ def check_sales_offer_package(context, fare_frames, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1532,14 +1406,7 @@ def check_dist_assignments(context, sales_offer_packages, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1602,14 +1469,7 @@ def check_payment_methods(context, distribution_assignments, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1640,14 +1500,7 @@ def check_sale_offer_package_elements(context, sales_offer_packages, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
@@ -1706,14 +1559,7 @@ def check_fare_product_ref(context, sales_offer_package_elements, *args):
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
         except KeyError:
-            sourceline = type_of_frame_refs[0].sourceline
-            response_details = XMLViolationDetail(
-                "violation",
-                sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING,
-            )
-            response = response_details.__list__()
-            return response
+            return ""
         if (
             type_of_frame_ref_ref is not None
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
