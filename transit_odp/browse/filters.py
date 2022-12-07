@@ -97,13 +97,7 @@ class FaresSearchFilter(filters.FilterSet):
     status = filters.ChoiceFilter(choices=DatasetRevision.STATUS_CHOICES)
 
     # is_bods_compliance = filters.BooleanFilter()
-    is_bods_compliance = filters.ChoiceFilter(
-        choices=(
-            ("", "All statuses"),
-            (FeedStatus.compliant.value, "Compliant"),
-            (FeedStatus.noncompliant.value, "Non compliant"),
-        ),
-    )
+    is_fares_complaint = filters.BooleanFilter()
 
     class Meta:
         form = FaresSearchFilterForm

@@ -835,28 +835,7 @@ class DatasetQuerySet(models.QuerySet):
     def filter_pti_compliant(self):
         return self.add_is_live_pti_compliant().filter(is_pti_compliant=True)
 
-    # def add_is_fares_validation_compliant(self):
-    #     return (
-    #         self.get_compliant_fares_validation()
-    #         .annotate(
-    #             is_bods_compliance=Case(
-    #                 When(
-    #                     Q(is_fares_compliant=True), then=False,
-    #                 ),
-    #                 When(
-    #                     Q(is_fares_compliant=False), then=True,
-    #                 ),
-    #                 default=None,
-    #                 output_field=BooleanField(),
-    #             ),
-    #         )
-    #     )
-
-    # def filter_fares_bods_compliance(self):
-    #     return self.add_is_fares_validation_compliant().filter(is_bods_compliance=True)
-
     def filter_compliant_fares(self):
-        # exclude_status = [FeedStatus.noncompliant.value]
         qs = self.get_compliant_fares_validation().filter(is_fares_compliant=True)
         return qs
 
