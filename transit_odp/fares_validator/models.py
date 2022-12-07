@@ -90,7 +90,7 @@ class FaresValidation(models.Model):
     )
     important_note = models.CharField(
         max_length=2000,
-        default="Data containing this warning will be rejected by BODS after January 2023. Please contact your ticket machine supplier",
+        default="This is warning only but data containing this failure will eventually be rejected by BODS ",
         help_text=_("The Important Note error of the observation."),
     )
 
