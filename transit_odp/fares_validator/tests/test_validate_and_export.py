@@ -25,10 +25,11 @@ def create_revision(**kwargs):
 
 def test_get_errors():
     organisation: models.Organisation = create_organisation()
+    revision: models.DatasetRevision = create_revision()
     filepath = DATA_DIR / "fares_test_xml_pass.xml"
     with open(filepath, "rb") as zout:
         fares_xml_validator = FaresXmlValidator(
-            File(zout, name="fares_test_xml.xml"), organisation.id, 100
+            File(zout, name="fares_test_xml.xml"), organisation.id, revision.id
         )
         result = fares_xml_validator.get_errors()
         if result:
@@ -48,7 +49,7 @@ def test_set_errors():
             filepath = DATA_DIR / "fares_test_xml_fail.xml"
         with open(filepath, "rb") as zout:
             fares_xml_validator = FaresXmlValidator(
-                File(zout, name="fares_test_xml.xml"), organisation.id, 1
+                File(zout, name="fares_test_xml.xml"), organisation.id, revision.id
             )
             result = fares_xml_validator.set_errors()
             if result:
@@ -68,7 +69,7 @@ def test_fares_validation_zip():
             filepath = DATA_DIR / "fares_test_zip_fail.zip"
         with open(filepath, "rb") as zout:
             fares_xml_validator = FaresXmlValidator(
-                File(zout, name="fares_test_xml.xml"), organisation.id, 1
+                File(zout, name="fares_test_xml.xml"), organisation.id, revision.id
             )
             result = fares_xml_validator.set_errors()
             if result:
