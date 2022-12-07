@@ -6,6 +6,7 @@ from django.forms.widgets import NumberInput
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from waffle import flag_is_active
 
 from transit_odp.avl.constants import (
     AWAITING_REVIEW,
@@ -181,38 +182,48 @@ class FaresSearchFilterForm(GOVUKForm):
         ),
         required=False,
     )
-
-    is_fares_complaint = forms.NullBooleanField(
-        required=False,
-        label=_("BODS compliance"),
-    )
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+    if is_fares_validator_active:
+        is_fares_compliant = forms.NullBooleanField(
+            required=False,
+            label=_("BODS compliance"),
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Change field labels
         self.fields["area"].label_from_instance = lambda obj: obj.name
         self.fields["organisation"].label_from_instance = lambda obj: obj.name
-        is_fares_complaint = self.fields["is_fares_complaint"]
-        is_fares_complaint.label_from_instance = (
-            lambda obj: "BODS compliant" if obj else "Not BODS compliant"
-        )
-        # Use a boolean field and change the widget to get type conversion for free
-        is_fares_complaint.widget = forms.Select(
-            choices=(
-                (None, "All statuses"),
-                (True, "Compliant"),
-                (False, "Non compliant"),
+        self.is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if self.is_fares_validator_active:
+            is_fares_compliant = self.fields["is_fares_compliant"]
+            is_fares_compliant.label_from_instance = (
+                lambda obj: "BODS compliant" if obj else "Not BODS compliant"
             )
-        )
+            is_fares_compliant.widget = forms.Select(
+                choices=(
+                    (None, "All statuses"),
+                    (True, "Compliant"),
+                    (False, "Non compliant"),
+                )
+            )
 
     def get_layout(self):
-        return Layout(
-            Field("area", css_class="govuk-!-width-full"),
-            Field("organisation", css_class="govuk-!-width-full"),
-            Field("status", css_class="govuk-!-width-full"),
-            Field("is_fares_complaint", css_class="govuk-!-width-full"),
-            ButtonSubmit("submitform", "submit", content=_("Apply filter")),
-        )
+        if self.is_fares_validator_active:
+            return Layout(
+                Field("area", css_class="govuk-!-width-full"),
+                Field("organisation", css_class="govuk-!-width-full"),
+                Field("status", css_class="govuk-!-width-full"),
+                Field("is_fares_compliant", css_class="govuk-!-width-full"),
+                ButtonSubmit("submitform", "submit", content=_("Apply filter")),
+            )
+        else:
+            return Layout(
+                Field("area", css_class="govuk-!-width-full"),
+                Field("organisation", css_class="govuk-!-width-full"),
+                Field("status", css_class="govuk-!-width-full"),
+                ButtonSubmit("submitform", "submit", content=_("Apply filter")),
+            )
 
 
 class ConsumerFeedbackForm(GOVUKModelForm):

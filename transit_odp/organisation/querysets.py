@@ -835,10 +835,6 @@ class DatasetQuerySet(models.QuerySet):
     def filter_pti_compliant(self):
         return self.add_is_live_pti_compliant().filter(is_pti_compliant=True)
 
-    def filter_compliant_fares(self):
-        qs = self.get_compliant_fares_validation().filter(is_fares_compliant=True)
-        return qs
-
     def get_compliant_timetables(self):
         qs = (
             self.get_active_org()
@@ -852,7 +848,7 @@ class DatasetQuerySet(models.QuerySet):
     def get_compliant_fares_validation(self):
         non_zero_count = Q(live_revision__fares_validation_result__count=0)
         return self.annotate(
-            is_fares_complaint=Case(
+            is_fares_compliant=Case(
                 When(non_zero_count, then=True),
                 default=False,
                 output_field=BooleanField(),
