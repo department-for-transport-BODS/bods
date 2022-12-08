@@ -845,6 +845,16 @@ class DatasetQuerySet(models.QuerySet):
         )
         return qs
 
+    def get_compliant_fares_validation(self):
+        non_zero_count = Q(live_revision__fares_validation_result__count=0)
+        return self.annotate(
+            is_fares_compliant=Case(
+                When(non_zero_count, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
