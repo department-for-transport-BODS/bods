@@ -23,6 +23,7 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -89,6 +90,7 @@ class FaresSearchView(BaseSearchView):
             .get_active_org()
             .add_organisation_name()
             .add_live_data()
+            .get_compliant_fares_validation()
             .order_by(*self.get_ordering())
         )
 
@@ -129,6 +131,17 @@ class FaresDatasetDetailView(DetailView):
         )
         kwargs["last_modified_username"] = last_modified_username
         kwargs["show_map"] = dataset.status in (EXPIRED, INACTIVE, LIVE)
+
+        kwargs["pk1"] = dataset.organisation_id
+        kwargs["pk2"] = dataset.live_revision_id
+
+        results = FaresValidationResult.objects.get(
+            revision_id=dataset.live_revision_id
+        )
+        if results.is_compliant is False:
+            kwargs["is_compliant_error"] = True
+        else:
+            kwargs["is_compliant_error"] = False
 
         is_subscribed = None
         feed_api = None
