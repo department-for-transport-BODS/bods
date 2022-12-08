@@ -61,7 +61,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
-        task_run_fares_validation(task.id)
+        # task_run_fares_validation(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -215,6 +215,7 @@ def task_run_fares_etl(task_id):
     # like localities, admin areas
     transformed_data["revision"] = revision
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
+    print("FaresMetadata>>>>", fares_metadata)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 
