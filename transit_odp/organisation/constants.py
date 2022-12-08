@@ -19,8 +19,6 @@ class FeedStatus(ChoiceEnum):
     expired = "expired"
     deleted = "deleted"
     inactive = "inactive"
-    compliant = "compliant"
-    noncompliant = "non compliant"
 
     def is_public(self):
         return (self == self.live) or (self == self.expiring) or (self == self.warning)
@@ -34,8 +32,6 @@ INACTIVE = FeedStatus.inactive.value
 LIVE = FeedStatus.live.value
 PENDING = FeedStatus.pending.value
 SUCCESS = FeedStatus.success.value
-COMPLIANT = FeedStatus.compliant.value
-NON_COMPLIANT = FeedStatus.noncompliant.value
 
 EXPIRY_NOTIFY_THRESHOLD = 30
 
@@ -52,18 +48,11 @@ STATUS_CHOICES = (
     (FeedStatus.expired.value, "Expired"),
     (FeedStatus.deleted.value, "Deleted"),
     (FeedStatus.inactive.value, "Inactive"),
-    (FeedStatus.compliant.value, "Compliant"),
-    (FeedStatus.noncompliant.value, "Non compliant"),
 )
 
 SEARCH_STATUS_CHOICES = (
     (LIVE, "Published"),
     (INACTIVE, "Inactive"),
-)
-
-SEARCH_BODS_COMPLAINT_CHOICES = (
-    (COMPLIANT, "Compliant"),
-    (NON_COMPLIANT, "Non compliant"),
 )
 
 
