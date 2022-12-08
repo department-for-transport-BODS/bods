@@ -8,7 +8,6 @@ from django_hosts import reverse
 from invitations.utils import get_invitation_model
 
 import config.hosts
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.forms import (
     AcceptRejectForm,
     AgentLeaveForm,
@@ -18,6 +17,7 @@ from transit_odp.common.forms import (
 )
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
+from transit_odp.notifications import get_notifications
 from transit_odp.organisation.forms.management import (
     InvitationSubsequentForm,
     UserEditForm,

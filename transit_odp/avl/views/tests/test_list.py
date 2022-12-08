@@ -1,3 +1,4 @@
+import re
 from datetime import date, timedelta
 
 import pytest
@@ -5,8 +6,9 @@ from django.db.models.fields import timezone
 from django_hosts.resolvers import reverse
 
 import config.hosts
-from transit_odp.avl.constants import MORE_DATA_NEEDED
+from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
 from transit_odp.avl.factories import PostPublishingCheckReportFactory
+from transit_odp.avl.models import PPCReportType
 from transit_odp.organisation.constants import INACTIVE, AVLType
 from transit_odp.organisation.factories import (
     DatasetFactory,
@@ -67,7 +69,7 @@ class TestAVLListView:
                 dataset=dataset,
                 vehicle_activities_analysed=num_analysed[i],
                 vehicle_activities_completely_matching=num_matching[i],
-                granularity="weekly",
+                granularity=PPCReportType.WEEKLY,
                 created=created_at,
             )
 
@@ -93,7 +95,7 @@ class TestAVLListView:
         for dataset in datasets:
             PostPublishingCheckReportFactory(
                 dataset=dataset,
-                granularity="weekly",
+                granularity=PPCReportType.WEEKLY,
                 vehicle_activities_analysed=0,
                 vehicle_activities_completely_matching=0,
             )
@@ -119,38 +121,41 @@ class TestAVLListView:
         today = date.today()
         dataset = DraftDatasetFactory(
             organisation=organisation,
+            contact=user,
             dataset_type=AVLType,
         )
         PostPublishingCheckReportFactory(
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=1,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today,
         )
 
         dataset = DatasetFactory(
             organisation=organisation,
+            contact=user,
             dataset_type=AVLType,
         )
         PostPublishingCheckReportFactory(
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=2,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today,
         )
 
         dataset_revision = DatasetRevisionFactory(
             dataset__dataset_type=AVLType,
             dataset__organisation=organisation,
+            dataset__contact=user,
             status=INACTIVE,
         )
         PostPublishingCheckReportFactory(
             dataset=dataset_revision.dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=4,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today,
         )
 
@@ -179,14 +184,14 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=1,
-            granularity="daily",
+            granularity=PPCReportType.DAILY,
             created=today,
         )
         PostPublishingCheckReportFactory(
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=2,
-            granularity="daily",
+            granularity=PPCReportType.DAILY,
             created=today - timedelta(days=1),
         )
 
@@ -194,7 +199,7 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=4,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today - timedelta(days=1),
         )
 
@@ -202,7 +207,7 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=8,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today - timedelta(days=8),
         )
 
@@ -232,7 +237,7 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=1,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today,
         )
 
@@ -244,7 +249,7 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=2,
-            granularity="daily",
+            granularity=PPCReportType.DAILY,
             created=today,
         )
 
@@ -274,7 +279,7 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=1,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today,
         )
 
@@ -287,7 +292,7 @@ class TestAVLListView:
             dataset=dataset,
             vehicle_activities_analysed=10,
             vehicle_activities_completely_matching=2,
-            granularity="weekly",
+            granularity=PPCReportType.WEEKLY,
             created=today,
         )
 
@@ -298,4 +303,282 @@ class TestAVLListView:
         expected_score = 100 * 1 / 10
         assert round(response.context_data["overall_ppc_score"], 0) == round(
             expected_score, 0
+        )
+
+    def test_table_ppc_score_typical(self, client_factory):
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+
+        dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=10,
+            vehicle_activities_completely_matching=1,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        expected_score = "10%"
+
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
+        response = client.get(url)
+        table = response.context["table"]
+        assert len(table.rows) == 1
+        row = table.rows[0]
+        assert row.get_cell("percent_matching") == expected_score
+
+    def test_table_ppc_score_zero_matching(self, client_factory):
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+
+        dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=10,
+            vehicle_activities_completely_matching=0,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        expected_score = "0%"
+
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
+        response = client.get(url)
+        table = response.context["table"]
+        assert len(table.rows) == 1
+        row = table.rows[0]
+        assert row.get_cell("percent_matching") == expected_score
+
+    def test_table_ppc_score_zero_analysed(self, client_factory):
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+
+        dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=0,
+            vehicle_activities_completely_matching=0,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        expected_score = UNDERGOING
+
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
+        response = client.get(url)
+        table = response.context["table"]
+        assert len(table.rows) == 1
+        row = table.rows[0]
+        assert row.get_cell("percent_matching") == expected_score
+
+    def test_table_ppc_score_none(self, client_factory):
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+
+        DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        expected_score = UNDERGOING
+
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
+        response = client.get(url)
+        table = response.context["table"]
+        assert len(table.rows) == 1
+        row = table.rows[0]
+        assert row.get_cell("percent_matching") == expected_score
+
+    def test_table_ppc_score_dormant(self, client_factory):
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+
+        dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+            avl_compliance_cached__status=MORE_DATA_NEEDED,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=10,
+            vehicle_activities_completely_matching=1,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        expected_score = MORE_DATA_NEEDED
+
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
+        response = client.get(url)
+        table = response.context["table"]
+        assert len(table.rows) == 1
+        row = table.rows[0]
+        assert row.get_cell("percent_matching") == expected_score
+
+
+class TestAVLFeedMatchingView:
+    host = config.hosts.PUBLISH_HOST
+
+    @pytest.mark.parametrize(
+        """vehicle_activities_analysed,
+         vehicle_activities_completely_matching,
+         granularity,
+         expected""",
+        (
+            (10, 10, PPCReportType.WEEKLY, "100%"),
+            (654, 543, PPCReportType.WEEKLY, str(round(543 / 654.0 * 100)) + "%"),
+            (234, 0, PPCReportType.WEEKLY, "0%"),
+            (344, 322, PPCReportType.DAILY, None),
+        ),
+    )
+    def test_each_feed_ppc_score(
+        self,
+        client_factory,
+        vehicle_activities_analysed,
+        vehicle_activities_completely_matching,
+        granularity,
+        expected,
+    ):
+        """
+        GIVEN : an AVL dataset
+
+        WHEN  : the PostPublishingCheckReport has been created with
+                different data to test different scenario
+                1. ppc score 100%
+                2. ppc score created less then 100%
+                3. vehicle_activities_completely_matching = 0 -> 0%
+                4. not in database e.g. granularity = daily
+
+        THEN  : the view should display the ppc score for each dataset
+                according with the case in WHEN
+        """
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+        dataset = DatasetFactory(organisation=organisation, dataset_type=AVLType)
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=vehicle_activities_analysed,
+            vehicle_activities_completely_matching=(
+                vehicle_activities_completely_matching
+            ),
+            granularity=granularity,
+            created=today,
+        )
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse(
+            "avl:feed-detail", args=(organisation.id, dataset.id), host=self.host
+        )
+        response = client.get(url)
+        assert (
+            response.context_data["properties"]["avl_timetables_matching"] == expected
+        )
+
+    def test_feed_more_data_needed(self, client_factory):
+        """
+        GIVEN : an AVL dataset with avl_compliance_cached__status =
+                'Unavailable due to dormant feed' (MORE_DATA_NEEDED)
+
+        WHEN  : An invalid PostPublishingCheckReport has been created with
+                1. dataset created in GIVEN
+                2. granularity = daily
+
+        THEN  : the view should display the table with 2 rows with
+                'Unavailable due to dormant feed'
+        """
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+        dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+            avl_compliance_cached__status=MORE_DATA_NEEDED,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=234,
+            vehicle_activities_completely_matching=123,
+            granularity=PPCReportType.DAILY,
+            created=today,
+        )
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse(
+            "avl:feed-detail", args=(organisation.id, dataset.id), host=self.host
+        )
+        response = client.get(url)
+
+        RE_WORD = re.compile(MORE_DATA_NEEDED)
+        occur_more_data_needed = RE_WORD.findall(str(response.content))
+        assert len(occur_more_data_needed) == 2
+
+    def test_each_feed_ppc_score_post_publishing_more_rows(
+        self,
+        client_factory,
+    ):
+        """
+        GIVEN : an AVL dataset
+
+        WHEN  : the PostPublishingCheckReport has been created with
+                3 different date
+
+        THEN  : the view should display the ppc score
+        """
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+        last_week = today - timedelta(days=7)
+        week_before = today - timedelta(days=14)
+
+        dataset = DatasetFactory(organisation=organisation, dataset_type=AVLType)
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=654,
+            vehicle_activities_completely_matching=543,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=300,
+            vehicle_activities_completely_matching=232,
+            granularity=PPCReportType.WEEKLY,
+            created=last_week,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=956,
+            vehicle_activities_completely_matching=841,
+            granularity=PPCReportType.WEEKLY,
+            created=week_before,
+        )
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url = reverse(
+            "avl:feed-detail", args=(organisation.id, dataset.id), host=self.host
+        )
+        response = client.get(url)
+
+        expected = str(round(543 / 654.0 * 100)) + "%"
+        assert (
+            response.context_data["properties"]["avl_timetables_matching"] == expected
         )

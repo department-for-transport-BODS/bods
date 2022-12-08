@@ -3,7 +3,7 @@ import logging
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from transit_odp.bods.interfaces.plugins import get_notifications
+from transit_odp.notifications import get_notifications
 from transit_odp.organisation.models import (
     ConsumerStats,
     Dataset,

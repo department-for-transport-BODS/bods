@@ -6,11 +6,15 @@ from typing import Any, Dict, List
 from django.core.files.base import ContentFile
 
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+from transit_odp.avl.post_publishing_checks.constants import (
+    SIRIVM_TO_TXC_MAP,
+    ErrorCategory,
+    MiscFieldPPC,
+    SirivmField,
+)
+from transit_odp.avl.post_publishing_checks.results import ValidationResult
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.common.constants import UTF8
-
-from .constants import SIRIVM_TO_TXC_MAP, ErrorCategory, MiscFieldPPC, SirivmField
-from .results import ValidationResult
 
 
 class FieldStat:
@@ -111,15 +115,24 @@ class PostPublishingResultsJsonWriter:
             "suppliers to ensure it is provided accurately"
         )
         for field in field_stats:
+            if len(results) == 0:
+                percent_populated = self.pretty_print(None)
+                percent_matched = self.pretty_print(None)
+            else:
+                percent_populated = (
+                    str(round(field.count_present * 100 / len(results), 1)) + "%"
+                )
+                percent_matched = (
+                    str(round(field.count_matches * 100 / len(results), 1)) + "%"
+                )
             field_json = {
                 "SIRI field": field.sirivm_field.value,
                 "TXC match field": SIRIVM_TO_TXC_MAP[field.sirivm_field],
                 "Total vehicleActivities analysed": len(results),
                 "Total count of SIRI fields populated": field.count_present,
-                "%populated": str(round(field.count_present * 100 / len(results), 1))
-                + "%",
+                "%populated": percent_populated,
                 "Successful match with TXC": str(field.count_matches),
-                "%match": str(round(field.count_matches * 100 / len(results), 1)) + "%",
+                "%match": percent_matched,
                 "Notes": block_ref_notes
                 if field.sirivm_field == SirivmField.BLOCK_REF
                 else "",

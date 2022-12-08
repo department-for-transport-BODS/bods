@@ -121,7 +121,7 @@ class XmlFileParser(ETLUtility):
 
         creation_datetime = extract_timestamp(self.trans.get_creation_date_time())
         modification_datetime = extract_timestamp(
-            self.trans.get_modifitication_date_time()
+            self.trans.get_modification_date_time()
         )
 
         import_datetime = self.feed_parser.now

@@ -4,10 +4,10 @@ import pytest
 from django.core.files import File
 from django.test import RequestFactory
 
-from tests.integration.factories import OrganisationFactory
 from transit_odp.fares_validator.views.export_excel import FaresXmlExporter
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation import models
+from transit_odp.organisation.factories import OrganisationFactory
 
 DATA_DIR = Path(__file__).parent / "data"
 

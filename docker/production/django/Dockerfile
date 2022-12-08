@@ -72,7 +72,6 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
 # Copy the compiled frontend from step 1 - this ensures production image
 # needn't depend on dev tooling
 COPY --from=0 /app/transit_odp/frontend/static /app/transit_odp/frontend/static
-COPY ./cavl-client /app/cavl-client
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN python --version \
