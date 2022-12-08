@@ -3,11 +3,10 @@ from django_hosts import reverse, reverse_host
 from rest_framework.test import APIClient
 
 from config.hosts import DATA_HOST
-from tests.integration.factories import OrganisationFactory
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.factories import (
     DatasetFactory,
-    OperatorCodeFactory,
+    OrganisationFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.users.constants import DeveloperType
@@ -118,11 +117,10 @@ def test_filter_line_part_match_returns_empty(user_factory):
 
 
 def test_noc_operators(user_factory):
-    org = OrganisationFactory.create()
+    org = OrganisationFactory.create(nocs=["noc1"])
     host = reverse_host(DATA_HOST)
     user = user_factory(account_type=DeveloperType)
     client = APIClient()
-    OperatorCodeFactory(noc="noc1", organisation=org)
 
     url = reverse("api:v2:operators-list", host=DATA_HOST)
     response = client.get(

@@ -1,9 +1,8 @@
 import logging
 
-from cavl_client.rest import ApiException
 from django.db import transaction
 
-from transit_odp.bods.interfaces.plugins import get_cavl_service
+from transit_odp.avl.client import CAVLService
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.publish.views.base import (
     FeedArchiveBaseView,
@@ -11,7 +10,6 @@ from transit_odp.publish.views.base import (
 )
 
 APP_NAME = "avl"
-_404 = 404
 logger = logging.getLogger(__name__)
 
 
@@ -26,15 +24,9 @@ class AVLFeedArchiveView(FeedArchiveBaseView):
     @transaction.atomic()
     def form_valid(self, form):
         dataset = self.get_object()
-        cavl_service = get_cavl_service()
+        cavl_service = CAVLService()
+        cavl_service.delete_feed(feed_id=dataset.id)
 
-        try:
-            cavl_service.delete_feed(feed_id=dataset.id)
-        except ApiException as e:
-            if e.status == _404:
-                logger.error(
-                    f"[CAVL] Dataset {dataset.id} => Does not exist in CAVL Service."
-                )
         return super().form_valid(form)
 
 

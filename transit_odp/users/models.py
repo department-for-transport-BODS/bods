@@ -9,8 +9,8 @@ from django_hosts import reverse
 from invitations.models import Invitation as InvitationBase
 
 import config.hosts
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.validators import validate_profanity
+from transit_odp.notifications import get_notifications
 from transit_odp.users.constants import AccountType
 from transit_odp.users.managers import InvitationManager
 from transit_odp.users.mixins import UserRoleMixin

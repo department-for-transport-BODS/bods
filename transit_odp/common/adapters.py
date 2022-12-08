@@ -11,7 +11,7 @@ from django_hosts import reverse
 from invitations.utils import get_invitation_model
 
 import config.hosts
-from transit_odp.bods.interfaces.plugins import get_notifications
+from transit_odp.notifications import get_notifications
 
 Invitation = get_invitation_model()
 

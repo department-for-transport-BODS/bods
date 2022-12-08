@@ -134,7 +134,7 @@ class TransXChangeDocument:
         """
         return self._root["CreationDateTime"]
 
-    def get_modifitication_date_time(self):
+    def get_modification_date_time(self):
         """Gets the ModificationDateTime attribute from TxC file.
 
         Returns:
@@ -181,6 +181,15 @@ class TransXChangeDocument:
 
     def get_service_codes(self):
         xpath = ["Services", "Service", "ServiceCode"]
+        return self.find_anywhere(xpath)
+
+    def get_lines(self):
+        """Get all the Line elements in the TransXChangeDocument.
+
+        Returns:
+            List[TransXChangeElement]: A list of TransXChangeElement Line elements.
+        """
+        xpath = ["Services", "Service", "Lines", "Line"]
         return self.find_anywhere(xpath)
 
     def get_all_line_names(self):
@@ -295,6 +304,16 @@ class TransXChangeDocument:
         standard = ["Services", "Service", "StandardService", "Destination"]
         destination = self._root.get_first_text_or_default(xpath=standard, default="")
         return destination
+
+    def get_vehicle_journeys(self):
+        """Get all the VehicleJourney elements in the TransXChangeDocument.
+
+        Returns:
+            List[TransXChangeElement]: A list of TransXChangeElement
+            VehicleJourney elements.
+        """
+        xpath = ["VehicleJourneys", "VehicleJourney"]
+        return self._root.get_elements(xpath)
 
 
 class TransXChangeZip(ZippedValidator):

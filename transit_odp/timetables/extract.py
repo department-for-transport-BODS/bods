@@ -87,9 +87,7 @@ class TransXChangeExtractor:
         logger.debug("Finished extracting journey_patterns_sections")
 
         creation_datetime = extract_timestamp(self.doc.get_creation_date_time())
-        modification_datetime = extract_timestamp(
-            self.doc.get_modifitication_date_time()
-        )
+        modification_datetime = extract_timestamp(self.doc.get_modification_date_time())
 
         line_names = self.doc.get_all_line_names()
         line_count = len(line_names)

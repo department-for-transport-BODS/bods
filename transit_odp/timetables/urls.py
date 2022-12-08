@@ -141,7 +141,7 @@ urlpatterns = [
                 ),
                 path(
                     "changelog/",
-                    view=timetable.FeedChangeLogView.as_view(),
+                    view=timetable.TimetableChangeLogView.as_view(),
                     name="feed-changelog",
                 ),
                 path(
