@@ -44,13 +44,16 @@ def _get_token() -> str:
         "scope": settings.MS_SCOPE,
         "grant_type": "client_credentials",
     }
-
+    response = None
     try:
         response = requests.post(url=url, headers=headers, data=body)
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
         msg = f"Couldn't fetch Authorization token. {err}"
         logger.error(msg)
+        logger.info(f"with credentials {body}")
+        if response:
+            logger.info(f"with content {response.content}")
         raise OTCAuthorizationTokenException(msg)
 
     response = AuthResponse(**response.json())
