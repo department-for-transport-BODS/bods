@@ -1,9 +1,4 @@
 on:
-  push:
-    branches:
-    - 'hotfix-*'
-    paths:
-    - version.txt
   workflow_dispatch:
 
 name: 'hotfix_deployment'
