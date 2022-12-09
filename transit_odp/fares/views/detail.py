@@ -5,6 +5,7 @@ from django_hosts import reverse
 import config.hosts
 from transit_odp.common.enums import FeedErrorSeverity
 from transit_odp.common.views import BaseDetailView
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -80,6 +81,7 @@ class FaresFeedDetailView(OrgUserViewMixin, BaseDetailView):
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
         kwargs["pk1"] = self.kwargs["pk1"]
+        kwargs["pk2"] = revision.id
 
         severe_errors = revision.errors.filter(severity=FeedErrorSeverity.severe.value)
         status = revision.status
@@ -87,6 +89,19 @@ class FaresFeedDetailView(OrgUserViewMixin, BaseDetailView):
         # there display error banner
         if severe_errors or (revision.status == FeedStatus.error.value):
             status = "error"
+
+        kwargs["is_compliant_error"] = True
+        kwargs["show_report_link"] = False
+        try:
+            results = FaresValidationResult.objects.get(
+                revision_id=dataset.live_revision_id
+            )
+        except FaresValidationResult.DoesNotExist:
+            results = None
+        if results:
+            if results.is_compliant is True:
+                kwargs["is_compliant_error"] = False
+            kwargs["show_report_link"] = True
 
         try:
             faresmetadata = revision.metadata.faresmetadata
