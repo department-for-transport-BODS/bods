@@ -45,11 +45,7 @@ def get_lxml_element(string_xml):
             True,
             True,
             False,
-            [
-                "violation",
-                "5",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             False,
@@ -158,11 +154,7 @@ def test_is_time_intervals_present_in_tarrifs(
             True,
             True,
             False,
-            [
-                "violation",
-                "5",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             False,
@@ -393,11 +385,7 @@ def test_is_time_interval_name_present_in_tariffs(
             False,
             False,
             False,
-            [
-                "violation",
-                "13",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
+            "",
         ),
         (True, True, False, False, False, None),
         (
@@ -568,11 +556,7 @@ def test_is_fare_structure_element_present(
             False,
             False,
             False,
-            [
-                "violation",
-                "13",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
+            "",
         ),
         (True, False, False, False, False, False, None),
         (
