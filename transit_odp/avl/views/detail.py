@@ -85,11 +85,9 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             ).first()
             ppc_weekly_score = (
                 str(
-                    round(
-                        ppc_avl_dataset.vehicle_activities_completely_matching
-                        * 100
-                        / ppc_avl_dataset.vehicle_activities_analysed,
-                    )
+                    ppc_avl_dataset.vehicle_activities_completely_matching
+                    * 100
+                    // ppc_avl_dataset.vehicle_activities_analysed,
                 )
                 + "%"
             )
