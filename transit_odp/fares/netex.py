@@ -89,6 +89,34 @@ class NeTExDocument:
     def get_netex_version(self):
         return self._root["version"]
 
+    def get_xml_file_name(self):
+        xml_file_name = self.name
+        file_name = xml_file_name.split(".xml")[0]
+        return file_name
+
+    def get_attribute_id_from_xpath(self, path):
+        elements = self.find_anywhere(path)
+        element_id = [element["id"] for element in elements]
+        return element_id.pop()
+
+    def get_attribute_text_from_xpath(self, path):
+        elements = self.find_anywhere(path)
+        element_value = [element.text for element in elements]
+
+        return element_value.pop()
+
+    def get_multiple_attr_text_from_xpath(self, path):
+        elements = self.find_anywhere(path)
+        element_value = [element.text for element in elements]
+
+        return element_value
+
+    def get_multiple_attr_ids_from_xpath(self, path):
+        elements = self.find_anywhere(path)
+        element_id = [element["id"] for element in elements]
+
+        return element_id
+
     @property
     def fare_zones(self):
         xpath = "FareZone"
@@ -136,6 +164,15 @@ class NeTExDocument:
             return max(to_dates)
 
         return None
+
+    def get_atco_area_code(self):
+        path = ["scheduledStopPoints", "ScheduledStopPoint"]
+        elements = self.find_anywhere(path)
+        element_ids = [element["id"] for element in elements]
+        all_atco_codes = [element_id.split(":")[-1] for element_id in element_ids]
+        atco_codes = [code[:3] for code in all_atco_codes]
+
+        return atco_codes
 
     @property
     def scheduled_stop_points(self):

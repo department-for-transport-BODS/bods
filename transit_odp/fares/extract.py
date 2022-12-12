@@ -83,6 +83,84 @@ class NeTExDocumentsExtractor:
         ]
         return list(itertools.chain(*stop_point_refs))
 
+    @property
+    def xml_file_name(self):
+        xml_file_name = [doc.get_xml_file_name() for doc in self.documents]
+        return xml_file_name.pop()
+
+    @property
+    def national_operator_code(self):
+        path = ["organisations", "Operator", "PublicCode"]
+        national_operator_code = [
+            doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
+        ]
+
+        return national_operator_code.pop()
+
+    @property
+    def tariff_basis(self):
+        path = ["Tariff", "TariffBasis"]
+        tariff_basis = [
+            doc.get_attribute_text_from_xpath(path) for doc in self.documents
+        ]
+
+        return tariff_basis.pop()
+
+    @property
+    def product_type(self):
+        path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
+        product_type = [
+            doc.get_attribute_text_from_xpath(path) for doc in self.documents
+        ]
+
+        return product_type.pop()
+
+    @property
+    def product_name(self):
+        path = ["fareProducts", "PreassignedFareProduct", "Name"]
+        product_name = [
+            doc.get_attribute_text_from_xpath(path) for doc in self.documents
+        ]
+
+        return product_name.pop()
+
+    @property
+    def user_type(self):
+        path = [
+            "FareStructureElement",
+            "GenericParameterAssignment",
+            "limitations",
+            "UserProfile",
+            "UserType",
+        ]
+        user_type = [doc.get_attribute_text_from_xpath(path) for doc in self.documents]
+
+        return user_type.pop()
+
+    @property
+    def line_id(self):
+        path = ["lines", "Line"]
+        line_ids = [
+            doc.get_multiple_attr_ids_from_xpath(path) for doc in self.documents
+        ]
+
+        return line_ids.pop()
+
+    @property
+    def line_name(self):
+        path = ["lines", "Line", "PublicCode"]
+        line_name = [
+            doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
+        ]
+
+        return line_name.pop()
+
+    @property
+    def atco_area(self):
+        scheduled_stop_points = [doc.get_atco_area_code() for doc in self.documents]
+
+        return scheduled_stop_points.pop()
+
     def to_dict(self):
         keys = [
             "schema_version",
@@ -94,6 +172,15 @@ class NeTExDocumentsExtractor:
             "valid_from",
             "valid_to",
             "stop_point_refs",
+            "xml_file_name",
+            "national_operator_code",
+            "line_id",
+            "line_name",
+            "atco_area",
+            "tariff_basis",
+            "product_type",
+            "product_name",
+            "user_type",
         ]
         try:
             data = {key: getattr(self, key) for key in keys}
