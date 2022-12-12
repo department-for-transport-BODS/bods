@@ -85,7 +85,7 @@ class NeTExDocumentsExtractor:
 
     @property
     def xml_file_name(self):
-        xml_file_name = [doc.get_xml_file_name() for doc in self.documents].pop()
+        xml_file_name = [doc.get_xml_file_name() for doc in self.documents]
         return xml_file_name
 
     @property
@@ -105,7 +105,7 @@ class NeTExDocumentsExtractor:
         try:
             path = ["Tariff", "TariffBasis"]
             tariff_basis = [
-                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+                doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
             ].pop()
         except IndexError:
             return None
@@ -117,7 +117,7 @@ class NeTExDocumentsExtractor:
         try:
             path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
             product_type = [
-                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+                doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
             ].pop()
         except IndexError:
             return None
@@ -129,7 +129,7 @@ class NeTExDocumentsExtractor:
         try:
             path = ["fareProducts", "PreassignedFareProduct", "Name"]
             product_name = [
-                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+                doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
             ].pop()
         except IndexError:
             return None
@@ -147,7 +147,7 @@ class NeTExDocumentsExtractor:
                 "UserType",
             ]
             user_type = [
-                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+                doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
             ].pop()
         except IndexError:
             return None
