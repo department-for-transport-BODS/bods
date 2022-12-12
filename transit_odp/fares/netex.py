@@ -94,11 +94,6 @@ class NeTExDocument:
         file_name = xml_file_name.split(".xml")[0]
         return file_name
 
-    def get_attribute_id_from_xpath(self, path):
-        elements = self.find_anywhere(path)
-        element_id = [element["id"] for element in elements]
-        return element_id.pop()
-
     def get_attribute_text_from_xpath(self, path):
         elements = self.find_anywhere(path)
         element_value = [element.text for element in elements]

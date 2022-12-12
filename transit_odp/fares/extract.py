@@ -85,81 +85,109 @@ class NeTExDocumentsExtractor:
 
     @property
     def xml_file_name(self):
-        xml_file_name = [doc.get_xml_file_name() for doc in self.documents]
-        return xml_file_name.pop()
+        xml_file_name = [doc.get_xml_file_name() for doc in self.documents].pop()
+        return xml_file_name
 
     @property
     def national_operator_code(self):
-        path = ["organisations", "Operator", "PublicCode"]
-        national_operator_code = [
-            doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-        ]
+        try:
+            path = ["organisations", "Operator", "PublicCode"]
+            national_operator_code = [
+                doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return national_operator_code.pop()
+        return national_operator_code
 
     @property
     def tariff_basis(self):
-        path = ["Tariff", "TariffBasis"]
-        tariff_basis = [
-            doc.get_attribute_text_from_xpath(path) for doc in self.documents
-        ]
+        try:
+            path = ["Tariff", "TariffBasis"]
+            tariff_basis = [
+                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return tariff_basis.pop()
+        return tariff_basis
 
     @property
     def product_type(self):
-        path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
-        product_type = [
-            doc.get_attribute_text_from_xpath(path) for doc in self.documents
-        ]
+        try:
+            path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
+            product_type = [
+                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return product_type.pop()
+        return product_type
 
     @property
     def product_name(self):
-        path = ["fareProducts", "PreassignedFareProduct", "Name"]
-        product_name = [
-            doc.get_attribute_text_from_xpath(path) for doc in self.documents
-        ]
+        try:
+            path = ["fareProducts", "PreassignedFareProduct", "Name"]
+            product_name = [
+                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return product_name.pop()
+        return product_name
 
     @property
     def user_type(self):
-        path = [
-            "FareStructureElement",
-            "GenericParameterAssignment",
-            "limitations",
-            "UserProfile",
-            "UserType",
-        ]
-        user_type = [doc.get_attribute_text_from_xpath(path) for doc in self.documents]
+        try:
+            path = [
+                "FareStructureElement",
+                "GenericParameterAssignment",
+                "limitations",
+                "UserProfile",
+                "UserType",
+            ]
+            user_type = [
+                doc.get_attribute_text_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return user_type.pop()
+        return user_type
 
     @property
     def line_id(self):
-        path = ["lines", "Line"]
-        line_ids = [
-            doc.get_multiple_attr_ids_from_xpath(path) for doc in self.documents
-        ]
+        try:
+            path = ["lines", "Line"]
+            line_ids = [
+                doc.get_multiple_attr_ids_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return line_ids.pop()
+        return line_ids
 
     @property
     def line_name(self):
-        path = ["lines", "Line", "PublicCode"]
-        line_name = [
-            doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-        ]
+        try:
+            path = ["lines", "Line", "PublicCode"]
+            line_name = [
+                doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return line_name.pop()
+        return line_name
 
     @property
     def atco_area(self):
-        scheduled_stop_points = [doc.get_atco_area_code() for doc in self.documents]
+        try:
+            scheduled_stop_points = [
+                doc.get_atco_area_code() for doc in self.documents
+            ].pop()
+        except IndexError:
+            return None
 
-        return scheduled_stop_points.pop()
+        return scheduled_stop_points
 
     def to_dict(self):
         keys = [
