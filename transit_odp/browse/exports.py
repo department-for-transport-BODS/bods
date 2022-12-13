@@ -19,7 +19,7 @@ from transit_odp.organisation.csv.overall import (
 )
 from transit_odp.organisation.models import Organisation
 from transit_odp.timetables.csv import TIMETABLE_COLUMN_MAP, get_timetable_catalogue_csv
-from transit_odp.fares_validator.csv import FARES_COLUMN_MAP, get_fares_data_catalogue_csv
+from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
 
 logger = logging.getLogger(__name__)
 
@@ -94,13 +94,6 @@ def create_guidance_file_string() -> str:
     result += [
         row_template.format(field_name=field_name, definition=definition)
         for field_name, definition in AVL_COLUMN_MAP.values()
-    ]
-
-    fares = "\nFares data catalogue:"
-    result.append(header_template.format(header=fares, field_header=field_header))
-    result += [
-        row_template.format(field_name=field_name, definition=definition)
-        for field_name, definition in FARES_COLUMN_MAP.values()
     ]
 
     return "\n".join(result)
