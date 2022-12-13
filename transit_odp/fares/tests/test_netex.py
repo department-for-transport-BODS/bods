@@ -87,6 +87,54 @@ def test_get_netex_version(netexdocument):
     assert expected == actual
 
 
+def test_get_xml_file_name(netexdocument):
+    actual = netexdocument.get_xml_file_name()
+    expected = "/app/transit_odp/fares/tests/fixtures/sample1"
+    assert expected == actual
+
+
+def test_get_multiple_attr_text_from_xpath(netexdocument):
+    path = ["organisations", "Operator", "PublicCode"]
+    actual = netexdocument.get_multiple_attr_text_from_xpath(path)
+    expected = ["HCTY", "ATOC", "NR"]
+    assert expected == actual
+
+
+def test_get_multiple_attr_ids_from_xpath(netexdocument):
+    path = ["lines", "Line"]
+    actual = netexdocument.get_multiple_attr_ids_from_xpath(path)
+    expected = ["16"]
+    assert expected == actual
+
+
+def test_get_atco_area_code(netexdocument):
+    actual = netexdocument.get_atco_area_code()
+    expected = [
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+    ]
+    assert expected == actual
+
+
+def test_get_valid_from_date(netexdocument):
+    actual = netexdocument.get_valid_from_date()
+    expected = "2020-01-01"
+    assert expected == actual
+
+
 def test_get_fare_products(netexdocument):
     actual = netexdocument.fare_products
     assert len(actual) == 1

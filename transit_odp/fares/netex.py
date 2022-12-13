@@ -163,6 +163,29 @@ class NeTExDocument:
 
         return atco_codes
 
+    def get_valid_from_date(self):
+        path = ["CompositeFrame", "ValidBetween", "FromDate"]
+        elements = self.find_anywhere(path)
+        from_date_list = [parse_datetime_str(from_date.text) for from_date in elements]
+        first_from_date = str(from_date_list[0])
+        from_date_value = first_from_date[:10]
+
+        return from_date_value
+
+    def get_composite_frame_ids(self):
+        path = ["CompositeFrame"]
+        frame_elements = self.find_anywhere(path)
+        composite_frame_ids = [frame["id"] for frame in frame_elements]
+        return composite_frame_ids
+
+    def get_to_date_texts(self):
+        path = ["CompositeFrame", "ValidBetween", "ToDate"]
+        to_date_elements_list = self.find_anywhere(path)
+        all_to_date_text_list = [
+            parse_datetime_str(to_date.text) for to_date in to_date_elements_list
+        ]
+        return all_to_date_text_list
+
     @property
     def scheduled_stop_points(self):
         xpath = ["scheduledStopPoints", "ScheduledStopPoint"]
