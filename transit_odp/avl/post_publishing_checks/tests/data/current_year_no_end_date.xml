@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<TransXChange FileName="current_year_no_end_date.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+<ServicedOrganisations>
+</ServicedOrganisations>
+<StopPoints>
+</StopPoints>
+<RouteSections>
+</RouteSections>
+<Routes>
+</Routes>
+<JourneyPatternSections>
+</JourneyPatternSections>
+<Operators>
+</Operators>
+<Services>
+  <Service>
+    <OperatingPeriod>
+      <StartDate>2022-01-01</StartDate>
+    </OperatingPeriod>
+  </Service>
+</Services>
+<VehicleJourneys>
+</VehicleJourneys>
+</TransXChange>

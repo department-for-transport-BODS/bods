@@ -38,6 +38,7 @@ class FaresXmlValidator:
             for violation in raw_violations
             if violation not in violations
         ]
+        logger.info(f"Revision {self.pk2} contains {len(violations)} fares violations.")
         if violations:
             for violation in violations:
                 fares_violations = FaresValidation.create_observations(

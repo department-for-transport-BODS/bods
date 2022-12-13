@@ -1,9 +1,10 @@
 from .archive import AVLFeedArchiveSuccessView, AVLFeedArchiveView
-from .changelog import ChangeLogView
+from .changelog import AVLChangeLogView
 from .create import AVLUploadWizard
 from .delete import RevisionDeleteAVLView, RevisionDeleteSuccessView
 from .detail import (
     AvlFeedDetailView,
+    DownloadPPCWeeklyReportView,
     SchemaValidationFileDownloadView,
     ValidationFileDownloadView,
 )
@@ -28,7 +29,7 @@ __all__ = [
     "AVLUpdateWizard",
     "AVLUploadWizard",
     "AvlFeedDetailView",
-    "ChangeLogView",
+    "AVLChangeLogView",
     "DraftExistsView",
     "EditDraftRevisionDescriptionView",
     "EditLiveRevisionDescriptionView",
@@ -39,6 +40,7 @@ __all__ = [
     "RevisionDeleteSuccessView",
     "RevisionPublishSuccessView",
     "RevisionUpdateSuccessView",
+    "DownloadPPCWeeklyReportView",
     "SchemaValidationFileDownloadView",
     "UpdateRevisionPublishView",
     "ValidationFileDownloadView",

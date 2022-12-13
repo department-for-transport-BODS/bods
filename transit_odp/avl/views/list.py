@@ -1,9 +1,7 @@
-from django.conf import settings
-from django.db.models import Avg, Case, ExpressionWrapper, F, OuterRef, Subquery, When
-from django.db.models.fields import FloatField
+from django.db.models import Avg
 
 from transit_odp.avl.constants import MORE_DATA_NEEDED
-from transit_odp.avl.models import PostPublishingCheckReport
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.tables import AVLDataFeedTable
 from transit_odp.organisation.constants import AVLType
@@ -29,45 +27,28 @@ class ListView(BasePublishListView):
             .order_by("avl_feed_status", "-modified")
         )
 
+    def get_active_qs(self):
+        qs = super().get_active_qs()
+        return qs.add_post_publishing_check_stats()
+
     def get_overall_ppc_score(self):
-        created_at = (
-            PostPublishingCheckReport.objects.filter(granularity="weekly")
-            .filter(dataset=OuterRef("pk"))
-            .order_by("-created")
-        )
         avl_datasets = (
             self.get_datasets()
             .get_active()
             .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
-        ).annotate(
-            vehicle_completely_matching=Subquery(
-                created_at.values("vehicle_activities_completely_matching")[:1]
-            ),
-            vehicle_analysed=Subquery(
-                created_at.values("vehicle_activities_analysed")[:1]
-            ),
+            .add_post_publishing_check_stats()
         )
-        return avl_datasets.annotate(
-            score=Case(
-                When(
-                    vehicle_analysed__gt=0,
-                    then=ExpressionWrapper(
-                        F("vehicle_completely_matching")
-                        * 100.0
-                        / F("vehicle_analysed"),
-                        output_field=FloatField(),
-                    ),
-                ),
-                default=None,
-            )
-        ).aggregate(Avg("score"))
+        return avl_datasets.exclude(percent_matching=float(NO_PPC_DATA)).aggregate(
+            Avg("percent_matching")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(
             {
-                "feature_ppc_enabled": settings.FEATURE_PPC_ENABLED,
-                "overall_ppc_score": self.get_overall_ppc_score()["score__avg"],
+                "overall_ppc_score": self.get_overall_ppc_score()[
+                    "percent_matching__avg"
+                ],
             }
         )
         return context

@@ -63,11 +63,7 @@ def get_lxml_element(string_xml):
             True,
             True,
             True,
-            [
-                "violation",
-                "3",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             True,
@@ -172,11 +168,7 @@ def test_is_fare_zones_present_in_fare_frame(
             False,
             False,
             False,
-            [
-                "violation",
-                "3",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             False,
@@ -184,11 +176,7 @@ def test_is_fare_zones_present_in_fare_frame(
             True,
             True,
             True,
-            [
-                "violation",
-                "3",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             True,
@@ -345,11 +333,7 @@ def test_is_name_present_in_fare_frame(
             False,
             False,
             False,
-            [
-                "violation",
-                "3",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             False,
@@ -358,11 +342,7 @@ def test_is_name_present_in_fare_frame(
             True,
             True,
             True,
-            [
-                "violation",
-                "3",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (
             True,

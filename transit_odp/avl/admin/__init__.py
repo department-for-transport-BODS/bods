@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminFileWidget
@@ -218,59 +217,57 @@ class DummyDatafeedAdmin(admin.ModelAdmin):
         return to_delete, model_count, set(), protected
 
 
-if settings.FEATURE_PPC_ENABLED:
+@admin.register(PostPublishingCheckReport)
+class PostPublishingCheckReportAdmin(admin.ModelAdmin):
+    form = PostPublishingCheckReportAdminForm
+    formfield_overrides = {models.FileField: {"widget": CustomAdminFileWidget}}
+    list_display = (
+        "dataset_id",
+        "granularity",
+        "created",
+        "download_report",
+        "vehicle_activities_analysed",
+        "vehicle_activities_completely_matching",
+    )
+    readonly_fields = ("download_report",)
+    fields = (
+        "dataset",
+        "granularity",
+        "created",
+        "download_report",
+        "file",
+        "vehicle_activities_analysed",
+        "vehicle_activities_completely_matching",
+    )
+    search_fields = ("dataset__id",)
 
-    @admin.register(PostPublishingCheckReport)
-    class PostPublishingCheckReportAdmin(admin.ModelAdmin):
-        form = PostPublishingCheckReportAdminForm
-        formfield_overrides = {models.FileField: {"widget": CustomAdminFileWidget}}
-        list_display = (
-            "dataset_id",
-            "granularity",
-            "created",
-            "download_report",
-            "vehicle_activities_analysed",
-            "vehicle_activities_completely_matching",
+    def get_urls(self):
+        urls = super().get_urls()
+        urls += [
+            url(
+                r"^download-ppc-report/(?P<pk>\d+)$",
+                self.download_ppc_report,
+                name="post-publishing-check-report",
+            ),
+        ]
+        return urls
+
+    def download_report(self, instance):
+        if instance.pk is None:
+            return "Not available"
+        if not instance.file:
+            return "Empty"
+
+        return format_html(
+            '<a href="{}">{}</a>',
+            reverse("admin:post-publishing-check-report", args=[instance.pk]),
+            instance.file.name,
         )
-        readonly_fields = ("download_report",)
-        fields = (
-            "dataset",
-            "granularity",
-            "created",
-            "download_report",
-            "file",
-            "vehicle_activities_analysed",
-            "vehicle_activities_completely_matching",
-        )
-        search_fields = ("dataset__id",)
 
-        def get_urls(self):
-            urls = super().get_urls()
-            urls += [
-                url(
-                    r"^download-ppc-report/(?P<pk>\d+)$",
-                    self.download_ppc_report,
-                    name="post-publishing-check-report",
-                ),
-            ]
-            return urls
-
-        def download_report(self, instance):
-            if instance.pk is None:
-                return "Not available"
-            if not instance.file:
-                return "Empty"
-
-            return format_html(
-                '<a href="{}">{}</a>',
-                reverse("admin:post-publishing-check-report", args=[instance.pk]),
-                instance.file.name,
-            )
-
-        def download_ppc_report(self, request, pk):
-            if request.user.is_anonymous or not request.user.is_superuser:
-                return HttpResponseForbidden("not admin user", content_type="text/html")
-            report = get_object_or_404(PostPublishingCheckReport, pk=pk)
-            response = FileResponse(report.file.open("rb"), as_attachment=True)
-            response["Content-Disposition"] = f"attachment; filename={report.file.name}"
-            return response
+    def download_ppc_report(self, request, pk):
+        if request.user.is_anonymous or not request.user.is_superuser:
+            return HttpResponseForbidden("not admin user", content_type="text/html")
+        report = get_object_or_404(PostPublishingCheckReport, pk=pk)
+        response = FileResponse(report.file.open("rb"), as_attachment=True)
+        response["Content-Disposition"] = f"attachment; filename={report.file.name}"
+        return response

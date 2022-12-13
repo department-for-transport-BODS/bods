@@ -2,7 +2,7 @@ from transit_odp.publish.views.timetable.archive import (
     TimetableFeedArchiveSuccessView,
     TimetableFeedArchiveView,
 )
-from transit_odp.publish.views.timetable.changelog import FeedChangeLogView
+from transit_odp.publish.views.timetable.changelog import TimetableChangeLogView
 from transit_odp.publish.views.timetable.create import FeedUploadWizard
 from transit_odp.publish.views.timetable.delete import (
     RevisionDeleteSuccessView,
@@ -30,7 +30,7 @@ from transit_odp.publish.views.timetable.update import (
 __all__ = [
     "TimetableFeedArchiveSuccessView",
     "TimetableFeedArchiveView",
-    "FeedChangeLogView",
+    "TimetableChangeLogView",
     "FeedUploadWizard",
     "RevisionDeleteSuccessView",
     "RevisionDeleteTimetableView",

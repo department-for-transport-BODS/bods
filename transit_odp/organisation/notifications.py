@@ -1,8 +1,8 @@
 from django.db.models import Q
 from django.utils import timezone
 
-from transit_odp.bods.interfaces.notifications import INotifications
-from transit_odp.bods.interfaces.plugins import get_notifications
+from transit_odp.notifications import get_notifications
+from transit_odp.notifications.client import INotifications
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.users.models import AgentUserInvite
 

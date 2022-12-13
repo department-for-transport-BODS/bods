@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from pydantic import BaseModel
 
@@ -35,3 +35,4 @@ class Violation(BaseModel):
     line: int
     filename: str
     observation: str
+    category: str

@@ -1,8 +1,12 @@
 from datetime import datetime
-from typing import TypedDict
+from typing import Optional, TypedDict
 
 import pytz
+from django.db.models import ObjectDoesNotExist
+from django.http import FileResponse
+from django.views.generic import DetailView
 
+from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.common.views import BaseDetailView
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -23,18 +27,19 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
         siri_version: str
         url_link: str
         last_modified: str
-        last_modified_user: str
+        last_modified_user: Optional[str]
         last_server_update: str
-        published_by: str
+        published_by: Optional[str]
         published_at: str
-        avl_compliance_status: str
+        avl_compliance_status_cached: str
+        avl_timetables_matching: Optional[str]
         has_schema_violations: bool
         days_to_go: int
         first_error_date: datetime
         is_dummy: bool
 
     def get_queryset(self):
-        return (
+        qs = (
             super()
             .get_queryset()
             .filter(
@@ -47,6 +52,7 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             .add_avl_compliance_status_cached()
             .select_related("live_revision")
         )
+        return qs
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -70,6 +76,26 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
                 pytz.timezone("Europe/London")
             ).strftime("%d %b %Y %H:%M")
 
+        ppc_weekly_score = None
+        try:
+            ppc_avl_dataset = (
+                PostPublishingCheckReport.objects.filter(granularity="weekly")
+                .filter(dataset__id=self.object.id)
+                .order_by("-created")
+            ).first()
+            ppc_weekly_score = (
+                str(
+                    round(
+                        ppc_avl_dataset.vehicle_activities_completely_matching
+                        * 100
+                        / ppc_avl_dataset.vehicle_activities_analysed,
+                    )
+                )
+                + "%"
+            )
+        except (ObjectDoesNotExist, ZeroDivisionError, AttributeError):
+            pass
+
         if hasattr(revision, "metadata"):
             siri_version = revision.metadata.schema_version
         else:
@@ -91,12 +117,12 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             published_by=published_by,
             published_at=revision.published_at,
             avl_compliance_status_cached=dataset.avl_compliance_status_cached,
+            avl_timetables_matching=ppc_weekly_score,
             has_schema_violations=dataset.has_schema_violations,
             days_to_go=7 - dataset.avl_report_count,
             first_error_date=dataset.first_error_date,
             is_dummy=dataset.is_dummy,
         )
-
         return kwargs
 
 
@@ -112,3 +138,25 @@ class SchemaValidationFileDownloadView(OrgUserViewMixin, BaseDetailView):
 
     def get(self, *args, **kwargs):
         return self.get_object().to_schema_validation_response()
+
+
+class DownloadPPCWeeklyReportView(OrgUserViewMixin, DetailView):
+    model = AVLDataset
+
+    def get(self, *args, **kwargs):
+        dataset_id = self.kwargs["pk"]
+        self.ppc_avl_dataset = (
+            PostPublishingCheckReport.objects.filter(
+                dataset__id=dataset_id, granularity=PPCReportType.WEEKLY
+            )
+            .order_by("-created")
+            .first()
+        )
+        return self.render_to_response()
+
+    def render_to_response(self):
+        response = FileResponse(self.ppc_avl_dataset.file)
+        response[
+            "Content-Disposition"
+        ] = f"attachment; filename={self.ppc_avl_dataset.file.name}"
+        return response

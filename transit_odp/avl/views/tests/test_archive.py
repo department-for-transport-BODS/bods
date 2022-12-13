@@ -1,7 +1,6 @@
 from unittest.mock import Mock, patch
 
 import pytest
-from cavl_client.rest import ApiException
 from django_hosts.resolvers import reverse
 
 import config.hosts
@@ -25,14 +24,11 @@ class TestAVLFeedArchiveViewDataset:
         assert issubclass(AVLFeedArchiveView, OrgUserViewMixin)
 
     @pytest.mark.skip("Doesn't work in the pipeline due to --numprocesses")
-    @pytest.mark.parametrize(
-        "mock_kwargs", ({"return_value": None}, {"side_effect": ApiException})
-    )
-    @patch(AVL_VIEWS + "archive.get_cavl_service")
-    def test_archive_successful(self, get_service, client_factory, mock_kwargs):
+    @patch(AVL_VIEWS + "archive.CAVLService")
+    def test_archive_successful(self, get_service, client_factory):
         client = client_factory(host=self.host)
         mock_cavl = Mock()
-        mock_cavl.delete_feed = Mock(**mock_kwargs)
+        mock_cavl.delete_feed = Mock(return_value=None)
         get_service.return_value = mock_cavl
 
         organisation = OrganisationFactory()

@@ -64,3 +64,5 @@ SIRIVM_TO_TXC_MAP = OrderedDict(
         (SirivmField.BLOCK_REF, "BlockNumber"),
     ]
 )
+
+NO_PPC_DATA = -1

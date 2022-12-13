@@ -845,6 +845,16 @@ class DatasetQuerySet(models.QuerySet):
         )
         return qs
 
+    def get_compliant_fares_validation(self):
+        non_zero_count = Q(live_revision__fares_validation_result__count=0)
+        return self.annotate(
+            is_fares_compliant=Case(
+                When(non_zero_count, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
@@ -1097,6 +1107,9 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .annotate(dataset_id=F("revision__dataset_id"))
             .add_string_lines()
         )
+
+    def filter_by_noc_and_line_name(self, noc, line_name):
+        return self.filter(national_operator_code=noc, line_names__contains=[line_name])
 
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
