@@ -89,6 +89,36 @@ class NeTExDocumentsExtractor:
         return xml_file_name
 
     @property
+    def fares_valid_from(self):
+        try:
+            valid_from = [doc.get_valid_from_date() for doc in self.documents].pop()
+        except IndexError:
+            return None
+
+        return valid_from
+
+    @property
+    def fares_valid_to(self):
+        try:
+            composite_frame_ids_list = [
+                doc.get_composite_frame_ids() for doc in self.documents
+            ].pop()
+            to_date_text_list = [
+                doc.get_to_date_texts() for doc in self.documents
+            ].pop()
+            if (
+                len(to_date_text_list) > 1
+                and "UK_PI_METADATA_OFFER" not in composite_frame_ids_list
+            ):
+                first_to_date_element = str(to_date_text_list[0])
+                valid_to = first_to_date_element[:10]
+                return valid_to
+            else:
+                return None
+        except IndexError:
+            return None
+
+    @property
     def national_operator_code(self):
         try:
             path = ["organisations", "Operator", "PublicCode"]
@@ -201,6 +231,8 @@ class NeTExDocumentsExtractor:
             "valid_to",
             "stop_point_refs",
             "xml_file_name",
+            "fares_valid_from",
+            "fares_valid_to",
             "national_operator_code",
             "line_id",
             "line_name",

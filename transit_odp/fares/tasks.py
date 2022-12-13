@@ -188,6 +188,7 @@ def task_run_fares_etl(task_id):
         adapter.info("Creating fares extractor.")
         extractor = NeTExDocumentsExtractor(docs)
         extracted_data = extractor.to_dict()
+        print("extracted data>>>", extracted_data)
     except ExtractionError as exc:
         adapter.error("Metadata extraction failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)

@@ -15,6 +15,8 @@ class FaresMetadata(DatasetMetadata):
     valid_from = models.DateTimeField(blank=True, null=True)
     valid_to = models.DateTimeField(blank=True, null=True)
     xml_file_name = ArrayField(models.CharField(null=True, max_length=255))
+    fares_valid_from = models.DateField(null=True, max_length=100)
+    fares_valid_to = models.DateField(null=True, max_length=100)
     national_operator_code = ArrayField(models.CharField(null=True, max_length=255))
     line_id = ArrayField(models.CharField(null=True, max_length=255))
     line_name = ArrayField(models.CharField(null=True, max_length=100))

@@ -17,6 +17,17 @@ class FaresMetadataFactory(DatasetMetadataFactory):
     num_of_user_profiles = factory.Sequence(lambda n: n)
     valid_from = datetime.datetime(2000, 5, 7)
     valid_to = datetime.datetime(2099, 5, 7)
+    acto_area = factory.Sequence(lambda n: n)
+    fares_valid_from = datetime.datetime(2000, 5, 7)
+    fares_valid_to = datetime.datetime(2099, 5, 7)
+    line_id = factory.Sequence(lambda n: n)
+    line_name = factory.Sequence(lambda n: n)
+    national_operator_code = factory.Sequence(lambda n: n)
+    product_name = factory.Sequence(lambda n: n)
+    product_type = factory.Sequence(lambda n: n)
+    tariff_basis = factory.Sequence(lambda n: n)
+    user_type = factory.Sequence(lambda n: n)
+    xml_file_name = factory.Sequence(lambda n: n)
 
     @factory.post_generation
     def stops(self, create, extracted, **kwargs):
