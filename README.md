@@ -243,6 +243,8 @@ npm start
 ```
 ## HotFix Deployment
 
-### Step 1: Create a pull request from branch into test, obtain approval and merge. This will trigger the test pipeline. The test test pipeline should fail as the image does not exist.
+### Step 1: 
+Create a pull request from branch into test, obtain approval and merge. This will trigger the test pipeline. The test test pipeline should fail as the image does not exist.
 
-### Step 2: Navigate to the hotfix pipeline and trigger it from the test branch.
+### Step 2: 
+Navigate to the hotfix pipeline and trigger it from the test branch. This will trigger the build and will take around 1:30 minutes to complete.
