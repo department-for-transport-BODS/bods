@@ -464,17 +464,7 @@ def test_check_type_of_fare_structure_element_ref(
     ),
     [
         (True, True, True, True, None),
-        (
-            False,
-            False,
-            True,
-            True,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
-        ),
+        (False, False, True, True, ""),
         (True, False, True, True, None),
         (
             True,
@@ -594,17 +584,7 @@ def test_check_generic_parameters_for_access(
         (True, True, True, True, None),
         (True, True, False, True, None),
         (True, True, True, False, None),
-        (
-            False,
-            False,
-            True,
-            True,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
-        ),
+        (False, False, True, True, ""),
         (True, False, False, False, None),
         (
             True,
@@ -730,11 +710,7 @@ def test_check_validity_grouping_type_for_access(
             False,
             False,
             True,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
+            "",
         ),
         (True, False, False, None),
         (
@@ -845,11 +821,7 @@ def test_check_validity_parameter_for_access(
             True,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
+            "",
         ),
         (True, False, True, True, True, True, None),
         (
@@ -1044,11 +1016,7 @@ def test_check_generic_parameters_for_eligibility(
             False,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFareStructureElementRef' is missing",
-            ],
+            "",
         ),
         (
             True,

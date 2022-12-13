@@ -135,14 +135,18 @@ class FaresDatasetDetailView(DetailView):
         kwargs["pk1"] = dataset.organisation_id
         kwargs["pk2"] = dataset.live_revision_id
 
-        results = FaresValidationResult.objects.get(
-            revision_id=dataset.live_revision_id
-        )
-        if results.is_compliant is False:
-            kwargs["is_compliant_error"] = True
-        else:
-            kwargs["is_compliant_error"] = False
-
+        kwargs["is_compliant_error"] = True
+        kwargs["show_report_link"] = False
+        try:
+            results = FaresValidationResult.objects.get(
+                revision_id=dataset.live_revision_id
+            )
+        except FaresValidationResult.DoesNotExist:
+            results = None
+        if results:
+            if results.is_compliant is True:
+                kwargs["is_compliant_error"] = False
+            kwargs["show_report_link"] = True
         is_subscribed = None
         feed_api = None
 

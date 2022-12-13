@@ -1,9 +1,10 @@
-import pytest
 from pathlib import Path
+
+import pytest
 from django.core.files import File
 
-from transit_odp.fares_validator.views.validators import FaresValidator
 from transit_odp.fares_validator.types import Violation
+from transit_odp.fares_validator.views.validators import FaresValidator
 
 DATA_DIR = Path(__file__).parent / "data"
 FARES_SCHEMA = Path(__file__).parent.parent / "schema" / "fares_schema.json"
@@ -47,11 +48,13 @@ def test_fares_validators_is_valid(test_pass, expected):
                     line=1819,
                     filename="fares_test_xml.xml",
                     observation="Element 'TripType' is missing within 'RoundTrip'",
+                    category="Conditions",
                 ),
                 Violation(
                     line=225,
                     filename="fares_test_xml.xml",
                     observation="'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
+                    category="FareStructureElement",
                 ),
             ],
         ),
