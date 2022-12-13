@@ -30,22 +30,14 @@ def get_lxml_element(string_xml):
             False,
             False,
             False,
-            [
-                "violation",
-                "4",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             False,
             True,
             True,
             True,
-            [
-                "violation",
-                "4",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             True,

@@ -35,11 +35,7 @@ def get_lxml_element(xpath, string_xml):
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (True, False, False, False, False, None),
         (
@@ -159,11 +155,7 @@ def test_check_type_of_tariff_ref_values(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (True, False, False, None),
         (
@@ -240,11 +232,7 @@ def test_check_tariff_operator_ref(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (True, False, False, None),
         (
@@ -325,11 +313,7 @@ def test_check_tariff_basis(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
-            ],
+            "",
         ),
         (True, False, False, False, False, None),
         (
