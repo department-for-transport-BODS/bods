@@ -39,7 +39,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
 
         subquery = Subquery(
             FaresValidationResult.objects.filter(revision=OuterRef("revision"))
-            .get("is_compliant")[:1]
+            .values("count")[:1]
         )
         return self.annotate(report_file_name=subquery)
 
