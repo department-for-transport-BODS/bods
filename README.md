@@ -241,3 +241,8 @@ When in the project root directory:
 ```sh
 npm start
 ```
+## HotFix Deployment
+
+### Step 1: Create a pull request from branch into test, obtain approval and merge. This will trigger the test pipeline. The test test pipeline should fail as the image does not exist.
+
+### Step 2: Navigate to the hotfix pipeline and trigger it from the test branch.
