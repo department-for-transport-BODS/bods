@@ -24,12 +24,9 @@ class ListView(BasePublishListView):
             super()
             .get_datasets()
             .add_avl_compliance_status_cached()
+            .add_post_publishing_check_stats()
             .order_by("avl_feed_status", "-modified")
         )
-
-    def get_active_qs(self):
-        qs = super().get_active_qs()
-        return qs.add_post_publishing_check_stats()
 
     def get_overall_ppc_score(self):
         avl_datasets = (
