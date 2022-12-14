@@ -14,6 +14,5 @@ class FaresMetadata(DatasetMetadata):
     valid_from = models.DateTimeField(blank=True, null=True)
     valid_to = models.DateTimeField(blank=True, null=True)
     stops = models.ManyToManyField(StopPoint, related_name="faresmetadata")
-    
-    objects = FaresNetexFileAttributesQuerySet.as_manager()
 
+    objects = FaresNetexFileAttributesQuerySet.as_manager()

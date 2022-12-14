@@ -1,9 +1,8 @@
 from transit_odp.organisation.querysets import DatasetQuerySet
 from django.db import models
-from django.db.models import (
-    Q, F, Case, When, BooleanField
-)
+from django.db.models import Q, F, Case, When, BooleanField
 from transit_odp.organisation.constants import FeedStatus
+
 
 class FaresDatasetQuerySet(DatasetQuerySet):
     pass
@@ -23,17 +22,13 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         """
         Add date published to BODS as published date
         """
-        return self.annotate(
-            last_updated_date=F("revision__published_at")
-        )
+        return self.annotate(last_updated_date=F("revision__published_at"))
 
     def add_operator_id(self):
         """
         Add operator Id to result. Dataset organisation_id used as operator_id
         """
-        return self.annotate(
-            operator_id=F("revision__dataset__organisation_id")
-            )
+        return self.annotate(operator_id=F("revision__dataset__organisation_id"))
 
     def add_organisation_name(self):
         return self.annotate(
@@ -58,9 +53,9 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         Filter for revisions that are published and active along with other added properties
         """
         return (
-        self.get_active_published_files()
-        .add_published_date()
-        .add_operator_id()
-        .add_organisation_name()
-        .add_compliance_status()
+            self.get_active_published_files()
+            .add_published_date()
+            .add_operator_id()
+            .add_organisation_name()
+            .add_compliance_status()
         )

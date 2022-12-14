@@ -136,6 +136,5 @@ def create_data_catalogue_file() -> BinaryIO:
         except EmptyDataFrame:
             pass
 
-
     buffer_.seek(0)
     return buffer_
