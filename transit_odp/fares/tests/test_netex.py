@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 from dateutil.parser import parse as parse_datetime_str
 
@@ -91,7 +89,7 @@ def test_get_netex_version(netexdocument):
 
 def test_get_xml_file_name(netexdocument):
     actual = netexdocument.get_xml_file_name()
-    expected = "/app/transit_odp/fares/tests/fixtures/sample1"
+    expected = "/app/transit_odp/fares/tests/fixtures/sample1.xml"
     assert expected == actual
 
 
@@ -148,10 +146,7 @@ def test_get_composite_frame_ids(netexdocument):
 
 def test_get_to_date_texts(netexdocument):
     actual = netexdocument.get_to_date_texts()
-    expected = [
-        datetime.datetime(2022, 12, 31, 12, 0),
-        datetime.datetime(2020, 12, 31, 12, 0),
-    ]
+    expected = ["2022-12-31", "2020-12-31"]
     assert expected == actual
 
 
