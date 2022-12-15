@@ -76,7 +76,7 @@ class TestFaresQuerySet:
         assert len(qs) == 3
         for org in qs:
             if org.id == org1[0].id:
-                assert org.operator_id == 7
+                assert org.operator_id == org1[0].id
 
     def test_add_organisation_name(self):
         """Tests the queryset is annotated with operator_id from the dataset table"""
