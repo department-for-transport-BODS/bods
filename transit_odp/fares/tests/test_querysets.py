@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-import factory
 import faker
 import pytest
 from django.test import override_settings
@@ -11,24 +10,13 @@ from transit_odp.organisation.constants import (
     FeedStatus,
 )
 from transit_odp.organisation.factories import (
-    DatasetFactory,
-    DatasetRevisionFactory,
-    FaresDatasetRevisionFactory,
     OrganisationFactory,
-)
-from transit_odp.organisation.models import (
-    Dataset,
-    DatasetRevision,
-    Organisation,
 )
 from transit_odp.fares.models import (
     FaresMetadata,
-    FaresNetexFileAttributesQuerySet,
 )
 
 pytestmark = pytest.mark.django_db
-
-FAKER = faker.Faker()
 
 
 class TestFaresQuerySet:
