@@ -18,7 +18,11 @@ from transit_odp.fares.netex import (
     get_documents_from_file,
     get_netex_schema,
 )
-from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
+from transit_odp.fares.transform import (
+    FaresDataCatalogue,
+    NeTExDocumentsTransformer,
+    TransformationError,
+)
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset, DatasetRevision
@@ -61,7 +65,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
-        task_run_fares_validation(task.id)
+        # task_run_fares_validation(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -188,7 +192,7 @@ def task_run_fares_etl(task_id):
         adapter.info("Creating fares extractor.")
         extractor = NeTExDocumentsExtractor(docs)
         extracted_data = extractor.to_dict()
-        print("extracted data>>>", extracted_data)
+        print("extracted_data>>", extracted_data)
     except ExtractionError as exc:
         adapter.error("Metadata extraction failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)
@@ -201,6 +205,14 @@ def task_run_fares_etl(task_id):
         adapter.info("Transforming NeTEx stops")
         transform = NeTExDocumentsTransformer(extracted_data)
         transformed_data = transform.transform_data()
+        file_names = transformed_data.pop("xml_file_name")
+        fares_data_catlogue = []
+        for i, file in enumerate(file_names):
+            fares_catalogue = FaresDataCatalogue(extracted_data, file, i)
+            fares_data_catlogue.append(fares_catalogue.to_dict())
+
+        print("fares_data_catlogue>>", fares_data_catlogue)
+        print("transformed_data>>", transformed_data)
     except TransformationError as exc:
         adapter.error("Metadata transformation failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)
@@ -216,6 +228,10 @@ def task_run_fares_etl(task_id):
     # like localities, admin areas
     transformed_data["revision"] = revision
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
+    for element in fares_data_catlogue:
+        fares_metadata.fares_data_catalogue_metadata.add(**element)
+        # fares_data_catalogue_data = FaresDataCatalogueMetaData.objects
+        # .create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 

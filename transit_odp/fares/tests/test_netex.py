@@ -89,7 +89,7 @@ def test_get_netex_version(netexdocument):
 
 def test_get_xml_file_name(netexdocument):
     actual = netexdocument.get_xml_file_name()
-    expected = "/app/transit_odp/fares/tests/fixtures/sample1"
+    expected = "/app/transit_odp/fares/tests/fixtures/sample1.xml"
     assert expected == actual
 
 
@@ -132,6 +132,21 @@ def test_get_atco_area_code(netexdocument):
 def test_get_valid_from_date(netexdocument):
     actual = netexdocument.get_valid_from_date()
     expected = "2020-01-01"
+    assert expected == actual
+
+
+def test_get_composite_frame_ids(netexdocument):
+    actual = netexdocument.get_composite_frame_ids()
+    expected = [
+        "epd:UK:HCTY:CompositeFrame_UK_PI_LINE_FARE_OFFER:Trip@Line_16:op",
+        "fxc:UK:DFT:TypeOfFrame_UK_PI_METADATA_OFFER:FXCP:fxc",
+    ]
+    assert expected == actual
+
+
+def test_get_to_date_texts(netexdocument):
+    actual = netexdocument.get_to_date_texts()
+    expected = ["2022-12-31", "2020-12-31"]
     assert expected == actual
 
 

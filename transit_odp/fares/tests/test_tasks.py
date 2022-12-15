@@ -200,11 +200,12 @@ def test_task_run_fares_etl(mocker, netexdocuments):
     assert task.revision.metadata.faresmetadata.num_of_fare_zones == 15
     assert task.revision.metadata.faresmetadata.tariff_basis == ["zoneToZone"]
     assert task.revision.metadata.faresmetadata.national_operator_code == [
-        "BLAC",
         "ATOC",
+        "BLAC",
+        "HCTY",
         "NR",
     ]
-    assert task.revision.metadata.faresmetadata.line_name == ["11"]
+    assert task.revision.metadata.faresmetadata.line_name == ["11", "16"]
     assert list(task.revision.metadata.faresmetadata.stops.all()) == list(
         StopPoint.objects.all()
     )

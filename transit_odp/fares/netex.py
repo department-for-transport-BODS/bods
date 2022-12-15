@@ -91,19 +91,16 @@ class NeTExDocument:
 
     def get_xml_file_name(self):
         xml_file_name = self.name
-        file_name = xml_file_name.split(".xml")[0]
-        return file_name
+        return xml_file_name
 
     def get_multiple_attr_text_from_xpath(self, path):
-        elements = self.find_anywhere(path)
-        element_value = [element.text for element in elements]
-
-        return element_value
+        elements_list = self.find_anywhere(path)
+        element_text = [element.text for element in elements_list]
+        return element_text
 
     def get_multiple_attr_ids_from_xpath(self, path):
-        elements = self.find_anywhere(path)
-        element_id = [element["id"] for element in elements]
-
+        elements_list = self.find_anywhere(path)
+        element_id = [element["id"] for element in elements_list]
         return element_id
 
     @property
@@ -156,21 +153,23 @@ class NeTExDocument:
 
     def get_atco_area_code(self):
         path = ["scheduledStopPoints", "ScheduledStopPoint"]
-        elements = self.find_anywhere(path)
-        element_ids = [element["id"] for element in elements]
-        all_atco_codes = [element_id.split(":")[-1] for element_id in element_ids]
-        atco_codes = [code[:3] for code in all_atco_codes]
+        stop_point_elements = self.find_anywhere(path)
+        stop_point_ids_list = [stop_point["id"] for stop_point in stop_point_elements]
+        all_atco_codes_list = [
+            element_id.split(":")[-1] for element_id in stop_point_ids_list
+        ]
+        valid_atco_codes_list = [code[:3] for code in all_atco_codes_list]
 
-        return atco_codes
+        return valid_atco_codes_list
 
     def get_valid_from_date(self):
         path = ["CompositeFrame", "ValidBetween", "FromDate"]
-        elements = self.find_anywhere(path)
-        from_date_list = [parse_datetime_str(from_date.text) for from_date in elements]
-        first_from_date = str(from_date_list[0])
-        from_date_value = first_from_date[:10]
-
-        return from_date_value
+        from_date_elements = self.find_anywhere(path)
+        from_date_list = [
+            str(parse_datetime_str(from_date.text))[:10]
+            for from_date in from_date_elements
+        ]
+        return from_date_list[0]
 
     def get_composite_frame_ids(self):
         path = ["CompositeFrame"]
@@ -182,7 +181,8 @@ class NeTExDocument:
         path = ["CompositeFrame", "ValidBetween", "ToDate"]
         to_date_elements_list = self.find_anywhere(path)
         all_to_date_text_list = [
-            parse_datetime_str(to_date.text) for to_date in to_date_elements_list
+            str(parse_datetime_str(to_date.text))[:10]
+            for to_date in to_date_elements_list
         ]
         return all_to_date_text_list
 
@@ -222,8 +222,9 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
     with zipfile.ZipFile(zipfile_) as zout:
         filenames = [name for name in zout.namelist() if name.endswith("xml")]
         for name in filenames:
-            with zout.open(name) as xmlout:
-                docs.append(NeTExDocument(xmlout))
+            if not name.startswith("__"):
+                with zout.open(name) as xmlout:
+                    docs.append(NeTExDocument(xmlout))
     return docs
 
 

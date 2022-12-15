@@ -91,30 +91,27 @@ class NeTExDocumentsExtractor:
     @property
     def fares_valid_from(self):
         try:
-            valid_from = [doc.get_valid_from_date() for doc in self.documents].pop()
+            valid_from_list = [doc.get_valid_from_date() for doc in self.documents]
         except IndexError:
             return None
 
-        return valid_from
+        return valid_from_list
 
     @property
     def fares_valid_to(self):
         try:
             composite_frame_ids_list = [
                 doc.get_composite_frame_ids() for doc in self.documents
-            ].pop()
-            to_date_text_list = [
-                doc.get_to_date_texts() for doc in self.documents
-            ].pop()
+            ]
+            to_date_text_list = [doc.get_to_date_texts() for doc in self.documents]
             if (
-                len(to_date_text_list) > 1
-                and "UK_PI_METADATA_OFFER" not in composite_frame_ids_list
+                len(to_date_text_list) == 1
+                and "UK_PI_METADATA_OFFER" in composite_frame_ids_list
             ):
-                first_to_date_element = str(to_date_text_list[0])
-                valid_to = first_to_date_element[:10]
-                return valid_to
-            else:
+                # first_to_date_element = str(to_date_text_list[0])
+                # valid_to = first_to_date_element[:10]
                 return None
+            return to_date_text_list[0]
         except IndexError:
             return None
 
@@ -122,49 +119,57 @@ class NeTExDocumentsExtractor:
     def national_operator_code(self):
         try:
             path = ["organisations", "Operator", "PublicCode"]
-            national_operator_code = [
+            national_operator_code_list = [
                 doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if national_operator_code_list:
+                return national_operator_code_list
+            return None
         except IndexError:
             return None
-
-        return national_operator_code
 
     @property
     def tariff_basis(self):
         try:
             path = ["Tariff", "TariffBasis"]
-            tariff_basis = [
+            tariff_basis_list = [
                 doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if tariff_basis_list:
+                return tariff_basis_list
+            return None
         except IndexError:
             return None
-
-        return tariff_basis
 
     @property
     def product_type(self):
         try:
             path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
-            product_type = [
+            product_type_list = [
                 doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if product_type_list:
+                return product_type_list
+            return None
         except IndexError:
             return None
-
-        return product_type
 
     @property
     def product_name(self):
         try:
             path = ["fareProducts", "PreassignedFareProduct", "Name"]
-            product_name = [
+            product_name_list = [
                 doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if product_name_list:
+                return product_name_list
+            return None
         except IndexError:
             return None
-
-        return product_name
 
     @property
     def user_type(self):
@@ -176,48 +181,56 @@ class NeTExDocumentsExtractor:
                 "UserProfile",
                 "UserType",
             ]
-            user_type = [
+            user_type_list = [
                 doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if user_type_list:
+                return user_type_list
+            return None
         except IndexError:
             return None
-
-        return user_type
 
     @property
     def line_id(self):
         try:
             path = ["lines", "Line"]
-            line_ids = [
+            line_ids_list = [
                 doc.get_multiple_attr_ids_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if line_ids_list:
+                return line_ids_list
+            return None
         except IndexError:
             return None
-
-        return line_ids
 
     @property
     def line_name(self):
         try:
             path = ["lines", "Line", "PublicCode"]
-            line_name = [
+            line_name_list = [
                 doc.get_multiple_attr_text_from_xpath(path) for doc in self.documents
-            ].pop()
+            ]
+
+            if line_name_list:
+                return line_name_list
+            return None
         except IndexError:
             return None
-
-        return line_name
 
     @property
     def atco_area(self):
         try:
-            scheduled_stop_points = [
+            scheduled_stop_points_list = [
                 doc.get_atco_area_code() for doc in self.documents
-            ].pop()
+            ]
+
+            if scheduled_stop_points_list:
+                return scheduled_stop_points_list
+            return None
         except IndexError:
             return None
-
-        return scheduled_stop_points
 
     def to_dict(self):
         keys = [
