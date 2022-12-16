@@ -12,7 +12,7 @@ from transit_odp.common.loggers import (
     PipelineAdapter,
 )
 from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
-from transit_odp.fares.models import FaresDataCatalogueMetaData, FaresMetadata
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.fares.netex import (
     NeTExValidator,
     get_documents_from_file,
@@ -61,7 +61,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
-        # task_run_fares_validation(task.id)
+        task_run_fares_validation(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -218,7 +218,7 @@ def task_run_fares_etl(task_id):
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
     for element in fares_data_catlogue:
         element.update({"fares_metadata_id": fares_metadata.id})
-        FaresDataCatalogueMetaData.objects.create(**element)
+        DataCatalogueMetaData.objects.create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 
