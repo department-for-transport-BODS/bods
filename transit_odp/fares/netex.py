@@ -169,7 +169,7 @@ class NeTExDocument:
             str(parse_datetime_str(from_date.text))[:10]
             for from_date in from_date_elements
         ]
-        return from_date_list[0]
+        return from_date_list
 
     def get_composite_frame_ids(self):
         path = ["CompositeFrame"]
