@@ -198,14 +198,15 @@ def test_task_run_fares_etl(mocker, netexdocuments):
     assert task.revision.metadata.faresmetadata.schema_version == "1.1"
     assert task.revision.metadata.faresmetadata.num_of_lines == 2
     assert task.revision.metadata.faresmetadata.num_of_fare_zones == 15
-    assert task.revision.metadata.faresmetadata.tariff_basis == ["zoneToZone"]
-    assert task.revision.metadata.faresmetadata.national_operator_code == [
-        "ATOC",
-        "BLAC",
-        "HCTY",
-        "NR",
-    ]
-    assert task.revision.metadata.faresmetadata.line_name == ["11", "16"]
+    assert task.revision.metadata.faresmetadata.datacatalogue.values(
+        "tariff_basis"
+    ).all()[0] == {"tariff_basis": ["zoneToZone"]}
+    assert task.revision.metadata.faresmetadata.datacatalogue.values(
+        "national_operator_code"
+    ).all()[1] == {"national_operator_code": ["HCTY", "ATOC", "NR"]}
+    assert task.revision.metadata.faresmetadata.datacatalogue.values("line_name").all()[
+        1
+    ] == {"line_name": ["16"]}
     assert list(task.revision.metadata.faresmetadata.stops.all()) == list(
         StopPoint.objects.all()
     )

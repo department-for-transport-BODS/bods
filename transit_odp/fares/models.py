@@ -9,6 +9,7 @@ class DataCatalogueMetaData(models.Model):
     fares_metadata = models.ForeignKey(
         "fares.FaresMetadata",
         on_delete=models.CASCADE,
+        related_name="datacatalogue",
     )
     xml_file_name = models.CharField(blank=True, max_length=255)
     valid_from = models.DateField(null=True, max_length=100)

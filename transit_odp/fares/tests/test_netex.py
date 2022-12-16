@@ -131,7 +131,7 @@ def test_get_atco_area_code(netexdocument):
 
 def test_get_valid_from_date(netexdocument):
     actual = netexdocument.get_valid_from_date()
-    expected = "2020-01-01"
+    expected = ["2020-01-01", "2015-02-01"]
     assert expected == actual
 
 
