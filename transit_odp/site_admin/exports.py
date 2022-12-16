@@ -9,11 +9,16 @@ from zipfile import ZIP_DEFLATED
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import File
-from django.db.models import Case, CharField, OuterRef, Q, Subquery, Value, When
+from django.db.models import Avg, Case, CharField, OuterRef, Q, Subquery, Value, When
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
+from django_hosts.resolvers import reverse
 
+import config.hosts
+from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
+from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.exports import (
     LOCATION_FILENAME,
     ORGANISATION_FILENAME,
@@ -78,6 +83,47 @@ def get_org_fares_count(org) -> int:
         return org.total_fare_products
     else:
         return 0
+
+
+def get_ppc_weekly_per_feed_download_report(
+    organisation_id: int, dataset_id: int
+) -> str:
+    return reverse(
+        "avl:download-matching-report",
+        args=(organisation_id, dataset_id),
+        host=config.hosts.PUBLISH_HOST,
+    )
+
+
+def make_ppc_weekly_overall():
+    ppc_weekly_score = {}
+
+    def get_ppc_weekly_overall(organisation_id: int) -> float:
+        if organisation_id not in ppc_weekly_score.keys():
+            ppc_weekly_score[organisation_id] = (
+                AVLDataset.objects.get_active()
+                .add_avl_compliance_status_cached()
+                .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
+                .filter(organisation_id=organisation_id)
+                .add_post_publishing_check_stats()
+                .exclude(percent_matching=float(NO_PPC_DATA))
+                .aggregate(Avg("percent_matching"))["percent_matching__avg"]
+            )
+        return ppc_weekly_score[organisation_id]
+
+    return get_ppc_weekly_overall
+
+
+# get a callable object `ppc_overall_score`
+ppc_overall_score = make_ppc_weekly_overall()
+
+
+def get_ppc_weekly_overall_url(organisation_id: int) -> str:
+    return reverse(
+        "consumer-interactions",
+        args=(organisation_id,),
+        host=config.hosts.PUBLISH_HOST,
+    )
 
 
 class ConsumerCSV(CSVBuilder):
@@ -166,6 +212,35 @@ class DatasetPublishingCSV(CSVBuilder):
             header="accountType",
             accessor=lambda at: pretty_account_name(at.account_type),
         ),
+        CSVColumn(
+            header="% AVL to Timetables feed matching score",
+            accessor=lambda dataset: str(round(dataset.percent_matching)) + "%"
+            if dataset.percent_matching >= 0
+            else "",
+        ),
+        CSVColumn(
+            header="Latest matching report URL",
+            accessor=lambda dataset: get_ppc_weekly_per_feed_download_report(
+                dataset.organisation_id, dataset.id
+            )
+            if dataset.percent_matching >= 0
+            else "",
+        ),
+        CSVColumn(
+            header="% Operator overall AVL to Timetables matching",
+            accessor=lambda dataset: str(
+                round(ppc_overall_score(dataset.organisation_id))
+            )
+            + "%"
+            if dataset.percent_matching >= 0
+            else "",
+        ),
+        CSVColumn(
+            header="Archived matching reports URL",
+            accessor=lambda dataset: get_ppc_weekly_overall_url(dataset.organisation_id)
+            if dataset.percent_matching >= 0
+            else "",
+        ),
     ]
 
     def get_queryset(self):
@@ -176,6 +251,7 @@ class DatasetPublishingCSV(CSVBuilder):
             .add_last_published_by_email()
             .annotate(account_type=F("live_revision__published_by__account_type"))
             .exclude(live_revision__status=EXPIRED)
+            .add_post_publishing_check_stats()
         )
 
 

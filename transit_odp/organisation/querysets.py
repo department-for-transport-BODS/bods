@@ -11,7 +11,9 @@ from django.db.models import (
     Case,
     CharField,
     Count,
+    ExpressionWrapper,
     F,
+    FloatField,
     Func,
     IntegerField,
     Max,
@@ -29,6 +31,7 @@ from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
@@ -866,6 +869,41 @@ class DatasetQuerySet(models.QuerySet):
             .add_pretty_dataset_type()
             .add_last_updated_including_avl()
             .exclude(live_revision__status=EXPIRED)
+        )
+
+    def add_post_publishing_check_stats(self):
+        from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+
+        created_at = (
+            PostPublishingCheckReport.objects.filter(
+                granularity=PPCReportType.WEEKLY.value
+            )
+            .filter(dataset=OuterRef("pk"))
+            .order_by("-created")
+        )
+        return self.annotate(
+            vehicles_completely_matching=Coalesce(
+                Subquery(
+                    created_at.values("vehicle_activities_completely_matching")[:1]
+                ),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                Subquery(created_at.values("vehicle_activities_analysed")[:1]),
+                Value(NO_PPC_DATA),
+            ),
+            percent_matching=Case(
+                When(
+                    vehicles_analysed__gt=0,
+                    then=ExpressionWrapper(
+                        F("vehicles_completely_matching")
+                        * 100.0
+                        / F("vehicles_analysed"),
+                        output_field=FloatField(),
+                    ),
+                ),
+                default=float(NO_PPC_DATA),
+            ),
         )
 
 
