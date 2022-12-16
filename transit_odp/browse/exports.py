@@ -19,6 +19,7 @@ from transit_odp.organisation.csv.overall import (
 )
 from transit_odp.organisation.models import Organisation
 from transit_odp.timetables.csv import TIMETABLE_COLUMN_MAP, get_timetable_catalogue_csv
+from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ OVERALL_FILENAME = "overall_data_catalogue.csv"
 LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
 OTC_EMPTY_WARNING = "OTC Licence is not populated."
+FARES_FILENAME = "fares_data_catalogue.csv"
 
 
 def get_feed_status(dataset):
@@ -126,6 +128,11 @@ def create_data_catalogue_file() -> BinaryIO:
 
         try:
             zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
+        except EmptyDataFrame:
+            pass
+
+        try:
+            zin.writestr(FARES_FILENAME, get_fares_data_catalogue_csv())
         except EmptyDataFrame:
             pass
 
