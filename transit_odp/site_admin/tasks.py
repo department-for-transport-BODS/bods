@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.core.files.base import File
 from django.utils import timezone
 
+from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.feedback.models import Feedback
 from transit_odp.site_admin.constants import (
     ARCHIVE_CATEGORY_FILENAME,
@@ -33,6 +34,8 @@ from transit_odp.site_admin.stats import (
 logger = logging.getLogger(__name__)
 DATA_RETENTION_POLICY_MONTHS = 3
 FEEDBACK_RETENTION_POLICY_MONTHS = 24
+MIN_DAYS_WEEKLY_PPC_REPORT = 90
+MIN_DAYS_DAILY_PPC_REPORT = 28
 
 
 @shared_task()
@@ -149,3 +152,19 @@ def task_delete_unwanted_data():
     website_feedback_cutoff = now.date() - website_feedback_policy
     deleted, _ = Feedback.objects.filter(date__lte=website_feedback_cutoff).delete()
     logger.info(f"Deleted {deleted} website feedback instances")
+
+    daily_ppc_reports = now.date() - timedelta(days=MIN_DAYS_DAILY_PPC_REPORT)
+    deleted, _ = (
+        PostPublishingCheckReport.objects.filter(granularity=PPCReportType.DAILY)
+        .filter(created__lt=daily_ppc_reports)
+        .delete()
+    )
+    logger.info(f"Deleted {deleted} post publishing check daily report")
+
+    weekly_ppc_reports = now.date() - timedelta(days=MIN_DAYS_WEEKLY_PPC_REPORT)
+    deleted, _ = (
+        PostPublishingCheckReport.objects.filter(granularity=PPCReportType.WEEKLY)
+        .filter(created__lt=weekly_ppc_reports)
+        .delete()
+    )
+    logger.info(f"Deleted {deleted} post publishing check weekly report")
