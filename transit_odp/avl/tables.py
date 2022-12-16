@@ -11,6 +11,7 @@ from transit_odp.avl.constants import (
 )
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.tables import GovUkTable
+from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.tables import FeedStatusColumn, get_feed_name_linkify
 
 
@@ -41,6 +42,8 @@ class AVLDataFeedTable(GovUkTable):
             return value
 
     def render_percent_matching(self, value, record):
+        if record.status in [FeedStatus.expired.value, FeedStatus.inactive.value]:
+            return ""
         if record.avl_compliance_status_cached == MORE_DATA_NEEDED:
             return MORE_DATA_NEEDED
         if value == float(NO_PPC_DATA):
