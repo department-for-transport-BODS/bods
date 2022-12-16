@@ -26,6 +26,26 @@ class FaresDataCatalogueMetaData(models.Model):
     user_type = ArrayField(models.CharField(blank=True, max_length=100), null=True)
 
 
+class FaresDataCatalogueMetaData(models.Model):
+    fares_metadata = models.ForeignKey(
+        "fares.FaresMetadata",
+        on_delete=models.CASCADE,
+    )
+    xml_file_name = models.CharField(blank=True, max_length=255)
+    valid_from = models.DateField(null=True, max_length=100)
+    valid_to = models.DateField(null=True, max_length=100)
+    national_operator_code = ArrayField(
+        models.CharField(blank=True, max_length=255), null=True
+    )
+    line_id = ArrayField(models.CharField(blank=True, max_length=255), null=True)
+    line_name = ArrayField(models.CharField(blank=True, max_length=100), null=True)
+    atco_area = ArrayField(models.CharField(blank=True, max_length=255), null=True)
+    tariff_basis = ArrayField(models.CharField(blank=True, max_length=100), null=True)
+    product_type = ArrayField(models.CharField(blank=True, max_length=100), null=True)
+    product_name = ArrayField(models.CharField(blank=True, max_length=100), null=True)
+    user_type = ArrayField(models.CharField(blank=True, max_length=100), null=True)
+
+
 class FaresMetadata(DatasetMetadata):
     num_of_fare_zones = models.PositiveIntegerField()
     num_of_lines = models.PositiveIntegerField()
