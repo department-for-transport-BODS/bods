@@ -5,10 +5,10 @@ from datetime import date, timedelta
 from django.core.files import File
 
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
-from transit_odp.avl.post_publishing_checks.reports.weekly.archiver import (
+from transit_odp.avl.post_publishing_checks.weekly.archiver import (
     WeeklyPPCReportArchiver,
 )
-from transit_odp.avl.post_publishing_checks.reports.weekly.summary import (
+from transit_odp.avl.post_publishing_checks.weekly.summary import (
     AggregatedDailyReports,
     PostPublishingChecksSummaryData,
 )
@@ -76,7 +76,7 @@ class WeeklyReport:
         Creates zip file containing bunch of CSVs generated from summary data for feed.
         """
         filename = (
-            f"Week_{self.start_date.strftime('%d_%m_%Y')}_feed_{feed_id}"
+            f"week_{self.start_date.strftime('%d_%m_%Y')}_feed_{feed_id}"
             f"_{summary.all_fields_matching_vehicles_score}.zip"
         )
         archiver = WeeklyPPCReportArchiver()

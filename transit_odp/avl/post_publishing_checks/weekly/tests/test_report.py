@@ -7,11 +7,11 @@ from freezegun import freeze_time
 
 from transit_odp.avl.factories import PPCReportFactory
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
-from transit_odp.avl.post_publishing_checks.reports import WeeklyReport
+from transit_odp.avl.post_publishing_checks.weekly import WeeklyReport
 from transit_odp.organisation.factories import DatasetFactory
 
 pytestmark = pytest.mark.django_db
-mock_path_prefix = "transit_odp.avl.post_publishing_checks.reports.weekly.report."
+mock_path_prefix = "transit_odp.avl.post_publishing_checks.weekly.report."
 FetchedDataType = dict[int, list[PostPublishingCheckReport]]
 TEST_DATE = "2022-10-30"
 
@@ -112,7 +112,7 @@ def test_created_zip_has_correct_name(
 
     feed_id = list(mockup_reports.keys())[0]
 
-    assert generated_archive.file.name == f"Week_30_10_2022_feed_{feed_id}_60.zip"
+    assert generated_archive.file.name == f"week_30_10_2022_feed_{feed_id}_60.zip"
 
 
 @freeze_time(TEST_DATE)

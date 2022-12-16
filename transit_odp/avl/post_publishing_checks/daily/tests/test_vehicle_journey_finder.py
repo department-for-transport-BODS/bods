@@ -3,13 +3,13 @@ from pathlib import Path
 
 import pytest
 
-from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
-from transit_odp.avl.post_publishing_checks.results import ValidationResult
-from transit_odp.avl.post_publishing_checks.vehicle_journey_finder import (
+from transit_odp.avl.post_publishing_checks.daily.results import ValidationResult
+from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import (
     DayOfWeek,
     TxcVehicleJourney,
     VehicleJourneyFinder,
 )
+from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
 from transit_odp.organisation.factories import DatasetFactory, TXCFileAttributesFactory
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.timetables.transxchange import TransXChangeDocument

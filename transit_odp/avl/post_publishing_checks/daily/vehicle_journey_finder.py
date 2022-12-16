@@ -6,13 +6,13 @@ from typing import List, Optional
 from zipfile import ZipFile
 
 from transit_odp.avl.post_publishing_checks.constants import ErrorCategory, SirivmField
+from transit_odp.avl.post_publishing_checks.daily.results import (
+    MiscFieldPPC,
+    ValidationResult,
+)
 from transit_odp.avl.post_publishing_checks.models import (
     MonitoredVehicleJourney,
     VehicleActivity,
-)
-from transit_odp.avl.post_publishing_checks.results import (
-    MiscFieldPPC,
-    ValidationResult,
 )
 from transit_odp.common.utils.choice_enum import ChoiceEnum
 from transit_odp.common.xmlelements.exceptions import (

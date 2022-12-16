@@ -4,12 +4,12 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 from pandas import DataFrame
 
-from transit_odp.avl.post_publishing_checks.reports.weekly.constants import (
+from transit_odp.avl.post_publishing_checks.weekly.constants import (
     README_INTRO,
     README_OUTRO,
     WeeklyPPCSummaryFiles,
 )
-from transit_odp.avl.post_publishing_checks.reports.weekly.fields import (
+from transit_odp.avl.post_publishing_checks.weekly.fields import (
     BLOCK_REF_FIELDS,
     DESTINATION_REF_FIELDS,
     DIRECTION_REF_FIELDS,
@@ -17,9 +17,7 @@ from transit_odp.avl.post_publishing_checks.reports.weekly.fields import (
     SIRI_MSG_ANALYSED_FIELDS,
     UNCOUNTED_VEHICLE_ACTIVITIES_FIELDS,
 )
-from transit_odp.avl.post_publishing_checks.reports.weekly.summary import (
-    PPC_SUMMARY_FIELDS,
-)
+from transit_odp.avl.post_publishing_checks.weekly.summary import PPC_SUMMARY_FIELDS
 
 
 class WeeklyReport(Protocol):

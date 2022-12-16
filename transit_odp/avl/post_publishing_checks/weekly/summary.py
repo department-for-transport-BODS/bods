@@ -6,8 +6,8 @@ from functools import cache, cached_property
 import pandas as pd
 
 from transit_odp.avl.models import PostPublishingCheckReport
-from transit_odp.avl.post_publishing_checks.reports.weekly.constants import DailyReport
-from transit_odp.avl.post_publishing_checks.reports.weekly.fields import (
+from transit_odp.avl.post_publishing_checks.weekly.constants import DailyReport
+from transit_odp.avl.post_publishing_checks.weekly.fields import (
     BLOCK_REF_FIELDS,
     DESTINATION_REF_FIELDS,
     DIRECTION_REF_FIELDS,

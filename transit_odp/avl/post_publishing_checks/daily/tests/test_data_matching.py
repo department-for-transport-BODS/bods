@@ -3,15 +3,15 @@ from pathlib import Path
 import pytest
 
 from transit_odp.avl.post_publishing_checks.constants import SirivmField
-from transit_odp.avl.post_publishing_checks.data_matching import DataMatching
-from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
-from transit_odp.avl.post_publishing_checks.results import (
+from transit_odp.avl.post_publishing_checks.daily.data_matching import DataMatching
+from transit_odp.avl.post_publishing_checks.daily.results import (
     ErrorCategory,
     ValidationResult,
 )
-from transit_odp.avl.post_publishing_checks.vehicle_journey_finder import (
+from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import (
     TxcVehicleJourney,
 )
+from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
 from transit_odp.timetables.transxchange import (
     TransXChangeDocument,
     TransXChangeElement,
