@@ -5,17 +5,27 @@ from datetime import date, timedelta
 
 import pytest
 from django.utils import timezone
+from django_hosts.resolvers import reverse
 from freezegun import freeze_time
 
+import config.hosts
 from config.hosts import DATA_HOST
+from transit_odp.avl.factories import PostPublishingCheckReportFactory
+from transit_odp.avl.models import PPCReportType
 from transit_odp.browse.exports import get_feed_status
 from transit_odp.common.utils import reverse_path
 from transit_odp.common.utils.cast import to_int_or_value
 from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.feedback.models import SatisfactionRating
-from transit_odp.organisation.constants import DatasetType, FaresType, TimetableType
+from transit_odp.organisation.constants import (
+    AVLType,
+    DatasetType,
+    FaresType,
+    TimetableType,
+)
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
+    DatasetFactory,
     DatasetRevisionFactory,
     LicenceFactory,
     OrganisationFactory,
@@ -50,7 +60,7 @@ from transit_odp.users.constants import (
     OrgAdminType,
     OrgStaffType,
 )
-from transit_odp.users.factories import InvitationFactory, UserFactory
+from transit_odp.users.factories import InvitationFactory, OrgStaffFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -133,6 +143,10 @@ class TestDatasetPublishingCSV:
             "lastPublished",
             "email",
             "accountType",
+            "% AVL to Timetables feed matching score",
+            "Latest matching report URL",
+            "% Operator overall AVL to Timetables matching",
+            "Archived matching reports URL",
         ]
         assert first_row[0] == revision.dataset.organisation.name
         assert first_row[1] == DatasetType(revision.dataset.dataset_type).name.title()
@@ -141,6 +155,91 @@ class TestDatasetPublishingCSV:
         assert first_row[4] == revision.published_at.isoformat()
         assert first_row[5] == revision.published_by.email
         assert first_row[6] == pretty_account_name(revision.published_by.account_type)
+
+    def test_active_publisher_to_string_last_four_columns(self, client_factory):
+        host = config.hosts.PUBLISH_HOST
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+
+        dataset1 = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        dataset2 = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset1,
+            vehicle_activities_analysed=10,
+            vehicle_activities_completely_matching=1,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset2,
+            vehicle_activities_analysed=230,
+            vehicle_activities_completely_matching=120,
+            granularity=PPCReportType.WEEKLY,
+            created=today - timedelta(days=7),
+        )
+
+        dataset_publishing_csv = DatasetPublishingCSV()
+        actual = dataset_publishing_csv.to_string()
+        csvfile = io.StringIO(actual)
+        reader = csv.reader(csvfile.getvalue().splitlines())
+
+        headers, first_row, second_row = list(reader)
+        assert headers == [
+            "operator",
+            "dataType",
+            "dataID",
+            "status",
+            "lastPublished",
+            "email",
+            "accountType",
+            "% AVL to Timetables feed matching score",
+            "Latest matching report URL",
+            "% Operator overall AVL to Timetables matching",
+            "Archived matching reports URL",
+        ]
+
+        client = client_factory(host=host)
+        client.force_login(user=user)
+        url_report_dataset1 = reverse(
+            "avl:download-matching-report",
+            args=(organisation.id, dataset1.id),
+            host=host,
+        )
+        url_report_dataset2 = reverse(
+            "avl:download-matching-report",
+            args=(organisation.id, dataset2.id),
+            host=host,
+        )
+        url_overall = reverse(
+            "consumer-interactions",
+            args=(organisation.id,),
+            host=host,
+        )
+
+        FIRST_DATASET_PERCENTAGE = "10%"
+        SECOND_DATASET_PERCENTAGE = "52%"
+        TOTAL_PERCENTAGE = "31%"
+
+        assert first_row[0] == dataset1.organisation.name
+        assert first_row[1] == DatasetType(dataset1.dataset_type).name.title()
+        assert first_row[2] == str(dataset1.id)
+        assert first_row[3] == get_feed_status(dataset1)
+        assert first_row[7] == FIRST_DATASET_PERCENTAGE
+        assert first_row[8] == url_report_dataset1
+        assert first_row[9] == TOTAL_PERCENTAGE
+        assert first_row[10] == url_overall
+
+        assert second_row[7] == SECOND_DATASET_PERCENTAGE
+        assert second_row[8] == url_report_dataset2
+        assert second_row[9] == TOTAL_PERCENTAGE
+        assert second_row[10] == url_overall
 
 
 class TestConsumerCSV:
