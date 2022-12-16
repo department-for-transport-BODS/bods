@@ -3,26 +3,22 @@ import logging
 from typing import List
 
 from transit_odp.avl.post_publishing_checks.constants import MiscFieldPPC, SirivmField
-from transit_odp.avl.post_publishing_checks.data_matching import DataMatching
-from transit_odp.avl.post_publishing_checks.models import VehicleActivity
-from transit_odp.avl.post_publishing_checks.results import ValidationResult
-from transit_odp.avl.post_publishing_checks.sirivm_sampler import (
+from transit_odp.avl.post_publishing_checks.daily.data_matching import DataMatching
+from transit_odp.avl.post_publishing_checks.daily.results import ValidationResult
+from transit_odp.avl.post_publishing_checks.daily.sirivm_sampler import (
     SiriHeader,
     SirivmSampler,
 )
-from transit_odp.avl.post_publishing_checks.vehicle_journey_finder import (
+from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import (
     VehicleJourneyFinder,
 )
-from transit_odp.avl.post_publishing_checks.writer import (
+from transit_odp.avl.post_publishing_checks.daily.writer import (
     PostPublishingResultsJsonWriter,
 )
+from transit_odp.avl.post_publishing_checks.models import VehicleActivity
 from transit_odp.organisation.models import Dataset
 
 logger = logging.getLogger(__name__)
-
-# For debug (temporary)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
 
 
 class PostPublishingChecker:
@@ -129,5 +125,5 @@ class PostPublishingChecker:
 
             results.append(result)
 
-        results_writer = PostPublishingResultsJsonWriter(feed_id, logger)
+        results_writer = PostPublishingResultsJsonWriter(activity_date, feed_id)
         results_writer.write_results(results)

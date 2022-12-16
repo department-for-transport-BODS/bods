@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from transit_odp.avl.models import PostPublishingCheckReport
-from transit_odp.avl.post_publishing_checks.reports.weekly.summary import (
+from transit_odp.avl.post_publishing_checks.weekly.summary import (
     PostPublishingChecksSummaryData,
 )
 
@@ -35,7 +35,7 @@ def daily_report_mock() -> PostPublishingCheckReport:
     return report
 
 
-mock_path_prefix = "transit_odp.avl.post_publishing_checks.reports.weekly.summary."
+mock_path_prefix = "transit_odp.avl.post_publishing_checks.weekly.summary."
 
 
 @patch("json.load")

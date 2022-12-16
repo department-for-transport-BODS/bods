@@ -4,10 +4,10 @@ from zipfile import ZipFile
 import pandas as pd
 import pytest
 
-from transit_odp.avl.post_publishing_checks.reports.weekly.archiver import (
+from transit_odp.avl.post_publishing_checks.weekly.archiver import (
     WeeklyPPCReportArchiver,
 )
-from transit_odp.avl.post_publishing_checks.reports.weekly.constants import (
+from transit_odp.avl.post_publishing_checks.weekly.constants import (
     WeeklyPPCSummaryFiles,
 )
 

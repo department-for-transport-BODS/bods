@@ -1,13 +1,13 @@
 from typing import List, Optional, Tuple
 
 from transit_odp.avl.post_publishing_checks.constants import ErrorCategory, SirivmField
+from transit_odp.avl.post_publishing_checks.daily.results import ValidationResult
+from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import (
+    TxcVehicleJourney,
+)
 from transit_odp.avl.post_publishing_checks.models import (
     MonitoredVehicleJourney,
     VehicleActivity,
-)
-from transit_odp.avl.post_publishing_checks.results import ValidationResult
-from transit_odp.avl.post_publishing_checks.vehicle_journey_finder import (
-    TxcVehicleJourney,
 )
 from transit_odp.common.xmlelements.exceptions import NoElement
 from transit_odp.timetables.transxchange import TransXChangeElement

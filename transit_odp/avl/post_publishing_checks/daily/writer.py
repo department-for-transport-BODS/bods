@@ -12,9 +12,10 @@ from transit_odp.avl.post_publishing_checks.constants import (
     MiscFieldPPC,
     SirivmField,
 )
-from transit_odp.avl.post_publishing_checks.results import ValidationResult
-from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.post_publishing_checks.daily.results import ValidationResult
 from transit_odp.common.constants import UTF8
+
+logger = logging.getLogger(__name__)
 
 
 class FieldStat:
@@ -25,9 +26,9 @@ class FieldStat:
 
 
 class PostPublishingResultsJsonWriter:
-    def __init__(self, feed_id: int, logger: logging.Logger):
+    def __init__(self, activity_date: datetime.date, feed_id: int):
+        self.activity_date = activity_date
         self.feed_id = feed_id
-        self.logger = logger
         self.json_report = {}
         self.complete_matches = 0
 
@@ -44,21 +45,17 @@ class PostPublishingResultsJsonWriter:
 
     def write_results(self, results: List[ValidationResult]):
         self.compile_results(results)
-        today = date.today()
-        filename = f"Day {today:%02d_%02m_%y}_feed_{self.feed_id}.json"
+        filename = (
+            f"day_{self.activity_date.strftime('%d_%m_%Y')}_feed_{self.feed_id}.json"
+        )
         content_file = ContentFile(
             json.dumps(self.json_report).encode(UTF8), name=filename
         )
         total_analysed = len(results)
 
-        # data_feed = Dataset.objects.get(id=self.feed_id)
-        # For debugging, need to save the PPC report against a real AVL feed, rather
-        # than the one on production this task was run with.
-        data_feed = AVLDataset.objects.first()
-
         ppc_report, created = PostPublishingCheckReport.objects.get_or_create(
-            dataset=data_feed,
-            created=today,
+            dataset_id=self.feed_id,
+            created=self.activity_date,
             granularity=PPCReportType.DAILY,
         )
         if created:
@@ -67,9 +64,9 @@ class PostPublishingResultsJsonWriter:
             ppc_report.vehicle_activities_completely_matching = self.complete_matches
             ppc_report.save()
         else:
-            self.logger.warning(
+            logger.warning(
                 "PPC report not created: One already exists for feed id "
-                f"{self.feed_id} on {today}"
+                f"{self.feed_id} on {self.activity_date}"
             )
 
     def compile_results(self, results: List[ValidationResult]):
