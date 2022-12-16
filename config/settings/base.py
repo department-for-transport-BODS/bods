@@ -603,3 +603,34 @@ CRISPY_CLASS_CONVERTERS = {
     "radioinput": "govuk-radios__input ",
     # 'button': "govuk-button ",
 }
+
+LOG_LEVEL = env("DJANGO_LOG_LEVEL", default=None)
+
+if LOG_LEVEL:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname:8s} - {asctime:s} - {name:20s} || {message:s}",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+                "style": "{",
+            },
+            "simple": {
+                "format": "{levelname:8s} {message:s}",
+                "style": "{",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+            },
+        },
+        "loggers": {
+            "root": {
+                "handlers": ["console"],
+                "level": LOG_LEVEL,
+            },
+        },
+    }
