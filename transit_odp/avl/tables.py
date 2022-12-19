@@ -30,7 +30,9 @@ class AVLDataFeedTable(GovUkTable):
     )
     id = tables.Column(verbose_name="Data feed ID")
     avl_feed_last_checked = tables.Column(verbose_name="Last automated update")
-    short_description = tables.Column()
+    short_description = tables.Column(
+        attrs={"th": {"class": "govuk-table__header", "width": "25%"}}
+    )
 
     class Meta(GovUkTable.Meta):
         attrs = {"th": {"class": "govuk-table__header"}}
