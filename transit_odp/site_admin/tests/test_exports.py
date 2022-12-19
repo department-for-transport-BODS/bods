@@ -218,7 +218,7 @@ class TestDatasetPublishingCSV:
             host=host,
         )
         url_overall = reverse(
-            "consumer-interactions",
+            "ppc-archive",
             args=(organisation.id,),
             host=host,
         )

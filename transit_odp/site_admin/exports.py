@@ -120,7 +120,7 @@ ppc_overall_score = make_ppc_weekly_overall()
 
 def get_ppc_weekly_overall_url(organisation_id: int) -> str:
     return reverse(
-        "consumer-interactions",
+        "ppc-archive",
         args=(organisation_id,),
         host=config.hosts.PUBLISH_HOST,
     )
