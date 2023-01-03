@@ -37,7 +37,7 @@ SAMPLE_FILES = [
                 "atco:3290YYA00100",
                 "atco:3290YYA00922",
             ],
-            "fares_data_catlogue": [
+            "fares_data_catalogue": [
                 {
                     "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample1.xml",
                     "valid_from": "2020-01-01",
@@ -110,7 +110,7 @@ SAMPLE_FILES = [
                 "naptan:2590B0309",
                 "naptan:2590B2027",
             ],
-            "fares_data_catlogue": [
+            "fares_data_catalogue": [
                 {
                     "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample2.xml",
                     "valid_from": "2020-01-01",
@@ -199,7 +199,7 @@ EXPECTED_METADATA_ZIP = {
         "naptan:2590B0309",
         "naptan:2590B2027",
     ],
-    "fares_data_catlogue": [
+    "fares_data_catalogue": [
         {
             "xml_file_name": "sample1.xml",
             "valid_from": "2020-01-01",

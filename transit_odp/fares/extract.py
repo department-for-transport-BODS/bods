@@ -241,7 +241,7 @@ class NeTExDocumentsExtractor:
         return list(itertools.chain(*stop_point_refs))
 
     @property
-    def fares_data_catlogue(self):
+    def fares_data_catalogue(self):
         fares_catalogue_extracted_data = []
         for doc in self.documents:
             fares_catalogue = FaresDataCatalogueExtractor(doc)
@@ -259,7 +259,7 @@ class NeTExDocumentsExtractor:
             "valid_from",
             "valid_to",
             "stop_point_refs",
-            "fares_data_catlogue",
+            "fares_data_catalogue",
         ]
         try:
             data = {key: getattr(self, key) for key in keys}

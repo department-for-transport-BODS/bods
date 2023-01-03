@@ -210,13 +210,13 @@ def task_run_fares_etl(task_id):
     task.update_progress(90)
 
     naptan_stop_ids = transformed_data.pop("naptan_stop_ids")
-    fares_data_catlogue = transformed_data.pop("fares_data_catlogue")
+    fares_data_catalogue = transformed_data.pop("fares_data_catalogue")
     # Load metadata
     # This block can be moved to a load module when we extract/load more metadata
     # like localities, admin areas
     transformed_data["revision"] = revision
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
-    for element in fares_data_catlogue:
+    for element in fares_data_catalogue:
         element.update({"fares_metadata_id": fares_metadata.id})
         DataCatalogueMetaData.objects.create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
