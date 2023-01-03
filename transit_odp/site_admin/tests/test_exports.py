@@ -170,6 +170,11 @@ class TestDatasetPublishingCSV:
             organisation=organisation,
             dataset_type=AVLType,
         )
+        dataset3 = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+            live_revision__status="inactive",
+        )
         PostPublishingCheckReportFactory(
             dataset=dataset1,
             vehicle_activities_analysed=10,
@@ -184,13 +189,20 @@ class TestDatasetPublishingCSV:
             granularity=PPCReportType.WEEKLY,
             created=today - timedelta(days=7),
         )
+        PostPublishingCheckReportFactory(
+            dataset=dataset3,
+            vehicle_activities_analysed=100,
+            vehicle_activities_completely_matching=20,
+            granularity=PPCReportType.WEEKLY,
+            created=today - timedelta(days=7),
+        )
 
         dataset_publishing_csv = DatasetPublishingCSV()
         actual = dataset_publishing_csv.to_string()
         csvfile = io.StringIO(actual)
         reader = csv.reader(csvfile.getvalue().splitlines())
 
-        headers, first_row, second_row = list(reader)
+        headers, first_row, second_row, third_row = list(reader)
         assert headers == [
             "operator",
             "dataType",
@@ -240,6 +252,11 @@ class TestDatasetPublishingCSV:
         assert second_row[8] == url_report_dataset2
         assert second_row[9] == TOTAL_PERCENTAGE
         assert second_row[10] == url_overall
+
+        assert third_row[7] == ""
+        assert third_row[8] == ""
+        assert third_row[9] == ""
+        assert third_row[10] == ""
 
 
 class TestConsumerCSV:
