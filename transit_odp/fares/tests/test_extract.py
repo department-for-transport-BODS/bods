@@ -236,11 +236,9 @@ def test_get_metadata_from_documents(filename, expected):
     docs = get_documents_from_file(source)
     extractor = NeTExDocumentsExtractor(docs)
     actual = extractor.to_dict()
-    print("actual ", actual)
     assert expected == actual
 
 
 def test_netex_extractor(netexdocuments):
     extractor = NeTExDocumentsExtractor(netexdocuments)
-    print("extractor.to_dict()", extractor.to_dict())
     assert EXPECTED_METADATA_ZIP == extractor.to_dict()
