@@ -150,7 +150,7 @@ class VehicleJourneyFinder:
         timetables: List[TransXChangeDocument] = []
         upload_file = txc_file_attrs[0].revision.upload_file
         if Path(upload_file.name).suffix == ".xml":
-            with open(upload_file, "rb") as fp:
+            with upload_file.open("rb") as fp:
                 timetables.append(TransXChangeDocument(fp))
         else:
             with ZipFile(upload_file) as zin:
@@ -404,7 +404,7 @@ class VehicleJourneyFinder:
         return True
 
     def record_journey_match(
-        result: ValidationResult, vehicle_journey_ref: str, vj: TxcVehicleJourney
+        self, result: ValidationResult, vehicle_journey_ref: str, vj: TxcVehicleJourney
     ):
         result.set_txc_value(SirivmField.DATED_VEHICLE_JOURNEY_REF, vehicle_journey_ref)
         result.set_matches(SirivmField.DATED_VEHICLE_JOURNEY_REF)
@@ -441,7 +441,7 @@ class VehicleJourneyFinder:
         if not matching_txc_file_attrs:
             return None
 
-        if not self.check_same_dataset(matching_txc_file_attrs, result):
+        if not self.check_same_dataset(matching_txc_file_attrs, mvj, result):
             return None
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
@@ -462,10 +462,12 @@ class VehicleJourneyFinder:
         if not vehicle_journeys:
             return None
 
-        if not self.filter_by_operating_profile(activity_date, vehicle_journeys):
+        if not self.filter_by_operating_profile(
+            activity_date, vehicle_journeys, result
+        ):
             return None
 
-        if not self.filter_by_revision_number(vehicle_journeys):
+        if not self.filter_by_revision_number(vehicle_journeys, result):
             return None
 
         # If we get to this point, we've matched the SIRI-VM MonitoredVehicleJourney
