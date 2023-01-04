@@ -89,6 +89,20 @@ class NeTExDocument:
     def get_netex_version(self):
         return self._root["version"]
 
+    def get_xml_file_name(self):
+        xml_file_name = self.name
+        return xml_file_name
+
+    def get_multiple_attr_text_from_xpath(self, path):
+        elements_list = self.find_anywhere(path)
+        element_text = [element.text for element in elements_list]
+        return element_text
+
+    def get_multiple_attr_ids_from_xpath(self, path):
+        elements_list = self.find_anywhere(path)
+        element_id = [element["id"] for element in elements_list]
+        return element_id
+
     @property
     def fare_zones(self):
         xpath = "FareZone"
@@ -137,6 +151,41 @@ class NeTExDocument:
 
         return None
 
+    def get_atco_area_code(self):
+        path = ["scheduledStopPoints", "ScheduledStopPoint"]
+        stop_point_elements = self.find_anywhere(path)
+        stop_point_ids_list = [stop_point["id"] for stop_point in stop_point_elements]
+        all_atco_codes_list = [
+            element_id.split(":")[-1] for element_id in stop_point_ids_list
+        ]
+        valid_atco_codes_list = [code[:3] for code in all_atco_codes_list]
+
+        return valid_atco_codes_list
+
+    def get_valid_from_date(self):
+        path = ["CompositeFrame", "ValidBetween", "FromDate"]
+        from_date_elements = self.find_anywhere(path)
+        from_date_list = [
+            str(parse_datetime_str(from_date.text))[:10]
+            for from_date in from_date_elements
+        ]
+        return from_date_list
+
+    def get_composite_frame_ids(self):
+        path = ["CompositeFrame"]
+        frame_elements = self.find_anywhere(path)
+        composite_frame_ids = [frame["id"] for frame in frame_elements]
+        return composite_frame_ids
+
+    def get_to_date_texts(self):
+        path = ["CompositeFrame", "ValidBetween", "ToDate"]
+        to_date_elements_list = self.find_anywhere(path)
+        all_to_date_text_list = [
+            str(parse_datetime_str(to_date.text))[:10]
+            for to_date in to_date_elements_list
+        ]
+        return all_to_date_text_list
+
     @property
     def scheduled_stop_points(self):
         xpath = ["scheduledStopPoints", "ScheduledStopPoint"]
@@ -173,8 +222,9 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
     with zipfile.ZipFile(zipfile_) as zout:
         filenames = [name for name in zout.namelist() if name.endswith("xml")]
         for name in filenames:
-            with zout.open(name) as xmlout:
-                docs.append(NeTExDocument(xmlout))
+            if not name.startswith("__"):
+                with zout.open(name) as xmlout:
+                    docs.append(NeTExDocument(xmlout))
     return docs
 
 

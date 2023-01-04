@@ -37,6 +37,21 @@ SAMPLE_FILES = [
                 "atco:3290YYA00100",
                 "atco:3290YYA00922",
             ],
+            "fares_data_catalogue": [
+                {
+                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample1.xml",
+                    "valid_from": "2020-01-01",
+                    "valid_to": "2022-12-31",
+                    "national_operator_code": ["HCTY", "ATOC", "NR"],
+                    "line_id": ["16"],
+                    "line_name": ["16"],
+                    "atco_area": ["329"],
+                    "tariff_basis": ["zoneToZone"],
+                    "product_type": None,
+                    "product_name": ["single Ticket - adult"],
+                    "user_type": ["adult"],
+                }
+            ],
         },
     ),
     (
@@ -94,6 +109,21 @@ SAMPLE_FILES = [
                 "naptan:2590B0302",
                 "naptan:2590B0309",
                 "naptan:2590B2027",
+            ],
+            "fares_data_catalogue": [
+                {
+                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample2.xml",
+                    "valid_from": "2020-01-01",
+                    "valid_to": "2022-12-31",
+                    "national_operator_code": ["BLAC", "ATOC", "NR"],
+                    "line_id": ["11"],
+                    "line_name": ["11"],
+                    "atco_area": ["250", "259"],
+                    "tariff_basis": ["zoneToZone"],
+                    "product_type": None,
+                    "product_name": ["Single Ticket"],
+                    "user_type": None,
+                }
             ],
         },
     ),
@@ -168,6 +198,34 @@ EXPECTED_METADATA_ZIP = {
         "naptan:2590B0302",
         "naptan:2590B0309",
         "naptan:2590B2027",
+    ],
+    "fares_data_catalogue": [
+        {
+            "xml_file_name": "sample1.xml",
+            "valid_from": "2020-01-01",
+            "valid_to": "2022-12-31",
+            "national_operator_code": ["HCTY", "ATOC", "NR"],
+            "line_id": ["16"],
+            "line_name": ["16"],
+            "atco_area": ["329"],
+            "tariff_basis": ["zoneToZone"],
+            "product_type": None,
+            "product_name": ["single Ticket - adult"],
+            "user_type": ["adult"],
+        },
+        {
+            "xml_file_name": "sample2.xml",
+            "valid_from": "2020-01-01",
+            "valid_to": "2022-12-31",
+            "national_operator_code": ["BLAC", "ATOC", "NR"],
+            "line_id": ["11"],
+            "line_name": ["11"],
+            "atco_area": ["250", "259"],
+            "tariff_basis": ["zoneToZone"],
+            "product_type": None,
+            "product_name": ["Single Ticket"],
+            "user_type": None,
+        },
     ],
 }
 

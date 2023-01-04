@@ -2,7 +2,7 @@ import datetime
 
 import factory
 
-from transit_odp.fares.models import FaresMetadata
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.organisation.factories import DatasetMetadataFactory
 
 
@@ -27,3 +27,20 @@ class FaresMetadataFactory(DatasetMetadataFactory):
             # A list of groups were passed in, use them
             for stop in extracted:
                 self.stops.add(stop)
+
+
+class DataCatalogueMetaDataFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = DataCatalogueMetaData
+
+    acto_area = factory.Sequence(lambda n: n)
+    valid_from = datetime.datetime(2000, 5, 7)
+    valid_to = datetime.datetime(2099, 5, 7)
+    line_id = factory.Sequence(lambda n: n)
+    line_name = factory.Sequence(lambda n: n)
+    national_operator_code = factory.Sequence(lambda n: n)
+    product_name = factory.Sequence(lambda n: n)
+    product_type = factory.Sequence(lambda n: n)
+    tariff_basis = factory.Sequence(lambda n: n)
+    user_type = factory.Sequence(lambda n: n)
+    xml_file_name = factory.Sequence(lambda n: n)
