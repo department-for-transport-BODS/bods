@@ -4,9 +4,12 @@ import zipfile
 from collections import namedtuple
 from typing import BinaryIO
 
+from waffle import flag_is_active
+
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
 from transit_odp.browse.constants import INTRO
 from transit_odp.common.csv import CSVBuilder, CSVColumn
+from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
 from transit_odp.organisation.constants import ERROR, LIVE, NO_ACTIVITY, AVLType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.organisation import (
@@ -19,7 +22,6 @@ from transit_odp.organisation.csv.overall import (
 )
 from transit_odp.organisation.models import Organisation
 from transit_odp.timetables.csv import TIMETABLE_COLUMN_MAP, get_timetable_catalogue_csv
-from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +104,7 @@ def create_guidance_file_string() -> str:
 def create_data_catalogue_file() -> BinaryIO:
     buffer_ = io.BytesIO()
     files = (CSVFile(NOC_FILENAME, DownloadOperatorNocCatalogueCSV),)
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
 
     with zipfile.ZipFile(buffer_, mode="w", compression=zipfile.ZIP_DEFLATED) as zin:
         for file_ in files:
@@ -131,10 +134,11 @@ def create_data_catalogue_file() -> BinaryIO:
         except EmptyDataFrame:
             pass
 
-        try:
-            zin.writestr(FARES_FILENAME, get_fares_data_catalogue_csv())
-        except EmptyDataFrame:
-            pass
+        if is_fares_validator_active:
+            try:
+                zin.writestr(FARES_FILENAME, get_fares_data_catalogue_csv())
+            except EmptyDataFrame:
+                pass
 
     buffer_.seek(0)
     return buffer_

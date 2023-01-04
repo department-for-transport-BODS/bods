@@ -1,7 +1,8 @@
 import pandas as pd
+from waffle import flag_is_active
 
-from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.fares.models import FaresMetadata
+from transit_odp.organisation.csv import EmptyDataFrame
 
 
 def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
@@ -17,4 +18,6 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
 
 
 def get_fares_data_catalogue_csv():
-    return _get_fares_data_catalogue_dataframe().to_csv(index=False)
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+    if is_fares_validator_active:
+        return _get_fares_data_catalogue_dataframe().to_csv(index=False)

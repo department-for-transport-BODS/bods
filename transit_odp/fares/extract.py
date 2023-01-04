@@ -251,16 +251,13 @@ class NeTExDocumentsExtractor:
         ]
         return list(itertools.chain(*stop_point_refs))
 
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-    if is_fares_validator_active:
-
-        @property
-        def fares_data_catalogue(self):
-            fares_catalogue_extracted_data = []
-            for doc in self.documents:
-                fares_catalogue = FaresDataCatalogueExtractor(doc)
-                fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
-            return fares_catalogue_extracted_data
+    @property
+    def fares_data_catalogue(self):
+        fares_catalogue_extracted_data = []
+        for doc in self.documents:
+            fares_catalogue = FaresDataCatalogueExtractor(doc)
+            fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
+        return fares_catalogue_extracted_data
 
     def to_dict(self):
         is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
