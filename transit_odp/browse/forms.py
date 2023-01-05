@@ -182,12 +182,11 @@ class FaresSearchFilterForm(GOVUKForm):
         ),
         required=False,
     )
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-    if is_fares_validator_active:
-        is_fares_compliant = forms.NullBooleanField(
-            required=False,
-            label=_("BODS compliance"),
-        )
+
+    is_fares_compliant = forms.NullBooleanField(
+        required=False,
+        label=_("BODS compliance"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
