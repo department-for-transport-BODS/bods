@@ -442,3 +442,74 @@ def test_ppc_summary(
     # 2 x 25 = 50 for all fields matching vehicles
     assert df.iloc[1]["Successful match with TXC"] == 50
     assert df.iloc[1]["%match"] == "50%"
+
+
+@patch("json.load")
+def test_ppc_summary_no_data(
+    json_mock: Mock,
+    ppc_summary_data: PostPublishingChecksSummaryData,
+    daily_report_mock: PostPublishingCheckReport,
+) -> None:
+    daily_report_mock.vehicle_activities_completely_matching = 0
+    daily_report_mock.vehicle_activities_analysed = 0
+    data = [
+        {
+            "AVLtoTimetable matching summary": [
+                {
+                    "SIRI field": "LineRef",
+                    "TXC match field": "LineName",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+            ]
+        },
+        {
+            "AVLtoTimetable matching summary": [
+                {
+                    "SIRI field": "LineRef",
+                    "TXC match field": "LineName",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+            ]
+        },
+    ]
+
+    json_mock.side_effect = data
+
+    # Calling with 2x Mock to run loop 2 times.
+    result = ppc_summary_data.aggregate_daily_reports(
+        daily_reports=[daily_report_mock, daily_report_mock]
+    )
+    df = result.get_summary_report()
+    columns = df.columns
+
+    assert df.shape == (2, 8)
+    assert columns[0] == "SIRI field"
+    assert columns[1] == "TXC match field"
+    assert columns[2] == "Total vehicleActivities analysed"
+    assert columns[3] == "Total count of SIRI fields populated"
+    assert columns[4] == "%populated"
+    assert columns[5] == "Successful match with TXC"
+    assert columns[6] == "%match"
+    assert columns[7] == "Notes"
+
+    assert df.iloc[0]["SIRI field"] == "LineRef"
+    assert df.iloc[0]["TXC match field"] == "LineName"
+    assert df.iloc[0]["Total vehicleActivities analysed"] == 0
+    assert df.iloc[0]["Total count of SIRI fields populated"] == 0
+    assert df.iloc[0]["%populated"] == "0%"
+    assert df.iloc[0]["Successful match with TXC"] == 0
+    assert df.iloc[0]["%match"] == "0%"
+    assert df.iloc[0]["Notes"] == "dummy_1"
+
+    assert df.iloc[1]["Successful match with TXC"] == 0
+    assert df.iloc[1]["%match"] == "0%"

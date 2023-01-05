@@ -61,6 +61,7 @@ class AggregatedDailyReports:
             self.ppc_summary_report[col] = (
                 self.ppc_summary_report[col]
                 .str.replace("%", "")
+                .replace("-", "0")
                 .astype(float)
                 .astype(int)
             )
@@ -90,12 +91,12 @@ class AggregatedDailyReports:
             agg_df["successful_match_with_txc"]
             * 100
             // agg_df["total_activities_analysed"]
-        ).astype(str) + "%"
+        ).fillna("0").astype(str) + "%"
         agg_df["%populated"] = (
             agg_df["total_count_siri_fields"]
             * 100
             // agg_df["total_activities_analysed"]
-        ).astype(str) + "%"
+        ).fillna("0").astype(str) + "%"
 
         return agg_df
 
