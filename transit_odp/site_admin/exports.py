@@ -33,7 +33,7 @@ from transit_odp.common.utils import (
     remove_query_string_param,
 )
 from transit_odp.feedback.models import Feedback, SatisfactionRating
-from transit_odp.organisation.constants import EXPIRED, DatasetType
+from transit_odp.organisation.constants import EXPIRED, INACTIVE, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackAdminCSV
 from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
@@ -215,7 +215,7 @@ class DatasetPublishingCSV(CSVBuilder):
         CSVColumn(
             header="% AVL to Timetables feed matching score",
             accessor=lambda dataset: str(round(dataset.percent_matching)) + "%"
-            if dataset.percent_matching >= 0
+            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
             else "",
         ),
         CSVColumn(
@@ -223,7 +223,7 @@ class DatasetPublishingCSV(CSVBuilder):
             accessor=lambda dataset: get_ppc_weekly_per_feed_download_report(
                 dataset.organisation_id, dataset.id
             )
-            if dataset.percent_matching >= 0
+            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
             else "",
         ),
         CSVColumn(
@@ -232,13 +232,13 @@ class DatasetPublishingCSV(CSVBuilder):
                 round(ppc_overall_score(dataset.organisation_id))
             )
             + "%"
-            if dataset.percent_matching >= 0
+            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
             else "",
         ),
         CSVColumn(
             header="Archived matching reports URL",
             accessor=lambda dataset: get_ppc_weekly_overall_url(dataset.organisation_id)
-            if dataset.percent_matching >= 0
+            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
             else "",
         ),
     ]
