@@ -4,7 +4,12 @@ from django.test import RequestFactory
 from django_hosts.resolvers import get_host, reverse
 
 import config.hosts
-from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
+    DatasetRevisionFactory,
+    FaresDatasetRevisionFactory,
+)
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import UserFactory
 from transit_odp.users.forms.account import PublishAdminNotifications
@@ -421,3 +426,90 @@ class TestFeedsManageView:
         response = client.get(self.url)
         # Assert
         assert response.context_data["object_list"].count() == 5
+
+    @pytest.mark.parametrize(
+        "dataset_factory_type, rows, pages",
+        [
+            (DatasetRevisionFactory, 11, 2),
+            (DatasetRevisionFactory, 21, 3),
+            (DatasetRevisionFactory, 51, 6),
+            (AVLDatasetRevisionFactory, 61, 7),
+            (AVLDatasetRevisionFactory, 71, 8),
+            (AVLDatasetRevisionFactory, 101, 11),
+            (FaresDatasetRevisionFactory, 111, 12),
+            (FaresDatasetRevisionFactory, 121, 13),
+            (FaresDatasetRevisionFactory, 151, 16),
+        ],
+    )
+    def test_unsubscribe_dataset(
+        self,
+        user: settings.AUTH_USER_MODEL,
+        client_factory,
+        dataset_factory_type,
+        rows,
+        pages,
+    ):
+        """
+        GIVEN : different type of dataset: Timetable, AVL, Fares
+               number of rows per table, number of pages in the table
+        WHEN  : the table is created, the link for the last page of the table,
+              the last element is deleted from the Dataset
+        THEN  : the link in the last page should be updated according
+              with the rows in the database.
+        """
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+
+        for revision in dataset_factory_type.create_batch(rows):
+            revision.dataset.subscribers.add(user)
+
+        response = client.get(self.url)
+        page = response.context_data.get("page_obj", None)
+        assert page is not None
+
+        while page.has_next():
+            url_next = f"{self.url}?page={page.next_page_number()}&"
+            response = client.get(url_next)
+            page = response.context_data.get("page_obj", None)
+            assert page is not None
+
+        assert page.number == pages
+
+        revision.dataset.subscribers.remove(user)
+
+        name_router_subscription = "feed-subscription"
+        name_router_success = "feed-subscription-success"
+        if dataset_factory_type().dataset.dataset_type == DatasetType.AVL.value:
+            name_router_subscription = f"avl-{name_router_subscription}"
+            name_router_success = f"avl-{name_router_success}"
+        elif dataset_factory_type().dataset.dataset_type == DatasetType.FARES.value:
+            name_router_subscription = f"fares-{name_router_subscription}"
+            name_router_success = f"fares-{name_router_success}"
+
+        # The right 'back_url' link in the "success" page has been
+        # generated in the "subscription" page.  The steps here are:
+        # 1. "subscription" page -> 'back_url' link with the correct
+        #    number of the page according with the table in the
+        #    queryparams.
+        #
+        # 2. The call of "success" page and test if in the
+        #    context_data there is the correct 'back_url'
+        client.get(
+            reverse(
+                name_router_subscription,
+                args=[revision.dataset_id],
+                host=config.hosts.DATA_HOST,
+            ),
+            follow=True,
+            HTTP_REFERER=self.url + f"?page={pages}&",
+        )
+        response = client.get(
+            reverse(
+                name_router_success,
+                args=[revision.dataset_id],
+                host=config.hosts.DATA_HOST,
+            ),
+            follow=True,
+        )
+
+        assert response.context_data["back_url"] == self.url + f"?page={pages - 1}&"

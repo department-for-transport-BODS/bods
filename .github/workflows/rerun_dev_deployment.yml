@@ -1,0 +1,125 @@
+name: 'rerun_dev_deployment'
+on: [workflow_dispatch]
+
+defaults:
+  run:
+    working-directory: ./
+ 
+env:  
+  ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
+  ENVIRONMENT_NAME: dev
+
+jobs:
+
+  rerun_dev_deployment:
+    name: 'rerun_dev_deployment'
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - id: set-version-number
+      run: |
+        TEXT=$(cat ./version.txt)
+        echo "::set-output name=version::${TEXT//'%'/'%25'}"
+
+    - id: echo-version
+      run: |
+        echo ${{ steps.set-version-number.outputs.version }} 
+    
+    - name: Check if Image exists in Amazon ECR
+      id: check-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }} 
+        IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
+      run: |
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Logout of Amazon ECR
+      if: always()
+      run: docker logout ${{ steps.login-ecr.outputs.registry }}   
+
+    - name: Update celeryflower Task
+      uses: "./.github/workflows/templates/update_task_def"
+      with:
+        service: celeryflower
+        container: celeryflower
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Update celeryworker Task
+      uses: "./.github/workflows/templates/update_task_def"
+      with:
+        service: celeryworker
+        container: celeryworker
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Update celerybeat Task
+      uses: "./.github/workflows/templates/update_task_def"
+      with:
+        service: celerybeat
+        container: celerybeat
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Update frontend Task
+      uses: "./.github/workflows/templates/update_task_def"
+      with:
+        service: frontend
+        container: frontend
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Update api_frontend Task
+      uses: "./.github/workflows/templates/update_task_def"
+      with:
+        service: api_frontend
+        container: frontend
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Update pg_migration
+      uses: "./.github/workflows/templates/register_task_def"
+      with:
+        service: pg_migration
+        container: db-migrate
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Update pg_superuser
+      uses: "./.github/workflows/templates/register_task_def"
+      with:
+        service: pg_superuser
+        container: pg-superuser
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+
+    - name: Run pg migration 
+      uses: "./.github/workflows/templates/run_pg_migration_task"
+      with:
+        subnets: ${{ secrets.SUBNETS }}
+        security_groups: ${{ secrets.SECURITY_GROUPS }}
+        environment: ${{ env.ENVIRONMENT_NAME }}
+
+    - name: Invoke Lambda Function
+      shell: bash
+      run: |
+        aws lambda invoke \
+        --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} \
+        response.json

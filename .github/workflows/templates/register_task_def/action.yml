@@ -1,0 +1,36 @@
+name: update_task_definition
+
+# Were we can define the inputs that our action will accept
+inputs:
+  service: 
+    required: true
+  container: 
+    required: true
+  environment:
+    required: true
+  image_id:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+  # aws-ecs/deploy-service-update 
+  - name: Download task definition
+    shell: bash
+    run: |
+      aws ecs describe-task-definition --task-definition bodds_${{ inputs.service }}_${{ inputs.environment }} --query taskDefinition > ${{ github.workspace }}/task-definition.json
+
+  - name: Fill in the new image ID in the Amazon ECS task definition
+    id: task-def
+    uses: aws-actions/amazon-ecs-render-task-definition@v1
+    with:
+      task-definition: task-definition.json
+      container-name: ${{ inputs.container }}
+      image: ${{ inputs.image_id }}
+
+  - name: Register task definition
+    shell: bash
+    run: |
+      cat ${{ steps.task-def.outputs.task-definition }} | jq 'del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' > ${{ github.workspace }}/updated-task-definition.json
+      aws ecs register-task-definition --cli-input-json file://updated-task-definition.json

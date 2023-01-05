@@ -1,8 +1,10 @@
 {% load i18n %}
 
 <div class="help-modal">
-    <i class="help-icon fas fa-question-circle">
-    </i>
+    {% block help_icon %}
+        <i class="help-icon fas fa-question-circle">
+        </i>
+    {% endblock %}
     <div class="overlay">
         <div class="window">
             <button class="close-button govuk-link">{% trans "Close" %}</button>

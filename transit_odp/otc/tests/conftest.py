@@ -1,45 +1,84 @@
+import json
 from pathlib import Path
 
 import pytest
 import requests_mock
+from django.conf import settings
+from tenacity import wait_none
 
-from transit_odp.otc.constants import CSV_FILE_TEMPLATE, OTC_CSV_URL, TrafficAreas
+from transit_odp.otc.client import OTCAPIClient
+from transit_odp.otc.client.otc_client import APIResponse
 
 HERE = Path(__file__)
-CSV_PATH = HERE.parent / Path("data")
-CSV_DATA = [
-    # The values were calculated using pandas, Service codes that are either
-    # empty or "N/A" are dropped by the code
-    # Columns are:
-    # traffic area, total registrations, total operators, total services, total licences
-    ("B", 3516, 133, 2527, 133),
-    ("C", 3546, 147, 2441, 147),
-    ("D", 6683, 70, 1235, 70),
-    ("F", 2824, 140, 1853, 140),
-    ("G", 1614, 82, 1114, 82),
-    ("H", 8508, 123, 1997, 123),
-    ("K", 1562, 72, 1003, 72),
-    ("M", 3039, 155, 2098, 155),
-]
+TEST_DATA_PATH = HERE.parent / Path("data")
+API_DATA_PATH = TEST_DATA_PATH / Path("API")
 
 
-def read_csv(otc_traffic_area):
-    filepath = CSV_PATH / Path(CSV_FILE_TEMPLATE.format(otc_traffic_area))
-    with open(filepath, "r") as test_csv:
-        return test_csv.read()
+class TestableOTCAPIClient(OTCAPIClient):
+    """
+    Testable OTC Client that wont do exponential backoff for broken requests.
+    Not having this would significantly slow down the unit tests
+    """
+
+    def _make_request(self, *args, **kwargs) -> APIResponse:
+        func = super()._make_request
+        func.retry.wait = wait_none()
+        return func(*args, **kwargs)
 
 
-@pytest.fixture
-def otc_urls():
-    with requests_mock.Mocker() as m:
-        for cta in TrafficAreas.values:
-            m.get(f"{OTC_CSV_URL}/{CSV_FILE_TEMPLATE.format(cta)}", text=read_csv(cta))
-        yield m
+def get_data_by_path(path: Path):
+    with path.open("r") as file_:
+        data = json.load(file_)
+    return data
+
+
+def truncate_data(data):
+    data["page"]["totalPages"] = 1
+    data["busSearch"] = data["busSearch"][:10]
+    return data
 
 
 @pytest.fixture
-def bad_otc_urls():
-    with requests_mock.Mocker() as m:
-        for cta in TrafficAreas.values:
-            m.get(f"{OTC_CSV_URL}/{CSV_FILE_TEMPLATE.format(cta)}", status_code=403)
-        yield m
+def otc_data_from_filename_truncated():
+    from_status = API_DATA_PATH / Path("from_status")
+    registration_numbers = API_DATA_PATH / Path("registration_numbers")
+
+    with requests_mock.Mocker() as mock:
+        for status in from_status.glob("*"):
+            page = status / Path("page1.json")
+            data = get_data_by_path(page)
+            data = truncate_data(data)
+            status_qp = status.name
+            qp = f"latestVariation=true&page=1&limit=100&regStatus={status_qp}"
+            mock.get(f"{settings.OTC_API_URL}?{qp}", json=data)
+
+        for reg_no in registration_numbers.glob("*"):
+            for page in reg_no.glob("*"):
+                data = get_data_by_path(page)
+                page_qp = page.name[4]
+                reg_no_qp = reg_no.name.replace("_", "/")
+                qp = f"page={page_qp}&limit=100&regNo={reg_no_qp}"
+                mock.get(f"{settings.OTC_API_URL}?{qp}", json=data)
+
+        yield mock
+
+
+@pytest.fixture
+def otc_data_from_filename_status():
+    from_status = API_DATA_PATH / Path("from_status")
+
+    with requests_mock.Mocker() as mock:
+        for status in from_status.glob("*"):
+            for page in status.glob("*"):
+                data = get_data_by_path(page)
+                page_qp = page.name[4]
+                status_qp = status.name
+                qp = (
+                    f"latestVariation=true"
+                    f"&page={page_qp}"
+                    "&limit=100"
+                    f"&regStatus={status_qp}"
+                )
+                mock.get(f"{settings.OTC_API_URL}?{qp}", json=data)
+
+        yield mock

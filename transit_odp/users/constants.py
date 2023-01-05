@@ -15,3 +15,5 @@ OrgAdminType = AccountType.org_admin.value
 OrgStaffType = AccountType.org_staff.value
 DeveloperType = AccountType.developer.value
 AgentUserType = AccountType.agent_user.value
+
+DATASET_MANAGE_TABLE_PAGINATE_BY = 10

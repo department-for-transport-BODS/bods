@@ -3,6 +3,7 @@ from typing import List
 
 import factory
 import factory.fuzzy
+from django.utils import timezone
 
 from transit_odp.otc.constants import (
     LicenceDescription,
@@ -10,18 +11,24 @@ from transit_odp.otc.constants import (
     SubsidiesDescription,
     TrafficAreas,
 )
+from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
 from transit_odp.otc.models import Licence as LicenceModel
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
-from transit_odp.otc.registry import Licence, Operator, Registration, Service
 
 TODAY = datetime.date.today()
 PAST = TODAY - datetime.timedelta(weeks=100)
-DATE_STRING = "%d/%m/%y"
+RECENT = timezone.now() - datetime.timedelta(days=2)
+DATE_STRING = "%d/%m/%Y"
+DATETIME_STRING = "%d/%m/%Y %H:%M:%S"
 
 
 def fuzzy_date_as_text(_):
     return factory.fuzzy.FuzzyDate(start_date=PAST).fuzz().strftime(DATE_STRING)
+
+
+def fuzzy_datetime_as_text(_):
+    return factory.fuzzy.FuzzyDateTime(start_dt=RECENT).fuzz().strftime(DATETIME_STRING)
 
 
 class RegistrationFactory(factory.Factory):
@@ -61,6 +68,7 @@ class RegistrationFactory(factory.Factory):
     registration_number = factory.LazyAttribute(
         lambda obj: f"{obj.licence_number}/{obj.registration_code}"
     )
+    last_modified = factory.LazyAttribute(fuzzy_datetime_as_text)
 
 
 class LicenceFactory(factory.Factory):
@@ -107,10 +115,11 @@ class ServiceFactory(factory.Factory):
     description = factory.fuzzy.FuzzyChoice(LicenceDescription.values)
     registration_status = "Registered"
     public_text = factory.Faker("paragraph")
-    service_type_description = factory.Faker("sentence", nb_words=4)
+    service_type_description = factory.Faker("sentence", nb_words=2)
     short_notice = factory.fuzzy.FuzzyChoice([True, False])
     subsidies_description = factory.fuzzy.FuzzyChoice(SubsidiesDescription.values)
     subsidies_details = factory.Faker("sentence")
+    last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
 
 
 class LicenceModelFactory(factory.DjangoModelFactory, LicenceFactory):
@@ -144,6 +153,8 @@ def flatten_data(services: List[Service]) -> List[Registration]:
         for key, value in kwargs.items():
             if isinstance(value, datetime.date):
                 kwargs[key] = value.strftime(DATE_STRING)
+            if isinstance(value, datetime.datetime):
+                kwargs[key] = value.strftime(DATETIME_STRING)
 
         registrations.append(RegistrationFactory(**kwargs))
 
