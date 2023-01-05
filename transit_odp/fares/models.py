@@ -18,7 +18,7 @@ class DataCatalogueMetaData(models.Model):
     national_operator_code = ArrayField(
         models.CharField(blank=True, max_length=255), null=True
     )
-    line_id = ArrayField(models.IntegerField(), null=True)
+    line_id = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     line_name = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     atco_area = ArrayField(models.IntegerField(), null=True)
     tariff_basis = ArrayField(models.CharField(blank=True, max_length=100), null=True)
