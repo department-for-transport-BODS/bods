@@ -138,7 +138,7 @@ class SchemaValidationFileDownloadView(OrgUserViewMixin, BaseDetailView):
         return self.get_object().to_schema_validation_response()
 
 
-class DownloadPPCWeeklyReportView(OrgUserViewMixin, DetailView):
+class DownloadPPCWeeklyReportView(DetailView):
     model = AVLDataset
 
     def get(self, *args, **kwargs):
