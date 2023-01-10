@@ -75,10 +75,10 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
                 orgs.append(org_id.values_list("organisation_id")[0][0])
             if len(set(orgs)) == 1:
                 return self.annotate(
-                    Multioperator=Value("False", output_field=BooleanField())
+                    Multioperator=Value("No", output_field=BooleanField())
                 )
             return self.annotate(
-                Multioperator=Value("True", output_field=BooleanField())
+                Multioperator=Value("Yes", output_field=BooleanField())
             )
 
     def get_active_fares_files(self):
