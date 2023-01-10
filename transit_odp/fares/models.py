@@ -29,7 +29,6 @@ class DataCatalogueMetaData(models.Model):
     objects = FaresNetexFileAttributesQuerySet.as_manager()
 
 
-
 class FaresMetadata(DatasetMetadata):
     num_of_fare_zones = models.PositiveIntegerField()
     num_of_lines = models.PositiveIntegerField()
