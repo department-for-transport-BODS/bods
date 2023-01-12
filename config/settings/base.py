@@ -512,7 +512,6 @@ GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
 # Central AVL Service
 # ------------------------------------------------------------------------------
 CAVL_URL = env("CAVL_URL")
-CAVL_SERVICE = "transit_odp.bods.adapters.gateways.cavl.CAVLService"
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
 CAVL_VALIDATION_URL = env("CAVL_VALIDATION_URL")
 AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
@@ -604,38 +603,3 @@ CRISPY_CLASS_CONVERTERS = {
     "radioinput": "govuk-radios__input ",
     # 'button': "govuk-button ",
 }
-
-# Post Publishing Checks
-# ------------------------------------------------------------------------------
-FEATURE_PPC_ENABLED = env.bool("FEATURE_PPC_ENABLED", default=False)
-
-LOG_LEVEL = env("DJANGO_LOG_LEVEL", default=None)
-
-if LOG_LEVEL:
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{levelname:8s} - {asctime:s} - {name:20s} || {message:s}",
-                "datefmt": "%Y-%m-%d %H:%M:%S",
-                "style": "{",
-            },
-            "simple": {
-                "format": "{levelname:8s} {message:s}",
-                "style": "{",
-            },
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "verbose",
-            },
-        },
-        "loggers": {
-            "root": {
-                "handlers": ["console"],
-                "level": LOG_LEVEL,
-            },
-        },
-    }

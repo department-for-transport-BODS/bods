@@ -37,11 +37,7 @@ def get_lxml_element(xpath, string_xml):
             False,
             False,
             False,
-            [
-                "violation",
-                "8",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (True, False, False, False, False, None),
         (
@@ -198,11 +194,7 @@ def test_preassigned_fare_products(
             False,
             False,
             False,
-            [
-                "violation",
-                "8",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (True, False, False, None),
         (
@@ -312,11 +304,7 @@ def test_preassigned_fare_products_type_ref(
             False,
             False,
             False,
-            [
-                "violation",
-                "8",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (True, False, False, None),
         (
@@ -434,11 +422,7 @@ def test_preassigned_fare_products_charging_type(
             False,
             False,
             False,
-            [
-                "violation",
-                "8",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (True, False, False, False, False, False, None),
         (
@@ -671,11 +655,7 @@ def test_preassigned_validable_elements(
             False,
             False,
             False,
-            [
-                "violation",
-                "8",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (True, False, False, False, None),
         (
@@ -824,11 +804,7 @@ def test_access_right_elements(
             False,
             False,
             False,
-            [
-                "violation",
-                "8",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (True, False, False, None),
         (

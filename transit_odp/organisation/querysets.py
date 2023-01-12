@@ -11,7 +11,9 @@ from django.db.models import (
     Case,
     CharField,
     Count,
+    ExpressionWrapper,
     F,
+    FloatField,
     Func,
     IntegerField,
     Max,
@@ -29,6 +31,7 @@ from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
@@ -845,6 +848,16 @@ class DatasetQuerySet(models.QuerySet):
         )
         return qs
 
+    def get_compliant_fares_validation(self):
+        non_zero_count = Q(live_revision__fares_validation_result__count=0)
+        return self.annotate(
+            is_fares_compliant=Case(
+                When(non_zero_count, then=True),
+                default=False,
+                output_field=BooleanField(),
+            )
+        )
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
@@ -856,6 +869,41 @@ class DatasetQuerySet(models.QuerySet):
             .add_pretty_dataset_type()
             .add_last_updated_including_avl()
             .exclude(live_revision__status=EXPIRED)
+        )
+
+    def add_post_publishing_check_stats(self):
+        from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+
+        created_at = (
+            PostPublishingCheckReport.objects.filter(
+                granularity=PPCReportType.WEEKLY.value
+            )
+            .filter(dataset=OuterRef("pk"))
+            .order_by("-created")
+        )
+        return self.annotate(
+            vehicles_completely_matching=Coalesce(
+                Subquery(
+                    created_at.values("vehicle_activities_completely_matching")[:1]
+                ),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                Subquery(created_at.values("vehicle_activities_analysed")[:1]),
+                Value(NO_PPC_DATA),
+            ),
+            percent_matching=Case(
+                When(
+                    vehicles_analysed__gt=0,
+                    then=ExpressionWrapper(
+                        F("vehicles_completely_matching")
+                        * 100.0
+                        / F("vehicles_analysed"),
+                        output_field=FloatField(),
+                    ),
+                ),
+                default=float(NO_PPC_DATA),
+            ),
         )
 
 
@@ -1097,6 +1145,9 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .annotate(dataset_id=F("revision__dataset_id"))
             .add_string_lines()
         )
+
+    def filter_by_noc_and_line_name(self, noc, line_name):
+        return self.filter(national_operator_code=noc, line_names__contains=[line_name])
 
 
 class ConsumerFeedbackQuerySet(models.QuerySet):

@@ -18,8 +18,8 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
+from transit_odp.notifications import get_notifications
 from transit_odp.users import signals
 from transit_odp.users.forms.admin import (
     AREAS_OF_INTEREST,

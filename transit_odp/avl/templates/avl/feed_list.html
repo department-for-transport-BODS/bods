@@ -10,24 +10,32 @@
         <i class="fas fa-play govuk-!-margin-right-1"></i>
         <a class="review-stat__link" href={% url 'data-activity' pk1=pk1 host hosts.publish %}>{% trans 'More details' %}</a>
     </div>
-    {% if feature_ppc_enabled %}
-        {% if overall_ppc_score %}
-            <div class="review-stat">
-                <div>
-                    <span class="review-stat__top">{{ overall_ppc_score|floatformat:"0" }}%<b class="govuk-!-font-size-16" style="position: relative; bottom: 20px;">{% include "publish/snippets/help_modals/weekly_overall_AVL_to_timetable.html" %}</b></span>
-                </div>
-                <p class="review-stat__description">{% trans 'Weekly overall AVL to Timetables matching score' %}</p>
-                <i class="fas fa-play govuk-!-margin-right-1"></i>
-                <!-- fake link at the moment -->
-                <a class="review-stat__link" href={% url 'consumer-interactions' pk1=pk1 host hosts.publish %}>{% trans 'Download all archived matching reports' %}</a>
+    {% if overall_ppc_score %}
+        <div class="review-stat">
+            <div>
+                <span class="review-stat__top">{{ overall_ppc_score|floatformat:"0" }}%
+                    <b class="govuk-!-font-size-16" style="position: relative; bottom: 20px;">
+                        {% include "publish/snippets/help_modals/weekly_overall_AVL_to_timetable.html" %}
+                    </b>
+                </span>
             </div>
-        {% else %}
-            <div class="review-stat">
-                <div>
-                    <span class="review-stat__top">{% trans 'Pending' %}<b class="govuk-!-font-size-16" style="position: relative; bottom: 20px;">{% include "publish/snippets/help_modals/weekly_overall_AVL_to_timetable.html" %}</b></span>
-                </div>
-                <p class="review-stat__description">{% trans 'Weekly overall AVL to Timetables matching score' %}</p>
+            <p class="review-stat__description">{% trans 'Weekly overall AVL to Timetables matching score' %}</p>
+            <i class="fas fa-play govuk-!-margin-right-1"></i>
+            <a class="review-stat__link" href={% url 'ppc-archive' pk1=pk1 host hosts.publish %}>
+                {% trans 'Download all archived matching reports' %}
+            </a>
+        </div>
+    {% else %}
+        <div class="review-stat">
+            <div>
+                <span class="review-stat__top">
+                    {% trans 'Pending' %}
+                    <b class="govuk-!-font-size-16" style="position: relative; bottom: 20px;">
+                        {% include "publish/snippets/help_modals/weekly_overall_AVL_to_timetable.html" %}
+                    </b>
+                </span>
             </div>
-        {% endif %}
+            <p class="review-stat__description">{% trans 'Weekly overall AVL to Timetables matching score' %}</p>
+        </div>
     {% endif %}
 {% endblock %}

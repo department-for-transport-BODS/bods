@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load static %}
+
+<p class="govuk-body">
+    {% if properties.avl_timetables_matching != '100%'  %}
+        <i class="fas fa-exclamation-circle fa"></i>
+    {% endif %}
+
+    {% if not properties.avl_timetables_matching %}
+        {% if properties.avl_compliance_status_cached == "Unavailable due to dormant feed" %}
+            {% trans 'Unavailable due to dormant feed' %}
+        {% else %}
+            {% trans 'Undergoing validation' %}
+        {% endif %}
+    {% else %}
+        {{ properties.avl_timetables_matching }}
+        {% trans 'completely matched AVL to Timetables' %}
+        </p>
+        <a href="{% url 'avl:download-matching-report' pk1=pk1 pk=object.id host hosts.publish %}" class="govuk-link">
+            {% trans 'Download matching report' %}
+        </a>
+    {% endif %}

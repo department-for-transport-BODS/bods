@@ -14,24 +14,26 @@ from django.utils.translation import gettext as _
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
-from django_tables2 import SingleTableView
 
 import config.hosts
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
-from transit_odp.browse.views.base_views import BaseSearchView, BaseTemplateView
+from transit_odp.browse.views.base_views import (
+    BaseSearchView,
+    BaseTemplateView,
+    ChangeLogView,
+)
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
-    BODSBaseView,
     DownloadView,
     ResourceCounterMixin,
 )
 from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import (
     DatasetType,
     FeedStatus,
@@ -258,47 +260,10 @@ class DatasetSubscriptionSuccessView(
         return context
 
 
-class DatasetChangeLogView(BODSBaseView, SingleTableView):
+class DatasetChangeLogView(ChangeLogView):
     template_name = "browse/timetables/feed_change_log.html"
-    model = DatasetRevision
     table_class = TimetableChangelogTable
-    dataset: Dataset
-    paginate_by = 10
-
-    def get_dataset_queryset(self):
-        return (
-            Dataset.objects.get_active_org()
-            .get_dataset_type(dataset_type=DatasetType.TIMETABLE.value)
-            .add_live_data()
-        )
-
-    def get_dataset(self):
-        try:
-            related_pk = self.kwargs["pk"]
-            self.dataset = self.get_dataset_queryset().get(id=related_pk)
-            return self.dataset
-        except Dataset.DoesNotExist:
-            raise Http404(
-                _("No %(verbose_name)s found matching the query")
-                % {"verbose_name": Dataset._meta.verbose_name}
-            )
-
-    def get_queryset(self):
-        self.dataset = self.get_dataset()
-        return (
-            super()
-            .get_queryset()
-            .filter(dataset=self.dataset)
-            .get_published()
-            .add_publisher_email()
-            .order_by("-created")
-        )
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context["object"] = self.dataset
-        context["feed"] = self.dataset
-        return context
+    dataset_type = DatasetType.TIMETABLE.value
 
 
 class SearchView(BaseSearchView):

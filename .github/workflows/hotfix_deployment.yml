@@ -56,7 +56,7 @@ jobs:
         else
             echo "Build and push docker image with that tag $IMAGE_TAG "
         fi
-
+        
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:

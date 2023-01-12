@@ -13,7 +13,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 
-from transit_odp.bods.interfaces.plugins import get_notifications
+from transit_odp.notifications import get_notifications
 from transit_odp.users.constants import AccountType
 from transit_odp.users.models import Invitation, User, UserSettings
 from transit_odp.users.signals import user_accepted

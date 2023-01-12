@@ -205,7 +205,7 @@ class TestDatasetRevision:
             username="test-account",
             password="password123",
         )
-        cavl_service = mocker.patch(f"{self.mut}.get_cavl_service").return_value
+        cavl_service = mocker.patch(f"{self.mut}.CAVLService").return_value
         revision.publish()
         cavl_service.register_feed.assert_called_once_with(
             feed_id=revision.dataset.id,
@@ -234,7 +234,7 @@ class TestDatasetRevision:
             password="password123.v2",
         )
 
-        cavl_service = mocker.patch(f"{self.mut}.get_cavl_service").return_value
+        cavl_service = mocker.patch(f"{self.mut}.CAVLService").return_value
         new_revision.publish()
         cavl_service.update_feed.assert_called_once_with(
             feed_id=revision.dataset.id,

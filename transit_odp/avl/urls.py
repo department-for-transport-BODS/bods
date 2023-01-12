@@ -32,6 +32,11 @@ urlpatterns = [
                     ),
                 ),
                 path(
+                    "download-matching-report/",
+                    view=views.DownloadPPCWeeklyReportView.as_view(),
+                    name="download-matching-report",
+                ),
+                path(
                     "dataset-edit/",
                     view=views.EditLiveRevisionDescriptionView.as_view(),
                     name="dataset-edit",
@@ -109,7 +114,7 @@ urlpatterns = [
                 ),
                 path(
                     "changelog/",
-                    view=views.ChangeLogView.as_view(),
+                    view=views.AVLChangeLogView.as_view(),
                     name="feed-changelog",
                 ),
                 path(

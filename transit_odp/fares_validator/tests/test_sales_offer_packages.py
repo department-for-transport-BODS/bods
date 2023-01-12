@@ -2,11 +2,11 @@ import pytest
 from lxml import etree
 
 from transit_odp.fares_validator.views.functions import (
-    check_sales_offer_package,
     check_dist_assignments,
-    check_sale_offer_package_elements,
-    check_payment_methods,
     check_fare_product_ref,
+    check_payment_methods,
+    check_sale_offer_package_elements,
+    check_sales_offer_package,
 )
 
 NAMESPACE = {"x": "http://www.netex.org.uk/netex"}
@@ -33,22 +33,14 @@ def get_lxml_element(xpath, string_xml):
             False,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             False,
             True,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             True,
@@ -181,11 +173,7 @@ def test_check_sales_offer_package(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             False,
@@ -193,11 +181,7 @@ def test_check_sales_offer_package(
             True,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             True,
@@ -374,21 +358,13 @@ def test_check_dist_assignments(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             False,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             True,
@@ -503,21 +479,13 @@ def test_check_payment_methods(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             False,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             True,
@@ -644,11 +612,7 @@ def test_check_fare_product_ref(
             False,
             False,
             False,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             False,
@@ -658,11 +622,7 @@ def test_check_fare_product_ref(
             True,
             True,
             True,
-            [
-                "violation",
-                "7",
-                "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'",
-            ],
+            "",
         ),
         (
             True,

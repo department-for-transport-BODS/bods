@@ -1,10 +1,10 @@
 from django.db.models import QuerySet
 
-from transit_odp.bods.interfaces.notifications import INotifications
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.common.utils.convert_datetime import (
     localize_datetime_and_convert_to_string,
 )
+from transit_odp.notifications import get_notifications
+from transit_odp.notifications.client import INotifications
 from transit_odp.organisation.models import Dataset
 
 notifier: INotifications = get_notifications()

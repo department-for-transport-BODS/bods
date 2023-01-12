@@ -3,15 +3,20 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ChoiceField
+from django.http import Http404
+from django.utils.translation import gettext as _
 from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import CreateView
 from django_filters.constants import EMPTY_VALUES
 from django_filters.views import FilterView
 from django_hosts import reverse
+from django_tables2 import SingleTableView
 
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.feedback.forms import GlobalFeedbackForm
 from transit_odp.feedback.models import Feedback
+from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models.data import Dataset, DatasetRevision
 
 
 class BaseFilterView(BODSBaseView, FilterView):
@@ -127,3 +132,58 @@ class GlobalFeedbackView(CreateView):
 
 class GlobalFeedbackThankYouView(TemplateView):
     template_name = "pages/thank_you_page.html"
+
+
+class ChangeLogView(BODSBaseView, SingleTableView):
+    model = DatasetRevision
+    paginate_by = 10
+
+    dataset_type: DatasetType
+
+    def get_dataset_queryset(self):
+        return (
+            Dataset.objects.get_active_org()
+            .get_dataset_type(dataset_type=self.dataset_type)
+            .add_live_data()
+        )
+
+    def get_dataset(self):
+        try:
+            related_pk = self.kwargs["pk"]
+            self.dataset = self.get_dataset_queryset().get(id=related_pk)
+            return self.dataset
+        except Dataset.DoesNotExist:
+            raise Http404(
+                _("No %(verbose_name)s found matching the query")
+                % {"verbose_name": Dataset._meta.verbose_name}
+            )
+
+    def get_queryset(self):
+        self.dataset = self.get_dataset()
+        return (
+            super()
+            .get_queryset()
+            .filter(dataset=self.dataset)
+            .get_published()
+            .add_publisher_email()
+            .order_by("-created")
+        )
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context["object"] = self.dataset
+        context["feed"] = self.dataset
+        context["dataset_type"] = self.dataset.dataset_type
+        return context
+
+
+class OrgChangeLogView(ChangeLogView):
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context["pk1"] = self.kwargs["pk1"]
+        return context
+
+    def get_dataset_queryset(self):
+        return (
+            super().get_dataset_queryset().filter(organisation_id=self.organisation.id)
+        )
