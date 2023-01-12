@@ -1,0 +1,65 @@
+on:
+  push:
+    branches:
+    - 'dev'
+    paths:
+    - version.txt
+  workflow_dispatch:
+
+name: 'set_output_deployment'
+
+defaults:
+  run:
+    working-directory: ./
+
+env:  
+  ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
+  ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
+  ENVIRONMENT_NAME: dev
+
+jobs:
+
+  set_output_deployment:
+    name: 'set_output_deployment'
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - id: set-version-number
+      run: |
+        TEXT=$(cat ./version.txt)
+        echo "::set-output name=version::${TEXT//'%'/'%25'}"
+
+    - id: echo-version
+      run: |
+        echo ${{ steps.set-version-number.outputs.version }} 
+    
+    - name: Check if Image exists in Amazon ECR
+      id: check-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }} 
+        IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
+      run: |
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
+            echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
+            exit 1
+        else
+            echo "Build and push docker image with that tag $IMAGE_TAG "
+        fi
