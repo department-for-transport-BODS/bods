@@ -1,17 +1,13 @@
 from transit_odp.organisation.querysets import DatasetQuerySet
 from django.db import models
 from django.db.models import (
-    Value,
     Q,
     F,
     Case,
     When,
     BooleanField,
-    CharField,
-    IntegerField,
 )
 from transit_odp.organisation.constants import FeedStatus
-from transit_odp.organisation.models.organisations import OperatorCode
 
 
 class FaresDatasetQuerySet(DatasetQuerySet):

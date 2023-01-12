@@ -2,16 +2,7 @@ import pandas as pd
 
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.fares.models import DataCatalogueMetaData
-from django.db.models import (
-    Value,
-    Q,
-    F,
-    Case,
-    When,
-    BooleanField,
-    CharField,
-    IntegerField,
-)
+from django.db.models import Q
 
 from transit_odp.organisation.models.organisations import OperatorCode
 
