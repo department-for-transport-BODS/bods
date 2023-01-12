@@ -40,21 +40,6 @@ jobs:
     - id: echo-version
       run: |
         echo ${{ steps.set-version-number.outputs.version }} 
-    
-    - name: Check if Image exists in Amazon ECR
-      id: check-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }} 
-        IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
-      run: |
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-        if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
-            echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
-            exit 1
-        else
-            echo "Build and push docker image with that tag $IMAGE_TAG "
-        fi
 
     - name: Logout of Amazon ECR
       if: always()
