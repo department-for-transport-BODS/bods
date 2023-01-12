@@ -56,11 +56,6 @@ jobs:
         else
             echo "Build and push docker image with that tag $IMAGE_TAG "
         fi
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> test
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
@@ -121,8 +116,6 @@ jobs:
         container: db-migrate
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
-<<<<<<< HEAD
-=======
 
     - name: Update pg_superuser
       uses: "./.github/workflows/templates/register_task_def"
@@ -131,7 +124,6 @@ jobs:
         container: pg-superuser
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
->>>>>>> test
 
     - name: Update pg_superuser
       uses: "./.github/workflows/templates/register_task_def"
