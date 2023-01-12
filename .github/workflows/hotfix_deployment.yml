@@ -65,6 +65,7 @@ jobs:
       run: |
         docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+
     - name: Logout of Amazon ECR
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}   
@@ -124,6 +125,7 @@ jobs:
         container: pg-superuser
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
+
     - name: Run pg migration 
       uses: "./.github/workflows/templates/run_pg_migration_task"
       with:
