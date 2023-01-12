@@ -56,7 +56,11 @@ jobs:
         else
             echo "Build and push docker image with that tag $IMAGE_TAG "
         fi
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> test
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
@@ -65,6 +69,7 @@ jobs:
       run: |
         docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+
     - name: Logout of Amazon ECR
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}   
@@ -116,6 +121,17 @@ jobs:
         container: db-migrate
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
+<<<<<<< HEAD
+=======
+
+    - name: Update pg_superuser
+      uses: "./.github/workflows/templates/register_task_def"
+      with:
+        service: pg_superuser
+        container: pg-superuser
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.check-image.outputs.image }}
+>>>>>>> test
 
     - name: Update pg_superuser
       uses: "./.github/workflows/templates/register_task_def"
