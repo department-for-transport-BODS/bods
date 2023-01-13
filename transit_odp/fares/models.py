@@ -26,6 +26,8 @@ class DataCatalogueMetaData(models.Model):
     product_name = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     user_type = ArrayField(models.CharField(blank=True, max_length=100), null=True)
 
+    objects = FaresNetexFileAttributesQuerySet.as_manager()
+
 
 class FaresMetadata(DatasetMetadata):
     num_of_fare_zones = models.PositiveIntegerField()
@@ -36,5 +38,3 @@ class FaresMetadata(DatasetMetadata):
     valid_from = models.DateTimeField(blank=True, null=True)
     valid_to = models.DateTimeField(blank=True, null=True)
     stops = models.ManyToManyField(StopPoint, related_name="faresmetadata")
-
-    objects = FaresNetexFileAttributesQuerySet.as_manager()
