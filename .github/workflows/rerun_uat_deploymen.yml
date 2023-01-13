@@ -13,7 +13,7 @@ jobs:
 
   rerun_uat_deployment:
     name: 'rerun_uat_deployment'
-    runs-on: ubuntu-lauat
+    runs-on: ubuntu-latest
     environment:
       name: uat
     
