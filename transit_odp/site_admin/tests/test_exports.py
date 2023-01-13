@@ -10,6 +10,7 @@ from freezegun import freeze_time
 
 import config.hosts
 from config.hosts import DATA_HOST
+from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
 from transit_odp.avl.factories import PostPublishingCheckReportFactory
 from transit_odp.avl.models import PPCReportType
 from transit_odp.browse.exports import get_feed_status
@@ -175,6 +176,16 @@ class TestDatasetPublishingCSV:
             dataset_type=AVLType,
             live_revision__status="inactive",
         )
+        dataset4 = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+            avl_compliance_cached__status=MORE_DATA_NEEDED,
+        )
+        dataset5 = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+
         PostPublishingCheckReportFactory(
             dataset=dataset1,
             vehicle_activities_analysed=10,
@@ -196,13 +207,26 @@ class TestDatasetPublishingCSV:
             granularity=PPCReportType.WEEKLY,
             created=today - timedelta(days=7),
         )
+        PostPublishingCheckReportFactory(
+            dataset=dataset4,
+            vehicle_activities_analysed=0,
+            vehicle_activities_completely_matching=0,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=dataset5,
+            vehicle_activities_analysed=0,
+            vehicle_activities_completely_matching=0,
+            created=today,
+        )
 
         dataset_publishing_csv = DatasetPublishingCSV()
         actual = dataset_publishing_csv.to_string()
         csvfile = io.StringIO(actual)
         reader = csv.reader(csvfile.getvalue().splitlines())
 
-        headers, first_row, second_row, third_row = list(reader)
+        headers, first_row, second_row, third_row, fourth_row, fifth_row = list(reader)
         assert headers == [
             "operator",
             "dataType",
@@ -257,6 +281,16 @@ class TestDatasetPublishingCSV:
         assert third_row[8] == ""
         assert third_row[9] == ""
         assert third_row[10] == ""
+
+        assert fourth_row[7] == MORE_DATA_NEEDED
+        assert fourth_row[8] == ""
+        assert fourth_row[9] == TOTAL_PERCENTAGE
+        assert fourth_row[10] == url_overall
+
+        assert fifth_row[7] == UNDERGOING
+        assert fifth_row[8] == ""
+        assert fifth_row[9] == TOTAL_PERCENTAGE
+        assert fifth_row[10] == url_overall
 
 
 class TestConsumerCSV:
