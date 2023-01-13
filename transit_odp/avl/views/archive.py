@@ -1,9 +1,11 @@
 import logging
 
-from cavl_client.rest import ApiException
 from django.db import transaction
+from django.http import FileResponse
+from django.views.generic import View
 
-from transit_odp.bods.interfaces.plugins import get_cavl_service
+from transit_odp.avl.client import CAVLService
+from transit_odp.avl.post_publishing_checks.archive import PPCArchiveCreator
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.publish.views.base import (
     FeedArchiveBaseView,
@@ -11,7 +13,6 @@ from transit_odp.publish.views.base import (
 )
 
 APP_NAME = "avl"
-_404 = 404
 logger = logging.getLogger(__name__)
 
 
@@ -26,18 +27,27 @@ class AVLFeedArchiveView(FeedArchiveBaseView):
     @transaction.atomic()
     def form_valid(self, form):
         dataset = self.get_object()
-        cavl_service = get_cavl_service()
+        cavl_service = CAVLService()
+        cavl_service.delete_feed(feed_id=dataset.id)
 
-        try:
-            cavl_service.delete_feed(feed_id=dataset.id)
-        except ApiException as e:
-            if e.status == _404:
-                logger.error(
-                    f"[CAVL] Dataset {dataset.id} => Does not exist in CAVL Service."
-                )
         return super().form_valid(form)
 
 
 class AVLFeedArchiveSuccessView(FeedArchiveSuccessBaseView):
     template_name = "avl/feed_archive_success.html"
     app_name = APP_NAME
+
+
+class PPCArchiveView(View):
+    def get(self, *args, **kwargs):
+        org_id = self.kwargs["pk1"]
+        archiver = PPCArchiveCreator()
+        four_week_buffer = archiver.create_archive(org_id)
+        return self.render_to_response(
+            four_week_buffer, "archived_avl_to_timetable_matching_all_feeds.zip"
+        )
+
+    def render_to_response(self, buffer, filename):
+        response = FileResponse(buffer, as_attachment=True)
+        response["Content-Disposition"] = f"attachment; filename={filename}"
+        return response

@@ -1,0 +1,38 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+
+{% block help_heading %}
+    {% trans "AVL to Timetables feed sampled matching" %}
+{% endblock %}
+
+{% block help_content %}
+    <p class="govuk-body">
+        {% blocktrans %}
+            The AVL to Timetables feed matching is a weekly score of a
+            published data feed. Daily random samples of data packets are
+            collected for each published feed to be matched and then
+            collated together to create a weekly report along with a
+            weekly associated summary score for that report. This is
+            usually done on Monday every week.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            This is the latest matching score for this feed.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Please note that BODS doesn't check every single packet of
+            data but we do a random sampling throughout the day in order
+            to determine these reports and scores.
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
+            Please download the report and work with your technology
+            suppliers to provide the most accurate data so that download
+            data consumers and eventually your bus passengers can benefit.
+        {% endblocktrans %}
+    </p>
+{% endblock %}

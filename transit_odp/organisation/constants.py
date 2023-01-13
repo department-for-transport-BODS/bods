@@ -56,14 +56,6 @@ SEARCH_STATUS_CHOICES = (
 )
 
 
-@enum.unique
-class AVLFeedStatus(ChoiceEnum):
-    DEPLOYING = "DEPLOYING"
-    SYSTEM_ERROR = "SYSTEM_ERROR"
-    FEED_UP = "FEED_UP"
-    FEED_DOWN = "FEED_DOWN"
-
-
 class DatasetType(int, ChoiceEnum):
     TIMETABLE = 1
     AVL = 2
@@ -73,11 +65,6 @@ class DatasetType(int, ChoiceEnum):
 TimetableType = DatasetType.TIMETABLE.value
 AVLType = DatasetType.AVL.value
 FaresType = DatasetType.FARES.value
-
-AVLFeedUp = AVLFeedStatus.FEED_UP.value
-AVLFeedDown = AVLFeedStatus.FEED_DOWN.value
-AVLFEEDSystemError = AVLFeedStatus.SYSTEM_ERROR.value
-AVLFeedDeploying = AVLFeedStatus.DEPLOYING.value
 
 NO_ACTIVITY = "No vehicle activity"
 

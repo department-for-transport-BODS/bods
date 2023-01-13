@@ -9,8 +9,8 @@ from django.views.generic.edit import CreateView
 from django_hosts import reverse
 
 import config.hosts
-from transit_odp.bods.interfaces.plugins import get_notifications
 from transit_odp.browse.forms import ConsumerFeedbackForm
+from transit_odp.notifications import get_notifications
 from transit_odp.organisation.models import ConsumerFeedback, Organisation
 from transit_odp.users.constants import OrgAdminType, SiteAdminType
 

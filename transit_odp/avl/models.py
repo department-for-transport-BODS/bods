@@ -233,7 +233,7 @@ class PostPublishingCheckReport(models.Model):
         return (
             f"id={self.id}, dataset id={self.dataset.id}, type={self.granularity}, "
             f"created={self.created.isoformat()}, filename={self.file.name!r}, "
-            f"vehicle_activities_analysed={self.vehicle_activities_analysed}"
+            f"vehicle_activities_analysed={self.vehicle_activities_analysed}, "
             "vehicle_activities_completely_matching="
             f"{self.vehicle_activities_completely_matching}"
         )

@@ -124,7 +124,7 @@ class Header(BaseModel):
             schema_version=doc.get_transxchange_version(),
             modification=doc.get_modification(),
             creation_datetime=doc.get_creation_date_time(),
-            modification_datetime=doc.get_modifitication_date_time(),
+            modification_datetime=doc.get_modification_date_time(),
             filename=filename,
         )
 

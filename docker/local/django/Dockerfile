@@ -41,9 +41,6 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
     && pip3 install --upgrade pip \
     && pip3 install cython
 
-# Install Python packages
-COPY ./cavl-client /app/cavl-client
-
 COPY ./pyproject.toml ./poetry.lock ./package.json ./package-lock.json ./
 
 RUN python --version \

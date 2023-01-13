@@ -5,8 +5,9 @@ from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
 
+from transit_odp.avl.enums import AVL_FEED_UP
 from transit_odp.avl.proxies import AVLDataset
-from transit_odp.organisation.constants import LIVE, AVLFeedUp, AVLType
+from transit_odp.organisation.constants import LIVE, AVLType
 from transit_odp.organisation.models import DatasetRevision, Organisation
 
 
@@ -79,7 +80,7 @@ def create_dummy_avl_datafeed(
     """
     datafeed.organisation = organisation
     datafeed.contact = organisation.key_contact
-    datafeed.avl_feed_status = AVLFeedUp
+    datafeed.avl_feed_status = AVL_FEED_UP
     datafeed.dataset_type = AVLType
     datafeed.is_dummy = True
 

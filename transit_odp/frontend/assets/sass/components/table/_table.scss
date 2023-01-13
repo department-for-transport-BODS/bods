@@ -13,7 +13,12 @@ $govuk-table-border: 1px solid $govuk-border-colour;
     font-size: 18px;
     border-top: $govuk-table-border;
     border-bottom: 0;
-    word-break: break-word;
+  }
+
+  .govuk-table__row {
+      .govuk-table__cell:last-child {
+          word-break: break-word;
+      }
   }
 
   .govuk-table__row:last-child {

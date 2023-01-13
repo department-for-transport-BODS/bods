@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<TransXChange FileName="vehicle_journeys.xml" RevisionNumber="2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+  <ServicedOrganisations>
+  </ServicedOrganisations>
+  <StopPoints>
+  </StopPoints>
+  <RouteSections>
+  </RouteSections>
+  <Routes>
+  </Routes>
+  <JourneyPatternSections>
+  </JourneyPatternSections>
+  <Operators>
+  </Operators>
+  <Services>
+  </Services>
+  <VehicleJourneys>
+    <VehicleJourney SequenceNumber="300">
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>502</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday/>
+          </DaysOfWeek>
+        </RegularDayType>
+      </OperatingProfile>
+      <JourneyPatternRef>JP5</JourneyPatternRef>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>
