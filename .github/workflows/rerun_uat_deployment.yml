@@ -1,5 +1,12 @@
+on:
+  push:
+    branches:
+    - 'main'
+    paths:
+    - version.txt
+  workflow_dispatch:
+
 name: 'rerun_uat_deployment'
-on: [workflow_dispatch]
 
 defaults:
   run:
