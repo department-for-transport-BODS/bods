@@ -15,6 +15,8 @@ class FaresMetadataFactory(DatasetMetadataFactory):
     num_of_sales_offer_packages = factory.Sequence(lambda n: n)
     num_of_fare_products = factory.Sequence(lambda n: n)
     num_of_user_profiles = factory.Sequence(lambda n: n)
+    num_of_trip_products = factory.Sequence(lambda n: n)
+    num_of_pass_products = factory.Sequence(lambda n: n)
     valid_from = datetime.datetime(2000, 5, 7)
     valid_to = datetime.datetime(2099, 5, 7)
 
