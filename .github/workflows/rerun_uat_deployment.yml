@@ -3,8 +3,8 @@ on: [workflow_dispatch]
 
 defaults:
   run:
-    working-directory: ./
- 
+    working-directory: ./:
+
 env:  
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: uat
