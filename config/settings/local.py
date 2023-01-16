@@ -120,6 +120,7 @@ CELERY_TASK_EAGER_PROPAGATES = False
 
 # Increase age of session cookies to prevent been signed out quickly in development
 SESSION_COOKIE_AGE = 1314000  # set to 1 year
+SESSION_COOKIE_DOMAIN = ""
 
 # Your stuff...
 # ------------------------------------------------------------------------------
