@@ -25,6 +25,7 @@ from transit_odp.organisation.models import (
     Licence,
     OperatorCode,
     Organisation,
+    SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
 )
@@ -117,7 +118,8 @@ class DatasetFactory(factory.django.DjangoModelFactory):
         "transit_odp.organisation.factories.DatasetRevisionFactory", "dataset"
     )
     avl_compliance_cached = factory.RelatedFactory(
-        "transit_odp.organisation.factories.AVLComplianceCacheFactory", "dataset"
+        "transit_odp.organisation.factories.AVLComplianceCacheFactory",
+        "dataset",
     )
 
     @factory.post_generation
@@ -294,3 +296,15 @@ class AVLComplianceCacheFactory(factory.django.DjangoModelFactory):
 
     dataset = factory.SubFactory(DatasetFactory)
     status = UNDERGOING
+
+
+class SeasonalServiceFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SeasonalService
+
+    licence = factory.SubFactory(LicenceFactory)
+    registration_code = factory.Faker("pyint", min_value=1, max_value=4000)
+    start = factory.Faker(
+        "date_between", start_date="2023-01-01", end_date="2023-12-31"
+    )
+    end = factory.LazyAttribute(lambda obj: obj.start + datetime.timedelta(days=90))

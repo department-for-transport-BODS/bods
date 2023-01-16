@@ -30,6 +30,7 @@ from transit_odp.organisation.constants import (
 from transit_odp.organisation.managers import (
     DatasetManager,
     DatasetRevisionManager,
+    SeasonalServiceManager,
     ServiceCodeExemptionManager,
 )
 from transit_odp.organisation.mixins import (
@@ -645,4 +646,38 @@ class ServiceCodeExemption(TimeStampedModel):
             f"licence_id={self.licence}, "
             f"registration_code={self.registration_code}, "
             f"justification='{self.justification}'"
+        )
+
+
+class SeasonalService(TimeStampedModel):
+    licence = models.ForeignKey(
+        "Licence",
+        on_delete=models.CASCADE,
+        help_text="Organisation licence",
+        related_name="seasonal_services",
+    )
+    registration_code = models.IntegerField(
+        blank=False,
+        null=False,
+        help_text="The part of the service code after the licence prefix",
+    )
+
+    start = models.DateField(_("First day of season"), blank=False, null=False)
+
+    end = models.DateField(_("Last day of season"), blank=False, null=False)
+
+    objects = SeasonalServiceManager()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["licence", "registration_code"], name="unique_service"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"licence_id={self.licence}, "
+            f"registration_code={self.registration_code}, "
+            f"season={self.start:%d/%m/%Y} to {self.end:%d/%m/%Y}"
         )
