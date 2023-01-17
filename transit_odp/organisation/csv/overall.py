@@ -105,7 +105,7 @@ DATACATALOGUE_ATTRIBUTE_FIELDS = (
 
 def get_fares_data_list(
     filtered_fares_data_dict, filtered_revision_ids_dict, filtered_dataset_ids_dict
-):
+) -> list:
     """
     Returns list of fares information (xml file name, NOCs and line name)
     when dataset_id in DatasetRevision table match
@@ -123,7 +123,7 @@ def get_fares_data_list(
     return list(filtered_fares_data_dict)
 
 
-def transform_lists(data_list):
+def transform_lists(data_list) -> str:
     """
     Transform lists to seperate multiple values in a list
     with a semi-colon
@@ -192,6 +192,7 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
                 ] = national_operator_code
                 merged.loc[row.Index, ["Line Name"]] = line_name
 
+    print("merged>>>", merged.to_string())
     return merged
 
 
