@@ -98,7 +98,7 @@ def get_ppc_weekly_per_feed_download_report(
 def make_ppc_weekly_overall():
     ppc_weekly_score = {}
 
-    def get_ppc_weekly_overall(organisation_id: int) -> float:
+    def get_ppc_weekly_overall(organisation_id: int) -> Optional[float]:
         if organisation_id not in ppc_weekly_score.keys():
             ppc_weekly_score[organisation_id] = (
                 AVLDataset.objects.get_active()
@@ -124,6 +124,37 @@ def get_ppc_weekly_overall_url(organisation_id: int) -> str:
         args=(organisation_id,),
         host=config.hosts.PUBLISH_HOST,
     )
+
+
+def timetables_matching_score(dataset, qs) -> str:
+    if dataset.percent_matching >= 0 and dataset.status != INACTIVE:
+        return str(round(dataset.percent_matching)) + "%"
+    elif dataset.dataset_type == DatasetType.AVL.value and dataset.status != INACTIVE:
+        return qs.get(id=dataset.id).avl_compliance_status_cached
+    else:
+        return ""
+
+
+def latest_matching_url(dataset) -> str:
+    if dataset.percent_matching >= 0 and dataset.status != INACTIVE:
+        return get_ppc_weekly_per_feed_download_report(
+            dataset.organisation_id, dataset.id
+        )
+    return ""
+
+
+def overall_avl_timetables_matching(dataset) -> str:
+    if dataset.status != INACTIVE:
+        score = ppc_overall_score(dataset.organisation_id)
+        if score is not None:
+            return str(round(score)) + "%"
+    return ""
+
+
+def archived_matching_url(dataset) -> str:
+    if dataset.status != INACTIVE:
+        return get_ppc_weekly_overall_url(dataset.organisation_id)
+    return ""
 
 
 class ConsumerCSV(CSVBuilder):
@@ -198,6 +229,18 @@ class PublisherCSV(CSVBuilder):
 class DatasetPublishingCSV(CSVBuilder):
     """A CSVBuilder class for creating Dataset Publisher CSV strings"""
 
+    def __init__(self):
+        self.avl_compliance_status = {}
+
+    def get_avl_compliance_status(self, organisation_id: int):
+        if organisation_id not in self.avl_compliance_status.keys():
+            self.avl_compliance_status[organisation_id] = (
+                AVLDataset.objects.get_active()
+                .add_avl_compliance_status_cached()
+                .filter(organisation_id=organisation_id)
+            )
+        return self.avl_compliance_status[organisation_id]
+
     columns = [
         CSVColumn(header="operator", accessor="organisation_name"),
         CSVColumn(
@@ -214,32 +257,24 @@ class DatasetPublishingCSV(CSVBuilder):
         ),
         CSVColumn(
             header="% AVL to Timetables feed matching score",
-            accessor=lambda dataset: str(round(dataset.percent_matching)) + "%"
-            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
-            else "",
+            accessor=lambda dataset: timetables_matching_score(
+                dataset,
+                DatasetPublishingCSV().get_avl_compliance_status(
+                    dataset.organisation_id
+                ),
+            ),
         ),
         CSVColumn(
             header="Latest matching report URL",
-            accessor=lambda dataset: get_ppc_weekly_per_feed_download_report(
-                dataset.organisation_id, dataset.id
-            )
-            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
-            else "",
+            accessor=lambda dataset: latest_matching_url(dataset),
         ),
         CSVColumn(
             header="% Operator overall AVL to Timetables matching",
-            accessor=lambda dataset: str(
-                round(ppc_overall_score(dataset.organisation_id))
-            )
-            + "%"
-            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
-            else "",
+            accessor=lambda dataset: overall_avl_timetables_matching(dataset),
         ),
         CSVColumn(
             header="Archived matching reports URL",
-            accessor=lambda dataset: get_ppc_weekly_overall_url(dataset.organisation_id)
-            if dataset.percent_matching >= 0 and dataset.status != INACTIVE
-            else "",
+            accessor=lambda dataset: archived_matching_url(dataset),
         ),
     ]
 

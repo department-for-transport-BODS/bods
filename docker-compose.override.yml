@@ -3,6 +3,7 @@ version: "3"
 volumes:
   local_postgres_data: {}
   local_postgres_data_backups: {}
+  clamav_store: {}
 
 services:
   django: &django
@@ -10,8 +11,8 @@ services:
       context: .
       dockerfile: ./docker/local/django/Dockerfile
       args:
-        - UID=${UID:?UID not set. Add to .env or export using `UID=$(id -u)`}
-        - GID=${GID:?GID not set. Add to .env or export using `GID=$(id -g)`}
+        - UID=${UID}
+        - GID=${GID}
     command: /start
     depends_on:
       - mailhog
@@ -26,11 +27,6 @@ services:
     ports:
       - "8000:8000"
       - "3000:3000"
-    extra_hosts:
-      - "www.bods.local:127.0.0.1"
-      - "data.bods.local:127.0.0.1"
-      - "publish.bods.local:127.0.0.1"
-      - "admin.bods.local:127.0.0.1"
 
   postgres:
     build:

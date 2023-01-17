@@ -51,7 +51,6 @@ jobs:
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
             echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
-            exit 1
         else
             echo "Build and push docker image with that tag $IMAGE_TAG "
         fi
