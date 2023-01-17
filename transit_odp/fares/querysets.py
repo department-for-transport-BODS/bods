@@ -1,13 +1,8 @@
-from transit_odp.organisation.querysets import DatasetQuerySet
 from django.db import models
-from django.db.models import (
-    Q,
-    F,
-    Case,
-    When,
-    BooleanField,
-)
+from django.db.models import BooleanField, Case, F, Q, When
+
 from transit_odp.organisation.constants import FeedStatus
+from transit_odp.organisation.querysets import DatasetQuerySet
 
 
 class FaresDatasetQuerySet(DatasetQuerySet):
@@ -23,6 +18,19 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             Q(fares_metadata_id__revision__is_published=True)
             & Q(fares_metadata_id__revision__status=FeedStatus.live.value)
         ).order_by("fares_metadata_id")
+        return qs
+
+    def get_filtered_fares(self):
+        from transit_odp.fares.models import FaresMetadata
+
+        qs = self.filter(
+            Q(
+                fares_metadata_id__in=FaresMetadata.objects.all().values_list(
+                    "datasetmetadata_ptr", flat=True
+                )
+            )
+        ).order_by("fares_metadata_id")
+
         return qs
 
     def add_published_date(self):
@@ -68,7 +76,8 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
 
     def get_active_fares_files(self):
         """
-        Filter for revisions that are published and active along with other added properties
+        Filter for revisions that are published and active along
+        with other added properties
         """
         return (
             self.get_active_published_files()
@@ -77,3 +86,6 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_organisation_name()
             .add_compliance_status()
         )
+
+    def get_fares_overall_catalogue(self):
+        return self.get_filtered_fares()

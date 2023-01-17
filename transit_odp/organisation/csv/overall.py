@@ -3,7 +3,7 @@ from collections import OrderedDict
 from pandas import DataFrame, merge
 
 from transit_odp.common.collections import Column
-from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
+from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
     Dataset,
@@ -103,36 +103,24 @@ DATACATALOGUE_ATTRIBUTE_FIELDS = (
 )
 
 
-def get_fares_data():
+def get_fares_data_list(
+    filtered_fares_data_dict, filtered_revision_ids_dict, filtered_dataset_ids_dict
+):
     """
     Returns list of fares information (xml file name, NOCs and line name)
     when dataset_id in DatasetRevision table match
     fares_metadata_id in DataCatalogueMetaData table.
     """
-    dataset_ids_dict = (
-        DataCatalogueMetaData.objects.filter(
-            fares_metadata_id__in=FaresMetadata.objects.all().values_list(
-                "datasetmetadata_ptr"
-            )
-        )
-        .order_by("fares_metadata_id")
-        .values(*DATACATALOGUE_ATTRIBUTE_FIELDS)
-    )
+    for fares_data_dict in filtered_fares_data_dict:
+        for revision_id_dict in filtered_revision_ids_dict:
+            if fares_data_dict.get("fares_metadata_id") == revision_id_dict.get("id"):
+                fares_data_dict["revision_id"] = revision_id_dict["revision_id"]
 
-    for dataset_id in dataset_ids_dict:
-        revision_ids = DatasetMetadata.objects.filter(
-            id=dataset_id.get("fares_metadata_id")
-        ).values("revision_id")
-        for revision_id in revision_ids:
-            dataset_id["revision_id"] = revision_id["revision_id"]
+        for dataset_id_dict in filtered_dataset_ids_dict:
+            if fares_data_dict.get("revision_id") == dataset_id_dict.get("id"):
+                fares_data_dict["dataset_id"] = dataset_id_dict["dataset_id"]
 
-        dataset_ids = DatasetRevision.objects.filter(
-            id=dataset_id.get("revision_id")
-        ).values("dataset_id")
-        for dataset_id in dataset_ids:
-            dataset_id["dataset_id"] = dataset_id["dataset_id"]
-
-    return list(dataset_ids_dict)
+    return list(filtered_fares_data_dict)
 
 
 def transform_lists(data_list):
@@ -140,8 +128,10 @@ def transform_lists(data_list):
     Transform lists to seperate multiple values in a list
     with a semi-colon
     """
-    transformed_string = "".join([str(data) + ";" for data in data_list])
-    return transformed_string[: len(transformed_string) - 1]
+    transformed_string = "".join([str(data) + "; " for data in data_list]).removesuffix(
+        "; "
+    )
+    return transformed_string
 
 
 def _get_overall_catalogue_dataframe() -> DataFrame:
@@ -153,6 +143,16 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
             *TXC_FILE_ATTRIBUTE_FIELDS
         )
     )
+    datacatalogue_metadata_qs = (
+        DataCatalogueMetaData.objects.get_fares_overall_catalogue().values(
+            *DATACATALOGUE_ATTRIBUTE_FIELDS
+        )
+    )
+    revision_id_qs = DatasetMetadata.objects.revision_id_qs().values(
+        "id", "revision_id"
+    )
+    dataset_id_qs = DatasetRevision.objects.dataset_id_qs().values("id", "dataset_id")
+
     if dataset_df.empty or txc_file_attributes_df.empty:
         raise EmptyDataFrame()
 
@@ -171,22 +171,26 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
     }
     merged = merged[OVERALL_COLUMN_MAP.keys()].rename(columns=rename_map)
 
-    df_data_id_list = merged["Data ID"].tolist()
-    all_data_dict = get_fares_data()
+    fares_data_dict = get_fares_data_list(
+        datacatalogue_metadata_qs,
+        revision_id_qs,
+        dataset_id_qs,
+    )
 
-    for data_id in df_data_id_list:
-        for data in all_data_dict:
-            if data_id == data.get("dataset_id"):
-                index = merged.index[merged["Data ID"] == data_id].values.astype(int)
-                xml_file_name = data.get("xml_file_name")
+    for row in merged.itertuples():
+        for data_dict in fares_data_dict:
+            if data_dict.get("dataset_id") == getattr(row, "_10"):
+                xml_file_name = data_dict.get("xml_file_name")
                 national_operator_code = transform_lists(
-                    data.get("national_operator_code")
+                    data_dict.get("national_operator_code")
                 )
-                line_name = transform_lists(data.get("line_name"))
+                line_name = transform_lists(data_dict.get("line_name"))
 
-                merged.loc[index, ["XML File Name"]] = xml_file_name
-                merged.loc[index, ["National Operator Code"]] = national_operator_code
-                merged.loc[index, ["Line Name"]] = line_name
+                merged.loc[row.Index, ["XML File Name"]] = xml_file_name
+                merged.loc[
+                    row.Index, ["National Operator Code"]
+                ] = national_operator_code
+                merged.loc[row.Index, ["Line Name"]] = line_name
 
     return merged
 
