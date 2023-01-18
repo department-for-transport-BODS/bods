@@ -1222,3 +1222,11 @@ class BODSLicenceQuerySet(models.QuerySet):
                 output_field=CharField(),
             )
         )
+
+
+class OperatorCodeQuerySet(models.QuerySet):
+    def get_nocs(self):
+        """
+        This returns all the objects from the OperatorCode model
+        """
+        return self.values_list().order_by("id")
