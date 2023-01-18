@@ -192,7 +192,6 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
                 ] = national_operator_code
                 merged.loc[row.Index, ["Line Name"]] = line_name
 
-    print("merged>>>", merged.to_string())
     return merged
 
 
