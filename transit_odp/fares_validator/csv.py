@@ -89,10 +89,6 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "ProductName",
             "",
         ),
-        "user_type": Column(
-            "UserType",
-            "",
-        ),
         "multioperator": Column(
             "Multioperator",
             "",
