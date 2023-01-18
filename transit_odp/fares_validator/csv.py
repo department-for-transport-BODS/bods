@@ -5,8 +5,6 @@ from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.common.collections import Column
 
-from django.db.models import Q
-
 from transit_odp.organisation.models.organisations import OperatorCode
 
 
