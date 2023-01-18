@@ -136,6 +136,36 @@ class NeTExDocument:
         xpath = ["usageParameters", "UserProfile"]
         return self.find_anywhere(xpath)
 
+    def get_product_types(self):
+        xpath = ["fareProducts", "PreassignedFareProduct", "ProductType"]
+        return list(self.find_anywhere(xpath))
+
+    def get_products_count(self, product_value_list):
+        count = 0
+        product_type_list = self.get_product_types()
+
+        for product_type in product_type_list:
+            if getattr(product_type, "text") in product_value_list:
+                count += 1
+
+        return count
+
+    def get_number_of_trip_products(self):
+        trip_product_values = [
+            "singleTrip",
+            "dayReturnTrip",
+            "periodReturnTrip",
+            "timeLimitedSingleTrip",
+            "ShortTrip",
+        ]
+        trip_product_count = self.get_products_count(trip_product_values)
+        return trip_product_count
+
+    def get_number_of_pass_products(self):
+        pass_product_values = ["dayPass", "periodPass"]
+        pass_product_count = self.get_products_count(pass_product_values)
+        return pass_product_count
+
     def get_earliest_tariff_from_date(self):
         xpath = ["Tariff", "validityConditions", "ValidBetween", "FromDate"]
         elements = self.find_anywhere(xpath)
