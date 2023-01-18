@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import BooleanField, Case, F, Q, When
+from django.db.models import BooleanField, Case, F, Q, Subquery, When
 
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.querysets import DatasetQuerySet
@@ -24,10 +24,8 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         from transit_odp.fares.models import FaresMetadata
 
         qs = self.filter(
-            Q(
-                fares_metadata_id__in=FaresMetadata.objects.all().values_list(
-                    "datasetmetadata_ptr", flat=True
-                )
+            fares_metadata_id__in=Subquery(
+                FaresMetadata.objects.values_list("datasetmetadata_ptr", flat=True)
             )
         ).order_by("fares_metadata_id")
 
