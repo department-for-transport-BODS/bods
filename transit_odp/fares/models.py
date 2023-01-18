@@ -18,13 +18,15 @@ class DataCatalogueMetaData(models.Model):
     national_operator_code = ArrayField(
         models.CharField(blank=True, max_length=255), null=True
     )
-    line_id = ArrayField(models.IntegerField(), null=True)
+    line_id = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     line_name = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     atco_area = ArrayField(models.IntegerField(), null=True)
     tariff_basis = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     product_type = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     product_name = ArrayField(models.CharField(blank=True, max_length=100), null=True)
     user_type = ArrayField(models.CharField(blank=True, max_length=100), null=True)
+
+    objects = FaresNetexFileAttributesQuerySet.as_manager()
 
 
 class FaresMetadata(DatasetMetadata):
@@ -36,5 +38,3 @@ class FaresMetadata(DatasetMetadata):
     valid_from = models.DateTimeField(blank=True, null=True)
     valid_to = models.DateTimeField(blank=True, null=True)
     stops = models.ManyToManyField(StopPoint, related_name="faresmetadata")
-
-    objects = FaresNetexFileAttributesQuerySet.as_manager()
