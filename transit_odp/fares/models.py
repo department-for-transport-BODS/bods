@@ -35,6 +35,8 @@ class FaresMetadata(DatasetMetadata):
     num_of_sales_offer_packages = models.PositiveIntegerField()
     num_of_fare_products = models.PositiveIntegerField()
     num_of_user_profiles = models.PositiveIntegerField()
+    num_of_trip_products = models.PositiveIntegerField(null=True)
+    num_of_pass_products = models.PositiveIntegerField(null=True)
     valid_from = models.DateTimeField(blank=True, null=True)
     valid_to = models.DateTimeField(blank=True, null=True)
     stops = models.ManyToManyField(StopPoint, related_name="faresmetadata")

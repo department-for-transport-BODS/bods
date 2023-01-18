@@ -241,6 +241,20 @@ class NeTExDocumentsExtractor:
         return list(itertools.chain(*stop_point_refs))
 
     @property
+    def num_of_trip_products(self):
+        trip_products_list = [
+            doc.get_number_of_trip_products() for doc in self.documents
+        ]
+        return trip_products_list[0]
+
+    @property
+    def num_of_pass_products(self):
+        pass_products_list = [
+            doc.get_number_of_pass_products() for doc in self.documents
+        ]
+        return pass_products_list[0]
+
+    @property
     def fares_data_catalogue(self):
         fares_catalogue_extracted_data = []
         for doc in self.documents:
@@ -256,6 +270,8 @@ class NeTExDocumentsExtractor:
             "num_of_sales_offer_packages",
             "num_of_fare_products",
             "num_of_user_profiles",
+            "num_of_trip_products",
+            "num_of_pass_products",
             "valid_from",
             "valid_to",
             "stop_point_refs",
