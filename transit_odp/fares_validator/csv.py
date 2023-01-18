@@ -108,15 +108,13 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
         DataCatalogueMetaData.objects.get_active_fares_files().values(*METADATA_COLUMNS)
     )
     nocs = fares_df["national_operator_code"].tolist()
-    nocs_df = pd.DataFrame.from_records(
-        OperatorCode.objects.get_nocs().values()
-    )    
+    nocs_df = pd.DataFrame.from_records(OperatorCode.objects.get_nocs().values())
     multioperator_list = add_multioperator_status(nocs, nocs_df)
     multioperator_df = pd.DataFrame(multioperator_list, columns=["multioperator"])
-    
+
     if fares_df.empty or multioperator_df.empty:
         raise EmptyDataFrame()
-        
+
     merged = pd.merge(fares_df, multioperator_df, on=fares_df.index, how="outer")
     rename_map = {
         old_name: column_tuple.field_name
@@ -131,6 +129,7 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
 def get_fares_data_catalogue_csv():
     return _get_fares_data_catalogue_dataframe()
 
+
 def add_multioperator_status(nocs, nocs_df) -> list:
     """
     Calculates if the NOCs belong to the same organisation or not
@@ -140,8 +139,7 @@ def add_multioperator_status(nocs, nocs_df) -> list:
     for operator_codes in nocs:
         orgs = []
         for operator in operator_codes:
-            org = nocs_df.loc[nocs_df["noc"]
-                                       == operator, "organisation_id"].iloc[0]
+            org = nocs_df.loc[nocs_df["noc"] == operator, "organisation_id"].iloc[0]
             if org:
                 orgs.append(org)
         if len(set(orgs)) == 1:

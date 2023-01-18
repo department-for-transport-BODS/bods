@@ -111,7 +111,6 @@ class OperatorCode(models.Model):
 
     objects = OperatorCodeManager()
 
-
     def __str__(self):
         return f"<OperatorCode noc='{self.noc}'>"
 
