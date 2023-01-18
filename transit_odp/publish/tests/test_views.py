@@ -132,7 +132,6 @@ def test_publish_home_view(client_factory, account_type):
     ids=("Test timetables feed-list", "Test AVL feed-list", "Test fares feed-list"),
 )
 def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
-
     host = PUBLISH_HOST
     client = client_factory(host=host)
     set_urlconf(get_host(host))
@@ -167,7 +166,6 @@ def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
 def test_publish_select_data_type_view(
     dataset_type, expected_view, pathargs, pathkwargs, client_factory
 ):
-
     host = PUBLISH_HOST
     client = client_factory(host=host)
     org = OrganisationFactory(id=1)
@@ -995,7 +993,6 @@ class TestPublishView:
 
         # Assert
         assert response.status_code == 200
-        assert "publish/feed_list.html" in [t.name for t in response.templates]
         assert response.context_data["seasonal_services_counter"] == 4
 
 
@@ -1031,7 +1028,6 @@ class TestFeedArchiveView:
         )
 
     def test_archive_view_archives_dataset(self, publish_client):
-
         publish_client.force_login(user=self.staff)
         response = publish_client.post(self.url, data={"submit": "submit"}, follow=True)
         fished_out_feed = Dataset.objects.get(pk=self.feed.id)

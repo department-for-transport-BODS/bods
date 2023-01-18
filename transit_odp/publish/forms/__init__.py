@@ -11,10 +11,7 @@ from .revision import (
     RevisionPublishForm,
     RevisionPublishFormViolations,
 )
-from .seasonal_services import (
-    SeasonalServiceEditDateForm,
-    SeasonalServiceLicenceNumberForm,
-)
+from .seasonal_services import EditDateForm, LicenceNumberForm
 
 __all__ = [
     "FeedDescriptionForm",
@@ -26,6 +23,6 @@ __all__ = [
     "FeedPublishCancelForm",
     "RevisionPublishForm",
     "RevisionPublishFormViolations",
-    "SeasonalServiceLicenceNumberForm",
-    "SeasonalServiceEditDateForm",
+    "LicenceNumberForm",
+    "EditDateForm",
 ]

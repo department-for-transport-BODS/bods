@@ -1,0 +1,27 @@
+@import "govuk-frontend/govuk/helpers/colour";
+
+.button-table-link {
+    @extend .govuk-link;
+    color: $govuk-link-colour;
+    background: none;
+    border: none;
+    padding: 0;
+    
+}
+
+.seasonal_service_header_empty_table {
+    @extend .govuk-table__header;
+    padding: 0 0 0 0;
+}
+
+.seasonal_service_empty_body_table {
+    @extend .govuk-width-container;
+    
+    p {
+        @extend .govuk-body-m;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        color: $govuk-secondary-text-colour;
+    }
+}
