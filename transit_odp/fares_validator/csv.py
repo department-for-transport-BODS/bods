@@ -125,7 +125,7 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
 
 
 def get_fares_data_catalogue_csv():
-    return _get_fares_data_catalogue_dataframe()
+    return _get_fares_data_catalogue_dataframe().to_csv(index=False)
 
 
 def add_multioperator_status(nocs, nocs_df) -> list:
