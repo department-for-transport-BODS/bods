@@ -15,6 +15,7 @@ from transit_odp.organisation.constants import (
 from transit_odp.organisation.managers import (
     BODSLicenceManager,
     ConsumerFeedbackManager,
+    OperatorCodeManager,
     OrganisationManager,
 )
 from transit_odp.organisation.models import Dataset
@@ -107,6 +108,8 @@ class OperatorCode(models.Model):
     organisation = models.ForeignKey(
         Organisation, on_delete=models.CASCADE, related_name="nocs"
     )
+
+    objects = OperatorCodeManager()
 
     def __str__(self):
         return f"<OperatorCode noc='{self.noc}'>"
