@@ -101,6 +101,11 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "The Name element within PreassignedFareProduct as extracted from the files"
             " provided by the operator/publisher to BODS.",
         ),
+        "user_type": Column(
+            "UserType",
+            "The origin element as extracted from the files provided by the operator"
+            "/publisher to BODS.",
+        ),
         "multioperator": Column(
             "Multioperator",
             "Status derived from comparing the BODS organisation of "
@@ -109,8 +114,6 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
         ),
     }
 )
-
-# Is user type not included anymore?
 
 
 def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
