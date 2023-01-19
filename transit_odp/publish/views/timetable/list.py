@@ -1,13 +1,20 @@
+from typing import List, Tuple, Type
+
+from django.forms import Form
 from django.http import HttpResponse
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
 from django.views import View
 from django_tables2 import SingleTableView
+from formtools.wizard.views import SessionWizardView
 
+from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
 from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.publish.forms import SeasonalServiceLicenceNumberForm
 from transit_odp.publish.tables import DatasetTable
 from transit_odp.publish.views.base import BasePublishListView
 from transit_odp.timetables.proxies import TimetableDataset
@@ -91,6 +98,49 @@ class ServiceCodeView(OrgUserViewMixin, View):
 
 
 class SeasonalServicesView(OrgUserViewMixin, SingleTableView):
+    template_name = "publish/seasonal_services.html"
+    model = SeasonalService
+    table_class = SeasonalServicesTable
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org_id = self.kwargs["pk1"]
+        context["pk1"] = org_id
+        # uncomment when BODP-5626 merged
+        context[
+            "seasonal_services_counter"
+        ] = 12  # SeasonalService.objects.get_seasonal_service_counter(org_id)
+        return context
+
+
+class SeasonalServicesWizardAddNewView(
+    BODSBaseView, OrgUserViewMixin, SessionWizardView
+):
+    SELECT_PSV_STEP = "select_psv_licence_number"
+    PROVIDE_OPERATING_DATE = "provide_operating_dates"
+
+    form_list: List[Tuple[str, Type[Form]]] = [
+        (SELECT_PSV_STEP, SeasonalServiceLicenceNumberForm),
+    ]
+
+    step_context = {
+        SELECT_PSV_STEP: {"step_title": _("Seasonal service operating dates")},
+        PROVIDE_OPERATING_DATE: {"step_title": _("Seasonal service operating dates")},
+    }
+
+    def get_template_names(self):
+        return "publish/seasonal_services_add_date_form.html"
+
+    def get_context_data(self, form, **kwargs):
+        kwargs = super().get_context_data(form, **kwargs)
+        kwargs.update(self.step_context[self.SELECT_PSV_STEP])
+        kwargs.update({"form_list": list(self.form_list.items())[0:1]})
+        kwargs.update({"current_step": self.steps.current, "pk1": self.kwargs["pk1"]})
+        return kwargs
+
+
+class SeasonalServicesEditDateView(OrgUserViewMixin, SingleTableView):
     template_name = "publish/seasonal_services.html"
     model = SeasonalService
     table_class = SeasonalServicesTable

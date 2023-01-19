@@ -83,4 +83,14 @@ class SeasonalServicesTable(GovUkTable):
     )
     service_begins = tables.Column(verbose_name="Service begins", accessor="start")
     service_ends = tables.Column(verbose_name="Service ends", accessor="end")
-    actions = tables.Column()
+    actions = tables.Column(empty_values=())
+
+    def render_actions(self):
+        return format_html(
+            '<a class="govuk-link govuk-!-margin-left-1" >'
+            "Edit dates"
+            "</a>"
+            '<a class="govuk-link govuk-!-margin-left-1" >'
+            "Delete"
+            "</a>"
+        )

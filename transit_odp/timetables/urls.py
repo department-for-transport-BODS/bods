@@ -26,8 +26,25 @@ urlpatterns = [
     ),
     path(
         "seasonal-services/",
-        view=timetable.SeasonalServicesView.as_view(),
-        name="seasonal-services",
+        include(
+            [
+                path(
+                    "",
+                    view=timetable.SeasonalServicesView.as_view(),
+                    name="seasonal-services",
+                ),
+                path(
+                    "add-new",
+                    view=timetable.SeasonalServicesWizardAddNewView.as_view(),
+                    name="add-new",
+                ),
+                path(
+                    "edit-date",
+                    view=timetable.SeasonalServicesEditDateView.as_view(),
+                    name="edit-date",
+                ),
+            ]
+        ),
     ),
     # All these routes must restrict access to organisation who owns
     # the feed

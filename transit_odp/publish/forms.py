@@ -16,6 +16,7 @@ from django_hosts.resolvers import reverse
 import config.hosts
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.publish.constants import (
     DUPLICATE_COMMENT_ERROR_MESSAGE,
     REQUIRED_COMMENT_ERROR_MESSAGE,
@@ -553,4 +554,26 @@ class EditFeedDescriptionForm(GOVUKModelForm):
             "description",
             "short_description",
             ButtonHolder(EDIT_DESCRIPTION_SUBMIT, CANCEL_PUBLISH_BUTTON),
+        )
+
+
+class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
+    form_tag = False
+    form_error_title = DEFAULT_ERROR_SUMMARY
+    form_title = _("Seasonal service operating dates")
+
+    class Meta:
+        model = SeasonalService
+        fields = ("licence", "registration_code", "start", "end")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_layout(self):
+        return Layout(
+            "licence",
+            "registration_code",
+            "start",
+            "end",
+            ButtonHolder(CONTINUE_BUTTON, CANCEL_PUBLISH_BUTTON),
         )

@@ -17,7 +17,9 @@ from transit_odp.publish.views.timetable.edit_description import (
 from transit_odp.publish.views.timetable.list import (
     ListView,
     RequiresAttentionView,
+    SeasonalServicesEditDateView,
     SeasonalServicesView,
+    SeasonalServicesWizardAddNewView,
     ServiceCodeView,
 )
 from transit_odp.publish.views.timetable.progess import PublishProgressView
@@ -47,5 +49,7 @@ __all__ = [
     "RevisionUpdateSuccessView",
     "RequiresAttentionView",
     "SeasonalServicesView",
+    "SeasonalServicesWizardAddNewView",
+    "SeasonalServicesEditDateView",
     "ServiceCodeView",
 ]
