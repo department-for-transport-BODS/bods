@@ -37,9 +37,9 @@ def get_feed_status(dataset):
     if dataset.dataset_type == AVLType and dataset.live_revision.status == ERROR:
         return NO_ACTIVITY
     if dataset.live_revision.status == LIVE:
-        return "published"
+        return "Published"
 
-    return dataset.live_revision.status
+    return dataset.live_revision.status.capitalize()
 
 
 class DownloadOperatorNocCatalogueCSV(CSVBuilder):
