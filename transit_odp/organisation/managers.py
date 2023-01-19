@@ -9,6 +9,7 @@ from transit_odp.organisation.querysets import (
     DatasetRevisionQuerySet,
     OrganisationQuerySet,
     ServiceCodeExemptionQuerySet,
+    OperatorCodeQuerySet,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,4 +38,8 @@ class ServiceCodeExemptionManager(
 
 
 class BODSLicenceManager(models.Manager.from_queryset(BODSLicenceQuerySet)):
+    pass
+
+
+class OperatorCodeManager(models.Manager.from_queryset(OperatorCodeQuerySet)):
     pass
