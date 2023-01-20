@@ -9,7 +9,10 @@ from waffle import flag_is_active
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
 from transit_odp.browse.constants import INTRO
 from transit_odp.common.csv import CSVBuilder, CSVColumn
-from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
+from transit_odp.fares_validator.csv import (
+    FARES_DATA_COLUMN_MAP,
+    get_fares_data_catalogue_csv,
+)
 from transit_odp.organisation.constants import ERROR, LIVE, NO_ACTIVITY, AVLType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.organisation import (
@@ -80,6 +83,13 @@ def create_guidance_file_string() -> str:
     result += [
         row_template.format(field_name=field_name, definition=definition)
         for field_name, definition in TIMETABLE_COLUMN_MAP.values()
+    ]
+
+    fares = "\nFares data catalogue:"
+    result.append(header_template.format(header=fares, field_header=field_header))
+    result += [
+        row_template.format(field_name=field_name, definition=definition)
+        for field_name, definition in FARES_DATA_COLUMN_MAP.values()
     ]
 
     organisations = "\nOrganisations data catalogue:"
