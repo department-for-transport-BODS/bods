@@ -106,8 +106,6 @@ def create_guidance_file_string() -> str:
         for field_name, definition in AVL_COLUMN_MAP.values()
     ]
 
-    print("result>>>", result)
-
     return "\n".join(result)
 
 
