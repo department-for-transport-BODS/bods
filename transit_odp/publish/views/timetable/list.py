@@ -1,24 +1,31 @@
 from typing import List, Tuple, Type
 
+from django.db import transaction
 from django.forms import Form
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django.views import View
+from django_hosts import reverse
 from django_tables2 import SingleTableView
 from formtools.wizard.views import SessionWizardView
 
+import config.hosts
 from transit_odp.common.view_mixins import BODSBaseView
+from transit_odp.common.views import BaseUpdateView
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
 from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.forms import SeasonalServiceLicenceNumberForm
+from transit_odp.publish.forms import (
+    SeasonalServiceEditDateForm,
+    SeasonalServiceLicenceNumberForm,
+)
 from transit_odp.publish.tables import DatasetTable
 from transit_odp.publish.views.base import BasePublishListView
 from transit_odp.timetables.proxies import TimetableDataset
-from transit_odp.timetables.tables import RequiresAttentionTable, SeasonalServicesTable
+from transit_odp.timetables.tables import RequiresAttentionTable, SeasonalServiceTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
@@ -97,10 +104,10 @@ class ServiceCodeView(OrgUserViewMixin, View):
         return response
 
 
-class SeasonalServicesView(OrgUserViewMixin, SingleTableView):
+class SeasonalServiceView(OrgUserViewMixin, SingleTableView):
     template_name = "publish/seasonal_services.html"
     model = SeasonalService
-    table_class = SeasonalServicesTable
+    table_class = SeasonalServiceTable
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
@@ -114,7 +121,7 @@ class SeasonalServicesView(OrgUserViewMixin, SingleTableView):
         return context
 
 
-class SeasonalServicesWizardAddNewView(
+class SeasonalServiceWizardAddNewView(
     BODSBaseView, OrgUserViewMixin, SessionWizardView
 ):
     SELECT_PSV_STEP = "select_psv_licence_number"
@@ -122,6 +129,7 @@ class SeasonalServicesWizardAddNewView(
 
     form_list: List[Tuple[str, Type[Form]]] = [
         (SELECT_PSV_STEP, SeasonalServiceLicenceNumberForm),
+        (PROVIDE_OPERATING_DATE, SeasonalServiceEditDateForm),
     ]
 
     step_context = {
@@ -139,11 +147,28 @@ class SeasonalServicesWizardAddNewView(
         kwargs.update({"current_step": self.steps.current, "pk1": self.kwargs["pk1"]})
         return kwargs
 
+    @transaction.atomic
+    def done(self, form_list, **kwargs):
+        all_data = self.get_all_cleaned_data()
+        SeasonalService.objects.create(
+            licence=all_data["licence"],
+            registration_code=all_data["registration_code"],
+            start=all_data["start"],
+            end=all_data["end"],
+        )
+        return HttpResponseRedirect(
+            reverse(
+                "seasonal-service",
+                kwargs={"pk1": self.kwargs["pk1"]},
+                host=config.hosts.PUBLISH_HOST,
+            )
+        )
 
-class SeasonalServicesEditDateView(OrgUserViewMixin, SingleTableView):
+
+class SeasonalServiceEditDateView(OrgUserViewMixin, SingleTableView):
     template_name = "publish/seasonal_services.html"
     model = SeasonalService
-    table_class = SeasonalServicesTable
+    table_class = SeasonalServiceTable
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
@@ -155,3 +180,21 @@ class SeasonalServicesEditDateView(OrgUserViewMixin, SingleTableView):
             "seasonal_services_counter"
         ] = 12  # SeasonalService.objects.get_seasonal_service_counter(org_id)
         return context
+
+
+class SeasonalServiceDelete(OrgUserViewMixin, BaseUpdateView):
+    model = SeasonalService
+
+    def get_success_url(self):
+        return reverse(
+            "seasonal-service",
+            kwargs={"pk1": self.kwargs["pk1"]},
+            host=config.hosts.PUBLISH_HOST,
+        )
+
+    def form_valid(self, form):
+        try:
+            SeasonalService.objects.get(pk=102).delete()
+        except:
+            pass
+        return HttpResponseRedirect(self.get_success_url())

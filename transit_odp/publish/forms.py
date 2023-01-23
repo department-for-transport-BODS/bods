@@ -10,6 +10,7 @@ from crispy_forms_govuk.layout.fields import CheckboxSingleField
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.forms.widgets import NumberInput
 from django.utils.translation import gettext_lazy as _
 from django_hosts.resolvers import reverse
 
@@ -564,14 +565,60 @@ class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
 
     class Meta:
         model = SeasonalService
-        fields = ("licence", "registration_code", "start", "end")
+        fields = ("licence",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        licence_field = self.fields["licence"]
+        licence_field.label_from_instance = lambda obj: obj.number
+        licence_field.empty_label = _("Select PSV licence number")
+        licence_field.widget.attrs.update({"class": "govuk-!-width-full govuk-select"})
+
+    def get_layout(self):
+        return Layout(
+            "licence",
+            ButtonHolder(CONTINUE_BUTTON, CANCEL_PUBLISH_BUTTON),
+        )
+
+
+class SeasonalServiceEditDateForm(GOVUKModelForm):
+    form_tag = False
+    form_error_title = DEFAULT_ERROR_SUMMARY
+    form_title = _("Seasonal service operating dates")
+
+    license_number = forms.Textarea(attrs={"rows": "3"})
+
+    start = forms.DateTimeField(
+        required=True,
+        label=_("First day of the season"),
+        help_text=_("For example: 21/11/2014"),
+        error_messages={"invalid": _("Error first date")},
+        widget=NumberInput(attrs={"type": "date"}),
+    )
+
+    end = forms.DateTimeField(
+        required=True,
+        label=_("Last day of the season"),
+        help_text=_("For example: 21/11/2014"),
+        error_messages={"invalid": _("Error last date")},
+        widget=NumberInput(attrs={"type": "date"}),
+    )
+
+    class Meta:
+        model = SeasonalService
+        fields = ("registration_code", "start", "end")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_layout(self):
         return Layout(
-            "licence",
+            HTML(
+                '<span class="govuk-hint">If you require your SIRI-VM feed to be '
+                "restricted to particular IP addresses, "
+                "please allow-list these IP addresses: "
+                "</span>"
+            ),
             "registration_code",
             "start",
             "end",

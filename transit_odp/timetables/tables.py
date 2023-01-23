@@ -6,7 +6,9 @@ from django.template.loader import get_template, render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
+from django_hosts.resolvers import reverse
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.common.tables import GovUkTable
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.pipelines.models import DataQualityTask
@@ -71,7 +73,7 @@ class RequiresAttentionTable(GovUkTable):
     line = LineColumn(accessor="service_number")
 
 
-class SeasonalServicesTable(GovUkTable):
+class SeasonalServiceTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         pass
 
@@ -90,7 +92,12 @@ class SeasonalServicesTable(GovUkTable):
             '<a class="govuk-link govuk-!-margin-left-1" >'
             "Edit dates"
             "</a>"
-            '<a class="govuk-link govuk-!-margin-left-1" >'
+            '<a class="govuk-link govuk-!-margin-left-1" href={href}>'
             "Delete"
-            "</a>"
+            "</a>",
+            href=reverse(
+                "delete-seasonal-service",
+                args=(217,),
+                host=PUBLISH_HOST,
+            ),
         )

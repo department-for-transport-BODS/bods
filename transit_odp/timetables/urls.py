@@ -25,23 +25,28 @@ urlpatterns = [
         name="service-codes",
     ),
     path(
-        "seasonal-services/",
+        "seasonal-service/",
         include(
             [
                 path(
                     "",
-                    view=timetable.SeasonalServicesView.as_view(),
-                    name="seasonal-services",
+                    view=timetable.SeasonalServiceView.as_view(),
+                    name="seasonal-service",
                 ),
                 path(
                     "add-new",
-                    view=timetable.SeasonalServicesWizardAddNewView.as_view(),
+                    view=timetable.SeasonalServiceWizardAddNewView.as_view(),
                     name="add-new",
                 ),
                 path(
                     "edit-date",
-                    view=timetable.SeasonalServicesEditDateView.as_view(),
+                    view=timetable.SeasonalServiceEditDateView.as_view(),
                     name="edit-date",
+                ),
+                path(
+                    "delete-seasonal-service",
+                    view=timetable.SeasonalServiceDelete.as_view(),
+                    name="delete-seasonal-service",
                 ),
             ]
         ),
