@@ -76,6 +76,7 @@ class RequiresAttentionTable(GovUkTable):
 class SeasonalServiceTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         pass
+        # model = SeasonalService
 
     licence_number = tables.Column(
         verbose_name="Licence number", accessor="licence__number"
@@ -87,7 +88,7 @@ class SeasonalServiceTable(GovUkTable):
     service_ends = tables.Column(verbose_name="Service ends", accessor="end")
     actions = tables.Column(empty_values=())
 
-    def render_actions(self):
+    def render_actions(self, value, record):
         return format_html(
             '<a class="govuk-link govuk-!-margin-left-1" >'
             "Edit dates"
@@ -97,7 +98,7 @@ class SeasonalServiceTable(GovUkTable):
             "</a>",
             href=reverse(
                 "delete-seasonal-service",
-                args=(217,),
+                args=(record.licence.organisation.id,),
                 host=PUBLISH_HOST,
             ),
         )

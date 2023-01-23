@@ -194,7 +194,7 @@ class SeasonalServiceDelete(OrgUserViewMixin, BaseUpdateView):
 
     def form_valid(self, form):
         try:
-            SeasonalService.objects.get(pk=102).delete()
+            SeasonalService.objects.get(id=102).delete()
         except:
             pass
         return HttpResponseRedirect(self.get_success_url())
