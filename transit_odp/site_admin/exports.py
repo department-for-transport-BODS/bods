@@ -95,27 +95,18 @@ def get_ppc_weekly_per_feed_download_report(
     )
 
 
-def make_ppc_weekly_overall():
-    ppc_weekly_score = {}
-
-    def get_ppc_weekly_overall(organisation_id: int) -> Optional[float]:
-        if organisation_id not in ppc_weekly_score.keys():
-            ppc_weekly_score[organisation_id] = (
-                AVLDataset.objects.get_active()
-                .add_avl_compliance_status_cached()
-                .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
-                .filter(organisation_id=organisation_id)
-                .add_post_publishing_check_stats()
-                .exclude(percent_matching=float(NO_PPC_DATA))
-                .aggregate(Avg("percent_matching"))["percent_matching__avg"]
-            )
-        return ppc_weekly_score[organisation_id]
-
-    return get_ppc_weekly_overall
-
-
-# get a callable object `ppc_overall_score`
-ppc_overall_score = make_ppc_weekly_overall()
+def get_ppc_weekly_average_subquery():
+    return Subquery(
+        AVLDataset.objects.get_active()
+        .add_avl_compliance_status_cached()
+        .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
+        .filter(organisation_id=OuterRef("organisation_id"))
+        .add_post_publishing_check_stats()
+        .values("organisation_id")
+        .exclude(percent_matching=float(NO_PPC_DATA))
+        .annotate(average_percent_matching=Avg("percent_matching"))
+        .values("average_percent_matching")
+    )
 
 
 def get_ppc_weekly_overall_url(organisation_id: int) -> str:
@@ -126,13 +117,13 @@ def get_ppc_weekly_overall_url(organisation_id: int) -> str:
     )
 
 
-def timetables_matching_score(dataset, qs) -> str:
-    if dataset.percent_matching >= 0 and dataset.status != INACTIVE:
-        return str(round(dataset.percent_matching)) + "%"
-    elif dataset.dataset_type == AVLType and dataset.status != INACTIVE:
-        return qs.get(id=dataset.id).avl_compliance_status_cached
-    else:
+def matching_score(dataset) -> str:
+    if dataset.dataset_type != AVLType or dataset.status == INACTIVE:
         return ""
+    if dataset.percent_matching >= 0:
+        return str(round(dataset.percent_matching)) + "%"
+    else:
+        return dataset.avl_compliance_cached.status
 
 
 def latest_matching_url(dataset) -> str:
@@ -145,7 +136,7 @@ def latest_matching_url(dataset) -> str:
 
 def overall_avl_timetables_matching(dataset) -> str:
     if dataset.dataset_type == AVLType and dataset.status != INACTIVE:
-        score = ppc_overall_score(dataset.organisation_id)
+        score = dataset.average_percent_matching
         if score is not None:
             return str(round(score)) + "%"
     return ""
@@ -229,18 +220,6 @@ class PublisherCSV(CSVBuilder):
 class DatasetPublishingCSV(CSVBuilder):
     """A CSVBuilder class for creating Dataset Publisher CSV strings"""
 
-    def __init__(self):
-        self.avl_compliance_status = {}
-
-    def get_avl_compliance_status(self, organisation_id: int):
-        if organisation_id not in self.avl_compliance_status.keys():
-            self.avl_compliance_status[organisation_id] = (
-                AVLDataset.objects.get_active()
-                .add_avl_compliance_status_cached()
-                .filter(organisation_id=organisation_id)
-            )
-        return self.avl_compliance_status[organisation_id]
-
     columns = [
         CSVColumn(header="operator", accessor="organisation_name"),
         CSVColumn(
@@ -257,12 +236,7 @@ class DatasetPublishingCSV(CSVBuilder):
         ),
         CSVColumn(
             header="% AVL to Timetables feed matching score",
-            accessor=lambda dataset: timetables_matching_score(
-                dataset,
-                DatasetPublishingCSV().get_avl_compliance_status(
-                    dataset.organisation_id
-                ),
-            ),
+            accessor=lambda dataset: matching_score(dataset),
         ),
         CSVColumn(
             header="Latest matching report URL",
@@ -281,12 +255,17 @@ class DatasetPublishingCSV(CSVBuilder):
     def get_queryset(self):
         return (
             Dataset.objects.get_published()
+            .select_related("avl_compliance_cached", "live_revision")
             .add_live_data()
             .add_organisation_name()
             .add_last_published_by_email()
-            .annotate(account_type=F("live_revision__published_by__account_type"))
+            .annotate(
+                account_type=F("live_revision__published_by__account_type"),
+                average_percent_matching=get_ppc_weekly_average_subquery(),
+            )
             .exclude(live_revision__status=EXPIRED)
             .add_post_publishing_check_stats()
+            .order_by("id")
         )
 
 
