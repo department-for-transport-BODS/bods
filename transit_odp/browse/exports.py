@@ -65,6 +65,7 @@ class DownloadOperatorNocCatalogueCSV(CSVBuilder):
 
 
 def create_guidance_file_string() -> str:
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     row_template = "{field_name:45}{definition}"
     header_template = "{header}\n{field_header:45}Definition"
     field_header = "Field name"
@@ -85,12 +86,13 @@ def create_guidance_file_string() -> str:
         for field_name, definition in TIMETABLE_COLUMN_MAP.values()
     ]
 
-    fares = "\nFares data catalogue:"
-    result.append(header_template.format(header=fares, field_header=field_header))
-    result += [
-        row_template.format(field_name=field_name, definition=definition)
-        for field_name, definition in FARES_DATA_COLUMN_MAP.values()
-    ]
+    if is_fares_validator_active:
+        fares = "\nFares data catalogue:"
+        result.append(header_template.format(header=fares, field_header=field_header))
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in FARES_DATA_COLUMN_MAP.values()
+        ]
 
     organisations = "\nOrganisations data catalogue:"
     result.append(
