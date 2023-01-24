@@ -107,6 +107,31 @@ def test_get_multiple_attr_ids_from_xpath(netexdocument):
     assert expected == actual
 
 
+def test_get_product_types(netexdocument):
+    actual = netexdocument.get_product_types()
+    expected = []
+    assert expected == actual
+
+
+def test_get_products_count(netexdocument):
+    product_types = netexdocument.get_product_types()
+    actual = netexdocument.get_products_count(product_types)
+    expected = 0
+    assert expected == actual
+
+
+def test_get_number_of_trip_products(netexdocument):
+    actual = netexdocument.get_number_of_trip_products()
+    expected = 0
+    assert expected == actual
+
+
+def test_get_number_of_pass_products(netexdocument):
+    actual = netexdocument.get_number_of_pass_products()
+    expected = 0
+    assert expected == actual
+
+
 def test_get_atco_area_code(netexdocument):
     actual = netexdocument.get_atco_area_code()
     expected = [

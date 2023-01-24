@@ -1,6 +1,8 @@
 import itertools
 from typing import List
 
+from waffle import flag_is_active
+
 from transit_odp.fares.netex import NeTExDocument
 
 NeTExDocuments = List[NeTExDocument]
@@ -241,6 +243,20 @@ class NeTExDocumentsExtractor:
         return list(itertools.chain(*stop_point_refs))
 
     @property
+    def num_of_trip_products(self):
+        trip_products_list = [
+            doc.get_number_of_trip_products() for doc in self.documents
+        ]
+        return trip_products_list[0]
+
+    @property
+    def num_of_pass_products(self):
+        pass_products_list = [
+            doc.get_number_of_pass_products() for doc in self.documents
+        ]
+        return pass_products_list[0]
+
+    @property
     def fares_data_catalogue(self):
         fares_catalogue_extracted_data = []
         for doc in self.documents:
@@ -249,18 +265,34 @@ class NeTExDocumentsExtractor:
         return fares_catalogue_extracted_data
 
     def to_dict(self):
-        keys = [
-            "schema_version",
-            "num_of_lines",
-            "num_of_fare_zones",
-            "num_of_sales_offer_packages",
-            "num_of_fare_products",
-            "num_of_user_profiles",
-            "valid_from",
-            "valid_to",
-            "stop_point_refs",
-            "fares_data_catalogue",
-        ]
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if is_fares_validator_active:
+            keys = [
+                "schema_version",
+                "num_of_lines",
+                "num_of_fare_zones",
+                "num_of_sales_offer_packages",
+                "num_of_fare_products",
+                "num_of_user_profiles",
+                "num_of_trip_products",
+                "num_of_pass_products",
+                "valid_from",
+                "valid_to",
+                "stop_point_refs",
+                "fares_data_catalogue",
+            ]
+        else:
+            keys = [
+                "schema_version",
+                "num_of_lines",
+                "num_of_fare_zones",
+                "num_of_sales_offer_packages",
+                "num_of_fare_products",
+                "num_of_user_profiles",
+                "valid_from",
+                "valid_to",
+                "stop_point_refs",
+            ]
         try:
             data = {key: getattr(self, key) for key in keys}
         except ValueError as err:
