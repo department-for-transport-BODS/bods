@@ -1,6 +1,8 @@
 import itertools
 from typing import List
 
+from waffle import flag_is_active
+
 from transit_odp.fares.netex import NeTExDocument
 
 NeTExDocuments = List[NeTExDocument]
@@ -263,20 +265,34 @@ class NeTExDocumentsExtractor:
         return fares_catalogue_extracted_data
 
     def to_dict(self):
-        keys = [
-            "schema_version",
-            "num_of_lines",
-            "num_of_fare_zones",
-            "num_of_sales_offer_packages",
-            "num_of_fare_products",
-            "num_of_user_profiles",
-            "num_of_trip_products",
-            "num_of_pass_products",
-            "valid_from",
-            "valid_to",
-            "stop_point_refs",
-            "fares_data_catalogue",
-        ]
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if is_fares_validator_active:
+            keys = [
+                "schema_version",
+                "num_of_lines",
+                "num_of_fare_zones",
+                "num_of_sales_offer_packages",
+                "num_of_fare_products",
+                "num_of_user_profiles",
+                "num_of_trip_products",
+                "num_of_pass_products",
+                "valid_from",
+                "valid_to",
+                "stop_point_refs",
+                "fares_data_catalogue",
+            ]
+        else:
+            keys = [
+                "schema_version",
+                "num_of_lines",
+                "num_of_fare_zones",
+                "num_of_sales_offer_packages",
+                "num_of_fare_products",
+                "num_of_user_profiles",
+                "valid_from",
+                "valid_to",
+                "stop_point_refs",
+            ]
         try:
             data = {key: getattr(self, key) for key in keys}
         except ValueError as err:
