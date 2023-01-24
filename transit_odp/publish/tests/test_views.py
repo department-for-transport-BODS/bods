@@ -1586,15 +1586,7 @@ class TestEditDraftRevisionDescriptionView:
         )
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_empty_search_box(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_empty_search_box(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1609,13 +1601,13 @@ def test_require_attention_empty_search_box(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1626,7 +1618,7 @@ def test_require_attention_empty_search_box(
         revision=live_revision,
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
@@ -1635,22 +1627,15 @@ def test_require_attention_empty_search_box(
         )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 4
+    assert response.context["services_require_attention_percentage"] == 58
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_field_in_search_box(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_field_in_search_box(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1665,13 +1650,13 @@ def test_require_attention_field_in_search_box(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1682,7 +1667,7 @@ def test_require_attention_field_in_search_box(
         revision=live_revision,
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
@@ -1691,22 +1676,15 @@ def test_require_attention_field_in_search_box(
         )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": "006"}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["table"].data) == 1
+    assert response.context["services_require_attention_percentage"] == 58
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_seasonal_services(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_seasonal_services(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1724,7 +1702,7 @@ def test_require_attention_seasonal_services(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1752,22 +1730,16 @@ def test_require_attention_seasonal_services(
     )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 3
+    # One out of season seasonal service reduces in scope services to 4
+    assert response.context["services_require_attention_percentage"] == 75
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_stale_otc_effective_date(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_stale_otc_effective_date(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1784,14 +1756,14 @@ def test_require_attention_stale_otc_effective_date(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
@@ -1814,22 +1786,15 @@ def test_require_attention_stale_otc_effective_date(
         )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 5
+    assert response.context["services_require_attention_percentage"] == 72
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_stale_end_date(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_stale_end_date(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1846,14 +1811,14 @@ def test_require_attention_stale_end_date(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
@@ -1867,7 +1832,7 @@ def test_require_attention_stale_end_date(
         revision=live_revision,
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() - timedelta(weeks=105),
-        modification_datetime=date.today() - timedelta(weeks=100),
+        modification_datetime=now() - timedelta(weeks=100),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
@@ -1878,22 +1843,15 @@ def test_require_attention_stale_end_date(
         )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 5
+    assert response.context["services_require_attention_percentage"] == 72
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_stale_last_modified_date(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_stale_last_modified_date(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1910,14 +1868,14 @@ def test_require_attention_stale_last_modified_date(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
@@ -1931,7 +1889,7 @@ def test_require_attention_stale_last_modified_date(
         revision=live_revision,
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() - timedelta(days=1),
-        modification_datetime=date.today() - timedelta(weeks=100),
+        modification_datetime=now() - timedelta(weeks=100),
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
@@ -1943,22 +1901,15 @@ def test_require_attention_stale_last_modified_date(
         )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 5
+    assert response.context["services_require_attention_percentage"] == 72
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_all_variations(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_all_variations(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1978,14 +1929,14 @@ def test_require_attention_all_variations(
         revision=dataset1.live_revision,
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
-        modification_datetime=date.today(),
+        modification_datetime=now(),
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
@@ -1999,7 +1950,7 @@ def test_require_attention_all_variations(
         revision=live_revision,
         service_code=all_service_codes[3],
         operating_period_end_date=None,
-        modification_datetime=date.today() - timedelta(weeks=100),
+        modification_datetime=now() - timedelta(weeks=100),
     )
 
     # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
@@ -2007,7 +1958,7 @@ def test_require_attention_all_variations(
         revision=live_revision,
         service_code=all_service_codes[4],
         operating_period_end_date=date.today() - timedelta(weeks=105),
-        modification_datetime=date.today() - timedelta(weeks=100),
+        modification_datetime=now() - timedelta(weeks=100),
     )
 
     # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -2040,8 +1991,70 @@ def test_require_attention_all_variations(
         )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 6
+    # One out of season seasonal service reduces in scope services to 8
+    assert response.context["services_require_attention_percentage"] == 75
+
+
+def test_require_attention_compliant(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+    month = now().date() + timedelta(weeks=4)
+    two_months = now().date() + timedelta(weeks=8)
+
+    total_services = 4
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    dataset2 = DatasetFactory(organisation=org1)
+
+    # Setup three TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    TXCFileAttributesFactory(
+        revision=dataset2.live_revision,
+        service_code=all_service_codes[2],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    # Create Out of Season Seasonal Services
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[3][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert response.context["total_in_scope_in_season_services"] == 3
+    assert response.context["services_require_attention_percentage"] == 0

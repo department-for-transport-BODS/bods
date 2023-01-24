@@ -1,3 +1,5 @@
+from math import ceil
+
 from django.http import HttpResponse
 from django.utils.timezone import now
 from django.views import View
@@ -25,6 +27,20 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
         context["ancestor"] = f"Review {data_owner} Timetables Data"
         context["services_requiring_attention"] = len(self.object_list)
+        context[
+            "total_in_scope_in_season_services"
+        ] = OTCService.objects.get_in_scope_in_season_services(org_id).count()
+        try:
+            context["services_require_attention_percentage"] = ceil(
+                100
+                * (
+                    context["services_requiring_attention"]
+                    / context["total_in_scope_in_season_services"]
+                )
+            )
+        except ZeroDivisionError:
+            context["services_require_attention_percentage"] = 0
+
         context["q"] = self.request.GET.get("q", "").strip()
         return context
 
