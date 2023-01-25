@@ -1,11 +1,13 @@
 from typing import List, Tuple, Type
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.forms import Form
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django.views import View
+from django.views.generic.edit import BaseDeleteView
 from django_hosts import reverse
 from django_tables2 import SingleTableView
 from formtools.wizard.views import SessionWizardView
@@ -117,7 +119,7 @@ class SeasonalServiceView(OrgUserViewMixin, SingleTableView):
         # uncomment when BODP-5626 merged
         context[
             "seasonal_services_counter"
-        ] = 12  # SeasonalService.objects.get_seasonal_service_counter(org_id)
+        ] = 1  # SeasonalService.objects.get_seasonal_service_counter(org_id)
         return context
 
 
@@ -182,22 +184,35 @@ class SeasonalServiceEditDateView(OrgUserViewMixin, SingleTableView):
         return context
 
 
-class SeasonalServiceDelete(OrgUserViewMixin, BaseUpdateView):
+class SeasonalServiceDelete(OrgUserViewMixin, BaseDeleteView):
+    template_name = None
     model = SeasonalService
 
-    def get_success_url(self):
-        return reverse(
-            "seasonal-service",
-            kwargs={"pk1": self.kwargs["pk1"]},
-            host=config.hosts.PUBLISH_HOST,
+    def get(self, request, *args, **kwargs):
+        seasonal_service_id = kwargs["pk"]
+        SeasonalService.objects.get(id=seasonal_service_id).delete()
+        return HttpResponseRedirect(
+            reverse(
+                "seasonal-service",
+                kwargs={"pk1": kwargs["pk1"]},
+                host=config.hosts.PUBLISH_HOST,
+            )
         )
+        # return super().get(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        try:
-            SeasonalService.objects.get(id=102).delete()
-        except:
-            pass
-        return HttpResponseRedirect(self.get_success_url())
+    # def get_success_url(self):
+    #     return reverse(
+    #         "seasonal-service",
+    #         kwargs={"pk1": self.kwargs["pk1"]},
+    #         host=config.hosts.PUBLISH_HOST,
+    #     )
+
+    # def form_valid(self, form):
+    #     try:
+    #         SeasonalService.objects.get(id=102).delete()
+    #     except:
+    #         pass
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 # class SeasonalServiceDelete(OrgUserViewMixin, BaseUpdateView):

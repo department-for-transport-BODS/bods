@@ -11,6 +11,7 @@ from django_hosts.resolvers import reverse
 from config.hosts import PUBLISH_HOST
 from transit_odp.common.tables import GovUkTable
 from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.publish.tables import DatasetRevisionTable
 
@@ -75,8 +76,8 @@ class RequiresAttentionTable(GovUkTable):
 
 class SeasonalServiceTable(GovUkTable):
     class Meta(GovUkTable.Meta):
-        pass
-        # model = SeasonalService
+        model = SeasonalService
+        fields = ("licence_number",)
 
     licence_number = tables.Column(
         verbose_name="Licence number", accessor="licence__number"
@@ -98,7 +99,10 @@ class SeasonalServiceTable(GovUkTable):
             "</a>",
             href=reverse(
                 "delete-seasonal-service",
-                kwargs={"pk1": record.licence.organisation.id - 2, "pk": 113},
+                kwargs={
+                    "pk1": record.licence.organisation.id,
+                    "pk": record.id,
+                },
                 host=PUBLISH_HOST,
             ),
         )
