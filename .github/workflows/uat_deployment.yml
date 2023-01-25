@@ -57,10 +57,10 @@ jobs:
       run: |
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
         if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
-            echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
-            exit 1
+            echo "The image $IMAGE_TAG exists in the $ECR_REPOSITORY Repository, environment will be updated"
         else
-            echo "Build and push docker image with that tag $IMAGE_TAG "
+            echo "The image $IMAGE_TAG exists in the $ECR_REPOSITORY Repository, build and push docker image first."
+            exit 1
         fi
 
     - name: Logout of Amazon ECR
