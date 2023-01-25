@@ -305,6 +305,8 @@ class SeasonalServiceFactory(factory.django.DjangoModelFactory):
     licence = factory.SubFactory(LicenceFactory)
     registration_code = factory.Faker("pyint", min_value=1, max_value=4000)
     start = factory.Faker(
-        "date_between", start_date="2023-01-01", end_date="2023-12-31"
+        "date_between",
+        start_date=datetime.datetime(2023, 1, 1, tzinfo=pytz.utc),
+        end_date=datetime.datetime(2023, 12, 31, tzinfo=pytz.utc),
     )
     end = factory.LazyAttribute(lambda obj: obj.start + datetime.timedelta(days=90))

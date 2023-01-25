@@ -1279,3 +1279,7 @@ class SeasonalServiceQuerySet(models.QuerySet):
                 output_field=CharField(),
             )
         )
+
+    def get_count_in_organisation(self, org_id: int) -> int:
+        """The number of Seasonal services per organisation."""
+        return self.filter(licence__organisation_id=org_id).count()
