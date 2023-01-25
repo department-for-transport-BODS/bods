@@ -33,7 +33,7 @@ from transit_odp.common.utils import (
     remove_query_string_param,
 )
 from transit_odp.feedback.models import Feedback, SatisfactionRating
-from transit_odp.organisation.constants import EXPIRED, INACTIVE, DatasetType
+from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackAdminCSV
 from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
@@ -129,7 +129,7 @@ def get_ppc_weekly_overall_url(organisation_id: int) -> str:
 def timetables_matching_score(dataset, qs) -> str:
     if dataset.percent_matching >= 0 and dataset.status != INACTIVE:
         return str(round(dataset.percent_matching)) + "%"
-    elif dataset.dataset_type == DatasetType.AVL.value and dataset.status != INACTIVE:
+    elif dataset.dataset_type == AVLType and dataset.status != INACTIVE:
         return qs.get(id=dataset.id).avl_compliance_status_cached
     else:
         return ""
@@ -144,7 +144,7 @@ def latest_matching_url(dataset) -> str:
 
 
 def overall_avl_timetables_matching(dataset) -> str:
-    if dataset.status != INACTIVE:
+    if dataset.dataset_type == AVLType and dataset.status != INACTIVE:
         score = ppc_overall_score(dataset.organisation_id)
         if score is not None:
             return str(round(score)) + "%"
