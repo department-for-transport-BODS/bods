@@ -44,8 +44,8 @@ urlpatterns = [
                     name="edit-date",
                 ),
                 path(
-                    "delete-seasonal-service",
-                    view=timetable.SeasonalServiceDelete.as_view(),
+                    "<int:pk>/delete-seasonal-service",
+                    view=timetable.seasonal_service_delete,
                     name="delete-seasonal-service",
                 ),
             ]

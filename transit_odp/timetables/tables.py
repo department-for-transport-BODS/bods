@@ -98,7 +98,7 @@ class SeasonalServiceTable(GovUkTable):
             "</a>",
             href=reverse(
                 "delete-seasonal-service",
-                args=(record.licence.organisation.id,),
+                kwargs={"pk1": record.licence.organisation.id - 2, "pk": 113},
                 host=PUBLISH_HOST,
             ),
         )

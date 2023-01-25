@@ -14,7 +14,7 @@ from transit_odp.publish.views.timetable.edit_description import (
     EditDraftRevisionDescriptionView,
     EditLiveRevisionDescriptionView,
 )
-from transit_odp.publish.views.timetable.list import (
+from transit_odp.publish.views.timetable.list import (  # SeasonalServiceDelete,
     ListView,
     RequiresAttentionView,
     SeasonalServiceDelete,
@@ -22,6 +22,7 @@ from transit_odp.publish.views.timetable.list import (
     SeasonalServiceView,
     SeasonalServiceWizardAddNewView,
     ServiceCodeView,
+    seasonal_service_delete,
 )
 from transit_odp.publish.views.timetable.progess import PublishProgressView
 from transit_odp.publish.views.timetable.update import (
@@ -52,6 +53,7 @@ __all__ = [
     "SeasonalServiceView",
     "SeasonalServiceWizardAddNewView",
     "SeasonalServiceEditDateView",
-    "SeasonalServiceDelete",
+    # "SeasonalServiceDelete",
+    "seasonal_service_delete",
     "ServiceCodeView",
 ]

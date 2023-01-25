@@ -198,3 +198,40 @@ class SeasonalServiceDelete(OrgUserViewMixin, BaseUpdateView):
         except:
             pass
         return HttpResponseRedirect(self.get_success_url())
+
+
+# class SeasonalServiceDelete(OrgUserViewMixin, BaseUpdateView):
+#     template_name = "publish/seasonal_service_delete.html"
+#     model = SeasonalService
+#     fields = "__all__"
+
+#     def as_view(self, *args, **kwargs) -> Any:
+#         super().as_view()
+#         breakpoint()
+#         return self.form_valid()
+
+#     def get_success_url(self):
+
+#         return reverse(
+#             "seasonal-service",
+#             kwargs={"pk1": self.kwargs["pk1"]},
+#             host=config.hosts.PUBLISH_HOST,
+#         )
+
+#     def form_valid(self):
+#         try:
+#             SeasonalService.objects.get(id=113).delete()
+#         except:
+#             pass
+#         return HttpResponseRedirect(self.get_success_url())
+
+
+def seasonal_service_delete(request, *args, **kwargs):
+    SeasonalService.objects.get(id=115).delete()
+    return HttpResponseRedirect(
+        reverse(
+            "seasonal-service",
+            kwargs={"pk1": kwargs["pk1"]},
+            host=config.hosts.PUBLISH_HOST,
+        )
+    )
