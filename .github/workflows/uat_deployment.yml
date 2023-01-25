@@ -38,7 +38,7 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-
+      
     - id: set-version-number
       run: |
         TEXT=$(cat ./version.txt)

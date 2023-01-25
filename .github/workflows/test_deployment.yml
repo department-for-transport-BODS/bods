@@ -43,7 +43,7 @@ jobs:
       run: |
         TEXT=$(cat ./version.txt)
         echo "::set-output name=version::${TEXT//'%'/'%25'}"
-
+        
     - id: echo-version
       run: |
         echo ${{ steps.set-version-number.outputs.version }} 
