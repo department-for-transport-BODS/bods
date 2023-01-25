@@ -143,7 +143,7 @@ def overall_avl_timetables_matching(dataset) -> str:
 
 
 def archived_matching_url(dataset) -> str:
-    if dataset.status != INACTIVE:
+    if dataset.dataset_type == AVLType and dataset.status != INACTIVE:
         return get_ppc_weekly_overall_url(dataset.organisation_id)
     return ""
 
