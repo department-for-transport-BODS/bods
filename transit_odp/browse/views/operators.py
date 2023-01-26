@@ -5,6 +5,7 @@ from config.hosts import DATA_HOST
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
@@ -101,8 +102,20 @@ class OperatorDetailView(BaseDetailView):
         context["fares_stats"] = fares_datasets.agg_global_feed_stats(
             dataset_type=FaresType, organisation_id=organisation.id
         )
-        # Compliance is n/a for Fares datasets
-        context["fares_non_compliant"] = 0
+
+        try:
+            results = FaresValidationResult.objects.filter(
+                organisation_id=organisation.id,
+                revision_id=F("revision__dataset__live_revision_id"),
+                revision__dataset__dataset_type=FaresType,
+            ).values("count")
+        except FaresValidationResult.DoesNotExist:
+            results = None
+        fares_non_compliant_count = len(
+            [count for count in results if count.get("count") > 0]
+        )
+        context["fares_non_compliant"] = fares_non_compliant_count
+
         if self.request.user.is_authenticated:
             context["timetable_feed_url"] = (
                 f"{reverse('api:feed-list', host=DATA_HOST)}"
