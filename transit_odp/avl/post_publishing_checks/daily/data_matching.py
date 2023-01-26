@@ -28,10 +28,15 @@ class DataMatching:
         direction_ref = mvj.direction_ref
         if direction_ref is None:
             result.add_error(
-                ErrorCategory.DIRECTION_REF, "DirectionRef not found in SIRI-VM data"
+                ErrorCategory.DIRECTION_REF,
+                "DirectionRef not found in SIRI-VM data",
             )
         else:
-            result.set_sirivm_value(SirivmField.DIRECTION_REF, direction_ref)
+            result.set_sirivm_value(
+                SirivmField.DIRECTION_REF,
+                direction_ref,
+                mvj.direction_ref_linenum,
+            )
             direction_ref_normalised = direction_ref.lower()
             if direction_ref_normalised not in (
                 "outbound",
@@ -49,7 +54,12 @@ class DataMatching:
                     "JourneyPatternRef"
                 )
                 if journey_pattern_ref is not None:
-                    xpath = ["Services", "Service", "StandardService", "JourneyPattern"]
+                    xpath = [
+                        "Services",
+                        "Service",
+                        "StandardService",
+                        "JourneyPattern",
+                    ]
                     journey_patterns = vj.txc_xml.find_anywhere(xpath)
                     for jp in journey_patterns:
                         if jp["id"] == journey_pattern_ref.text:
@@ -57,7 +67,9 @@ class DataMatching:
                             if direction_elem is not None:
                                 txc_direction = direction_elem.text
                                 result.set_txc_value(
-                                    SirivmField.DIRECTION_REF, txc_direction
+                                    SirivmField.DIRECTION_REF,
+                                    txc_direction,
+                                    direction_elem.line_number,
                                 )
                                 if direction_ref_normalised == "outbound":
                                     matches = txc_direction in (
@@ -106,16 +118,23 @@ class DataMatching:
         block_ref = mvj.block_ref
         if block_ref is None:
             result.add_error(
-                ErrorCategory.BLOCK_REF, "BlockRef not found in SIRI-VM VehicleActivity"
+                ErrorCategory.BLOCK_REF,
+                "BlockRef not found in SIRI-VM VehicleActivity",
             )
         else:
-            result.set_sirivm_value(SirivmField.BLOCK_REF, block_ref)
+            result.set_sirivm_value(
+                SirivmField.BLOCK_REF, block_ref, mvj.block_ref_linenum
+            )
             try:
                 operational = vj.vehicle_journey.get_element("Operational")
                 block = operational.get_element("Block")
                 block_number_elem = block.get_element("BlockNumber")
                 txc_block_number = block_number_elem.text
-                result.set_txc_value(SirivmField.BLOCK_REF, txc_block_number)
+                result.set_txc_value(
+                    SirivmField.BLOCK_REF,
+                    txc_block_number,
+                    block_number_elem.line_number,
+                )
                 matches = txc_block_number == block_ref
             except NoElement:
                 matches = False
@@ -224,7 +243,11 @@ class DataMatching:
                 "DestinationRef not found in SIRI-VM VehicleActivity",
             )
         else:
-            result.set_sirivm_value(SirivmField.DESTINATION_REF, destination_ref)
+            result.set_sirivm_value(
+                SirivmField.DESTINATION_REF,
+                destination_ref,
+                mvj.destination_ref_linenum,
+            )
             matches = False
             (
                 _,
@@ -242,11 +265,12 @@ class DataMatching:
                                 "JourneyPatternTimingLink"
                             )
                             to_link = timing_links[-1].get_element("To")
-                            txc_stop_point_ref = to_link.get_element(
-                                "StopPointRef"
-                            ).text
+                            stop_point_ref_elem = to_link.get_element("StopPointRef")
+                            txc_stop_point_ref = stop_point_ref_elem.text
                             result.set_txc_value(
-                                SirivmField.DESTINATION_REF, txc_stop_point_ref
+                                SirivmField.DESTINATION_REF,
+                                txc_stop_point_ref,
+                                stop_point_ref_elem.line_number,
                             )
                             matches = txc_stop_point_ref == destination_ref
                         except NoElement:
@@ -281,7 +305,9 @@ class DataMatching:
                 "OriginRef not found in SIRI-VM VehicleActivity",
             )
         else:
-            result.set_sirivm_value(SirivmField.ORIGIN_REF, origin_ref)
+            result.set_sirivm_value(
+                SirivmField.ORIGIN_REF, origin_ref, mvj.origin_ref_linenum
+            )
             matches = False
             (
                 _,
@@ -299,11 +325,12 @@ class DataMatching:
                                 "JourneyPatternTimingLink"
                             )
                             from_link = timing_links[0].get_element("From")
-                            txc_stop_point_ref = from_link.get_element(
-                                "StopPointRef"
-                            ).text
+                            stop_point_ref_elem = from_link.get_element("StopPointRef")
+                            txc_stop_point_ref = stop_point_ref_elem.text
                             result.set_txc_value(
-                                SirivmField.ORIGIN_REF, txc_stop_point_ref
+                                SirivmField.ORIGIN_REF,
+                                txc_stop_point_ref,
+                                stop_point_ref_elem.line_number,
                             )
                             matches = txc_stop_point_ref == origin_ref
                         except NoElement:
@@ -368,41 +395,66 @@ class DataMatching:
                             "DynamicDestinationDisplay"
                         )
                         if dynamic_dest_display is not None:
-                            txc_destination_display.add(dynamic_dest_display.text)
+                            txc_destination_display.add(
+                                (
+                                    dynamic_dest_display.text,
+                                    dynamic_dest_display.line_number,
+                                )
+                            )
                     to_link = timing_link.get_element_or_none("To")
                     if to_link is not None:
                         dynamic_dest_display = to_link.get_element_or_none(
                             "DynamicDestinationDisplay"
                         )
                         if dynamic_dest_display is not None:
-                            txc_destination_display.add(dynamic_dest_display.text)
+                            txc_destination_display.add(
+                                (
+                                    dynamic_dest_display.text,
+                                    dynamic_dest_display.line_number,
+                                )
+                            )
 
             if len(txc_destination_display) == 0:
                 # If DynamicDestinationDisplay is omitted, DestinationDisplay must be
                 # provided
                 dest_display = journey_pattern.get_element_or_none("DestinationDisplay")
                 if dest_display is not None:
-                    txc_destination_display.add(dest_display.text)
+                    txc_destination_display.add(
+                        (dest_display.text, dest_display.line_number)
+                    )
 
-            matches = destination_name in txc_destination_display
-            if matches:
-                result.set_txc_value(SirivmField.DESTINATION_NAME, destination_name)
-                result.set_matches(SirivmField.DESTINATION_NAME)
-            elif len(txc_destination_display) > 0:
-                result.set_txc_value(
-                    SirivmField.DESTINATION_NAME, txc_destination_display.pop()
-                )
-                result.add_error(
-                    ErrorCategory.DESTINATION_NAME,
-                    "DestinationName does not match any DynamicDestinationDisplay or "
-                    "DestinationDisplay found in timetable",
-                )
-            else:
-                result.add_error(
-                    ErrorCategory.DESTINATION_NAME,
-                    "No DynamicDestinationDisplay or DestinationDisplay found in "
-                    "timetable",
-                )
+            for destination_display, line_number in txc_destination_display:
+                if destination_name == destination_display:
+                    result.set_txc_value(
+                        SirivmField.DESTINATION_NAME,
+                        destination_name,
+                        line_number,
+                    )
+                    result.set_matches(SirivmField.DESTINATION_NAME)
+                    break
+            if not result.matches(SirivmField.DESTINATION_NAME):
+                if len(txc_destination_display) > 0:
+                    (
+                        destination_display,
+                        line_number,
+                    ) = txc_destination_display.pop()
+                    result.set_txc_value(
+                        SirivmField.DESTINATION_NAME,
+                        destination_display,
+                        line_number,
+                    )
+                    result.add_error(
+                        ErrorCategory.DESTINATION_NAME,
+                        "DestinationName does not match any "
+                        "DynamicDestinationDisplay or DestinationDisplay found "
+                        "in timetable",
+                    )
+                else:
+                    result.add_error(
+                        ErrorCategory.DESTINATION_NAME,
+                        "No DynamicDestinationDisplay or DestinationDisplay "
+                        "found in timetable",
+                    )
 
     def data_match(
         self,
