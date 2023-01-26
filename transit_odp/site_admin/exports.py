@@ -12,9 +12,11 @@ from django.core.files.base import File
 from django.db.models import Case, CharField, OuterRef, Q, Subquery, Value, When
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
+from waffle import flag_is_active
 
 from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
 from transit_odp.browse.exports import (
+    FARES_FILENAME,
     LOCATION_FILENAME,
     ORGANISATION_FILENAME,
     OTC_EMPTY_WARNING,
@@ -27,6 +29,7 @@ from transit_odp.common.utils import (
     get_dataset_type_from_path_info,
     remove_query_string_param,
 )
+from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
 from transit_odp.feedback.models import Feedback, SatisfactionRating
 from transit_odp.organisation.constants import EXPIRED, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
@@ -288,6 +291,7 @@ def create_operational_exports_file() -> BinaryIO:
             ServiceCodeExemptionsCSV,
         ),
     )
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
 
     with zipfile.ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
         for file_ in files:
@@ -319,6 +323,12 @@ def create_operational_exports_file() -> BinaryIO:
             zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
         except EmptyDataFrame:
             pass
+
+        if is_fares_validator_active:
+            try:
+                zin.writestr(FARES_FILENAME, get_fares_data_catalogue_csv())
+            except EmptyDataFrame:
+                pass
 
     buffer_.seek(0)
     return buffer_
