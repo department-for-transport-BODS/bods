@@ -18,6 +18,7 @@ import config.hosts
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.models.data import SeasonalService
+from transit_odp.organisation.models.organisations import Licence
 from transit_odp.publish.constants import (
     DUPLICATE_COMMENT_ERROR_MESSAGE,
     REQUIRED_COMMENT_ERROR_MESSAGE,
@@ -564,14 +565,31 @@ class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
     form_title = _("Seasonal service operating dates")
 
     class Meta:
-        model = SeasonalService
+        model = Licence
         fields = ("licence",)
+
+    licence = forms.ModelChoiceField(
+        queryset=Licence.objects.filter(organisation_id=217),
+        required=True,
+        empty_label=_("Select PSV licence number"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # self.fields.update(
+        #     {
+        #         "number": forms.ModelChoiceField(
+        #             queryset=Licence.objects.filter(
+        #                 organisation_id=instance.organisation_id
+        #             ),
+        #             required=True,
+        #             empty_label=_("Select PSV licence number"),
+        #         )
+        #     }
+        # )
         licence_field = self.fields["licence"]
         licence_field.label_from_instance = lambda obj: obj.number
-        licence_field.empty_label = _("Select PSV licence number")
+        # licence_field.empty_label = _("Select PSV licence number")
         licence_field.widget.attrs.update({"class": "govuk-!-width-full govuk-select"})
 
     def get_layout(self):
@@ -608,8 +626,8 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
         model = SeasonalService
         fields = ("registration_code", "start", "end")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, instance=None, *args, **kwargs):
+        super().__init__(instance=instance, *args, **kwargs)
 
     def get_layout(self):
         return Layout(

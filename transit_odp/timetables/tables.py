@@ -6,6 +6,7 @@ from django.template.loader import get_template, render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
+from django.views.generic.detail import DetailView
 from django_hosts.resolvers import reverse
 
 from config.hosts import PUBLISH_HOST
@@ -76,8 +77,9 @@ class RequiresAttentionTable(GovUkTable):
 
 class SeasonalServiceTable(GovUkTable):
     class Meta(GovUkTable.Meta):
-        model = SeasonalService
-        fields = ("licence_number",)
+        pass
+        # model = SeasonalService
+        # fields = ("licence_number",)
 
     licence_number = tables.Column(
         verbose_name="Licence number", accessor="licence__number"

@@ -19,6 +19,7 @@ from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
 from transit_odp.organisation.models.data import SeasonalService
+from transit_odp.organisation.models.organisations import Licence
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.forms import (
     SeasonalServiceEditDateForm,
@@ -116,11 +117,15 @@ class SeasonalServiceView(OrgUserViewMixin, SingleTableView):
         context = super().get_context_data(**kwargs)
         org_id = self.kwargs["pk1"]
         context["pk1"] = org_id
-        # uncomment when BODP-5626 merged
         context[
             "seasonal_services_counter"
-        ] = 1  # SeasonalService.objects.get_seasonal_service_counter(org_id)
+        ] = SeasonalService.objects.get_count_in_organisation(org_id)
         return context
+
+    def get_table_data(self, **kwargs):
+        # org_id = self.request.GET.get("pk1")
+        org_id = self.kwargs["pk1"]
+        return SeasonalService.objects.filter(licence__organisation_id=org_id)
 
 
 class SeasonalServiceWizardAddNewView(
@@ -139,6 +144,10 @@ class SeasonalServiceWizardAddNewView(
         PROVIDE_OPERATING_DATE: {"step_title": _("Seasonal service operating dates")},
     }
 
+    def get_queryset(self):
+        org_id = self.request.GET.get("pk1")
+        return Licence.objects.filter(organisation_id=org_id)
+
     def get_template_names(self):
         return "publish/seasonal_services_add_date_form.html"
 
@@ -151,8 +160,9 @@ class SeasonalServiceWizardAddNewView(
 
     @transaction.atomic
     def done(self, form_list, **kwargs):
+        org_id = self.kwargs["pk1"]
         all_data = self.get_all_cleaned_data()
-        SeasonalService.objects.create(
+        SeasonalService.objects.filter(licence__organisation_id=org_id).create(
             licence=all_data["licence"],
             registration_code=all_data["registration_code"],
             start=all_data["start"],
@@ -161,7 +171,7 @@ class SeasonalServiceWizardAddNewView(
         return HttpResponseRedirect(
             reverse(
                 "seasonal-service",
-                kwargs={"pk1": self.kwargs["pk1"]},
+                kwargs={"pk1": org_id},
                 host=config.hosts.PUBLISH_HOST,
             )
         )
