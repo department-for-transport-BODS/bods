@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from lxml import etree
 from lxml.etree import _Element
@@ -67,14 +67,18 @@ class Extensions(BaseModel):
 class MonitoredVehicleJourney(BaseModel):
     bearing: Optional[float]
     block_ref: Optional[str]
+    block_ref_linenum: Optional[int]
     framed_vehicle_journey_ref: Optional[FramedVehicleJourneyRef]
     vehicle_journey_ref: Optional[str]
     destination_name: Optional[str]
     destination_ref: Optional[str]
+    destination_ref_linenum: Optional[int]
     origin_name: Optional[str]
     origin_ref: Optional[str]
+    origin_ref_linenum: Optional[int]
     origin_aimed_departure_time: Optional[datetime]
     direction_ref: Optional[str]
+    direction_ref_linenum: Optional[int]
     published_line_name: Optional[str]
     line_ref: Optional[str]
     vehicle_location: Optional[VehicleLocation]
@@ -82,9 +86,30 @@ class MonitoredVehicleJourney(BaseModel):
     vehicle_ref: str
     extensions: Optional[Extensions]
 
+    @staticmethod
+    def get_value_and_line_number(
+        element: _Element, xpath: str
+    ) -> Tuple[Optional[str], Optional[int]]:
+        xpath_elem = element.find(xpath, namespaces=_NSMAP)
+        if xpath_elem is not None:
+            return (xpath_elem.text, xpath_elem.sourceline)
+        return (None, None)
+
     @classmethod
     def from_lxml_element(cls, element: _Element) -> "MonitoredVehicleJourney":
 
+        block_ref, block_ref_linenum = cls.get_value_and_line_number(
+            element, "x:BlockRef"
+        )
+        direction_ref, direction_ref_linenum = cls.get_value_and_line_number(
+            element, "x:DirectionRef"
+        )
+        origin_ref, origin_ref_linenum = cls.get_value_and_line_number(
+            element, "x:OriginRef"
+        )
+        destination_ref, destination_ref_linenum = cls.get_value_and_line_number(
+            element, "x:DestinationRef"
+        )
         framed_vehicle_journey_ref = None
         fvjr_element = element.find("x:FramedVehicleJourneyRef", namespaces=_NSMAP)
         if fvjr_element is not None:
@@ -103,16 +128,20 @@ class MonitoredVehicleJourney(BaseModel):
 
         return cls(
             bearing=element.findtext("x:Bearing", namespaces=_NSMAP),
-            block_ref=element.findtext("x:BlockRef", namespaces=_NSMAP),
+            block_ref=block_ref,
+            block_ref_linenum=block_ref_linenum,
             line_ref=element.findtext("x:LineRef", namespaces=_NSMAP),
-            direction_ref=element.findtext("x:DirectionRef", namespaces=_NSMAP),
+            direction_ref=direction_ref,
+            direction_ref_linenum=direction_ref_linenum,
             published_line_name=element.findtext(
                 "x:PublishedLineName", namespaces=_NSMAP
             ),
             operator_ref=element.findtext("x:OperatorRef", namespaces=_NSMAP),
-            origin_ref=element.findtext("x:OriginRef", namespaces=_NSMAP),
+            origin_ref=origin_ref,
+            origin_ref_linenum=origin_ref_linenum,
             origin_name=element.findtext("x:OriginName", namespaces=_NSMAP),
-            destination_ref=element.findtext("x:DestinationRef", namespaces=_NSMAP),
+            destination_ref=destination_ref,
+            destination_ref_linenum=destination_ref_linenum,
             destination_name=element.findtext("x:DestinationName", namespaces=_NSMAP),
             origin_aimed_departure_time=element.findtext(
                 "x:OriginAimedDepartureTime", namespaces=_NSMAP

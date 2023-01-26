@@ -46,7 +46,8 @@ class PostPublishingResultsJsonWriter:
     def write_results(self, results: List[ValidationResult]):
         self.compile_results(results)
         filename = (
-            f"day_{self.activity_date.strftime('%d_%m_%Y')}_feed_{self.feed_id}.json"
+            f"day_{self.activity_date.strftime('%d_%m_%Y')}_"
+            f"feed_{self.feed_id}.json"
         )
         content_file = ContentFile(
             json.dumps(self.json_report).encode(UTF8), name=filename
@@ -215,8 +216,12 @@ class PostPublishingResultsJsonWriter:
                 "Direction from JourneyPattern in TXC": result.txc_value(
                     SirivmField.DIRECTION_REF
                 ),
-                "SIRI XML line number": "TBD",
-                "TransXChange XML line number": "TBD",
+                "SIRI XML line number": result.sirivm_line_number(
+                    SirivmField.DIRECTION_REF
+                ),
+                "TransXChange XML line number": result.txc_line_number(
+                    SirivmField.DIRECTION_REF
+                ),
                 "Error note": "\n".join(result.errors.get(ErrorCategory.DIRECTION_REF)),
             }
             vehicle_activity = {
@@ -258,8 +263,12 @@ class PostPublishingResultsJsonWriter:
                     SirivmField.DESTINATION_REF
                 ),
                 "StopPointRef in TXC": result.txc_value(SirivmField.DESTINATION_REF),
-                "SIRI XML line number": "TBD",
-                "TransXChange XML line number": "TBD",
+                "SIRI XML line number": result.sirivm_line_number(
+                    SirivmField.DESTINATION_REF
+                ),
+                "TransXChange XML line number": result.txc_line_number(
+                    SirivmField.DESTINATION_REF
+                ),
                 "Error note": "\n".join(
                     result.errors.get(ErrorCategory.DESTINATION_REF)
                 ),
@@ -301,8 +310,12 @@ class PostPublishingResultsJsonWriter:
                 ),
                 "OriginRef in SIRI": result.sirivm_value(SirivmField.ORIGIN_REF),
                 "StopPointRef in TXC": result.txc_value(SirivmField.ORIGIN_REF),
-                "SIRI XML line number": "TBD",
-                "TransXChange XML line number": "TBD",
+                "SIRI XML line number": result.sirivm_line_number(
+                    SirivmField.ORIGIN_REF
+                ),
+                "TransXChange XML line number": result.txc_line_number(
+                    SirivmField.ORIGIN_REF
+                ),
                 "Error note": "\n".join(result.errors.get(ErrorCategory.ORIGIN_REF)),
             }
             vehicle_activity = {
@@ -342,8 +355,12 @@ class PostPublishingResultsJsonWriter:
                 ),
                 "BlockRef in SIRI": result.sirivm_value(SirivmField.BLOCK_REF),
                 "BlockNumber in TXC": result.txc_value(SirivmField.BLOCK_REF),
-                "SIRI XML line number": "TBD",
-                "TransXChange XML line number": "TBD",
+                "SIRI XML line number": result.sirivm_line_number(
+                    SirivmField.BLOCK_REF
+                ),
+                "TransXChange XML line number": result.txc_line_number(
+                    SirivmField.BLOCK_REF
+                ),
                 "Error note": "\n".join(result.errors.get(ErrorCategory.BLOCK_REF)),
             }
             vehicle_activity = {

@@ -19,8 +19,10 @@ class FieldValidation:
     def __init__(self, sirivm_field: SirivmField, txc_name: Optional[str] = None):
         self.sirivm_field = sirivm_field
         self.sirivm_value = None
+        self.sirivm_line_num = None
         self.txc_name = txc_name
         self.txc_value = None
+        self.txc_line_num = None
         self.matches = False
 
 
@@ -34,17 +36,23 @@ class ValidationResult:
         self.journey_matched = False
         self.stats = None
 
-    def set_sirivm_value(self, sirivm_field: SirivmField, value: str):
+    def set_sirivm_value(
+        self, sirivm_field: SirivmField, value: str, line_num: int = None
+    ):
         for validated_field in self.validated:
             if validated_field.sirivm_field == sirivm_field:
                 validated_field.sirivm_value = value
+                validated_field.sirivm_line_num = line_num
                 return
         assert False
 
-    def set_txc_value(self, sirivm_field: SirivmField, value: str):
+    def set_txc_value(
+        self, sirivm_field: SirivmField, value: str, line_num: int = None
+    ):
         for validated_field in self.validated:
             if validated_field.sirivm_field == sirivm_field:
                 validated_field.txc_value = value
+                validated_field.txc_line_num = line_num
                 return
         assert False
 
@@ -65,10 +73,22 @@ class ValidationResult:
                 return validated_field.sirivm_value
         assert False
 
+    def sirivm_line_number(self, sirivm_field: SirivmField) -> Optional[int]:
+        for validated_field in self.validated:
+            if validated_field.sirivm_field == sirivm_field:
+                return validated_field.sirivm_line_num
+        assert False
+
     def txc_value(self, sirivm_field: SirivmField) -> Optional[str]:
         for validated_field in self.validated:
             if validated_field.sirivm_field == sirivm_field:
                 return validated_field.txc_value
+        assert False
+
+    def txc_line_number(self, sirivm_field: SirivmField) -> Optional[int]:
+        for validated_field in self.validated:
+            if validated_field.sirivm_field == sirivm_field:
+                return validated_field.txc_line_num
         assert False
 
     def matches(self, sirivm_field: SirivmField) -> Optional[bool]:
