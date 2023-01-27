@@ -155,7 +155,6 @@ def get_fares_data_catalogue_csv():
 
 def add_multioperator_status(nocs, nocs_df) -> list:
     """
-    nocs=[["acb", "abc"], [axsax, xasxx]]
     Calculates if the NOCs belong to the same organisation or not
     If all NOCs doesn't belong to same organisation then Multioperator is True
     """
@@ -180,6 +179,5 @@ def add_multioperator_status(nocs, nocs_df) -> list:
             MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
         ):
             multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
-    print("multioperator list>>>", multioperator_list)
     if multioperator_list:
         return multioperator_list
