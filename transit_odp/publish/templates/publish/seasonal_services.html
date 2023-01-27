@@ -1,0 +1,93 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+{% load render_table from django_tables2 %}
+
+{% block title_tag %}
+    {% filter force_escape %}{% trans 'Manage seasonal services' %}{% endfilter %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+    {{ block.super }}
+    {% breadcrumb 'Manage seasonal services' %}
+{% endblock %}
+
+{% block full_width_content %}
+    <div class="app-masthead">
+        <div class="govuk-width-container">
+            <div class=govuk-grid-row">
+                <div class="govuk-!-margin-top-5">
+                    <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Seasonal service operating dates' %}</h1>
+                    <p class="app-masthead__description">
+                        {% filter force_escape %}
+                            {% blocktrans %}
+                                BODS marks your service as requiring
+                                attention if it has been registered
+                                with the OTC and you have not
+                                published any timetable data to
+                                BODS. From within this page, you can
+                                manage your seasonal services by
+                                providing an operating start and end
+                                date to let BODS know when to expect
+                                your data for a service.
+                            {% endblocktrans %}
+                        {% endfilter %}
+                    </p>
+                    <p class="app-masthead__description">
+                        {% filter force_escape %}
+                            {% blocktrans %}
+                                BODS will not alert you for not
+                                publishing data for a service until 42
+                                days prior to the service start date
+                                listed below
+                            {% endblocktrans %}
+                        {% endfilter %}
+                    </p>
+                    <div class="review-banner">
+                        <div class="review-stat govuk-!-margin-bottom-0">
+                            <div>
+                                <span class="review-stat__top">{{ seasonal_services_counter }}</span>
+                            </div>
+                            <p class="review-stat__description">{% trans 'Seasonal services' %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-top-0">
+            <div class="govuk-width-container">
+                <div class="govuk-grid-column-full custom_govuk_table_border">
+                    {% if seasonal_services_counter %}
+                        {% render_table table %}
+                    {% else %}
+                        <div class="govuk-grid-column-full">
+                            <p class="govuk-body-m">
+                                {% trans "No seasonal services added." %}
+                                </br>
+                                {% trans "Click 'Add new date range' to add a service." %}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                        <a role="button" class="govuk-button govuk-button--secondary govuk-!-margin-top-5" href={% url 'add-new' pk1=pk1 host hosts.publish %}>
+                            {{ _('Add new date range') }}
+                        </a>
+                        <a role="button" class="govuk-button govuk-button--secondary govuk-!-margin-top-5" href={% url 'feed-list' pk1=pk1 host hosts.publish %}>
+                            {{ _('Close') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

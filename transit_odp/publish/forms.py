@@ -11,6 +11,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.forms.widgets import NumberInput
+from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 from django_hosts.resolvers import reverse
 
@@ -565,38 +566,33 @@ class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
     form_title = _("Seasonal service operating dates")
 
     class Meta:
-        model = Licence
+        model = SeasonalService
         fields = ("licence",)
 
-    licence = forms.ModelChoiceField(
-        queryset=Licence.objects.filter(organisation_id=217),
-        required=True,
-        empty_label=_("Select PSV licence number"),
-    )
-
     def __init__(self, *args, **kwargs):
+        org_id = kwargs.pop("org_id", None)
         super().__init__(*args, **kwargs)
-        # self.fields.update(
-        #     {
-        #         "number": forms.ModelChoiceField(
-        #             queryset=Licence.objects.filter(
-        #                 organisation_id=instance.organisation_id
-        #             ),
-        #             required=True,
-        #             empty_label=_("Select PSV licence number"),
-        #         )
-        #     }
-        # )
-        licence_field = self.fields["licence"]
-        licence_field.label_from_instance = lambda obj: obj.number
-        # licence_field.empty_label = _("Select PSV licence number")
-        licence_field.widget.attrs.update({"class": "govuk-!-width-full govuk-select"})
+        self.fields.update(
+            {
+                "licence": forms.ModelChoiceField(
+                    queryset=Licence.objects.filter(organisation_id=org_id),
+                    required=True,
+                )
+            }
+        )
+        number_field = self.fields["licence"]
+        number_field.label_from_instance = lambda obj: obj.number
+        number_field.empty_label = _("Select PSV licence number")
+        number_field.widget.attrs.update({"class": "govuk-!-width-full govuk-select"})
 
     def get_layout(self):
         return Layout(
             "licence",
             ButtonHolder(CONTINUE_BUTTON, CANCEL_PUBLISH_BUTTON),
         )
+
+    def clean_number(self):
+        return self.cleaned_data["number"].number
 
 
 class SeasonalServiceEditDateForm(GOVUKModelForm):
@@ -626,8 +622,9 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
         model = SeasonalService
         fields = ("registration_code", "start", "end")
 
-    def __init__(self, instance=None, *args, **kwargs):
-        super().__init__(instance=instance, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        org_id = kwargs.pop("org_id", None)
+        super().__init__(*args, **kwargs)
 
     def get_layout(self):
         return Layout(

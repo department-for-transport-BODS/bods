@@ -158,10 +158,15 @@ class SeasonalServiceWizardAddNewView(
         kwargs.update({"current_step": self.steps.current, "pk1": self.kwargs["pk1"]})
         return kwargs
 
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs()
+        kwargs["org_id"] = self.kwargs["pk1"]
+        return kwargs
+
     @transaction.atomic
     def done(self, form_list, **kwargs):
-        org_id = self.kwargs["pk1"]
         all_data = self.get_all_cleaned_data()
+        org_id = self.kwargs["pk1"]
         SeasonalService.objects.filter(licence__organisation_id=org_id).create(
             licence=all_data["licence"],
             registration_code=all_data["registration_code"],
