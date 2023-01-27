@@ -101,7 +101,7 @@ class PostPublishingResultsJsonWriter:
                     field.count_present += 1
                     if result.matches(field.sirivm_field):
                         field.count_matches += 1
-                        if field != SirivmField.BLOCK_REF:
+                        if field.sirivm_field != SirivmField.BLOCK_REF:
                             num_matching_fields += 1
             if num_matching_fields == num_mandatory_fields:
                 self.complete_matches += 1
