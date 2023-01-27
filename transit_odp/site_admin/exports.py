@@ -4,6 +4,7 @@ import tempfile
 import zipfile
 from collections import namedtuple
 from datetime import date, datetime
+from math import floor
 from typing import BinaryIO, Optional
 from zipfile import ZIP_DEFLATED
 
@@ -15,7 +16,7 @@ from django.db.models.functions import Concat
 from django_hosts.resolvers import reverse
 
 import config.hosts
-from transit_odp.avl.constants import MORE_DATA_NEEDED
+from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
 from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
@@ -121,9 +122,12 @@ def matching_score(dataset) -> str:
     if dataset.dataset_type != AVLType or dataset.status == INACTIVE:
         return ""
     if dataset.percent_matching >= 0:
-        return str(round(dataset.percent_matching)) + "%"
+        return str(floor(dataset.percent_matching)) + "%"
     else:
-        return dataset.avl_compliance_cached.status
+        # We could have new AVL Datasets without generated compliance reports
+        # In this case by definition we are undergoing validation
+        compliance = getattr(dataset, "avl_compliance_cached", None)
+        return compliance.status if compliance else UNDERGOING
 
 
 def latest_matching_url(dataset) -> str:
@@ -138,7 +142,7 @@ def overall_avl_timetables_matching(dataset) -> str:
     if dataset.dataset_type == AVLType and dataset.status != INACTIVE:
         score = dataset.average_percent_matching
         if score is not None:
-            return str(round(score)) + "%"
+            return str(floor(score)) + "%"
     return ""
 
 
