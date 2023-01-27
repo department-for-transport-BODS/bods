@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 import pandas as pd
 
+# from pandas.errors import IndexingError
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.organisation.csv import EmptyDataFrame
@@ -115,17 +116,26 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
     }
 )
 
+MULTIOPERATOR_STATUS_DICT = {True: "Yes", False: "No", "Unavailable": "NA"}
+
 
 def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
     fares_df = pd.DataFrame.from_records(
         DataCatalogueMetaData.objects.get_active_fares_files().values(*METADATA_COLUMNS)
     )
+    if fares_df.empty:
+        raise EmptyDataFrame()
+
     nocs = fares_df["national_operator_code"].tolist()
     nocs_df = pd.DataFrame.from_records(OperatorCode.objects.get_nocs().values())
+
+    if nocs_df.empty:
+        raise EmptyDataFrame()
+
     multioperator_list = add_multioperator_status(nocs, nocs_df)
     multioperator_df = pd.DataFrame(multioperator_list, columns=["multioperator"])
 
-    if fares_df.empty or multioperator_df.empty:
+    if multioperator_df.empty:
         raise EmptyDataFrame()
 
     merged = pd.merge(fares_df, multioperator_df, on=fares_df.index, how="outer")
@@ -145,6 +155,7 @@ def get_fares_data_catalogue_csv():
 
 def add_multioperator_status(nocs, nocs_df) -> list:
     """
+    nocs=[["acb", "abc"], [axsax, xasxx]]
     Calculates if the NOCs belong to the same organisation or not
     If all NOCs doesn't belong to same organisation then Multioperator is True
     """
@@ -152,12 +163,23 @@ def add_multioperator_status(nocs, nocs_df) -> list:
     for operator_codes in nocs:
         orgs = []
         for operator in operator_codes:
-            org = nocs_df.loc[nocs_df["noc"] == operator, "organisation_id"].iloc[0]
-            if org:
-                orgs.append(org)
-        if len(set(orgs)) == 1:
-            multioperator_list.append("No")
-        elif len(set(orgs)) > 1:
-            multioperator_list.append("Yes")
+            try:
+                org = nocs_df.loc[nocs_df["noc"] == operator, "organisation_id"].iloc[0]
+                if org:
+                    orgs.append(org)
+            except IndexError:
+                orgs.append("NA")
+        if "NA" in orgs:
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+
+        if len(set(orgs)) == 1 and (
+            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
+        ):
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+        elif len(set(orgs)) > 1 and (
+            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
+        ):
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
+    print("multioperator list>>>", multioperator_list)
     if multioperator_list:
         return multioperator_list
