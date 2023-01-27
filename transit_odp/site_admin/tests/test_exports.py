@@ -186,6 +186,10 @@ class TestDatasetPublishingCSV:
             dataset_type=AVLType,
         )
 
+        DatasetFactory(
+            organisation=organisation, dataset_type=AVLType, avl_compliance_cached=None
+        )
+
         PostPublishingCheckReportFactory(
             dataset=dataset1,
             vehicle_activities_analysed=10,
@@ -220,13 +224,20 @@ class TestDatasetPublishingCSV:
             vehicle_activities_completely_matching=0,
             created=today,
         )
-
         dataset_publishing_csv = DatasetPublishingCSV()
         actual = dataset_publishing_csv.to_string()
         csvfile = io.StringIO(actual)
         reader = csv.reader(csvfile.getvalue().splitlines())
 
-        headers, first_row, second_row, third_row, fourth_row, fifth_row = list(reader)
+        (
+            headers,
+            first_row,
+            second_row,
+            third_row,
+            fourth_row,
+            fifth_row,
+            sixth_row,
+        ) = list(reader)
         assert headers == [
             "operator",
             "dataType",
@@ -291,6 +302,8 @@ class TestDatasetPublishingCSV:
         assert fifth_row[8] == ""
         assert fifth_row[9] == TOTAL_PERCENTAGE
         assert fifth_row[10] == url_overall
+
+        assert sixth_row[7] == UNDERGOING
 
 
 class TestConsumerCSV:
