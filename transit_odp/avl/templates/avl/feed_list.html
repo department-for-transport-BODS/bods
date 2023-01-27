@@ -13,7 +13,7 @@
     {% if overall_ppc_score is not None %}
         <div class="review-stat">
             <div>
-                <span class="review-stat__top">{{ overall_ppc_score }}%
+                <span class="review-stat__top">{{ overall_ppc_score|floatformat:"0" }}%
                     <b class="govuk-!-font-size-16" style="position: relative; bottom: 20px;">
                         {% include "publish/snippets/help_modals/weekly_overall_AVL_to_timetable.html" %}
                     </b>
