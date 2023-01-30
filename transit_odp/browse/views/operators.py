@@ -112,7 +112,7 @@ class OperatorDetailView(BaseDetailView):
                     revision__dataset__dataset_type=FaresType,
                 ).values("count")
             except FaresValidationResult.DoesNotExist:
-                results = None
+                results = []
             fares_non_compliant_count = len(
                 [count for count in results if count.get("count") > 0]
             )
