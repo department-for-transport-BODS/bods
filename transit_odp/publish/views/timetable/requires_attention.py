@@ -61,7 +61,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         return get_requires_attention_data(org_id)
 
 
-class ServiceCodeView(OrgUserViewMixin, View):
+class ServiceCodeView(View):
     def get(self, *args, **kwargs):
         self.org = Organisation.objects.get(id=kwargs["pk1"])
         return self.render_to_response()
