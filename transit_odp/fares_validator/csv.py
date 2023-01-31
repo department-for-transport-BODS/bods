@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 import pandas as pd
 
-# from pandas.errors import IndexingError
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.organisation.csv import EmptyDataFrame
