@@ -11,7 +11,7 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.tables import DatasetTable
 from transit_odp.publish.views.base import BasePublishListView
 from transit_odp.timetables.proxies import TimetableDataset
-from transit_odp.timetables.tables import RequiresAttentionTable
+from transit_odp.timetables.tables import RequiresAttentionTable, SeasonalServiceTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
@@ -88,3 +88,26 @@ class ServiceCodeView(OrgUserViewMixin, View):
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
         return response
+
+
+class SeasonalServiceView(OrgUserViewMixin, SingleTableView):
+    template_name = "publish/seasonal_services/index.html"
+    model = SeasonalService
+    table_class = SeasonalServiceTable
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org_id = self.kwargs["pk1"]
+        context["pk1"] = org_id
+        context[
+            "seasonal_services_counter"
+        ] = SeasonalService.objects.get_count_in_organisation(org_id)
+        return context
+
+    def get_table_data(self, **kwargs):
+        # org_id = self.request.GET.get("pk1")
+        org_id = self.kwargs["pk1"]
+        return SeasonalService.objects.filter(licence__organisation_id=org_id)
+
+
