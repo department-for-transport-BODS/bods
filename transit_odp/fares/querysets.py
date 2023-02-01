@@ -79,6 +79,13 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             self.get_active_published_files()
             .add_published_date()
             .add_operator_id()
+            .add_string_nocs()
+            .add_string_line_ids()
+            .add_string_lines()
+            .add_string_atco_areas()
+            .add_string_tariff_basis()
+            .add_string_product_type()
+            .add_string_product_name()
             .add_organisation_name()
             .add_compliance_status()
         )
@@ -115,6 +122,61 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             )
         )
 
+    def add_string_line_ids(self):
+        return self.annotate(
+            string_line_ids=Func(
+                F("line_id"),
+                Value(";", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
+    def add_string_atco_areas(self):
+        return self.annotate(
+            string_atco_areas=Func(
+                F("atco_area"),
+                Value(";", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
+    def add_string_tariff_basis(self):
+        return self.annotate(
+            string_tariff_basis=Func(
+                F("tariff_basis"),
+                Value(";", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
+    def add_string_product_type(self):
+        return self.annotate(
+            string_product_type=Func(
+                F("product_type"),
+                Value(";", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
+    def add_string_product_name(self):
+        return self.annotate(
+            string_product_name=Func(
+                F("product_name"),
+                Value(";", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+    
     def get_fares_overall_catalogue(self):
         return (
             self.add_revision_and_dataset()
