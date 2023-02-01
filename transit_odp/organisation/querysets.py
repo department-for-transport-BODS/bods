@@ -977,22 +977,6 @@ class DatasetRevisionQuerySet(models.QuerySet):
             )
         )
 
-    def get_filtered_dataset_ids(self):
-        from transit_odp.fares.models import DatasetMetadata
-
-        qs = self.filter(
-            Q(
-                id__in=DatasetMetadata.objects.all().values_list(
-                    "revision_id", flat=True
-                )
-            )
-        )
-
-        return qs
-
-    def dataset_id_qs(self):
-        return self.get_filtered_dataset_ids()
-
 
 class TXCFileAttributesQuerySet(models.QuerySet):
     def get_active_revisions(self):
