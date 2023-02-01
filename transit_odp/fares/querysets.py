@@ -176,7 +176,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
                 output_field=CharField(),
             )
         )
-    
+
     def get_fares_overall_catalogue(self):
         return (
             self.add_revision_and_dataset()
