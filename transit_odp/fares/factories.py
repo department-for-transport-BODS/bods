@@ -1,10 +1,12 @@
 import datetime
 
 import factory
-from waffle import flag_is_active
+import faker
 
 from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.organisation.factories import DatasetMetadataFactory
+
+FAKER = faker.Faker()
 
 
 class FaresMetadataFactory(DatasetMetadataFactory):
@@ -36,16 +38,15 @@ class DataCatalogueMetaDataFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = DataCatalogueMetaData
 
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-    if is_fares_validator_active:
-        acto_area = factory.Sequence(lambda n: n)
-        valid_from = datetime.datetime(2000, 5, 7)
-        valid_to = datetime.datetime(2099, 5, 7)
-        line_id = factory.Sequence(lambda n: n)
-        line_name = factory.Sequence(lambda n: n)
-        national_operator_code = factory.Sequence(lambda n: n)
-        product_name = factory.Sequence(lambda n: n)
-        product_type = factory.Sequence(lambda n: n)
-        tariff_basis = factory.Sequence(lambda n: n)
-        user_type = factory.Sequence(lambda n: n)
-        xml_file_name = factory.Sequence(lambda n: n)
+    fares_metadata = factory.SubFactory(FaresMetadataFactory)
+    atco_area = ["329"]
+    valid_from = datetime.datetime(2000, 5, 7)
+    valid_to = datetime.datetime(2099, 5, 7)
+    line_id = ["123"]
+    line_name = ["234"]
+    national_operator_code = ["NR"]
+    product_name = ["Adult Single"]
+    product_type = ["dayPass"]
+    tariff_basis = ["zone"]
+    user_type = ["adult"]
+    xml_file_name = FAKER.file_name(extension="xml")
