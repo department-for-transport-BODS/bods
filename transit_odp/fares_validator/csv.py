@@ -125,7 +125,6 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
     )
     if fares_df.empty:
         raise EmptyDataFrame()
-    print("nocs>>>", fares_df["string_nocs"])
     nocs = fares_df["national_operator_code"].tolist()
     nocs_df = pd.DataFrame.from_records(OperatorCode.objects.get_nocs().values())
 
