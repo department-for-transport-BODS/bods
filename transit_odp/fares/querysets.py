@@ -6,7 +6,6 @@ from django.db.models import (
     F,
     Func,
     Q,
-    Subquery,
     Value,
     When,
 )
@@ -28,17 +27,6 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             Q(fares_metadata_id__revision__is_published=True)
             & Q(fares_metadata_id__revision__status=FeedStatus.live.value)
         ).order_by("fares_metadata_id")
-        return qs
-
-    def get_filtered_fares(self):
-        from transit_odp.fares.models import FaresMetadata
-
-        qs = self.filter(
-            fares_metadata_id__in=Subquery(
-                FaresMetadata.objects.values_list("datasetmetadata_ptr", flat=True)
-            )
-        ).order_by("fares_metadata_id")
-
         return qs
 
     def add_published_date(self):
@@ -116,9 +104,9 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             )
         )
 
-    def add_nocs_string(self, delimiter=","):
+    def add_string_nocs(self):
         return self.annotate(
-            nocs_string=Func(
+            string_nocs=Func(
                 F("national_operator_code"),
                 Value(";", output_field=CharField()),
                 Value("", output_field=CharField()),
@@ -132,5 +120,5 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             self.add_revision_and_dataset()
             .get_live_revision_data()
             .add_string_lines()
-            .add_nocs_string()
+            .add_string_nocs()
         )

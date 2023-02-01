@@ -159,7 +159,7 @@ DATACATALOGUE_ATTRIBUTE_FIELDS = (
     "dataset_id",
     "fares_metadata_id",
     "xml_file_name",
-    "nocs_string",
+    "string_nocs",
     "string_lines",
 )
 
@@ -185,34 +185,45 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
             )
         )
         datacatalogue_metadata_df.rename(
-            columns={"nocs_string": "national_operator_code"}, inplace=True
+            columns={"string_nocs": "national_operator_code"}, inplace=True
         )
         datacatalogue_metadata_df.rename(
             columns={"xml_file_name": "filename"}, inplace=True
         )
 
-    if (
-        (dataset_df.empty and dataset_df_fares)
-        or txc_file_attributes_df.empty
-        or datacatalogue_metadata_df.empty
-    ):
-        raise EmptyDataFrame()
+        if (
+            (dataset_df_fares.empty and dataset_df.empty)
+            or txc_file_attributes_df.empty
+            or datacatalogue_metadata_df.empty
+        ):
+            raise EmptyDataFrame()
 
-    merged_fares = merge(
-        dataset_df_fares,
-        datacatalogue_metadata_df,
-        left_on="id",
-        right_on="dataset_id",
-        how="outer",
-    )
-    merged_txc = merge(
-        dataset_df,
-        txc_file_attributes_df,
-        left_on="id",
-        right_on="dataset_id",
-        how="outer",
-    )
-    merged = pd.concat([merged_fares, merged_txc], ignore_index=True)
+        merged_fares = merge(
+            dataset_df_fares,
+            datacatalogue_metadata_df,
+            left_on="id",
+            right_on="dataset_id",
+            how="outer",
+        )
+        merged_txc = merge(
+            dataset_df,
+            txc_file_attributes_df,
+            left_on="id",
+            right_on="dataset_id",
+            how="outer",
+        )
+        merged = pd.concat([merged_fares, merged_txc], ignore_index=True)
+    else:
+        if dataset_df.empty or txc_file_attributes_df.empty:
+            raise EmptyDataFrame()
+
+        merged = merge(
+            dataset_df,
+            txc_file_attributes_df,
+            left_on="id",
+            right_on="dataset_id",
+            how="outer",
+        )
     merged["mode"] = "Bus"
     merged = merged.sort_values("id")
 
