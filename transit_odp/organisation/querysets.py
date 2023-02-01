@@ -56,6 +56,9 @@ ANONYMOUS = "Anonymous"
 GENERAL_LEVEL = "General"
 DATASET_LEVEL = "Data set level"
 
+TSeasonalServiceQuerySet = TypeVar(
+    "TSeasonalServiceQuerySet", bound="SeasonalServiceQuerySet"
+)
 TServiceCodeExemptionQuerySet = TypeVar(
     "TServiceCodeExemptionQuerySet", bound="ServiceCodeExemptionQuerySet"
 )
@@ -1260,3 +1263,23 @@ class BODSLicenceQuerySet(models.QuerySet):
                 output_field=CharField(),
             )
         )
+
+
+class SeasonalServiceQuerySet(models.QuerySet):
+    def add_registration_number(self) -> TSeasonalServiceQuerySet:
+        """The registration number comprises the licence prefix plus
+        registration code. This is sometimes referred to as the
+        service code.
+        """
+        return self.annotate(
+            registration_number=Concat(
+                "licence__number",
+                Value("/"),
+                "registration_code",
+                output_field=CharField(),
+            )
+        )
+
+    def get_count_in_organisation(self, org_id: int) -> int:
+        """The number of Seasonal services per organisation."""
+        return self.filter(licence__organisation_id=org_id).count()

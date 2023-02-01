@@ -6,6 +6,7 @@ from django_tables2 import SingleTableView
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.tables import DatasetTable
 from transit_odp.publish.views.base import BasePublishListView
@@ -34,6 +35,9 @@ class ListView(BasePublishListView):
         context[
             "missing_service_codes"
         ] = OTCService.objects.get_missing_from_organisation(org_id).count()
+        context[
+            "seasonal_services_counter"
+        ] = SeasonalService.objects.get_count_in_organisation(org_id)
         return context
 
 

@@ -42,7 +42,7 @@ jobs:
     - id: set-version-number
       run: |
         TEXT=$(cat ./version.txt)
-        echo "::set-output name=version::${TEXT//'%'/'%25'}"
+        echo "version=${TEXT//'%'/'%25'}" >> $GITHUB_OUTPUT
 
     - id: echo-version
       run: |
@@ -55,11 +55,11 @@ jobs:
         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }} 
         IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
       run: |
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
         if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
-            echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
         else
-            echo "Build and push docker image with that tag $IMAGE_TAG "
+            echo "The image $IMAGE_TAG exists in the $ECR_REPOSITORY Repository, build and push docker image first."
+            exit 1
         fi
 
     - name: Logout of Amazon ECR
