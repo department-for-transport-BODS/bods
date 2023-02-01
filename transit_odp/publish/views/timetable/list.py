@@ -111,3 +111,19 @@ class SeasonalServiceView(OrgUserViewMixin, SingleTableView):
         return SeasonalService.objects.filter(licence__organisation_id=org_id)
 
 
+class SeasonalServiceEditDateView(OrgUserViewMixin, SingleTableView):
+    template_name = "publish/seasonal_services/index.html"
+    model = SeasonalService
+    table_class = SeasonalServiceTable
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org_id = self.kwargs["pk1"]
+        context["pk1"] = org_id
+        # uncomment when BODP-5626 merged
+        context[
+            "seasonal_services_counter"
+        ] = 12  # SeasonalService.objects.get_seasonal_service_counter(org_id)
+        return context
+
