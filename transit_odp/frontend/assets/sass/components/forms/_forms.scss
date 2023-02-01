@@ -1,0 +1,36 @@
+%flex-space-between {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.heading-container {
+  @extend %flex-space-between;
+}
+
+.seasonal-service {
+  .licence {
+    margin-bottom: 5rem;
+  }
+
+  .buttons {
+    margin-top: 5rem;
+  }
+
+  .govuk-heading-s {
+    margin-top: govuk-spacing(6);
+    margin-bottom: govuk-spacing(6);
+  }
+
+  .date-container {
+    @extend %flex-space-between;
+    margin-bottom: 5rem;
+
+    .date {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      width: 47%;
+    }
+  }
+}

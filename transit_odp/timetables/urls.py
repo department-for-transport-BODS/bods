@@ -33,6 +33,16 @@ urlpatterns = [
                     view=timetable.SeasonalServiceView.as_view(),
                     name="seasonal-service",
                 ),
+                path(
+                    "add-new",
+                    view=timetable.SeasonalServiceWizardAddNewView.as_view(),
+                    name="add-seasonal-service",
+                ),
+                path(
+                    "edit-date",
+                    view=timetable.SeasonalServiceEditDateView.as_view(),
+                    name="edit-date",
+                ),
             ]
         ),
     ),

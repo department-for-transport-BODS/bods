@@ -1,0 +1,45 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load seasonal_services_stepper %}
+
+{% block title_tag %}
+    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+    {% if title_tag_text %}
+        {{ title_tag_text }}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="govuk-breadcrumbs">
+        <div class="govuk-breadcrumbs">
+            {% stepper %}
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl">Seasonal service operating dates</h1>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            {% block extra_content %}
+            {% endblock %}
+            <form class="seasonal-service" method="post" enctype="multipart/form-data" novalidate>
+                {{ wizard.form.media }}
+                {{ wizard.management_form }}
+                {% crispy wizard.form wizard.form.helper %}
+            </form>
+            <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+        </div>
+    </div>
+
+
+{% endblock %}
