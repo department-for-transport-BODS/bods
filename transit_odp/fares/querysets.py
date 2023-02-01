@@ -109,7 +109,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         return self.annotate(
             string_lines=Func(
                 F("line_name"),
-                Value(",", output_field=CharField()),
+                Value(";", output_field=CharField()),
                 Value("", output_field=CharField()),
                 function="array_to_string",
                 output_field=CharField(),
@@ -120,7 +120,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         return self.annotate(
             nocs_string=Func(
                 F("national_operator_code"),
-                Value(",", output_field=CharField()),
+                Value(";", output_field=CharField()),
                 Value("", output_field=CharField()),
                 function="array_to_string",
                 output_field=CharField(),
