@@ -1,5 +1,15 @@
 from django.db import models
-from django.db.models import BooleanField, Case, F, Q, Subquery, When
+from django.db.models import (
+    BooleanField,
+    Case,
+    CharField,
+    F,
+    Func,
+    Q,
+    Subquery,
+    Value,
+    When,
+)
 
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.querysets import DatasetQuerySet
@@ -85,5 +95,42 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_compliance_status()
         )
 
+    def add_revision_and_dataset(self):
+        return self.annotate(revision_id=F("fares_metadata_id__revision__id")).annotate(
+            dataset_id=F("fares_metadata_id__revision__dataset_id")
+        )
+
+    def get_live_revision_data(self):
+        return self.filter(
+            revision_id=F("fares_metadata_id__revision__dataset__live_revision")
+        )
+
+    def add_string_lines(self):
+        return self.annotate(
+            string_lines=Func(
+                F("line_name"),
+                Value(",", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
+    def add_nocs_string(self, delimiter=","):
+        return self.annotate(
+            nocs_string=Func(
+                F("national_operator_code"),
+                Value(",", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
     def get_fares_overall_catalogue(self):
-        return self.get_filtered_fares()
+        return (
+            self.add_revision_and_dataset()
+            .get_live_revision_data()
+            .add_string_lines()
+            .add_nocs_string()
+        )

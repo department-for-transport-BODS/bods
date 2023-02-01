@@ -37,7 +37,6 @@ from transit_odp.organisation.mixins import (
     DatasetPayloadMixin,
 )
 from transit_odp.organisation.querysets import (
-    DatasetMetadataQuerySet,
     DatasetRevisionQuerySet,
     TXCFileAttributesQuerySet,
 )
@@ -498,8 +497,6 @@ class DatasetMetadata(models.Model):
         DatasetRevision, related_name="metadata", on_delete=models.CASCADE
     )
     schema_version = models.CharField(max_length=8)
-
-    objects = DatasetMetadataQuerySet.as_manager()
 
 
 class TXCFileAttributes(models.Model):

@@ -869,24 +869,6 @@ class DatasetQuerySet(models.QuerySet):
         )
 
 
-class DatasetMetadataQuerySet(models.QuerySet):
-    def get_filtered_revision_ids(self):
-        from transit_odp.fares.models import DataCatalogueMetaData
-
-        qs = self.filter(
-            Q(
-                id__in=DataCatalogueMetaData.objects.all().values_list(
-                    "fares_metadata_id", flat=True
-                )
-            )
-        ).values("revision_id")
-
-        return qs
-
-    def revision_id_qs(self):
-        return self.get_filtered_revision_ids()
-
-
 class DatasetRevisionQuerySet(models.QuerySet):
     def get_live_revisions(self):
         # This uses a correlated subquery to select the latest published revision

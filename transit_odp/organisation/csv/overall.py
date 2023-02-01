@@ -1,17 +1,13 @@
 from collections import OrderedDict
 
+import pandas as pd
 from pandas import DataFrame, merge
 from waffle import flag_is_active
 
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.organisation.csv import EmptyDataFrame
-from transit_odp.organisation.models import (
-    Dataset,
-    DatasetMetadata,
-    DatasetRevision,
-    TXCFileAttributes,
-)
+from transit_odp.organisation.models import Dataset, TXCFileAttributes
 
 FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
     {
@@ -160,44 +156,12 @@ TXC_FILE_ATTRIBUTE_FIELDS = (
 )
 
 DATACATALOGUE_ATTRIBUTE_FIELDS = (
+    "dataset_id",
     "fares_metadata_id",
     "xml_file_name",
-    "national_operator_code",
-    "line_name",
+    "nocs_string",
+    "string_lines",
 )
-
-
-def get_fares_data_list(
-    filtered_fares_data_dict, filtered_revision_ids_dict, filtered_dataset_ids_dict
-) -> list:
-    """
-    Returns list of fares information (xml file name, NOCs and line name)
-    when dataset_id in DatasetRevision table match
-    fares_metadata_id in DataCatalogueMetaData table.
-    """
-    for fares_data_dict in filtered_fares_data_dict:
-        for revision_id_dict in filtered_revision_ids_dict:
-            if fares_data_dict.get("fares_metadata_id") == revision_id_dict.get("id"):
-                fares_data_dict["revision_id"] = revision_id_dict["revision_id"]
-
-        for dataset_id_dict in filtered_dataset_ids_dict:
-            if fares_data_dict.get("revision_id") == dataset_id_dict.get("id"):
-                fares_data_dict["dataset_id"] = dataset_id_dict["dataset_id"]
-
-    return list(filtered_fares_data_dict)
-
-
-def transform_lists(data_list) -> str:
-    """
-    Transform lists to seperate multiple values in a list
-    with a semi-colon
-    """
-    transformed_string = None
-    if data_list:
-        transformed_string = "".join(
-            [str(data) + "; " for data in data_list]
-        ).removesuffix("; ")
-    return transformed_string
 
 
 def _get_overall_catalogue_dataframe() -> DataFrame:
@@ -205,36 +169,53 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
     dataset_df = DataFrame.from_records(
         Dataset.objects.get_overall_data_catalogue_annotations().values(*DATASET_FIELDS)
     )
+
+    dataset_df_fares = dataset_df[dataset_df["dataset_type_pretty"] == "Fares"]
+    dataset_df = dataset_df[dataset_df["dataset_type_pretty"] != "Fares"]
+
     txc_file_attributes_df = DataFrame.from_records(
         TXCFileAttributes.objects.get_overall_data_catalogue().values(
             *TXC_FILE_ATTRIBUTE_FIELDS
         )
     )
     if is_fares_validator_active:
-        datacatalogue_metadata_qs = (
+        datacatalogue_metadata_df = DataFrame.from_records(
             DataCatalogueMetaData.objects.get_fares_overall_catalogue().values(
                 *DATACATALOGUE_ATTRIBUTE_FIELDS
             )
         )
-        revision_id_qs = DatasetMetadata.objects.revision_id_qs().values(
-            "id", "revision_id"
+        datacatalogue_metadata_df.rename(
+            columns={"nocs_string": "national_operator_code"}, inplace=True
         )
-        dataset_id_qs = DatasetRevision.objects.dataset_id_qs().values(
-            "id", "dataset_id"
+        datacatalogue_metadata_df.rename(
+            columns={"xml_file_name": "filename"}, inplace=True
         )
 
-    if dataset_df.empty or txc_file_attributes_df.empty:
+    if (
+        (dataset_df.empty and dataset_df_fares)
+        or txc_file_attributes_df.empty
+        or datacatalogue_metadata_df.empty
+    ):
         raise EmptyDataFrame()
 
-    merged = merge(
+    merged_fares = merge(
+        dataset_df_fares,
+        datacatalogue_metadata_df,
+        left_on="id",
+        right_on="dataset_id",
+        how="outer",
+    )
+    merged_txc = merge(
         dataset_df,
         txc_file_attributes_df,
         left_on="id",
         right_on="dataset_id",
         how="outer",
     )
+    merged = pd.concat([merged_fares, merged_txc], ignore_index=True)
     merged["mode"] = "Bus"
     merged = merged.sort_values("id")
+
     if is_fares_validator_active:
         rename_map = {
             old_name: column_tuple.field_name
@@ -249,28 +230,6 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
             for old_name, column_tuple in OVERALL_COLUMN_MAP.items()
         }
         merged = merged[OVERALL_COLUMN_MAP.keys()].rename(columns=rename_map)
-
-    if is_fares_validator_active:
-        fares_data_dict = get_fares_data_list(
-            datacatalogue_metadata_qs,
-            revision_id_qs,
-            dataset_id_qs,
-        )
-
-        for row in merged.itertuples():
-            for data_dict in fares_data_dict:
-                if data_dict.get("dataset_id") == getattr(row, "_10"):
-                    xml_file_name = data_dict.get("xml_file_name")
-                    national_operator_code = transform_lists(
-                        data_dict.get("national_operator_code")
-                    )
-                    line_name = transform_lists(data_dict.get("line_name"))
-
-                    merged.loc[row.Index, ["XML File Name"]] = xml_file_name
-                    merged.loc[
-                        row.Index, ["National Operator Code"]
-                    ] = national_operator_code
-                    merged.loc[row.Index, ["Line Name"]] = line_name
 
     return merged
 
