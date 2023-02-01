@@ -13,12 +13,13 @@ METADATA_COLUMNS = (
     "valid_from",
     "valid_to",
     "national_operator_code",
-    "line_id",
-    "line_name",
-    "atco_area",
-    "tariff_basis",
-    "product_type",
-    "product_name",
+    "string_nocs",
+    "string_line_ids",
+    "string_lines",
+    "string_atco_areas",
+    "string_tariff_basis",
+    "string_product_type",
+    "string_product_name",
     "user_type",
     "last_updated_date",
     "operator_id",
@@ -42,7 +43,7 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "Organisation Name",
             "The name of the operator/publisher providing data on BODS.",
         ),
-        "national_operator_code": Column(
+        "string_nocs": Column(
             "National Operator Code",
             "The National Operator Code(s) for the particular publisher as "
             "extracted from the NeTEx file they provided.",
@@ -71,32 +72,32 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "The operating period end date as extracted from the files "
             "provided by the operator/publisher to BODS.",
         ),
-        "line_id": Column(
+        "string_line_ids": Column(
             "Line ids",
             "The Line id(s) as extracted from the files provided by the "
             "operator/publisher to BODS.",
         ),
-        "line_name": Column(
+        "string_lines": Column(
             "Line Name",
             "The line name(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
-        "atco_area": Column(
+        "string_atco_areas": Column(
             "ATCO Area",
             "The ATCO Area (s) extracted from the ScheduledStopPoints in "
             "the files provided by the operator/publisher to BODS.",
         ),
-        "tariff_basis": Column(
+        "string_tariff_basis": Column(
             "TariffBasis",
             "The TariffBasis element as extracted from the files provided by the "
             "operator/publisher to BODS.",
         ),
-        "product_type": Column(
+        "string_product_type": Column(
             "ProductType",
             "The ProductType element as extracted from the files provided by the "
             "operator/publisher to BODS.",
         ),
-        "product_name": Column(
+        "string_product_name": Column(
             "ProductName",
             "The Name element within PreassignedFareProduct as extracted from the "
             "files provided by the operator/publisher to BODS.",
@@ -124,7 +125,7 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
     )
     if fares_df.empty:
         raise EmptyDataFrame()
-
+    print("nocs>>>", fares_df["string_nocs"])
     nocs = fares_df["national_operator_code"].tolist()
     nocs_df = pd.DataFrame.from_records(OperatorCode.objects.get_nocs().values())
 
