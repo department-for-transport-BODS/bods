@@ -61,15 +61,28 @@ class PostPublishingChecker:
         result.set_sirivm_value(SirivmField.LINE_REF, mvj.line_ref)
         result.set_sirivm_value(SirivmField.ORIGIN_NAME, mvj.origin_name)
         result.set_sirivm_value(
-            SirivmField.ORIGIN_AIMED_DEPARTURE_TIME, mvj.origin_aimed_departure_time
+            SirivmField.ORIGIN_AIMED_DEPARTURE_TIME,
+            mvj.origin_aimed_departure_time,
         )
-        result.set_sirivm_value(SirivmField.DIRECTION_REF, mvj.direction_ref)
-        result.set_sirivm_value(SirivmField.BLOCK_REF, mvj.block_ref)
+        result.set_sirivm_value(
+            SirivmField.DIRECTION_REF,
+            mvj.direction_ref,
+            mvj.direction_ref_linenum,
+        )
+        result.set_sirivm_value(
+            SirivmField.BLOCK_REF, mvj.block_ref, mvj.block_ref_linenum
+        )
         result.set_sirivm_value(
             SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name
         )
-        result.set_sirivm_value(SirivmField.DESTINATION_REF, mvj.destination_ref)
-        result.set_sirivm_value(SirivmField.ORIGIN_REF, mvj.origin_ref)
+        result.set_sirivm_value(
+            SirivmField.DESTINATION_REF,
+            mvj.destination_ref,
+            mvj.destination_ref_linenum,
+        )
+        result.set_sirivm_value(
+            SirivmField.ORIGIN_REF, mvj.origin_ref, mvj.origin_ref_linenum
+        )
         result.set_sirivm_value(SirivmField.DESTINATION_NAME, mvj.destination_name)
         result.set_sirivm_value(SirivmField.BEARING, mvj.bearing)
         result.set_sirivm_value(SirivmField.VEHICLE_REF, mvj.vehicle_ref)
@@ -80,7 +93,8 @@ class PostPublishingChecker:
             result.set_sirivm_value(SirivmField.LATITUDE, mvj.vehicle_location.latitude)
         if mvj.extensions is not None and mvj.extensions.vehicle_journey is not None:
             result.set_sirivm_value(
-                SirivmField.DRIVER_REF, mvj.extensions.vehicle_journey.driver_ref
+                SirivmField.DRIVER_REF,
+                mvj.extensions.vehicle_journey.driver_ref,
             )
         if mvj.framed_vehicle_journey_ref is not None:
             result.set_sirivm_value(
@@ -94,7 +108,10 @@ class PostPublishingChecker:
         return result
 
     def perform_checks(
-        self, activity_date: datetime.date, feed_id: int, num_activities: int = 20
+        self,
+        activity_date: datetime.date,
+        feed_id: int,
+        num_activities: int = 20,
     ):
         sampler = SirivmSampler()
         sirivm_header, activities = sampler.get_vehicle_activities(

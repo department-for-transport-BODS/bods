@@ -1,3 +1,5 @@
+from math import floor
+
 from django.db.models import Avg
 
 from transit_odp.avl.constants import MORE_DATA_NEEDED
@@ -41,11 +43,12 @@ class ListView(BasePublishListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        overall_ppc_score = self.get_overall_ppc_score()["percent_matching__avg"]
         context.update(
             {
-                "overall_ppc_score": self.get_overall_ppc_score()[
-                    "percent_matching__avg"
-                ],
+                "overall_ppc_score": floor(overall_ppc_score)
+                if overall_ppc_score
+                else overall_ppc_score,
             }
         )
         return context
