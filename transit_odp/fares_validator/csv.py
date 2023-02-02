@@ -20,7 +20,7 @@ METADATA_COLUMNS = (
     "string_tariff_basis",
     "string_product_type",
     "string_product_name",
-    "user_type",
+    "string_user_type",
     "last_updated_date",
     "operator_id",
     "organisation_name",
@@ -102,7 +102,7 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "The Name element within PreassignedFareProduct as extracted from the "
             "files provided by the operator/publisher to BODS.",
         ),
-        "user_type": Column(
+        "string_user_type": Column(
             "UserType",
             "The origin element as extracted from the files provided by the "
             "operator/publisher to BODS.",
