@@ -6,6 +6,8 @@
 
 .heading-container {
   @extend %flex-space-between;
+  flex-wrap: wrap;
+  align-items: baseline;
 }
 
 .seasonal-service {

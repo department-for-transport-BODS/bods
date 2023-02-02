@@ -11,7 +11,7 @@ from formtools.wizard.views import SessionWizardView
 import config.hosts
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.organisation.models.data import SeasonalService
-from transit_odp.organisation.models.organisations import Licence
+from transit_odp.organisation.models.organisations import Organisation
 from transit_odp.publish.forms import (
     SeasonalServiceEditDateForm,
     SeasonalServiceLicenceNumberForm,
@@ -36,23 +36,19 @@ class SeasonalServiceWizardAddNewView(
         PROVIDE_OPERATING_DATE: {"step_title": _("Seasonal service operating dates")},
     }
 
-    templates = {
-        SELECT_PSV_STEP: "publish/seasonal_services/add_licence.html",
-        PROVIDE_OPERATING_DATE: "publish/seasonal_services/add_dates.html",
-    }
-
-    def get_queryset(self):
-        org_id = self.request.GET.get("pk1")
-        return Licence.objects.filter(organisation_id=org_id)
-
-    def get_template_names(self):
-        return [self.templates[self.steps.current]]
+    template_name = "publish/seasonal_services/add_new.html"
 
     def get_context_data(self, form, **kwargs):
+        pk1 = self.kwargs["pk1"]
         kwargs = super().get_context_data(form, **kwargs)
         kwargs.update(self.step_context[self.SELECT_PSV_STEP])
-        kwargs.update({"form_list": list(self.form_list.items())[0:1]})
-        kwargs.update({"current_step": self.steps.current, "pk1": self.kwargs["pk1"]})
+        kwargs.update(
+            {
+                "current_step": self.steps.current,
+                "organisation": Organisation.objects.get(id=pk1),
+                "pk1": self.kwargs["pk1"],
+            }
+        )
         return kwargs
 
     def get_form_kwargs(self, step=None):
@@ -94,6 +90,7 @@ class SeasonalServiceView(OrgUserViewMixin, SingleTableView):
         context = super().get_context_data(**kwargs)
         org_id = self.kwargs["pk1"]
         context["pk1"] = org_id
+        context["organisation"] = Organisation.objects.get(id=org_id)
         context[
             "seasonal_services_counter"
         ] = SeasonalService.objects.get_count_in_organisation(org_id)

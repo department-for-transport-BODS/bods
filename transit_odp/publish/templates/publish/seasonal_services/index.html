@@ -10,6 +10,13 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
+    {% if user.is_agent_user %}
+        {% with "Review "|add:organisation.name|title|add:" Timetables Data" as heading %}
+            {% breadcrumb_url heading 'feed-list' pk1=pk1 host hosts.publish %}
+        {% endwith %}
+    {% else %}
+        {% breadcrumb_url "Review My Timetables Data" 'feed-list' pk1=pk1 host hosts.publish %}
+    {% endif %}
     {% breadcrumb 'Manage seasonal services' %}
 {% endblock %}
 

@@ -148,4 +148,4 @@ class TestCreateSeasonalServiceView:
 
         errors = response.context_data["form"].errors
         for error in errors.values():
-            assert error[0] == "This field is required."
+            assert error[0] == "This date is required"

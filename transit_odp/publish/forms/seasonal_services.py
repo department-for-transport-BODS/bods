@@ -10,17 +10,15 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
 
-import config.hosts
+from config.hosts import PUBLISH_HOST
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.organisation.models import Licence, SeasonalService
-from transit_odp.publish.forms.constants import CONTINUE_BUTTON, SEPARATOR
+from transit_odp.publish.forms.constants import CONTINUE_BUTTON, SAVE_BUTTON, SEPARATOR
 
 
 def cancel_seasonal_service(org_id):
     return LinkButton(
-        reverse(
-            "seasonal-service", kwargs={"pk1": org_id}, host=config.hosts.PUBLISH_HOST
-        ),
+        reverse("seasonal-service", kwargs={"pk1": org_id}, host=PUBLISH_HOST),
         content="Cancel",
     )
 
@@ -50,11 +48,8 @@ class DateDiv(Div):
                 show_error = True
                 break
 
-        self.css_class = (
-            self.css_class + " govuk-form-group--error"
-            if show_error
-            else self.css_class
-        )
+        if show_error:
+            self.css_class += " govuk-form-group--error"
 
         return super().render(form, form_style, context, **kwargs)
 
@@ -108,13 +103,19 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
     start = forms.DateTimeField(
         required=True,
         label=_("Service begins on"),
-        error_messages={"invalid": _("Error first date")},
+        error_messages={
+            "invalid": _("Error first date"),
+            "required": _("This date is required"),
+        },
         widget=NumberInput(attrs={"type": "date"}),
     )
     end = forms.DateTimeField(
         required=True,
         label=_("Service ends on"),
-        error_messages={"invalid": _("Error last date")},
+        error_messages={
+            "invalid": _("Error last date"),
+            "required": _("This date is required"),
+        },
         widget=NumberInput(attrs={"type": "date"}),
     )
 
@@ -131,7 +132,20 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
         help_modal = render_to_string(
             "publish/snippets/help_modals/seasonal_services.html"
         )
+        edit_snippet = render_to_string(
+            "publish/seasonal_services/edit_service_code_snippet.html",
+            context={
+                "link": reverse(
+                    "add-seasonal-service",
+                    kwargs={"pk1": self.org_id},
+                    host=PUBLISH_HOST,
+                ),
+                "number": self.licence.number,
+            },
+        )
+
         return Layout(
+            HTML(edit_snippet),
             Field(
                 "registration_code",
                 template="publish/seasonal_services/service_code_widget.html",
@@ -149,7 +163,7 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
             ),
             SEPARATOR,
             ButtonHolder(
-                CONTINUE_BUTTON,
+                SAVE_BUTTON,
                 cancel_seasonal_service(self.org_id),
                 css_class="buttons",
             ),
@@ -173,6 +187,6 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
         if start is None or end is None:
             return cleaned_data
 
-        if start >= end:
+        if start > end:
             raise ValidationError("Start date must be earlier than end date")
         return cleaned_data

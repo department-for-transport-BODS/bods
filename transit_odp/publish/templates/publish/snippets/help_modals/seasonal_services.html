@@ -8,18 +8,22 @@
 {% block help_content %}
     <p class="govuk-body">
         {% blocktranslate %}
-            Use the date range to mark when this service intends to operate
+            Use the date range to mark when this service intends to operate.
         {% endblocktranslate %}
     </p>
     <ul class="govuk-list">
         <li>
             <b>{% trans "Example 1:" %}</b>
-            For example with school services, mark the date the service begins on at the start of Autumn term and enter
-            the date the service ends on as the last day of the summer term.
+            {% blocktranslate %}
+                For example with school services, mark the date the service begins on at the start of Autumn term and enter
+                the date the service ends on as the last day of the summer term.
+            {% endblocktranslate %}
         </li>
         <li>
             <b>{% trans "Example 2:" %}</b>
-            For a Christmas service, mark the date the service starts for the Christmas period and enter the date the service ends.
+            {% blocktranslate %}
+                For a Christmas service, mark the date the service starts for the Christmas period and enter the date the service ends.
+            {% endblocktranslate %}
         </li>
     </ul>
 {% endblock %}

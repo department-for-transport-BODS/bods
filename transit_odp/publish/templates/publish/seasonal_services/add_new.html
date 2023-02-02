@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load seasonal_services_stepper %}
+{% load breadcrumbs %}
 
 {% block title_tag %}
     {% if form.errors %}{% trans 'Error: ' %}{% endif %}
@@ -13,11 +14,21 @@
     {% endif %}
 {% endblock %}
 
-{% block breadcrumb %}
+{% block breadcrumb.content %}
+    {{ block.super }}
+    {% if user.is_agent_user %}
+        {% with "Review "|add:organisation.name|title|add:" Timetables Data" as heading %}
+            {% breadcrumb_url heading 'feed-list' pk1=pk1 host hosts.publish %}
+        {% endwith %}
+    {% else %}
+        {% breadcrumb_url "Review My Timetables Data" 'feed-list' pk1=pk1 host hosts.publish %}
+    {% endif %}
+    {% breadcrumb_url "Manage seasonal services" "seasonal-service" pk1=pk1 host hosts.publish %}
+    {% breadcrumb "Add new" %}
+    </div>
     <div class="govuk-breadcrumbs">
-        <div class="govuk-breadcrumbs">
-            {% stepper %}
-        </div>
+        {% stepper %}
+    </div>
     </div>
 {% endblock %}
 
@@ -25,7 +36,7 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-xl">Seasonal service operating dates</h1>
+            <h1 class="govuk-heading-xl">{% trans "Seasonal service operating dates" %}</h1>
         </div>
     </div>
     <div class="govuk-grid-row">
