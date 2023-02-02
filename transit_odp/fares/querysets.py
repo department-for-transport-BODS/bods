@@ -66,6 +66,16 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             )
         )
 
+    def add_organisation_id(self):
+        """
+        Adds organisation id from the FaresValidationResult to the resultset
+        """
+        return self.annotate(
+            org_id=F(
+                "fares_metadata_id__revision__fares_validation_result__organisation_id"
+            )
+        )
+
     def get_active_fares_files(self):
         """
         Filter for revisions that are published and active along with other added properties
@@ -77,3 +87,10 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_organisation_name()
             .add_compliance_status()
         )
+
+    def get_compliance_status(self):
+        """
+        Filter for fares validation compliance status by organisations
+        """
+
+        return self.add_compliance_status().add_organisation_id()

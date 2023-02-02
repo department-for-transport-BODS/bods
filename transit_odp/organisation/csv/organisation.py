@@ -5,7 +5,7 @@ from django.db.models.expressions import F
 from pandas import DataFrame, NamedAgg, Series, isna
 
 from transit_odp.common.collections import Column
-from transit_odp.fares.models import FaresMetadata
+from transit_odp.fares.models import FaresMetadata, DataCatalogueMetaData
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import Licence, Organisation, TXCFileAttributes
 from transit_odp.organisation.models.data import ServiceCodeExemption
@@ -216,6 +216,14 @@ ORG_COLUMN_MAP = OrderedDict(
             "The total number of fares products found in the fares data provided "
             "by the operator/publisher to BODS.",
         ),
+        "number_pass_products": Column(
+            "Number of Pass Products",
+            "",
+        ),
+        "number_trip_products": Column(
+            "Number of Trip Products",
+            "",
+        ),
     }
 )
 
@@ -246,22 +254,39 @@ def _get_fares_dataframe() -> DataFrame:
     fares = FaresMetadata.objects.filter(
         revision__dataset__live_revision=F("revision_id"), revision__status="live"
     ).annotate(organisation_id=F("revision__dataset__organisation_id"))
-    columns = ("revision_id", "organisation_id", "num_of_fare_products")
-    df = DataFrame.from_records(fares.values(*columns))
-    df = df.groupby("organisation_id").agg(
-        {"revision_id": ["count"], "num_of_fare_products": ["sum"]}
+    columns = (
+        "revision_id",
+        "organisation_id",
+        "num_of_pass_products",
+        "num_of_trip_products",
     )
+    df = DataFrame.from_records(fares.values(*columns))
+    compliance_status_df = DataFrame.from_records(
+        DataCatalogueMetaData.objects.get_compliance_status().values()
+    )
+    compliance_status_df = compliance_status_df.groupby("org_id").agg(
+        {"is_fares_compliant": ["count"]}
+    )
+
+    df = df.groupby("organisation_id").agg(
+        {
+            "revision_id": ["count"],
+            "num_of_pass_products": ["count"],
+            "num_of_trip_products": ["count"],
+        }
+    )
+
     if df is not None:
         df = df.droplevel(axis=1, level=0)
         df = df.rename(
             columns={
                 "count": "published_fares_count",
-                "sum": "total_fare_products",
+                "count": "num_of_pass_products",
+                "count": "num_of_trip_products",
             }
         )
     else:
         raise EmptyDataFrame()
-
     return df
 
 
@@ -441,7 +466,7 @@ def _get_organisation_catalogue_dataframe() -> DataFrame:
         for old_name, column_tuple in ORG_COLUMN_MAP.items()
     }
     orgs = orgs[ORG_COLUMN_MAP.keys()].rename(columns=rename_map)
-    return orgs
+    return
 
 
 def get_organisation_catalogue_csv() -> str:
