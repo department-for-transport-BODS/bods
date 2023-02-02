@@ -86,6 +86,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_string_tariff_basis()
             .add_string_product_type()
             .add_string_product_name()
+            .add_string_user_type()
             .add_organisation_name()
             .add_compliance_status()
         )
@@ -170,6 +171,17 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         return self.annotate(
             string_product_name=Func(
                 F("product_name"),
+                Value(";", output_field=CharField()),
+                Value("", output_field=CharField()),
+                function="array_to_string",
+                output_field=CharField(),
+            )
+        )
+
+    def add_string_user_type(self):
+        return self.annotate(
+            string_user_type=Func(
+                F("user_type"),
                 Value(";", output_field=CharField()),
                 Value("", output_field=CharField()),
                 function="array_to_string",
