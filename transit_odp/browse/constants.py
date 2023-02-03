@@ -20,6 +20,8 @@ The data catalogue zip contains 4 distinct CSVs:
 -   Timetables data catalogue: this contains a detailed granular view of the
         timetables data within BODS. It also contains a detailed mapping of the BODS
         timetables data with the data from the Office of the Traffic Commissioner (OTC).
+-   Fares data catalogue: this contains a detailed granular view of the
+        fares data within BODS.
 -   Organisations data catalogue: this contains helpful counts of data at an
         organisation level: which is at the level of the publishing operators (e.g
         overall service data)
