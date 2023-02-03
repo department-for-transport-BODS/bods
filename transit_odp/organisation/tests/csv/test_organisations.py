@@ -3,9 +3,11 @@ from datetime import datetime, timedelta
 import factory
 import pytest
 from freezegun import freeze_time
+from waffle import flag_is_active
 
 from transit_odp.data_quality.factories import PTIValidationResultFactory
 from transit_odp.fares.factories import FaresMetadataFactory
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
 from transit_odp.organisation.constants import ORG_ACTIVE
 from transit_odp.organisation.csv.organisation import (
     _get_organisation_catalogue_dataframe,
@@ -36,6 +38,7 @@ def test_df_organisations():
     WHEN: We generate the organisation_data_catalogue.csv
     THEN: The data in the csv should reflect this
     """
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     registered_service_count = 3
     unregistered_service_count = 2
     valid_operating_service_count = 3
@@ -58,6 +61,13 @@ def test_df_organisations():
     )
     no_of_fares_products = 10
     avl_revisions = 2
+    no_of_revisions = 14
+    no_of_compliant_fares = 5
+    no_of_percentage_fares_compliance = (
+        f"{no_of_compliant_fares / no_of_revisions * 100:.2f}%"
+    )
+    no_of_pass_products = 2
+    no_of_trip_products = 3
 
     now = datetime.now()
     today = now.date()
@@ -77,6 +87,7 @@ def test_df_organisations():
     FaresMetadataFactory(
         revision=fares_revision, num_of_fare_products=no_of_fares_products
     )
+    FaresValidationResultFactory(revision=fares_revision, count=no_of_fares_products)
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
         revision=timetable_revision,
@@ -182,7 +193,16 @@ def test_df_organisations():
     assert row["Number of Published Timetable Datasets"] == 1
     assert row["Number of Published AVL Datafeeds"] == avl_revisions
     assert row["Number of Published Fare Datasets"] == 1
-    assert row["Number of Fare Products"] == no_of_fares_products
+    if is_fares_validator_active:
+        assert row["Number of Published Fare Datasets"] == no_of_revisions
+        assert (
+            row["% Compliant Published Fare Datasets"]
+            == no_of_percentage_fares_compliance
+        )
+        assert row["Number of Pass Products"] == no_of_pass_products
+        assert row["Number of Trip Products"] == no_of_trip_products
+    else:
+        assert row["Number of Fare Products"] == no_of_fares_products
 
 
 @pytest.mark.skip

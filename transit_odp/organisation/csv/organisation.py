@@ -208,7 +208,10 @@ FEATURE_FLAG_ORG_COLUMN_MAP = OrderedDict(
             "The total number of published location data feeds provided "
             "by the operator/publisher to BODS.",
         ),
-        "number_of_revisions_count": Column("Number of Published Fare Datasets", ""),
+        "number_of_revisions_count": Column(
+            "Number of Published Fare Datasets",
+            "The total number of published fares datasets provided by the operator/publisher to BODS.",
+        ),
         "compliant_fares_count": Column(
             "% Compliant Published Fare Datasets",
             "The percentage of an organisation's published fare datasets that are BODS compliant.",
