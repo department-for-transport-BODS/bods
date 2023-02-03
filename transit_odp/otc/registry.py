@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Tuple
 
 from transit_odp.otc.client import OTCAPIClient
 from transit_odp.otc.client.enums import RegistrationStatusEnum
@@ -17,7 +17,28 @@ class Registry:
     """
     Class that is responsible for transforming the OTC data.
     ie, dropping duplicate objects and normalising the data ready for batch loading
-    into a database
+    into a database.
+
+    Two typical usecases:
+
+    First to completely sync with OTC registry. This typically take 3.5 hours.
+    Currently used to completely refresh the data.
+
+    registry = Registry()
+    registry.sync_with_otc_registry()
+
+    once this has run then the following properties will be populated
+    registry.services -> all services that are in "Registered" status
+    registry.operators -> all operators that have "Registered" services
+    registry.licences -> all licences that "Registered" services against them
+
+    Second to update from a given date. Will return services from a given date
+    that are *either* "Registered" *or* services that are marked for deletion.
+
+    registry = Registry()
+    registry.get_variations_since(datetime(2022, 12, 25))
+    note that registry.services will contain data that should be removed from the
+    database. Use registry.filter_by_status("Registered") to get the services you want.
     """
 
     def __init__(self):
@@ -25,6 +46,14 @@ class Registry:
         self._service_map = {}
         self._licence_map = {}
         self._client = OTCAPIClient()
+
+    def sync_with_otc_registry(self) -> None:
+        """
+        helper method that runs what is required to completely sync the
+        OTC database for use in BODS
+        """
+        self.add_all_latest_registered_variations()
+        self.add_all_older_registered_variations()
 
     def add_all_latest_registered_variations(self) -> None:
         """
@@ -37,6 +66,11 @@ class Registry:
             self.update(registration)
 
     def add_all_older_registered_variations(self) -> None:
+        """
+        Makes individual calls to API for each registration code that has previously
+        returned a status in RegistrationStatusEnum.to_change(). Only status's in
+        RegistrationStatusEnum.REGISTERED.value are kept.
+        """
         further_lookups = self.get_further_lookup_ids()
         total = len(further_lookups)
         for current, registration_number in enumerate(further_lookups, start=1):
@@ -49,24 +83,38 @@ class Registry:
                     self.update(variation)
 
     def get_variations_since(self, when: datetime) -> List[Service]:
+        """
+        looks up all latest variations since a given date, any variations in the
+        RegistrationStatusEnum.to_change() will be looked up again. This leaves both
+        registrations in RegistrationStatusEnum.REGISTERED and
+        RegistrationStatusEnum.to_delete().
+        """
+        look_up_again = set()
         for registration in self._client.get_latest_variations_since(when):
             if registration.registration_status in RegistrationStatusEnum.to_change():
-                older_variations = self.get_latest_variations_by_id(
-                    registration.registration_number
-                )
-                for variation in older_variations:
-                    self.update(variation)
+                look_up_again.add(registration.registration_number)
             else:
                 self.update(registration)
 
+        for registration_number in look_up_again:
+            older_variations = self.get_latest_variations_by_id(registration_number)
+            for variation in older_variations:
+                self.update(variation)
+
         return list(self._service_map.values())
 
-    def filter_by_status(self, *args):
+    def filter_by_status(self, *args) -> List[Service]:
         return [
             service for service in self.services if service.registration_status in args
         ]
 
     def get_latest_variations_by_id(self, registration_number) -> List[Registration]:
+        """
+        Gets a list of the all variations by registration number that are ordered by
+        variation number descending. We then return all the entries with the highest
+        variation number whose status are not in RegistrationStatusEnum.to_change().
+        If all of them are then we return an empty list
+        """
         registrations = self._client.get_variations_by_registration_code_desc(
             registration_number
         )
@@ -83,7 +131,12 @@ class Registry:
                 ]
         return []
 
-    def get_further_lookup_ids(self):
+    def get_further_lookup_ids(self) -> Set[str]:
+        """
+        Returns a set of all registration numbers whos latest variation is in
+        RegistrationStatusEnum.to_change(), we do this so we can look them up again
+        and get the latest registered
+        """
         lookup_ids = set()
         for status in RegistrationStatusEnum.to_change():
             for registration in self._client.get_latest_variations_by_reg_status(
@@ -93,13 +146,17 @@ class Registry:
 
         return lookup_ids
 
-    def update(self, registration: Registration):
+    def update(self, registration: Registration) -> None:
+        """
+        Performs normalisation and drops duplicates, will keep highest variation
+        """
         licence_number = registration.licence_number
         registration_number = registration.registration_number
         service_type_description = registration.service_type_description
         operator_id = registration.operator_id
 
-        if (registration_number, service_type_description) in self._service_map:
+        service = self._service_map.get((registration_number, service_type_description))
+        if service and registration.variation_number < service.variation_number:
             return
 
         if licence_number not in self._licence_map:
