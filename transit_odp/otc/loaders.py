@@ -188,8 +188,7 @@ class Loader:
     @transaction.atomic
     def load_into_fresh_database(self):
         new_otc_objects = []
-        self.registry.add_all_latest_registered_variations()
-        self.registry.add_all_older_registered_variations()
+        self.registry.sync_with_otc_registry()
         self._delete_all_otc_data()
 
         for licence in self.registry.licences:
