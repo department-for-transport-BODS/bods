@@ -13,13 +13,14 @@ METADATA_COLUMNS = (
     "valid_from",
     "valid_to",
     "national_operator_code",
-    "line_id",
-    "line_name",
-    "atco_area",
-    "tariff_basis",
-    "product_type",
-    "product_name",
-    "user_type",
+    "string_nocs",
+    "string_line_ids",
+    "string_lines",
+    "string_atco_areas",
+    "string_tariff_basis",
+    "string_product_type",
+    "string_product_name",
+    "string_user_type",
     "last_updated_date",
     "operator_id",
     "organisation_name",
@@ -42,7 +43,7 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "Organisation Name",
             "The name of the operator/publisher providing data on BODS.",
         ),
-        "national_operator_code": Column(
+        "string_nocs": Column(
             "National Operator Code",
             "The National Operator Code(s) for the particular publisher as "
             "extracted from the NeTEx file they provided.",
@@ -71,37 +72,37 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
             "The operating period end date as extracted from the files "
             "provided by the operator/publisher to BODS.",
         ),
-        "line_id": Column(
+        "string_line_ids": Column(
             "Line ids",
             "The Line id(s) as extracted from the files provided by the "
             "operator/publisher to BODS.",
         ),
-        "line_name": Column(
+        "string_lines": Column(
             "Line Name",
             "The line name(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
-        "atco_area": Column(
+        "string_atco_areas": Column(
             "ATCO Area",
             "The ATCO Area (s) extracted from the ScheduledStopPoints in "
             "the files provided by the operator/publisher to BODS.",
         ),
-        "tariff_basis": Column(
+        "string_tariff_basis": Column(
             "TariffBasis",
             "The TariffBasis element as extracted from the files provided by the "
             "operator/publisher to BODS.",
         ),
-        "product_type": Column(
+        "string_product_type": Column(
             "ProductType",
             "The ProductType element as extracted from the files provided by the "
             "operator/publisher to BODS.",
         ),
-        "product_name": Column(
+        "string_product_name": Column(
             "ProductName",
             "The Name element within PreassignedFareProduct as extracted from the "
             "files provided by the operator/publisher to BODS.",
         ),
-        "user_type": Column(
+        "string_user_type": Column(
             "UserType",
             "The origin element as extracted from the files provided by the "
             "operator/publisher to BODS.",
@@ -115,17 +116,25 @@ FARES_DATA_COLUMN_MAP = OrderedDict(
     }
 )
 
+MULTIOPERATOR_STATUS_DICT = {True: "Yes", False: "No", "Unavailable": "NA"}
+
 
 def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
     fares_df = pd.DataFrame.from_records(
         DataCatalogueMetaData.objects.get_active_fares_files().values(*METADATA_COLUMNS)
     )
+    if fares_df.empty:
+        raise EmptyDataFrame()
     nocs = fares_df["national_operator_code"].tolist()
     nocs_df = pd.DataFrame.from_records(OperatorCode.objects.get_nocs().values())
+
+    if nocs_df.empty:
+        raise EmptyDataFrame()
+
     multioperator_list = add_multioperator_status(nocs, nocs_df)
     multioperator_df = pd.DataFrame(multioperator_list, columns=["multioperator"])
 
-    if fares_df.empty or multioperator_df.empty:
+    if multioperator_df.empty:
         raise EmptyDataFrame()
 
     merged = pd.merge(fares_df, multioperator_df, on=fares_df.index, how="outer")
@@ -152,12 +161,22 @@ def add_multioperator_status(nocs, nocs_df) -> list:
     for operator_codes in nocs:
         orgs = []
         for operator in operator_codes:
-            org = nocs_df.loc[nocs_df["noc"] == operator, "organisation_id"].iloc[0]
-            if org:
-                orgs.append(org)
-        if len(set(orgs)) == 1:
-            multioperator_list.append("No")
-        elif len(set(orgs)) > 1:
-            multioperator_list.append("Yes")
+            try:
+                org = nocs_df.loc[nocs_df["noc"] == operator, "organisation_id"].iloc[0]
+                if org:
+                    orgs.append(org)
+            except IndexError:
+                orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
+        if MULTIOPERATOR_STATUS_DICT["Unavailable"] in orgs:
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+
+        if len(set(orgs)) == 1 and (
+            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
+        ):
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+        elif len(set(orgs)) > 1 and (
+            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
+        ):
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
     if multioperator_list:
         return multioperator_list

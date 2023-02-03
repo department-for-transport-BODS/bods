@@ -41,7 +41,7 @@ def test_df_timetables_expected():
     assert row["Status"] == "published"
     assert row["Last Updated"] == pd.Timestamp(current)
     assert row["File Name"] == timetable.upload_file
-    assert row["TXC File Name"] == fa.filename
+    assert row["XML File Name"] == fa.filename
     assert row["Data Set/Feed Name"] == timetable.name
     assert row["Data ID"] == timetable.dataset.id
     assert row["Mode"] == "Bus"
