@@ -2,10 +2,11 @@ from collections import OrderedDict
 from datetime import datetime
 
 from django.db.models.expressions import F
-from pandas import DataFrame, NamedAgg, Series, isna
+from pandas import DataFrame, NamedAgg, Series, isna, merge
 
 from transit_odp.common.collections import Column
-from transit_odp.fares.models import FaresMetadata, DataCatalogueMetaData
+from transit_odp.fares.models import FaresMetadata
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import Licence, Organisation, TXCFileAttributes
 from transit_odp.organisation.models.data import ServiceCodeExemption
@@ -206,21 +207,16 @@ ORG_COLUMN_MAP = OrderedDict(
             "The total number of published location data feeds provided "
             "by the operator/publisher to BODS.",
         ),
-        "published_fares_count": Column(
-            "Number of Published Fare Datasets",
-            "The total number of published fares datasets provided "
-            "by the operator/publisher to BODS.",
+        "number_of_revisions_count": Column("Number of Published Fare Datasets", ""),
+        "compliant_fares_count": Column(
+            "% Compliant Published Fare Datasets",
+            ".",
         ),
-        "total_fare_products": Column(
-            "Number of Fare Products",
-            "The total number of fares products found in the fares data provided "
-            "by the operator/publisher to BODS.",
-        ),
-        "number_pass_products": Column(
+        "num_of_pass_products_count": Column(
             "Number of Pass Products",
             "",
         ),
-        "number_trip_products": Column(
+        "num_of_trip_products_count": Column(
             "Number of Trip Products",
             "",
         ),
@@ -238,6 +234,19 @@ def _get_compliance_percentage(row: Series) -> str:
         return str(percentage)
 
     percentage = row.compliant_service_count / row.services_registered_in_bods_count
+    return f"{percentage * 100:.2f}%"
+
+
+def _get_fares_compliance_percentage(row: Series) -> str:
+    percentage = 0.0
+    if (
+        isna(row.number_of_revisions_count)
+        or isna(row.compliant_fares_count)
+        or not row.number_of_revisions_count
+    ):
+        return str(percentage)
+
+    percentage = row.compliant_fares_count / row.number_of_revisions_count
     return f"{percentage * 100:.2f}%"
 
 
@@ -260,34 +269,43 @@ def _get_fares_dataframe() -> DataFrame:
         "num_of_pass_products",
         "num_of_trip_products",
     )
-    df = DataFrame.from_records(fares.values(*columns))
-    compliance_status_df = DataFrame.from_records(
-        DataCatalogueMetaData.objects.get_compliance_status().values()
-    )
-    compliance_status_df = compliance_status_df.groupby("org_id").agg(
-        {"is_fares_compliant": ["count"]}
+    fares_df = DataFrame.from_records(fares.values(*columns))
+
+    fares_columns = ("organisation_id", "revision_id", "count")
+    compliance = FaresValidationResult.objects.filter(
+        revision__dataset__live_revision=F("revision_id"), revision__status="live"
     )
 
-    df = df.groupby("organisation_id").agg(
+    compliance_status_df = DataFrame.from_records(compliance.values(*fares_columns))
+    compliance_status_df.query("count == 0", inplace=True)
+    compliance_count_df = compliance_status_df.groupby(
+        ["organisation_id"], as_index=False
+    )["count"].count()
+    compliance_count_df.columns = ["organisation_id", "compliant_fares_count"]
+
+    fares_count_df = fares_df.groupby("organisation_id").agg(
         {
             "revision_id": ["count"],
             "num_of_pass_products": ["count"],
             "num_of_trip_products": ["count"],
         }
     )
+    fares_count_df.columns = [
+        "number_of_revisions_count",
+        "num_of_pass_products_count",
+        "num_of_trip_products_count",
+    ]
 
-    if df is not None:
-        df = df.droplevel(axis=1, level=0)
-        df = df.rename(
-            columns={
-                "count": "published_fares_count",
-                "count": "num_of_pass_products",
-                "count": "num_of_trip_products",
-            }
-        )
-    else:
+    merged = merge(
+        fares_count_df,
+        compliance_count_df,
+        left_on="organisation_id",
+        right_on="organisation_id",
+        how="outer",
+    )
+    if merged is None:
         raise EmptyDataFrame()
-    return df
+    return merged
 
 
 def _is_valid_operating_date(row: Series) -> bool:
@@ -421,11 +439,18 @@ def _prepare_calculated_columns(df: DataFrame) -> None:
     df["compliant_service_ratio"] = df.apply(
         lambda x: _get_compliance_percentage(x), axis=1
     )
+    df["compliant_fares_count"] = df.apply(
+        lambda x: _get_fares_compliance_percentage(x), axis=1
+    )
 
 
 def _populate_nan_with_zeros(df: DataFrame):
     pti_columns = ["compliant_service_count", "compliant_service_ratio"]
-    fares_columns = ["published_fares_count", "total_fare_products"]
+    fares_columns = [
+        "num_of_pass_products_count",
+        "num_of_trip_products_count",
+        "compliant_fares_count",
+    ]
     # we don't need to fill 'number' in OTC_LICENCE_FIELDS
     otc_columns = OTC_LICENCE_FIELDS[1:] + OTC_SERVICES_FIELDS
     services_columns = ["services_registered_in_bods_count", "exempted_services_count"]
@@ -466,7 +491,7 @@ def _get_organisation_catalogue_dataframe() -> DataFrame:
         for old_name, column_tuple in ORG_COLUMN_MAP.items()
     }
     orgs = orgs[ORG_COLUMN_MAP.keys()].rename(columns=rename_map)
-    return
+    return orgs
 
 
 def get_organisation_catalogue_csv() -> str:
