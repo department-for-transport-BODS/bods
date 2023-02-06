@@ -770,27 +770,32 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     )
                     response = response_details.__list__()
                     return response
-
                 list_type_of_access_right_assignment_ref_ref.append(
                     type_of_access_right_assignment_ref_ref
                 )
-            access_index = list_type_of_fare_structure_element_ref_ref.index(
-                FARE_STRUCTURE_ELEMENT_ACCESS_REF
+            access_index_set = find_indices(
+                list_type_of_fare_structure_element_ref_ref,
+                FARE_STRUCTURE_ELEMENT_ACCESS_REF,
             )
-            can_access_index = list_type_of_access_right_assignment_ref_ref.index(
-                FARE_STRUCTURE_ACCESS_RIGHT_REF
+            can_access_index_set = find_indices(
+                list_type_of_access_right_assignment_ref_ref,
+                FARE_STRUCTURE_ACCESS_RIGHT_REF,
             )
-            eligibility_index = list_type_of_fare_structure_element_ref_ref.index(
-                FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF
+            eligibility_index_set = find_indices(
+                list_type_of_fare_structure_element_ref_ref,
+                FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF,
             )
-            eligibile_index = list_type_of_access_right_assignment_ref_ref.index(
-                FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF
+            eligibile_index_set = find_indices(
+                list_type_of_access_right_assignment_ref_ref,
+                FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF,
             )
-            travel_conditions_index = list_type_of_fare_structure_element_ref_ref.index(
-                FARE_STRUCTURE_ELEMENT_TRAVEL_REF
+            travel_conditions_index_set = find_indices(
+                list_type_of_fare_structure_element_ref_ref,
+                FARE_STRUCTURE_ELEMENT_TRAVEL_REF,
             )
-            condition_of_use_index = list_type_of_access_right_assignment_ref_ref.index(
-                FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF
+            condition_of_use_index_set = find_indices(
+                list_type_of_access_right_assignment_ref_ref,
+                FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
             )
         else:
             response_details = XMLViolationDetail(
@@ -809,12 +814,13 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
         response = response_details.__list__()
         return response
 
-    # Compare indexes
-    if not (
-        access_index == can_access_index
-        and eligibility_index == eligibile_index
-        and travel_conditions_index == condition_of_use_index
-    ):
+    can_access_count = len(access_index_set.intersection(can_access_index_set))
+    eligibile_count = len(eligibility_index_set.intersection(eligibile_index_set))
+    cond_of_use_count = len(
+        travel_conditions_index_set.intersection(condition_of_use_index_set)
+    )
+
+    if not (can_access_count >= 1 and eligibile_count >= 1 and cond_of_use_count >= 1):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
@@ -822,6 +828,10 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
         )
         response = response_details.__list__()
         return response
+
+
+def find_indices(ref_list, ref):
+    return {index for index, ref_value in enumerate(ref_list) if ref_value == ref}
 
 
 def check_fare_structure_element(context, fare_structure_elements, *args):

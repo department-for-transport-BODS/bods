@@ -87,6 +87,94 @@ def test_get_netex_version(netexdocument):
     assert expected == actual
 
 
+def test_get_xml_file_name(netexdocument):
+    actual = netexdocument.get_xml_file_name()
+    expected = "/app/transit_odp/fares/tests/fixtures/sample1.xml"
+    assert expected == actual
+
+
+def test_get_multiple_attr_text_from_xpath(netexdocument):
+    path = ["organisations", "Operator", "PublicCode"]
+    actual = netexdocument.get_multiple_attr_text_from_xpath(path)
+    expected = ["HCTY", "ATOC", "NR"]
+    assert expected == actual
+
+
+def test_get_multiple_attr_ids_from_xpath(netexdocument):
+    path = ["lines", "Line"]
+    actual = netexdocument.get_multiple_attr_ids_from_xpath(path)
+    expected = ["16"]
+    assert expected == actual
+
+
+def test_get_product_types(netexdocument):
+    actual = netexdocument.get_product_types()
+    expected = []
+    assert expected == actual
+
+
+def test_get_products_count(netexdocument):
+    product_types = netexdocument.get_product_types()
+    actual = netexdocument.get_products_count(product_types)
+    expected = 0
+    assert expected == actual
+
+
+def test_get_number_of_trip_products(netexdocument):
+    actual = netexdocument.get_number_of_trip_products()
+    expected = 0
+    assert expected == actual
+
+
+def test_get_number_of_pass_products(netexdocument):
+    actual = netexdocument.get_number_of_pass_products()
+    expected = 0
+    assert expected == actual
+
+
+def test_get_atco_area_code(netexdocument):
+    actual = netexdocument.get_atco_area_code()
+    expected = [
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+        "329",
+    ]
+    assert expected == actual
+
+
+def test_get_valid_from_date(netexdocument):
+    actual = netexdocument.get_valid_from_date()
+    expected = ["2020-01-01", "2015-02-01"]
+    assert expected == actual
+
+
+def test_get_composite_frame_ids(netexdocument):
+    actual = netexdocument.get_composite_frame_ids()
+    expected = [
+        "epd:UK:HCTY:CompositeFrame_UK_PI_LINE_FARE_OFFER:Trip@Line_16:op",
+        "fxc:UK:DFT:TypeOfFrame_UK_PI_METADATA_OFFER:FXCP:fxc",
+    ]
+    assert expected == actual
+
+
+def test_get_to_date_texts(netexdocument):
+    actual = netexdocument.get_to_date_texts()
+    expected = ["2022-12-31", "2020-12-31"]
+    assert expected == actual
+
+
 def test_get_fare_products(netexdocument):
     actual = netexdocument.fare_products
     assert len(actual) == 1
