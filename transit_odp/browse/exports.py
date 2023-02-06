@@ -7,7 +7,7 @@ from typing import BinaryIO
 from waffle import flag_is_active
 
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
-from transit_odp.browse.constants import INTRO
+from transit_odp.browse.constants import INTRO, INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.fares_validator.csv import (
     FARES_DATA_COLUMN_MAP,
@@ -17,10 +17,12 @@ from transit_odp.organisation.constants import ERROR, LIVE, NO_ACTIVITY, AVLType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.organisation import (
     ORG_COLUMN_MAP,
+    FEATURE_FLAG_ORG_COLUMN_MAP,
     get_organisation_catalogue_csv,
 )
 from transit_odp.organisation.csv.overall import (
     OVERALL_COLUMN_MAP,
+    FEATURE_FLAG_OVERALL_COLUMN_MAP,
     get_overall_data_catalogue_csv,
 )
 from transit_odp.organisation.models import Organisation
@@ -70,23 +72,25 @@ def create_guidance_file_string() -> str:
     header_template = "{header}\n{field_header:45}Definition"
     field_header = "Field name"
 
-    result = [INTRO]
-
-    overall = "Overall data catalogue:"
-    result.append(header_template.format(header=overall, field_header=field_header))
-    result += [
-        row_template.format(field_name=field_name, definition=definition)
-        for field_name, definition in OVERALL_COLUMN_MAP.values()
-    ]
-
-    timetables = "\nTimetables data catalogue:"
-    result.append(header_template.format(header=timetables, field_header=field_header))
-    result += [
-        row_template.format(field_name=field_name, definition=definition)
-        for field_name, definition in TIMETABLE_COLUMN_MAP.values()
-    ]
-
     if is_fares_validator_active:
+        result = [INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE]
+
+        overall = "Overall data catalogue:"
+        result.append(header_template.format(header=overall, field_header=field_header))
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in FEATURE_FLAG_OVERALL_COLUMN_MAP.values()
+        ]
+
+        timetables = "\nTimetables data catalogue:"
+        result.append(
+            header_template.format(header=timetables, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in TIMETABLE_COLUMN_MAP.values()
+        ]
+
         fares = "\nFares data catalogue:"
         result.append(header_template.format(header=fares, field_header=field_header))
         result += [
@@ -94,21 +98,60 @@ def create_guidance_file_string() -> str:
             for field_name, definition in FARES_DATA_COLUMN_MAP.values()
         ]
 
-    organisations = "\nOrganisations data catalogue:"
-    result.append(
-        header_template.format(header=organisations, field_header=field_header)
-    )
-    result += [
-        row_template.format(field_name=field_name, definition=definition)
-        for field_name, definition in ORG_COLUMN_MAP.values()
-    ]
+        organisations = "\nOrganisations data catalogue:"
+        result.append(
+            header_template.format(header=organisations, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in FEATURE_FLAG_ORG_COLUMN_MAP.values()
+        ]
 
-    locations = "\nLocation data catalogue:"
-    result.append(header_template.format(header=locations, field_header=field_header))
-    result += [
-        row_template.format(field_name=field_name, definition=definition)
-        for field_name, definition in AVL_COLUMN_MAP.values()
-    ]
+        locations = "\nLocation data catalogue:"
+        result.append(
+            header_template.format(header=locations, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in AVL_COLUMN_MAP.values()
+        ]
+
+    else:
+        result = [INTRO]
+
+        overall = "Overall data catalogue:"
+        result.append(header_template.format(header=overall, field_header=field_header))
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in OVERALL_COLUMN_MAP.values()
+        ]
+
+        timetables = "\nTimetables data catalogue:"
+        result.append(
+            header_template.format(header=timetables, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in TIMETABLE_COLUMN_MAP.values()
+        ]
+
+        organisations = "\nOrganisations data catalogue:"
+        result.append(
+            header_template.format(header=organisations, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in ORG_COLUMN_MAP.values()
+        ]
+
+        locations = "\nLocation data catalogue:"
+        result.append(
+            header_template.format(header=locations, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in AVL_COLUMN_MAP.values()
+        ]
 
     return "\n".join(result)
 
