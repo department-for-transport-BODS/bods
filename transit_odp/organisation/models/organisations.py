@@ -16,7 +16,6 @@ from transit_odp.organisation.managers import (
     BODSLicenceManager,
     ConsumerFeedbackManager,
     OrganisationManager,
-    OperatorCodeManager,
 )
 from transit_odp.organisation.models import Dataset
 from transit_odp.users.models import User
@@ -108,8 +107,6 @@ class OperatorCode(models.Model):
     organisation = models.ForeignKey(
         Organisation, on_delete=models.CASCADE, related_name="nocs"
     )
-
-    objects = OperatorCodeManager()
 
     def __str__(self):
         return f"<OperatorCode noc='{self.noc}'>"

@@ -10,7 +10,6 @@ from transit_odp.organisation.querysets import (
     OrganisationQuerySet,
     SeasonalServiceQuerySet,
     ServiceCodeExemptionQuerySet,
-    OperatorCodeQuerySet,
 )
 
 logger = logging.getLogger(__name__)
