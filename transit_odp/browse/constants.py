@@ -48,7 +48,7 @@ which is timetables data in TransxChange format, bus location data in SIRI-VM fo
 and fares data in NeTEx format. Other non-primary data on BODS (e.g disruptions data
 or GTFS converted forms) are not represented on the data catalogue.
 
-The data catalogue zip contains 4 distinct CSVs:
+The data catalogue zip contains 5 distinct CSVs:
 -   Overall data catalogue: this contains a high-level overview of all the static
         data on BODS: timetables and fares data.
 -   Timetables data catalogue: this contains a detailed granular view of the
