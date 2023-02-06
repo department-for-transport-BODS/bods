@@ -11,7 +11,9 @@ from django.db.models import (
     Case,
     CharField,
     Count,
+    ExpressionWrapper,
     F,
+    FloatField,
     Func,
     IntegerField,
     Max,
@@ -29,6 +31,7 @@ from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
@@ -53,6 +56,9 @@ ANONYMOUS = "Anonymous"
 GENERAL_LEVEL = "General"
 DATASET_LEVEL = "Data set level"
 
+TSeasonalServiceQuerySet = TypeVar(
+    "TSeasonalServiceQuerySet", bound="SeasonalServiceQuerySet"
+)
 TServiceCodeExemptionQuerySet = TypeVar(
     "TServiceCodeExemptionQuerySet", bound="ServiceCodeExemptionQuerySet"
 )
@@ -868,6 +874,41 @@ class DatasetQuerySet(models.QuerySet):
             .exclude(live_revision__status=EXPIRED)
         )
 
+    def add_post_publishing_check_stats(self):
+        from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+
+        created_at = (
+            PostPublishingCheckReport.objects.filter(
+                granularity=PPCReportType.WEEKLY.value
+            )
+            .filter(dataset=OuterRef("pk"))
+            .order_by("-created")
+        )
+        return self.annotate(
+            vehicles_completely_matching=Coalesce(
+                Subquery(
+                    created_at.values("vehicle_activities_completely_matching")[:1]
+                ),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                Subquery(created_at.values("vehicle_activities_analysed")[:1]),
+                Value(NO_PPC_DATA),
+            ),
+            percent_matching=Case(
+                When(
+                    vehicles_analysed__gt=0,
+                    then=ExpressionWrapper(
+                        F("vehicles_completely_matching")
+                        * 100.0
+                        / F("vehicles_analysed"),
+                        output_field=FloatField(),
+                    ),
+                ),
+                default=float(NO_PPC_DATA),
+            ),
+        )
+
 
 class DatasetRevisionQuerySet(models.QuerySet):
     def get_live_revisions(self):
@@ -1224,9 +1265,21 @@ class BODSLicenceQuerySet(models.QuerySet):
         )
 
 
-class OperatorCodeQuerySet(models.QuerySet):
-    def get_nocs(self):
+class SeasonalServiceQuerySet(models.QuerySet):
+    def add_registration_number(self) -> TSeasonalServiceQuerySet:
+        """The registration number comprises the licence prefix plus
+        registration code. This is sometimes referred to as the
+        service code.
         """
-        This returns all the objects from the OperatorCode model
-        """
-        return self.values_list().order_by("id")
+        return self.annotate(
+            registration_number=Concat(
+                "licence__number",
+                Value("/"),
+                "registration_code",
+                output_field=CharField(),
+            )
+        )
+
+    def get_count_in_organisation(self, org_id: int) -> int:
+        """The number of Seasonal services per organisation."""
+        return self.filter(licence__organisation_id=org_id).count()

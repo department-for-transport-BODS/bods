@@ -42,13 +42,8 @@ from transit_odp.avl.notifications import (
     send_avl_schema_check_fail,
     send_avl_status_changed_notification,
 )
-from transit_odp.avl.post_publishing_checks.api_checker import (
-    PostPublishingChecker as PostPublishingCheckerAPI,
-)
-from transit_odp.avl.post_publishing_checks.checker import (
-    PostPublishingChecker as PostPublishingCheckerDB,
-)
-from transit_odp.avl.post_publishing_checks.reports.weekly import WeeklyReport
+from transit_odp.avl.post_publishing_checks.daily.checker import PostPublishingChecker
+from transit_odp.avl.post_publishing_checks.weekly import WeeklyReport
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.validation import get_validation_client
 from transit_odp.common.loggers import PipelineAdapter, get_datafeed_adapter
@@ -66,6 +61,7 @@ SIRI_ZIP = "sirivm_{}.zip"
 SIRI_TFL_ZIP = "sirivm_tfl_{}.zip"
 VALIDATION_SAMPLE_SIZE = 250
 CONFIG_API_WAIT_TIME = 25
+PPC_MAX_VEHICLE_ACTIVITIES_ANALYSED = 1000
 
 
 @dataclass
@@ -347,13 +343,33 @@ def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):
 
 
 @shared_task()
-def task_daily_post_publishing_checks(
-    feed_id: int, num_activities: int = 20, direct_to_db=False
+def task_daily_post_publishing_checks_single_feed(
+    feed_id: int,
+    report_date: date = None,
+    num_activities: int = PPC_MAX_VEHICLE_ACTIVITIES_ANALYSED,
 ):
-    today = date.today()
+    """Daily task to perform Post Publishing Checks for a given feed.
+    Specify a date to record in the report (even if the task runs past midnight
+    before it completes).
+    Specify maximum number of individual VehicleActivity instances analysed
+    for this feed.
+    """
+    if report_date is None:
+        report_date = date.today()
     logger.info(f"Perform daily post publishing checks for AVL feed ID {feed_id}")
-    checker = PostPublishingCheckerDB() if direct_to_db else PostPublishingCheckerAPI()
-    checker.perform_checks(today, feed_id, num_activities)
+    checker = PostPublishingChecker()
+    checker.perform_checks(report_date, feed_id, num_activities)
+
+
+@shared_task()
+def task_daily_post_publishing_checks_all_feeds():
+    avl_datasets = AVLDataset.objects.get_active_org().get_active()
+    today = date.today()
+    logger.info("Perform daily post publishing checks for all active AVL feeds")
+    for dataset in avl_datasets:
+        task_daily_post_publishing_checks_single_feed(
+            feed_id=dataset.id, report_date=today
+        )
 
 
 @shared_task()

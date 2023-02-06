@@ -69,3 +69,28 @@ class RequiresAttentionTable(GovUkTable):
         verbose_name="Service code", accessor="registration_number"
     )
     line = LineColumn(accessor="service_number")
+
+
+class SeasonalServiceTable(GovUkTable):
+    class Meta(GovUkTable.Meta):
+        pass
+
+    licence_number = tables.Column(
+        verbose_name="Licence number", accessor="licence__number"
+    )
+    service_code = tables.Column(
+        verbose_name="Service code", accessor="registration_code"
+    )
+    service_begins = tables.Column(verbose_name="Service begins", accessor="start")
+    service_ends = tables.Column(verbose_name="Service ends", accessor="end")
+    actions = tables.Column(empty_values=())
+
+    def render_actions(self, value, record):
+        return mark_safe(
+            '<a class="govuk-link govuk-!-margin-left-1" href="#">'
+            "Edit dates"
+            "</a>"
+            '<a class="govuk-link govuk-!-margin-left-1" href="#">'
+            "Delete"
+            "</a>",
+        )

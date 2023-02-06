@@ -179,3 +179,8 @@ class XMLElement:
             raise ParentDoesNotExist(msg)
 
         return self.__class__(element)
+
+    @property
+    def line_number(self):
+        """Returns the line number of the element."""
+        return self._element.sourceline

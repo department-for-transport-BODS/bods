@@ -7,8 +7,12 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from freezegun import freeze_time
 
+from transit_odp.avl.factories import PostPublishingCheckReportFactory
+from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.feedback.models import Feedback
+from transit_odp.organisation.constants import AVLType
+from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
 from transit_odp.site_admin.factories import (
     APIRequestFactory,
     ResourceRequestCounterFactory,
@@ -20,6 +24,8 @@ from transit_odp.site_admin.models import (
 )
 from transit_odp.site_admin.tasks import (
     DATA_RETENTION_POLICY_MONTHS,
+    MIN_DAYS_DAILY_PPC_REPORT,
+    MIN_DAYS_WEEKLY_PPC_REPORT,
     task_backfill_metrics_archive,
     task_delete_unwanted_data,
 )
@@ -188,3 +194,115 @@ def test_delete_website_feedback():
     task_delete_unwanted_data()
     assert Feedback.objects.count() == 1
     assert Feedback.objects.first() == fb
+
+
+@freeze_time("2022-01-31")
+def test_delete_ppc_daily_report():
+    organisation = OrganisationFactory()
+    today = date.today()
+    dataset = DatasetFactory(
+        organisation=organisation,
+        dataset_type=AVLType,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=1,
+        granularity=PPCReportType.DAILY,
+        created=today,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=2,
+        granularity=PPCReportType.DAILY,
+        created=today - timedelta(days=1),
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=2,
+        granularity=PPCReportType.DAILY,
+        created=today - timedelta(days=MIN_DAYS_DAILY_PPC_REPORT),
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=2,
+        granularity=PPCReportType.DAILY,
+        created=today - timedelta(days=MIN_DAYS_DAILY_PPC_REPORT + 2),
+    )
+
+    assert (
+        PostPublishingCheckReport.objects.filter(
+            granularity=PPCReportType.DAILY
+        ).count()
+        == 4
+    )
+
+    task_delete_unwanted_data()
+
+    assert (
+        PostPublishingCheckReport.objects.filter(
+            granularity=PPCReportType.DAILY
+        ).count()
+        == 3
+    )
+
+
+@freeze_time("2022-01-31")
+def test_delete_ppc_weekly_report():
+    organisation = OrganisationFactory()
+    today = date.today()
+    dataset0 = DatasetFactory(
+        organisation=organisation,
+        dataset_type=AVLType,
+    )
+    dataset1 = DatasetFactory(
+        organisation=organisation,
+        dataset_type=AVLType,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset0,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=1,
+        granularity=PPCReportType.WEEKLY,
+        created=today,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset1,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=2,
+        granularity=PPCReportType.WEEKLY,
+        created=today - timedelta(days=7),
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset0,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=2,
+        granularity=PPCReportType.WEEKLY,
+        created=today - timedelta(days=MIN_DAYS_WEEKLY_PPC_REPORT),
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset1,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=2,
+        granularity=PPCReportType.WEEKLY,
+        created=today - timedelta(days=MIN_DAYS_WEEKLY_PPC_REPORT + 7),
+    )
+
+    assert (
+        PostPublishingCheckReport.objects.filter(
+            granularity=PPCReportType.WEEKLY
+        ).count()
+        == 4
+    )
+
+    task_delete_unwanted_data()
+
+    assert (
+        PostPublishingCheckReport.objects.filter(
+            granularity=PPCReportType.WEEKLY
+        ).count()
+        == 3
+    )

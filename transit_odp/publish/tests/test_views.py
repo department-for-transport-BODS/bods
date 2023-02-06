@@ -33,6 +33,7 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
     OrganisationFactory,
+    SeasonalServiceFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision
@@ -967,6 +968,35 @@ class TestPublishView:
             ids += list(data.values_list("id", flat=True))
 
         assert len(set(ids)) == len(ids) == number_of_files
+
+    def test_seasonal_services_counter(self, client_factory):
+        # Setup
+        host = PUBLISH_HOST
+        client = client_factory(host=host)
+
+        # create an organisation
+        org = OrganisationFactory.create()
+
+        # create seasonal services
+        SeasonalServiceFactory(licence__organisation=org)
+        SeasonalServiceFactory(licence__organisation=org)
+        SeasonalServiceFactory(licence__organisation=org)
+        SeasonalServiceFactory(licence__organisation=org)
+
+        user = UserFactory(
+            account_type=AccountType.org_staff.value, organisations=(org,)
+        )
+        client.force_login(user=user)
+
+        url = reverse("feed-list", kwargs={"pk1": org.id}, host=host)
+
+        # Test
+        response = client.get(url)
+
+        # Assert
+        assert response.status_code == 200
+        assert "publish/feed_list.html" in [t.name for t in response.templates]
+        assert response.context_data["seasonal_services_counter"] == 4
 
 
 class TestFeedArchiveView:

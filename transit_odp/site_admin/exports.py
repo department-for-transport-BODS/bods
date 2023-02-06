@@ -4,17 +4,23 @@ import tempfile
 import zipfile
 from collections import namedtuple
 from datetime import date, datetime
+from math import floor
 from typing import BinaryIO, Optional
 from zipfile import ZIP_DEFLATED
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import File
-from django.db.models import Case, CharField, OuterRef, Q, Subquery, Value, When
+from django.db.models import Avg, Case, CharField, OuterRef, Q, Subquery, Value, When
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
 from waffle import flag_is_active
+from django_hosts.resolvers import reverse
 
+import config.hosts
+from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
 from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
+from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.exports import (
     FARES_FILENAME,
     LOCATION_FILENAME,
@@ -31,7 +37,7 @@ from transit_odp.common.utils import (
 )
 from transit_odp.fares_validator.csv import get_fares_data_catalogue_csv
 from transit_odp.feedback.models import Feedback, SatisfactionRating
-from transit_odp.organisation.constants import EXPIRED, DatasetType
+from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, DatasetType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackAdminCSV
 from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
@@ -81,6 +87,72 @@ def get_org_fares_count(org) -> int:
         return org.total_fare_products
     else:
         return 0
+
+
+def get_ppc_weekly_per_feed_download_report(
+    organisation_id: int, dataset_id: int
+) -> str:
+    return reverse(
+        "avl:download-matching-report",
+        args=(organisation_id, dataset_id),
+        host=config.hosts.PUBLISH_HOST,
+    )
+
+
+def get_ppc_weekly_average_subquery():
+    return Subquery(
+        AVLDataset.objects.get_active()
+        .add_avl_compliance_status_cached()
+        .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
+        .filter(organisation_id=OuterRef("organisation_id"))
+        .add_post_publishing_check_stats()
+        .values("organisation_id")
+        .exclude(percent_matching=float(NO_PPC_DATA))
+        .annotate(average_percent_matching=Avg("percent_matching"))
+        .values("average_percent_matching")
+    )
+
+
+def get_ppc_weekly_overall_url(organisation_id: int) -> str:
+    return reverse(
+        "ppc-archive",
+        args=(organisation_id,),
+        host=config.hosts.PUBLISH_HOST,
+    )
+
+
+def matching_score(dataset) -> str:
+    if dataset.dataset_type != AVLType or dataset.status == INACTIVE:
+        return ""
+    if dataset.percent_matching >= 0:
+        return str(floor(dataset.percent_matching)) + "%"
+    else:
+        # We could have new AVL Datasets without generated compliance reports
+        # In this case by definition we are undergoing validation
+        compliance = getattr(dataset, "avl_compliance_cached", None)
+        return compliance.status if compliance else UNDERGOING
+
+
+def latest_matching_url(dataset) -> str:
+    if dataset.percent_matching >= 0 and dataset.status != INACTIVE:
+        return get_ppc_weekly_per_feed_download_report(
+            dataset.organisation_id, dataset.id
+        )
+    return ""
+
+
+def overall_avl_timetables_matching(dataset) -> str:
+    if dataset.dataset_type == AVLType and dataset.status != INACTIVE:
+        score = dataset.average_percent_matching
+        if score is not None:
+            return str(floor(score)) + "%"
+    return ""
+
+
+def archived_matching_url(dataset) -> str:
+    if dataset.dataset_type == AVLType and dataset.status != INACTIVE:
+        return get_ppc_weekly_overall_url(dataset.organisation_id)
+    return ""
 
 
 class ConsumerCSV(CSVBuilder):
@@ -169,16 +241,38 @@ class DatasetPublishingCSV(CSVBuilder):
             header="accountType",
             accessor=lambda at: pretty_account_name(at.account_type),
         ),
+        CSVColumn(
+            header="% AVL to Timetables feed matching score",
+            accessor=lambda dataset: matching_score(dataset),
+        ),
+        CSVColumn(
+            header="Latest matching report URL",
+            accessor=lambda dataset: latest_matching_url(dataset),
+        ),
+        CSVColumn(
+            header="% Operator overall AVL to Timetables matching",
+            accessor=lambda dataset: overall_avl_timetables_matching(dataset),
+        ),
+        CSVColumn(
+            header="Archived matching reports URL",
+            accessor=lambda dataset: archived_matching_url(dataset),
+        ),
     ]
 
     def get_queryset(self):
         return (
             Dataset.objects.get_published()
+            .select_related("avl_compliance_cached", "live_revision")
             .add_live_data()
             .add_organisation_name()
             .add_last_published_by_email()
-            .annotate(account_type=F("live_revision__published_by__account_type"))
+            .annotate(
+                account_type=F("live_revision__published_by__account_type"),
+                average_percent_matching=get_ppc_weekly_average_subquery(),
+            )
             .exclude(live_revision__status=EXPIRED)
+            .add_post_publishing_check_stats()
+            .order_by("id")
         )
 
 

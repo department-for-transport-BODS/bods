@@ -52,3 +52,39 @@ class TestAvlFeedDetailView:
         )
         response = client.get(url)
         assert response.get("Content-Disposition") == f"attachment; filename={filename}"
+
+    def test_same_score_between_weekly_report_dataset_page(
+        self,
+        client_factory,
+    ):
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+        dataset = DatasetFactory(organisation=organisation, dataset_type=AVLType)
+        PostPublishingCheckReportFactory(
+            dataset=dataset,
+            vehicle_activities_analysed=200,
+            vehicle_activities_completely_matching=175,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+
+        client = client_factory(host=self.host)
+        client.force_login(user=user)
+        url_feed_detail = reverse(
+            "avl:feed-detail",
+            args=(organisation.id, dataset.id),
+            host=self.host,
+        )
+        response = client.get(url_feed_detail)
+        ppc_score_feed = response.context_data.get("properties").get(
+            "avl_timetables_matching"
+        )
+        url_list_view = reverse(
+            "avl:feed-list", args=(organisation.id,), host=self.host
+        )
+        response = client.get(url_list_view)
+        table = response.context["table"]
+        row = table.rows[0]
+        ppc_score_table = row.get_cell("percent_matching")
+        assert ppc_score_table == ppc_score_feed
