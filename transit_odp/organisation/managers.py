@@ -8,6 +8,7 @@ from transit_odp.organisation.querysets import (
     DatasetQuerySet,
     DatasetRevisionQuerySet,
     OrganisationQuerySet,
+    SeasonalServiceQuerySet,
     ServiceCodeExemptionQuerySet,
 )
 
@@ -37,4 +38,8 @@ class ServiceCodeExemptionManager(
 
 
 class BODSLicenceManager(models.Manager.from_queryset(BODSLicenceQuerySet)):
+    pass
+
+
+class SeasonalServiceManager(models.Manager.from_queryset(SeasonalServiceQuerySet)):
     pass

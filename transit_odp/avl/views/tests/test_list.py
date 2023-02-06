@@ -1,5 +1,6 @@
 import re
 from datetime import date, timedelta
+from math import floor
 
 import pytest
 from django.db.models.fields import timezone
@@ -78,7 +79,7 @@ class TestAVLListView:
         url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
         response = client.get(url)
 
-        assert round(response.context_data["overall_ppc_score"], 2) == round(mean, 2)
+        assert response.context_data["overall_ppc_score"] == floor(mean)
 
     def test_overall_ppc_score_no_vehicles(self, client_factory, sample_data):
         """

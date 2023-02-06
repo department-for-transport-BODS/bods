@@ -17,8 +17,9 @@ from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
 
 TODAY = datetime.date.today()
+NOW = timezone.now()
 PAST = TODAY - datetime.timedelta(weeks=100)
-RECENT = timezone.now() - datetime.timedelta(days=2)
+RECENT = NOW - datetime.timedelta(days=2)
 DATE_STRING = "%d/%m/%Y"
 DATETIME_STRING = "%d/%m/%Y %H:%M:%S"
 
@@ -28,7 +29,11 @@ def fuzzy_date_as_text(_):
 
 
 def fuzzy_datetime_as_text(_):
-    return factory.fuzzy.FuzzyDateTime(start_dt=RECENT).fuzz().strftime(DATETIME_STRING)
+    return (
+        factory.fuzzy.FuzzyDateTime(start_dt=RECENT, end_dt=NOW)
+        .fuzz()
+        .strftime(DATETIME_STRING)
+    )
 
 
 class RegistrationFactory(factory.Factory):
