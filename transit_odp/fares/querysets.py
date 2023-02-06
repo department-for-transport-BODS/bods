@@ -1,14 +1,5 @@
 from django.db import models
-from django.db.models import (
-    BooleanField,
-    Case,
-    CharField,
-    F,
-    Func,
-    Q,
-    Value,
-    When,
-)
+from django.db.models import BooleanField, Case, CharField, F, Func, Q, Value, When
 
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.querysets import DatasetQuerySet
