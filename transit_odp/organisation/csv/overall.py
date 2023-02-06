@@ -38,7 +38,7 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
         ),
         "filename": Column(
             "XML File Name",
-            "The value of the FileName attribute in the TransXChange file.",
+            "The value of the FileName attribute in the TransXChange or NeTEx file.",
         ),
         "name": Column(
             "Data Set/Feed Name",
@@ -56,8 +56,8 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
         ),
         "national_operator_code": Column(
             "National Operator Code",
-            "The National Operator Codes for the particular publisher as extracted"
-            " from the TransXChange file they provided.",
+            "The National Operator Codes for the particular publisher as extracted "
+            "from the TransXChange or NeTEx file they provided.",
         ),
         "service_code": Column(
             "Service Code",
@@ -67,7 +67,7 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
         "string_lines": Column(
             "Line Name",
             "The linename for the particular publisher as extracted from "
-            "the TransXChange file they provided.",
+            "the TransXChange or NeTEx file they provided.",
         ),
     }
 )
@@ -100,8 +100,8 @@ OVERALL_COLUMN_MAP = OrderedDict(
             "the publisher or their supplier",
         ),
         "filename": Column(
-            "XML File Name",
-            "The value of the FileName attribute in the TransXChange or NeTEx file.",
+            "TXC File Name",
+            "The value of the FileName attribute in the TransXChange file.",
         ),
         "name": Column(
             "Data Set/Feed Name",
@@ -119,8 +119,8 @@ OVERALL_COLUMN_MAP = OrderedDict(
         ),
         "national_operator_code": Column(
             "National Operator Code",
-            "The National Operator Codes for the particular publisher as extracted "
-            "from the TransXChange or NeTEx file they provided.",
+            "The National Operator Codes for the particular publisher as extracted"
+            " from the TransXChange file they provided.",
         ),
         "service_code": Column(
             "Service Code",
@@ -130,7 +130,7 @@ OVERALL_COLUMN_MAP = OrderedDict(
         "string_lines": Column(
             "Line Name",
             "The linename for the particular publisher as extracted from "
-            "the TransXChange or NeTEx file they provided.",
+            "the TransXChange file they provided.",
         ),
     }
 )
