@@ -413,7 +413,7 @@ def _get_fares_compliance_percentage(row: Series) -> str:
         or isna(row.compliant_fares_count)
         or not row.number_of_revisions_count
     ):
-        return str(percentage)
+        return f"{percentage * 100:.2f}%"
 
     percentage = row.compliant_fares_count / row.number_of_revisions_count
     return f"{percentage * 100:.2f}%"
@@ -494,7 +494,7 @@ def _get_fares_dataframe() -> DataFrame:
             right_on="organisation_id",
             how="outer",
         )
-        if merged is None:
+        if merged.empty:
             raise EmptyDataFrame()
         return merged
 
