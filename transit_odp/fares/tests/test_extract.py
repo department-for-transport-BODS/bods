@@ -18,6 +18,8 @@ SAMPLE_FILES = [
             "num_of_fare_products": 1,
             "num_of_sales_offer_packages": 1,
             "num_of_user_profiles": 4,
+            "num_of_pass_products": 0,
+            "num_of_trip_products": 0,
             "valid_from": parse_datetime_str("2020-06-22T13:51:43.044Z"),
             "valid_to": parse_datetime_str("2119-06-22T13:51:43.044Z"),
             "stop_point_refs": [
@@ -37,6 +39,21 @@ SAMPLE_FILES = [
                 "atco:3290YYA00100",
                 "atco:3290YYA00922",
             ],
+            "fares_data_catalogue": [
+                {
+                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample1.xml",
+                    "valid_from": "2020-01-01",
+                    "valid_to": "2022-12-31",
+                    "national_operator_code": ["HCTY", "ATOC", "NR"],
+                    "line_id": ["16"],
+                    "line_name": ["16"],
+                    "atco_area": ["329"],
+                    "tariff_basis": ["zoneToZone"],
+                    "product_type": None,
+                    "product_name": ["single Ticket - adult"],
+                    "user_type": ["adult"],
+                }
+            ],
         },
     ),
     (
@@ -48,6 +65,8 @@ SAMPLE_FILES = [
             "num_of_fare_products": 1,
             "num_of_sales_offer_packages": 1,
             "num_of_user_profiles": 4,
+            "num_of_pass_products": 0,
+            "num_of_trip_products": 0,
             "valid_from": parse_datetime_str("2020-04-15T18:23:45.412Z"),
             "valid_to": parse_datetime_str("2119-04-15T18:23:45.412Z"),
             "stop_point_refs": [
@@ -95,6 +114,21 @@ SAMPLE_FILES = [
                 "naptan:2590B0309",
                 "naptan:2590B2027",
             ],
+            "fares_data_catalogue": [
+                {
+                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample2.xml",
+                    "valid_from": "2020-01-01",
+                    "valid_to": "2022-12-31",
+                    "national_operator_code": ["BLAC", "ATOC", "NR"],
+                    "line_id": ["11"],
+                    "line_name": ["11"],
+                    "atco_area": ["250", "259"],
+                    "tariff_basis": ["zoneToZone"],
+                    "product_type": None,
+                    "product_name": ["Single Ticket"],
+                    "user_type": None,
+                }
+            ],
         },
     ),
 ]
@@ -107,6 +141,8 @@ EXPECTED_METADATA_ZIP = {
     "num_of_sales_offer_packages": 2,
     "num_of_fare_products": 2,
     "num_of_user_profiles": 8,
+    "num_of_pass_products": 0,
+    "num_of_trip_products": 0,
     "valid_from": datetime.datetime(2020, 4, 15, 18, 23, 45, 412000, tzinfo=tzutc()),
     "valid_to": datetime.datetime(2119, 6, 22, 13, 51, 43, 44000, tzinfo=tzutc()),
     "stop_point_refs": [
@@ -168,6 +204,34 @@ EXPECTED_METADATA_ZIP = {
         "naptan:2590B0302",
         "naptan:2590B0309",
         "naptan:2590B2027",
+    ],
+    "fares_data_catalogue": [
+        {
+            "xml_file_name": "sample1.xml",
+            "valid_from": "2020-01-01",
+            "valid_to": "2022-12-31",
+            "national_operator_code": ["HCTY", "ATOC", "NR"],
+            "line_id": ["16"],
+            "line_name": ["16"],
+            "atco_area": ["329"],
+            "tariff_basis": ["zoneToZone"],
+            "product_type": None,
+            "product_name": ["single Ticket - adult"],
+            "user_type": ["adult"],
+        },
+        {
+            "xml_file_name": "sample2.xml",
+            "valid_from": "2020-01-01",
+            "valid_to": "2022-12-31",
+            "national_operator_code": ["BLAC", "ATOC", "NR"],
+            "line_id": ["11"],
+            "line_name": ["11"],
+            "atco_area": ["250", "259"],
+            "tariff_basis": ["zoneToZone"],
+            "product_type": None,
+            "product_name": ["Single Ticket"],
+            "user_type": None,
+        },
     ],
 }
 

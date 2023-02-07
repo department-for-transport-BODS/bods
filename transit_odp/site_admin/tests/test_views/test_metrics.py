@@ -6,9 +6,13 @@ from django.contrib.auth import get_user_model
 from django.test import Client
 from django_hosts.resolvers import reverse, reverse_host
 from freezegun import freeze_time
+from waffle import flag_is_active
 
 from config.hosts import ADMIN_HOST
-from transit_odp.fares.factories import FaresMetadataFactory
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
+    FaresMetadataFactory,
+)
 from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
@@ -71,7 +75,7 @@ class TestOperationalMetricsFileView:
             service_code=service.registration_number.replace("/", ":"),
         )
         AVLDatasetRevisionFactory()
-        FaresMetadataFactory()
+
         LicenceFactory(number=service.licence.number)
         org = OrganisationFactory(short_name="TEST CSV")
         consumer = UserFactory()
@@ -80,23 +84,47 @@ class TestOperationalMetricsFileView:
             consumer=consumer, dataset=revision.dataset, organisation=org
         )
         FeedbackFactory()
-        task_create_operational_exports_archive()
-
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if is_fares_validator_active:
+            OrganisationFactory(nocs=["org11"])
+            fares_metadata_factory = FaresMetadataFactory()
+            DataCatalogueMetaDataFactory(
+                fares_metadata=fares_metadata_factory, national_operator_code=["org11"]
+            )
+            expected_files = [
+                "publishers.csv",
+                "consumers.csv",
+                "stats.csv",
+                "agents.csv",
+                "datasetpublishing.csv",
+                "feedback_report_operator_breakdown.csv",
+                "websiteFeedbackResponses.csv",
+                "2022-01-31-Service codes exempt from BODS reporting.csv",
+                "organisations_data_catalogue.csv",
+                "timetables_data_catalogue.csv",
+                "overall_data_catalogue.csv",
+                "location_data_catalogue.csv",
+                "fares_data_catalogue.csv",
+            ]
+        else:
+            FaresMetadataFactory()
+            expected_files = [
+                "publishers.csv",
+                "consumers.csv",
+                "stats.csv",
+                "agents.csv",
+                "datasetpublishing.csv",
+                "feedback_report_operator_breakdown.csv",
+                "websiteFeedbackResponses.csv",
+                "2022-01-31-Service codes exempt from BODS reporting.csv",
+                "organisations_data_catalogue.csv",
+                "timetables_data_catalogue.csv",
+                "overall_data_catalogue.csv",
+                "location_data_catalogue.csv",
+            ]
         expected_disposition = "attachment; filename=operationalexports.zip"
-        expected_files = [
-            "publishers.csv",
-            "consumers.csv",
-            "stats.csv",
-            "agents.csv",
-            "datasetpublishing.csv",
-            "feedback_report_operator_breakdown.csv",
-            "websiteFeedbackResponses.csv",
-            "2022-01-31-Service codes exempt from BODS reporting.csv",
-            "organisations_data_catalogue.csv",
-            "timetables_data_catalogue.csv",
-            "overall_data_catalogue.csv",
-            "location_data_catalogue.csv",
-        ]
+
+        task_create_operational_exports_archive()
 
         response = client.get(url)
         response_file = io.BytesIO(b"".join(response.streaming_content))

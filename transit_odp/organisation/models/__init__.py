@@ -5,6 +5,7 @@ from transit_odp.organisation.models.data import (
     DatasetMetadata,
     DatasetRevision,
     DatasetSubscription,
+    SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
 )
@@ -26,6 +27,7 @@ __all__ = [
     DatasetRevision,
     DatasetMetadata,
     DatasetSubscription,
+    SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
 ]

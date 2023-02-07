@@ -22,4 +22,15 @@
         <i class="fas fa-play govuk-!-margin-right-1"></i>
         <a class="review-stat__link" href={% url 'data-activity' pk1=pk1 host hosts.publish %}>{% trans 'More details' %}</a>
     </div>
+
+    <div class="review-stat">
+        <div>
+            <span class="review-stat__top">
+                {{ seasonal_services_counter }}
+            </span>
+        </div>
+        <p class="review-stat__description">{% trans 'Seasonal services' %}</p>
+        <i class="fas fa-play govuk-!-margin-right-1"></i>
+        <a class="review-stat__link" href={% url 'seasonal-service' pk1=pk1 host hosts.publish %}>{% trans 'Manage' %}</a>
+    </div>
 {% endblock %}

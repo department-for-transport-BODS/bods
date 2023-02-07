@@ -2,10 +2,12 @@ from collections import OrderedDict
 from datetime import datetime
 
 from django.db.models.expressions import F
-from pandas import DataFrame, NamedAgg, Series, isna
+from pandas import DataFrame, NamedAgg, Series, isna, merge
+from waffle import flag_is_active
 
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import FaresMetadata
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import Licence, Organisation, TXCFileAttributes
 from transit_odp.organisation.models.data import ServiceCodeExemption
@@ -53,6 +55,177 @@ ORG_FIELDS = [
     "number_of_licences",
 ]
 
+FEATURE_FLAG_ORG_COLUMN_MAP = OrderedDict(
+    {
+        "name": Column(
+            "Name", "The name of the operator/publisher providing data on BODS"
+        ),
+        "status": Column(
+            "Status",
+            "The registration status of the operator/publisher on BODS. 'Active' "
+            "are signed up on BODS, 'Inactive' no longer have functioning accounts "
+            "on BODS, 'Pending Invite' still haven't signed up and 'Not yet invited' "
+            "have been added to BODS but not yet invited to complete the full sign "
+            "up procedure",
+        ),
+        "invite_accepted": Column(
+            "Date Invite Accepted",
+            "The date at which the operator/publisher accepted their "
+            "invite and signed up",
+        ),
+        "created": Column(
+            "Organisation creation date",
+            "The date at which the Operator/publisher organisation are added to "
+            "BODS which may or may not be the same date as the invited date.",
+        ),
+        "invite_sent": Column(
+            "Date Invited",
+            "The date at which they were originally invited to sign up to BODS",
+        ),
+        "last_active": Column(
+            "Last Log-In",
+            "The last time there was activity for the operator/publisher on BODS.",
+        ),
+        "permit_holder": Column(
+            "Permit Holder",
+            "The permit status as declared by operator/publisher in the "
+            "Organisation profile section on BODS (Permit holder is 'Yes' "
+            "if the user clicks the tickbox of 'I don't have a PSV license "
+            "number')",
+        ),
+        "nocs_string": Column(
+            "National Operator Codes",
+            "The National Operator Codes of the operator/ publisher as declared by "
+            "them in the Organisation Profile section on BODS.",
+        ),
+        "licence_string": Column(
+            "Licence Numbers",
+            "The Licence number(s) of the operator/publisher as declared "
+            "by them in the Organisation Profile section on BODS.",
+        ),
+        "number_of_licences": Column(
+            "Number of Licences",
+            "The total count of services of the operator/publisher as declared by them "
+            "in the Organisation Profile section on BODS. This informs us "
+            "to understand the total number of licence numbers the organisation "
+            "is representing.",
+        ),
+        "unregistered_service_count": Column(
+            "Unregistered Services",
+            "The total number of unregistered services "
+            "(UZ declared in ServiceCode field) are published in total "
+            "by the operator/publisher to BODS.",
+        ),
+        "distinct_service_count": Column(
+            "OTC Registered Services",
+            "The total count of services of the operator/publisher as "
+            "extracted from the database of the Office of the Traffic "
+            "Commissioner (OTC). This informs us to understand the total "
+            "number of services expected to be published from the licences "
+            "associated in the organisational profile.",
+        ),
+        "exempted_services_count": Column(
+            "Out of scope services(exempted)",
+            "The total number of registered services that have been marked as "
+            "exempt from publishing to BODS by the DVSA/DfT admin user.",
+        ),
+        "services_registered_in_bods_count": Column(
+            "Registered Services in scope(for BODS)",
+            "The total number of in scope, registered services for the "
+            "organisation that require data in BODS",
+        ),
+        "published_registered_service_count": Column(
+            "Registered Services Published",
+            "The total number of registered services that an organisation "
+            "has published.",
+        ),
+        "compliant_service_count": Column(
+            "Compliant Registered Services Published",
+            "The total number of compliant, in scope, registered services "
+            "are published in total by the operator/publisher to BODS.",
+        ),
+        "compliant_service_ratio": Column(
+            "% Compliant Registered Services Published",
+            "The percentage of an organisation's in scope, "
+            "registered services that are PTI compliant.",
+        ),
+        "school_or_work_count": Column(
+            "Number of School or Works Services",
+            "The total count of school or works services of the operator/publisher as "
+            "extracted from the database of the Office of the Traffic Commissioner "
+            "(OTC). This informs us to understand the total number of services "
+            "expected to be published from the licences associated in the "
+            "organisational profile that are 'School or Works'.",
+        ),
+        "school_or_work_and_subsidies_count": Column(
+            "School or Works Services Subsidised",
+            "The total count of school or works services that are subsidised for the "
+            "operator/publisher as extracted from the database of the Office of the "
+            "Traffic Commissioner (OTC). This informs us to understand the total "
+            "number of services expected to be published from the licences "
+            "associated in the organisational profile that are 'School or Works' "
+            "and are fully subsidised (Yes).",
+        ),
+        "school_or_work_and_in_part_count": Column(
+            "School or Works Services Subsidised In Part",
+            "The total count of school or works services that are subsidised in "
+            "part for the operator/publisher as extracted from the database of "
+            "the Office of the Traffic Commissioner (OTC). This informs us to "
+            "understand the total number of services expected to be published "
+            "from the licences associated in the organisational profile that "
+            "are 'School or Works' and are in part subsidised (In Part).",
+        ),
+        "flexible_registration_count": Column(
+            "Flexible Registration",
+            "The total count of flexible services for the operator/publisher "
+            "as extracted from the database of the Office of the Traffic "
+            "Commissioner (OTC). This informs us to understand the total number "
+            "of services expected to be published from the licences associated "
+            "in the organisational profile that are 'Flexible' services, "
+            "so we can prepare organisations for this technical implementation.",
+        ),
+        "number_of_services_valid_operating_date": Column(
+            "Number of Published Services with Valid Operating Dates",
+            "The total number of services published on BODS that have a "
+            "valid operating period today.",
+        ),
+        "published_services_with_future_start_date": Column(
+            "Additional Published Services with Future Start Date",
+            "The total number of additional published services that have "
+            "future start dates on BODS. This informs us to understand the "
+            "additional number of new services codes that will become valid in "
+            "the future, which is just a difference to the total already "
+            "provided, to give an indicator to services that are published but "
+            "not valid now.",
+        ),
+        "published_timetable_count": Column(
+            "Number of Published Timetable Datasets",
+            "The total number of published timetables datasets provided "
+            "by the operator/publisher to BODS.",
+        ),
+        "published_avl_count": Column(
+            "Number of Published AVL Datafeeds",
+            "The total number of published location data feeds provided "
+            "by the operator/publisher to BODS.",
+        ),
+        "number_of_revisions_count": Column(
+            "Number of Published Fare Datasets",
+            "The total number of published fares datasets provided by the operator/publisher to BODS.",
+        ),
+        "compliant_fares_count": Column(
+            "% Compliant Published Fare Datasets",
+            "The percentage of an organisation's published fare datasets that are BODS compliant.",
+        ),
+        "num_of_pass_products_count": Column(
+            "Number of Pass Products",
+            "The total number of pass products as extracted from the files provided by the operator/publisher to BODS.",
+        ),
+        "num_of_trip_products_count": Column(
+            "Number of Trip Products",
+            "The total number of trip limited products as extracted from the files provided by the operator/publisher to BODS.",
+        ),
+    }
+)
 ORG_COLUMN_MAP = OrderedDict(
     {
         "name": Column(
@@ -233,6 +406,19 @@ def _get_compliance_percentage(row: Series) -> str:
     return f"{percentage * 100:.2f}%"
 
 
+def _get_fares_compliance_percentage(row: Series) -> str:
+    percentage = 0.0
+    if (
+        isna(row.number_of_revisions_count)
+        or isna(row.compliant_fares_count)
+        or not row.number_of_revisions_count
+    ):
+        return f"{percentage * 100:.2f}%"
+
+    percentage = row.compliant_fares_count / row.number_of_revisions_count
+    return f"{percentage * 100:.2f}%"
+
+
 def _get_services_registered_in_bods(row: Series) -> int:
     if row.distinct_service_count:
         if isna(row.exempted_services_count):
@@ -243,26 +429,74 @@ def _get_services_registered_in_bods(row: Series) -> int:
 
 
 def _get_fares_dataframe() -> DataFrame:
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+
     fares = FaresMetadata.objects.filter(
         revision__dataset__live_revision=F("revision_id"), revision__status="live"
     ).annotate(organisation_id=F("revision__dataset__organisation_id"))
-    columns = ("revision_id", "organisation_id", "num_of_fare_products")
-    df = DataFrame.from_records(fares.values(*columns))
-    df = df.groupby("organisation_id").agg(
-        {"revision_id": ["count"], "num_of_fare_products": ["sum"]}
-    )
-    if df is not None:
-        df = df.droplevel(axis=1, level=0)
-        df = df.rename(
-            columns={
-                "count": "published_fares_count",
-                "sum": "total_fare_products",
+
+    if not is_fares_validator_active:
+        columns = ("revision_id", "organisation_id", "num_of_fare_products")
+        df = DataFrame.from_records(fares.values(*columns))
+        df = df.groupby("organisation_id").agg(
+            {"revision_id": ["count"], "num_of_fare_products": ["sum"]}
+        )
+        if df is not None:
+            df = df.droplevel(axis=1, level=0)
+            df = df.rename(
+                columns={
+                    "count": "published_fares_count",
+                    "sum": "total_fare_products",
+                }
+            )
+        else:
+            raise EmptyDataFrame()
+
+        return df
+    else:
+        columns = (
+            "revision_id",
+            "organisation_id",
+            "num_of_pass_products",
+            "num_of_trip_products",
+        )
+        fares_df = DataFrame.from_records(fares.values(*columns))
+
+        fares_columns = ("organisation_id", "revision_id", "count")
+        compliance = FaresValidationResult.objects.filter(
+            revision__dataset__live_revision=F("revision_id"), revision__status="live"
+        )
+
+        compliance_status_df = DataFrame.from_records(compliance.values(*fares_columns))
+        compliance_status_df.query("count == 0", inplace=True)
+        compliance_count_df = compliance_status_df.groupby(
+            ["organisation_id"], as_index=False
+        )["count"].count()
+        compliance_count_df.columns = ["organisation_id", "compliant_fares_count"]
+
+        fares_count_df = fares_df.groupby("organisation_id").agg(
+            {
+                "revision_id": ["count"],
+                "num_of_pass_products": ["count"],
+                "num_of_trip_products": ["count"],
             }
         )
-    else:
-        raise EmptyDataFrame()
+        fares_count_df.columns = [
+            "number_of_revisions_count",
+            "num_of_pass_products_count",
+            "num_of_trip_products_count",
+        ]
 
-    return df
+        merged = merge(
+            fares_count_df,
+            compliance_count_df,
+            left_on="organisation_id",
+            right_on="organisation_id",
+            how="outer",
+        )
+        if merged.empty:
+            raise EmptyDataFrame()
+        return merged
 
 
 def _is_valid_operating_date(row: Series) -> bool:
@@ -390,17 +624,31 @@ def _get_organisation_details_dataframe() -> DataFrame:
 
 
 def _prepare_calculated_columns(df: DataFrame) -> None:
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+
     df["services_registered_in_bods_count"] = df.apply(
         lambda x: _get_services_registered_in_bods(x), axis=1
     )
     df["compliant_service_ratio"] = df.apply(
         lambda x: _get_compliance_percentage(x), axis=1
     )
+    if is_fares_validator_active:
+        df["compliant_fares_count"] = df.apply(
+            lambda x: _get_fares_compliance_percentage(x), axis=1
+        )
 
 
 def _populate_nan_with_zeros(df: DataFrame):
     pti_columns = ["compliant_service_count", "compliant_service_ratio"]
-    fares_columns = ["published_fares_count", "total_fare_products"]
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+    if is_fares_validator_active:
+        fares_columns = [
+            "num_of_pass_products_count",
+            "num_of_trip_products_count",
+            "compliant_fares_count",
+        ]
+    else:
+        fares_columns = ["published_fares_count", "total_fare_products"]
     # we don't need to fill 'number' in OTC_LICENCE_FIELDS
     otc_columns = OTC_LICENCE_FIELDS[1:] + OTC_SERVICES_FIELDS
     services_columns = ["services_registered_in_bods_count", "exempted_services_count"]
@@ -436,11 +684,20 @@ def _get_organisation_catalogue_dataframe() -> DataFrame:
 
     drop_columns = ["id"]
     orgs.drop(columns=drop_columns, inplace=True)
-    rename_map = {
-        old_name: column_tuple.field_name
-        for old_name, column_tuple in ORG_COLUMN_MAP.items()
-    }
-    orgs = orgs[ORG_COLUMN_MAP.keys()].rename(columns=rename_map)
+
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+    if is_fares_validator_active:
+        rename_map = {
+            old_name: column_tuple.field_name
+            for old_name, column_tuple in FEATURE_FLAG_ORG_COLUMN_MAP.items()
+        }
+        orgs = orgs[FEATURE_FLAG_ORG_COLUMN_MAP.keys()].rename(columns=rename_map)
+    else:
+        rename_map = {
+            old_name: column_tuple.field_name
+            for old_name, column_tuple in ORG_COLUMN_MAP.items()
+        }
+        orgs = orgs[ORG_COLUMN_MAP.keys()].rename(columns=rename_map)
     return orgs
 
 
