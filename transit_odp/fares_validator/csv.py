@@ -125,8 +125,12 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
     )
     if fares_df.empty:
         raise EmptyDataFrame()
+
     nocs = fares_df["national_operator_code"].tolist()
-    nocs_df = pd.DataFrame.from_records(OperatorCode.objects.get_nocs().values())
+
+    NOC_COLUMNS = ("organisation_id", "noc")
+    nocs_data = OperatorCode.objects.values_list().order_by("id")
+    nocs_df = pd.DataFrame.from_records(nocs_data.values(*NOC_COLUMNS))
 
     if nocs_df.empty:
         raise EmptyDataFrame()
