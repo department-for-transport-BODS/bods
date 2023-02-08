@@ -45,6 +45,16 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
                 "fares_metadata_id__revision__dataset__organisation__name"
             )
         )
+    
+    def add_dataset_id(self):
+        """
+        Add organisation dataset id to the result
+        """
+        return self.annotate(
+            org_dataset_id=F(
+                "fares_metadata_id__revision__dataset__id"
+            )
+        )
 
     def add_compliance_status(self):
         """
@@ -79,6 +89,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_string_product_name()
             .add_string_user_type()
             .add_organisation_name()
+            .add_dataset_id()
             .add_compliance_status()
         )
 

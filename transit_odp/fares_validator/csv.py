@@ -8,7 +8,7 @@ from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models.organisations import OperatorCode
 
 METADATA_COLUMNS = (
-    "fares_metadata_id",
+    "org_dataset_id",
     "xml_file_name",
     "valid_from",
     "valid_to",
@@ -29,7 +29,7 @@ METADATA_COLUMNS = (
 
 FARES_DATA_COLUMN_MAP = OrderedDict(
     {
-        "fares_metadata_id": Column(
+        "org_dataset_id": Column(
             "Dataset ID",
             "The internal BODS generated ID of the "
             "operator/publisher providing data on BODS.",
