@@ -59,6 +59,9 @@ class DateDiv(Div):
 class LicenceNumberForm(GOVUKModelForm):
     form_tag = False
     form_error_title = DEFAULT_ERROR_SUMMARY
+    subheading = _(
+        "Select the PSV licence number to add seasonal service operating dates."
+    )
 
     class Meta:
         model = SeasonalService
