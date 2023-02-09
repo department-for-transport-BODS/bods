@@ -5,6 +5,7 @@ from typing import Set, Tuple, Union
 from django.db import transaction
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
+from transit_odp.otc.client.otc_client import EmptyResponseException
 from transit_odp.otc.models import Licence, Operator, Service
 from transit_odp.otc.registry import Registry
 
@@ -168,13 +169,16 @@ class Loader:
             logger.error("Cant find last modified date in database, giving up")
             raise LoadFailedException("Cannot calculate last run date of task")
 
-        with transaction.atomic():
-            self.registry.get_variations_since(most_recently_modified.last_modified)
-            self.load_licences()
-            self.load_operators()
-            self.load_services()
-            self.update_services_and_operators()
-            self.delete_bad_data()
+        try:
+            with transaction.atomic():
+                self.registry.get_variations_since(most_recently_modified.last_modified)
+                self.load_licences()
+                self.load_operators()
+                self.load_services()
+                self.update_services_and_operators()
+                self.delete_bad_data()
+        except EmptyResponseException:
+            pass
 
     def _delete_all_otc_data(self) -> None:
         logger.info("Clearing OTC tables")

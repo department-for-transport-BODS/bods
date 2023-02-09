@@ -25,7 +25,7 @@ class EmptyResponseException(Exception):
     pass
 
 
-retry_exceptions = (RequestException, EmptyResponseException)
+retry_exceptions = RequestException
 
 
 class Page(BaseModel):
