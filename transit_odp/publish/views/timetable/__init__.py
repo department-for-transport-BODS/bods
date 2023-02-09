@@ -21,9 +21,10 @@ from transit_odp.publish.views.timetable.requires_attention import (
     ServiceCodeView,
 )
 from transit_odp.publish.views.timetable.seasonal_services import (
-    SeasonalServiceEditDateView,
-    SeasonalServiceView,
-    SeasonalServiceWizardAddNewView,
+    DeleteView,
+    EditDateView,
+    ListHomeView,
+    WizardAddNewView,
 )
 from transit_odp.publish.views.timetable.update import (
     DatasetUpdateModify,
@@ -51,7 +52,8 @@ __all__ = [
     "RevisionUpdateSuccessView",
     "RequiresAttentionView",
     "ServiceCodeView",
-    "SeasonalServiceView",
-    "SeasonalServiceWizardAddNewView",
-    "SeasonalServiceEditDateView",
+    "ListHomeView",
+    "WizardAddNewView",
+    "EditDateView",
+    "DeleteView",
 ]

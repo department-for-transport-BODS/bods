@@ -14,11 +14,13 @@ from config.hosts import PUBLISH_HOST
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
 from transit_odp.organisation.models import Licence, SeasonalService
 from transit_odp.publish.forms.constants import CONTINUE_BUTTON, SAVE_BUTTON, SEPARATOR
+from transit_odp.timetables.tables import get_table_page
 
 
-def cancel_seasonal_service(org_id):
+def cancel_seasonal_service(org_id: int, page: str) -> LinkButton:
     return LinkButton(
-        reverse("seasonal-service", kwargs={"pk1": org_id}, host=PUBLISH_HOST),
+        reverse("seasonal-service", kwargs={"pk1": org_id}, host=PUBLISH_HOST)
+        + get_table_page(page),
         content="Cancel",
     )
 
@@ -54,7 +56,7 @@ class DateDiv(Div):
         return super().render(form, form_style, context, **kwargs)
 
 
-class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
+class LicenceNumberForm(GOVUKModelForm):
     form_tag = False
     form_error_title = DEFAULT_ERROR_SUMMARY
 
@@ -64,6 +66,7 @@ class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
 
     def __init__(self, *args, **kwargs):
         self.org_id = kwargs.pop("org_id", None)
+        self.page = kwargs.pop("page", None)
         super().__init__(*args, **kwargs)
         self.fields.update(
             {
@@ -85,21 +88,16 @@ class SeasonalServiceLicenceNumberForm(GOVUKModelForm):
             SEPARATOR,
             ButtonHolder(
                 CONTINUE_BUTTON,
-                cancel_seasonal_service(self.org_id),
+                cancel_seasonal_service(self.org_id, self.page),
                 css_class="buttons",
             ),
         )
 
 
-class SeasonalServiceEditDateForm(GOVUKModelForm):
+class BaseForm(GOVUKModelForm):
     form_tag = False
     form_error_title = DEFAULT_ERROR_SUMMARY
 
-    registration_code = forms.IntegerField(
-        required=True,
-        label=_("Service code"),
-        error_messages={"required": _("Enter a service code in the box below")},
-    )
     start = forms.DateTimeField(
         required=True,
         label=_("Service begins on"),
@@ -121,11 +119,35 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
 
     class Meta:
         model = SeasonalService
+        fields = ("start", "end")
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        start = cleaned_data.get("start")
+        end = cleaned_data.get("end")
+        if start is None or end is None:
+            return cleaned_data
+
+        if start > end:
+            raise ValidationError("Start date must be earlier than end date")
+        return cleaned_data
+
+
+class EditRegistrationCodeDateForm(BaseForm):
+    registration_code = forms.IntegerField(
+        required=True,
+        label=_("Service code"),
+        error_messages={"required": _("Enter a service code in the box below")},
+    )
+
+    class Meta:
+        model = SeasonalService
         fields = ("registration_code", "start", "end")
 
     def __init__(self, *args, **kwargs):
         self.licence = kwargs.pop("licence", None)
-        self.org_id = kwargs.pop("org_id")
+        self.org_id = kwargs.pop("org_id", None)
+        self.page = kwargs.pop("page", None)
         super().__init__(*args, **kwargs)
 
     def get_layout(self):
@@ -164,7 +186,7 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
             SEPARATOR,
             ButtonHolder(
                 SAVE_BUTTON,
-                cancel_seasonal_service(self.org_id),
+                cancel_seasonal_service(self.org_id, self.page),
                 css_class="buttons",
             ),
         )
@@ -180,13 +202,53 @@ class SeasonalServiceEditDateForm(GOVUKModelForm):
             )
         return registration_code
 
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        start = cleaned_data.get("start")
-        end = cleaned_data.get("end")
-        if start is None or end is None:
-            return cleaned_data
 
-        if start > end:
-            raise ValidationError("Start date must be earlier than end date")
-        return cleaned_data
+class EditDateForm(BaseForm):
+    def __init__(self, *args, **kwargs):
+        self.org_id = kwargs.pop("org_id", None)
+        self.page = kwargs.pop("page", None)
+        super().__init__(*args, **kwargs)
+
+    def get_layout(self):
+        help_modal = render_to_string(
+            "publish/snippets/help_modals/seasonal_services.html"
+        )
+        edit_snippet = render_to_string(
+            "publish/seasonal_services/edit_page_service_code_snippet.html",
+            context={"form": self},
+        )
+
+        return Layout(
+            HTML(edit_snippet),
+            HTML(
+                format_html(
+                    '<h2 class="govuk-heading-s">Service operating dates {}</h2>',
+                    help_modal,
+                ),
+            ),
+            DateDiv(
+                FieldNoErrors("start", wrapper_class="date"),
+                FieldNoErrors("end", wrapper_class="date"),
+                css_class="date-container",
+            ),
+            SEPARATOR,
+            ButtonHolder(
+                SAVE_BUTTON,
+                cancel_seasonal_service(self.org_id, self.page),
+                css_class="buttons",
+            ),
+        )
+
+
+class DeleteForm(forms.Form):
+    id = forms.IntegerField(required=True)
+
+    def __init__(self, *args, org_id=None, **kwargs):
+        self.org_id = org_id
+        super().__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        id_ = self.cleaned_data.get("id")
+        return SeasonalService.objects.filter(
+            licence__organisation__id=self.org_id, id=id_
+        ).delete()
