@@ -56,7 +56,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         with other added properties
         """
         return (
-             self.add_revision_and_dataset()
+            self.add_revision_and_dataset()
             .get_live_revision_data()
             .add_published_date()
             .add_operator_id()
