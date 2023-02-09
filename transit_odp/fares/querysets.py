@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import BooleanField, Case, CharField, F, Func, Q, Value, When
 
-from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.querysets import DatasetQuerySet
 
 
@@ -10,16 +9,6 @@ class FaresDatasetQuerySet(DatasetQuerySet):
 
 
 class FaresNetexFileAttributesQuerySet(models.QuerySet):
-    def get_active_published_files(self):
-        """
-        Filter for revisions that are published and active
-        """
-        qs = self.filter(
-            Q(fares_metadata_id__revision__is_published=True)
-            & Q(fares_metadata_id__revision__status=FeedStatus.live.value)
-        ).order_by("fares_metadata_id")
-        return qs
-
     def add_published_date(self):
         """
         Add date published to BODS as published date
@@ -67,7 +56,8 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
         with other added properties
         """
         return (
-            self.get_active_published_files()
+            self.add_revision_and_dataset()
+            .get_live_revision_data()
             .add_published_date()
             .add_operator_id()
             .add_string_nocs()
