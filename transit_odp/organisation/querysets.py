@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import TypeVar
 
 import pytz
@@ -11,6 +11,7 @@ from django.db.models import (
     Case,
     CharField,
     Count,
+    DateField,
     ExpressionWrapper,
     F,
     FloatField,
@@ -1152,6 +1153,118 @@ class TXCFileAttributesQuerySet(models.QuerySet):
     def filter_by_noc_and_line_name(self, noc, line_name):
         return self.filter(national_operator_code=noc, line_names__contains=[line_name])
 
+    def add_effective_stale_date_otc_effective_date(self):
+        """Adds the OTC Effective Date from OTCService and the
+        Effective Stale Date: OTC Effective Date - 42 days."""
+        from transit_odp.otc.models import Service as OTCService
+
+        otc_service_query = (
+            OTCService.objects.add_service_code()
+            .filter(service_code=OuterRef("service_code"))
+            .values_list("effective_date")
+        )
+        return self.annotate(
+            otc_effective_date=Subquery(otc_service_query),
+            effective_stale_date_otc_effective_date=ExpressionWrapper(
+                F("otc_effective_date") - timedelta(days=42),
+                output_field=DateField(),
+            ),
+        )
+
+    def add_effective_stale_date_last_modified_date(self):
+        """Adds the Effective Stale Date: Last Modified Date of file + 1 year."""
+        return self.annotate(
+            effective_stale_date_last_modified_date=ExpressionWrapper(
+                F("modification_datetime") + timedelta(days=365),
+                output_field=DateField(),
+            )
+        )
+
+    def add_effective_stale_date_end_date(self):
+        """Adds the Effective Stale Date: Operating Period End Date - 42 days."""
+        return self.annotate(
+            effective_stale_date_end_date=ExpressionWrapper(
+                F("operating_period_end_date") - timedelta(days=42),
+                output_field=DateField(),
+            )
+        )
+
+    def add_staleness_dates(self):
+        """Adds all Effective Stale dates for live revisions."""
+        return (
+            self.get_active_live_revisions()
+            .add_effective_stale_date_last_modified_date()
+            .add_effective_stale_date_end_date()
+            .add_effective_stale_date_otc_effective_date()
+        )
+
+    def add_staleness_status(self):
+        """
+        Adds the Staleness status to the TXCFileAttributes based on the following:
+
+        Staleness Status - Not Stale:
+            Default status for service codes published to BODS
+
+        Staleness Status - Stale - OTC Variation:
+            If last_modified_date < OTC Effective start date
+            AND
+            Today >= effective_stale_date_end_date
+
+        Staleness Status - Stale - End Date Passed:
+            If effective_stale_date_end_date (if present) >
+                effective_stale_date_last_modified_date
+            AND
+            Today >= effective_stale_date_end_date
+            AND
+            last_modified_date > OTC Effective start date
+
+        Staleness Status - Stale - 12 months old:
+            If effective_stale_date_last_modified_date >
+                effective_stale_date_end_date (if present)
+            AND
+            Today >= effective_stale_date_last_modified_date
+            AND
+            last_modified_date > OTC Effective start date
+        """
+        qs = self.add_staleness_dates()
+
+        today = datetime.today()
+        last_modified_date = F("modification_datetime")
+        effective_stale_date_last_modified_date = F(
+            "effective_stale_date_last_modified_date"
+        )
+
+        staleness_otc = Q(otc_effective_date__gt=last_modified_date) & Q(
+            effective_stale_date_otc_effective_date__lte=today
+        )
+        staleness_end_date = (
+            Q(effective_stale_date_end_date__gt=effective_stale_date_last_modified_date)
+            & Q(effective_stale_date_end_date__lte=today)
+            & Q(otc_effective_date__lt=last_modified_date)
+        )
+
+        staleness_12_months_old = Q(
+            effective_stale_date_last_modified_date__lte=today
+        ) & Q(otc_effective_date__lt=last_modified_date)
+
+        return qs.annotate(
+            staleness_status=Case(
+                When(
+                    staleness_otc,
+                    then=Value("Stale - OTC Variation", output_field=CharField()),
+                ),
+                When(
+                    staleness_end_date,
+                    then=Value("Stale - End Date Passed", output_field=CharField()),
+                ),
+                When(
+                    staleness_12_months_old,
+                    then=Value("Stale - 12 Months Old", output_field=CharField()),
+                ),
+                default=Value("Not Stale", output_field=CharField()),
+            )
+        )
+
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
     def add_feedback_type(self):
@@ -1279,6 +1392,23 @@ class SeasonalServiceQuerySet(models.QuerySet):
                 output_field=CharField(),
             )
         )
+
+    def add_seasonal_status(self) -> TSeasonalServiceQuerySet:
+        """Adds whether or not a seasonal service is in season."""
+        today = date.today()
+        return self.annotate(
+            seasonal_status=Case(
+                When(
+                    Q(start__lte=today) & Q(end__gte=today),
+                    then=Value(True, output_field=BooleanField()),
+                ),
+                default=Value(False, output_field=BooleanField()),
+            )
+        )
+
+    def add_data_annotations(self):
+        """Add all data annotations for Seasonal Service queryset."""
+        return self.add_seasonal_status().add_registration_number()
 
     def get_count_in_organisation(self, org_id: int) -> int:
         """The number of Seasonal services per organisation."""

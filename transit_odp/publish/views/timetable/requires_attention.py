@@ -24,16 +24,16 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
         context["ancestor"] = f"Review {data_owner} Timetables Data"
         context[
-            "num_missing_services"
-        ] = OTCService.objects.get_missing_from_organisation(org_id).count()
+            "services_requiring_attention"
+        ] = OTCService.objects.get_services_requiring_attention(org_id).count()
 
-        context["not_empty"] = self.object_list.count()
+        context["not_empty"] = context["services_requiring_attention"]
         context["q"] = self.request.GET.get("q", "").strip()
         return context
 
     def get_queryset(self):
         org_id = self.kwargs["pk1"]
-        qs = OTCService.objects.get_missing_from_organisation(org_id)
+        qs = OTCService.objects.get_services_requiring_attention(org_id)
 
         keywords = self.request.GET.get("q", "").strip()
         if keywords:

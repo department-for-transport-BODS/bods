@@ -2,7 +2,7 @@ import csv
 import io
 import math
 import zipfile
-from datetime import timedelta
+from datetime import date, timedelta
 
 import factory
 import pytest
@@ -1606,20 +1606,33 @@ def test_require_attention_empty_search_box(
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[0]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
     )
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[1]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
         revision=dataset2.revisions.last(), service_code=all_service_codes[2]
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
-    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
-        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
 
     publish_client.force_login(user=user)
     url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
@@ -1649,20 +1662,33 @@ def test_require_attention_field_in_search_box(
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[0]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
     )
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[1]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
         revision=dataset2.revisions.last(), service_code=all_service_codes[2]
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
-    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
-        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
 
     publish_client.force_login(user=user)
     url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
@@ -1670,3 +1696,389 @@ def test_require_attention_field_in_search_box(
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 1
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_seasonal_services(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+    today = now().date()
+    month = now().date() + timedelta(weeks=4)
+    two_months = now().date() + timedelta(weeks=8)
+
+    total_services = 5
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[1],
+    )
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[2][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[3][-1:]),
+    )
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 3
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_stale_otc_effective_date(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup two TXCFileAttributes that will be marked as 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be marked as 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() + timedelta(days=50),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_stale_end_date(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup a TXCFileAttributes that will be marked as 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be marked as 'Stale - End Date Passed'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() - timedelta(days=1),
+        modification_datetime=date.today() - timedelta(weeks=100),
+    )
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_stale_last_modified_date(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup two TXCFileAttributes that will be marked as 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be marked as 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=date.today() - timedelta(weeks=100),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_all_variations(
+    pathname, pathargs, pathkwargs, publish_client
+):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+    today = now().date()
+    month = now().date() + timedelta(weeks=4)
+    two_months = now().date() + timedelta(weeks=8)
+
+    total_services = 9
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup two TXCFileAttributes that will be marked as 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=date.today(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be marked as 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=date.today() - timedelta(weeks=100),
+    )
+
+    # Setup a TXCFileAttributes that will be marked as 'Stale - End Date Passed'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[4],
+        operating_period_end_date=date.today() - timedelta(days=1),
+        modification_datetime=date.today() - timedelta(weeks=100),
+    )
+
+    # Setup a TXCFileAttributes that will be marked as 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[5],
+        operating_period_end_date=date.today() + timedelta(days=50),
+    )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[6][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[7][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 6
+
+
+@pytest.mark.parametrize(
+    "pathname,pathargs,pathkwargs",
+    [
+        ("requires-attention", [], {"pk1": 1}),
+    ],
+)
+def test_require_attention_big_datasets(pathname, pathargs, pathkwargs, publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 1000
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=code,
+            operating_period_end_date=date.today() + timedelta(days=50),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5

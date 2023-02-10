@@ -24,8 +24,8 @@ class ListView(BasePublishListView):
             org_id
         ).count()
         context[
-            "missing_service_codes"
-        ] = OTCService.objects.get_missing_from_organisation(org_id).count()
+            "services_requiring_attention"
+        ] = OTCService.objects.get_services_requiring_attention(org_id).count()
         context[
             "seasonal_services_counter"
         ] = SeasonalService.objects.get_count_in_organisation(org_id)
