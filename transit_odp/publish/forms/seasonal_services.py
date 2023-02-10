@@ -4,8 +4,10 @@ from crispy_forms_govuk.layout import LinkButton
 from crispy_forms_govuk.layout.fields import Field
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.forms import NumberInput
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
@@ -98,7 +100,7 @@ class BaseForm(GOVUKModelForm):
     form_tag = False
     form_error_title = DEFAULT_ERROR_SUMMARY
 
-    start = forms.DateTimeField(
+    start = forms.DateField(
         required=True,
         label=_("Service begins on"),
         error_messages={
@@ -107,7 +109,7 @@ class BaseForm(GOVUKModelForm):
         },
         widget=NumberInput(attrs={"type": "date"}),
     )
-    end = forms.DateTimeField(
+    end = forms.DateField(
         required=True,
         label=_("Service ends on"),
         error_messages={
@@ -115,6 +117,12 @@ class BaseForm(GOVUKModelForm):
             "required": _("This date is required"),
         },
         widget=NumberInput(attrs={"type": "date"}),
+        validators=(
+            MinValueValidator(
+                limit_value=lambda: timezone.now().date(),
+                message=("End date cannot be in the past"),
+            ),
+        ),
     )
 
     class Meta:
