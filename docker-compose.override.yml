@@ -11,8 +11,8 @@ services:
       context: .
       dockerfile: ./docker/local/django/Dockerfile
       args:
-        - UID=$${UID}
-        - GID=$${GID}
+        - UID=${UID}
+        - GID=${GID}
     command: /start
     depends_on:
       - mailhog

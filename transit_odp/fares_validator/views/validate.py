@@ -7,7 +7,6 @@ from rest_framework.parsers import FileUploadParser
 from ..models import FaresValidation, FaresValidationResult
 from ..serializers import FaresSerializer
 from . import fares_validation
-from transit_odp.organisation.csv.organisation import get_organisation_catalogue_csv
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,6 @@ class FaresXmlValidator:
         self.file = request
         self.pk1 = pk1
         self.pk2 = pk2
-        get_organisation_catalogue_csv()
 
     def get_errors(self):
         validations = FaresValidation.objects.filter(

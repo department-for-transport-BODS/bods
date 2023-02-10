@@ -51,5 +51,3 @@ services:
     volumes:
       - clamav_store:/var/lib/clamav
       - ./docker/local/clamav/clamd.conf:/etc/clamav/clamd.conf
-volumes:
-  clam:
