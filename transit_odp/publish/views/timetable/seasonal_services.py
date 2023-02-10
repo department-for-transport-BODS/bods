@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django_hosts import reverse
 from django_tables2 import SingleTableView
+from django_tables2.paginators import Paginator
 from formtools.wizard.views import SessionWizardView
 
 import config.hosts
@@ -177,12 +178,18 @@ class DeleteView(OrgUserViewMixin, FormView):
         return kwargs
 
     def get_success_url(self):
+        org_id = self.kwargs["pk1"]
         page = self.request.GET.get("page", None)
+        seasonal_services = SeasonalService.objects.filter(
+            licence__organisation__id=org_id
+        ).order_by("end")
+        paginator = Paginator(seasonal_services, DATASET_MANAGE_TABLE_PAGINATE_BY)
+        page_obj = paginator.get_page(page)
         return reverse(
             "seasonal-service",
-            kwargs={"pk1": self.kwargs["pk1"]},
+            kwargs={"pk1": org_id},
             host=config.hosts.PUBLISH_HOST,
-        ) + get_table_page(page)
+        ) + get_table_page(str(page_obj.number))
 
     def form_valid(self, form):
         form.save()

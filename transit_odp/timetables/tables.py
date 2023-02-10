@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Optional
 
 import django_tables2 as tables
 from django.conf import settings
@@ -15,8 +16,8 @@ from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.publish.tables import DatasetRevisionTable
 
 
-def get_table_page(page: str) -> str:
-    return f"?page={page}&" if page and page > "1" else "?page=&"
+def get_table_page(page: Optional[str]) -> str:
+    return f"?page={page}&" if page else "?page=&"
 
 
 class TimetableChangelogTable(DatasetRevisionTable):
