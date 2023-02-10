@@ -105,7 +105,15 @@ class SeasonalServiceTable(GovUkTable):
     service_ends = tables.DateTimeColumn(
         verbose_name="Service ends", accessor="end", format="d/m/Y"
     )
-    actions = tables.Column(empty_values=())
+    actions = tables.Column(
+        empty_values=(),
+        orderable=False,
+        attrs={
+            "th": {
+                "class": "actions-column-table govuk-table__header",
+            },
+        },
+    )
 
     def render_actions(self, record):
         return format_html(
