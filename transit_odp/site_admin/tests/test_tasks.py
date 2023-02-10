@@ -12,7 +12,13 @@ from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.feedback.models import Feedback
 from transit_odp.organisation.constants import AVLType
-from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
+from transit_odp.organisation.factories import DatasetFactory
+from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
+from transit_odp.organisation.factories import (
+    OrganisationFactory,
+    SeasonalServiceFactory,
+)
+from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.site_admin.factories import (
     APIRequestFactory,
     ResourceRequestCounterFactory,
@@ -28,6 +34,7 @@ from transit_odp.site_admin.tasks import (
     MIN_DAYS_WEEKLY_PPC_REPORT,
     task_backfill_metrics_archive,
     task_delete_unwanted_data,
+    task_seasonal_service_updated_dates,
 )
 
 pytestmark = pytest.mark.django_db
@@ -306,3 +313,50 @@ def test_delete_ppc_weekly_report():
         ).count()
         == 3
     )
+
+
+@freeze_time("2023-01-31")
+def test_seasonal_service_updated_dates():
+    organisation = OrganisationFactory()
+    licence = BODSLicenceFactory(organisation=organisation)
+    today = datetime.today()
+
+    SeasonalServiceFactory(
+        licence=licence,
+        start=datetime(2022, 12, 1, tzinfo=pytz.utc),
+        end=datetime(2022, 12, 31, tzinfo=pytz.utc),
+    )
+    SeasonalServiceFactory(
+        licence=licence,
+        start=datetime(2023, 1, 1, tzinfo=pytz.utc),
+        end=datetime(2023, 1, 2, tzinfo=pytz.utc),
+    )
+
+    SeasonalServiceFactory(
+        licence=licence,
+        start=datetime(2023, 1, 20, tzinfo=pytz.utc),
+        end=datetime(2023, 2, 1, tzinfo=pytz.utc),
+    )
+    SeasonalServiceFactory(
+        licence=licence,
+        start=datetime(2023, 1, 31, tzinfo=pytz.utc),
+        end=datetime(2023, 2, 10, tzinfo=pytz.utc),
+    )
+
+    SeasonalServiceFactory(
+        licence=licence,
+        start=datetime(2023, 2, 1, tzinfo=pytz.utc),
+        end=datetime(2023, 2, 15, tzinfo=pytz.utc),
+    )
+    SeasonalServiceFactory(
+        licence=licence,
+        start=datetime(2023, 2, 20, tzinfo=pytz.utc),
+        end=datetime(2023, 3, 15, tzinfo=pytz.utc),
+    )
+
+    assert SeasonalService.objects.all().count() == 6
+    assert SeasonalService.objects.filter(end__gt=today).count() == 4
+
+    task_seasonal_service_updated_dates()
+
+    assert SeasonalService.objects.filter(end__gt=today).count() == 6
