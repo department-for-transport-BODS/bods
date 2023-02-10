@@ -1,3 +1,4 @@
+import datetime
 from collections import OrderedDict
 from typing import Optional
 
@@ -7,8 +8,11 @@ import pandas as pd
 from transit_odp.common.collections import Column
 from transit_odp.common.utils import round_down
 from transit_odp.organisation.csv import EmptyDataFrame
-from transit_odp.organisation.models import TXCFileAttributes
-from transit_odp.organisation.models.data import ServiceCodeExemption
+from transit_odp.organisation.models import (
+    SeasonalService,
+    ServiceCodeExemption,
+    TXCFileAttributes,
+)
 from transit_odp.otc.models import Service as OTCService
 
 TXC_COLUMNS = (
@@ -51,6 +55,8 @@ OTC_COLUMNS = (
     "service_type_other_details",
 )
 
+SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
+
 TIMETABLE_COLUMN_MAP = OrderedDict(
     {
         "published_status": Column(
@@ -66,6 +72,18 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "Default status for published or unpublished services to BODS. "
             "Assumed in scope unless marked as exempt in the service code "
             "exemption flow",
+        ),
+        "seasonal_status": Column(
+            "Seasonal Status",
+            "In season: Service code has been marked with a date range within "
+            "the seasonal services flow and the date from which the file is "
+            "created falls within the date range for that service code. "
+            "Out of Season: Service code has been marked with a date range "
+            "within the seasonal services flow and the date from which the "
+            "file is created falls outside the date range for that service "
+            "code. "
+            "Not Seasonal: Service code has not been marked with a date range "
+            "within the seasonal services flow.",
         ),
         "organisation_name": Column(
             "Organisation Name",
@@ -248,9 +266,40 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
     df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
     df["scope_status"] = np.where(
-        registration_number_exempted, "Out of scope", "In scope"
+        registration_number_exempted, "Out of Scope", "In Scope"
     )
     return df
+
+
+def add_seasonal_status(df: pd.DataFrame) -> pd.DataFrame:
+    seasonal_services_df = pd.DataFrame.from_records(
+        SeasonalService.objects.add_registration_number().values(
+            *SEASONAL_SERVICE_COLUMNS
+        )
+    )
+    if seasonal_services_df.empty:
+        df["seasonal_status"] = "Not Seasonal"
+        return df
+
+    seasonal_services_df.rename(
+        columns={"start": "seasonal_start", "end": "seasonal_end"}, inplace=True
+    )
+    annotated_df = pd.merge(
+        df, seasonal_services_df, on="registration_number", how="left"
+    )
+
+    not_seasonal = pd.isna(annotated_df["seasonal_start"])
+    today = datetime.date.today()
+    in_season = (annotated_df["seasonal_start"] <= today) & (
+        annotated_df["seasonal_end"] >= today
+    )
+    annotated_df["seasonal_status"] = np.select(
+        condlist=[not_seasonal, in_season],
+        choicelist=["Not Seasonal", "In Season"],
+        default="Out of Season",
+    )
+
+    return annotated_df
 
 
 def cast_boolean_to_string(value: Optional[bool]) -> str:
@@ -290,6 +339,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged = add_status_columns(merged)
+    merged = add_seasonal_status(merged)
     merged["score"] = merged["score"].map(
         lambda value: f"{int(round_down(value) * 100)}%" if not pd.isna(value) else ""
     )
