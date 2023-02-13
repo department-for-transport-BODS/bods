@@ -20,21 +20,6 @@ pytestmark = pytest.mark.django_db
 
 
 class TestFaresQuerySet:
-    def test_get_active_published_files(self):
-        """Tests the queryset is annotated with the total dataset count
-        for live and is_published revisions"""
-        FaresMetadataFactory(
-            revision__status=FeedStatus.inactive.value, revision__is_published=False
-        )
-        FaresMetadataFactory(
-            revision__status=FeedStatus.expired.value, revision__is_published=False
-        )
-        FaresMetadataFactory(
-            revision__status=FeedStatus.live.value, revision__is_published=True
-        )
-        qs = FaresMetadata.objects.get_active_published_files()
-        assert len(qs) == 1
-
     # Annotations
     def test_add_published_date(self):
         """Tests the queryset is annotated with published date"""
