@@ -188,33 +188,17 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
         pass
 
     def form_valid(self, form):
-        client = get_notifications()
         dataset = self.get_object()
         revision = dataset.revisions.order_by("-created").first()
 
         # Delete revision
         if not revision.is_published or revision.status == ExpiredStatus:
-
             try:
                 DatasetRevision.objects.get(id=revision.id).delete()
 
             except DatasetRevision.DoesNotExist:
                 # This shouldnt happen but we dont want to break the site if it does
                 pass
-
-            else:
-                client.send_data_endpoint_deleted_deleter_notification(
-                    dataset_id=dataset.id,
-                    dataset_name=revision.name,
-                    contact_email=self.request.user.email,
-                )
-                if dataset.contact != self.request.user and dataset.contact.is_active:
-                    client.send_data_endpoint_deleted_updater_notification(
-                        dataset_id=dataset.id,
-                        contact_email=dataset.contact.email,
-                        dataset_name=revision.name,
-                        last_updated=revision.modified,
-                    )
 
         return HttpResponseRedirect(self.get_success_url())
 
