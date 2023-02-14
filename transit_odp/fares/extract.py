@@ -224,7 +224,6 @@ class NeTExDocumentsExtractor:
     def num_of_user_profiles(self):
         attr = "user_profiles"
         return self._get_user_type_count(attr)
-        # user_types = [doc.get_earliest_tariff_from_date() for doc in self.documents]
 
     @property
     def valid_from(self):
