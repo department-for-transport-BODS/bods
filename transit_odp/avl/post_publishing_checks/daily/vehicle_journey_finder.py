@@ -446,7 +446,9 @@ class VehicleJourneyFinder:
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
 
-        if not self.filter_by_operating_period(activity_date, txc_xml, result):
+        if not self.filter_by_operating_period(
+            activity.recorded_at_time, txc_xml, result
+        ):
             return None
 
         if (vehicle_journey_ref := self.get_vehicle_journey_ref(mvj)) is None:
