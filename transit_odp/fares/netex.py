@@ -133,8 +133,17 @@ class NeTExDocument:
 
     @property
     def user_profiles(self):
-        xpath = ["usageParameters", "UserProfile"]
-        return self.find_anywhere(xpath)
+        xpath = [
+            "FareStructureElement",
+            "GenericParameterAssignment",
+            "limitations",
+            "UserProfile",
+            "UserType",
+        ]
+        user_types = self.find_anywhere(xpath)
+        if len(user_types) > 0:
+            user_types = [getattr(user_type, "text") for user_type in user_types]
+        return user_types
 
     def get_product_types(self):
         xpath = ["fareProducts", "PreassignedFareProduct", "ProductType"]
