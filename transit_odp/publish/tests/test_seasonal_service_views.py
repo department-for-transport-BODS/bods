@@ -269,7 +269,7 @@ class TestEditSeasonalServiceView:
             data=form_data,
         )
         assert (
-            response.context_data["form"].errors["__all__"][0]
+            response.context_data["form"].errors["end"][0]
             == "Start date must be earlier than end date"
         )
 
@@ -382,7 +382,7 @@ class TestCreateSeasonalServiceView:
         response = publish_client.post(self.url, data=step2_data)
 
         assert (
-            response.context_data["form"].errors["__all__"][0]
+            response.context_data["form"].errors["end"][0]
             == "Start date must be earlier than end date"
         )
 
