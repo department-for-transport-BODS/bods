@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import pytest
 
 from transit_odp.fares.factories import (
-    FaresMetadataFactory,
     DataCatalogueMetaDataFactory,
 )
 from transit_odp.fares_validator.factories import FaresValidationResultFactory
