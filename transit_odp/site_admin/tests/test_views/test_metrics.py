@@ -13,6 +13,7 @@ from transit_odp.fares.factories import (
     DataCatalogueMetaDataFactory,
     FaresMetadataFactory,
 )
+from transit_odp.fares_validator.factories import(FaresValidationResultFactory,)
 from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
@@ -91,6 +92,8 @@ class TestOperationalMetricsFileView:
             DataCatalogueMetaDataFactory(
                 fares_metadata=fares_metadata_factory, national_operator_code=["org11"]
             )
+            FaresValidationResultFactory()
+
             expected_files = [
                 "publishers.csv",
                 "consumers.csv",
