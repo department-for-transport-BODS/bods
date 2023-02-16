@@ -132,16 +132,18 @@ class BaseForm(GOVUKModelForm):
         model = SeasonalService
         fields = ("start", "end")
 
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        start = cleaned_data.get("start")
-        end = cleaned_data.get("end")
-        if start is None or end is None:
-            return cleaned_data
-
+    def clean_end(self):
+        start = self.cleaned_data.get("start")
+        end = self.cleaned_data.get("end")
+        if start is None and end is None:
+            return self.cleaned_data
+        if start is None:
+            return end
+        elif end is None:
+            return start
         if start > end:
             raise ValidationError("Start date must be earlier than end date")
-        return cleaned_data
+        return end
 
 
 class EditRegistrationCodeDateForm(BaseForm):
