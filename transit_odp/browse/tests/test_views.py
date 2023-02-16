@@ -610,7 +610,6 @@ class TestDataDownloadCatalogueView:
 
         with zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))) as zf:
             for zf in zf.infolist():
-                print(zf.filename)
                 assert zf.filename in expected_files
 
     def test_operator_noc_download(self, client_factory):
