@@ -592,10 +592,10 @@ class TestDataDownloadCatalogueView:
         DatasetFactory.create(organisation=org)
 
         task_create_data_catalogue_archive()
-        
+
         client = client_factory(host=self.host)
         url = reverse("download-catalogue", host=self.host)
-        
+
         response = client.get(url)
 
         expected_disposition = "attachment; filename=bodsdatacatalogue.zip"

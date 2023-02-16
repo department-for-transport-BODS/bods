@@ -87,7 +87,9 @@ def test_df_organisations():
     FaresMetadataFactory(
         revision=timetable_revision, num_of_fare_products=no_of_fares_products
     )
-    FaresValidationResultFactory.create_batch(no_of_compliant_fares, revision = fares_revision, count=0)
+    FaresValidationResultFactory.create_batch(
+        no_of_compliant_fares, revision=fares_revision, count=0
+    )
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
         revision=timetable_revision,

@@ -13,7 +13,9 @@ from transit_odp.fares.factories import (
     DataCatalogueMetaDataFactory,
     FaresMetadataFactory,
 )
-from transit_odp.fares_validator.factories import(FaresValidationResultFactory,)
+from transit_odp.fares_validator.factories import (
+    FaresValidationResultFactory,
+)
 from transit_odp.feedback.factories import FeedbackFactory
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,

@@ -14,9 +14,8 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.fares.factories import (
-    DataCatalogueMetaDataFactory
-)
+from transit_odp.fares.factories import DataCatalogueMetaDataFactory
+
 pytestmark = pytest.mark.django_db
 is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
 
@@ -30,9 +29,9 @@ def test_df_contains_correct_number_of_rows():
     if is_fares_validator_active:
         orgs = OrganisationFactory.create_batch(3)
         DataCatalogueMetaDataFactory(
-                fares_metadata__revision__dataset__organisation=orgs[0],
-                fares_metadata__revision__is_published=True,
-            )
+            fares_metadata__revision__dataset__organisation=orgs[0],
+            fares_metadata__revision__is_published=True,
+        )
         FaresDatasetRevisionFactory(published_at=current)
         df = _get_overall_catalogue_dataframe()
         assert len(df) == 5
@@ -47,9 +46,9 @@ def test_df_timetables_expected():
     timetable = DatasetRevisionFactory(published_at=current, dataset__organisation=org)
     fa = TXCFileAttributesFactory(revision=timetable, service_code="PD000001")
     DataCatalogueMetaDataFactory(
-            fares_metadata__revision__dataset__organisation=org,
-            fares_metadata__revision__is_published=True,
-        )
+        fares_metadata__revision__dataset__organisation=org,
+        fares_metadata__revision__is_published=True,
+    )
     FaresDatasetRevisionFactory(published_at=current)
     df = _get_overall_catalogue_dataframe()
     row = df.iloc[0]
@@ -85,9 +84,9 @@ def test_df_avls_expected():
     # need a random TxC FA entry so txc df isnt empty. This will only be empty on
     # new installs
     DataCatalogueMetaDataFactory(
-            fares_metadata__revision__dataset__organisation=org,
-            fares_metadata__revision__is_published=True,
-        )
+        fares_metadata__revision__dataset__organisation=org,
+        fares_metadata__revision__is_published=True,
+    )
     FaresDatasetRevisionFactory(published_at=current)
     df = _get_overall_catalogue_dataframe()
     row = df.iloc[0]
@@ -114,9 +113,9 @@ def test_df_fares_expected():
     # new installs
     if is_fares_validator_active:
         DataCatalogueMetaDataFactory(
-                fares_metadata__revision__dataset__organisation=org,
-                fares_metadata__revision__is_published=True,
-            )
+            fares_metadata__revision__dataset__organisation=org,
+            fares_metadata__revision__is_published=True,
+        )
     df = _get_overall_catalogue_dataframe()
     row = df.iloc[0]
     assert row["Operator"] == org.name
