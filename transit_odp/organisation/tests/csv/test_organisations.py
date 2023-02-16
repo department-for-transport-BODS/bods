@@ -39,6 +39,7 @@ def test_df_organisations():
     WHEN: We generate the organisation_data_catalogue.csv
     THEN: The data in the csv should reflect this
     """
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     registered_service_count = 3
     unregistered_service_count = 2
     valid_operating_service_count = 3
@@ -85,10 +86,9 @@ def test_df_organisations():
     )
     fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
     FaresMetadataFactory(
-        revision=timetable_revision, num_of_fare_products=no_of_fares_products
+        revision=fares_revision, num_of_fare_products=no_of_fares_products
     )
-    FaresValidationResultFactory(revision=fares_revision, count=0
-    )
+    FaresValidationResultFactory(revision=fares_revision, count=no_of_fares_products)
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
         revision=timetable_revision,
