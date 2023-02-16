@@ -70,9 +70,8 @@ def test_get_lines(netexdocument):
 
 def test_get_user_profiles(netexdocument):
     actual = netexdocument.user_profiles
-    assert len(actual) == 4
-    assert actual[0].localname == "UserProfile"
-    assert actual[0]["id"] == "fxc:adult"
+    assert len(actual) == 1
+    assert actual[0] == "adult"
 
 
 def test_get_sales_offer_packages(netexdocument):

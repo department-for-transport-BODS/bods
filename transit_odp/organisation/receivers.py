@@ -12,13 +12,11 @@ from transit_odp.organisation.models import (
 )
 from transit_odp.organisation.notifications import (
     send_endpoint_available_notification,
-    send_feed_changed_notification,
     send_feed_monitor_fail_final_try_notification,
     send_feed_monitor_fail_first_try_notification,
     send_revision_published_notification,
 )
 from transit_odp.organisation.signals import (
-    feed_monitor_change_detected,
     feed_monitor_dataset_available,
     feed_monitor_fail_final_try,
     feed_monitor_fail_first_try,
@@ -55,15 +53,6 @@ def feed_monitor_fail_final_try_handler(sender, dataset: Dataset, **kwargs):
         f"Dataset<id={dataset.id}>"
     )
     send_feed_monitor_fail_final_try_notification(dataset)
-
-
-@receiver(feed_monitor_change_detected)
-def feed_monitor_change_detected_handler(sender, dataset: Dataset, **kwargs):
-    logger.debug(
-        f"[feed_monitor_change_detected_handler] received a "
-        f"signal for Dataset<id={dataset.id}>"
-    )
-    send_feed_changed_notification(dataset)
 
 
 @receiver(feed_monitor_dataset_available)

@@ -1,6 +1,7 @@
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.publish.requires_attention import get_requires_attention_data
 from transit_odp.publish.tables import DatasetTable
 from transit_odp.publish.views.base import BasePublishListView
 from transit_odp.timetables.proxies import TimetableDataset
@@ -23,9 +24,9 @@ class ListView(BasePublishListView):
         context["all_service_codes"] = OTCService.objects.get_all_without_exempted_ones(
             org_id
         ).count()
-        context[
-            "missing_service_codes"
-        ] = OTCService.objects.get_missing_from_organisation(org_id).count()
+        context["services_requiring_attention"] = len(
+            get_requires_attention_data(org_id)
+        )
         context[
             "seasonal_services_counter"
         ] = SeasonalService.objects.get_count_in_organisation(org_id)

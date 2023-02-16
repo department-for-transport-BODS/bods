@@ -180,6 +180,7 @@ class NotificationBase:
             data_set_url=remote_url,
         )
 
+    # This notification email has been removed
     @validate_arguments
     def send_data_endpoint_deleted_deleter_notification(
         self, dataset_id: int, dataset_name: str, contact_email: str
@@ -198,6 +199,7 @@ class NotificationBase:
             feed_id=dataset_id,
         )
 
+    # This notification email has been removed
     @validate_arguments
     def send_data_endpoint_deleted_updater_notification(
         self,
@@ -340,7 +342,6 @@ class NotificationBase:
         contact_email: str,
         with_pti_violations: bool = False,
     ):
-
         if with_pti_violations:
             template = "OPERATOR_PUBLISH_LIVE_WITH_PTI_VIOLATIONS"
             subject = "Action required – PTI validation report requires resolution"
@@ -380,7 +381,6 @@ class NotificationBase:
         contact_email: str,
         with_pti_violations: bool = False,
     ):
-
         if with_pti_violations:
             template = "AGENT_PUBLISH_LIVE_WITH_PTI_VIOLATIONS"
             subject = "Action required – PTI validation report requires resolution"
@@ -874,7 +874,6 @@ class NotificationBase:
         feed_detail_link: str,
         contact_email: str,
     ):
-
         template = "AVL_COMPLIANCE_STATUS_CHANGED"
         subject = f"SIRI-VM compliance status changed to {new_status}"
         settings_link = reverse("users:settings", host=config.hosts.PUBLISH_HOST)
@@ -1126,7 +1125,6 @@ class NotificationBase:
         draft_link: str,
         contact_email: str,
     ):
-
         template = "REPORTS_AVAILABLE"
         subject = (
             "Action required – PTI validation report requires resolution "

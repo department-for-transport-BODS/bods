@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Optional
 
 import django_tables2 as tables
 from django.conf import settings
@@ -15,8 +16,8 @@ from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.publish.tables import DatasetRevisionTable
 
 
-def get_table_page(page: str) -> str:
-    return f"?page={page}&" if page and page > "1" else "?page=&"
+def get_table_page(page: Optional[str]) -> str:
+    return f"?page={page}&" if page else "?page=&"
 
 
 class TimetableChangelogTable(DatasetRevisionTable):
@@ -68,13 +69,9 @@ class RequiresAttentionTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         pass
 
-    licence_number = tables.Column(
-        verbose_name="Licence number", accessor="licence__number"
-    )
-    service_code = tables.Column(
-        verbose_name="Service code", accessor="registration_number"
-    )
-    line = LineColumn(accessor="service_number")
+    licence_number = tables.Column(verbose_name="Licence number")
+    service_code = tables.Column(verbose_name="Service code")
+    line_number = LineColumn(verbose_name="Line", accessor="line_number")
 
 
 class SeasonalServiceTable(GovUkTable):

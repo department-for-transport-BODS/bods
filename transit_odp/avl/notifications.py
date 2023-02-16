@@ -8,6 +8,7 @@ from transit_odp.organisation.models import Dataset
 notifier: INotifications = get_notifications()
 
 
+# This notification email has been removed
 def send_avl_feed_down_notification(dataset: Dataset):
     if dataset.contact.settings.notify_avl_unavailable:
         notifier.send_avl_feed_down_publisher_notification(
@@ -18,6 +19,7 @@ def send_avl_feed_down_notification(dataset: Dataset):
         )
 
 
+# This notification email has been removed
 def send_avl_status_changed_notification(dataset: Dataset):
     for developer in dataset.subscribers.filter(
         settings__mute_all_dataset_notifications=False
@@ -32,6 +34,7 @@ def send_avl_status_changed_notification(dataset: Dataset):
         )
 
 
+# This notification email has been removed
 def send_avl_report_requires_resolution_notification(dataset: Dataset):
     revision = dataset.live_revision
     notifier.send_avl_report_requires_resolution(
