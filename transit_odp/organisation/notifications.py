@@ -39,8 +39,8 @@ def send_feed_monitor_fail_final_try_notification(dataset: Dataset):
         )
 
 
+# This notification email has been removed
 def send_feed_changed_notification(dataset: Dataset):
-
     if not dataset.contact.is_agent_user and dataset.contact.is_active:
         notifier.send_data_endpoint_changed_notification(
             dataset_id=dataset.id,
@@ -74,7 +74,6 @@ def send_endpoint_available_notification(dataset: Dataset):
 
 
 def send_revision_published_notification(dataset: Dataset):
-
     has_pti_violations = not dataset.live_revision.is_pti_compliant()
     if not dataset.contact.is_agent_user and dataset.contact.is_active:
         notifier.send_data_endpoint_publish_notification(
@@ -159,6 +158,7 @@ def send_endpoint_validation_error_notification(dataset):
         )
 
 
+# This notification email has been removed
 def send_report_available_notifications(revision: DatasetRevision):
     contact = revision.dataset.contact
     dataset = revision.dataset

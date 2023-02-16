@@ -4,7 +4,6 @@ from django.utils import timezone
 from transit_odp.organisation import signals
 from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
 from transit_odp.organisation.receivers import (
-    feed_monitor_change_detected_handler,
     feed_monitor_dataset_available_handler,
     feed_monitor_fail_final_try_handler,
     feed_monitor_fail_first_try_handler,
@@ -90,26 +89,6 @@ class TestMonitorFeedFailFinalTryHandler:
 
         consumer_subject = "Data set status changed"
         assert consumer_mailbox.subject == consumer_subject
-
-
-class TestMonitorFeedChangeDetectedHandler:
-    def test_connected(self):
-        registered_functions = [
-            r[1]() for r in signals.feed_monitor_change_detected.receivers
-        ]
-        assert feed_monitor_change_detected_handler in registered_functions
-
-    @pytest.mark.parametrize("account_type", (OrgStaffType, AgentUserType))
-    def test_notify_feed_monitor_change_detected_is_called(
-        self, account_type, user_factory, mailoutbox
-    ):
-        dataset = setup_dataset(user_factory, staff_account=account_type)
-        feed_monitor_change_detected_handler(None, dataset=dataset)
-        expected_subject = (
-            "A change has been detected in your bus data – no action required"
-        )
-        subjects = [mail.subject for mail in mailoutbox]
-        assert expected_subject in subjects
 
 
 class TestMonitorFeedAvailableHandler:

@@ -13,7 +13,6 @@ from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.organisation.notifications import (
     send_endpoint_available_notification,
-    send_feed_changed_notification,
     send_feed_monitor_fail_final_try_notification,
     send_feed_monitor_fail_first_try_notification,
 )
@@ -164,7 +163,6 @@ def update_dataset(dataset: Dataset, publish_task):
                 kwargs = {"do_publish": True}
                 adapter.info("Start data set ETL pipeline.")
                 publish_task.apply_async(args=args, kwargs=kwargs)
-                send_feed_changed_notification(updater.dataset)
             else:
                 adapter.info("Dataset contains a good revision. Do nothing.")
         else:
