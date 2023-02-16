@@ -28,6 +28,7 @@ from transit_odp.users.constants import OrgAdminType
 from transit_odp.users.factories import InvitationFactory, OrgAdminFactory
 
 pytestmark = pytest.mark.django_db
+is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
 
 
 @freeze_time("25-12-2021")
@@ -38,7 +39,6 @@ def test_df_organisations():
     WHEN: We generate the organisation_data_catalogue.csv
     THEN: The data in the csv should reflect this
     """
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     registered_service_count = 3
     unregistered_service_count = 2
     valid_operating_service_count = 3
@@ -85,9 +85,9 @@ def test_df_organisations():
     )
     fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
     FaresMetadataFactory(
-        revision=fares_revision, num_of_fare_products=no_of_fares_products
+        revision=timetable_revision, num_of_fare_products=no_of_fares_products
     )
-    FaresValidationResultFactory(revision=fares_revision, count=no_of_fares_products)
+    FaresValidationResultFactory.create_batch(no_of_compliant_fares, revision = fares_revision, count=0)
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
         revision=timetable_revision,
@@ -194,7 +194,7 @@ def test_df_organisations():
     assert row["Number of Published AVL Datafeeds"] == avl_revisions
     assert row["Number of Published Fare Datasets"] == 1
     if is_fares_validator_active:
-        assert row["Number of Published Fare Datasets"] == no_of_revisions
+        assert row["Number of Published Fare Datasets"] == 1
         assert (
             row["% Compliant Published Fare Datasets"]
             == no_of_percentage_fares_compliance
@@ -273,6 +273,8 @@ def test_df_non_otc_data():
     FaresMetadataFactory(
         revision=fares_revision, num_of_fare_products=no_of_fares_products
     )
+    FaresValidationResultFactory(revision=fares_revision, count=no_of_fares_products)
+
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
         revision=timetable_revision,
@@ -323,7 +325,8 @@ def test_df_non_otc_data():
     assert row["Number of Published Timetable Datasets"] == 1
     assert row["Number of Published AVL Datafeeds"] == avl_revisions
     assert row["Number of Published Fare Datasets"] == 1
-    assert row["Number of Fare Products"] == no_of_fares_products
+    if not is_fares_validator_active:
+        assert row["Number of Fare Products"] == no_of_fares_products
 
 
 def test_no_licences_or_otc_and_one_dataset():
@@ -337,6 +340,7 @@ def test_no_licences_or_otc_and_one_dataset():
     timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
     fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
     FaresMetadataFactory(revision=fares_revision, num_of_fare_products=10)
+    FaresValidationResultFactory(revision=fares_revision, count=5)
     TXCFileAttributesFactory(
         revision=timetable_revision,
     )
@@ -347,7 +351,7 @@ def test_no_licences_or_otc_and_one_dataset():
 
     df = _get_organisation_catalogue_dataframe()
     row = df.iloc[0]
-    assert str(row["Number of Published Services with Valid Operating Dates"]) == "0"
+    assert str(row["Number of Published Services with Valid Operating Dates"]) == "0.0"
 
 
 def test_number_of_organisations():
@@ -380,6 +384,7 @@ def test_number_of_organisations():
     FaresMetadataFactory(
         revision=fares_revision, num_of_fare_products=no_of_fares_products
     )
+    FaresValidationResultFactory(revision=fares_revision, count=5)
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
         revision=timetable_revision,
@@ -393,4 +398,7 @@ def test_number_of_organisations():
     )
 
     df = _get_organisation_catalogue_dataframe()
-    assert len(df) == 5
+    if not is_fares_validator_active:
+        assert len(df) == 5
+    else:
+        assert len(df) == 6
