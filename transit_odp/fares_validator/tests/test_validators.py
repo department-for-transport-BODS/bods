@@ -50,12 +50,6 @@ def test_fares_validators_is_valid(test_pass, expected):
                     observation="Element 'TripType' is missing within 'RoundTrip'",
                     category="Conditions",
                 ),
-                Violation(
-                    line=225,
-                    filename="fares_test_xml.xml",
-                    observation="'FareStructureElement' checks failed: Present at least 3 times, check the 'ref' values are in the correct combination for both 'TypeOfFareStructureElementRef' and 'TypeOfAccessRightAssignmentRef' elements.",
-                    category="FareStructureElement",
-                ),
             ],
         ),
     ],

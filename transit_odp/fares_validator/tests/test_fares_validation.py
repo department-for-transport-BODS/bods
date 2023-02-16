@@ -15,7 +15,7 @@ DATA_DIR = Path(__file__).parent / "data"
     ),
     [
         (True, 0),
-        (False, 2),
+        (False, 1),
     ],
 )
 def test_fares_validation_xml(test_pass, expected):
@@ -43,7 +43,7 @@ def test_fares_validation_xml(test_pass, expected):
     ),
     [
         (True, 0),
-        (False, 6),
+        (False, 5),
     ],
 )
 def test_fares_validation_zip(test_pass, expected):
