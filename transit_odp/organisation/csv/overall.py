@@ -169,7 +169,9 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
     dataset_df = DataFrame.from_records(
         Dataset.objects.get_overall_data_catalogue_annotations().values(*DATASET_FIELDS)
     )
-
+    if dataset_df.empty:
+        raise EmptyDataFrame
+    
     dataset_df_fares = dataset_df[dataset_df["dataset_type_pretty"] == "Fares"]
     dataset_df = dataset_df[dataset_df["dataset_type_pretty"] != "Fares"]
 

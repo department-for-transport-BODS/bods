@@ -87,8 +87,7 @@ def test_df_organisations():
     FaresMetadataFactory(
         revision=timetable_revision, num_of_fare_products=no_of_fares_products
     )
-    FaresValidationResultFactory.create_batch(
-        no_of_compliant_fares, revision=fares_revision, count=0
+    FaresValidationResultFactory(revision=fares_revision, count=0
     )
     TXCFileAttributesFactory.create_batch(
         unregistered_service_count,
@@ -196,7 +195,7 @@ def test_df_organisations():
     assert row["Number of Published AVL Datafeeds"] == avl_revisions
     assert row["Number of Published Fare Datasets"] == 1
     if is_fares_validator_active:
-        assert row["Number of Published Fare Datasets"] == 1
+        assert row["Number of Published Fare Datasets"] == no_of_revisions
         assert (
             row["% Compliant Published Fare Datasets"]
             == no_of_percentage_fares_compliance
