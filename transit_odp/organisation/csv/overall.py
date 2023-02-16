@@ -171,7 +171,7 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
     )
     if dataset_df.empty:
         raise EmptyDataFrame
-    
+
     dataset_df_fares = dataset_df[dataset_df["dataset_type_pretty"] == "Fares"]
     dataset_df = dataset_df[dataset_df["dataset_type_pretty"] != "Fares"]
 
