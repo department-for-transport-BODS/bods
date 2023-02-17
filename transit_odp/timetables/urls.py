@@ -30,18 +30,23 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=timetable.SeasonalServiceView.as_view(),
+                    view=timetable.ListHomeView.as_view(),
                     name="seasonal-service",
                 ),
                 path(
                     "add-new",
-                    view=timetable.SeasonalServiceWizardAddNewView.as_view(),
+                    view=timetable.WizardAddNewView.as_view(),
                     name="add-seasonal-service",
                 ),
                 path(
-                    "edit-date",
-                    view=timetable.SeasonalServiceEditDateView.as_view(),
-                    name="edit-date",
+                    "delete",
+                    view=timetable.DeleteView.as_view(),
+                    name="delete-seasonal-service",
+                ),
+                path(
+                    "<int:pk>/edit-date",
+                    view=timetable.EditDateView.as_view(),
+                    name="edit-seasonal-service-date",
                 ),
             ]
         ),

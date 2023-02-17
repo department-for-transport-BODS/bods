@@ -1,5 +1,8 @@
+import datetime
+
 import pytest
 from factory import Sequence
+from freezegun import freeze_time
 
 from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
@@ -10,6 +13,7 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     LicenceFactory,
+    SeasonalServiceFactory,
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
@@ -34,7 +38,9 @@ def test_service_in_bods_but_not_in_otc():
     for index, row in df[:5].iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Unassigned licence"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Unregistered"
+        assert row["Scope Status"] == "In Scope"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -65,7 +71,9 @@ def test_service_in_bods_and_otc():
         operator = service.operator
         licence = service.licence
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Published (Registered)"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Registered"
+        assert row["Scope Status"] == "In Scope"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -105,7 +113,9 @@ def test_service_in_otc_and_not_in_bods():
         operator = service.operator
         licence = service.licence
 
-        assert row["Service Statuses"] == "Missing data"
+        assert row["Published Status"] == "Unpublished"
+        assert row["OTC Status"] == "Registered"
+        assert row["Scope Status"] == "In Scope"
         assert row["Operator ID"] == operator.operator_id
         assert row["Operator Name"] == operator.operator_name
         assert row["Address"] == operator.address
@@ -135,7 +145,9 @@ def test_unregistered_services_in_bods():
     for index, row in df[:5].iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Published (Unregistered)"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Unregistered"
+        assert row["Scope Status"] == "In Scope"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -153,8 +165,8 @@ def test_unregistered_services_in_bods():
 def test_exempted_services_in_bods() -> None:
     """
     In exported data when Registration Number is included in ExemptedServiceCodes
-    the Service Status should be "Published (Out of scope)".
-    In this test all existing entries's reg. numbers are exempted.
+    the Scope Status should be "Out of Scope".
+    In this test all existing entries' reg. numbers are exempted.
     """
 
     for service in ServiceModelFactory.create_batch(5):
@@ -171,7 +183,9 @@ def test_exempted_services_in_bods() -> None:
 
     df = _get_timetable_catalogue_dataframe()
     for _, row in df.iterrows():
-        assert row["Service Statuses"] == "Published (Out of scope)"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Registered"
+        assert row["Scope Status"] == "Out of Scope"
 
 
 def test_empty_otc_services():
@@ -234,3 +248,42 @@ def test_all_txc_file_attributes_belong_to_live_revisions():
     for index, row in df[:5].iterrows():
         assert row["Origin"] == "latest"
         assert row["DQ Score"] == "98%"
+
+
+@freeze_time("2023-02-14")
+@pytest.mark.parametrize(
+    "start,end,status",
+    (
+        ("2023-01-01", "2023-02-01", "Out of Season"),
+        ("2023-02-01", "2023-03-01", "In Season"),
+        ("2023-03-01", "2023-04-01", "Out of Season"),
+        (None, None, "Not Seasonal"),
+    ),
+)
+def test_seasonal_status(start, end, status):
+    """
+    Exported services have a Seasonal Status with one of the following values:
+    In Season - the service is marked as seasonal with dates that encompass
+                today's date
+    Out of Season - the service is marked as seasonal with dates that do not
+                encompass today's date
+    Not Seasonal - the service is not marked as seasonal
+    """
+    otc_service = ServiceModelFactory()
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    bods_licence = LicenceFactory(number=otc_service.licence.number)
+    if start is not None:
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            registration_code=otc_service.registration_code,
+            start=datetime.date.fromisoformat(start),
+            end=datetime.date.fromisoformat(end),
+        )
+
+    df = _get_timetable_catalogue_dataframe()
+    assert df["Seasonal Status"][0] == status

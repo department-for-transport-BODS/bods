@@ -188,6 +188,14 @@ class NeTExDocumentsExtractor:
         lens = [len(lines) for lines in self._attr_from_documents(attr)]
         return sum(lens)
 
+    def _get_user_type_count(self, attr):
+        """Gets the total count of distinct UserType in all documents"""
+        lists_user_types = self._attr_from_documents(attr)
+        distinct_user_types = set(
+            [value for sublist in lists_user_types for value in sublist]
+        )
+        return len(distinct_user_types)
+
     @property
     def schema_version(self):
         return min(doc.get_netex_version() for doc in self.documents)
@@ -215,7 +223,7 @@ class NeTExDocumentsExtractor:
     @property
     def num_of_user_profiles(self):
         attr = "user_profiles"
-        return self._get_count(attr)
+        return self._get_user_type_count(attr)
 
     @property
     def valid_from(self):

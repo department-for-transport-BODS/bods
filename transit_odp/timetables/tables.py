@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Optional
 
 import django_tables2 as tables
 from django.conf import settings
@@ -6,11 +7,17 @@ from django.template.loader import get_template, render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
+from django_hosts.resolvers import reverse
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.common.tables import GovUkTable
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.publish.tables import DatasetRevisionTable
+
+
+def get_table_page(page: Optional[str]) -> str:
+    return f"?page={page}&" if page else "?page=&"
 
 
 class TimetableChangelogTable(DatasetRevisionTable):
@@ -62,35 +69,66 @@ class RequiresAttentionTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         pass
 
-    licence_number = tables.Column(
-        verbose_name="Licence number", accessor="licence__number"
-    )
-    service_code = tables.Column(
-        verbose_name="Service code", accessor="registration_number"
-    )
-    line = LineColumn(accessor="service_number")
+    licence_number = tables.Column(verbose_name="Licence number")
+    service_code = tables.Column(verbose_name="Service code")
+    line_number = LineColumn(verbose_name="Line", accessor="line_number")
 
 
 class SeasonalServiceTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         pass
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.empty_text = format_html(
+            """
+                <div class="seasonal_service_empty_body_table">
+                <p>No seasonal services added.</p>
+                <br/>
+                <p>Click 'Add new date range' to add a service.</p>
+                </div>
+            """
+        )
+
     licence_number = tables.Column(
         verbose_name="Licence number", accessor="licence__number"
     )
     service_code = tables.Column(
-        verbose_name="Service code", accessor="registration_code"
+        verbose_name="Service code", accessor="registration_number"
     )
-    service_begins = tables.Column(verbose_name="Service begins", accessor="start")
-    service_ends = tables.Column(verbose_name="Service ends", accessor="end")
-    actions = tables.Column(empty_values=())
+    service_begins = tables.DateTimeColumn(
+        verbose_name="Service begins", accessor="start", format="d/m/Y"
+    )
+    service_ends = tables.DateTimeColumn(
+        verbose_name="Service ends", accessor="end", format="d/m/Y"
+    )
+    actions = tables.Column(
+        empty_values=(),
+        orderable=False,
+        attrs={
+            "th": {
+                "class": "actions-column-table govuk-table__header",
+            },
+        },
+    )
 
-    def render_actions(self, value, record):
-        return mark_safe(
-            '<a class="govuk-link govuk-!-margin-left-1" href="#">'
+    def render_actions(self, record):
+        return format_html(
+            '<a class="govuk-link" href={href_edit}?page={page}&>'
             "Edit dates"
             "</a>"
-            '<a class="govuk-link govuk-!-margin-left-1" href="#">'
+            '<button type="submit" name="id" value="{value}" '
+            'class="button-table-link govuk-!-margin-left-1">'
             "Delete"
-            "</a>",
+            "</button>",
+            href_edit=reverse(
+                "edit-seasonal-service-date",
+                kwargs={
+                    "pk1": record.licence.organisation.id,
+                    "pk": record.id,
+                },
+                host=PUBLISH_HOST,
+            ),
+            page=self.page.number,
+            value=record.id,
         )

@@ -20,12 +20,13 @@ $top-border: solid 2px govuk-colour("mid-grey", $legacy: "grey-3");
 
 @mixin step-nav-line-position {
   left: 0;
-  margin-left: ($number-circle-size / 2) - ($stroke-width / 2);
+  margin-left: calc($number-circle-size / 2) - calc($stroke-width / 2);
 }
 
 @mixin step-nav-line-position-large {
   left: 0;
-  margin-left: ($number-circle-size-large / 2) - ($stroke-width-large / 2);
+  margin-left: calc($number-circle-size-large / 2) -
+    calc($stroke-width-large / 2);
   border-width: $stroke-width-large;
 }
 
@@ -153,8 +154,8 @@ $top-border: solid 2px govuk-colour("mid-grey", $legacy: "grey-3");
     z-index: 6;
     bottom: 0;
     left: 0;
-    margin-left: $number-circle-size / 4;
-    width: $number-circle-size / 2;
+    margin-left: calc($number-circle-size / 4);
+    width: calc($number-circle-size / 2);
     height: 0;
     border-bottom: solid $stroke-width
       govuk-colour("mid-grey", $legacy: "grey-2");
@@ -176,8 +177,8 @@ $top-border: solid 2px govuk-colour("mid-grey", $legacy: "grey-3");
   .app-step-nav--large & {
     @include govuk-media-query($from: tablet) {
       &:before {
-        margin-left: $number-circle-size-large / 4;
-        width: $number-circle-size-large / 2;
+        margin-left: calc($number-circle-size-large / 4);
+        width: calc($number-circle-size-large / 2);
         border-width: $stroke-width-large;
       }
 
@@ -427,9 +428,9 @@ $top-border: solid 2px govuk-colour("mid-grey", $legacy: "grey-3");
     z-index: 5;
     top: 0.6em; // position the dot to align with the first row of text in the link
     left: -(govuk-spacing(6) + govuk-spacing(3));
-    margin-top: -($stroke-width / 2);
-    margin-left: ($number-circle-size / 2);
-    width: $number-circle-size / 2;
+    margin-top: -(calc($stroke-width / 2));
+    margin-left: calc($number-circle-size / 2);
+    width: calc($number-circle-size / 2);
     height: $stroke-width;
     background: govuk-colour("black");
   }
@@ -438,7 +439,7 @@ $top-border: solid 2px govuk-colour("mid-grey", $legacy: "grey-3");
     @include govuk-media-query($from: tablet) {
       &:before {
         left: -(govuk-spacing(9));
-        margin-left: ($number-circle-size-large / 2);
+        margin-left: calc($number-circle-size-large / 2);
         height: $stroke-width-large;
       }
     }

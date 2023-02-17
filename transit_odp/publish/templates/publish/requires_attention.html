@@ -32,7 +32,7 @@
                     <div class="review-banner">
                         <div class="review-stat govuk-!-margin-bottom-0">
                             <div>
-                                <span class="review-stat__top">{{ num_missing_services }}</span>
+                                <span class="review-stat__top">{{ services_requiring_attention }}</span>
                             </div>
                             <p class="review-stat__description">{% trans 'Service codes missing from BODS' %}</p>
                         </div>
@@ -52,7 +52,7 @@
                 {% endwith %}
             </form>
 
-            {% if not_empty %}
+            {% if services_requiring_attention %}
                 <div class="govuk-width-container">
                     <div class="govuk-grid-column-full custom_govuk_table_border">
                         {% render_table table %}

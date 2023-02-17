@@ -587,7 +587,12 @@ class TestDataDownloadCatalogueView:
         return headers, body
 
     def test_data_catalogue_download_zip_file(self, client_factory):
+        # create an organisation
+        org = OrganisationFactory.create()
+        DatasetFactory.create(organisation=org)
+
         task_create_data_catalogue_archive()
+
         client = client_factory(host=self.host)
         url = reverse("download-catalogue", host=self.host)
 
@@ -608,8 +613,9 @@ class TestDataDownloadCatalogueView:
                 assert zf.filename in expected_files
 
     def test_operator_noc_download(self, client_factory):
-        OrganisationFactory.create()
+        org = OrganisationFactory.create()
         OrganisationFactory.create(nocs=4)
+        DatasetFactory.create(organisation=org)
 
         orgs = Organisation.objects.values_list("name", "nocs__noc").order_by(
             "name", "nocs__noc"
@@ -638,9 +644,10 @@ class TestDataDownloadCatalogueView:
         assert body == expected
 
     def test_operator_noc_download_exclude_inactive_orgs(self, client_factory):
-        OrganisationFactory.create()
+        org = OrganisationFactory.create()
         OrganisationFactory.create(is_active=False)
         OrganisationFactory.create(nocs=4)
+        DatasetFactory.create(organisation=org)
 
         orgs = (
             Organisation.objects.filter(is_active=True)

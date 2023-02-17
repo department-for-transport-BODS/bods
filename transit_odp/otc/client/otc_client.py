@@ -29,16 +29,16 @@ retry_exceptions = (RequestException, EmptyResponseException)
 
 
 class Page(BaseModel):
-    current: int
-    total_count: int = Field(alias="totalCount")
-    per_page: int = Field(alias="perPage")
-    total_pages: int = Field(alias="totalPages")
+    current: int = 1
+    total_count: int = Field(alias="totalCount", default=0)
+    per_page: int = Field(alias="perPage", default=100)
+    total_pages: int = Field(alias="totalPages", default=1)
 
 
 class APIResponse(BaseModel):
-    timestamp: datetime = Field(alias="timeStamp")
-    bus_search: List[Registration] = Field(alias="busSearch")
-    page: Page
+    timestamp: datetime = Field(alias="timeStamp", default=datetime.now().isoformat())
+    bus_search: List[Registration] = Field(alias="busSearch", default=[])
+    page: Page = Page()
 
     @validator("timestamp", pre=True)
     def parse_timestamp(cls, v):
@@ -83,8 +83,11 @@ class OTCAPIClient:
             raise
 
         if response.status_code == HTTPStatus.NO_CONTENT:
-            logger.error(f"Empty Response, API return {HTTPStatus.NO_CONTENT}")
-            raise EmptyResponseException
+            logger.warning(
+                f"Empty Response, API return {HTTPStatus.NO_CONTENT}, "
+                f"for params {params}"
+            )
+            return APIResponse()
 
         return APIResponse(**response.json())
 

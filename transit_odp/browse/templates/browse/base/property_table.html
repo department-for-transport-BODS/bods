@@ -1,6 +1,5 @@
 {% load i18n %}
 {% load tz %}
-{% load waffle_tags %}
 
 <table class="govuk-table consumer-property-table">
     <tbody class="govuk-table__body">
@@ -43,26 +42,6 @@
                 </div>
             </td>
         </tr>
-        {% flag "is_fares_validator_active" %}
-            <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">{% trans 'BODS Compliant data' %}</th>
-                {% if is_compliant_error %}
-                    <td colspan="2" class="govuk-table__cell">
-                        <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
-                            <span class="govuk-warning-text__icon" aria-hidden="true" style="min-width: 20px; min-height: 20px; font-size: 15px; line-height: 15px; top: 16px;">!</span>
-                            <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans 'Non compliant' %}</span>
-                            {% if show_report_link %}
-                                <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
-                            {% endif %}
-                        </div>
-                    </td>
-                {% else %}
-                    <td colspan="2" class="govuk-table__cell">
-                        <span class="item__value">{% trans 'Compliant' %}</span>
-                    </td>
-                {% endif %}
-            </tr>
-        {% endflag %}
         <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
             <td colspan="2" class="govuk-table__cell">
