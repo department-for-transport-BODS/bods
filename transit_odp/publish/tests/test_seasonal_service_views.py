@@ -3,6 +3,7 @@ import datetime
 import pytest
 from django.utils.timezone import pytz
 from django_hosts import reverse
+from freezegun import freeze_time
 
 from config.hosts import PUBLISH_HOST
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
@@ -147,6 +148,45 @@ class TestSeasonalServiceView:
             == self.NUMBER_SEASONAL_SERVICE_PER_ORGANISATION - 1
         )
 
+    def test_transition_page_when_delete_seasonal_service(self, publish_client):
+        SEASONAL_SERVICE_UPGRADE = 6
+        publish_client.force_login(user=self.user)
+        for _ in range(SEASONAL_SERVICE_UPGRADE):
+            SeasonalServiceFactory(licence=self.licence)
+        # up to 3 pages
+        response = publish_client.get(self.url + "?page=3")
+
+        assert response.status_code == 200
+        assert response.context.get("table").paginator.num_pages == 3
+        assert (
+            response.context.get("table").data.model.objects.count()
+            == self.NUMBER_SEASONAL_SERVICE_PER_ORGANISATION + SEASONAL_SERVICE_UPGRADE
+        )
+
+        seasonal_services = SeasonalService.objects.last()
+        delete_data = {"id": seasonal_services.id}
+        delete_url = reverse(
+            "delete-seasonal-service",
+            host=PUBLISH_HOST,
+            kwargs={"pk1": self.org.id},
+        )
+        response = publish_client.post(
+            delete_url,
+            data=delete_data,
+            follow=True,
+        )
+        # redirect to list table
+        assert response.status_code == 200
+        assert len(response.context_data["table"].data) > 0
+        # the 3rd page no longer exists!
+        response = publish_client.get(
+            self.url + "?page=3",
+        )
+        assert response.status_code == 404
+        # the last page now is the second one
+        response = publish_client.get(self.url + "?page=2")
+        assert response.status_code == 200
+
 
 class TestEditSeasonalServiceView:
     REGISTRATION_CODE = 15
@@ -214,6 +254,7 @@ class TestEditSeasonalServiceView:
         assert seasonal_service.start == start.date()
         assert seasonal_service.end == end.date()
 
+    @freeze_time("2023-01-09")
     def test_edit_seasonal_service_errors_on_end_before_start(self, publish_client):
         """
         GIVEN : a new seasonal services
@@ -228,7 +269,7 @@ class TestEditSeasonalServiceView:
             data=form_data,
         )
         assert (
-            response.context_data["form"].errors["__all__"][0]
+            response.context_data["form"].errors["end"][0]
             == "Start date must be earlier than end date"
         )
 
@@ -246,6 +287,7 @@ class TestCreateSeasonalServiceView:
             "add-seasonal-service", host=PUBLISH_HOST, kwargs={"pk1": self.org.id}
         )
 
+    @freeze_time("2023-01-10")
     def test_can_add_seasonal_service(self, publish_client):
         licence = BODSLicenceFactory(organisation=self.org)
         publish_client.force_login(user=self.user)
@@ -317,6 +359,7 @@ class TestCreateSeasonalServiceView:
             == "This service code has already been set up with a date range"
         )
 
+    @freeze_time("2023-01-04")
     def test_seasonal_service_errors_on_end_before_start(self, publish_client):
         licence = BODSLicenceFactory(organisation=self.org)
         publish_client.force_login(user=self.user)
@@ -339,10 +382,11 @@ class TestCreateSeasonalServiceView:
         response = publish_client.post(self.url, data=step2_data)
 
         assert (
-            response.context_data["form"].errors["__all__"][0]
+            response.context_data["form"].errors["end"][0]
             == "Start date must be earlier than end date"
         )
 
+    @freeze_time("2023-01-10")
     @pytest.mark.parametrize(
         "start,end", [("", "2023-01-15"), ("2023-01-05", ""), ("", "")]
     )

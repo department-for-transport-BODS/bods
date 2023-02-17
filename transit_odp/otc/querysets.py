@@ -1,12 +1,26 @@
+from datetime import timedelta
 from typing import TypeVar
 
-from django.db.models import CharField, F, QuerySet, Subquery, Value
+from django.db.models import (
+    CharField,
+    DateField,
+    ExpressionWrapper,
+    F,
+    QuerySet,
+    Subquery,
+    Value,
+)
 from django.db.models.aggregates import Count
-from django.db.models.functions import Replace
+from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
+from django.utils import timezone
 
 from transit_odp.organisation.models import Licence as BODSLicence
-from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models import (
+    SeasonalService,
+    ServiceCodeExemption,
+    TXCFileAttributes,
+)
 from transit_odp.otc.constants import (
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -86,6 +100,44 @@ class ServiceQuerySet(QuerySet):
                     )
                 )
             )
+            .order_by("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number", "service_number")
+        )
+
+    def add_otc_stale_date(self):
+        return self.annotate(
+            effective_stale_date_otc_effective_date=TruncDate(
+                ExpressionWrapper(
+                    F("effective_date") - timedelta(days=42),
+                    output_field=DateField(),
+                )
+            )
+        )
+
+    def get_otc_data_for_organisation(self, organisation_id: int) -> TServiceQuerySet:
+        now = timezone.now()
+        licences_subquery = Subquery(
+            BODSLicence.objects.filter(organisation=organisation_id).values("number")
+        )
+        # seasonal services that are out of season
+        seasonal_services_subquery = Subquery(
+            SeasonalService.objects.filter(licence__organisation__id=organisation_id)
+            .filter(start__gt=now.date())
+            .add_registration_number()
+            .values("registration_number")
+        )
+        exemptions_subquery = Subquery(
+            ServiceCodeExemption.objects.add_registration_number()
+            .filter(licence__organisation__id=organisation_id)
+            .values("registration_number")
+        )
+
+        return (
+            self.add_otc_stale_date()
+            .annotate(otc_licence_number=F("licence__number"))
+            .filter(licence__number__in=licences_subquery)
+            .exclude(registration_number__in=exemptions_subquery)
+            .exclude(registration_number__in=seasonal_services_subquery)
             .order_by("licence__number", "registration_number", "service_number")
             .distinct("licence__number", "registration_number", "service_number")
         )

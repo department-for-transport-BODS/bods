@@ -1,19 +1,17 @@
 from datetime import datetime, timedelta
 
-import faker
 import pytest
-from django.test import override_settings
 
-from transit_odp.fares.factories import FaresMetadataFactory
-from transit_odp.fares_validator.factories import FaresValidationResultFactory
-from transit_odp.organisation.constants import (
-    FeedStatus,
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
 )
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
+
 from transit_odp.organisation.factories import (
     OrganisationFactory,
 )
 from transit_odp.fares.models import (
-    FaresMetadata,
+    DataCatalogueMetaData,
 )
 
 pytestmark = pytest.mark.django_db
@@ -24,16 +22,19 @@ class TestFaresQuerySet:
     def test_add_published_date(self):
         """Tests the queryset is annotated with published date"""
         orgs = OrganisationFactory.create_batch(3)
-        FaresMetadataFactory(
-            revision__dataset__organisation=orgs[0], revision__is_published=False
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=orgs[0],
+            fares_metadata__revision__is_published=False,
         )
-        FaresMetadataFactory(
-            revision__dataset__organisation=orgs[1], revision__is_published=False
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=orgs[1],
+            fares_metadata__revision__is_published=False,
         )
-        FaresMetadataFactory(
-            revision__dataset__organisation=orgs[2], revision__is_published=True
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=orgs[2],
+            fares_metadata__revision__is_published=True,
         )
-        qs = FaresMetadata.objects.add_published_date()
+        qs = DataCatalogueMetaData.objects.add_published_date()
 
         assert len(qs) == 3
         for org in qs:
@@ -48,16 +49,19 @@ class TestFaresQuerySet:
         """Tests the queryset is annotated with operator_id from the dataset table"""
         org1 = OrganisationFactory.create_batch(1, name="KPMG_TEST1")
         org2 = OrganisationFactory.create_batch(1, name="KPMG_TEST2")
-        FaresMetadataFactory(
-            revision__dataset__organisation=org1[0], revision__is_published=False
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org1[0],
+            fares_metadata__revision__is_published=False,
         )
-        FaresMetadataFactory(
-            revision__dataset__organisation=org2[0], revision__is_published=False
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org2[0],
+            fares_metadata__revision__is_published=False,
         )
-        FaresMetadataFactory(
-            revision__dataset__organisation=org2[0], revision__is_published=True
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org2[0],
+            fares_metadata__revision__is_published=True,
         )
-        qs = FaresMetadata.objects.add_operator_id()
+        qs = DataCatalogueMetaData.objects.add_operator_id()
         assert len(qs) == 3
         for org in qs:
             if org.id == org1[0].id:
@@ -67,16 +71,19 @@ class TestFaresQuerySet:
         """Tests the queryset is annotated with operator_id from the dataset table"""
         org1 = OrganisationFactory.create_batch(1, name="KPMG_TEST1")
         org2 = OrganisationFactory.create_batch(1, name="KPMG_TEST2")
-        FaresMetadataFactory(
-            revision__dataset__organisation=org1[0], revision__is_published=False
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org1[0],
+            fares_metadata__revision__is_published=False,
         )
-        FaresMetadataFactory(
-            revision__dataset__organisation=org2[0], revision__is_published=False
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org2[0],
+            fares_metadata__revision__is_published=False,
         )
-        FaresMetadataFactory(
-            revision__dataset__organisation=org2[0], revision__is_published=True
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org2[0],
+            fares_metadata__revision__is_published=True,
         )
-        qs = FaresMetadata.objects.add_organisation_name()
+        qs = DataCatalogueMetaData.objects.add_organisation_name()
         assert len(qs) == 3
         assert qs[0].organisation_name == "KPMG_TEST1"
         assert qs[1].organisation_name == "KPMG_TEST2"
@@ -85,9 +92,10 @@ class TestFaresQuerySet:
         """Tests the queryset is annoted with compliance status"""
         org1 = OrganisationFactory.create_batch(1, name="KPMG_TEST1")
         FaresValidationResultFactory()
-        FaresMetadataFactory(
-            revision__dataset__organisation=org1[0], revision__is_published=True
+        DataCatalogueMetaDataFactory(
+            fares_metadata__revision__dataset__organisation=org1[0],
+            fares_metadata__revision__is_published=True,
         )
-        qs = FaresMetadata.objects.add_compliance_status()
+        qs = DataCatalogueMetaData.objects.add_compliance_status()
         assert len(qs) == 1
         assert qs[0].is_fares_compliant == False
