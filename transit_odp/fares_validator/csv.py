@@ -171,16 +171,14 @@ def add_multioperator_status(nocs, nocs_df) -> list:
                     orgs.append(org)
             except IndexError:
                 orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
-        if MULTIOPERATOR_STATUS_DICT["Unavailable"] in orgs:
+        if len(set(orgs)) == 1:
             multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
-
-        if len(set(orgs)) == 1 and (
-            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
+        elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT["Unavailable"] in set(
+            orgs
         ):
             multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
-        elif len(set(orgs)) > 1 and (
-            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
-        ):
+        elif len(set(orgs)) > 2:
             multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
+
     if multioperator_list:
         return multioperator_list
