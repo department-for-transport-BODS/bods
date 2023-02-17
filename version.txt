@@ -1,2 +1,2 @@
-v1.23.12 - datadog apm
+v1.23.12-datadog-apm
 
