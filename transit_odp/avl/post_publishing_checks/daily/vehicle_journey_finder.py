@@ -425,7 +425,6 @@ class VehicleJourneyFinder:
 
     def match_vehicle_activity_to_vehicle_journey(
         self,
-        activity_date: datetime.date,
         activity: VehicleActivity,
         result: ValidationResult,
     ) -> Optional[TxcVehicleJourney]:
@@ -447,7 +446,7 @@ class VehicleJourneyFinder:
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
 
         if not self.filter_by_operating_period(
-            activity.recorded_at_time, txc_xml, result
+            activity.recorded_at_time.date(), txc_xml, result
         ):
             return None
 
@@ -465,7 +464,7 @@ class VehicleJourneyFinder:
             return None
 
         if not self.filter_by_operating_profile(
-            activity_date, vehicle_journeys, result
+            activity.recorded_at_time.date(), vehicle_journeys, result
         ):
             return None
 
