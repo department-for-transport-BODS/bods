@@ -1684,6 +1684,44 @@ def test_require_attention_field_in_search_box(publish_client):
     assert response.context["services_require_attention_percentage"] == 58
 
 
+def test_require_attention_search_no_results(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 3
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": "xxxYYyzz123"}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["table"].data) == 0
+    assert response.context["services_require_attention_percentage"] == 34
+
+
 def test_require_attention_seasonal_services(publish_client):
     # Setup
     host = PUBLISH_HOST
