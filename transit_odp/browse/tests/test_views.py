@@ -33,7 +33,6 @@ from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.loggers import PipelineAdapter
 from transit_odp.data_quality.factories import DataQualityReportFactory
-from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.feedback.models import Feedback
 from transit_odp.naptan.factories import AdminAreaFactory
@@ -42,9 +41,16 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
+    DraftDatasetFactory,
+)
+from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
+from transit_odp.organisation.factories import (
     OrganisationFactory,
+    SeasonalServiceFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import DatasetSubscription, Organisation
+from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 from transit_odp.pipelines.factories import (
     BulkDataArchiveFactory,
     ChangeDataArchiveFactory,
@@ -842,21 +848,90 @@ class TestOperatorsView:
 
 
 class TestOperatorDetailView:
-    def test_operator_detail_view_timetable_stats(
+    def test_operator_detail_view_timetable_stats_not_compliant(
         self, request_factory: RequestFactory
     ):
         org = OrganisationFactory()
-        num_datasets = 2
+        today = timezone.now().date()
+        month = timezone.now().date() + datetime.timedelta(weeks=4)
+        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
 
-        datasets = DatasetFactory.create_batch(
-            num_datasets, organisation=org, dataset_type=DatasetType.TIMETABLE.value
+        total_services = 9
+        licence_number = "PD5000229"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+
+        # Setup two TXCFileAttributes that will be 'Not Stale'
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
         )
-        revisions = [
-            DatasetRevisionFactory(dataset=datasets[0], num_of_lines=1),
-            DatasetRevisionFactory(dataset=datasets[1], num_of_lines=2),
-        ]
 
-        PTIObservationFactory(revision=revisions[1])
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[1],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=75),
+            modification_datetime=timezone.now() - datetime.timedelta(days=50),
+        )
+        # Setup a draft TXCFileAttributes
+        dataset2 = DraftDatasetFactory(organisation=org)
+        TXCFileAttributesFactory(
+            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        )
+
+        live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+        # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[3],
+            operating_period_end_date=None,
+            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[4],
+            operating_period_end_date=datetime.date.today()
+            - datetime.timedelta(weeks=105),
+            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[5],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+        )
+
+        # Create Seasonal Services - one in season, one out of season
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=today,
+            end=month,
+            registration_code=int(all_service_codes[6][-1:]),
+        )
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=month,
+            end=two_months,
+            registration_code=int(all_service_codes[7][-1:]),
+        )
+
+        otc_lic1 = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+            )
 
         request = request_factory.get("/operators/")
         request.user = UserFactory()
@@ -865,11 +940,82 @@ class TestOperatorDetailView:
         assert response.status_code == 200
         context = response.context_data
         assert context["view"].template_name == "browse/operators/operator_detail.html"
+        # One out of season seasonal service reduces in scope services to 8
+        assert context["total_in_scope_in_season_services"] == 8
+        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
+        assert context["services_require_attention_percentage"] == 75
 
-        timetable_stats = context["timetable_stats"]
-        assert timetable_stats.total_dataset_count == len(datasets)
-        assert timetable_stats.line_count == 3
-        assert context["timetable_non_compliant"] == 1
+    def test_operator_detail_view_timetable_stats_compliant(
+        self, request_factory: RequestFactory
+    ):
+        org = OrganisationFactory()
+        month = timezone.now().date() + datetime.timedelta(weeks=4)
+        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+        total_services = 4
+        licence_number = "PD5000123"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+        dataset2 = DatasetFactory(organisation=org)
+
+        request = request_factory.get("/operators/")
+        request.user = UserFactory()
+
+        # Setup three TXCFileAttributes that will be 'Not Stale'
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[1],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+        TXCFileAttributesFactory(
+            revision=dataset2.live_revision,
+            service_code=all_service_codes[2],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+
+        # Create Out of Season Seasonal Service
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=month,
+            end=two_months,
+            registration_code=int(all_service_codes[3][-1:]),
+        )
+        # Create In Season Seasonal Service for live, not stale service
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=timezone.now().date(),
+            end=month,
+            registration_code=int(all_service_codes[2][-1:]),
+        )
+
+        otc_lic1 = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+            )
+
+        response = OperatorDetailView.as_view()(request, pk=org.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert context["view"].template_name == "browse/operators/operator_detail.html"
+        # One out of season seasonal service reduces in scope services to 3
+        assert context["total_in_scope_in_season_services"] == 3
+        # 3 services not stale, including one in season. 0/3 requiring attention = 0%
+        assert context["services_require_attention_percentage"] == 0
 
     def test_operator_detail_view_avl_stats(self, request_factory: RequestFactory):
         org = OrganisationFactory()

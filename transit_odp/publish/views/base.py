@@ -693,7 +693,7 @@ class BasePublishListView(OrgUserViewMixin, BaseTemplateView):
         )
 
 
-class DataActivityView(OrgUserViewMixin, DetailView):
+class DataActivityView(DetailView):
     template_name = "publish/data_activity.html"
     model = Organisation
     pk_url_kwarg = "pk1"
