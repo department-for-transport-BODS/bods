@@ -343,9 +343,7 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
         .values_list("registration_number", flat=True)
         .all()
     )
-    registration_number_exempted = np.invert(pd.isna(df["dataset_id"])) & df[
-        "registration_number"
-    ].isin(exempted_reg_numbers)
+    registration_number_exempted = df["registration_number"].isin(exempted_reg_numbers)
 
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
     df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
