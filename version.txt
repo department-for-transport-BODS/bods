@@ -1,2 +1,2 @@
-v1.23.12-datadog
+v1.23.12-datadog-trace
 

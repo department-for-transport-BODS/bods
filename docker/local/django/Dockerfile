@@ -39,7 +39,8 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
-    && pip3 install cython
+    && pip3 install cython \
+    && pip3 install ddtrace
 
 COPY ./pyproject.toml ./poetry.lock ./package.json ./package-lock.json ./
 
@@ -48,6 +49,7 @@ RUN python --version \
     && pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
     && poetry install
+
 
 ARG UID=1000
 ARG GID=36
