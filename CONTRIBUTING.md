@@ -1,98 +1,154 @@
 # Contributing to BODS
 
-## BODS Git Flow
+## Pre-requisites
 
-For BODS development we use [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/)
-as our development workflow.
-In this section I will take you through how use this workflow for BODS.
+- The BODS application can run inside and outside of Docker
+- We recommend using Docker for the database, celery workers/beat scheduler/flower,
+  clam av scanner and django service
 
-In BODS we have 2 protected branches `master` and `develop`.
-These branches should track 2 of our 3 environments `production` and `internal` respectively.
-The third environment, `staging` should track a `release` branch.
+## Setup
 
-## Feature Development
-
-When working on a feature the first step is finding a ticket to work on. Go to the
-[BODS JIRA](https://itoworld.atlassian.net/jira/software/c/projects/BODP/issues?filter=allissues)
-and claim by setting yourself as the `Assigne`, also make a note of the issue ID
-and the issue title.
-
-### Creating a feature branch
-
-First, ensure you are currently in the `develop` branch of the project. Make a "feature"
-branch including the issue ID and title in the branch name. E.g. issue BODP 1234
-with title "Add wigdet to timetables list page" would be created as follows;
+To get started clone the repository
 
 ```sh
-git checkout -b feature/BODP-1234-timetable-list-widget
+
+git clone git@github.com:department-for-transport-BODS/bods.git
+cd ./bods
 ```
 
-In this example I have used dashes (`-`), you can also use (`_`) to separate
-words, ultimately it doesn't matter as these branches should be short lived.
-
-You should immediately push your local branch to the remote repo and open a
-merge request.
+For the project to build and start correctly several environment variables need
+to be set.
+We use a `.env` to set the variables.
+Make a copy of `./config/.env.local.template` in the root directory of the
+project, call this file `.env`.
 
 ```sh
-git push origin feature/BODP-1234-timetable-list-widget
+cp config/.env.local.template .env 
 ```
 
-When you push this branch the remote Gitlab repository will respond with
-a link to quickly open the merge request. I highly recommend you open
-the merge request immediately, ensure a [WIP](https://about.gitlab.com/blog/2016/01/08/feature-highlight-wip/)
-is added to the merge request to prevent accidental merging before the feature
-is finished.
-
-### Working on a feature
-
-You are now ready to make changes to the code, remember to commit early and often.
+Open the `.env` file and set the `UID` and `GID` to `1000`.
+Build the project using `docker-compose`.
 
 ```sh
-# Do something awesome
-git add somefile.py
-git commit
-git push origin feature/BODP-1234-timetable-list-widget
+docker-compose build
 ```
 
-BODS will use [pre-commit](https://pre-commit.com/) to ensure your code meets
-coding standards. Remember to push your changes so that merge requet is
-updated.
-If you suspect that your merge request will grow to incorporate a large
-number of changes, see if you can break it into merge requests that
-are logically consistent.
-If there is no avoiding a large merge request now might be a good time
-to assign a reviewer so they have lots of time to review your code.
-(See below)
-
-### Get your feature reviewed
-
-Depending on how many people are working on BODS you may be able to
-choose from a number of people to review your code.
-If you are modifying an existing feature try and find out who the
-original author of the code was and asking them to review your
-changes.
-If you are working on a new feature you can choose the most appropriate
-person.
-When you have decided on someone assign the Gitlab issue to them of
-leave an `@username` comment asking them to review.
-
-### Merging your feature
-
-Your code should not be merged into `develop` until it has been given
-the :thumbsup: by another developer (the merge request should literally
-have a thumbs up).
-
-When you're ready to merge, click the `Merge` button in the Gitlab
-merge request page, (also ensure the `Delete source branch` checkbox is
-ticked).
-
-### Clean up your local branchs
-
-Feature branches are short lived, now that your feature is in develop
-delete your local feaure branch.
+This will take a while to complete.
+Once completed we can start and initialise the dockerised postgres database.
 
 ```sh
-git branch -d feature/BODP-1234-timetable-list-widget
+docker-compose up postgres
 ```
 
-## Releasing a version of BODS
+This will start the database in the foreground, after a minute or so you should see
+the following message.
+
+```sh
+LOG:  database system is ready to accept connections
+```
+
+This indicates that database has been initialised correctly and has started
+successfully.
+
+Use `Ctrl+c` to stop the docker container.
+
+Next we need to apply our Django applications migrations to the database. To do this
+let's first bring the database container back up, but this time run it in the
+background.
+
+```sh
+docker-compose up -d postgres
+```
+
+After a few seconds you should see the postgres container running when you run
+
+```sh
+docker-compose ps
+```
+
+Next we'll be using the `docker-compose run` command to run the Django `migrate`
+command.
+
+```sh
+docker-compose run django python manage.py migrate
+```
+
+You will now be able to create a super user. This will ask for a username, email
+and password.
+
+```sh
+docker-compose run django python manage.py createsuperuser
+```
+
+Now that the superuser has been created you can login to the Django Admin site to
+ensure everything is running correctly.
+First start the application containers.
+
+```sh
+docker-compose up
+```
+
+Navigate to [admin.localhost:8000/admin](http://admin.localhost:8000/admin) and
+login with username and password you have previously created.
+
+There are a few Celery tasks that need to be run to populate the application
+with data.
+
+Navigate to the [Periodic Tasks](http://admin.localhost:8000/admin/django_celery_beat/periodictask/)
+in the Django Admin.
+
+Select the checkbox for the following periodic tasks
+
+- `run_naptan_etl`
+- `update_bods_xsd_zip_files`
+
+Select `Run selected tasks` from the dropdown and click `Go`.
+
+These tasks will populate the tables storing NaPTAN data and also fetch the schema
+files required to perform schema checks.
+
+## OTC Dataset
+
+BODS utilises the Office of Traffic Commissioners Bus Service dataset for
+Compliance and Monitoring functionality.
+To synchronise BODS with this data there are two Celery Tasks that need to be run.
+
+  1. task_get_all_otc_data
+  2. task_refresh_otc_data
+
+The first task should be run once on setup to ensure the BODS OTC tables are
+populated and the second task should be run periodically to ensure data stays
+up to date.
+The `task_get_all_otc_data` can take a few hours to initially run as it is doing
+a full sync with the OTC data set.
+
+**Note**. Before running these tasks ensure the OTC environment variables are
+correctly set in the `.env` file.
+
+## Create a Publisher Account
+
+1. Navigate to [BODS Admin section](http://admin.localhost:8000/)
+2. Click [Organisation management](http://admin.localhost:8000/organisations/)
+3. Click the [Add new organisation](http://admin.localhost:8000/organisations/new/)
+   button
+4. Complete the form with "fake" data (make sure the Key contact email is completed)
+5. This will send an email to the [MailHog inbox](http://localhost:8025/)
+6. Follow the instructions in the email to create a new publisher account, it's
+   recommended that you open the link in Incognito/privacy mode
+7. Complete the form with a password
+8. Your publisher account is created and you can now publish a timetable.
+
+## Publish a Timetable
+
+Publishing a timetable is a good way to check that you have everything setup end
+to end.
+
+1. Find a timetable on the production [BODS site](https://data.bus-data.dft.gov.uk/timetable/)
+2. Download a good quality timetable that is in a Published and Compliant Status
+3. Navigate to the [BODS Publish](http://publish.localhost:8000/) site
+4. Select the Timetables radio button and click Continue
+5. Fill in the Data set description text boxes
+6. Select the Upload data set to Bus Open Data Service radio button and click the
+   Choose file button
+7. Select the timetable data set you downloaded above, and click Continue
+8. After a while the pipeline will complete and you can publish the data set.

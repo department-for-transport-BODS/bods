@@ -17,9 +17,8 @@
 
 {% block secondary.title %}
     <p class="govuk-body">
-        <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}"
-            onClick="addGATagEvent('timetables')">
-            {% trans 'Timetables data' %}
+        <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
+            {% trans 'Download the data catalogue' %}
         </a>
     </p>
 {% endblock %}
@@ -27,23 +26,11 @@
 {% block heading.subtitle %}
     <p class="govuk-body">
         {% blocktrans %}
-            Timetables data provides details of a specific number, day, date,<br>
-            route and time. You can download all the timetables data cached<br>
-            on the service.
+            Data catalogue will provide you with a comprehensive
+            view of all data published on BODS and provide matching
+            information between different dataset types.
         {% endblocktrans %}
     </p>
-    <ul class="govuk-list">
-        <li>
-            <b>{% trans 'Format' %}:</b>
-            {% trans 'TransXChange' %} {% include "browse/snippets/help_modals/txc.html" %}
-            {% trans 'GTFS' %} {% include "browse/snippets/help_modals/gtfs.html" %}
-        </li>
-        <li><b>{% trans 'TXC profile' %}:</b> {% trans 'TXC 2.4 PTI v1.1' %}</li>
-        <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
-        <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-        <li><b>{% trans 'Update frequency' %}:</b>
-            {% trans 'Daily 6:00 am and 6:00 pm GMT' %}</li>
-    </ul>
 {% endblock %}
 
 {% block heading.secondary %}
@@ -67,6 +54,35 @@
 {% endblock %}
 
 {% block inner %}
+    <div class="govuk-grid-row govuk-!-margin-top-5">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">
+                <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}"
+                    onClick="addGATagEvent('timetables')">
+                    {% trans 'Timetables data' %}
+                </a>
+            </p>
+            <p class="govuk-body">
+                {% blocktrans %}
+                    Timetables data provides details of a specific number, day, date,<br>
+                    route and time. You can download all the timetables data cached<br>
+                    on the service.
+                {% endblocktrans %}
+            </p>
+            <ul class="govuk-list">
+                <li>
+                    <b>{% trans 'Format' %}:</b>
+                    {% trans 'TransXChange' %} {% include "browse/snippets/help_modals/txc.html" %}
+                    {% trans 'GTFS' %} {% include "browse/snippets/help_modals/gtfs.html" %}
+                </li>
+                <li><b>{% trans 'TXC profile' %}:</b> {% trans 'TXC 2.4 PTI v1.1' %}</li>
+                <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
+                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
+                <li><b>{% trans 'Update frequency' %}:</b>
+                    {% trans 'Daily 6:00 am and 6:00 pm GMT' %}</li>
+            </ul>
+        </div>
+    </div>
     <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">
