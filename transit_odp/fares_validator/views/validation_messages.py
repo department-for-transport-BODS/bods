@@ -184,5 +184,5 @@ MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING = (
     "Attribute 'id' of element 'CompositeFrame' is missing"
 )
 MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS = (
-    "Operators missing from 'ResourceFrame.groupsOfOperators.GroupOfOperators'"
+    "At least two 'OperatorRef' should be present in 'ResourceFrame.groupsOfOperators.GroupOfOperators.members'"
 )

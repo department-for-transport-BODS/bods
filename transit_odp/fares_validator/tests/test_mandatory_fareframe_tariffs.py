@@ -152,18 +152,20 @@ def test_check_type_of_tariff_ref_values(
         "expected",
     ),
     [
-        (True, True, True, True, None),
+        (True, True, True, True, True, None),
         (
+            False,
             False,
             False,
             False,
             False,
             "",
         ),
-        (True, False, False, False, None),
+        (True, False, False, False, False, None),
         (
             True,
             True,
+            False,
             False,
             False,
             [
@@ -172,7 +174,18 @@ def test_check_type_of_tariff_ref_values(
                 "Mandatory element 'OperatorRef' or 'GroupOfOperatorsRef' missing in 'Tariff'",
             ],
         ),
-        (True, True, False, True, None),
+        (
+            True,
+            True,
+            False,
+            True,
+            False,
+            [
+                "violation",
+                "8",
+                "At least two 'OperatorRef' should be present in 'ResourceFrame.groupsOfOperators.GroupOfOperators.members'",
+            ],
+        ),
     ],
 )
 def test_check_tariff_operator_ref(
@@ -213,15 +226,15 @@ def test_check_tariff_operator_ref(
                 <groupsOfOperators>
                 <GroupOfOperators version="1.0" id="operators@bus">
                 <Name>Bus Operators</Name>
-                {2}
+                {0}
             </GroupOfOperators>
           </groupsOfOperators>
         </ResourceFrame>
                     <FareFrame id="epd:UK:FSYO:FareFrame_UK_PI_FARE_NETWORK:1a_Inbound:op" version="1.0" dataSourceRef="data_source" responsibilitySetRef="network_data">
-                        {0}
+                        {1}
                         <tariffs>
                             <Tariff id="Tariff@AdultSingle@Line_1a_Inbound" version="1.0">
-                                {1}
+                                {2}
                             </Tariff>
                         </tariffs>
                     </FareFrame>
@@ -234,17 +247,41 @@ def test_check_tariff_operator_ref(
     if type_of_frame_ref_ref_present:
         if type_of_frame_ref_ref_valid:
             if single_operator_ref:
-                xml = tariffs.format(type_of_frame_ref_valid, operator_ref_pass)
+                xml = tariffs.format(
+                    min_num_of_operators_present_true,
+                    type_of_frame_ref_valid,
+                    operator_ref_pass,
+                )
             elif multi_operator_ref:
                 xml = tariffs.format(
-                    type_of_frame_ref_valid, group_of_operator_ref_pass
+                    min_num_of_operators_present_true,
+                    type_of_frame_ref_valid,
+                    group_of_operator_ref_pass,
                 )
+                if min_num_of_operators_present:
+                    xml = tariffs.format(
+                        min_num_of_operators_present_true,
+                        type_of_frame_ref_valid,
+                        group_of_operator_ref_pass,
+                    )
+                else:
+                    xml = tariffs.format(
+                        min_num_of_operators_present_false,
+                        type_of_frame_ref_valid,
+                        group_of_operator_ref_pass,
+                    )
             else:
-                xml = tariffs.format(type_of_frame_ref_valid, "")
+                xml = tariffs.format(
+                    min_num_of_operators_present_true, type_of_frame_ref_valid, ""
+                )
         else:
-            xml = tariffs.format(type_of_frame_ref_invalid, "")
+            xml = tariffs.format(
+                min_num_of_operators_present_true, type_of_frame_ref_invalid, ""
+            )
     else:
-        xml = tariffs.format(type_of_frame_ref_not_present, "")
+        xml = tariffs.format(
+            min_num_of_operators_present_true, type_of_frame_ref_not_present, ""
+        )
 
     tariffs = get_lxml_element(X_PATH, xml)
     response = check_tariff_operator_ref("", tariffs)
