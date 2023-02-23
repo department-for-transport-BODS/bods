@@ -68,6 +68,12 @@ class VehicleJourneyFinder:
             return framed_vehicle_journey_ref.dated_vehicle_journey_ref
         return None
 
+    def get_recorded_at_time(self, vehicle_activity: VehicleActivity) -> Optional[str]:
+        vehicle_recorded_at_time = vehicle_activity.recorded_at_time
+        if vehicle_recorded_at_time is not None:
+            return vehicle_recorded_at_time.date()
+        return None
+
     def check_operator_and_line_present(
         self, activity: VehicleActivity, result: ValidationResult
     ) -> bool:
@@ -445,9 +451,14 @@ class VehicleJourneyFinder:
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
 
-        if not self.filter_by_operating_period(
-            activity.recorded_at_time.date(), txc_xml, result
-        ):
+        if (recorded_at_time := self.get_recorded_at_time(activity)) is None:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "Recorded At Time missing in SIRI-VM VehicleActivity",
+            )
+            return None
+
+        if not self.filter_by_operating_period(recorded_at_time, txc_xml, result):
             return None
 
         if (vehicle_journey_ref := self.get_vehicle_journey_ref(mvj)) is None:
@@ -464,7 +475,7 @@ class VehicleJourneyFinder:
             return None
 
         if not self.filter_by_operating_profile(
-            activity.recorded_at_time.date(), vehicle_journeys, result
+            recorded_at_time, vehicle_journeys, result
         ):
             return None
 
