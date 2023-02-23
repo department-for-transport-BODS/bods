@@ -183,6 +183,4 @@ MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING = (
 MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING = (
     "Attribute 'id' of element 'CompositeFrame' is missing"
 )
-MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS = (
-    "At least two 'OperatorRef' should be present in 'ResourceFrame.groupsOfOperators.GroupOfOperators.members'"
-)
+MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS = "At least two 'OperatorRef' should be present in 'ResourceFrame.groupsOfOperators.GroupOfOperators.members'"
