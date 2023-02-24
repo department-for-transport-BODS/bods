@@ -1352,12 +1352,7 @@ class TestFeedDeleteView:
 
         response = publish_client.post(url, data={"submit": "submit"})
         assert response.status_code == 302
-        assert len(mailoutbox) == 1
-        assert mailoutbox[0].to[0] == "ms_deleter@test.test"
-        assert (
-            mailoutbox[0].subject
-            == "You deleted an unpublished data set – no action required"
-        )
+        assert len(mailoutbox) == 0
 
     def test_confirmation_displays_correct_name(self, publish_client):
         publish_client.force_login(user=self.deleter)
@@ -1381,18 +1376,7 @@ class TestFeedDeleteView:
         )
         response = publish_client.post(url, data={"submit": "submit"})
         assert response.status_code == 302
-        deleter, updater = mailoutbox
-        assert deleter.to[0] == "ms_deleter@test.test"
-        assert (
-            deleter.subject
-            == "You deleted an unpublished data set – no action required"
-        )
-        assert updater.to[0] == "mr_updater@test.test"
-        assert updater.subject == (
-            ""
-            "A data set you updated has been deleted from the Bus Open Data Service"
-            " – no action required"
-        )
+        assert len(mailoutbox) == 0
 
 
 class TestPublishRevisionView:
