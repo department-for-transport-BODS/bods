@@ -1,5 +1,7 @@
+import datetime
+
 from transit_odp.organisation.constants import TimetableType
-from transit_odp.organisation.models.data import SeasonalService
+from transit_odp.organisation.models import ConsumerFeedback, SeasonalService
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import get_requires_attention_data
 from transit_odp.publish.tables import DatasetTable
@@ -21,11 +23,20 @@ class ListView(BasePublishListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = context["pk1"]
-        context["all_service_codes"] = OTCService.objects.get_all_without_exempted_ones(
-            org_id
-        ).count()
+        context[
+            "applicable_services"
+        ] = OTCService.objects.get_in_scope_in_season_services(org_id).count()
         context["services_requiring_attention"] = len(
             get_requires_attention_data(org_id)
+        )
+        today_start = datetime.datetime.today().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        thirty_days_ago = today_start - datetime.timedelta(days=30)
+        context["feedback_count"] = (
+            ConsumerFeedback.objects.filter(organisation_id=org_id)
+            .filter(created__gte=thirty_days_ago)
+            .count()
         )
         context[
             "seasonal_services_counter"
