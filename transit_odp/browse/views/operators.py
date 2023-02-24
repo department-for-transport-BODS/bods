@@ -1,3 +1,5 @@
+from math import ceil
+
 from django.db.models import Count, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
@@ -7,14 +9,10 @@ from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
-from transit_odp.organisation.constants import (
-    EXPIRED,
-    INACTIVE,
-    AVLType,
-    FaresType,
-    TimetableType,
-)
+from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.otc.models import Service as OTCService
+from transit_odp.publish.requires_attention import get_requires_attention_data
 
 
 class OperatorsView(BaseListView):
@@ -62,21 +60,22 @@ class OperatorDetailView(BaseDetailView):
         context = super().get_context_data(**kwargs)
         organisation = self.object
 
-        timetable_datasets = (
-            Dataset.objects.filter(
-                organisation=organisation,
-                dataset_type=TimetableType,
+        context["total_services_requiring_attention"] = len(
+            get_requires_attention_data(organisation.id)
+        )
+        context[
+            "total_in_scope_in_season_services"
+        ] = OTCService.objects.get_in_scope_in_season_services(organisation.id).count()
+        try:
+            context["services_require_attention_percentage"] = ceil(
+                100
+                * (
+                    context["total_services_requiring_attention"]
+                    / context["total_in_scope_in_season_services"]
+                )
             )
-            .add_is_live_pti_compliant()
-            .select_related("organisation")
-            .select_related("live_revision")
-        )
-        context["timetable_stats"] = timetable_datasets.agg_global_feed_stats(
-            dataset_type=TimetableType, organisation_id=organisation.id
-        )
-        context["timetable_non_compliant"] = timetable_datasets.filter(
-            is_pti_compliant=False
-        ).count()
+        except ZeroDivisionError:
+            context["services_require_attention_percentage"] = 0
 
         avl_dataset_revisions = (
             DatasetRevision.objects.filter(dataset__organisation_id=organisation.id)

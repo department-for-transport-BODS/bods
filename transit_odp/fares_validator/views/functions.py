@@ -939,13 +939,31 @@ def check_tariff_operator_ref(context, elements, *args):
     ):
         xpath = "x:OperatorRef"
         operator_ref = element.xpath(xpath, namespaces=NAMESPACE)
-        if not operator_ref:
+        xpath = "x:GroupOfOperatorsRef"
+        multi_operator_ref = element.xpath(xpath, namespaces=NAMESPACE)
+        if not (operator_ref or multi_operator_ref):
             sourceline = element.sourceline
             response_details = XMLViolationDetail(
                 "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING
             )
             response = response_details.__list__()
             return response
+        elif multi_operator_ref:
+            xpath = "../../../x:ResourceFrame/x:groupsOfOperators/x:GroupOfOperators/x:members/x:OperatorRef"
+            members = element.xpath(xpath, namespaces=NAMESPACE)
+            if len(members) < 2:
+                xpath = (
+                    "../../../x:ResourceFrame/x:groupsOfOperators/x:GroupOfOperators"
+                )
+                groups_of_operators = element.xpath(xpath, namespaces=NAMESPACE)
+                sourceline_groups_of_operators = groups_of_operators[0].sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_groups_of_operators,
+                    MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS,
+                )
+                response = response_details.__list__()
+                return response
 
 
 def check_tariff_basis(context, elements, *args):

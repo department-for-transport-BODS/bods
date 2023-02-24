@@ -132,9 +132,6 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
     nocs_data = OperatorCode.objects.values_list().order_by("id")
     nocs_df = pd.DataFrame.from_records(nocs_data.values(*NOC_COLUMNS))
 
-    if nocs_df.empty:
-        raise EmptyDataFrame()
-
     multioperator_list = add_multioperator_status(nocs, nocs_df)
     multioperator_df = pd.DataFrame(multioperator_list, columns=["multioperator"])
 
@@ -165,22 +162,30 @@ def add_multioperator_status(nocs, nocs_df) -> list:
     for operator_codes in nocs:
         orgs = []
         for operator in operator_codes:
-            try:
-                org = nocs_df.loc[nocs_df["noc"] == operator, "organisation_id"].iloc[0]
-                if org:
-                    orgs.append(org)
-            except IndexError:
+            if nocs_df.empty:
                 orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
-        if MULTIOPERATOR_STATUS_DICT["Unavailable"] in orgs:
-            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+            else:
+                try:
+                    org = nocs_df.loc[
+                        nocs_df["noc"] == operator, "organisation_id"
+                    ].iloc[0]
+                    if org:
+                        orgs.append(org)
+                except IndexError:
+                    orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
 
-        if len(set(orgs)) == 1 and (
-            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
+        if len(set(orgs)) == 1:
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+        elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT["Unavailable"] in set(
+            orgs
         ):
             multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
-        elif len(set(orgs)) > 1 and (
-            MULTIOPERATOR_STATUS_DICT["Unavailable"] not in set(orgs)
-        ):
+        elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT[
+            "Unavailable"
+        ] not in set(orgs):
             multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
+        elif len(set(orgs)) > 2:
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
+
     if multioperator_list:
         return multioperator_list

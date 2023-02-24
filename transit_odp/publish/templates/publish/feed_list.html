@@ -5,7 +5,7 @@
     <div class="review-stat">
         <div>
             <span class="review-stat__top">{{ services_requiring_attention }}</span>
-            <span class="review-stat__bottom">/{{ all_service_codes }}</span>
+            <span class="review-stat__bottom">/{{ applicable_services }}</span>
         </div>
         <p class="review-stat__description">{% trans 'Total service codes that require attention' %}</p>
         <i class="fas fa-play govuk-!-margin-right-1"></i>
@@ -15,10 +15,10 @@
     <div class="review-stat">
         <div>
             <span class="review-stat__top">
-                {{ organisation.stats.weekly_downloads|add:organisation.stats.weekly_api_hits|add:organisation.total_subscriptions }}
+                {{ feedback_count }}
             </span>
         </div>
-        <p class="review-stat__description">{% trans 'Total consumer interactions with your data' %}</p>
+        <p class="review-stat__description">{% trans 'Feedback messages received recently' %}</p>
         <i class="fas fa-play govuk-!-margin-right-1"></i>
         <a class="review-stat__link" href={% url 'data-activity' pk1=pk1 host hosts.publish %}>{% trans 'More details' %}</a>
     </div>

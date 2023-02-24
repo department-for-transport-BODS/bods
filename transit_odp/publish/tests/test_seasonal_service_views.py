@@ -207,6 +207,7 @@ class TestEditSeasonalServiceView:
             kwargs={"pk1": self.org.id, "pk": self.seasonal_service.id},
         )
 
+    @freeze_time("2023-01-01")
     def test_edit_seasonal_service_date(self, publish_client):
         """
         GIVEN : a new seasonal services

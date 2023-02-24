@@ -5,13 +5,13 @@
 {% load render_table from django_tables2 %}
 
 {% block title_tag %}
-    {% filter force_escape %}{% trans 'Data Requiring Attention' %}{% endfilter %}
+    {% filter force_escape %}{% trans 'Service Codes Requiring Attention' %}{% endfilter %}
 {% endblock %}
 
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url ancestor 'feed-list' pk1=org_id host hosts.publish %}
-    {% breadcrumb 'Data Requiring Attention' %}
+    {% breadcrumb 'Service Codes Requiring Attention' %}
 {% endblock %}
 
 {% block full_width_content %}
@@ -19,24 +19,30 @@
         <div class="govuk-width-container">
             <div class="govuk-grid-row govuk-!-margin-top-5">
                 <div class="govuk-grid-column-two-thirds">
-                    <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Data requiring attention' %}</h1>
+                    <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Service codes requiring attention' %}</h1>
                     <p class="app-masthead__description">
                         {% filter force_escape %}
                             {% blocktrans %}
-                                We have not been able to find the below registered service codes within your published
-                                datasets. Ensure you publish data that covers all service codes registered within the OTC
-                                database.
+                                The service codes listed here are registered with the OTC and are in scope of BODS,
+                                but are not yet published in a complete and accurate way.
                             {% endblocktrans %}
                         {% endfilter %}
                     </p>
-                    <div class="review-banner">
-                        <div class="review-stat govuk-!-margin-bottom-0">
-                            <div>
-                                <span class="review-stat__top">{{ services_requiring_attention }}</span>
-                            </div>
-                            <p class="review-stat__description">{% trans 'Service codes missing from BODS' %}</p>
-                        </div>
-                    </div>
+                    <p class="app-masthead__description">
+                        {% filter force_escape %}
+                            {% blocktrans %}
+                                Download the detailed export at the bottom of the page to determine the reason your
+                                service code is listed here.
+                            {% endblocktrans %}
+                        {% endfilter %}
+                    </p>
+                    <p class="app-masthead__description">
+                        {% filter force_escape %}
+                            {% blocktrans %}
+                                Contact the service desk if you have any questions or require any support.
+                            {% endblocktrans %}
+                        {% endfilter %}
+                    </p>
                 </div>
             </div>
         </div>
@@ -44,21 +50,41 @@
 {% endblock %}
 
 {% block content %}
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-9">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-quarter">
+                <div class="feed-stat">
+                    <span class="feed-stat__value">{{ total_in_scope_in_season_services }}</span>
+                    <span class="feed-stat__label govuk-!-font-size-16">
+                        {% trans 'Total in scope/<br>in season registered services' %}
+                    </span>
+                </div>
+            </div>
+            <div class="govuk-grid-column-one-quarter">
+                <div class="feed-stat">
+                    <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
+                    <span class="feed-stat__label govuk-!-font-size-16 govuk-!-margin-bottom-2">
+                        {% trans 'Services requiring<br>attention' %}
+                    </span>
+                    {% if services_require_attention_percentage == 0 %}
+                        <span class="govuk-tag govuk-tag--green" style="letter-spacing: 0px;">{% trans 'Compliant' %}</span>
+                    {% else %}
+                        <span class="govuk-tag govuk-tag--red" style="letter-spacing: 0px;">{% trans 'Not Compliant' %}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="govuk-width-container">
         <div class="govuk-grid-row govuk-!-margin-top-0">
             <form>
-                {% with description="Search for a licence number / service code / line number" placeholder="" style_border="2px solid black"%}
+                {% with description="Search for a licence number, service code or line number" placeholder="" style_border="2px solid black"%}
                     {% include "browse/snippets/search_banner_no_masthead.html" %}
                 {% endwith %}
             </form>
 
-            {% if services_requiring_attention %}
-                <div class="govuk-width-container">
-                    <div class="govuk-grid-column-full custom_govuk_table_border">
-                        {% render_table table %}
-                    </div>
-                </div>
-            {% else %}
+            {% if services_requiring_attention == 0 or not table.data %}
                 <div class="govuk-grid-column-two-thirds">
                     <h2 class="govuk-heading-m">
                         {% filter force_escape %}{% trans 'Sorry, no results found for your search' %}{% endfilter %}
@@ -69,8 +95,14 @@
                     </p>
                     <ul class="govuk-list govuk-list--bullet">
                         <li>Check your spelling and try again</li>
-                        <li>User another search term</li>
+                        <li>Use another search term</li>
                     </ul>
+                </div>
+            {% else %}
+                <div class="govuk-width-container">
+                    <div class="govuk-grid-column-full custom_govuk_table_border">
+                        {% render_table table %}
+                    </div>
                 </div>
             {% endif %}
         </div>
