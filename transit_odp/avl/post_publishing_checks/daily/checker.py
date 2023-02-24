@@ -133,7 +133,7 @@ class PostPublishingChecker:
 
             txc_vehicle_journey = (
                 vehicle_journey_finder.match_vehicle_activity_to_vehicle_journey(
-                    activity_date, activity, result
+                    activity, result
                 )
             )
 

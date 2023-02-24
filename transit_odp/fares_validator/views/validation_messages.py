@@ -12,7 +12,7 @@ MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING = (
     "'TypeOfTariffRef' 'ref' attribute is missing in 'Tariff'"
 )
 MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING = (
-    "Mandatory element 'OperatorRef' is missing in 'Tariff'"
+    "Mandatory element 'OperatorRef' or 'GroupOfOperatorsRef' missing in 'Tariff'"
 )
 MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING = (
     "Mandatory element 'TariffBasis' is missing in 'Tariff'"
@@ -183,3 +183,4 @@ MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING = (
 MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING = (
     "Attribute 'id' of element 'CompositeFrame' is missing"
 )
+MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS = "At least two 'OperatorRef' should be present in 'ResourceFrame.groupsOfOperators.GroupOfOperators.members'"
