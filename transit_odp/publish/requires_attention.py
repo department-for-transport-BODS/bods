@@ -45,7 +45,7 @@ def _update_data(object_list: List[Dict[str, str]], service: OTCService) -> None
     )
 
 
-def requires_attention(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
+def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -> tuple:
     """
     Checks key staleness dates on live TXCFileAttributes and OTC Service to determine
     if a service is Stale and returns all Stale live services.
@@ -108,7 +108,16 @@ def requires_attention(service: OTCService, file_attribute: TXCFileAttributes) -
             and effective_date <= last_modified
         )
     )
-    return any((staleness_otc, staleness_end_date, staleness_12_months_old))
+
+    return (
+        staleness_end_date,
+        staleness_12_months_old,
+        staleness_otc,
+    )
+
+
+def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
+    return any(evaluate_staleness(service, file_attribute))
 
 
 def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
@@ -128,6 +137,6 @@ def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
         file_attribute = txcfa_map.get(service_code)
         if file_attribute is None:
             _update_data(object_list, service)
-        elif requires_attention(service, file_attribute):
+        elif is_stale(service, file_attribute):
             _update_data(object_list, service)
     return object_list

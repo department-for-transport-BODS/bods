@@ -27,7 +27,7 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.functions import Coalesce, Concat, Substr, TruncDate, Upper
+from django.db.models.functions import Cast, Coalesce, Concat, Substr, TruncDate, Upper
 from django.db.models.query import Prefetch
 from django.utils import timezone
 
@@ -1257,7 +1257,7 @@ class ServiceCodeExemptionQuerySet(models.QuerySet):
             registration_number=Concat(
                 "licence__number",
                 Value("/"),
-                "registration_code",
+                Cast("registration_code", output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -1267,7 +1267,7 @@ class ServiceCodeExemptionQuerySet(models.QuerySet):
             service_code=Concat(
                 "licence__number",
                 Value(":"),
-                "registration_code",
+                Cast("registration_code", output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -1304,7 +1304,7 @@ class SeasonalServiceQuerySet(models.QuerySet):
             registration_number=Concat(
                 "licence__number",
                 Value("/"),
-                "registration_code",
+                Cast("registration_code", output_field=CharField()),
                 output_field=CharField(),
             )
         )
