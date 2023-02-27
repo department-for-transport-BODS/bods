@@ -3,3 +3,8 @@
 .app-\!-text-muted {
   color: $govuk-secondary-text-colour;
 }
+
+// Override semi-opaque proposed dates in date inputs on Safari
+input[type="date"] {
+  -webkit-text-fill-color: $govuk-text-colour;
+}
