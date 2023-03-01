@@ -72,7 +72,7 @@ class ServiceCodeView(View):
             f"{self.org.name}.csv"
         )
         csv_export = ServiceCodesCSV(self.org.id)
-        file_ = csv_export.to_csv()
+        file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
         return response
