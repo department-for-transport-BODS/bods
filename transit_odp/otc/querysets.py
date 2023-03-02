@@ -140,13 +140,24 @@ class ServiceQuerySet(QuerySet):
             )
         )
 
-    def get_otc_data_for_organisation(self, organisation_id: int) -> TServiceQuerySet:
-        now = timezone.now()
+    def get_all_otc_data_for_organisation(
+        self, organisation_id: int
+    ) -> TServiceQuerySet:
         licences_subquery = Subquery(
             BODSLicence.objects.filter(organisation__id=organisation_id).values(
                 "number"
             )
         )
+        return (
+            self.add_otc_stale_date()
+            .annotate(otc_licence_number=F("licence__number"))
+            .filter(licence__number__in=licences_subquery)
+            .order_by("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number", "service_number")
+        )
+
+    def get_otc_data_for_organisation(self, organisation_id: int) -> TServiceQuerySet:
+        now = timezone.now()
         # seasonal services that are out of season
         seasonal_services_subquery = Subquery(
             SeasonalService.objects.filter(licence__organisation__id=organisation_id)
@@ -161,9 +172,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         return (
-            self.add_otc_stale_date()
-            .annotate(otc_licence_number=F("licence__number"))
-            .filter(licence__number__in=licences_subquery)
+            self.get_all_otc_data_for_organisation(organisation_id)
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
             .order_by("licence__number", "registration_number", "service_number")

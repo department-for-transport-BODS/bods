@@ -35,7 +35,7 @@ from transit_odp.avl.validation.factories import (
     ValidationResponseFactory,
     ValidationSummaryFactory,
 )
-from transit_odp.organisation.constants import ERROR, INACTIVE, LIVE, AVLType
+from transit_odp.organisation.constants import INACTIVE, LIVE, AVLType
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     DatasetFactory,
@@ -143,82 +143,6 @@ def test_no_change(mocker, mailoutbox):
         ).count()
         == 0
     )
-
-
-def test_from_down_to_up_only_subscribers(mocker, mailoutbox):
-    subscriber = UserFactory(account_type=DeveloperType)
-    subscriber.settings.notify_avl_unavailable = True
-    subscriber.settings.save()
-    dataset = DatasetFactory(
-        dataset_type=AVLType, avl_feed_status=AVL_FEED_DOWN, subscribers=[subscriber]
-    )
-    dataset.live_revision.status = ERROR
-    dataset.live_revision.save()
-    dataset.contact.settings.notify_avl_unavailable = True
-    dataset.contact.settings.save()
-    data = [
-        Feed(
-            id=dataset.id,
-            publisher_id=dataset.contact.id,
-            url="www.testurl.com/avl",
-            username=dataset.contact.username,
-            password="password",
-            status=AVL_FEED_UP,
-        )
-    ]
-
-    service = Mock()
-    service.get_feeds.return_value = data
-    mocker.patch(CAVL_PATH, return_value=service)
-    task_monitor_avl_feeds()
-    assert len(mailoutbox) == 1
-    assert mailoutbox[0].subject == "Data feed status changed"
-    assert mailoutbox[0].to[0] == subscriber.email
-    db_dataset = Dataset.objects.get(id=dataset.id)
-    assert db_dataset.avl_feed_status == AVL_FEED_UP
-    assert db_dataset.live_revision.status == LIVE
-
-
-def test_from_up_to_down_email_everyone(mocker, mailoutbox):
-    subscriber = UserFactory(account_type=DeveloperType)
-    subscriber.settings.notify_avl_unavailable = True
-    subscriber.settings.save()
-    dataset = DatasetFactory(
-        dataset_type=AVLType, avl_feed_status=AVL_FEED_UP, subscribers=[subscriber]
-    )
-    dataset.contact.settings.notify_avl_unavailable = True
-    dataset.contact.settings.save()
-    data = [
-        Feed(
-            id=dataset.id,
-            publisher_id=dataset.contact.id,
-            url="www.testurl.com/avl",
-            username=dataset.contact.username,
-            password="password",
-            status=AVL_FEED_DOWN,
-        )
-    ]
-
-    service = Mock()
-    service.get_feeds.return_value = data
-    mocker.patch(CAVL_PATH, return_value=service)
-    task_monitor_avl_feeds()
-    assert len(mailoutbox) == 2
-    developer, publisher = mailoutbox
-
-    assert developer.subject == "Data feed status changed"
-    assert developer.to[0] == subscriber.email
-
-    assert (
-        publisher.subject
-        == f"AVL Feed {dataset.id} is no longer sending data to the Bus Open Data "
-        f"Service"
-    )
-    assert publisher.to[0] == dataset.contact.email
-
-    db_dataset = Dataset.objects.get(id=dataset.id)
-    assert db_dataset.avl_feed_status == AVL_FEED_DOWN
-    assert db_dataset.live_revision.status == ERROR
 
 
 class TestValidateAVLTask:

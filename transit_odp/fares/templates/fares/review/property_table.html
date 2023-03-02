@@ -11,6 +11,17 @@
             <td class="govuk-table__cell dont-break-out">{{ object.dataset_id }}</td>
         </tr>
         <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'URL link' %}</th>
+            <td class="govuk-table__cell">
+                <span class="no-wrap" id="id-publish-review-url-link">
+                    <a class="govuk-link"
+                        href="{{ object.url_link }}">
+                        {% trans 'Publisher URL' %}
+                    </a>
+                </span>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
             <td class="govuk-table__cell">
                 <div class="flex-between">
@@ -47,18 +58,6 @@
         </tr>
 
         <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% trans 'URL link' %}</th>
-            <td class="govuk-table__cell">
-                <span class="no-wrap" id="id-publish-review-url-link">
-                    <a class="govuk-link"
-                        href="{{ object.url_link }}">
-                        {% trans 'Publisher URL' %}
-                    </a>
-                </span>
-            </td>
-        </tr>
-
-        <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans 'Download NeTEx' %}</th>
             <td class="govuk-table__cell">
                 <span class="no-wrap" style="text-align: right">
@@ -66,7 +65,7 @@
                     <a class="govuk-link"
                         href="
 
-                        {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                            {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
                         {% trans 'Download .xml (NeTEx)' %}
                     </a>
                 </span>
