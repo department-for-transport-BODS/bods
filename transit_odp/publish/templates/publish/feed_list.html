@@ -20,7 +20,7 @@
         </div>
         <p class="review-stat__description">{% trans 'Feedback messages received recently' %}</p>
         <i class="fas fa-play govuk-!-margin-right-1"></i>
-        <a class="review-stat__link" href={% url 'data-activity' pk1=pk1 host hosts.publish %}>{% trans 'More details' %}</a>
+        <a class="review-stat__link" href={{ data_activity_url }}>{% trans 'More details' %}</a>
     </div>
 
     <div class="review-stat">

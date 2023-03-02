@@ -1,5 +1,8 @@
 import datetime
 
+from django_hosts import reverse
+
+from config.hosts import PUBLISH_HOST
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import ConsumerFeedback, SeasonalService
 from transit_odp.otc.models import Service as OTCService
@@ -41,4 +44,8 @@ class ListView(BasePublishListView):
         context[
             "seasonal_services_counter"
         ] = SeasonalService.objects.get_count_in_organisation(org_id)
+        context["data_activity_url"] = (
+            reverse("data-activity", kwargs={"pk1": org_id}, host=PUBLISH_HOST)
+            + "?prev=feed-list"
+        )
         return context
