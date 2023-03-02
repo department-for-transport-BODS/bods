@@ -468,21 +468,19 @@ class DatasetRevision(
     @property
     def report_url(self):
         """returns draft's validtion report url review url"""
-        if self.dataset.dataset_type == DatasetType.TIMETABLE:
-            dataset = self.dataset
-            dataset_id = dataset.id
-            org_id = dataset.organisation.id
+        dataset = self.dataset
+        dataset_id = dataset.id
+        org_id = dataset.organisation.id
 
-            view_namespace = DATASET_TYPE_NAMESPACE_MAP[dataset.dataset_type]
-            view_name = "review-pti-csv"
-            view_name = f"{view_namespace}:{view_name}" if view_namespace else view_name
+        view_namespace = DATASET_TYPE_NAMESPACE_MAP[dataset.dataset_type]
+        view_name = "review-pti-csv"
+        view_name = f"{view_namespace}:{view_name}" if view_namespace else view_name
 
-            return reverse(
-                view_name,
-                kwargs={"pk": dataset_id, "pk1": org_id},
-                host=hosts.PUBLISH_HOST,
-            )
-        return ""
+        return reverse(
+            view_name,
+            kwargs={"pk": dataset_id, "pk1": org_id},
+            host=hosts.PUBLISH_HOST,
+        )
 
     def get_hash(self):
         """Returns the hash of the currently cached dataset"""
