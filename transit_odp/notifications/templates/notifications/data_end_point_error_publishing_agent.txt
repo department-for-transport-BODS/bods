@@ -1,13 +1,7 @@
 Hello,
 
-The following data set has failed to publish on the Bus Open Data Service due to validation errors{% if dataset_type == 1 %} in the files as specified in the Validation report{% endif %}.
-{% if with_pti_violations %}
-Operators are legally obliged to supply data according to the PTI standard, and you must resolve all issues listed immediately.
+The following data set has failed to upload on the Bus Open Data Service due to validation errors{% if dataset_type == 1 %} supplied in the Validation report{% endif %}.
 
-Please check your data set below to ensure that the most up-to-date information is maintained on BODS. If you do not know how to resolve issues, please reach out to your supplier.
-{% else %}
-Please check your data set below to ensure that the most up-to-date information is maintained on BODS.
-{% endif %}
 Operator: {{ organisation }}
 Data set: {{ feed_name }}
 Data set ID: {{ feed_id }}
@@ -15,6 +9,18 @@ Short Description: {{ feed_short_description }}
 Published: {{ published_time }}
 Comments: {{ comments }}
 Link to data set: {{ link }}
+
+The validation report is available here: {{ report_link }}
+
+Action required:
+    1) Share or forward this email to your supplier so that they can help you with the issues being encountered.
+    2) Complete all actions the supplier requests in response to the validation report.
+    3) Update the dataset on BODS and review the updated validation response.
+
+Important:
+You are legally obliged to supply data according to the standards, and you must resolve all issues listed immediately.
+
+For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
 
 Kind Regards,
 The Bus Open Data Team

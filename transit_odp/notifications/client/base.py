@@ -418,6 +418,7 @@ class NotificationBase:
         published_at: Optional[datetime.datetime],
         comments: str,
         feed_detail_link: str,
+        report_link: str,
         contact_email: str,
         with_pti_violations: bool = False,
     ):
@@ -442,6 +443,7 @@ class NotificationBase:
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            report_link=report_link,
             dataset_type=dataset_type,
             with_pti_violations=with_pti_violations,
         )
@@ -457,6 +459,7 @@ class NotificationBase:
         operator_name: str,
         comments: str,
         feed_detail_link: str,
+        report_link: str,
         contact_email: str,
         with_pti_violations: bool = False,
     ):
@@ -483,6 +486,7 @@ class NotificationBase:
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            report_link=report_link,
             dataset_type=dataset_type,
             with_pti_violations=with_pti_violations,
         )

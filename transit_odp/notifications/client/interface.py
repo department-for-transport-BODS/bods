@@ -219,6 +219,7 @@ class INotifications(Protocol):
         published_at: datetime.datetime,
         comments: str,
         feed_detail_link: str,
+        report_link: str,
         contact_email: str,
         with_pti_violations: bool = False,
     ):
@@ -246,6 +247,7 @@ class INotifications(Protocol):
         operator_name: str,
         comments: str,
         feed_detail_link: str,
+        report_link: str,
         contact_email: str,
         with_pti_violations: bool = False,
     ):
