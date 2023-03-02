@@ -141,6 +141,7 @@ def send_endpoint_validation_error_notification(dataset):
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
+            report_link=revision.report_url,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
         )
@@ -153,6 +154,7 @@ def send_endpoint_validation_error_notification(dataset):
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
+            report_link=revision.report_url,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
         )
