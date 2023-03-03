@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
 
 import config.hosts
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.publish.forms.constants import DISABLE_SUBMIT_SCRIPT
 
@@ -48,12 +49,31 @@ class RevisionPublishForm(GOVUKModelForm):
     ):
         super().__init__(*args, **kwargs)
         consent_field = self.fields["consent"]
-        consent_field.label = _(consent_label)
+        non_compliant_label = (
+            "I acknowledge my data does not meet the required standard, as detailed "
+            "in the validation report, and I am publishing non-compliant data to the "
+            "Bus Open Data Service."
+        )
+        consent_label = "I have reviewed the submission and wish to publish my data"
         self.is_update = is_update
+        try:
+            if self.get_count(**kwargs) > 0:
+                consent_field.label = _(non_compliant_label)
+            else:
+                consent_field.label = _(consent_label)
+        except IndexError:
+            consent_field.label = _(consent_label)
 
     class Meta:
         model = DatasetRevision
         fields = ("is_published",)
+
+    def get_count(self, **kwargs):
+        instance = kwargs.pop("instance")
+        count = FaresValidationResult.objects.filter(
+            revision_id=instance.id
+        ).values_list("count", flat=True)
+        return count[0]
 
     def get_layout(self):
         return Layout(

@@ -20,6 +20,7 @@ import config.hosts
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
@@ -28,6 +29,7 @@ from transit_odp.publish.forms import (
     FeedPublishCancelForm,
     FeedUploadForm,
     RevisionPublishForm,
+    RevisionPublishFormViolations,
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -115,7 +117,20 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
     """The base view of all review pages"""
 
     model = DatasetRevision
-    form_class = RevisionPublishForm
+    fields = ("id",)
+
+    def get_form_class(self) -> Type[RevisionPublishForm]:
+        count = FaresValidationResult.objects.filter(
+            revision_id=self.object.id
+        ).values_list("count", flat=True)
+        print("count>>>", count)
+        try:
+            if count[0] > 0:
+                form_class = RevisionPublishFormViolations
+                return form_class
+        except IndexError:
+            return RevisionPublishForm
+        return super().get_form_class()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
