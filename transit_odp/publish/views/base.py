@@ -704,4 +704,33 @@ class DataActivityView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["pk1"] = self.kwargs.get("pk1")
+        prev = self.request.GET.get("prev")
+        if prev == "operator-detail":
+            context["backlink_url"] = reverse(
+                "operator-detail",
+                kwargs={"pk": self.kwargs.get("pk1")},
+                host=config.hosts.DATA_HOST,
+            )
+        elif prev == "guide-me":
+            context["backlink_url"] = reverse(
+                "guide-me", host=config.hosts.PUBLISH_HOST
+            )
+        elif prev == "avl-feed-list":
+            context["backlink_url"] = reverse(
+                "avl:feed-list",
+                kwargs={"pk1": self.kwargs.get("pk1")},
+                host=config.hosts.PUBLISH_HOST,
+            )
+        elif prev == "fares-feed-list":
+            context["backlink_url"] = reverse(
+                "fares:feed-list",
+                kwargs={"pk1": self.kwargs.get("pk1")},
+                host=config.hosts.PUBLISH_HOST,
+            )
+        else:
+            context["backlink_url"] = reverse(
+                "feed-list",
+                kwargs={"pk1": self.kwargs.get("pk1")},
+                host=config.hosts.PUBLISH_HOST,
+            )
         return context

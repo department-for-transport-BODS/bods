@@ -54,9 +54,15 @@ class RedirectDataActivityView(OrgUserViewMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         user = self.request.user
         if user.is_agent_user:
-            return reverse("agent-dashboard", host=PUBLISH_HOST) + "?next=data-activity"
-        return reverse(
-            "data-activity", kwargs={"pk1": user.organisation.id}, host=PUBLISH_HOST
+            return (
+                reverse("agent-dashboard", host=PUBLISH_HOST)
+                + "?next=data-activity&prev=guide-me"
+            )
+        return (
+            reverse(
+                "data-activity", kwargs={"pk1": user.organisation.id}, host=PUBLISH_HOST
+            )
+            + "?prev=guide-me"
         )
 
 
