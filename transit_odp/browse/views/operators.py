@@ -4,7 +4,7 @@ from django.db.models import Count, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
 
-from config.hosts import DATA_HOST
+from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
@@ -137,4 +137,8 @@ class OperatorDetailView(BaseDetailView):
                 f"&api_key={self.request.user.auth_token.key}"
             )
 
+        context["data_activity_url"] = (
+            reverse("data-activity", kwargs={"pk1": organisation.id}, host=PUBLISH_HOST)
+            + "?prev=operator-detail"
+        )
         return context
