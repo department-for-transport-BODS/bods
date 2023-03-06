@@ -44,14 +44,6 @@ class ReviewView(ReviewBaseView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    # def get_form_kwargs(self):
-    #     kwargs = super().get_form_kwargs()
-    #     # kwargs.update(
-    #       {"consent_label": "I have reviewed the data and wish to publish my data"}
-    #     # )
-    #     print("kwargs revoew>>", kwargs)
-    #     return kwargs
-
     def get_dataset_queryset(self):
         """Returns a DatasetQuerySet for Fares datasets owned by the user's
         organisation.
