@@ -7,7 +7,7 @@
 
 {# Page Title #}
 {% block title_tag %}
-  {% trans 'Changelog' %}
+    {% trans 'Changelog' %}
 {% endblock %}
 
 {# Breadcrumb #}
@@ -16,21 +16,21 @@
 
 {# Backlink #}
 {% block backlink %}
-  {% url 'avl:feed-detail' pk1=pk1 pk=publication_id host host.name as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+    {% url 'avl:feed-detail' pk1=pk1 pk=object.id host host.name as backlink_url %}
+    {% include 'snippets/backlink.html' with url=backlink_url %}
 {% endblock %}
 
 {# Page Content #}
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl">
-        {% trans 'Changelog' %}
-      </span>
-      <h1 class="govuk-heading-xl dont-break-out">
-        {{ publication_name }}
-      </h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <span class="govuk-caption-xl">
+                {% trans 'Changelog' %}
+            </span>
+            <h1 class="govuk-heading-xl dont-break-out">
+                {{ feed.name }}
+            </h1>
+        </div>
     </div>
-  </div>
-  {% render_table table %}
+    {% render_table table %}
 {% endblock %}
