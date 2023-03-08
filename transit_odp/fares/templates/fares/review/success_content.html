@@ -38,7 +38,7 @@
         </div>
     </div>
 {% else %}
-    <div id="preview-section">
+    <div id="preview-section"></div>
 {% endflag %}
 
 {# Publish form #}
@@ -57,5 +57,4 @@
         href="{% url 'fares:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
         {{ _('Delete data set') }}
     </a>
-</div>
 </div>
