@@ -70,6 +70,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
 
     def get_table_data(self):
         next_page = self.request.GET.get("next", "feed-list")
+        prev_page = self.request.GET.get("prev")
         # Each record requires a separate request to the database which is in no way
         # ideal. We need to rethink the data model, possibly making the otc licence and
         # the organisation licence a foreign key.
@@ -77,7 +78,8 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             {
                 "next": reverse(
                     next_page, args=[record.organisation_id], host=PUBLISH_HOST
-                ),
+                )
+                + (f"?prev={prev_page}" if prev_page is not None else ""),
                 "organisation_id": record.organisation_id,
                 "organisation": record.organisation.name,
                 "requires_attention": len(

@@ -62,13 +62,13 @@ def test_df_organisations():
     )
     no_of_fares_products = 10
     avl_revisions = 2
-    no_of_revisions = 14
-    no_of_compliant_fares = 5
+    no_of_revisions = 1
+    no_of_compliant_fares = 0
     no_of_percentage_fares_compliance = (
         f"{no_of_compliant_fares / no_of_revisions * 100:.2f}%"
     )
-    no_of_pass_products = 2
-    no_of_trip_products = 3
+    no_of_pass_products = 1
+    no_of_trip_products = 1
 
     now = datetime.now()
     today = now.date()

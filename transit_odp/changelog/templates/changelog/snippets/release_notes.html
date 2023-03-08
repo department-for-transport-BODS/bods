@@ -1,6 +1,36 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "February 2023 (1.23.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the fares validation report and the fares data catalogue.
+        This validation report will enable an operator to work with their suppliers to
+        improve the way that fares data is produced. This deployment will result in:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            A validation report for each fares data set published to BODS describing
+            the compliance of the data within the fares data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A data catalogue to enable data consumers to review the fares data that has been published.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the AVL matching data quality report to use the appropriate date for when the
+            location data was generated.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "January 2023 (1.22.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

@@ -38,7 +38,7 @@
                     </a>
                 </li>
                 <li class="govuk-!-margin-bottom-5">
-                    <a class='govuk-link' href={% url 'data-activity' pk1=object.id host hosts.publish %}>
+                    <a class='govuk-link' href={{ data_activity_url }}>
                         {% filter force_escape %}{% trans 'Consumer activity' %}{% endfilter %}
                     </a>
                 </li>

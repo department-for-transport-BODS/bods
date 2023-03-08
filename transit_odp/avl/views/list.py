@@ -1,7 +1,9 @@
 from math import floor
 
 from django.db.models import Avg
+from django_hosts import reverse
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
@@ -49,6 +51,12 @@ class ListView(BasePublishListView):
                 "overall_ppc_score": floor(overall_ppc_score)
                 if overall_ppc_score
                 else overall_ppc_score,
+                "data_activity_url": reverse(
+                    "data-activity",
+                    kwargs={"pk1": self.organisation.id},
+                    host=PUBLISH_HOST,
+                )
+                + "?prev=avl-feed-list",
             }
         )
         return context

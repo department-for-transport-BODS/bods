@@ -7,10 +7,10 @@
 {% flag "is_fares_validator_active" %}
     <div class="govuk-!-margin-top-6" id="preview-section">
         {# Fares Validator Section - Succes/Fail Message #}
-        {% if validator_error %}
-            <div class="app-dqs-panel govuk-!-margin-bottom-7">
-                <div class="app-dqs-panel__body">
-                    <div class="app-dqs-panel__success">
+        <div class="app-dqs-panel govuk-!-margin-bottom-7">
+            <div class="app-dqs-panel__body">
+                <div class="app-dqs-panel__success">
+                    {% if validator_error %}
                         <h2 class="govuk-heading-m">Validation Check - Failed</h2>
                         <p class="govuk-body">
                             {% blocktrans %}
@@ -30,28 +30,21 @@
                                 supplier cannot help you with.
                             {% endblocktrans %}
                         </p>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="app-dqs-panel govuk-!-margin-bottom-7">
-                <div class="app-dqs-panel__body">
-                    <div class="app-dqs-panel__success">
+                    {% else %}
                         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Validation Check - Passed</h2>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
-        {% endif %}
+        </div>
+    </div>
 {% else %}
-    <div id="preview-section">
+    <div id="preview-section"></div>
 {% endflag %}
 
 {# Publish form #}
 <div class="govuk-!-margin-bottom-6">
     {% crispy form %}
 </div>
-
-<hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
 <h2 class="govuk-heading-l dont-break-out">
     {{ object.name }}
@@ -64,5 +57,4 @@
         href="{% url 'fares:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
         {{ _('Delete data set') }}
     </a>
-</div>
 </div>
