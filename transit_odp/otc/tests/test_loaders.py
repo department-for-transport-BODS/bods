@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -22,6 +22,8 @@ from transit_odp.otc.registry import Registry
 pytestmark = pytest.mark.django_db
 HERE = Path(__file__)
 CLIENT = "transit_odp.otc.client.otc_client.OTCAPIClient"
+TODAY = date.today()
+FUTURE = TODAY + timedelta(weeks=10)
 
 
 def test_empty_database_raises():
@@ -38,9 +40,14 @@ def test_simple_load(fake_client):
     operator = OperatorFactory()
     l1 = LicenceFactory(number="LD0000007")
     l2 = LicenceFactory(number="LD0000008")
-    services = ServiceFactory.create_batch(3, operator=operator, licence=l1)
-    services += ServiceFactory.create_batch(3, operator=operator, licence=l2)
-    services += ServiceFactory.create_batch(4)
+    services = ServiceFactory.create_batch(
+        3, operator=operator, licence=l1, variation_number=0
+    )
+    services += ServiceFactory.create_batch(
+        3, operator=operator, licence=l2, variation_number=0, effective_date=FUTURE
+    )
+    services += ServiceFactory.create_batch(2, effective_date=FUTURE)
+    services += ServiceFactory.create_batch(2, effective_date=None)
 
     fake_client.return_value = flatten_data(services)
     registry = Registry()
@@ -48,8 +55,8 @@ def test_simple_load(fake_client):
     loader.load()
 
     assert Operator.objects.count() == 5 + 1
-    assert Service.objects.count() == 10 + 1
-    assert Licence.objects.count() == 6 + 1
+    assert Service.objects.count() == 7 + 1
+    assert Licence.objects.count() == 5 + 1
 
 
 @patch(f"{CLIENT}.get_latest_variations_since")
@@ -264,11 +271,24 @@ def test_can_delete_cancelled_variations(fake_client):
     OperatorFactory.reset_sequence(10)
     LicenceFactory.reset_sequence(10)
     existing_services = ServiceFactory.create_batch(5)
+    services_should_not_to_delete = ServiceFactory.create_batch(
+        2,
+        effective_date=FUTURE,
+        registration_status=RegistrationStatusEnum.CANCELLED.value,
+    )
     services_to_delete = ServiceFactory.create_batch(5)
     licence_expiry_date = datetime(2021, 12, 25, 12, 1, 1).date()
 
     # Need to create data both in the database and in the API
     for service in existing_services:
+        service_kwargs = service.dict()
+        operator_kwargs = service_kwargs.pop("operator")
+        licence_kwargs = service_kwargs.pop("licence")
+        operator = OperatorModelFactory(**operator_kwargs)
+        licence = LicenceModelFactory(**licence_kwargs)
+        ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
+
+    for service in services_should_not_to_delete:
         service_kwargs = service.dict()
         operator_kwargs = service_kwargs.pop("operator")
         licence_kwargs = service_kwargs.pop("licence")
@@ -292,7 +312,9 @@ def test_can_delete_cancelled_variations(fake_client):
         service.licence.expiry_date = licence_expiry_date
         service.registration_status = RegistrationStatusEnum.CANCELLED.value
 
-    registrations = flatten_data(services_to_delete + existing_services)
+    registrations = flatten_data(
+        services_to_delete + existing_services + services_should_not_to_delete
+    )
     registry = Registry()
     for registration in registrations:
         registry.update(registration)
@@ -302,7 +324,7 @@ def test_can_delete_cancelled_variations(fake_client):
     loader.load_operators()
     loader.load_services()
     assert Service.objects.count() == len(
-        existing_services + services_to_delete
+        existing_services + services_to_delete + services_should_not_to_delete
     ), "no new objects created"
 
     loader.update_services_and_operators()
@@ -318,7 +340,9 @@ def test_can_delete_cancelled_variations(fake_client):
 
     loader.delete_bad_data()
 
-    assert Service.objects.count() == len(existing_services)
+    assert Service.objects.count() == len(
+        existing_services + services_should_not_to_delete
+    )
 
 
 @patch("transit_odp.otc.registry.Registry.add_all_latest_registered_variations")

@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional, Set, Tuple
 
 from transit_odp.otc.client import OTCAPIClient
@@ -63,7 +63,12 @@ class Registry:
         for registration in self._client.get_latest_variations_by_reg_status(
             RegistrationStatusEnum.REGISTERED.value
         ):
-            self.update(registration)
+            self.update_registered_variations(registration)
+
+        for registration in self._client.get_latest_variations_by_reg_status(
+            RegistrationStatusEnum.to_delete
+        ):
+            self.update_to_delete_variations(registration)
 
     def add_all_older_registered_variations(self) -> None:
         """
@@ -80,7 +85,7 @@ class Registry:
                     variation.registration_status
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
-                    self.update(variation)
+                    self.update_registered_variations(variation)
 
     def get_variations_since(self, when: datetime) -> List[Service]:
         """
@@ -94,12 +99,26 @@ class Registry:
             if registration.registration_status in RegistrationStatusEnum.to_change():
                 look_up_again.add(registration.registration_number)
             else:
-                self.update(registration)
+                if (
+                    registration.registration_status
+                    == RegistrationStatusEnum.REGISTERED.value
+                ):
+                    self.update_registered_variations(registration)
+
+                if (
+                    registration.registration_status
+                    in RegistrationStatusEnum.to_delete()
+                ):
+                    self.update_to_delete_variations(registration)
 
         for registration_number in look_up_again:
             older_variations = self.get_latest_variations_by_id(registration_number)
             for variation in older_variations:
-                self.update(variation)
+                if (
+                    variation.registration_status
+                    == RegistrationStatusEnum.REGISTERED.value
+                ):
+                    self.update_registered_variations(variation)
 
         return list(self._service_map.values())
 
@@ -107,6 +126,18 @@ class Registry:
         return [
             service for service in self.services if service.registration_status in args
         ]
+
+    def get_services_with_past_effective_date(
+        self, to_delete_services
+    ) -> List[Service]:
+        service_list = []
+        for service in to_delete_services:
+            if service.effective_date:
+                if service.effective_date <= date.today():
+                    service_list.append(service)
+            else:
+                service_list.append(service)
+        return service_list
 
     def get_latest_variations_by_id(self, registration_number) -> List[Registration]:
         """
@@ -124,6 +155,9 @@ class Registry:
                 not in RegistrationStatusEnum.to_change()
             ):
                 highest_variation_number = registration.variation_number
+                logger.info(
+                    f"Highest variation number is >> {highest_variation_number}"
+                )
                 return [
                     variation
                     for variation in registrations
@@ -145,6 +179,23 @@ class Registry:
                 lookup_ids.add(registration.registration_number)
 
         return lookup_ids
+
+    def update_registered_variations(self, variation: Registration) -> None:
+        if variation.variation_number == 0:
+            if variation.effective_date:
+                if variation.effective_date <= date.today():
+                    self.update(variation)
+            else:
+                self.update(variation)
+        else:
+            self.update(variation)
+
+    def update_to_delete_variations(self, variation: Registration) -> None:
+        if variation.effective_date:
+            if variation.effective_date > date.today():
+                self.update(variation)
+        else:
+            self.update(variation)
 
     def update(self, registration: Registration) -> None:
         """
