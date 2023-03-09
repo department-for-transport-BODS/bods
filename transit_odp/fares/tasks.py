@@ -22,7 +22,7 @@ from transit_odp.fares.netex import (
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.constants import FaresType
-from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
@@ -218,11 +218,23 @@ def task_run_fares_etl(task_id):
     # This block can be moved to a load module when we extract/load more metadata
     # like localities, admin areas
     transformed_data["revision"] = revision
+
+    # For 'Update data' flow which allows validation to occur multiple times
+    metadata_ids_list = DatasetMetadata.objects.filter(
+        revision_id=revision.id
+    ).values_list("id")
+    FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
     if is_fares_validator_active:
         for element in fares_data_catlogue:
             element.update({"fares_metadata_id": fares_metadata.id})
+            # For 'Update data' flow
+            DataCatalogueMetaData.objects.filter(
+                fares_metadata_id=fares_metadata.id
+            ).delete()
             DataCatalogueMetaData.objects.create(**element)
+    # For 'Update data' flow
+    fares_metadata.stops.remove(*naptan_stop_ids)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 

@@ -20,6 +20,10 @@ class FaresXmlValidator:
         self.pk2 = pk2
 
     def get_errors(self):
+        # For 'Update data' flow which allows validation to occur multiple times
+        FaresValidation.objects.filter(
+            revision_id=self.pk2, organisation_id=self.pk1
+        ).delete()
         validations = FaresValidation.objects.filter(
             revision_id=self.pk2, organisation_id=self.pk1
         )
@@ -40,6 +44,10 @@ class FaresXmlValidator:
         logger.info(f"Revision {self.pk2} contains {len(violations)} fares violations.")
         if violations:
             for violation in violations:
+                # For 'Update data' flow
+                FaresValidation.objects.filter(
+                    revision_id=self.pk2, organisation_id=self.pk1
+                ).delete()
                 fares_violations = FaresValidation.create_observations(
                     revision_id=self.pk2, org_id=self.pk1, violation=violation
                 ).save()
@@ -48,6 +56,10 @@ class FaresXmlValidator:
             response = JsonResponse(
                 serializer.data, safe=False, status=status.HTTP_201_CREATED
             )
+        # For 'Update data' flow
+        FaresValidationResult.objects.filter(
+            revision_id=self.pk2, organisation_id=self.pk1
+        ).delete()
         FaresValidationResult.create_validation_result(
             revision_id=self.pk2, org_id=self.pk1, violations=violations
         ).save()

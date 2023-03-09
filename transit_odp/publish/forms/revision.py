@@ -137,7 +137,7 @@ class RevisionPublishForm(GOVUKModelForm):
 
 class FaresRevisionPublishFormViolations(RevisionPublishForm):
     def get_layout(self):
-        modify_name = "fares:update-modify" if self.is_update else "fares:upload-modify"
+        modify_name = "fares:update-modify"
         recommendation = (
             "Your data needs to be improved, "
             "and we do not recommend publishing non-compliant data."

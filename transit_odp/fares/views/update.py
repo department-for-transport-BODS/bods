@@ -3,7 +3,8 @@ from typing import List, Tuple, Type
 from django.db import transaction
 from django.forms import Form
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import redirect
+
+# from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
@@ -99,18 +100,19 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
 
         # prevent user from trying to update dataset with existing draft, regardless of
         # how they got to this page
-        if self.object.dataset.revisions.filter(
-            status__in=[FeedStatus.draft.value, FeedStatus.success.value]
-        ).exists():
-            return redirect(
-                "fares:feed-draft-exists",
-                pk=self.object.dataset_id,
-                pk1=self.object.dataset.organisation_id,
-            )
-        else:
-            # Ensure GET returns the preview step
-            self.storage.reset()
-            return self.render(self.get_form())
+        # if self.object.dataset.revisions.filter(
+        #     status__in=[FeedStatus.draft.value, FeedStatus.success.value]
+        # ).exists():
+        #     return redirect(
+        #         "fares:feed-draft-exists",
+        #         pk=self.object.dataset_id,
+        #         pk1=self.object.dataset.organisation_id,
+        #     )
+        # else:
+        # Ensure GET returns the preview step
+        self.object.dataset.start_revision()
+        self.storage.reset()
+        return self.render(self.get_form())
 
     def get_form_kwargs(self, step=None):
         return {"is_update": True}
@@ -130,7 +132,6 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         return None
 
     def get_context_data(self, form, **kwargs):
-
         kwargs = super().get_context_data(form=form, **kwargs)
         kwargs.update(
             {

@@ -120,7 +120,7 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
     fields = ("id",)
 
     def get_upload_file(self, revision_id):
-        revision = self.objects.get(id=revision_id)
+        revision = DatasetRevision.objects.get(id=revision_id)
         upload_file = revision.upload_file
         return upload_file
 
