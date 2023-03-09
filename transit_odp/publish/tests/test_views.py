@@ -2,7 +2,7 @@ import csv
 import io
 import math
 import zipfile
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 import factory
 import pytest
@@ -24,6 +24,7 @@ from transit_odp.organisation.constants import INACTIVE, DatasetType, FeedStatus
 from transit_odp.organisation.csv.consumer_interactions import CSV_HEADERS
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
+    ConsumerFeedbackFactory,
     DatasetFactory,
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
@@ -33,6 +34,8 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
     OrganisationFactory,
+    SeasonalServiceFactory,
+    ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision
@@ -131,7 +134,6 @@ def test_publish_home_view(client_factory, account_type):
     ids=("Test timetables feed-list", "Test AVL feed-list", "Test fares feed-list"),
 )
 def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
-
     host = PUBLISH_HOST
     client = client_factory(host=host)
     set_urlconf(get_host(host))
@@ -166,7 +168,6 @@ def test_busy_agent_publish_home_view(client_factory, dataset_type, view_name):
 def test_publish_select_data_type_view(
     dataset_type, expected_view, pathargs, pathkwargs, client_factory
 ):
-
     host = PUBLISH_HOST
     client = client_factory(host=host)
     org = OrganisationFactory(id=1)
@@ -968,6 +969,210 @@ class TestPublishView:
 
         assert len(set(ids)) == len(ids) == number_of_files
 
+    def test_seasonal_services_counter(self, client_factory):
+        # Setup
+        host = PUBLISH_HOST
+        client = client_factory(host=host)
+
+        # create an organisation
+        org = OrganisationFactory.create()
+
+        # create seasonal services
+        SeasonalServiceFactory(licence__organisation=org)
+        SeasonalServiceFactory(licence__organisation=org)
+        SeasonalServiceFactory(licence__organisation=org)
+        SeasonalServiceFactory(licence__organisation=org)
+
+        user = UserFactory(
+            account_type=AccountType.org_staff.value, organisations=(org,)
+        )
+        client.force_login(user=user)
+
+        url = reverse("feed-list", kwargs={"pk1": org.id}, host=host)
+
+        # Test
+        response = client.get(url)
+
+        # Assert
+        assert response.status_code == 200
+        assert response.context_data["seasonal_services_counter"] == 4
+
+    def test_requires_attention_banner(self, client_factory):
+        host = PUBLISH_HOST
+        client = client_factory(host=host)
+
+        org1 = OrganisationFactory(id=1)
+        user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+        time_now = now()
+        today = time_now.date()
+        one_month = today + timedelta(weeks=4)
+        two_months = today + timedelta(weeks=8)
+
+        total_services = 12
+        licence_number = "PD5000229"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org1)
+
+        # Set up two TXCFileAttributes that will be 'Not Stale'
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=today + timedelta(days=50),
+            modification_datetime=time_now,
+        )
+
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[1],
+            operating_period_end_date=today + timedelta(days=50),
+            modification_datetime=time_now,
+        )
+
+        dataset2 = DraftDatasetFactory(organisation=org1)
+        TXCFileAttributesFactory(
+            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        )
+        live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+        # Set up a TXCFileAttributes that will be 'Stale - 12 months old'
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[3],
+            operating_period_end_date=None,
+            modification_datetime=time_now - timedelta(weeks=100),
+        )
+
+        # Set up a TXCFileAttributes that will be 'Stale - End Date Passed'
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[4],
+            operating_period_end_date=today - timedelta(weeks=105),
+            modification_datetime=time_now - timedelta(weeks=100),
+        )
+
+        # Set up a TXCFileAttributes that will be 'Stale - OTC Variation'
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[5],
+            operating_period_end_date=today + timedelta(days=50),
+        )
+
+        # Set up a TXCFileAttributes that will be 'Stale - 12 months old' that
+        # is in season
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[6],
+            operating_period_end_date=None,
+            modification_datetime=time_now - timedelta(weeks=100),
+        )
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=today,
+            end=one_month,
+            registration_code=int(all_service_codes[6].split(":")[1]),
+        )
+
+        # Set up a TXCFileAttributes that will be 'Stale - 12 months old' that
+        # is out of season
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[7],
+            operating_period_end_date=None,
+            modification_datetime=time_now - timedelta(weeks=100),
+        )
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=one_month,
+            end=two_months,
+            registration_code=int(all_service_codes[7].split(":")[1]),
+        )
+
+        # Set up a TXCFileAttributes that will be 'Stale - 12 months old' that
+        # is exempted
+        TXCFileAttributesFactory(
+            revision=live_revision,
+            service_code=all_service_codes[8],
+            operating_period_end_date=None,
+            modification_datetime=time_now - timedelta(weeks=100),
+        )
+        ServiceCodeExemptionFactory(
+            licence=bods_licence,
+            registration_code=all_service_codes[8].split(":")[1],
+            exempted_by=user,
+        )
+
+        # Create OTC services to match each TXCFileAttribute object,
+        # plus 3 more that are unmatched
+        otc_lic1 = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=date(year=2020, month=1, day=1),
+            )
+
+        client.force_login(user=user)
+        url = reverse("feed-list", host=host, kwargs={"pk1": org1.id})
+        response = client.get(url)
+
+        assert response.status_code == 200
+        # The total OTC services are reduced by two, one that's out of season
+        # and one that's exempted.
+        assert response.context["applicable_services"] == total_services - 2
+        # All of the applicable OTC services require attention, apart from
+        # two that have a TXCFileAttribute object and are not stale.
+        assert response.context["services_requiring_attention"] == (total_services - 4)
+
+    @freeze_time("2023-01-01T12:00:00")
+    def test_feedback_counter(self, client_factory):
+        host = PUBLISH_HOST
+        client = client_factory(host=host)
+        now = datetime.utcnow()
+
+        org = OrganisationFactory.create()
+        user = UserFactory(
+            account_type=AccountType.org_staff.value, organisations=(org,)
+        )
+        dataset = DatasetFactory(organisation=org, contact=user)
+        # Add two instances of dataset-specific feedback within the 30-day limit
+        for i in range(2):
+            feedback = ConsumerFeedbackFactory(
+                dataset=dataset, organisation=org, consumer=user
+            )
+            feedback.created = now - timedelta(days=30)
+            feedback.save()
+        # Add another two instances earlier than the 30-day cutoff
+        for i in range(2):
+            feedback = ConsumerFeedbackFactory(
+                dataset=dataset, organisation=org, consumer=user
+            )
+            feedback.created = now - timedelta(days=31)
+            feedback.save()
+        # Add one instance of organisation-level feedback: "created"
+        # defaults to the current time.
+        ConsumerFeedbackFactory(dataset=None, organisation=org, consumer=user)
+
+        # Create a second organisation with feedback
+        org2 = OrganisationFactory.create()
+        user2 = UserFactory(
+            account_type=AccountType.org_staff.value, organisations=(org2,)
+        )
+        dataset2 = DatasetFactory(organisation=org2, contact=user2)
+        ConsumerFeedbackFactory.create_batch(
+            10, dataset=dataset2, organisation=org2, consumer=user2
+        )
+        ConsumerFeedbackFactory.create_batch(
+            20, dataset=None, organisation=org2, consumer=user2
+        )
+
+        client.force_login(user=user)
+        url = reverse("feed-list", kwargs={"pk1": org.id}, host=host)
+        response = client.get(url)
+
+        assert response.status_code == 200
+        assert response.context_data["feedback_count"] == 3
+
 
 class TestFeedArchiveView:
     host = PUBLISH_HOST
@@ -1001,7 +1206,6 @@ class TestFeedArchiveView:
         )
 
     def test_archive_view_archives_dataset(self, publish_client):
-
         publish_client.force_login(user=self.staff)
         response = publish_client.post(self.url, data={"submit": "submit"}, follow=True)
         fished_out_feed = Dataset.objects.get(pk=self.feed.id)
@@ -1148,12 +1352,7 @@ class TestFeedDeleteView:
 
         response = publish_client.post(url, data={"submit": "submit"})
         assert response.status_code == 302
-        assert len(mailoutbox) == 1
-        assert mailoutbox[0].to[0] == "ms_deleter@test.test"
-        assert (
-            mailoutbox[0].subject
-            == "You deleted an unpublished data set – no action required"
-        )
+        assert len(mailoutbox) == 0
 
     def test_confirmation_displays_correct_name(self, publish_client):
         publish_client.force_login(user=self.deleter)
@@ -1177,18 +1376,7 @@ class TestFeedDeleteView:
         )
         response = publish_client.post(url, data={"submit": "submit"})
         assert response.status_code == 302
-        deleter, updater = mailoutbox
-        assert deleter.to[0] == "ms_deleter@test.test"
-        assert (
-            deleter.subject
-            == "You deleted an unpublished data set – no action required"
-        )
-        assert updater.to[0] == "mr_updater@test.test"
-        assert updater.subject == (
-            ""
-            "A data set you updated has been deleted from the Bus Open Data Service"
-            " – no action required"
-        )
+        assert len(mailoutbox) == 0
 
 
 class TestPublishRevisionView:
@@ -1560,15 +1748,7 @@ class TestEditDraftRevisionDescriptionView:
         )
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_empty_search_box(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_empty_search_box(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1580,38 +1760,44 @@ def test_require_attention_empty_search_box(
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[0]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
     )
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[1]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
         revision=dataset2.revisions.last(), service_code=all_service_codes[2]
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
-    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
-        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 4
+    assert response.context["services_require_attention_percentage"] == 58
 
 
-@pytest.mark.parametrize(
-    "pathname,pathargs,pathkwargs",
-    [
-        ("requires-attention", [], {"pk1": 1}),
-    ],
-)
-def test_require_attention_field_in_search_box(
-    pathname, pathargs, pathkwargs, publish_client
-):
+def test_require_attention_field_in_search_box(publish_client):
     # Setup
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -1623,24 +1809,452 @@ def test_require_attention_field_in_search_box(
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[0]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
     )
     TXCFileAttributesFactory(
-        revision=dataset1.live_revision, service_code=all_service_codes[1]
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
         revision=dataset2.revisions.last(), service_code=all_service_codes[2]
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
-    TXCFileAttributesFactory(revision=live_revision, service_code=all_service_codes[3])
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     for code in all_service_codes:
-        ServiceModelFactory(licence=otc_lic1, registration_number=code)
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
 
     publish_client.force_login(user=user)
-    url = reverse(pathname, host=host, args=pathargs, kwargs=pathkwargs)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
     response = publish_client.get(url, data={"q": "006"}, follow=True)
 
     assert response.status_code == 200
-    assert len(response.context["view"].object_list) == 1
+    assert len(response.context["table"].data) == 1
+    assert response.context["services_require_attention_percentage"] == 58
+
+
+def test_require_attention_search_no_results(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 3
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": "xxxYYyzz123"}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["table"].data) == 0
+    assert response.context["services_require_attention_percentage"] == 34
+
+
+def test_require_attention_seasonal_services(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+    today = now().date()
+    month = now().date() + timedelta(weeks=4)
+    two_months = now().date() + timedelta(weeks=8)
+
+    total_services = 5
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[1],
+    )
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[2][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[3][-1:]),
+    )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 3
+    # One out of season seasonal service reduces in scope services to 4
+    assert response.context["services_require_attention_percentage"] == 75
+
+
+def test_require_attention_stale_otc_effective_date(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup two TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() + timedelta(days=50),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1, registration_number=code.replace(":", "/")
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5
+    assert response.context["services_require_attention_percentage"] == 72
+
+
+def test_require_attention_stale_end_date(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup a TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() - timedelta(weeks=105),
+        modification_datetime=now() - timedelta(weeks=100),
+    )
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5
+    assert response.context["services_require_attention_percentage"] == 72
+
+
+def test_require_attention_stale_last_modified_date(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+
+    total_services = 7
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup two TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=date.today() - timedelta(days=1),
+        modification_datetime=now() - timedelta(weeks=100),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 5
+    assert response.context["services_require_attention_percentage"] == 72
+
+
+def test_require_attention_all_variations(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+    today = now().date()
+    month = now().date() + timedelta(weeks=4)
+    two_months = now().date() + timedelta(weeks=8)
+
+    total_services = 9
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+
+    # Setup two TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    dataset2 = DraftDatasetFactory(organisation=org1)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+    )
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=now() - timedelta(weeks=100),
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[4],
+        operating_period_end_date=date.today() - timedelta(weeks=105),
+        modification_datetime=now() - timedelta(weeks=100),
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[5],
+        operating_period_end_date=date.today() + timedelta(days=50),
+    )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[6][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[7][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert len(response.context["view"].object_list) == 6
+    # One out of season seasonal service reduces in scope services to 8
+    assert response.context["services_require_attention_percentage"] == 75
+
+
+def test_require_attention_compliant(publish_client):
+    # Setup
+    host = PUBLISH_HOST
+    org1 = OrganisationFactory(id=1)
+    user = UserFactory(account_type=OrgStaffType, organisations=(org1,))
+    month = now().date() + timedelta(weeks=4)
+    two_months = now().date() + timedelta(weeks=8)
+
+    total_services = 4
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org1)
+    dataset2 = DatasetFactory(organisation=org1)
+
+    # Setup three TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+    TXCFileAttributesFactory(
+        revision=dataset2.live_revision,
+        service_code=all_service_codes[2],
+        operating_period_end_date=date.today() + timedelta(days=50),
+        modification_datetime=now(),
+    )
+
+    # Create Out of Season Seasonal Services
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[3][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=code.replace(":", "/"),
+            effective_date=date(year=2020, month=1, day=1),
+        )
+
+    publish_client.force_login(user=user)
+    url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
+    response = publish_client.get(url, data={"q": ""}, follow=True)
+
+    assert response.status_code == 200
+    assert response.context["total_in_scope_in_season_services"] == 3
+    assert response.context["services_require_attention_percentage"] == 0

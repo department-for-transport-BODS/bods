@@ -32,9 +32,14 @@
                         {{ object.short_name }}
                     </a>
                 </li>
-                <li class="govuk-!-margin-bottom-5">
+                <li class="govuk-!-margin-bottom-3">
                     <a class='govuk-link' href="{% url 'downloads' host hosts.data %}">
                         {% filter force_escape %}{% trans 'Download all data' %}{% endfilter %}
+                    </a>
+                </li>
+                <li class="govuk-!-margin-bottom-5">
+                    <a class='govuk-link' href={{ data_activity_url }}>
+                        {% filter force_escape %}{% trans 'Consumer activity' %}{% endfilter %}
                     </a>
                 </li>
             </ul>
@@ -96,8 +101,48 @@
 
             <h3 class="govuk-heading-m govuk-!-margin-top-3">
                 {% filter force_escape %}{% trans 'Timetables data' %}{% endfilter %}
+                {% if services_require_attention_percentage == 0 %}
+                    <span class="govuk-tag govuk-tag--green" style="letter-spacing: 0px;">{% trans 'Compliant' %}</span>
+                {% else %}
+                    <span class="govuk-tag govuk-tag--red" style="letter-spacing: 0px;">{% trans 'Not Compliant' %}</span>
+                {% endif %}
             </h3>
-            <ul class="govuk-list">
+            <p class="govuk-body">
+                {% filter force_escape %}{% trans 'The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way.' %}{% endfilter %}
+            </p>
+            <p class="govuk-body">
+                {% filter force_escape %}{% trans 'Please download the detailed export for more information on the compliance data relating to each service.' %}{% endfilter %}
+            </p>
+            <p class="govuk-body">
+                {% filter force_escape %}{% trans 'Please contact the service desk if you have any questions or require any support.' %}{% endfilter %}
+            </p>
+            <div id="feed-stat-list" class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">
+                            {{ total_in_scope_in_season_services }}
+                        </span>
+                        <span class="feed-stat__label">
+                            {% trans 'Total in scope/in season<br>registered services' %}
+                        </span>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    <div class="feed-stat">
+                        <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
+                        <span class="feed-stat__label">
+                            {% filter force_escape %}{% trans 'Services requiring attention' %}{% endfilter %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <ul class="govuk-list govuk-!-margin-top-5">
+                <li>
+                    <a class="govuk-link"
+                        href={% url 'service-codes' pk1=object.id host hosts.publish %}>
+                        {% filter force_escape %}{% trans 'Download detailed export' %}{% endfilter %}
+                    </a>
+                </li>
                 <li class="govuk-!-margin-bottom-3">
                     <a class="govuk-link"
                         href="{% url 'search' host hosts.data %}?organisation={{ object.id }}">
@@ -105,44 +150,6 @@
                     </a>
                 </li>
             </ul>
-            <div id="feed-stat-list" class="govuk-grid-row">
-                <div class="govuk-grid-column-one-quarter">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">
-                            {{ timetable_stats.total_dataset_count }}
-                        </span>
-                        <span class="feed-stat__label">
-                            {% filter force_escape %}{% trans 'Data sets' %}{% endfilter %}
-                        </span>
-                    </div>
-                </div>
-                <div class="govuk-grid-column-one-quarter">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">{{ timetable_stats.line_count }}</span>
-                        <span class="feed-stat__label">
-                            {% filter force_escape %}{% trans 'Bus routes' %}{% endfilter %}
-                        </span>
-                    </div>
-                </div>
-                <div class="govuk-grid-column-one-half">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">{{ timetable_non_compliant }}</span>
-                        <span class="feed-stat__label">
-                            {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
-                        </span>
-                    </div>
-                    <div class="govuk-!-margin-top-2">
-                        <a class="govuk-link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-                            <i class="fas fa-play govuk-!-margin-right-1">
-                            </i>
-                            {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
-                        </a>
-                    </div>
-                </div>
-            </div>
             {% if user.is_authenticated %}
                 <p class="govuk-body-m govuk-!-padding-top-3">
                     {% filter force_escape %}
@@ -165,18 +172,10 @@
                     </div>
                 </div>
             {% endif %}
-
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
             <h3 class="govuk-heading-m govuk-!-margin-top-7">
                 {% filter force_escape %}{% trans 'Location data' %}{% endfilter %}
             </h3>
-            <ul class="govuk-list">
-                <li class="govuk-!-margin-bottom-3">
-                    <a class="govuk-link"
-                        href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}">
-                        {% filter force_escape %}{% trans 'Browse Location data' %}{% endfilter %}
-                    </a>
-                </li>
-            </ul>
             <div id="feed-stat-list" class="govuk-grid-row">
                 <div class="govuk-grid-column-one-quarter">
                     <div class="feed-stat">
@@ -205,6 +204,14 @@
                     </div>
                 </div>
             </div>
+            <ul class="govuk-list govuk-!-margin-top-5">
+                <li class="govuk-!-margin-bottom-3">
+                    <a class="govuk-link"
+                        href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}">
+                        {% filter force_escape %}{% trans 'Browse Location data' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
             {% if user.is_authenticated %}
                 <p class="govuk-body-m govuk-!-padding-top-3">
                     {% filter force_escape %}
@@ -228,17 +235,10 @@
                 </div>
             {% endif %}
 
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
             <h3 class="govuk-heading-m govuk-!-margin-top-7">
                 {% filter force_escape %}{% trans 'Fares data' %}{% endfilter %}
             </h3>
-            <ul class="govuk-list">
-                <li class="govuk-!-margin-bottom-3">
-                    <a class="govuk-link"
-                        href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}">
-                        {% filter force_escape %}{% trans 'Browse Fares data' %}{% endfilter %}
-                    </a>
-                </li>
-            </ul>
             <div id="feed-stat-list" class="govuk-grid-row">
                 <div class="govuk-grid-column-one-quarter">
                     <div class="feed-stat">
@@ -277,6 +277,14 @@
                     </div>
                 </div>
             </div>
+            <ul class="govuk-list govuk-!-margin-top-5">
+                <li class="govuk-!-margin-bottom-3">
+                    <a class="govuk-link"
+                        href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}">
+                        {% filter force_escape %}{% trans 'Browse Fares data' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
             {% if user.is_authenticated %}
                 <p class="govuk-body-m govuk-!-padding-top-3">
                     {% filter force_escape %}
@@ -302,7 +310,7 @@
 
             {% if not user.is_authenticated %}
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                <h3 class="govuk-heading-m govuk-!-margin-top-3">
+                <h3 class="govuk-heading-m govuk-!-margin-top-7">
                     {% filter force_escape %}{% trans 'Use API' %}{% endfilter %}
                 </h3>
                 <p class="govuk-body-m">

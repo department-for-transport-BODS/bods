@@ -35,12 +35,9 @@ from transit_odp.avl.models import (
 )
 from transit_odp.avl.notifications import (
     send_avl_compliance_status_changed,
-    send_avl_feed_down_notification,
     send_avl_flagged_with_compliance_issue,
     send_avl_flagged_with_major_issue,
-    send_avl_report_requires_resolution_notification,
     send_avl_schema_check_fail,
-    send_avl_status_changed_notification,
 )
 from transit_odp.avl.post_publishing_checks.daily.checker import PostPublishingChecker
 from transit_odp.avl.post_publishing_checks.weekly import WeeklyReport
@@ -225,11 +222,6 @@ def task_monitor_avl_feeds():
         [dataset.live_revision for dataset in update_list], ["status"]
     )
 
-    for dataset in update_list:
-        send_avl_status_changed_notification(dataset)
-        if dataset.avl_feed_status == AVL_FEED_DOWN:
-            send_avl_feed_down_notification(dataset)
-
 
 @shared_task()
 def task_run_avl_validations():
@@ -323,11 +315,6 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
             adapter.info(f"Feed has a compliance status of {new_status}.")
             adapter.info("Sending compliance issue email.")
             send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)
-    else:
-        send_email = (old_status == UNDERGOING) and (new_status == AWAITING_REVIEW)
-        if send_email:
-            adapter.info("Sending requires resolution email.")
-            send_avl_report_requires_resolution_notification(dataset=feed)
 
 
 def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):

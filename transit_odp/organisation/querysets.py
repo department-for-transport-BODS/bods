@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import TypeVar
 
 import pytz
@@ -11,6 +11,7 @@ from django.db.models import (
     Case,
     CharField,
     Count,
+    DateField,
     ExpressionWrapper,
     F,
     FloatField,
@@ -26,7 +27,7 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.functions import Coalesce, Concat, Substr, TruncDate, Upper
+from django.db.models.functions import Cast, Coalesce, Concat, Substr, TruncDate, Upper
 from django.db.models.query import Prefetch
 from django.utils import timezone
 
@@ -56,6 +57,9 @@ ANONYMOUS = "Anonymous"
 GENERAL_LEVEL = "General"
 DATASET_LEVEL = "Data set level"
 
+TSeasonalServiceQuerySet = TypeVar(
+    "TSeasonalServiceQuerySet", bound="SeasonalServiceQuerySet"
+)
 TServiceCodeExemptionQuerySet = TypeVar(
     "TServiceCodeExemptionQuerySet", bound="ServiceCodeExemptionQuerySet"
 )
@@ -1149,6 +1153,34 @@ class TXCFileAttributesQuerySet(models.QuerySet):
     def filter_by_noc_and_line_name(self, noc, line_name):
         return self.filter(national_operator_code=noc, line_names__contains=[line_name])
 
+    def add_effective_stale_date_last_modified_date(self):
+        """Adds the Effective Stale Date: Last Modified Date of file + 1 year."""
+        return self.annotate(
+            effective_stale_date_last_modified_date=TruncDate(
+                ExpressionWrapper(
+                    F("modification_datetime") + timedelta(days=365),
+                    output_field=DateField(),
+                )
+            )
+        )
+
+    def add_effective_stale_date_end_date(self):
+        """Adds the Effective Stale Date: Operating Period End Date - 42 days."""
+        return self.annotate(
+            effective_stale_date_end_date=TruncDate(
+                ExpressionWrapper(
+                    F("operating_period_end_date") - timedelta(days=42),
+                    output_field=DateField(),
+                )
+            )
+        )
+
+    def add_staleness_dates(self):
+        """Adds Effective Stale dates for live revisions."""
+        return (
+            self.add_effective_stale_date_last_modified_date().add_effective_stale_date_end_date()  # noqa: E501
+        )
+
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
     def add_feedback_type(self):
@@ -1225,7 +1257,7 @@ class ServiceCodeExemptionQuerySet(models.QuerySet):
             registration_number=Concat(
                 "licence__number",
                 Value("/"),
-                "registration_code",
+                Cast("registration_code", output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -1235,7 +1267,7 @@ class ServiceCodeExemptionQuerySet(models.QuerySet):
             service_code=Concat(
                 "licence__number",
                 Value(":"),
-                "registration_code",
+                Cast("registration_code", output_field=CharField()),
                 output_field=CharField(),
             )
         )
@@ -1260,3 +1292,36 @@ class BODSLicenceQuerySet(models.QuerySet):
                 output_field=CharField(),
             )
         )
+
+
+class SeasonalServiceQuerySet(models.QuerySet):
+    def add_registration_number(self) -> TSeasonalServiceQuerySet:
+        """The registration number comprises the licence prefix plus
+        registration code. This is sometimes referred to as the
+        service code.
+        """
+        return self.annotate(
+            registration_number=Concat(
+                "licence__number",
+                Value("/"),
+                Cast("registration_code", output_field=CharField()),
+                output_field=CharField(),
+            )
+        )
+
+    def add_seasonal_status(self) -> TSeasonalServiceQuerySet:
+        """Adds whether or not a seasonal service is in season."""
+        today = date.today()
+        return self.annotate(
+            seasonal_status=Case(
+                When(
+                    Q(start__lte=today) & Q(end__gte=today),
+                    then=Value(True, output_field=BooleanField()),
+                ),
+                default=Value(False, output_field=BooleanField()),
+            )
+        )
+
+    def get_count_in_organisation(self, org_id: int) -> int:
+        """The number of Seasonal services per organisation."""
+        return self.filter(licence__organisation_id=org_id).count()

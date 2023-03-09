@@ -19,7 +19,6 @@ UPDATERS_MODULE = "transit_odp.organisation.updaters."
 FIRST_NOTIFICATION = UPDATERS_MODULE + "send_feed_monitor_fail_first_try_notification"
 LAST_NOTIFICATION = UPDATERS_MODULE + "send_feed_monitor_fail_final_try_notification"
 URL_AVAILABLE = UPDATERS_MODULE + "send_endpoint_available_notification"
-FEED_CHANGED = UPDATERS_MODULE + "send_feed_changed_notification"
 REQUESTS = UPDATERS_MODULE + "requests"
 
 
@@ -234,25 +233,6 @@ def test_has_update_true_retry_is_one(endpoint_available):
     dataset.refresh_from_db()
     assert live_revision == dataset.live_revision
     endpoint_available.assert_called_once()
-
-
-@patch(FEED_CHANGED)
-def test_has_update_true_create_new_revision(feed_changed_notification):
-    remote_content = b"1"
-    file_content = b"2"
-    response = Mock(content=remote_content, ok=True)
-    dataset = DatasetFactory(
-        dataset_type=TimetableType, live_revision__upload_file__data=file_content
-    )
-    before_draft_count = dataset.revisions.get_draft().count()
-    task = Mock()
-    with patch(REQUESTS) as requests:
-        requests.get.return_value = response
-        update_dataset(dataset, task)
-
-    dataset.refresh_from_db()
-    assert dataset.revisions.get_draft().count() == before_draft_count + 1
-    feed_changed_notification.assert_called_once_with(dataset)
 
 
 @patch(FIRST_NOTIFICATION)

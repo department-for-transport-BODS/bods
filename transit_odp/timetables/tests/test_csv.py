@@ -1,5 +1,8 @@
+from datetime import date, datetime, timedelta
+
 import pytest
 from factory import Sequence
+from freezegun import freeze_time
 
 from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
@@ -10,6 +13,7 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     LicenceFactory,
+    SeasonalServiceFactory,
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
@@ -34,7 +38,9 @@ def test_service_in_bods_but_not_in_otc():
     for index, row in df[:5].iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Unassigned licence"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Unregistered"
+        assert row["Scope Status"] == "In Scope"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -65,7 +71,9 @@ def test_service_in_bods_and_otc():
         operator = service.operator
         licence = service.licence
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Published (Registered)"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Registered"
+        assert row["Scope Status"] == "In Scope"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -105,7 +113,9 @@ def test_service_in_otc_and_not_in_bods():
         operator = service.operator
         licence = service.licence
 
-        assert row["Service Statuses"] == "Missing data"
+        assert row["Published Status"] == "Unpublished"
+        assert row["OTC Status"] == "Registered"
+        assert row["Scope Status"] == "In Scope"
         assert row["Operator ID"] == operator.operator_id
         assert row["Operator Name"] == operator.operator_name
         assert row["Address"] == operator.address
@@ -120,6 +130,7 @@ def test_service_in_otc_and_not_in_bods():
         assert row["Effective Date"] == service.effective_date
         assert row["Received Date"] == service.received_date
         assert row["Service Type Other Details"] == service.service_type_other_details
+        assert row["Requires Attention"] == "Yes"
 
 
 def test_unregistered_services_in_bods():
@@ -135,7 +146,9 @@ def test_unregistered_services_in_bods():
     for index, row in df[:5].iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
-        assert row["Service Statuses"] == "Published (Unregistered)"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Unregistered"
+        assert row["Scope Status"] == "In Scope"
         assert row["DQ Score"] == "33%"
         assert row["BODS Compliant"] == "NO"
         assert row["XML Filename"] == txc_file_attributes.filename
@@ -153,8 +166,8 @@ def test_unregistered_services_in_bods():
 def test_exempted_services_in_bods() -> None:
     """
     In exported data when Registration Number is included in ExemptedServiceCodes
-    the Service Status should be "Published (Out of scope)".
-    In this test all existing entries's reg. numbers are exempted.
+    the Scope Status should be "Out of Scope".
+    In this test all existing entries' reg. numbers are exempted.
     """
 
     for service in ServiceModelFactory.create_batch(5):
@@ -171,7 +184,9 @@ def test_exempted_services_in_bods() -> None:
 
     df = _get_timetable_catalogue_dataframe()
     for _, row in df.iterrows():
-        assert row["Service Statuses"] == "Published (Out of scope)"
+        assert row["Published Status"] == "Published"
+        assert row["OTC Status"] == "Registered"
+        assert row["Scope Status"] == "Out of Scope"
 
 
 def test_empty_otc_services():
@@ -234,3 +249,245 @@ def test_all_txc_file_attributes_belong_to_live_revisions():
     for index, row in df[:5].iterrows():
         assert row["Origin"] == "latest"
         assert row["DQ Score"] == "98%"
+
+
+@freeze_time("2023-02-14")
+@pytest.mark.parametrize(
+    "start, end, status",
+    (
+        ("2023-01-01", "2023-02-01", "Out of Season"),
+        ("2023-02-01", "2023-03-01", "In Season"),
+        ("2023-03-01", "2023-04-01", "Out of Season"),
+        (None, None, "Not Seasonal"),
+    ),
+)
+def test_seasonal_status(start, end, status):
+    """
+    Exported services have a Seasonal Status with one of the following values:
+    In Season - the service is marked as seasonal with dates that encompass
+                today's date
+    Out of Season - the service is marked as seasonal with dates that do not
+                encompass today's date
+    Not Seasonal - the service is not marked as seasonal
+    """
+    otc_service = ServiceModelFactory()
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    bods_licence = LicenceFactory(number=otc_service.licence.number)
+    if start is not None:
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            registration_code=otc_service.registration_code,
+            start=date.fromisoformat(start),
+            end=date.fromisoformat(end),
+        )
+
+    df = _get_timetable_catalogue_dataframe()
+    assert df["Seasonal Status"][0] == status
+
+
+@freeze_time("2023-02-14")
+@pytest.mark.parametrize(
+    "effective, modified, period_end, is_stale",
+    (
+        # All conditions satisfied for staleness
+        ("2022-01-01", "2022-06-01", "2023-03-01", True),
+        # End date not present
+        ("2022-01-01", "2022-06-01", None, False),
+        # First condition not satisfied
+        ("2021-01-01", "2021-06-01", "2023-02-01", False),
+        # Second condition not satisfied
+        ("2022-12-01", "2023-01-01", "2023-06-01", False),
+        # Third condition not satisfied
+        ("2022-07-01", "2022-06-01", "2023-03-01", False),
+    ),
+)
+def test_stale_end_date(effective, modified, period_end, is_stale):
+    """
+    Staleness Status - Stale - End date passed
+    If “Effective stale date due to end date” (if present)  is sooner than
+    “Effective stale date due to effective last modified date”
+    and today’s date from which the file is created equals or passes
+    “Effective stale date due to end date”
+    and Last modified date < OTC Effective start date - FALSE
+    """
+    otc_service = ServiceModelFactory(effective_date=date.fromisoformat(effective))
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+        modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
+        operating_period_start_date=None
+        if period_end is None
+        else date.fromisoformat(period_end) - timedelta(days=100),
+        operating_period_end_date=None
+        if period_end is None
+        else date.fromisoformat(period_end),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    LicenceFactory(number=otc_service.licence.number)
+
+    df = _get_timetable_catalogue_dataframe()
+    assert (df["Staleness Status"][0] == "Stale - End date passed") == is_stale
+    assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
+
+
+@freeze_time("2023-02-14")
+@pytest.mark.parametrize(
+    "effective, modified, period_end, is_stale",
+    (
+        # All conditions satisfied for staleness
+        ("2021-12-01", "2022-01-01", "2023-03-01", True),
+        # End date not present
+        ("2021-12-01", "2022-01-01", None, True),
+        # First condition not satisfied
+        ("2021-01-01", "2021-06-01", "2022-05-01", False),
+        # Second condition not satisfied
+        ("2022-05-01", "2022-06-01", "2023-12-01", False),
+        # Third condition not satisfied
+        ("2022-02-01", "2022-01-01", "2023-03-01", False),
+    ),
+)
+def test_stale_12_months_old(effective, modified, period_end, is_stale):
+    """
+    Staleness Status - Stale - 12 months old
+    If “Effective stale date due to effective last modified” date is sooner
+    than “Effective stale date due to end date” (if present)
+    and today’s date from which the file is created equals or passes
+    “Effective stale date due to effective last modified date”
+    and Last modified date < OTC Effective start date - FALSE
+    """
+    otc_service = ServiceModelFactory(effective_date=date.fromisoformat(effective))
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+        modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
+        operating_period_start_date=None
+        if period_end is None
+        else date.fromisoformat(period_end) - timedelta(days=100),
+        operating_period_end_date=None
+        if period_end is None
+        else date.fromisoformat(period_end),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    LicenceFactory(number=otc_service.licence.number)
+
+    df = _get_timetable_catalogue_dataframe()
+    assert (df["Staleness Status"][0] == "Stale - 12 months old") == is_stale
+    assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
+
+
+@freeze_time("2023-02-14")
+@pytest.mark.parametrize(
+    "effective, modified, period_end, is_stale",
+    (
+        # All conditions satisfied for staleness
+        ("2023-02-01", "2023-01-01", "2025-01-01", True),
+        # First condition not satisfied
+        ("2023-01-01", "2023-02-01", "2025-01-01", False),
+        # Second condition not satisfied
+        ("2023-06-01", "2023-01-01", "2025-01-01", False),
+    ),
+)
+def test_stale_otc_variation(effective, modified, period_end, is_stale):
+    """
+    Staleness Status - Stale - OTC Variation
+    If Last modified date < OTC Effective start date - TRUE
+    AND
+    Today’s date greater than or equal to than “Effective stale date due to
+    OTC effective date”
+    """
+    otc_service = ServiceModelFactory(effective_date=date.fromisoformat(effective))
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+        modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
+        operating_period_start_date=None
+        if period_end is None
+        else date.fromisoformat(period_end) - timedelta(days=100),
+        operating_period_end_date=None
+        if period_end is None
+        else date.fromisoformat(period_end),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    LicenceFactory(number=otc_service.licence.number)
+
+    df = _get_timetable_catalogue_dataframe()
+    assert (df["Staleness Status"][0] == "Stale - OTC Variation") == is_stale
+    assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
+
+
+@freeze_time("2023-02-14")
+def test_not_stale():
+    """
+    Staleness Status - Not Stale
+    Default status for service codes published to BODS
+    """
+    effective = "2022-11-01"
+    modified = "2023-01-01"
+    period_end = "2023-09-01"
+    otc_service = ServiceModelFactory(effective_date=date.fromisoformat(effective))
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+        modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
+        operating_period_start_date=None
+        if period_end is None
+        else date.fromisoformat(period_end) - timedelta(days=100),
+        operating_period_end_date=None
+        if period_end is None
+        else date.fromisoformat(period_end),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    LicenceFactory(number=otc_service.licence.number)
+
+    df = _get_timetable_catalogue_dataframe()
+    assert df["Staleness Status"][0] == "Not Stale"
+    assert df["Requires Attention"][0] == "No"
+
+
+@freeze_time("2023-02-14")
+def test_stale_service_out_of_season():
+    # Set conditions that would mean the service was stale due to end date
+    # passed if it were in season
+    effective = "2022-01-01"
+    modified = "2022-06-01"
+    period_end = "2023-03-01"
+    # Set the service as currently out of season
+    seasonal_start = "2022-11-01"
+    seasonal_end = "2023-01-01"
+
+    otc_service = ServiceModelFactory(effective_date=date.fromisoformat(effective))
+    txc = TXCFileAttributesFactory(
+        licence_number=otc_service.licence.number,
+        service_code=otc_service.registration_number.replace("/", ":"),
+        modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
+        operating_period_start_date=None
+        if period_end is None
+        else date.fromisoformat(period_end) - timedelta(days=100),
+        operating_period_end_date=None
+        if period_end is None
+        else date.fromisoformat(period_end),
+    )
+    DataQualityReportFactory(revision=txc.revision)
+    PTIValidationResultFactory(revision=txc.revision)
+    bods_licence = LicenceFactory(number=otc_service.licence.number)
+
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=otc_service.registration_code,
+        start=date.fromisoformat(seasonal_start),
+        end=date.fromisoformat(seasonal_end),
+    )
+
+    df = _get_timetable_catalogue_dataframe()
+    assert df["Staleness Status"][0] == "Stale - End date passed"
+    assert df["Seasonal Status"][0] == "Out of Season"
+    assert df["Requires Attention"][0] == "No"

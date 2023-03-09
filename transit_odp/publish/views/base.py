@@ -188,33 +188,17 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
         pass
 
     def form_valid(self, form):
-        client = get_notifications()
         dataset = self.get_object()
         revision = dataset.revisions.order_by("-created").first()
 
         # Delete revision
         if not revision.is_published or revision.status == ExpiredStatus:
-
             try:
                 DatasetRevision.objects.get(id=revision.id).delete()
 
             except DatasetRevision.DoesNotExist:
                 # This shouldnt happen but we dont want to break the site if it does
                 pass
-
-            else:
-                client.send_data_endpoint_deleted_deleter_notification(
-                    dataset_id=dataset.id,
-                    dataset_name=revision.name,
-                    contact_email=self.request.user.email,
-                )
-                if dataset.contact != self.request.user and dataset.contact.is_active:
-                    client.send_data_endpoint_deleted_updater_notification(
-                        dataset_id=dataset.id,
-                        contact_email=dataset.contact.email,
-                        dataset_name=revision.name,
-                        last_updated=revision.modified,
-                    )
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -709,7 +693,7 @@ class BasePublishListView(OrgUserViewMixin, BaseTemplateView):
         )
 
 
-class DataActivityView(OrgUserViewMixin, DetailView):
+class DataActivityView(DetailView):
     template_name = "publish/data_activity.html"
     model = Organisation
     pk_url_kwarg = "pk1"
@@ -720,4 +704,33 @@ class DataActivityView(OrgUserViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["pk1"] = self.kwargs.get("pk1")
+        prev = self.request.GET.get("prev")
+        if prev == "operator-detail":
+            context["backlink_url"] = reverse(
+                "operator-detail",
+                kwargs={"pk": self.kwargs.get("pk1")},
+                host=config.hosts.DATA_HOST,
+            )
+        elif prev == "guide-me":
+            context["backlink_url"] = reverse(
+                "guide-me", host=config.hosts.PUBLISH_HOST
+            )
+        elif prev == "avl-feed-list":
+            context["backlink_url"] = reverse(
+                "avl:feed-list",
+                kwargs={"pk1": self.kwargs.get("pk1")},
+                host=config.hosts.PUBLISH_HOST,
+            )
+        elif prev == "fares-feed-list":
+            context["backlink_url"] = reverse(
+                "fares:feed-list",
+                kwargs={"pk1": self.kwargs.get("pk1")},
+                host=config.hosts.PUBLISH_HOST,
+            )
+        else:
+            context["backlink_url"] = reverse(
+                "feed-list",
+                kwargs={"pk1": self.kwargs.get("pk1")},
+                host=config.hosts.PUBLISH_HOST,
+            )
         return context

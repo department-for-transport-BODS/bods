@@ -4,10 +4,12 @@ from datetime import timedelta
 from celery import shared_task
 from dateutil.relativedelta import relativedelta
 from django.core.files.base import File
+from django.db.models.expressions import F
 from django.utils import timezone
 
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.feedback.models import Feedback
+from transit_odp.organisation.models.data import SeasonalService
 from transit_odp.site_admin.constants import (
     ARCHIVE_CATEGORY_FILENAME,
     OperationalMetrics,
@@ -168,3 +170,13 @@ def task_delete_unwanted_data():
         .delete()
     )
     logger.info(f"Deleted {deleted} post publishing check weekly report")
+
+
+@shared_task()
+def task_seasonal_service_updated_dates():
+    today = timezone.datetime.today()
+    one_year_deltatime = timedelta(days=365)
+    seasonal_services = SeasonalService.objects.filter(end__lt=today).update(
+        start=F("start") + one_year_deltatime, end=F("end") + one_year_deltatime
+    )
+    logger.info(f"# {seasonal_services}: seasonal services updated.")

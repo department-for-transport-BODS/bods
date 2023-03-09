@@ -1,3 +1,4 @@
+import datetime
 from collections import OrderedDict
 from typing import Optional
 
@@ -7,8 +8,11 @@ import pandas as pd
 from transit_odp.common.collections import Column
 from transit_odp.common.utils import round_down
 from transit_odp.organisation.csv import EmptyDataFrame
-from transit_odp.organisation.models import TXCFileAttributes
-from transit_odp.organisation.models.data import ServiceCodeExemption
+from transit_odp.organisation.models import (
+    SeasonalService,
+    ServiceCodeExemption,
+    TXCFileAttributes,
+)
 from transit_odp.otc.models import Service as OTCService
 
 TXC_COLUMNS = (
@@ -19,6 +23,7 @@ TXC_COLUMNS = (
     "last_updated_date",
     "filename",
     "licence_number",
+    "modification_datetime",
     "national_operator_code",
     "service_code",
     "public_use",
@@ -51,39 +56,99 @@ OTC_COLUMNS = (
     "service_type_other_details",
 )
 
+SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
+
 TIMETABLE_COLUMN_MAP = OrderedDict(
     {
-        "statuses": Column(
-            "Service Statuses",
-            "The publication status of the publisher’s data set on BODS. "
-            "'Registered/Unregistered' refers to their status of registration "
-            "with the OTC. 'Published/Unpublished' refers to if they have been "
-            "published on BODS. 'Missing data' refers to OTC data we haven't been "
-            "able to match to a BODS data set. 'Unassigned licence' refers to a data "
-            "set that we haven't been able to find the OTC. 'Out of scope' refers to "
-            "data deemed exempt from being reported on BODS by the DVSA/DfT Admin",
+        "requires_attention": Column(
+            "Requires Attention",
+            "No: Default state for correctly published services, will be “No” "
+            "unless any of the logic below is met. "
+            "Yes: Yes IF Staleness Status does not equal “Not Stale”. "
+            "Yes IF Published Status = Unpublished and OTC status = Registered "
+            "and Scope Status = In scope and Seasonal Status = Not Seasonal. "
+            "Yes IF Published Status = Unpublished and OTC status = Registered "
+            "and Scope Status = In scope and Seasonal Status = In season.",
+        ),
+        "published_status": Column(
+            "Published Status",
+            "Published: Published to BODS by an Operator/Agent. "
+            "Unpublished: Not published to BODS by an Operator/Agent.",
+        ),
+        "otc_status": Column(
+            "OTC Status",
+            "Registered: Registered and not cancelled within the OTC database. "
+            "Unregistered: Not Registered within the OTC.",
+        ),
+        "scope_status": Column(
+            "Scope Status",
+            "In scope: Default status for published or unpublished services to "
+            "BODS. Assumed in scope unless marked as exempt in the service "
+            "code exemption flow. "
+            "Out of Scope: Service code has been marked as exempt by the DVSA "
+            "in the service code exemption flow.",
+        ),
+        "seasonal_status": Column(
+            "Seasonal Status",
+            "In season: Service code has been marked with a date range within "
+            "the seasonal services flow and the date from which the file is "
+            "created falls within the date range for that service code. "
+            "Out of Season: Service code has been marked with a date range "
+            "within the seasonal services flow and the date from which the "
+            "file is created falls outside the date range for that service "
+            "code. "
+            "Not Seasonal: Default status for published or unpublished "
+            "services to BODS. Assumed Not seasonal unless service code has "
+            "been marked with a date range within the seasonal services flow.",
+        ),
+        "staleness_status": Column(
+            "Staleness Status",
+            "Not Stale: Default status for service codes published to BODS. "
+            "Stale - End date passed: If 'Effective stale date due to end "
+            "date' (if present)  is sooner than 'Effective stale date due to "
+            "effective last modified date' and today’s date from which the "
+            "file is created equals or passes 'Effective stale date due to end "
+            "date' and Last modified date < OTC Effective start date - FALSE."
+            "Stale - 12 months old: If 'Effective stale date due to effective "
+            "last modified' date is sooner than 'Effective stale date due to "
+            "end date' (if present) and today’s date from which the file is "
+            "created equals or passes 'Effective stale date due to effective "
+            "last modified date' and Last modified date < OTC Effective start "
+            "date - FALSE. "
+            "Stale - OTC Variation: If Last modified date < OTC Effective "
+            "start date - TRUE AND Today’s date greater than or equal to than "
+            "'Effective stale date due to OTC effective date'.",
         ),
         "organisation_name": Column(
             "Organisation Name",
-            "The name of the operator/publisher providing data on BODS",
+            "The name of the operator/publisher providing data on BODS.",
         ),
         "dataset_id": Column(
             "Dataset ID",
             "The internal BODS generated ID of the operator/publisher providing "
-            "data on BODS",
+            "data on BODS.",
         ),
         "score": Column(
             "DQ Score",
             "The DQ score assigned to the publisher’s data set as a result of "
-            "the additional data quality checks done on timetables data on BODS",
+            "the additional data quality checks done on timetables data on "
+            "BODS.",
         ),
         "bods_compliant": Column(
             "BODS Compliant",
-            "The validation status and format of timetables data ",
+            "The validation status and format of timetables data.",
         ),
         "last_updated_date": Column(
             "Last Updated Date",
             "The date that the data set/feed was last updated on BODS",
+        ),
+        "last_modified_date": Column(
+            "Last Modified Date",
+            "Date of last modified file within the service codes dataset.",
+        ),
+        "effective_last_modified_date": Column(
+            "Effective Last Modified Date",
+            "Equal to Last Modified Date.",
         ),
         "filename": Column(
             "XML Filename",
@@ -117,13 +182,54 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "operating_period_end_date": Column(
             "Operating Period End Date",
-            "The operating period end date as extracted from the files provided by "
-            "the operator/publisher to BODS.",
+            "The operating period end date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
+        "effective_stale_date_from_end_date": Column(
+            "Effective stale date due to end date",
+            "If end date exists within the timetable file "
+            "Then take end date from TransXChange file minus 42 days.",
+        ),
+        "effective_stale_date_from_last_modified": Column(
+            "Effective stale date due to effective last modified date",
+            "Take 'Effective Last Modified date' from timetable data catalogue "
+            "plus 12 months.",
+        ),
+        "last_modified_lt_effective_stale_date_otc": Column(
+            "Last modified date < Effective stale date due to " "OTC effective date",
+            "If last modified date is less than "
+            "Effective stale date due to OTC effective date "
+            "Then TRUE "
+            "Else FALSE.",
+        ),
+        "effective_stale_date_from_otc_effective": Column(
+            "Effective stale date due to OTC effective date",
+            "Effective date” (timetable data catalogue) minus 42 days.",
+        ),
+        "effective_seasonal_start": Column(
+            "Effective Seasonal Start Date",
+            "If Seasonal Start Date is present "
+            "Then Seasonal Start Date minus 42 days "
+            "Else null.",
+        ),
+        "seasonal_start": Column(
+            "Seasonal Start Date",
+            "If service has been assigned a date range from within the "
+            "seasonal services flow "
+            "Then take start date "
+            "Else null.",
+        ),
+        "seasonal_end": Column(
+            "Seasonal End Date",
+            "If service has been assigned a date range from within the "
+            "seasonal services flow "
+            "Then take end date "
+            "Else null.",
         ),
         "revision_number": Column(
             "Service Revision Number",
-            "The service revision number date as extracted from the files provided by "
-            "the operator/publisher to BODS.",
+            "The service revision number date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
         ),
         "string_lines": Column(
             "Line Name",
@@ -229,50 +335,130 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
 )
 
 
-def add_status_column(df: pd.DataFrame) -> pd.DataFrame:
-    choices = [
-        "Published (Out of scope)",
-        "Published (Registered)",
-        "Published (Unregistered)",
-        "Missing data",
-        "Unassigned licence",
-    ]
-
+def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
+    exists_in_bods = np.invert(pd.isna(df["dataset_id"]))
+    exists_in_otc = np.invert(pd.isna(df["otc_licence_number"]))
     exempted_reg_numbers = (
         ServiceCodeExemption.objects.add_registration_number()
         .values_list("registration_number", flat=True)
         .all()
     )
+    registration_number_exempted = df["registration_number"].isin(exempted_reg_numbers)
 
-    registration_number_exempted = np.invert(pd.isna(df["dataset_id"])) & df[
-        "registration_number"
-    ].isin(exempted_reg_numbers)
-    exists_in_otc_and_bods = np.invert(pd.isna(df["dataset_id"])) & np.invert(
-        pd.isna(df["otc_licence_number"])
+    df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
+    df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
+    df["scope_status"] = np.where(
+        registration_number_exempted, "Out of Scope", "In Scope"
     )
-    exists_in_bods_and_service_code_unregistered = np.invert(
-        pd.isna(df["dataset_id"])
-    ) & df["service_code"].str.startswith("UZ")
-    exists_in_otc_and_not_in_bods = pd.isna(df["dataset_id"]) & np.invert(
-        pd.isna(df["otc_licence_number"])
+    return df
+
+
+def add_seasonal_status(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
+    seasonal_services_df = pd.DataFrame.from_records(
+        SeasonalService.objects.add_registration_number().values(
+            *SEASONAL_SERVICE_COLUMNS
+        )
     )
-    exists_in_bods_and_not_in_otc = np.invert(pd.isna(df["dataset_id"])) & pd.isna(
-        df["otc_licence_number"]
+    if seasonal_services_df.empty:
+        df["seasonal_start"] = pd.NaT
+        df["seasonal_end"] = pd.NaT
+        df["seasonal_status"] = "Not Seasonal"
+        return df
+
+    seasonal_services_df.rename(
+        columns={"start": "seasonal_start", "end": "seasonal_end"}, inplace=True
+    )
+    annotated_df = pd.merge(
+        df, seasonal_services_df, on="registration_number", how="left"
     )
 
-    conditions = [
-        registration_number_exempted,  # Published (Out of scope)
-        exists_in_otc_and_bods,  # Published (Registered)
-        exists_in_bods_and_service_code_unregistered,  # Published (Unregistered)
-        exists_in_otc_and_not_in_bods,  # Missing data
-        exists_in_bods_and_not_in_otc,  # Unassigned licence
-    ]
-
-    statuses = np.select(
-        conditions,
-        choices,
+    not_seasonal = pd.isna(annotated_df["seasonal_start"])
+    in_season = (annotated_df["seasonal_start"] <= today) & (
+        annotated_df["seasonal_end"] >= today
     )
-    df["statuses"] = statuses
+    annotated_df["seasonal_status"] = np.select(
+        condlist=[not_seasonal, in_season],
+        choicelist=["Not Seasonal", "In Season"],
+        default="Out of Season",
+    )
+
+    return annotated_df
+
+
+def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
+    today = np.datetime64(today)
+    df["last_modified_date"] = df["modification_datetime"].dt.date
+    df["effective_last_modified_date"] = df["last_modified_date"]
+
+    df["effective_seasonal_start"] = df["seasonal_start"] - pd.Timedelta(days=42)
+
+    df["effective_stale_date_from_end_date"] = df[
+        "operating_period_end_date"
+    ] - pd.Timedelta(days=42)
+    defer_one_year = (
+        lambda d: d if pd.isna(d) else datetime.date(d.year + 1, d.month, d.day)
+    )
+    df["effective_stale_date_from_last_modified"] = df[
+        "effective_last_modified_date"
+    ].apply(defer_one_year)
+    df["effective_stale_date_from_otc_effective"] = df["effective_date"] - pd.Timedelta(
+        days=42
+    )
+
+    df["last_modified_lt_effective_stale_date_otc"] = (
+        df["last_modified_date"] < df["effective_stale_date_from_otc_effective"]
+    )
+
+    staleness_end_date = (
+        pd.notna(df["effective_stale_date_from_end_date"])
+        & (
+            df["effective_stale_date_from_end_date"]
+            < df["effective_stale_date_from_last_modified"]
+        )
+        & (df["effective_stale_date_from_end_date"] <= today)
+        & (df["last_modified_date"] >= df["effective_date"])
+    )
+    staleness_12_months = (
+        (
+            pd.isna(df["effective_stale_date_from_end_date"])
+            | (
+                df["effective_stale_date_from_last_modified"]
+                < df["effective_stale_date_from_end_date"]
+            )
+        )
+        & (df["effective_stale_date_from_last_modified"] <= today)
+        & (df["last_modified_date"] >= df["effective_date"])
+    )
+    staleness_otc = (df["last_modified_date"] < df["effective_date"]) & (
+        df["effective_stale_date_from_otc_effective"] <= today
+    )
+    df["staleness_status"] = np.select(
+        condlist=[staleness_end_date, staleness_12_months, staleness_otc],
+        choicelist=[
+            "Stale - End date passed",
+            "Stale - 12 months old",
+            "Stale - OTC Variation",
+        ],
+        default="Not Stale",
+    )
+    return df
+
+
+def add_requires_attention_column(
+    df: pd.DataFrame, today: datetime.date
+) -> pd.DataFrame:
+    requires_attention = (
+        (df["scope_status"] == "In Scope")
+        & (df["seasonal_status"] != "Out of Season")
+        & (
+            (df["staleness_status"] != "Not Stale")
+            | (
+                (df["published_status"] == "Unpublished")
+                & (df["otc_status"] == "Registered")
+            )
+        )
+    )
+    df["requires_attention"] = np.where(requires_attention, "Yes", "No")
     return df
 
 
@@ -286,10 +472,11 @@ def cast_boolean_to_string(value: Optional[bool]) -> str:
 
 
 def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
+    today = datetime.date.today()
+
     txc_df = pd.DataFrame.from_records(
         TXCFileAttributes.objects.get_active_txc_files().values(*TXC_COLUMNS)
     )
-
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
     )
@@ -312,7 +499,10 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         merged[field] = merged[field].astype(type_)
 
     merged.sort_values("dataset_id", inplace=True)
-    merged = add_status_column(merged)
+    merged = add_status_columns(merged)
+    merged = add_seasonal_status(merged, today)
+    merged = add_staleness_metrics(merged, today)
+    merged = add_requires_attention_column(merged, today)
     merged["score"] = merged["score"].map(
         lambda value: f"{int(round_down(value) * 100)}%" if not pd.isna(value) else ""
     )

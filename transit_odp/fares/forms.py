@@ -14,7 +14,7 @@ from transit_odp.publish.constants import (
     DUPLICATE_COMMENT_ERROR_MESSAGE,
     REQUIRED_COMMENT_ERROR_MESSAGE,
 )
-from transit_odp.publish.forms import (
+from transit_odp.publish.forms.constants import (
     CANCEL_PUBLISH_BUTTON,
     CANCEL_UPDATE_BUTTON,
     CONTINUE_BUTTON,

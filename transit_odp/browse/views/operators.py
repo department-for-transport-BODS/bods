@@ -1,18 +1,18 @@
+from math import ceil
+
 from django.db.models import Count, F
 from django_hosts.resolvers import reverse
+from waffle import flag_is_active
 
-from config.hosts import DATA_HOST
+from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
-from transit_odp.organisation.constants import (
-    EXPIRED,
-    INACTIVE,
-    AVLType,
-    FaresType,
-    TimetableType,
-)
+from transit_odp.fares_validator.models import FaresValidationResult
+from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.otc.models import Service as OTCService
+from transit_odp.publish.requires_attention import get_requires_attention_data
 
 
 class OperatorsView(BaseListView):
@@ -56,24 +56,26 @@ class OperatorDetailView(BaseDetailView):
         return super().get_queryset().filter(is_active=True).add_nocs_string()
 
     def get_context_data(self, **kwargs):
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
         context = super().get_context_data(**kwargs)
         organisation = self.object
 
-        timetable_datasets = (
-            Dataset.objects.filter(
-                organisation=organisation,
-                dataset_type=TimetableType,
+        context["total_services_requiring_attention"] = len(
+            get_requires_attention_data(organisation.id)
+        )
+        context[
+            "total_in_scope_in_season_services"
+        ] = OTCService.objects.get_in_scope_in_season_services(organisation.id).count()
+        try:
+            context["services_require_attention_percentage"] = ceil(
+                100
+                * (
+                    context["total_services_requiring_attention"]
+                    / context["total_in_scope_in_season_services"]
+                )
             )
-            .add_is_live_pti_compliant()
-            .select_related("organisation")
-            .select_related("live_revision")
-        )
-        context["timetable_stats"] = timetable_datasets.agg_global_feed_stats(
-            dataset_type=TimetableType, organisation_id=organisation.id
-        )
-        context["timetable_non_compliant"] = timetable_datasets.filter(
-            is_pti_compliant=False
-        ).count()
+        except ZeroDivisionError:
+            context["services_require_attention_percentage"] = 0
 
         avl_dataset_revisions = (
             DatasetRevision.objects.filter(dataset__organisation_id=organisation.id)
@@ -101,8 +103,23 @@ class OperatorDetailView(BaseDetailView):
         context["fares_stats"] = fares_datasets.agg_global_feed_stats(
             dataset_type=FaresType, organisation_id=organisation.id
         )
-        # Compliance is n/a for Fares datasets
-        context["fares_non_compliant"] = 0
+        if is_fares_validator_active:
+            try:
+                results = FaresValidationResult.objects.filter(
+                    organisation_id=organisation.id,
+                    revision_id=F("revision__dataset__live_revision_id"),
+                    revision__dataset__dataset_type=FaresType,
+                ).values("count")
+            except FaresValidationResult.DoesNotExist:
+                results = []
+            fares_non_compliant_count = len(
+                [count for count in results if count.get("count") > 0]
+            )
+            context["fares_non_compliant"] = fares_non_compliant_count
+        else:
+            # Compliance is n/a for Fares datasets
+            context["fares_non_compliant"] = 0
+
         if self.request.user.is_authenticated:
             context["timetable_feed_url"] = (
                 f"{reverse('api:feed-list', host=DATA_HOST)}"
@@ -120,4 +137,8 @@ class OperatorDetailView(BaseDetailView):
                 f"&api_key={self.request.user.auth_token.key}"
             )
 
+        context["data_activity_url"] = (
+            reverse("data-activity", kwargs={"pk1": organisation.id}, host=PUBLISH_HOST)
+            + "?prev=operator-detail"
+        )
         return context

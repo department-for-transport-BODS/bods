@@ -8,8 +8,8 @@ from django_tables2 import SingleTableView
 from config.hosts import PUBLISH_HOST
 from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import AVLType, FaresType, TimetableType
-from transit_odp.otc.models import Service
 from transit_odp.publish.forms import SelectDataTypeForm
+from transit_odp.publish.requires_attention import get_requires_attention_data
 from transit_odp.publish.tables import AgentOrganisationsTable
 from transit_odp.users.models import User
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -70,6 +70,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
 
     def get_table_data(self):
         next_page = self.request.GET.get("next", "feed-list")
+        prev_page = self.request.GET.get("prev")
         # Each record requires a separate request to the database which is in no way
         # ideal. We need to rethink the data model, possibly making the otc licence and
         # the organisation licence a foreign key.
@@ -77,12 +78,13 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             {
                 "next": reverse(
                     next_page, args=[record.organisation_id], host=PUBLISH_HOST
-                ),
+                )
+                + (f"?prev={prev_page}" if prev_page is not None else ""),
                 "organisation_id": record.organisation_id,
                 "organisation": record.organisation.name,
-                "requires_attention": Service.objects.get_missing_from_organisation(
-                    record.organisation_id
-                ).count(),
+                "requires_attention": len(
+                    get_requires_attention_data(record.organisation_id)
+                ),
             }
             for record in self.get_queryset()
         ]

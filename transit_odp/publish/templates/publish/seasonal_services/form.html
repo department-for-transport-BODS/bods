@@ -1,0 +1,51 @@
+{% extends "publish/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+    {% if title_tag_text %}
+        {{ title_tag_text }}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+
+{% block breadcrumb.content %}
+    {{ block.super }}
+    {% if user.is_agent_user %}
+        {% with "Review "|add:organisation.name|title|add:" Timetables Data" as heading %}
+            {% breadcrumb_url heading 'feed-list' pk1=pk1 host hosts.publish %}
+        {% endwith %}
+    {% else %}
+        {% breadcrumb_url "Review My Timetables Data" 'feed-list' pk1=pk1 host hosts.publish %}
+    {% endif %}
+    {% breadcrumb_url "Manage seasonal services" "seasonal-service" pk1=pk1 host hosts.publish %}
+    {% block breadcrumb_extend %}
+        {% breadcrumb "Edit dates" %}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl">{% trans 'Seasonal service operating dates' %}</h1>
+            {% if form.subheading %}
+                <p class="govuk-body govuk-!-margin-bottom-8">{{ form.subheading }}</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <form class="seasonal-service" method="post" enctype="multipart/form-data" novalidate>
+                {% block form_extend %}
+                    {% crispy form %}
+                {% endblock %}
+            </form>
+            <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+        </div>
+    </div>
+{% endblock %}

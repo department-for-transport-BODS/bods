@@ -24,7 +24,6 @@ from transit_odp.data_quality.utils import (
 )
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.notifications import get_notifications
-from transit_odp.organisation.notifications import send_report_available_notifications
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.pipelines.pipelines.dqs_report_etl import (
@@ -74,8 +73,6 @@ def run_dqs_report_etl_pipeline(report_id: int):
             dq_report.score = score
             dq_report.save()
 
-            adapter.info("Sending report available emails.")
-            send_report_available_notifications(dq_report.revision)
     except Exception as exc:
         message = str(exc)
         adapter.error(message)

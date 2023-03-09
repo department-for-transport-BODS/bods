@@ -12,7 +12,7 @@
                 <div class="app-dqs-panel__success">
                     {% if validator_error %}
                         <h2 class="govuk-heading-m">Validation Check - Failed</h2>
-                        <p class="govuk-body govuk-!-margin-bottom-0">
+                        <p class="govuk-body">
                             {% blocktrans %}
                                 The validation report checks for compliance against the mandated NeTEx Profile.
                             {% endblocktrans %}
@@ -20,12 +20,14 @@
                             <br />
                             <a class="govuk-link" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
                             <br />
-                            <br />
+                        </p>
+                        <p class="govuk-body govuk-!-margin-bottom-0">
                             {% blocktrans %}
-                                The fares data supplied is non-compliant. It does not meet the data format required as specified in
-                                the <a class="govuk-link" href="">guidance</a> and from Monday XX August XX it will be rejected from BODS. <br />
-                                <br />
-                                To pass the validation please address all outstanding issues in the validation report.
+                                The fares data supplied is non-compliant. You can publish this
+                                dataset now, however it is important to address the issues
+                                highightlighted in the report with your supplier. Please contact
+                                the helpdesk if there are any items on the report which your
+                                supplier cannot help you with.
                             {% endblocktrans %}
                         </p>
                     {% else %}
@@ -34,25 +36,25 @@
                 </div>
             </div>
         </div>
+    </div>
 {% else %}
-    <div id="preview-section">
+    <div id="preview-section"></div>
 {% endflag %}
 
-        {# Publish form #}
-        <div class="govuk-!-margin-bottom-6">
-            {% crispy form %}
-        </div>
+{# Publish form #}
+<div class="govuk-!-margin-bottom-6">
+    {% crispy form %}
+</div>
 
-        <h2 class="govuk-heading-l dont-break-out">
-            {{ object.name }}
-        </h2>
-        {% include 'publish/snippets/dataset_map.html' %}
-        {% include 'fares/review/property_table.html' %}
+<h2 class="govuk-heading-l dont-break-out">
+    {{ object.name }}
+</h2>
+{% include 'publish/snippets/dataset_map.html' %}
+{% include 'fares/review/property_table.html' %}
 
-        <div class="btn-group-justified">
-            <a role="button" class="govuk-button govuk-button--secondary"
-                href="{% url 'fares:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
-                {{ _('Delete data set') }}
-            </a>
-        </div>
-    </div>
+<div class="btn-group-justified">
+    <a role="button" class="govuk-button govuk-button--secondary"
+        href="{% url 'fares:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
+        {{ _('Delete data set') }}
+    </a>
+</div>

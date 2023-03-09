@@ -5,10 +5,14 @@
 {% block extra_content %}
     <h1 data-qa="using-api-header" class="govuk-heading-l">{% filter force_escape %}{% trans 'Data Catalogue' %}{% endfilter %}</h1>
     <p class="govuk-body">
+        {% url 'download-catalogue' host hosts.data as datalogue_url %}
+        {% blocktrans %}
+            <a class="govuk-link" href="{{ datalogue_url }}">The data catalogue zip</a>
+        {% endblocktrans %}
         {% filter force_escape %}
             {% blocktrans %}
-                The data catalogue zip contains a series of CSVs which
-                would gives a machine-readable overview of all the data
+                contains a series of CSVs which
+                gives a machine-readable overview of all the data
                 that resides in BODS currently.
             {% endblocktrans %}
         {% endfilter %}
