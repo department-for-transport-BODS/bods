@@ -111,7 +111,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             # Ensure GET returns the preview step
             self.object.dataset.start_revision()
             self.storage.reset()
-        return self.render(self.get_form())
+            return self.render(self.get_form())
 
     def get_form_kwargs(self, step=None):
         return {"is_update": True}
