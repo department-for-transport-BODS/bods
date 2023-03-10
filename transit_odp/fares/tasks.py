@@ -62,7 +62,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
-        task_run_fares_validation(task.id)
+        # task_run_fares_validation(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -229,9 +229,7 @@ def task_run_fares_etl(task_id):
         for element in fares_data_catlogue:
             element.update({"fares_metadata_id": fares_metadata.id})
             # For 'Update data' flow
-            DataCatalogueMetaData.objects.filter(
-                fares_metadata_id=fares_metadata.id
-            ).delete()
+            DataCatalogueMetaData.objects.filter(**element).delete()
             DataCatalogueMetaData.objects.create(**element)
     # For 'Update data' flow
     fares_metadata.stops.remove(*naptan_stop_ids)
