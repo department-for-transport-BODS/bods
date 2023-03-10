@@ -231,8 +231,6 @@ def task_run_fares_etl(task_id):
             # For 'Update data' flow
             DataCatalogueMetaData.objects.filter(**element).delete()
             DataCatalogueMetaData.objects.create(**element)
-    # For 'Update data' flow
-    fares_metadata.stops.remove(*naptan_stop_ids)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 
