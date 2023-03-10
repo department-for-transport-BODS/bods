@@ -44,10 +44,6 @@ class FaresXmlValidator:
         logger.info(f"Revision {self.pk2} contains {len(violations)} fares violations.")
         if violations:
             for violation in violations:
-                # For 'Update data' flow
-                FaresValidation.objects.filter(
-                    revision_id=self.pk2, organisation_id=self.pk1
-                ).delete()
                 fares_violations = FaresValidation.create_observations(
                     revision_id=self.pk2, org_id=self.pk1, violation=violation
                 ).save()
