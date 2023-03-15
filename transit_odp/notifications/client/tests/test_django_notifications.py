@@ -54,11 +54,16 @@ class TestDjangoNotification:
         assert m.subject == "Data set status changed"
 
     def test_data_endpoint_unreachable(self, mailoutbox, settings):
+        dataset_url = "https://www.example.com"
         client = DjangoNotifier()
         client.send_data_endpoint_unreachable_notification(
             dataset_id=1,
             dataset_name=self.dataset_name,
             contact_email=self.contact_email,
+            short_description=self.short_description,
+            feed_detail_link=self.feed_detail_link,
+            remote_url=dataset_url,
+            operator_name=self.organisation_name,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
@@ -91,6 +96,7 @@ class TestDjangoNotification:
             dataset_name=self.dataset_name,
             short_description=self.short_description,
             feed_detail_link=self.feed_detail_link,
+            operator_name=self.organisation_name,
             remote_url=dataset_url,
             contact_email=self.contact_email,
         )
