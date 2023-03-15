@@ -61,7 +61,14 @@ class INotifications(Protocol):
         ...
 
     def send_data_endpoint_unreachable_notification(
-        self, dataset_id: int, dataset_name: str, contact_email: str
+        self,
+        dataset_id: int,
+        dataset_name: str,
+        short_description: str,
+        feed_detail_link: str,
+        operator_name: str,
+        remote_url: str,
+        contact_email: str,
     ):
         """Sends notification to Publisher that their remote TxC dataset is
         unreachable"""
@@ -84,6 +91,7 @@ class INotifications(Protocol):
         dataset_name: str,
         short_description: str,
         feed_detail_link: str,
+        operator_name: str,
         remote_url: str,
         contact_email: str,
     ):
