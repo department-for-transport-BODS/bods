@@ -468,7 +468,7 @@ class DatasetRevision(
     @property
     def report_url(self):
         """returns draft's validtion report url review url"""
-        if self.dataset.dataset_type == 1:
+        if self.dataset.dataset_type == DatasetType.TIMETABLE:
             dataset = self.dataset
             dataset_id = dataset.id
             org_id = dataset.organisation.id

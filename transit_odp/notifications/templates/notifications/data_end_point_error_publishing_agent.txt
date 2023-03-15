@@ -22,19 +22,5 @@ You are legally obliged to supply data according to the standards, and you must 
 
 For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
 
-{% if dataset_type == 1 %}
-The validation report is available here: {{ report_link }}
-{% endif %}
-
-Action required:
-    1) Share or forward this email to your supplier so that they can help you with the issues being encountered.
-    2) Complete all actions the supplier requests in response to the validation report.
-    3) Update the dataset on BODS and review the updated validation response.
-
-Important:
-You are legally obliged to supply data according to the standards, and you must resolve all issues listed immediately.
-
-For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
-
 Kind Regards,
 The Bus Open Data Team
