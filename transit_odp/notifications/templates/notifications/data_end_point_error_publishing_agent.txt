@@ -9,11 +9,9 @@ Short Description: {{ feed_short_description }}
 Published: {{ published_time }}
 Comments: {{ comments }}
 Link to data set: {{ link }}
-
 {% if dataset_type == 1 %}
 The validation report is available here: {{ report_link }}
 {% endif %}
-
 Action required:
     1) Share or forward this email to your supplier so that they can help you with the issues being encountered.
     2) Complete all actions the supplier requests in response to the validation report.
