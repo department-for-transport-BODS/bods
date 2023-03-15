@@ -124,18 +124,6 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
         upload_file = revision.upload_file
         return upload_file
 
-    def set_validator_error(self, revision_id):
-        upload_file = self.get_upload_file(revision_id)
-
-        fares_validator_obj = FaresXmlValidator(
-            upload_file, self.kwargs["pk1"], revision_id
-        )
-        fares_validator_response = fares_validator_obj.set_errors()
-
-        if fares_validator_response.status_code == 201:
-            return True
-        return False
-
     def get_validator_error(self, revision_id):
         upload_file = self.get_upload_file(revision_id)
 
@@ -154,11 +142,11 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
     def get_form_class(self) -> Type[RevisionPublishForm]:
         validator_error = None
         if not self.get_validator_error(self.object.id):
-            validator_error = self.set_validator_error(self.object.id)
+            validator_error = False
         else:
-            validator_error = self.get_validator_error(self.object.id)
+            validator_error = True
 
-        if validator_error:
+        if validator_error is True:
             return FaresRevisionPublishFormViolations
         return RevisionPublishForm
 

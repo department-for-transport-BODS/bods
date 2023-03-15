@@ -12,6 +12,7 @@ import config.hosts
 from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.fares.forms import FaresFeedCommentForm, FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import FeedPublishCancelForm
@@ -22,9 +23,28 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 class RevisionUpdateSuccessView(OrgUserViewMixin, BaseTemplateView):
     template_name = "fares/revision_publish_success.html"
 
+    def get_count(self, dataset_id):
+        revision_id = list(
+            DatasetRevision.objects.filter(dataset_id=dataset_id).values_list(
+                "id", flat=True
+            )
+        )
+        count_list = list(
+            FaresValidationResult.objects.filter(
+                revision_id=revision_id[0]
+            ).values_list("count", flat=True)
+        )
+        return count_list
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"update": True, "pk1": self.kwargs["pk1"]})
+        count = self.get_count(self.kwargs["pk"])
+
+        if count[0] != 0:
+            context.update({"validator_error": True})
+        else:
+            context.update({"validator_error": False})
         return context
 
 

@@ -21,6 +21,7 @@ from transit_odp.fares.netex import (
 )
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 from transit_odp.organisation.updaters import update_dataset
@@ -63,6 +64,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
         task_run_fares_validation(task.id)
+        task_set_fares_validation_result(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -170,6 +172,27 @@ def task_run_fares_validation(task_id):
     task.update_progress(40)
     revision.upload_file = file_
     revision.save()
+
+
+@shared_task
+def task_set_fares_validation_result(task_id):
+    """Task to set validation errors in a fares file/s."""
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
+
+    file_ = revision.upload_file
+
+    org_id_list = Dataset.objects.filter(id=revision.dataset_id).values_list(
+        "organisation_id", flat=True
+    )
+
+    adapter.info("Setting validation errors.")
+    fares_validator_obj = FaresXmlValidator(file_, org_id_list[0], revision.id)
+    fares_validator_obj.set_errors()
+
+    task.update_progress(50)
 
 
 @shared_task

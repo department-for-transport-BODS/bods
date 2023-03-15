@@ -62,9 +62,9 @@ class RevisionPublishForm(GOVUKModelForm):
 
         validator_error = None
         if not self.get_validator_error(org_id_list[0], instance.id):
-            validator_error = self.set_validator_error(org_id_list[0], instance.id)
+            validator_error = False
         else:
-            validator_error = self.get_validator_error(org_id_list[0], instance.id)
+            validator_error = True
 
         if validator_error is True:
             consent_field.label = _(non_compliant_label)
@@ -80,18 +80,6 @@ class RevisionPublishForm(GOVUKModelForm):
         revision = DatasetRevision.objects.get(id=revision_id)
         upload_file = revision.upload_file
         return upload_file
-
-    def set_validator_error(self, organisation_id, revision_id):
-        upload_file = self.get_upload_file(revision_id)
-
-        fares_validator_obj = FaresXmlValidator(
-            upload_file, organisation_id, revision_id
-        )
-        fares_validator_response = fares_validator_obj.set_errors()
-
-        if fares_validator_response.status_code == 201:
-            return True
-        return False
 
     def get_validator_error(self, organisation_id, revision_id):
         upload_file = self.get_upload_file(revision_id)
