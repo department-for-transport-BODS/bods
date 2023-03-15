@@ -21,7 +21,9 @@ You are legally obliged to supply data according to the standards, and you must 
 
 For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
 
+{% if dataset_type == 1 %}
 The validation report is available here: {{ report_link }}
+{% endif %}
 
 Action required:
     1) Share or forward this email to your supplier so that they can help you with the issues being encountered.
