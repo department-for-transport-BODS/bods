@@ -13,6 +13,10 @@ def send_feed_monitor_fail_first_try_notification(dataset: Dataset):
     notifier.send_data_endpoint_unreachable_notification(
         dataset_id=dataset.id,
         dataset_name=dataset.live_revision.name,
+        short_description=dataset.live_revision.short_description,
+        feed_detail_link=dataset.feed_detail_url,
+        remote_url=dataset.live_revision.url_link,
+        operator_name=dataset.organisation.name,
         contact_email=dataset.contact.email,
     )
 
@@ -24,6 +28,7 @@ def send_feed_monitor_fail_final_try_notification(dataset: Dataset):
         short_description=dataset.live_revision.short_description,
         feed_detail_link=dataset.feed_detail_url,
         remote_url=dataset.live_revision.url_link,
+        operator_name=dataset.organisation.name,
         contact_email=dataset.contact.email,
     )
 
@@ -141,6 +146,7 @@ def send_endpoint_validation_error_notification(dataset):
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
+            report_link=revision.report_url,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
         )
@@ -153,6 +159,7 @@ def send_endpoint_validation_error_notification(dataset):
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
+            report_link=revision.report_url,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
         )

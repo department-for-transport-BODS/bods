@@ -17,6 +17,9 @@ class TestDjangoNotification:
     agent_organisation = "agentsRus"
     short_description = "test dataset for these tests"
     feed_detail_link = "http://publish.bods.local:8000/org/1/dataset/timetable/"
+    report_link = (
+        "http://publish.bods.local:8000/org/1/dataset/timetable/1/review/pti-csv"
+    )
     comments = "first publication"
 
     def test_send_data_endpoint_changed_notification(self, mailoutbox, settings):
@@ -51,11 +54,16 @@ class TestDjangoNotification:
         assert m.subject == "Data set status changed"
 
     def test_data_endpoint_unreachable(self, mailoutbox, settings):
+        dataset_url = "https://www.example.com"
         client = DjangoNotifier()
         client.send_data_endpoint_unreachable_notification(
             dataset_id=1,
             dataset_name=self.dataset_name,
             contact_email=self.contact_email,
+            short_description=self.short_description,
+            feed_detail_link=self.feed_detail_link,
+            remote_url=dataset_url,
+            operator_name=self.organisation_name,
         )
         [m] = mailoutbox
         assert m.from_email == settings.DEFAULT_FROM_EMAIL
@@ -88,6 +96,7 @@ class TestDjangoNotification:
             dataset_name=self.dataset_name,
             short_description=self.short_description,
             feed_detail_link=self.feed_detail_link,
+            operator_name=self.organisation_name,
             remote_url=dataset_url,
             contact_email=self.contact_email,
         )
@@ -206,6 +215,7 @@ class TestDjangoNotification:
             published_at=published_at,
             comments=self.comments,
             feed_detail_link=self.feed_detail_link,
+            report_link=self.report_link,
             contact_email=self.contact_email,
             with_pti_violations=False,
         )
@@ -227,6 +237,7 @@ class TestDjangoNotification:
             comments=self.comments,
             operator_name=self.agent_organisation,
             feed_detail_link=self.feed_detail_link,
+            report_link=self.report_link,
             contact_email=self.agent_contact_email,
             with_pti_violations=False,
         )
