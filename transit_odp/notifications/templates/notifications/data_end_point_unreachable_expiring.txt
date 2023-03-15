@@ -6,7 +6,6 @@ Operator: {{ organisation }}
 Dataset: {{ feed_name }}
 Data set ID: {{ feed_id }}
 Short Description: {{ feed_short_description }}
-Link to data set: {{ link }}
 
 Action required:
     1) Double check that this is the correct URL for the data you’d like to publish: {{ data_set_url }})
