@@ -24,14 +24,14 @@ class RevisionUpdateSuccessView(OrgUserViewMixin, BaseTemplateView):
     template_name = "fares/revision_publish_success.html"
 
     def get_count(self, dataset_id):
-        revision_id = list(
-            DatasetRevision.objects.filter(dataset_id=dataset_id).values_list(
-                "id", flat=True
+        live_revision_id = list(
+            Dataset.objects.filter(id=dataset_id).values_list(
+                "live_revision_id", flat=True
             )
         )
         count_list = list(
             FaresValidationResult.objects.filter(
-                revision_id=revision_id[0]
+                revision_id=live_revision_id[0]
             ).values_list("count", flat=True)
         )
         return count_list
