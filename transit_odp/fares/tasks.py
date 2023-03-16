@@ -188,9 +188,11 @@ def task_set_fares_validation_result(task_id):
         "organisation_id", flat=True
     )
 
-    adapter.info("Setting validation errors.")
+    adapter.info("Fares validation on fares file/s started.")
     fares_validator_obj = FaresXmlValidator(file_, org_id_list[0], revision.id)
+    adapter.info("Setting validation errors.")
     fares_validator_obj.set_errors()
+    adapter.info("Fares validation on fares file/s completed.")
 
     task.update_progress(50)
 

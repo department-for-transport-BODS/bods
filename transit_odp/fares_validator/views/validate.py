@@ -1,5 +1,6 @@
 import logging
 
+from django.db import transaction
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.parsers import FileUploadParser
@@ -38,27 +39,28 @@ class FaresXmlValidator:
             if violation not in violations
         ]
         logger.info(f"Revision {self.pk2} contains {len(violations)} fares violations.")
-        FaresValidation.objects.filter(
-            revision_id=self.pk2, organisation_id=self.pk1
-        ).delete()
-        if violations:
-            for violation in violations:
-                # For 'Update data' flow
-                fares_violations = FaresValidation.create_observations(
-                    revision_id=self.pk2, org_id=self.pk1, violation=violation
-                ).save()
+        with transaction.atomic():
+            FaresValidation.objects.filter(
+                revision_id=self.pk2, organisation_id=self.pk1
+            ).delete()
+            if violations:
+                for violation in violations:
+                    # For 'Update data' flow
+                    fares_violations = FaresValidation.create_observations(
+                        revision_id=self.pk2, org_id=self.pk1, violation=violation
+                    ).save()
 
-            serializer = FaresSerializer(fares_violations, many=True)
-            response = JsonResponse(
-                serializer.data, safe=False, status=status.HTTP_201_CREATED
-            )
-        # For 'Update data' flow
-        FaresValidationResult.objects.filter(
-            revision_id=self.pk2, organisation_id=self.pk1
-        ).delete()
-        FaresValidationResult.create_validation_result(
-            revision_id=self.pk2, org_id=self.pk1, violations=violations
-        ).save()
+                serializer = FaresSerializer(fares_violations, many=True)
+                response = JsonResponse(
+                    serializer.data, safe=False, status=status.HTTP_201_CREATED
+                )
+            # For 'Update data' flow
+            FaresValidationResult.objects.filter(
+                revision_id=self.pk2, organisation_id=self.pk1
+            ).delete()
+            FaresValidationResult.create_validation_result(
+                revision_id=self.pk2, org_id=self.pk1, violations=violations
+            ).save()
         return (
             response
             if response
