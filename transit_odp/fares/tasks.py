@@ -21,8 +21,9 @@ from transit_odp.fares.netex import (
 )
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
-from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
@@ -63,6 +64,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
         task_run_fares_validation(task.id)
+        task_set_fares_validation_result(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -173,6 +175,29 @@ def task_run_fares_validation(task_id):
 
 
 @shared_task
+def task_set_fares_validation_result(task_id):
+    """Task to set validation errors in a fares file/s."""
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
+
+    file_ = revision.upload_file
+
+    org_id_list = Dataset.objects.filter(id=revision.dataset_id).values_list(
+        "organisation_id", flat=True
+    )
+
+    adapter.info("Fares validation on fares file/s started.")
+    fares_validator_obj = FaresXmlValidator(file_, org_id_list[0], revision.id)
+    adapter.info("Setting validation errors.")
+    fares_validator_obj.set_errors()
+    adapter.info("Fares validation on fares file/s completed.")
+
+    task.update_progress(50)
+
+
+@shared_task
 def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
@@ -218,10 +243,18 @@ def task_run_fares_etl(task_id):
     # This block can be moved to a load module when we extract/load more metadata
     # like localities, admin areas
     transformed_data["revision"] = revision
+
+    # For 'Update data' flow which allows validation to occur multiple times
+    metadata_ids_list = DatasetMetadata.objects.filter(
+        revision_id=revision.id
+    ).values_list("id")
+    FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
     if is_fares_validator_active:
         for element in fares_data_catlogue:
             element.update({"fares_metadata_id": fares_metadata.id})
+            # For 'Update data' flow
+            DataCatalogueMetaData.objects.filter(**element).delete()
             DataCatalogueMetaData.objects.create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")

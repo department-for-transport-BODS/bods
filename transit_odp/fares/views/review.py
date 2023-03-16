@@ -14,6 +14,7 @@ import config.hosts
 from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import DatasetMetadata, DatasetRevision
@@ -43,13 +44,6 @@ class ReviewView(ReviewBaseView):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update(
-            {"consent_label": "I have reviewed the data and wish to publish my data"}
-        )
-        return kwargs
 
     def get_dataset_queryset(self):
         """Returns a DatasetQuerySet for Fares datasets owned by the user's
@@ -96,18 +90,6 @@ class ReviewView(ReviewBaseView):
         upload_file = revision.upload_file
         return upload_file
 
-    def set_validator_error(self, revision_id):
-        upload_file = self.get_upload_file(revision_id)
-
-        fares_validator_obj = FaresXmlValidator(
-            upload_file, self.kwargs["pk1"], revision_id
-        )
-        fares_validator_response = fares_validator_obj.set_errors()
-
-        if fares_validator_response.status_code == 201:
-            return True
-        return False
-
     def get_validator_error(self, revision_id):
         upload_file = self.get_upload_file(revision_id)
 
@@ -141,15 +123,17 @@ class ReviewView(ReviewBaseView):
         )
         if is_fares_validator_active:
             # Get the fares-validator error info
+            validator_error = None
             if (
                 not is_loading
                 and context["error"] is None
-                and not self.get_validator_error(revision.id)
+                and not self.get_validator_error(self.object.id)
             ):
-                context["validator_error"] = self.set_validator_error(revision.id)
+                validator_error = False
             else:
-                context["validator_error"] = self.get_validator_error(revision.id)
+                validator_error = True
 
+            context["validator_error"] = validator_error
             context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
@@ -193,9 +177,29 @@ class ReviewView(ReviewBaseView):
 class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
     template_name = "fares/revision_publish_success.html"
 
+    def get_count(self, dataset_id):
+        revision_id = list(
+            DatasetRevision.objects.filter(dataset_id=dataset_id).values_list(
+                "id", flat=True
+            )
+        )
+        count_list = list(
+            FaresValidationResult.objects.filter(
+                revision_id=revision_id[0]
+            ).values_list("count", flat=True)
+        )
+        return count_list
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"update": False, "pk1": self.kwargs["pk1"]})
+        count = self.get_count(self.kwargs["pk"])
+
+        if count[0] != 0:
+            context.update({"validator_error": True})
+        else:
+            context.update({"validator_error": False})
+
         return context
 
 

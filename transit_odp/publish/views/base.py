@@ -20,10 +20,12 @@ import config.hosts
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.publish.forms import (
+    FaresRevisionPublishFormViolations,
     FeedDescriptionForm,
     FeedPublishCancelForm,
     FeedUploadForm,
@@ -115,7 +117,38 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
     """The base view of all review pages"""
 
     model = DatasetRevision
-    form_class = RevisionPublishForm
+    fields = ("id",)
+
+    def get_upload_file(self, revision_id):
+        revision = DatasetRevision.objects.get(id=revision_id)
+        upload_file = revision.upload_file
+        return upload_file
+
+    def get_validator_error(self, revision_id):
+        upload_file = self.get_upload_file(revision_id)
+
+        fares_validator_obj = FaresXmlValidator(
+            upload_file, self.kwargs["pk1"], revision_id
+        )
+        fares_validator_errors = fares_validator_obj.get_errors()
+        fares_validator_errors_list = fares_validator_errors.content.decode(
+            "utf8"
+        ).replace("'", '"')
+
+        if fares_validator_errors_list == "[]":
+            return False
+        return True
+
+    def get_form_class(self) -> Type[RevisionPublishForm]:
+        validator_error = None
+        if not self.get_validator_error(self.object.id):
+            validator_error = False
+        else:
+            validator_error = True
+
+        if validator_error is True:
+            return FaresRevisionPublishFormViolations
+        return RevisionPublishForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
