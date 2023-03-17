@@ -103,20 +103,22 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "staleness_status": Column(
             "Staleness Status",
-            "Not Stale: Default status for service codes published to BODS. "
+            "Not Stale: Default status for service codes published to BODS. </br></br>"
             "Stale - End date passed: If 'Effective stale date due to end "
             "date' (if present)  is sooner than 'Effective stale date due to "
             "effective last modified date' and today’s date from which the "
             "file is created equals or passes 'Effective stale date due to end "
-            "date' and Last modified date < OTC Effective start date - FALSE."
+            "date' and Last modified date < OTC Effective start date - FALSE. "
+            "</br></br>"
             "Stale - 12 months old: If 'Effective stale date due to effective "
             "last modified' date is sooner than 'Effective stale date due to "
             "end date' (if present) and today’s date from which the file is "
             "created equals or passes 'Effective stale date due to effective "
             "last modified date' and Last modified date < OTC Effective start "
-            "date - FALSE. "
-            "Stale - OTC Variation: If Last modified date < OTC Effective "
-            "start date - TRUE AND Today’s date greater than or equal to than "
+            "date - FALSE. </br></br>"
+            "Stale - OTC Variation: If Last modified date < 'Effective stale date "
+            "due to OTC effective date' - TRUE and "
+            "Today’s date greater than or equal to than "
             "'Effective stale date due to OTC effective date'.",
         ),
         "organisation_name": Column(
@@ -402,7 +404,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         "effective_last_modified_date"
     ].apply(defer_one_year)
     df["effective_stale_date_from_otc_effective"] = df["effective_date"] - pd.Timedelta(
-        days=42
+        days=70
     )
 
     df["last_modified_lt_effective_stale_date_otc"] = (
@@ -429,9 +431,9 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         & (df["effective_stale_date_from_last_modified"] <= today)
         & (df["last_modified_date"] >= df["effective_date"])
     )
-    staleness_otc = (df["last_modified_date"] < df["effective_date"]) & (
-        df["effective_stale_date_from_otc_effective"] <= today
-    )
+    staleness_otc = (
+        df["last_modified_date"] < df["effective_stale_date_from_otc_effective"]
+    ) & (df["effective_stale_date_from_otc_effective"] <= today)
     df["staleness_status"] = np.select(
         condlist=[staleness_end_date, staleness_12_months, staleness_otc],
         choicelist=[
