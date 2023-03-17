@@ -137,10 +137,13 @@ class Loader:
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
     def delete_bad_data(self):
+        to_delete_services = self.registry.filter_by_status(
+            *RegistrationStatusEnum.to_delete()
+        )
         services = {
             service.registration_number
-            for service in self.registry.filter_by_status(
-                *RegistrationStatusEnum.to_delete()
+            for service in self.registry.get_services_with_past_effective_date(
+                to_delete_services
             )
         }
 
