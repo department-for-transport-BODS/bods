@@ -161,7 +161,7 @@ def add_multioperator_status(nocs, nocs_df) -> list:
     multioperator_list = []
     for operator_codes in nocs:
         orgs = []
-        if operator_codes is not None:
+        if operator_codes:
             for operator in operator_codes:
                 if nocs_df.empty:
                     orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
@@ -174,19 +174,21 @@ def add_multioperator_status(nocs, nocs_df) -> list:
                             orgs.append(org)
                     except IndexError:
                         orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
+        else:
+            orgs.append(MULTIOPERATOR_STATUS_DICT["Unavailable"])
 
-                if len(set(orgs)) == 1:
-                    multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
-                elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT[
-                    "Unavailable"
-                ] in set(orgs):
-                    multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
-                elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT[
-                    "Unavailable"
-                ] not in set(orgs):
-                    multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
-                elif len(set(orgs)) > 2:
-                    multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
+        if len(set(orgs)) == 1:
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+        elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT["Unavailable"] in set(
+            orgs
+        ):
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[False])
+        elif len(set(orgs)) == 2 and MULTIOPERATOR_STATUS_DICT[
+            "Unavailable"
+        ] not in set(orgs):
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
+        elif len(set(orgs)) > 2:
+            multioperator_list.append(MULTIOPERATOR_STATUS_DICT[True])
 
     if multioperator_list:
         return multioperator_list
