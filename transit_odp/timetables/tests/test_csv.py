@@ -387,7 +387,7 @@ def test_stale_12_months_old(effective, modified, period_end, is_stale):
     "effective, modified, period_end, is_stale",
     (
         # All conditions satisfied for staleness
-        ("2023-02-01", "2023-01-01", "2025-01-01", True),
+        ("2023-04-01", "2023-01-01", "2025-01-01", True),
         # First condition not satisfied
         ("2023-01-01", "2023-02-01", "2025-01-01", False),
         # Second condition not satisfied
@@ -397,7 +397,7 @@ def test_stale_12_months_old(effective, modified, period_end, is_stale):
 def test_stale_otc_variation(effective, modified, period_end, is_stale):
     """
     Staleness Status - Stale - OTC Variation
-    If Last modified date < OTC Effective start date - TRUE
+    If Last modified date < Effective stale date due to OTC effective date
     AND
     Today’s date greater than or equal to than “Effective stale date due to
     OTC effective date”
