@@ -49,7 +49,6 @@ class RevisionPublishForm(GOVUKModelForm):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        consent_field = self.fields["consent"]
 
         is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
         if is_fares_validator_active:
@@ -74,6 +73,9 @@ class RevisionPublishForm(GOVUKModelForm):
                 consent_field.label = _(non_compliant_label)
             else:
                 consent_field.label = _(consent_label)
+        else:
+            consent_field = self.fields["consent"]
+            consent_field.label = _(consent_label)
         self.is_update = is_update
 
     class Meta:

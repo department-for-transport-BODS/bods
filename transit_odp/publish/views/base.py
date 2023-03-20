@@ -15,6 +15,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
 from django_tables2 import RequestConfig
 from formtools.wizard.views import SessionWizardView
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.common.forms import ConfirmationForm
@@ -140,15 +141,19 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
         return True
 
     def get_form_class(self) -> Type[RevisionPublishForm]:
-        validator_error = None
-        if not self.get_validator_error(self.object.id):
-            validator_error = False
-        else:
-            validator_error = True
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if is_fares_validator_active:
+            validator_error = None
+            if not self.get_validator_error(self.object.id):
+                validator_error = False
+            else:
+                validator_error = True
 
-        if validator_error is True:
-            return FaresRevisionPublishFormViolations
-        return RevisionPublishForm
+            if validator_error is True:
+                return FaresRevisionPublishFormViolations
+            return RevisionPublishForm
+        else:
+            return RevisionPublishForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
