@@ -62,9 +62,9 @@ class FaresDataCatalogueExtractor:
 
             if national_operator_code_list:
                 return national_operator_code_list
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def tariff_basis(self):
@@ -73,9 +73,9 @@ class FaresDataCatalogueExtractor:
             tariff_basis_list = self.documents.get_multiple_attr_text_from_xpath(path)
             if tariff_basis_list:
                 return list(dict.fromkeys(tariff_basis_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def product_type(self):
@@ -85,9 +85,9 @@ class FaresDataCatalogueExtractor:
 
             if product_type_list:
                 return list(dict.fromkeys(product_type_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def product_name(self):
@@ -97,9 +97,9 @@ class FaresDataCatalogueExtractor:
 
             if product_name_list:
                 return list(dict.fromkeys(product_name_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def user_type(self):
@@ -115,9 +115,9 @@ class FaresDataCatalogueExtractor:
 
             if user_type_list:
                 return list(dict.fromkeys(user_type_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def line_id(self):
@@ -126,9 +126,9 @@ class FaresDataCatalogueExtractor:
             line_ids_list = self.documents.get_multiple_attr_ids_from_xpath(path)
             if line_ids_list:
                 return list(dict.fromkeys(line_ids_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def line_name(self):
@@ -137,9 +137,9 @@ class FaresDataCatalogueExtractor:
             line_name_list = self.documents.get_multiple_attr_text_from_xpath(path)
             if line_name_list:
                 return list(dict.fromkeys(line_name_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     @property
     def atco_area(self):
@@ -147,9 +147,9 @@ class FaresDataCatalogueExtractor:
             scheduled_stop_points_list = self.documents.get_atco_area_code()
             if scheduled_stop_points_list:
                 return list(dict.fromkeys(scheduled_stop_points_list))
-            return None
+            return []
         except IndexError:
-            return None
+            return []
 
     def to_dict(self):
         keys = [
