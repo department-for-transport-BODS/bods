@@ -59,6 +59,15 @@ class RevisionPublishForm(GOVUKModelForm):
             )
             instance = kwargs.get("instance")
 
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if is_fares_validator_active:
+            non_compliant_label = (
+                "I acknowledge my data does not meet the required standard, as detailed "
+                "in the validation report, and I am publishing non-compliant data to the "
+                "Bus Open Data Service."
+            )
+            instance = kwargs.get("instance")
+
             org_id_list = Dataset.objects.filter(id=instance.dataset_id).values_list(
                 "organisation_id", flat=True
             )
@@ -73,8 +82,6 @@ class RevisionPublishForm(GOVUKModelForm):
                 consent_field.label = _(non_compliant_label)
             else:
                 consent_field.label = _(consent_label)
-        else:
-            consent_field.label = _(consent_label)
         self.is_update = is_update
 
     class Meta:
