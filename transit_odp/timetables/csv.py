@@ -206,7 +206,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "effective_stale_date_from_otc_effective": Column(
             "Effective stale date due to OTC effective date",
-            "Effective date” (timetable data catalogue) minus 42 days.",
+            "Effective date” (timetable data catalogue) minus 70 days.",
         ),
         "effective_seasonal_start": Column(
             "Effective Seasonal Start Date",

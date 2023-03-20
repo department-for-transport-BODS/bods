@@ -8,6 +8,7 @@ from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
     PTIValidationResultFactory,
 )
+from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
