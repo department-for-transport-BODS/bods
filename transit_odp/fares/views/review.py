@@ -45,6 +45,13 @@ class ReviewView(ReviewBaseView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {"consent_label": "I have reviewed the data and wish to publish my data"}
+        )
+        return kwargs
+
     def get_dataset_queryset(self):
         """Returns a DatasetQuerySet for Fares datasets owned by the user's
         organisation.
@@ -193,12 +200,16 @@ class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"update": False, "pk1": self.kwargs["pk1"]})
-        count = self.get_count(self.kwargs["pk"])
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            count = self.get_count(self.kwargs["pk"])
 
-        if count[0] != 0:
-            context.update({"validator_error": True})
-        else:
-            context.update({"validator_error": False})
+            if count[0] != 0:
+                context.update({"validator_error": True})
+            else:
+                context.update({"validator_error": False})
 
         return context
 
