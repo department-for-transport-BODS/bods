@@ -61,10 +61,13 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
             task_id=self.request.id,
         )
 
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
         task_run_fares_validation(task.id)
-        task_set_fares_validation_result(task.id)
+        if is_fares_validator_active:
+            task_set_fares_validation_result(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -244,11 +247,13 @@ def task_run_fares_etl(task_id):
     # like localities, admin areas
     transformed_data["revision"] = revision
 
-    # For 'Update data' flow which allows validation to occur multiple times
-    metadata_ids_list = DatasetMetadata.objects.filter(
-        revision_id=revision.id
-    ).values_list("id")
-    FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
+    if is_fares_validator_active:
+        # For 'Update data' flow which allows validation to occur multiple times
+        metadata_ids_list = DatasetMetadata.objects.filter(
+            revision_id=revision.id
+        ).values_list("id")
+        FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
+
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
     if is_fares_validator_active:
         for element in fares_data_catlogue:

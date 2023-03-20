@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.browse.views.base_views import BaseTemplateView
@@ -39,12 +40,16 @@ class RevisionUpdateSuccessView(OrgUserViewMixin, BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"update": True, "pk1": self.kwargs["pk1"]})
-        count = self.get_count(self.kwargs["pk"])
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            count = self.get_count(self.kwargs["pk"])
 
-        if count[0] != 0:
-            context.update({"validator_error": True})
-        else:
-            context.update({"validator_error": False})
+            if count[0] != 0:
+                context.update({"validator_error": True})
+            else:
+                context.update({"validator_error": False})
         return context
 
 
@@ -129,7 +134,11 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             )
         else:
             # Ensure GET returns the preview step
-            self.object.dataset.start_revision()
+            is_fares_validator_active = flag_is_active(
+                self.request, "is_fares_validator_active"
+            )
+            if is_fares_validator_active:
+                self.object.dataset.start_revision()
             self.storage.reset()
             return self.render(self.get_form())
 

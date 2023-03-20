@@ -5,6 +5,7 @@ from crispy_forms_govuk.layout.fields import CheckboxSingleField
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
@@ -48,26 +49,30 @@ class RevisionPublishForm(GOVUKModelForm):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        non_compliant_label = (
-            "I acknowledge my data does not meet the required standard, as detailed "
-            "in the validation report, and I am publishing non-compliant data to the "
-            "Bus Open Data Service."
-        )
-        instance = kwargs.get("instance")
         consent_field = self.fields["consent"]
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        if is_fares_validator_active:
+            non_compliant_label = (
+                "I acknowledge my data does not meet the required standard, as detailed "
+                "in the validation report, and I am publishing non-compliant data to the "
+                "Bus Open Data Service."
+            )
+            instance = kwargs.get("instance")
 
-        org_id_list = Dataset.objects.filter(id=instance.dataset_id).values_list(
-            "organisation_id", flat=True
-        )
+            org_id_list = Dataset.objects.filter(id=instance.dataset_id).values_list(
+                "organisation_id", flat=True
+            )
 
-        validator_error = None
-        if not self.get_validator_error(org_id_list[0], instance.id):
-            validator_error = False
-        else:
-            validator_error = True
+            validator_error = None
+            if not self.get_validator_error(org_id_list[0], instance.id):
+                validator_error = False
+            else:
+                validator_error = True
 
-        if validator_error is True:
-            consent_field.label = _(non_compliant_label)
+            if validator_error is True:
+                consent_field.label = _(non_compliant_label)
+            else:
+                consent_field.label = _(consent_label)
         else:
             consent_field.label = _(consent_label)
         self.is_update = is_update

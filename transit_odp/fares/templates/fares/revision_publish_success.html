@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load waffle_tags %}
 
 {% block title_tag %}
     {% if update %}
@@ -33,14 +34,16 @@
             <p class="govuk-body-m">
                 {% trans 'We have sent you a confirmation email.' %}
             </p>
-            {% if validator_error %}
-                <p class="govuk-body-m">
-                    {% blocktrans %}
-                        Your dataset failed the validation set and will be marked as not compliant.
-                        Please contact your supplier to create a compliant dataset.
-                    {% endblocktrans %}
-                </p>
-            {% endif %}
+            {% flag "is_fares_validator_active" %}
+                {% if validator_error %}
+                    <p class="govuk-body-m">
+                        {% blocktrans %}
+                            Your dataset failed the validation set and will be marked as not compliant.
+                            Please contact your supplier to create a compliant dataset.
+                        {% endblocktrans %}
+                    </p>
+                {% endif %}
+            {% endflag %}
             <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
             <p class="govuk-body-m">
                 {% blocktrans %}
