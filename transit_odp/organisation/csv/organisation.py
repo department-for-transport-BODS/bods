@@ -468,24 +468,30 @@ def _get_fares_dataframe() -> DataFrame:
         )
 
         compliance_status_df = DataFrame.from_records(compliance.values(*fares_columns))
-        compliance_status_df.query("count == 0", inplace=True)
-        compliance_count_df = compliance_status_df.groupby(
-            ["organisation_id"], as_index=False
-        )["count"].count()
-        compliance_count_df.columns = ["organisation_id", "compliant_fares_count"]
+        if not compliance_status_df.empty:
+            compliance_status_df.query("count == 0", inplace=True)
+            compliance_count_df = compliance_status_df.groupby(
+                ["organisation_id"], as_index=False
+            )["count"].count()
+            compliance_count_df.columns = ["organisation_id", "compliant_fares_count"]
+        else:
+            raise EmptyDataFrame
 
-        fares_count_df = fares_df.groupby("organisation_id").agg(
-            {
-                "revision_id": ["count"],
-                "num_of_pass_products": ["count"],
-                "num_of_trip_products": ["count"],
-            }
-        )
-        fares_count_df.columns = [
-            "number_of_revisions_count",
-            "num_of_pass_products_count",
-            "num_of_trip_products_count",
-        ]
+        if not fares_df.empty:
+            fares_count_df = fares_df.groupby("organisation_id").agg(
+                {
+                    "revision_id": ["count"],
+                    "num_of_pass_products": ["count"],
+                    "num_of_trip_products": ["count"],
+                }
+            )
+            fares_count_df.columns = [
+                "number_of_revisions_count",
+                "num_of_pass_products_count",
+                "num_of_trip_products_count",
+            ]
+        else:
+            raise EmptyDataFrame
 
         merged = merge(
             fares_count_df,
