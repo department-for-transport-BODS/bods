@@ -7,11 +7,13 @@ from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.fares.forms import FaresFeedCommentForm, FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import FeedPublishCancelForm
@@ -22,9 +24,32 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 class RevisionUpdateSuccessView(OrgUserViewMixin, BaseTemplateView):
     template_name = "fares/revision_publish_success.html"
 
+    def get_count(self, dataset_id):
+        live_revision_id = list(
+            Dataset.objects.filter(id=dataset_id).values_list(
+                "live_revision_id", flat=True
+            )
+        )
+        count_list = list(
+            FaresValidationResult.objects.filter(
+                revision_id=live_revision_id[0]
+            ).values_list("count", flat=True)
+        )
+        return count_list
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"update": True, "pk1": self.kwargs["pk1"]})
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            count = self.get_count(self.kwargs["pk"])
+
+            if count[0] != 0:
+                context.update({"validator_error": True})
+            else:
+                context.update({"validator_error": False})
         return context
 
 
@@ -109,6 +134,11 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             )
         else:
             # Ensure GET returns the preview step
+            is_fares_validator_active = flag_is_active(
+                self.request, "is_fares_validator_active"
+            )
+            if is_fares_validator_active:
+                self.object.dataset.start_revision()
             self.storage.reset()
             return self.render(self.get_form())
 
@@ -130,7 +160,6 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         return None
 
     def get_context_data(self, form, **kwargs):
-
         kwargs = super().get_context_data(form=form, **kwargs)
         kwargs.update(
             {
