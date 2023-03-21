@@ -169,36 +169,37 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
     dataset_df = DataFrame.from_records(
         Dataset.objects.get_overall_data_catalogue_annotations().values(*DATASET_FIELDS)
     )
-    if dataset_df.empty:
-        raise EmptyDataFrame
-
-    dataset_df_fares = dataset_df[dataset_df["dataset_type_pretty"] == "Fares"]
-    dataset_df = dataset_df[dataset_df["dataset_type_pretty"] != "Fares"]
 
     txc_file_attributes_df = DataFrame.from_records(
         TXCFileAttributes.objects.get_overall_data_catalogue().values(
             *TXC_FILE_ATTRIBUTE_FIELDS
         )
     )
+
+    if dataset_df.empty or txc_file_attributes_df.empty:
+        raise EmptyDataFrame()
+
     if is_fares_validator_active:
+        dataset_df_fares = dataset_df[dataset_df["dataset_type_pretty"] == "Fares"]
+        dataset_df = dataset_df[dataset_df["dataset_type_pretty"] != "Fares"]
+
+        if dataset_df_fares.empty and dataset_df.empty:
+            raise EmptyDataFrame()
+
         datacatalogue_metadata_df = DataFrame.from_records(
             DataCatalogueMetaData.objects.get_fares_overall_catalogue().values(
                 *DATACATALOGUE_ATTRIBUTE_FIELDS
             )
         )
+        if datacatalogue_metadata_df.empty:
+            raise EmptyDataFrame()
+
         datacatalogue_metadata_df.rename(
             columns={"string_nocs": "national_operator_code"}, inplace=True
         )
         datacatalogue_metadata_df.rename(
             columns={"xml_file_name": "filename"}, inplace=True
         )
-
-        if (
-            (dataset_df_fares.empty and dataset_df.empty)
-            or txc_file_attributes_df.empty
-            or datacatalogue_metadata_df.empty
-        ):
-            raise EmptyDataFrame()
 
         merged_fares = merge(
             dataset_df_fares,
@@ -216,9 +217,6 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
         )
         merged = pd.concat([merged_fares, merged_txc], ignore_index=True)
     else:
-        if dataset_df.empty or txc_file_attributes_df.empty:
-            raise EmptyDataFrame()
-
         merged = merge(
             dataset_df,
             txc_file_attributes_df,
@@ -226,6 +224,7 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
             right_on="dataset_id",
             how="outer",
         )
+
     merged["mode"] = "Bus"
     merged = merged.sort_values("id")
 
