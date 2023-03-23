@@ -156,4 +156,8 @@ class CeleryAppConfig(AppConfig):
                 "task": ADMIN_TASKS + "task_seasonal_service_updated_dates",
                 "schedule": crontab(hour=23),
             },
+            "task_update_fares_validation_existing_dataset": {
+                "task": FARES_TASKS + "task_update_fares_validation_existing_dataset",
+                "schedule": crontab(minute=0, hour=20),
+            },
         }
