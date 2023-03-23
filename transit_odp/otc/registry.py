@@ -194,8 +194,6 @@ class Registry:
         if variation.effective_date:
             if variation.effective_date > date.today():
                 self.update(variation)
-        else:
-            self.update(variation)
 
     def update(self, registration: Registration) -> None:
         """
