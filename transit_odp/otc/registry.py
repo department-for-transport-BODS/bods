@@ -155,9 +155,6 @@ class Registry:
                 not in RegistrationStatusEnum.to_change()
             ):
                 highest_variation_number = registration.variation_number
-                logger.info(
-                    f"Highest variation number is >> {highest_variation_number}"
-                )
                 return [
                     variation
                     for variation in registrations
@@ -194,8 +191,6 @@ class Registry:
         if variation.effective_date:
             if variation.effective_date > date.today():
                 self.update(variation)
-        else:
-            self.update(variation)
 
     def update(self, registration: Registration) -> None:
         """
