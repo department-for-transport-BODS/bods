@@ -675,6 +675,24 @@ class DatasetQuerySet(models.QuerySet):
             qs = qs.filter(dataset_type=dataset_type)
         return qs
 
+    def add_fares_report_exists(self):
+        from transit_odp.fares_validator.models import FaresValidationResult
+
+        faresReport = FaresValidationResult.objects.filter(
+            revision=OuterRef("live_revision_id")
+        )
+
+        return self.annotate(has_validation_report=Exists(faresReport))
+
+    def get_existing_fares_dataset(self):
+        qs = (
+            self.get_active()
+            .filter(dataset_type=FaresType)
+            .add_fares_report_exists()
+            .filter(has_validation_report=False)
+        )
+        return qs
+
     def get_local_timetables(self):
         return self.get_local().get_active().filter(dataset_type=TimetableType)
 
