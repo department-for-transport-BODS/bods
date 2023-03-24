@@ -1,4 +1,5 @@
 import logging
+import uuid
 import zipfile
 
 from celery import shared_task
@@ -285,3 +286,34 @@ def task_retry_unavailable_fares():
     adapter.info(f"{count} datasets to check.")
     for fare in fares:
         update_dataset(fare, task_run_fares_pipeline)
+
+
+@shared_task(ignore_errors=True)
+def task_update_fares_validation_existing_dataset():
+    existing_fares = Dataset.objects.get_existing_fares_dataset()
+    count = existing_fares.count()
+    logger.info(f"There are {count} datasets with no validation report.")
+    for fares_dataset in existing_fares:
+        logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+        revision = fares_dataset.live_revision
+        revision_id = revision.id
+        try:
+            revision = DatasetRevision.objects.get(
+                pk=revision_id, dataset__dataset_type=FaresType
+            )
+        except DatasetRevision.DoesNotExist as exc:
+            message = f"DatasetRevision {revision_id} does not exist."
+            logger.exception(message, exc_info=True)
+            raise PipelineException(message) from exc
+
+        task_id = uuid.uuid4()
+        task = DatasetETLTaskResult.objects.create(
+            revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
+        )
+
+        task_download_fares_file(task.id)
+        task_set_fares_validation_result(task.id)
+        task_run_fares_etl(task.id)
+
+        task.update_progress(100)
+        task.to_success()
