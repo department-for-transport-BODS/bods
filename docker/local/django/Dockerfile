@@ -2,7 +2,7 @@ ARG BASE_IMAGE=python:3.9-alpine3.16
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.2.2
+    POETRY_VERSION=1.3.2
 
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
