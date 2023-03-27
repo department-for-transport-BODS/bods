@@ -75,7 +75,7 @@ COPY --from=0 /app/transit_odp/frontend/static /app/transit_odp/frontend/static
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN python --version \
-    && pip install poetry==1.3.2 \
+    && pip install poetry==1.2.2 \
     && poetry config virtualenvs.create false \
     && poetry install --no-dev
 
