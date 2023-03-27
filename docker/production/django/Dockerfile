@@ -65,7 +65,8 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
-    && pip3 install cython
+    && pip3 install cython \
+    && pip install ddtrace
 
 
 # Install python packages
