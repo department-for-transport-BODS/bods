@@ -65,17 +65,17 @@ MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_ELEMENT_MISSING = (
     "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame' - UK_PI_FARE_PRICE"
 )
 MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_INCORRECT = (
-    "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRICE'"
+    "Attribute 'ref' of element 'TypeOfFrameRef' does not include 'UK_PI_FARE_PRICE'"
 )
 MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_ELEMENT_FARE_PRODUCT_MISSING = "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_FARE_PRODUCT_INCORRECT = (
-    "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRODUCT'"
+    "Attribute 'ref' of element 'TypeOfFrameRef' does not include 'UK_PI_FARE_PRODUCT'"
 )
 MESSAGE_OBSERVATION_RESOURCE_FRAME_TYPE_OF_FRAME_REF_ELEMENT_MISSING = (
     "Mandatory element 'TypeOfFrameRef' is missing from 'ResourceFrame' - UK_PI_COMMON"
 )
 MESSAGE_OBSERVATION_RESOURCE_FRAME_TYPE_OF_FARE_FRAME_REF_INCORRECT = (
-    "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_COMMON'"
+    "Attribute 'ref' of element 'TypeOfFrameRef' does not include 'UK_PI_COMMON'"
 )
 MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING = "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRODUCT' or 'UK_PI_FARE_PRICE'"
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_MISSING = "From 'scheduledStopPoints' element in ServiceFrame, element 'ScheduledStopPoint' is missing"
