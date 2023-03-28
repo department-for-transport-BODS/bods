@@ -39,7 +39,8 @@ def get_lxml_element(xpath, string_xml):
             [
                 "violation",
                 "7",
-                "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame' - UK_PI_FARE_PRICE",
+                "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame'"
+                " - UK_PI_FARE_PRICE",
             ],
         ),
         (True, True, True, False, False, ""),
@@ -52,7 +53,8 @@ def get_lxml_element(xpath, string_xml):
             [
                 "violation",
                 "8",
-                "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRICE'",
+                "Attribute 'ref' of element 'TypeOfFrameRef' does not"
+                " include 'UK_PI_FARE_PRICE'",
             ],
         ),
     ],
@@ -154,7 +156,8 @@ def test_fare_frame_type_of_frame_ref_present_fare_price(
             [
                 "violation",
                 "7",
-                "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame' - UK_PI_FARE_PRODUCT",
+                "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame'"
+                " - UK_PI_FARE_PRODUCT",
             ],
         ),
         (True, True, True, False, False, ""),
@@ -167,7 +170,8 @@ def test_fare_frame_type_of_frame_ref_present_fare_price(
             [
                 "violation",
                 "8",
-                "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_FARE_PRODUCT'",
+                "Attribute 'ref' of element 'TypeOfFrameRef' does not"
+                " include 'UK_PI_FARE_PRODUCT'",
             ],
         ),
     ],
@@ -269,7 +273,8 @@ def test_fare_frame_type_of_frame_ref_present_fare_product(
             [
                 "violation",
                 "7",
-                "Mandatory element 'TypeOfFrameRef' is missing from 'ResourceFrame' - UK_PI_COMMON",
+                "Mandatory element 'TypeOfFrameRef' is missing from 'ResourceFrame'"
+                " - UK_PI_COMMON",
             ],
         ),
         (
@@ -293,7 +298,8 @@ def test_fare_frame_type_of_frame_ref_present_fare_product(
             [
                 "violation",
                 "8",
-                "Attribute 'ref' of element 'TypeOfFrameRef' does not contain 'UK_PI_COMMON'",
+                "Attribute 'ref' of element 'TypeOfFrameRef' does not include"
+                " 'UK_PI_COMMON'",
             ],
         ),
     ],
