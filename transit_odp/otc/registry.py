@@ -65,10 +65,11 @@ class Registry:
         ):
             self.update_registered_variations(registration)
 
-        for registration in self._client.get_latest_variations_by_reg_status(
-            RegistrationStatusEnum.to_delete
-        ):
-            self.update_to_delete_variations(registration)
+        for delete_status in RegistrationStatusEnum.to_delete():
+            for registration in self._client.get_latest_variations_by_reg_status(
+                delete_status
+            ):
+                self.update_to_delete_variations(registration)
 
     def add_all_older_registered_variations(self) -> None:
         """
