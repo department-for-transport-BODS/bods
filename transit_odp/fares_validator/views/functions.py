@@ -522,6 +522,14 @@ def is_service_frame_present(context, service_frame, *args):
     if service_frame:
         xpath = "x:TypeOfFrameRef"
         type_of_frame_ref = service_frame[0].xpath(xpath, namespaces=NAMESPACE)
+        if not type_of_frame_ref:
+            response_details = XMLViolationDetail(
+                "violation",
+                service_frame[0].sourceline,
+                MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING,
+            )
+            response = response_details.__list__()
+            return response
         try:
             ref = _extract_attribute(type_of_frame_ref, "ref")
         except KeyError:
@@ -1299,8 +1307,8 @@ def check_preassigned_fare_products(context, fare_frames, *args):
 
 def check_preassigned_fare_products_type_ref(context, preassigned_fare_products, *args):
     """
-    Check if mandatory element is 'TypeOfFareProductRef' present in PreassignedFareProduct
-    for FareFrame - UK_PI_FARE_PRODUCT
+    Check if mandatory element is 'TypeOfFareProductRef' present
+    in PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     preassigned_fare_product = preassigned_fare_products[0]
@@ -1514,8 +1522,9 @@ def check_product_type(context, preassigned_fare_products, *args):
 
 def check_sales_offer_package(context, fare_frames, *args):
     """
-    Check if mandatory salesOfferPackages elements missing for FareFrame - UK_PI_FARE_PRODUCT
-    FareFrame UK_PI_FARE_PRODUCT is mandatory
+    Check if mandatory salesOfferPackages elements missing
+    for FareFrame - UK_PI_FARE_PRODUCT.
+    FareFrame UK_PI_FARE_PRODUCT is mandatory.
     """
     fare_frame = fare_frames[0]
     xpath = "x:TypeOfFrameRef"
@@ -1831,8 +1840,9 @@ def check_validity_grouping_type_for_access(
 
 def check_validity_parameter_for_access(context, generic_parameter_assignments, *args):
     """
-    Checks if 'GenericParameterAssignment' has 'validityParameters' elements within it when
-    'TypeOfFareStructureElementRef' has a ref value of 'fxc:access'
+    Checks if 'GenericParameterAssignment' has 'validityParameters'
+    elements within it when 'TypeOfFareStructureElementRef' has
+    a ref value of 'fxc:access'
     """
     generic_parameter_assignment = generic_parameter_assignments[0]
     xpath = "../x:TypeOfFareStructureElementRef"
