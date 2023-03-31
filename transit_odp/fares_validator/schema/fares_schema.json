@@ -163,6 +163,19 @@
       ]
     },
     {
+      "details": "Mandatory element 'TypeOfFrameRef' is missing from 'FareFrame' - UK_PI_FARE_PRICE + UK_PI_FARE_PRODUCT",
+      "category": "TypeOfFrame",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
+      "rules": [
+        {
+          "test": "check_fare_frame_type_of_frame_ref_present_fare_price(.)"
+        },
+        {
+          "test": "check_fare_frame_type_of_frame_ref_present_fare_product(.)"
+        }
+      ]
+    },
+    {
       "details": "Mandatory element 'fareProducts' or 'PreassignedFareProduct' in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "FareProducts",
       "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
@@ -297,6 +310,16 @@
       "rules": [
         {
           "test": "check_composite_frame_valid_between(.)"
+        }
+      ]
+    },
+    {
+      "details": "Mandatory element 'TypeOfFrameRef' is missing from 'ResourceFrame' - UK_PI_COMMON",
+      "category": "TypeOfFrame",
+      "context": "//x:dataObjects/x:CompositeFrame",
+      "rules": [
+        {
+          "test": "check_resource_frame_type_of_frame_ref_present(.)"
         }
       ]
     },
