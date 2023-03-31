@@ -12,6 +12,8 @@ from transit_odp.fares_validator.views.functions import (
     check_access_right_elements,
     check_composite_frame_valid_between,
     check_dist_assignments,
+    check_fare_frame_type_of_frame_ref_present_fare_price,
+    check_fare_frame_type_of_frame_ref_present_fare_product,
     check_fare_product_ref,
     check_fare_structure_element,
     check_frequency_of_use,
@@ -27,6 +29,7 @@ from transit_odp.fares_validator.views.functions import (
     check_product_type,
     check_resource_frame_operator_name,
     check_resource_frame_organisation_elements,
+    check_resource_frame_type_of_frame_ref_present,
     check_sale_offer_package_elements,
     check_sales_offer_package,
     check_tariff_basis,
@@ -118,6 +121,14 @@ class FaresValidator:
             "check_tariff_validity_conditions", check_tariff_validity_conditions
         )
         self.register_function(
+            "check_fare_frame_type_of_frame_ref_present_fare_price",
+            check_fare_frame_type_of_frame_ref_present_fare_price,
+        )
+        self.register_function(
+            "check_fare_frame_type_of_frame_ref_present_fare_product",
+            check_fare_frame_type_of_frame_ref_present_fare_product,
+        )
+        self.register_function(
             "is_uk_pi_fare_price_frame_present", is_uk_pi_fare_price_frame_present
         )
         self.register_function(
@@ -175,6 +186,10 @@ class FaresValidator:
         )
         self.register_function(
             "check_composite_frame_valid_between", check_composite_frame_valid_between
+        )
+        self.register_function(
+            "check_resource_frame_type_of_frame_ref_present",
+            check_resource_frame_type_of_frame_ref_present,
         )
         self.register_function(
             "check_resource_frame_organisation_elements",

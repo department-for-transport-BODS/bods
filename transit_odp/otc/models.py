@@ -50,7 +50,7 @@ class Service(models.Model):
     )
     registration_number = models.CharField(max_length=20, blank=False, null=False)
     variation_number = models.IntegerField(blank=False, null=False)
-    service_number = models.CharField(max_length=50, blank=True, null=False)
+    service_number = models.CharField(max_length=1000, blank=True, null=False)
     current_traffic_area = models.CharField(
         choices=TrafficAreas.choices, max_length=1, blank=True, null=False
     )
@@ -67,7 +67,7 @@ class Service(models.Model):
     )
     registration_status = models.CharField(max_length=20, blank=True, null=False)
     public_text = models.TextField(blank=True, null=False)
-    service_type_description = models.CharField(max_length=50, blank=True, null=False)
+    service_type_description = models.CharField(max_length=1000, blank=True, null=False)
     short_notice = models.BooleanField(blank=False, null=True)
     subsidies_description = models.CharField(
         choices=SubsidiesDescription.choices, max_length=7, blank=True, null=False

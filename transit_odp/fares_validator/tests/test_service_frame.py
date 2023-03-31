@@ -20,37 +20,54 @@ def get_lxml_element(xpath, string_xml):
 
 @pytest.mark.parametrize(
     (
+        "type_of_frame_ref_present",
         "type_of_frame_ref_attr_present",
         "type_of_frame_ref_correct",
         "service_frame_present",
         "expected",
     ),
     [
-        (True, True, True, None),
+        (True, True, True, True, None),
         (
-            True,
             False,
-            True,
+            False,
+            False,
+            False,
             [
                 "violation",
                 "3",
-                "If 'ServiceFrame' is present, mandatory element 'TypeOfFrameRef' should be included and TypeOfFrameRef should include UK_PI_NETWORK",
+                "If 'ServiceFrame' is present, mandatory element 'TypeOfFrameRef' "
+                "should be included and TypeOfFrameRef should include UK_PI_NETWORK",
             ],
         ),
         (
+            True,
+            True,
+            False,
+            True,
+            [
+                "violation",
+                "5",
+                "If 'ServiceFrame' is present, mandatory element 'TypeOfFrameRef' "
+                "should be included and TypeOfFrameRef should include UK_PI_NETWORK",
+            ],
+        ),
+        (
+            True,
             False,
             False,
             True,
             [
                 "violation",
-                "3",
+                "4",
                 "Attribute 'ref' of element 'TypeOfFrameRef' is missing",
             ],
         ),
-        (True, True, False, None),
+        (True, True, True, False, None),
     ],
 )
 def test_is_service_frame_present(
+    type_of_frame_ref_present,
     type_of_frame_ref_attr_present,
     type_of_frame_ref_correct,
     service_frame_present,
@@ -69,30 +86,39 @@ def test_is_service_frame_present(
         </Line>
         </lines>
     """
-    type_of_frame_ref_attr_correct = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_NETWORK:FXCP" version="fxc:v1.0" />
+    type_of_frame_ref_attr_correct = """
+        <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_NETWORK:FXCP" version="fxc:v1.0" />
     """
     type_of_frame_ref_attr_missing = """<TypeOfFrameRef version="fxc:v1.0" />"""
-    type_of_frame_ref_attr_incorrect = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
+    type_of_frame_ref_attr_incorrect = """
+        <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
     """
-    service_frames = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    service_frames = """
+    <PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <ServiceFrame version="1.0" id="epd:UK:FYOR:ServiceFrame_UK_PI_NETWORK:1_Inbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
             {0}
             {1}
         </ServiceFrame>
     </PublicationDelivery>"""
 
-    if type_of_frame_ref_attr_present:
-        if type_of_frame_ref_correct:
-            if service_frame_present:
-                xml = service_frames.format(
-                    type_of_frame_ref_attr_correct, service_frame
-                )
+    if type_of_frame_ref_present:
+        if type_of_frame_ref_attr_present:
+            if type_of_frame_ref_correct:
+                if service_frame_present:
+                    xml = service_frames.format(
+                        type_of_frame_ref_attr_correct, service_frame
+                    )
+                else:
+                    xml = service_frames.format(type_of_frame_ref_attr_correct, "")
             else:
-                xml = service_frames.format(type_of_frame_ref_attr_correct, "")
+                xml = service_frames.format(
+                    type_of_frame_ref_attr_incorrect, service_frame
+                )
         else:
-            xml = service_frames.format(type_of_frame_ref_attr_incorrect, service_frame)
+            xml = service_frames.format(type_of_frame_ref_attr_missing, service_frame)
     else:
-        xml = service_frames.format(type_of_frame_ref_attr_missing, service_frame)
+        xml = service_frames.format("", service_frame)
+
     service_frames = get_lxml_element("//x:ServiceFrame", xml)
     result = is_service_frame_present("", service_frames)
     assert result == expected
@@ -325,7 +351,8 @@ def test_check_lines_operator_ref_present(line_present, operator_ref_present, ex
             [
                 "violation",
                 "4",
-                "From 'scheduledStopPoints' element in ServiceFrame, element 'ScheduledStopPoint' is missing",
+                "From 'scheduledStopPoints' element in ServiceFrame,"
+                " element 'ScheduledStopPoint' is missing",
             ],
         ),
         (
@@ -349,7 +376,8 @@ def test_check_lines_operator_ref_present(line_present, operator_ref_present, ex
             [
                 "violation",
                 "5",
-                "Attribute 'id' of element 'ScheduledStopPoint' should be in 'atco:xxxx' format",
+                "Attribute 'id' of element 'ScheduledStopPoint' should be in"
+                " 'atco:xxxx' format",
             ],
         ),
         (
@@ -361,7 +389,8 @@ def test_check_lines_operator_ref_present(line_present, operator_ref_present, ex
             [
                 "violation",
                 "11",
-                "From 'scheduledStopPoints' element in ServiceFrame, element 'Name' is missing or empty",
+                "From 'scheduledStopPoints' element in ServiceFrame,"
+                " element 'Name' is missing or empty",
             ],
         ),
     ],
