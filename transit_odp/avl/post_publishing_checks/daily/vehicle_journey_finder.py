@@ -400,6 +400,71 @@ class VehicleJourneyFinder:
             )
             return False
 
+        return True
+
+    def service_org_day_type(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[TransXChangeElement]:
+        try:
+            service_org_day_type = vj.vehicle_journey.get_element(
+                "ServicedOrganisationDayType"
+            )
+        except NoElement:
+            return None
+        except TooManyElements:
+            return None
+        return service_org_day_type
+
+    def get_service_org_ref(
+        self, txcElement: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        xpath = ["WorkingDays", "ServicedOrganisationRef"]
+        service_org_ref = txcElement.get_element(xpath)
+        return service_org_ref[0]
+
+    def get_serviced_organisations(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[List[TransXChangeElement]]:
+        try:
+            service_orgs = vj.txc_xml.get_serviced_organisations()
+        except NoElement:
+            return None
+        return service_orgs
+
+    def filter_by_days_of_operation(
+        self, vehicle_journeys: List[TxcVehicleJourney], result: ValidationResult
+    ):
+        for vj in reversed(vehicle_journeys):
+            service_org_day_type: TransXChangeElement = self.service_org_day_type(vj)
+            days_of_non_operation = service_org_day_type.find_anywhere(
+                "DaysOfNonOperation"
+            )
+            if days_of_non_operation is not None:
+                service_org_ref = self.get_service_org_ref(days_of_non_operation)
+            days_of_operation = service_org_day_type.find_anywhere("DaysOfOperation")
+            if days_of_operation is not None:
+                service_org_ref = self.get_service_org_ref(days_of_operation)
+
+            service_orgs = self.get_serviced_organisations(vj)
+            for org in service_orgs:
+                org_code = org.get_element("OrganisationCode")
+                if org_code == service_org_ref:
+                    working_days = org.get_elements("WorkingDays")
+                    for date_range in working_days:
+                        start_date = date_range.get_element("StartDate")
+                        end_date = date_range.get_element("EndDate")
+                        today = datetime.datetime.now()
+                        if not start_date <= today <= end_date:
+                            vehicle_journeys.remove(vj)
+
+        if len(vehicle_journeys) == 0:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "No vehicle journeys found with OperatingProfile applicable to "
+                "VehicleActivity date",
+            )
+            return False
+
         if len(vehicle_journeys) > 1:
             result.add_error(
                 ErrorCategory.GENERAL,
@@ -480,6 +545,9 @@ class VehicleJourneyFinder:
             return None
 
         if not self.filter_by_revision_number(vehicle_journeys, result):
+            return None
+
+        if not self.filter_by_days_of_operation(vehicle_journeys, result):
             return None
 
         # If we get to this point, we've matched the SIRI-VM MonitoredVehicleJourney
