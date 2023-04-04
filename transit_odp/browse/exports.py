@@ -16,13 +16,13 @@ from transit_odp.fares_validator.csv import (
 from transit_odp.organisation.constants import ERROR, LIVE, NO_ACTIVITY, AVLType
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.csv.organisation import (
-    ORG_COLUMN_MAP,
     FEATURE_FLAG_ORG_COLUMN_MAP,
+    ORG_COLUMN_MAP,
     get_organisation_catalogue_csv,
 )
 from transit_odp.organisation.csv.overall import (
-    OVERALL_COLUMN_MAP,
     FEATURE_FLAG_OVERALL_COLUMN_MAP,
+    OVERALL_COLUMN_MAP,
     get_overall_data_catalogue_csv,
 )
 from transit_odp.organisation.models import Organisation
@@ -87,7 +87,9 @@ def create_guidance_file_string() -> str:
             header_template.format(header=timetables, field_header=field_header)
         )
         result += [
-            row_template.format(field_name=field_name, definition=definition)
+            row_template.format(
+                field_name=field_name, definition=definition.replace("</br>", "\n")
+            )
             for field_name, definition in TIMETABLE_COLUMN_MAP.values()
         ]
 
@@ -131,7 +133,9 @@ def create_guidance_file_string() -> str:
             header_template.format(header=timetables, field_header=field_header)
         )
         result += [
-            row_template.format(field_name=field_name, definition=definition)
+            row_template.format(
+                field_name=field_name, definition=definition.replace("</br>", "\n")
+            )
             for field_name, definition in TIMETABLE_COLUMN_MAP.values()
         ]
 

@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import pytest
 from django.core.files import File
 from django.utils import timezone
 from lxml.etree import XMLSchemaParseError
+from waffle.testutils import override_flag
 
 from transit_odp.fares.extract import ExtractionError
 from transit_odp.fares.tasks import (
@@ -9,6 +12,7 @@ from transit_odp.fares.tasks import (
     task_run_antivirus_check,
     task_run_fares_etl,
     task_run_fares_validation,
+    task_set_fares_validation_result,
 )
 from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
@@ -184,7 +188,8 @@ def test_task_run_fares_etl_exception(mocker):
     assert task.error_code == task.SYSTEM_ERROR
 
 
-def test_task_run_fares_etl(mocker, netexdocuments):
+@override_flag("is_fares_validator_active", active=True)
+def test_task_run_fares_etl_flag_active(mocker, netexdocuments):
     StopPointFactory.create(id=1, atco_code="3290YYA00077")
     StopPointFactory.create(id=2, atco_code="3290YYA00359")
     StopPointFactory.create(id=3, atco_code="3290YYA01609")
@@ -210,3 +215,35 @@ def test_task_run_fares_etl(mocker, netexdocuments):
     assert list(task.revision.metadata.faresmetadata.stops.all()) == list(
         StopPoint.objects.all()
     )
+
+
+@override_flag("is_fares_validator_active", active=False)
+def test_task_run_fares_etl_flag_inactive(mocker, netexdocuments):
+    StopPointFactory.create(id=1, atco_code="3290YYA00077")
+    StopPointFactory.create(id=2, atco_code="3290YYA00359")
+    StopPointFactory.create(id=3, atco_code="3290YYA01609")
+    StopPointFactory.create(id=4, atco_code="3290YYA00103")
+
+    get_docs = "transit_odp.fares.tasks.get_documents_from_file"
+    mocker.patch(get_docs, return_value=netexdocuments)
+    task = create_task(revision__upload_file=None)
+    task_run_fares_etl(task.id)
+    task.refresh_from_db()
+    assert task.revision.metadata.faresmetadata.schema_version == "1.1"
+    assert task.revision.metadata.faresmetadata.num_of_lines == 2
+    assert task.revision.metadata.faresmetadata.num_of_fare_zones == 15
+    assert list(task.revision.metadata.faresmetadata.stops.all()) == list(
+        StopPoint.objects.all()
+    )
+
+
+def test_task_set_fares_validation_result_etl_exception():
+    netex_filepath = str(
+        Path(__file__).parent.joinpath("fixtures").joinpath("sample1.xml")
+    )
+    with open(netex_filepath, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
+    task_set_fares_validation_result(task.id)
+    task.refresh_from_db()
+    assert len(task.revision.fares_validations.all()) == 8
+    assert task.revision.fares_validation_result.count == 8

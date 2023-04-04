@@ -110,7 +110,14 @@ class NotificationBase:
 
     @validate_arguments
     def send_data_endpoint_unreachable_notification(
-        self, dataset_id: int, dataset_name: str, contact_email: str
+        self,
+        dataset_id: int,
+        dataset_name: str,
+        short_description: str,
+        feed_detail_link: str,
+        operator_name: str,
+        remote_url: str,
+        contact_email: str,
     ):
         template = "OPERATOR_DATA_ENDPOINT_UNREACHABLE"
         logger.debug(
@@ -126,8 +133,12 @@ class NotificationBase:
             template,
             contact_email,
             subject=subject,
+            organisation=operator_name,
             feed_name=dataset_name,
             feed_id=dataset_id,
+            feed_short_description=short_description,
+            link=feed_detail_link,
+            data_set_url=remote_url,
         )
 
     @validate_arguments
@@ -160,6 +171,7 @@ class NotificationBase:
         dataset_name: str,
         short_description: str,
         feed_detail_link: str,
+        operator_name: str,
         remote_url: str,
         contact_email: str,
     ):
@@ -173,6 +185,7 @@ class NotificationBase:
             template,
             contact_email,
             subject=subject,
+            organisation=operator_name,
             feed_id=dataset_id,
             feed_name=dataset_name,
             feed_short_description=short_description,
@@ -418,6 +431,7 @@ class NotificationBase:
         published_at: Optional[datetime.datetime],
         comments: str,
         feed_detail_link: str,
+        report_link: str,
         contact_email: str,
         with_pti_violations: bool = False,
     ):
@@ -442,6 +456,7 @@ class NotificationBase:
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            report_link=report_link,
             dataset_type=dataset_type,
             with_pti_violations=with_pti_violations,
         )
@@ -457,6 +472,7 @@ class NotificationBase:
         operator_name: str,
         comments: str,
         feed_detail_link: str,
+        report_link: str,
         contact_email: str,
         with_pti_violations: bool = False,
     ):
@@ -483,6 +499,7 @@ class NotificationBase:
             published_time=published_on,
             comments=comments,
             link=feed_detail_link,
+            report_link=report_link,
             dataset_type=dataset_type,
             with_pti_violations=with_pti_violations,
         )

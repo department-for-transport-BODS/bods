@@ -1,4 +1,5 @@
 import logging
+import uuid
 import zipfile
 
 from celery import shared_task
@@ -21,8 +22,9 @@ from transit_odp.fares.netex import (
 )
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
-from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
@@ -60,9 +62,13 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
             task_id=self.request.id,
         )
 
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
         task_run_fares_validation(task.id)
+        if is_fares_validator_active:
+            task_set_fares_validation_result(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -173,6 +179,29 @@ def task_run_fares_validation(task_id):
 
 
 @shared_task
+def task_set_fares_validation_result(task_id):
+    """Task to set validation errors in a fares file/s."""
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
+
+    file_ = revision.upload_file
+
+    org_id_list = Dataset.objects.filter(id=revision.dataset_id).values_list(
+        "organisation_id", flat=True
+    )
+
+    adapter.info("Fares validation on fares file/s started.")
+    fares_validator_obj = FaresXmlValidator(file_, org_id_list[0], revision.id)
+    adapter.info("Setting validation errors.")
+    fares_validator_obj.set_errors()
+    adapter.info("Fares validation on fares file/s completed.")
+
+    task.update_progress(50)
+
+
+@shared_task
 def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
@@ -218,10 +247,20 @@ def task_run_fares_etl(task_id):
     # This block can be moved to a load module when we extract/load more metadata
     # like localities, admin areas
     transformed_data["revision"] = revision
+
+    if is_fares_validator_active:
+        # For 'Update data' flow which allows validation to occur multiple times
+        metadata_ids_list = DatasetMetadata.objects.filter(
+            revision_id=revision.id
+        ).values_list("id")
+        FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
+
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
     if is_fares_validator_active:
         for element in fares_data_catlogue:
             element.update({"fares_metadata_id": fares_metadata.id})
+            # For 'Update data' flow
+            DataCatalogueMetaData.objects.filter(**element).delete()
             DataCatalogueMetaData.objects.create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
@@ -247,3 +286,34 @@ def task_retry_unavailable_fares():
     adapter.info(f"{count} datasets to check.")
     for fare in fares:
         update_dataset(fare, task_run_fares_pipeline)
+
+
+@shared_task(ignore_errors=True)
+def task_update_fares_validation_existing_dataset():
+    existing_fares = Dataset.objects.get_existing_fares_dataset()
+    count = existing_fares.count()
+    logger.info(f"There are {count} datasets with no validation report.")
+    for fares_dataset in existing_fares:
+        logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+        revision = fares_dataset.live_revision
+        revision_id = revision.id
+        try:
+            revision = DatasetRevision.objects.get(
+                pk=revision_id, dataset__dataset_type=FaresType
+            )
+        except DatasetRevision.DoesNotExist as exc:
+            message = f"DatasetRevision {revision_id} does not exist."
+            logger.exception(message, exc_info=True)
+            raise PipelineException(message) from exc
+
+        task_id = uuid.uuid4()
+        task = DatasetETLTaskResult.objects.create(
+            revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
+        )
+
+        task_download_fares_file(task.id)
+        task_set_fares_validation_result(task.id)
+        task_run_fares_etl(task.id)
+
+        task.update_progress(100)
+        task.to_success()

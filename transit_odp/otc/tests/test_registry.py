@@ -104,7 +104,7 @@ def test_get_latest_variations_since_returns_all_service_types(mock_all, mock_de
     registry = Registry()
     registry.get_variations_since(one_day_ago)
 
-    assert len(registry.services) == 5 + 2 + 2
+    assert len(registry.services) == 5 + 2
     service = registry.get_service_by_key(
         refetch1.registration_number, "Normal Stopping"
     )
@@ -117,11 +117,11 @@ def test_get_latest_variations_since_returns_all_service_types(mock_all, mock_de
     service = registry.get_service_by_key(
         refetch2.registration_number, "Normal Stopping"
     )
-    assert service.registration_status == RegistrationStatusEnum.SURRENDERED.value
+    assert service is None
     service = registry.get_service_by_key(
         refetch2.registration_number, "School Service"
     )
-    assert service.registration_status == RegistrationStatusEnum.SURRENDERED.value
+    assert service is None
 
 
 @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
@@ -167,7 +167,7 @@ def test_can_get_variations_since_drop_bad_data(otc_date_data_truncated):
     registry = Registry()
     registry.get_variations_since(datetime(2022, 11, 5))
 
-    assert len(registry.services) == 18
+    assert len(registry.services) == 11
 
 
 @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
@@ -179,7 +179,7 @@ def test_can_get_variations_since_can_skip_no_content(
     registry = Registry()
     registry.get_variations_since(datetime(2022, 11, 5))
 
-    assert len(registry.services) == 16
+    assert len(registry.services) == 10
 
 
 @freeze_time("2022-11-08")

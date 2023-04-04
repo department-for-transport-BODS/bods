@@ -1,14 +1,21 @@
 Hello,
 
-The Bus Open Data Service has repeatedly not been able to access the timetable/fares/AVL bus data indexed in the Bus Open Data Service and hosted at the URL you provided.
+The Bus Open Data Service has repeatedly failed to access the timetable/fares/AVL bus data hosted at the URL you provided.
 
+Operator: {{ organisation }}
 Dataset: {{ feed_name }}
 Data set ID: {{ feed_id }}
 Short Description: {{ feed_short_description }}
-Link to data set: {{ link }}
 
-Since we hit the maximum number of retries, we have moved your data set to an inactive, expired state. Follow this link to change the URL you provide for your bus data. {{ data_set_url }} You are legally obliged to provide accurate and up-to-date bus data.
-When you have successfully added a URL we can access, and your data is confirmed as valid, you will receive another email.
+Action required:
+    1) Double check that this is the correct URL for the data you’d like to publish: {{ data_set_url }})
+    2) Follow this link to review and if necessary, update the dataset with the correct URL for your bus data: {{ link }}
+    3) Review the notifications received from the Bus Open Data Service to ensure your data is successfully re-published.
+
+Important:
+You are legally obliged to provide accurate and up-to-date bus data.
+
+For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
 
 Kind regards,
 Bus Open Data Service

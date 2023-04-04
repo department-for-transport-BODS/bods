@@ -6,6 +6,7 @@ from .dataset import (
     SelectDataTypeForm,
 )
 from .revision import (
+    FaresRevisionPublishFormViolations,
     FeedPreviewForm,
     FeedPublishCancelForm,
     RevisionPublishForm,
@@ -23,6 +24,7 @@ __all__ = [
     "FeedPublishCancelForm",
     "RevisionPublishForm",
     "RevisionPublishFormViolations",
+    "FaresRevisionPublishFormViolations",
     "LicenceNumberForm",
     "EditDateForm",
 ]
