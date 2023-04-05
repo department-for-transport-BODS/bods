@@ -181,3 +181,58 @@ class FaresAPITests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 2)  # 2 entries created in SetUp
         self.assertEqual(len(results_with_hidden_key_displayed), 0)
+
+    def test_status_filter(self):
+        """
+        Ensures API response filters feed by status
+        """
+        self.assertTrue(
+            self.client.login(username=self.developer.username, password="password")
+        )
+        objs =  (
+            Dataset.objects.get_published()
+            .filter(dataset_type=DatasetType.FARES.value)
+            .get_viewable_statuses()
+            .get_active_org()
+            .add_organisation_name()
+            .select_related("live_revision")
+            .prefetch_related("organisation__nocs")
+            .prefetch_related("live_revision__metadata__faresmetadata__stops")
+        )
+        serializer = FaresDatasetSerializer(objs, many=True)
+        expected = serializer.data
+
+        query_params = "?status=published"
+        url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
+        response = self.client.get(url, HTTP_HOST=self.hostname)
+        actual = response.data["results"]
+
+        self.assertEqual(actual, expected)
+
+    def test_blank_status_filter(self):
+        """
+        Ensures API response filters feed by status=live when query param status is not supplied
+        """
+        self.assertTrue(
+            self.client.login(username=self.developer.username, password="password")
+        )
+        objs =  (
+            Dataset.objects.get_published()
+            .filter(dataset_type=DatasetType.FARES.value)
+            .get_viewable_statuses()
+            .get_active_org()
+            .add_organisation_name()
+            .select_related("live_revision")
+            .prefetch_related("organisation__nocs")
+            .prefetch_related("live_revision__metadata__faresmetadata__stops")
+        )
+        serializer = FaresDatasetSerializer(objs, many=True)
+        expected = serializer.data
+
+        query_params = ""
+        url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
+        response = self.client.get(url, HTTP_HOST=self.hostname)
+        actual = response.data["results"]
+
+        self.assertEqual(actual, expected)
+
