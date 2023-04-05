@@ -189,7 +189,7 @@ class FaresAPITests(APITestCase):
         self.assertTrue(
             self.client.login(username=self.developer.username, password="password")
         )
-        objs =  (
+        objs = (
             Dataset.objects.get_published()
             .filter(dataset_type=DatasetType.FARES.value)
             .get_viewable_statuses()
@@ -216,7 +216,7 @@ class FaresAPITests(APITestCase):
         self.assertTrue(
             self.client.login(username=self.developer.username, password="password")
         )
-        objs =  (
+        objs = (
             Dataset.objects.get_published()
             .filter(dataset_type=DatasetType.FARES.value)
             .get_viewable_statuses()
@@ -235,4 +235,3 @@ class FaresAPITests(APITestCase):
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
-

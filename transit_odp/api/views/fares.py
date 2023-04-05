@@ -71,12 +71,11 @@ class FaresDatasetViewset(DatasetBaseViewSet):
         status_list = self.request.GET.getlist("status", [])
         if not status_list or "" in status_list:
             status_list = ["live"]
-        
+
         elif status_list and "" not in status_list:
             status_list = [
                 status.replace("published", "live") for status in status_list
             ]
-        print("Status list is >>", status_list)
         qs = qs.filter(live_revision__status__in=status_list)
         bounding_box = self.request.GET.getlist("boundingBox", [])
         if bounding_box:
