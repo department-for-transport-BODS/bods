@@ -29,13 +29,19 @@ class TimetablesViewSet(DatasetViewSet):
         qs = qs.filter(dataset_type=TimetableType)
 
         status_list = self.request.GET.getlist("status", [])
-        if status_list and "" not in status_list:
+        print("Status List>>>>", status_list)
+        if not status_list or "" in status_list:
+            print("Insideeeee>>", status_list)
+            status_list = ["live"]
+        elif status_list and "" not in status_list:
             status_list = [
                 status.replace("published", "live") for status in status_list
             ]
-            qs = qs.filter(live_revision__status__in=status_list)
-
+        
+        qs = qs.filter(live_revision__status__in=status_list)
         keywords = self.request.GET.get("search", "").strip()
+        print("Status List Post processing>>>>", status_list)
+        print("Keywords are>>> ", keywords)
         if keywords:
             # TODO - enable full-text search
             qs = qs.filter(
