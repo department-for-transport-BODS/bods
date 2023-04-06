@@ -554,6 +554,15 @@ class DatasetQuerySet(models.QuerySet):
 
         return self.filter(live_revision__isnull=False)
 
+    def get_only_active_datasets_bulk_archive(self):
+        """
+        Filter queryset to exclude datasets which have an inactive status
+        """
+        exclude_status = FeedStatus.inactive.value
+        qs = self.get_published().exclude(live_revision__status=exclude_status)
+
+        return qs
+
     def get_live_dq_score(self):
         from transit_odp.data_quality.models.report import DataQualityReport
 
