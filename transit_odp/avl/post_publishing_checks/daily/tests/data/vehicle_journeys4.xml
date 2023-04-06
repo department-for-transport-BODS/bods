@@ -1,6 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <TransXChange FileName="vehicle_journeys.xml" RevisionNumber="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
   <ServicedOrganisations>
+    <ServicedOrganisation CreationDateTime="2022-12-07T11:35:15" Modification="new" RevisionNumber="1">
+      <OrganisationCode>test</OrganisationCode>
+      <Name>test Schools</Name>
+      <WorkingDays>
+        <DateRange>
+          <StartDate>2023-01-03</StartDate>
+          <EndDate>2023-02-10</EndDate>
+          <Description>KPMG Schools</Description>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-02-19</StartDate>
+          <EndDate>2023-03-31</EndDate>
+          <Description>KPMG Schools</Description>
+        </DateRange>
+      </WorkingDays>
+    </ServicedOrganisation>
     <ServicedOrganisation CreationDateTime="2022-12-07T11:35:15" Modification="new" RevisionNumber="0">
       <OrganisationCode>KPMG</OrganisationCode>
       <Name>KPMG Schools</Name>
