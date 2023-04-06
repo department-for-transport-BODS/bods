@@ -123,7 +123,6 @@ class TestOrganisationQuerySet:
         assert result.registration_complete is has_user
 
     def test_published_operator_count(self):
-
         org1 = OrganisationFactory()
 
         DatasetFactory(organisation=org1, dataset_type=TimetableType)
@@ -395,6 +394,22 @@ class TestDatasetQuerySet:
         )
         qs = Dataset.objects.get_active()
         assert len(qs) == 1
+        assert qs[0].id == datasets[0].id
+
+    def test_get_only_active_datasets_bulk_archive(self):
+        """
+        Tests queryset is filtered to exclude datasets which have an inactive status
+        """
+        datasets = DatasetFactory.create_batch(2, live_revision=None)
+        DatasetRevisionFactory(
+            dataset=datasets[0], is_published=True, status=FeedStatus.live.value
+        )
+        DatasetRevisionFactory(
+            dataset=datasets[1], is_published=True, status=FeedStatus.inactive.value
+        )
+        qs = Dataset.objects.get_only_active_datasets_bulk_archive()
+        assert len(qs) == 1
+        assert qs[0].id != datasets[1].id
         assert qs[0].id == datasets[0].id
 
     def test_search(self):
