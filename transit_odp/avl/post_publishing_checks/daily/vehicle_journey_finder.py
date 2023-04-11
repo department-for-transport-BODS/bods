@@ -1,7 +1,6 @@
 import datetime
 import logging
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 from zipfile import ZipFile
@@ -505,10 +504,10 @@ class VehicleJourneyFinder:
                             logger.info(error_msg)
                             break
 
-                        start_date_formatted = datetime.strptime(
+                        start_date_formatted = datetime.datetime.strptime(
                             start_date, "%Y-%m-%d"
                         ).date()
-                        end_date_formatted = datetime.strptime(
+                        end_date_formatted = datetime.datetime.strptime(
                             end_date, "%Y-%m-%d"
                         ).date()
 
