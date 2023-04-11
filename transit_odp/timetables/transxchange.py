@@ -320,7 +320,7 @@ class TransXChangeDocument:
         Get all Serviced Organisations
         """
         xpath = ["ServicedOrganisations", "ServicedOrganisation"]
-        return self.__root.get_element(xpath)
+        return self._root.get_element(xpath)
 
 
 class TransXChangeZip(ZippedValidator):
