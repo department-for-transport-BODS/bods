@@ -259,6 +259,32 @@ class FeedAPITests(APITestCase):
 
         self.assertEqual(actual, expected)
 
+    def test_blank_status_filter(self):
+        """
+        Ensures API response filters feed by status=live when query param status is not supplied
+        """
+        self.assertTrue(
+            self.client.login(username=self.developer.username, password="password")
+        )
+        objs = (
+            Dataset.objects.get_published()
+            .add_organisation_name()
+            .get_active_org()
+            .get_live_dq_score()
+            .add_is_live_pti_compliant()
+            .filter(live_revision__status="live")
+            .order_by("id")
+            .filter(dataset_type=DatasetType.TIMETABLE.value)
+        )
+        serializer = DatasetSerializer(objs, many=True)
+        expected = serializer.data
+
+        params = {"status": ""}
+        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        actual = response.data["results"]
+
+        self.assertEqual(actual, expected)
+
     def test_noc_whole_string_filter(self):
         """
         Ensures API response filters feed by noc whole
