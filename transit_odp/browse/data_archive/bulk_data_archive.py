@@ -10,7 +10,6 @@ from django.utils import timezone
 
 from transit_odp.organisation.constants import (
     DatasetType,
-    FeedStatus,
     TimetableType,
     TravelineRegions,
 )
@@ -36,7 +35,7 @@ def get_datasets_by_region(region_code: str):
         Dataset.objects.get_active_org()
         .filter(live_revision__admin_areas__traveline_region_id=region_code)
         .filter(dataset_type=TimetableType)
-        .get_published()
+        .get_only_active_datasets_bulk_archive()
         .distinct("id")
     )
 
@@ -117,27 +116,6 @@ def create_timetable_archive():
     logger.info(f"[bulk_data_archive] created for timetables: {timetable_archive}")
 
 
-def create_compliant_timetable_archive():
-    """
-    Create an archive of all the compliant timetables.
-    """
-    logger.info("[bulk_data_archive] processing compliant Timetable data")
-    timetable_datasets = (
-        Dataset.objects.add_live_data()
-        .get_active_org()
-        .select_related("live_revision")
-        .get_compliant_timetables()
-        .filter(status=FeedStatus.live.value)
-    )
-    now = timezone.now().strftime("%Y%m%d")
-    output = f"/tmp/bodds_compliant_timetables_archive_{now}.zip"
-    zip_datasets(timetable_datasets, output)
-    timetable_archive = upload_bulk_data_archive(
-        output, dataset_type=TimetableType, is_compliant=True
-    )
-    logger.info(f"[bulk_data_archive] created for timetables: {timetable_archive}")
-
-
 def create_fares_archive():
     # Fares Bulk data archive
     logger.info("[bulk_data_archive] processing Fares data")
@@ -191,8 +169,6 @@ def run():
     # order: set expired -> bulk download
 
     create_timetable_archive()
-
-    create_compliant_timetable_archive()
 
     create_fares_archive()
 

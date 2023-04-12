@@ -7,7 +7,6 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
-from django.views.generic.base import ContextMixin
 from django.views.generic.edit import FormMixin
 from django_filters.views import FilterView
 from django_hosts import reverse
@@ -449,7 +448,7 @@ class OrganisationListView(SiteAdminViewMixin, FilterView, SingleTableView, Form
         return context
 
 
-class OrganisationUsersManageView(DetailView, SiteAdminViewMixin, ContextMixin):
+class OrganisationUsersManageView(SiteAdminViewMixin, DetailView):
     template_name = "site_admin/organisation_user_manage.html"
     model = Organisation
 

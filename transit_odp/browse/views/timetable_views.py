@@ -305,9 +305,6 @@ class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
         context["show_bulk_archive_url"] = bulk_timetable.filter(
             compliant_archive=False
         ).exists()
-        context["show_bulk_compliant_archive_url"] = bulk_timetable.filter(
-            compliant_archive=True
-        ).exists()
         list_traveline_regions = []
         for region_code, pretty_name_region_code in TravelineRegions.choices:
             list_traveline_regions.append(
