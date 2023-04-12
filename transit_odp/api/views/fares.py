@@ -15,6 +15,9 @@ from transit_odp.api.views import DatasetBaseViewSet
 from transit_odp.common.utils.get_bounding_box import get_bounding_box
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
+import logging
+
+logger = logging.getLogger(__name__)
 
 FARES = DatasetType.FARES.value
 
@@ -69,13 +72,21 @@ class FaresDatasetViewset(DatasetBaseViewSet):
         )
 
         status_list = self.request.GET.getlist("status", [])
+        logger.info(f"Status list is - {status_list}")
+        logger.info(f"kwargs are - {self.request.resolver_match.kwargs}")
         if not self.request.resolver_match.kwargs:
+            logger.info(f"kwargs from inside if - {self.request.resolver_match.kwargs}")
             if not status_list or "" in status_list:
+                logger.info(f"If no status_list - {status_list}")
                 status_list = ["live"]
+                logger.info(f"Added live If no status_list - {status_list}")
             elif status_list and "" not in status_list:
+                logger.info(f"If status_list - {status_list}")
                 status_list = [
                     status.replace("published", "live") for status in status_list
                 ]
+                logger.info(f"Post processing status_list - {status_list}")
+            logger.info(f"Final status_list - {status_list}")
             qs = qs.filter(live_revision__status__in=status_list)
         bounding_box = self.request.GET.getlist("boundingBox", [])
         if bounding_box:
