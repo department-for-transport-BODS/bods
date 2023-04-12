@@ -1,7 +1,7 @@
 import openpyxl
 from django.http import HttpResponse
 from django.utils import timezone
-from rest_framework.views import APIView
+from django.views.generic.detail import DetailView
 
 from ..models import FaresValidation
 
@@ -17,7 +17,7 @@ FARES_VALIDATOR_REPORT_COLUMNS = {
 REPORT_SHEET_TITLE = "Warnings"
 
 
-class FaresXmlExporter(APIView):
+class FaresXmlExporter(DetailView):
     def get(self, request, pk1, pk2):
         now = timezone.now()
         fares_validator_report_name = (
