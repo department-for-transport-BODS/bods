@@ -167,3 +167,19 @@ def test_filter_by_revision_number():
     assert txc_vehicle_journeys[1].vehicle_journey["SequenceNumber"] == "300"
     assert txc_vehicle_journeys[0].txc_xml.get_revision_number() == "2"
     assert txc_vehicle_journeys[1].txc_xml.get_revision_number() == "2"
+
+
+def test_filter_by_days_of_operation():
+    txc_filename = str(DATA_DIR / "vehicle_journeys4.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    # Set recorded at date within serviced org working days
+    recorded_at_time = datetime.date.fromisoformat("2023-04-18")
+    vehicle_journey_finder = VehicleJourneyFinder()
+    vehicle_journey_finder.filter_by_days_of_operation(
+        recorded_at_time, txc_vehicle_journeys, ValidationResult()
+    )
+
+    assert len(txc_vehicle_journeys) == 1
+    assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"

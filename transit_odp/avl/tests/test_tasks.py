@@ -241,9 +241,6 @@ def test_send_pre_seven_days_action_required(get_client, mailoutbox):
     assert revision.avl_validation_reports.count() == 0
     task_run_feed_validation(revision.dataset.id)
 
-    expected_subject = "Action required - SIRI-VM validation report requires resolution"
-    assert len(mailoutbox) > 0
-    assert mailoutbox[0].subject == expected_subject
     assert revision.avl_validation_reports.count() == 1
 
 

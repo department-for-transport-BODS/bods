@@ -315,6 +315,13 @@ class TransXChangeDocument:
         xpath = ["VehicleJourneys", "VehicleJourney"]
         return self._root.get_elements(xpath)
 
+    def get_serviced_organisations(self):
+        """
+        Get all Serviced Organisations
+        """
+        xpath = ["ServicedOrganisations", "ServicedOrganisation"]
+        return self._root.get_elements(xpath)
+
 
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
