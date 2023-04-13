@@ -5,9 +5,6 @@ from django.views.generic import TemplateView
 from transit_odp.api.views.base import DatasetViewSet
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class TimetablesApiView(LoginRequiredMixin, TemplateView):
@@ -32,21 +29,13 @@ class TimetablesViewSet(DatasetViewSet):
         qs = qs.filter(dataset_type=TimetableType)
 
         status_list = self.request.GET.getlist("status", [])
-        logger.info(f"Status list is - {status_list}")
-        logger.info(f"kwargs are - {self.request.resolver_match.kwargs}")
         if not self.request.resolver_match.kwargs:
-            logger.info(f"kwargs from inside if - {self.request.resolver_match.kwargs}")
             if not status_list or "" in status_list:
-                logger.info(f"If no status_list - {status_list}")
                 status_list = ["live"]
-                logger.info(f"Added live If no status_list - {status_list}")
             elif status_list and "" not in status_list:
-                logger.info(f"If status_list - {status_list}")
                 status_list = [
                     status.replace("published", "live") for status in status_list
                 ]
-                logger.info(f"Post processing status_list - {status_list}")
-            logger.info(f"Final status_list - {status_list}")
             qs = qs.filter(live_revision__status__in=status_list)
         keywords = self.request.GET.get("search", "").strip()
         if keywords:
