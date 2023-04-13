@@ -1,0 +1,11 @@
+{% extends "page.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+    {% filter force_escape %}
+        {% trans 'Local Transport Authority details' %}
+    {% endfilter %}
+{% endblock %}
