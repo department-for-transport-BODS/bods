@@ -85,3 +85,8 @@ class Service(models.Model):
         kwargs["operator"] = operator
         kwargs["licence"] = licence
         return cls(**kwargs)
+
+
+class LocalAuthority(models.Model):
+    name = models.TextField(blank=True, null=False)
+    registration_numbers = models.ManyToManyField(Service, related_name="registration")
