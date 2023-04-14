@@ -80,6 +80,17 @@
         <p class="govuk-body">
             {% trans 'Data catalogue will provide you with a comprehensive view of all data published on BODS and provide matching information between different dataset types.' %}
         </p>
+
+        <hr class="govuk-section-break govuk-section-break--xl">
+
+        <p class="govuk-body">
+            <a class="govuk-link-bold" href="{% url 'local-authority' host hosts.data %}">
+                {% trans 'View local transport authority details' %}
+            </a>
+        </p>
+        <p class="govuk-body">
+            {% trans 'Search all Local Transport Authority profiles to review the quality of published data.' %}
+        </p>
     </div>
 {% endblock %}
 
