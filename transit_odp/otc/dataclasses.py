@@ -190,13 +190,14 @@ class Service(BaseModel):
             return ""
         return v
 
-class LocalAuthority():
+
+class LocalAuthority:
     class Config:
         allow_population_by_field_name = True
 
     name: str = Field(alias="local_authorities")
     registration_numbers: Optional[Service]
-    
+
     @validator(
         "name",
         pre=True,
@@ -206,5 +207,5 @@ class LocalAuthority():
             return ""
         return v
 
-EMPTY_VALUES = ["", "n/a"]
 
+EMPTY_VALUES = ["", "n/a"]

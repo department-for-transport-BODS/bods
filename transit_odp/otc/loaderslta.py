@@ -36,7 +36,7 @@ class LoaderLTA:
         count = len(registration_numbers)
         logger.info(f"Total count of registration numbers is {count}")
         self.populate_lta.populate_lta(registration_numbers)
-    
+
     def load_updated_lta(self):
         """
         The method is used to get the records that have been updated in OTC API and then updates the database.
@@ -55,7 +55,6 @@ class LoaderLTA:
 
         with transaction.atomic():
             self.populate_lta.refresh(most_recently_modified.last_modified)
-
 
     @cached_property
     def registered_service(self):

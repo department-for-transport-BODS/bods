@@ -104,7 +104,7 @@ class OTCAPIClient:
                 page=1, lastModifiedOn=updated_on.isoformat(), latestVariation=True
             )
             variations += response.bus_search
-            
+
             for page in range(2, response.page.total_pages + 1):
                 response = self._make_request(
                     page=page,
@@ -168,7 +168,7 @@ class OTCAPIClient:
             page=1, latestVariation=True, regNo=registration_code
         )
         records = response.bus_search
-        
+
         total_pages = response.page.total_pages
         for page in range(2, total_pages + 1):
             msg = (
@@ -180,5 +180,5 @@ class OTCAPIClient:
                 page=page, latestVariation=True, regNo=registration_code
             )
             records += response.bus_search
-        
+
         return records
