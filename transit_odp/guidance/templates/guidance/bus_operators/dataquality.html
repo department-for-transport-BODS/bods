@@ -546,15 +546,34 @@
         <p class="govuk-body govuk-!-margin-bottom-0">
             {% trans "Step 5" %}
         </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
+        <p class="govuk-body">
             {% blocktrans trimmed %}
-                You will have only one file when you reach this Step.Search within the file for JourneyCode to find the JourneyCode
-                with an OperatingProfile that is valid for the date being tested. There may be more than one matching JourneyCode within
-                a TxC if it is used for example for journeys operating on weekdays and weekends.
+                You will have only one file when you reach this Step.
+            {% endblocktrans %}
+        </p>
+        <p class="govuk-body">
+            {% blocktrans trimmed %}
+                There may be more than one matching JourneyCode within a TxC
+                if it is used for example for journeys operating on weekdays and weekends, or those relating to a serviced organisation.
+                Search within the file to find the JourneyCode(s) with an OperatingProfile that is valid for the date being tested.
+                For those journeys which reference a serviced organisation, the logic will establish whether the ServicedOrganisation is
+                working on the day of the Siri journey to find the appropriate instance of the JourneyCode.
+            {% endblocktrans %}
+        </p>
+        <p class="govuk-body">
+            {% blocktrans trimmed %}
+                If the serviced organisation is working on that day, there should be only one JourneyCode with the combination
+                of the operating profile, ServicedOrganisation and DaysofOperation.
+            {% endblocktrans %}
+        </p>
+        <p class="govuk-body">
+            {% blocktrans trimmed %}
+                If the serviced organisation is not working on that day, there should be only one JourneyCode with the combination
+                of the operating profile, ServicedOrganisation and DaysofNonOperation.
             {% endblocktrans %}
             <ul class="govuk-list govuk-list--alpha">
                 <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If a single JourneyCode is identified that is valid on the correct day, move to step 6." %}
+                    {% trans "If a single JourneyCode is identified, move to step 6." %}
                 </li>
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If there is more than one valid JourneyCode found, mark the vehicle journey as failed to be analysed." %}

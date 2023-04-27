@@ -1,6 +1,28 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "April 2023 (1.25.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An enhancement to the logic we use when measuring how well location data matches to
+            timetable data to consider journeys that belong to serviced organisations.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            We are removing inactive data from the Download All function and the API.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "March 2023 (1.24.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

@@ -400,6 +400,140 @@ class VehicleJourneyFinder:
             )
             return False
 
+        return True
+
+    def service_org_day_type(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["OperatingProfile", "ServicedOrganisationDayType"]
+            service_org_day_type = vj.vehicle_journey.get_element(xpath)
+        except NoElement:
+            return None
+        except TooManyElements:
+            return None
+        return service_org_day_type
+
+    def get_service_org_ref(
+        self, txcElement: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["WorkingDays", "ServicedOrganisationRef"]
+            service_org_ref = txcElement.get_text_or_default(xpath)
+        except NoElement:
+            return None
+        except TooManyElements:
+            return None
+        return service_org_ref
+
+    def get_serviced_organisations(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[List[TransXChangeElement]]:
+        try:
+            service_orgs = vj.txc_xml.get_serviced_organisations()
+        except NoElement:
+            return []
+        return service_orgs
+
+    def get_working_days(
+        self, org: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["WorkingDays", "DateRange"]
+            working_days = org.get_elements(xpath)
+        except NoElement:
+            return []
+        return working_days
+
+    def filter_by_days_of_operation(
+        self,
+        recorded_at_time,
+        vehicle_journeys: List[TxcVehicleJourney],
+        result: ValidationResult,
+    ):
+        for vj in reversed(vehicle_journeys):
+            days_of_non_operation = None
+            days_of_operation = None
+            service_org_ref = None
+            inside_operating_range = False
+            error_msg = None
+
+            service_org_day_type = self.service_org_day_type(vj)
+            if service_org_day_type is not None:
+                days_of_non_operation: TransXChangeElement = (
+                    service_org_day_type.get_element_or_none("DaysOfNonOperation")
+                )
+                if days_of_non_operation is not None:
+                    service_org_ref = self.get_service_org_ref(days_of_non_operation)
+
+                days_of_operation: TransXChangeElement = (
+                    service_org_day_type.get_element_or_none("DaysOfOperation")
+                )
+                if days_of_operation is not None:
+                    service_org_ref = self.get_service_org_ref(days_of_operation)
+
+            service_orgs = self.get_serviced_organisations(vj)
+            for org in service_orgs:
+                org_code = org.get_text_or_default("OrganisationCode")
+                if org_code == service_org_ref:
+                    working_days = self.get_working_days(org)
+                    for date_range in working_days:
+                        start_date = date_range.get_text_or_default("StartDate")
+                        if not start_date:
+                            vehicle_journey_seq_no = vj.vehicle_journey[
+                                "SequenceNumber"
+                            ]
+                            error_msg = (
+                                f"Ignoring vehicle journey with sequence number "
+                                f"{vehicle_journey_seq_no}, as Serviced organisation has no Start date"
+                            )
+                            result.add_error(ErrorCategory.GENERAL, error_msg)
+                            logger.info(error_msg)
+                            break
+
+                        end_date = date_range.get_text_or_default("EndDate")
+                        if not end_date:
+                            vehicle_journey_seq_no = vj.vehicle_journey[
+                                "SequenceNumber"
+                            ]
+                            error_msg = (
+                                f"Ignoring vehicle journey with sequence number "
+                                f"{vehicle_journey_seq_no}, as Serviced organisation has no End date"
+                            )
+                            result.add_error(ErrorCategory.GENERAL, error_msg)
+                            logger.info(error_msg)
+                            break
+
+                        start_date_formatted = datetime.datetime.strptime(
+                            start_date, "%Y-%m-%d"
+                        ).date()
+                        end_date_formatted = datetime.datetime.strptime(
+                            end_date, "%Y-%m-%d"
+                        ).date()
+
+                        if (
+                            start_date_formatted
+                            <= recorded_at_time
+                            <= end_date_formatted
+                        ):
+                            inside_operating_range = True
+
+                    if error_msg is None:
+                        if days_of_non_operation is not None and inside_operating_range:
+                            vehicle_journeys.remove(vj)
+                        elif (
+                            days_of_operation is not None and not inside_operating_range
+                        ):
+                            vehicle_journeys.remove(vj)
+
+        if len(vehicle_journeys) == 0:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "No vehicle journeys found with OperatingProfile applicable to "
+                "VehicleActivity date",
+            )
+            return False
+
         if len(vehicle_journeys) > 1:
             result.add_error(
                 ErrorCategory.GENERAL,
@@ -481,6 +615,12 @@ class VehicleJourneyFinder:
 
         if not self.filter_by_revision_number(vehicle_journeys, result):
             return None
+
+        if len(vehicle_journeys) > 1:
+            if not self.filter_by_days_of_operation(
+                recorded_at_time, vehicle_journeys, result
+            ):
+                return None
 
         # If we get to this point, we've matched the SIRI-VM MonitoredVehicleJourney
         # to exactly one TXC VehicleJourney. Update result to record a match.
