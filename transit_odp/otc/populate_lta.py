@@ -36,12 +36,14 @@ class PopulateLTA:
 
                 for local_authority in unique_local_authorities:
                     logger.info(f"Unique local authority is: {local_authority}")
-                    lta, created = LocalAuthority.objects.get_or_create(name=local_authority)
+                    lta, created = LocalAuthority.objects.get_or_create(
+                        name=local_authority
+                    )
                     if created:
                         logger.info("LocalAuthority object created")
                     else:
                         logger.info("LocalAuthority object exists")
-                    
+
                     lta.registration_numbers.add(service_id)
                 current_processing_count += 1
                 logger.info(f"Completed {current_processing_count} of {total_count}")
@@ -69,10 +71,11 @@ class PopulateLTA:
 
                 for local_authority in unique_local_authorities:
                     logger.info(f"Unique local authority is: {local_authority}")
-                    lta, created = LocalAuthority.objects.get_or_create(name=local_authority)
+                    lta, created = LocalAuthority.objects.get_or_create(
+                        name=local_authority
+                    )
                     if created:
                         logger.info("LocalAuthority object created")
                     else:
                         logger.info("LocalAuthority object exists")
                     lta.registration_numbers.add(service_id)
-

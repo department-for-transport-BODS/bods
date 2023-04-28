@@ -107,7 +107,7 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(registration)
-                    
+
                 if (
                     registration.registration_status
                     in RegistrationStatusEnum.to_delete()

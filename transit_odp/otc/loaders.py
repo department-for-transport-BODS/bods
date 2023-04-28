@@ -174,14 +174,15 @@ class Loader:
             raise LoadFailedException("Cannot calculate last run date of task")
 
         with transaction.atomic():
-            _registrations = self.registry.get_variations_since(most_recently_modified.last_modified)
+            _registrations = self.registry.get_variations_since(
+                most_recently_modified.last_modified
+            )
             self.load_licences()
             self.load_operators()
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
             self.refresh_lta(_registrations)
-
 
     def refresh_lta(self, regs_to_update_lta):
         refresh_lta = PopulateLTA()
