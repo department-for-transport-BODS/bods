@@ -4,7 +4,7 @@ from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.requires_attention import get_requires_attention_data
+from transit_odp.publish.requires_attention import get_requires_attention_data_lta
 
 
 class LocalAuthorityView(BaseListView):
@@ -17,31 +17,26 @@ class LocalAuthorityView(BaseListView):
         context["q"] = self.request.GET.get("q", "")
         context["ordering"] = self.request.GET.get("ordering", "name")
         all_ltas = self.model.objects.filter(name__isnull=False)
-        service_id = None
 
         for lta in all_ltas:
             context[
                 "total_in_scope_in_season_services"
-            ] = OTCService.objects.get_in_scope_in_season_lta_services(lta)
+            ] = OTCService.objects.get_in_scope_in_season_lta_services(lta).count()
 
-            reg_num_object = lta.registration_numbers.values("id")
-            if len(reg_num_object) > 0:
-                service_id = reg_num_object[0].get("id")
-                operator_id = list(OTCService.objects.get_operator_id(service_id))
-                context["total_services_requiring_attention"] = len(
-                    get_requires_attention_data(operator_id[0])
-                )
+            context["total_services_requiring_attention"] = len(
+                get_requires_attention_data_lta(lta)
+            )
 
-                try:
-                    context["services_require_attention_percentage"] = ceil(
-                        100
-                        * (
-                            context["total_services_requiring_attention"]
-                            / context["total_in_scope_in_season_services"]
-                        )
+            try:
+                context["services_require_attention_percentage"] = ceil(
+                    100
+                    * (
+                        context["total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
                     )
-                except ZeroDivisionError:
-                    context["services_require_attention_percentage"] = 0
+                )
+            except ZeroDivisionError:
+                context["services_require_attention_percentage"] = 0
 
         context["ltas"] = list(all_ltas.values_list("name", flat=True))
         return context
@@ -73,25 +68,23 @@ class LocalAuthorityDetailView(BaseDetailView):
 
         context[
             "total_in_scope_in_season_services"
-        ] = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+        ] = OTCService.objects.get_in_scope_in_season_lta_services(
+            local_authority
+        ).count()
 
-        reg_num_object = local_authority.registration_numbers.values("id")
-        if len(reg_num_object) > 0:
-            service_id = reg_num_object[0].get("id")
-            operator_id = list(OTCService.objects.get_operator_id(service_id))
-            context["total_services_requiring_attention"] = len(
-                get_requires_attention_data(operator_id[0])
-            )
+        context["total_services_requiring_attention"] = len(
+            get_requires_attention_data_lta(local_authority)
+        )
 
-            try:
-                context["services_require_attention_percentage"] = ceil(
-                    100
-                    * (
-                        context["total_services_requiring_attention"]
-                        / context["total_in_scope_in_season_services"]
-                    )
+        try:
+            context["services_require_attention_percentage"] = ceil(
+                100
+                * (
+                    context["total_services_requiring_attention"]
+                    / context["total_in_scope_in_season_services"]
                 )
-            except ZeroDivisionError:
-                context["services_require_attention_percentage"] = 0
+            )
+        except ZeroDivisionError:
+            context["services_require_attention_percentage"] = 0
 
         return context

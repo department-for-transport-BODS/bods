@@ -132,14 +132,15 @@ class ServiceQuerySet(QuerySet):
 
     def get_in_scope_in_season_lta_services(self, lta):
         now = timezone.now()
-        registration_code = []
         all_in_scope_in_season_services_count = None
 
         services_subquery = lta.registration_numbers.values("id")
 
         if len(services_subquery) > 0:
             seasonal_services_subquery = Subquery(
-                SeasonalService.objects.filter(registration_code__in=registration_code)
+                SeasonalService.objects.filter(
+                    licence_id__in=Subquery(services_subquery.values("licence_id"))
+                )
                 .filter(start__gt=now.date())
                 .add_registration_number()
                 .values("registration_number")
@@ -147,17 +148,18 @@ class ServiceQuerySet(QuerySet):
 
             exemptions_subquery = Subquery(
                 ServiceCodeExemption.objects.add_registration_number()
-                .filter(registration_code__in=registration_code)
+                .filter(licence_id__in=Subquery(services_subquery.values("licence_id")))
                 .values("registration_number")
             )
 
             all_in_scope_in_season_services_count = (
                 self.filter(id__in=Subquery(services_subquery.values("id")))
+                .annotate(otc_licence_number=F("licence__number"))
                 .exclude(registration_number__in=exemptions_subquery)
                 .exclude(registration_number__in=seasonal_services_subquery)
                 .order_by("licence__number", "registration_number", "service_number")
                 .distinct("licence__number", "registration_number", "service_number")
-            ).count()
+            )
 
         return all_in_scope_in_season_services_count
 
