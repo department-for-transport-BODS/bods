@@ -1,0 +1,17 @@
+{% extends 'browse/base.html' %}
+
+{% load breadcrumbs %}
+{% load i18n %}
+{% load query_transform %}
+{% load static %}
+
+{% block title_tag %}
+    {% filter force_escape %}
+        {% trans 'Local Transport Authority' %}
+    {% endfilter %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+    {{ block.super }}
+    {% breadcrumb 'Local Transport Authority Profiles' %}
+{% endblock %}
