@@ -96,7 +96,9 @@ class Registry:
         RegistrationStatusEnum.to_delete().
         """
         look_up_again = set()
+        regs_to_update_lta = []
         for registration in self._client.get_latest_variations_since(when):
+            regs_to_update_lta.append(registration)
             if registration.registration_status in RegistrationStatusEnum.to_change():
                 look_up_again.add(registration.registration_number)
             else:
@@ -105,7 +107,7 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(registration)
-
+                    
                 if (
                     registration.registration_status
                     in RegistrationStatusEnum.to_delete()
@@ -120,8 +122,7 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(variation)
-
-        return list(self._service_map.values())
+        return regs_to_update_lta
 
     def filter_by_status(self, *args) -> List[Service]:
         return [

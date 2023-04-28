@@ -30,10 +30,3 @@ def task_populate_lta_data():
     populate_lta = PopulateLTA()
     loader = LoaderLTA(populate_lta)
     loader.load_lta_into_fresh_database()
-
-
-@shared_task(ignore_errors=True)
-def task_refresh_lta_data():
-    populate_lta = PopulateLTA()
-    loader = LoaderLTA(populate_lta)
-    loader.load_updated_lta()
