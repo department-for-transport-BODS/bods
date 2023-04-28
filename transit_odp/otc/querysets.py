@@ -135,12 +135,9 @@ class ServiceQuerySet(QuerySet):
         registration_code = []
         all_in_scope_in_season_services_count = None
 
-        reg_num_object = lta.registration_numbers.values("id")
-        if len(reg_num_object) > 0:
-            registration_code = self.filter(id=reg_num_object[0].get("id")).values_list(
-                "registration_code", flat=True
-            )
+        services_subquery = lta.registration_numbers.values("id")
 
+        if len(services_subquery) > 0:
             seasonal_services_subquery = Subquery(
                 SeasonalService.objects.filter(registration_code__in=registration_code)
                 .filter(start__gt=now.date())
@@ -155,7 +152,8 @@ class ServiceQuerySet(QuerySet):
             )
 
             all_in_scope_in_season_services_count = (
-                self.exclude(registration_number__in=exemptions_subquery)
+                self.filter(id__in=Subquery(services_subquery.values("id")))
+                .exclude(registration_number__in=exemptions_subquery)
                 .exclude(registration_number__in=seasonal_services_subquery)
                 .order_by("licence__number", "registration_number", "service_number")
                 .distinct("licence__number", "registration_number", "service_number")
