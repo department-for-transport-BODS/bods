@@ -13,7 +13,10 @@
                     {% trans 'Services requiring attention:' %}
                 {% endfilter %}
             </span>
-            <span class="item__value">{{ item.attention_score }}{% trans '%' %}</span>
+            <span class="item__value">
+                {{ item.attention_score }}
+                {% trans '%' %}
+            </span>
         </li>
     </ul>
 </div>

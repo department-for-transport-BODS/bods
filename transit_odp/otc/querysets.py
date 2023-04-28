@@ -130,6 +130,57 @@ class ServiceQuerySet(QuerySet):
             .distinct("licence__number", "registration_number", "service_number")
         )
 
+    def get_in_scope_in_season_lta_services(self, all_ltas: list):
+        now = timezone.now()
+        lta_profiles = []
+
+        for lta in all_ltas:
+            reg_nums_object = lta.registration_numbers.values("id")
+            for reg_num in reg_nums_object:
+                lta_profiles.append({"id": lta.id, "service_id": reg_num["id"]})
+
+        for lta_profile in lta_profiles:
+            registration_code = self.filter(id=lta_profile["service_id"]).values_list(
+                "registration_code", flat=True
+            )
+
+            seasonal_services_subquery = Subquery(
+                SeasonalService.objects.filter(registration_code__in=registration_code)
+                .filter(start__gt=now.date())
+                .add_registration_number()
+                .values("registration_number")
+            )
+
+            exemptions_subquery = Subquery(
+                ServiceCodeExemption.objects.add_registration_number()
+                .filter(registration_code__in=registration_code)
+                .values("registration_number")
+            )
+
+            all_in_scope_in_season_services_count = (
+                self.exclude(registration_number__in=exemptions_subquery)
+                .exclude(registration_number__in=seasonal_services_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number", "service_number")
+            ).count()
+
+            lta_profile[
+                "total_in_scope_in_season_services"
+            ] = all_in_scope_in_season_services_count
+
+        return lta_profiles
+
+    def get_operator_id(self, service_id: int):
+        from transit_odp.otc.models import Operator as OTCOperator
+
+        operator_id = self.filter(id=service_id).values_list("operator_id", flat=True)
+
+        otc_operator_id = OTCOperator.objects.filter(id__in=operator_id).values_list(
+            "operator_id", flat=True
+        )
+
+        return otc_operator_id
+
     def add_otc_stale_date(self):
         return self.annotate(
             effective_stale_date_otc_effective_date=TruncDate(
@@ -253,3 +304,7 @@ class LicenceQuerySet(QuerySet):
 class OperatorQuerySet(QuerySet):
     def add_service_count(self):
         return self.annotate(service_count=Count("services"))
+
+
+class LocalAuthorityQuerySet(QuerySet):
+    pass

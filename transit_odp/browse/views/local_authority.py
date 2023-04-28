@@ -1,6 +1,10 @@
+from math import ceil
+
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.otc.models import LocalAuthority
+from transit_odp.otc.models import Service as OTCService
+from transit_odp.publish.requires_attention import get_requires_attention_data
 
 
 class LocalAuthorityView(BaseListView):
@@ -13,10 +17,39 @@ class LocalAuthorityView(BaseListView):
         context["q"] = self.request.GET.get("q", "")
         context["ordering"] = self.request.GET.get("ordering", "name")
         all_ltas = self.model.objects.filter(name__isnull=False)
-        ltas = {"names": [name for name in all_ltas.values_list("name", flat=True)]}
+        ltas = OTCService.objects.get_in_scope_in_season_lta_services(all_ltas)
 
-        context["ltas"] = ltas
+        for lta in ltas:
+            service_id = lta["service_id"]
+            operator_id = list(OTCService.objects.get_operator_id(service_id))
+            total_services_requiring_attention = len(
+                get_requires_attention_data(operator_id[0])
+            )
+
+            try:
+                context["services_require_attention_percentage"] = ceil(
+                    100
+                    * (
+                        total_services_requiring_attention
+                        / lta["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["services_require_attention_percentage"] = 0
+
+            lta["services_require_attention_percentage"] = context[
+                "services_require_attention_percentage"
+            ]
+            self.update_lta_table(lta)
+
+        context["ltas"] = list(all_ltas.values_list("name", flat=True))
         return context
+
+    def update_lta_table(self, lta):
+        self.model.objects.filter(id=lta["id"]).update(
+            attention_score=lta["services_require_attention_percentage"],
+            total_in_scope_in_season_services=lta["total_in_scope_in_season_services"],
+        )
 
     def get_queryset(self):
         qs = self.model.objects.filter(name__isnull=False)

@@ -9,7 +9,12 @@ from transit_odp.otc.constants import (
 from transit_odp.otc.dataclasses import Licence as RegistryLicence
 from transit_odp.otc.dataclasses import Operator as RegistryOperator
 from transit_odp.otc.dataclasses import Service as RegistryService
-from transit_odp.otc.managers import LicenceManager, OperatorManager, ServiceManager
+from transit_odp.otc.managers import (
+    LicenceManager,
+    LocalAuthorityManager,
+    OperatorManager,
+    ServiceManager,
+)
 
 
 class Licence(models.Model):
@@ -90,4 +95,7 @@ class Service(models.Model):
 class LocalAuthority(models.Model):
     name = models.TextField(blank=True, null=False)
     registration_numbers = models.ManyToManyField(Service, related_name="registration")
+    total_in_scope_in_season_services = models.IntegerField(blank=False, null=True)
     attention_score = models.IntegerField(blank=False, null=True)
+
+    objects = LocalAuthorityManager()
