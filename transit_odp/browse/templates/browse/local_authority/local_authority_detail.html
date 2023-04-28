@@ -44,7 +44,7 @@
                 <div class="govuk-grid-column-one-half">
                     <div class="feed-stat">
                         <span class="feed-stat__value">
-                            {{ object.total_in_scope_in_season_services }}
+                            {{ total_in_scope_in_season_services }}
                         </span>
                         <span class="feed-stat__label">
                             {% trans 'Registered in scope/<br>in season services' %}
@@ -54,7 +54,7 @@
                 <div class="govuk-grid-column-one-half">
                     <div class="feed-stat">
                         <span class="feed-stat__value">
-                            {{ object.attention_score }}%
+                            {{ services_require_attention_percentage }}%
                         </span>
                         <span class="feed-stat__label">
                             {% trans 'Services that<br>require attention' %}

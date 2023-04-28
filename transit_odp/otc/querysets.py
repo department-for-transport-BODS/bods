@@ -130,17 +130,14 @@ class ServiceQuerySet(QuerySet):
             .distinct("licence__number", "registration_number", "service_number")
         )
 
-    def get_in_scope_in_season_lta_services(self, all_ltas: list):
+    def get_in_scope_in_season_lta_services(self, lta):
         now = timezone.now()
-        lta_profiles = []
+        registration_code = []
+        all_in_scope_in_season_services_count = None
 
-        for lta in all_ltas:
-            reg_nums_object = lta.registration_numbers.values("id")
-            for reg_num in reg_nums_object:
-                lta_profiles.append({"id": lta.id, "service_id": reg_num["id"]})
-
-        for lta_profile in lta_profiles:
-            registration_code = self.filter(id=lta_profile["service_id"]).values_list(
+        reg_num_object = lta.registration_numbers.values("id")
+        if len(reg_num_object) > 0:
+            registration_code = self.filter(id=reg_num_object[0].get("id")).values_list(
                 "registration_code", flat=True
             )
 
@@ -164,11 +161,7 @@ class ServiceQuerySet(QuerySet):
                 .distinct("licence__number", "registration_number", "service_number")
             ).count()
 
-            lta_profile[
-                "total_in_scope_in_season_services"
-            ] = all_in_scope_in_season_services_count
-
-        return lta_profiles
+        return all_in_scope_in_season_services_count
 
     def get_operator_id(self, service_id: int):
         from transit_odp.otc.models import Operator as OTCOperator

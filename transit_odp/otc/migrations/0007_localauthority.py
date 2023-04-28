@@ -22,8 +22,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("name", models.TextField(blank=True)),
-                ("total_in_scope_in_season_services", models.IntegerField(null=True)),
-                ("attention_score", models.IntegerField(null=True)),
                 (
                     "registration_numbers",
                     models.ManyToManyField(

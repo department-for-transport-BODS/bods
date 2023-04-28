@@ -95,7 +95,5 @@ class Service(models.Model):
 class LocalAuthority(models.Model):
     name = models.TextField(blank=True, null=False)
     registration_numbers = models.ManyToManyField(Service, related_name="registration")
-    total_in_scope_in_season_services = models.IntegerField(blank=False, null=True)
-    attention_score = models.IntegerField(blank=False, null=True)
 
     objects = LocalAuthorityManager()

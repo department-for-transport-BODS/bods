@@ -17,39 +17,34 @@ class LocalAuthorityView(BaseListView):
         context["q"] = self.request.GET.get("q", "")
         context["ordering"] = self.request.GET.get("ordering", "name")
         all_ltas = self.model.objects.filter(name__isnull=False)
-        ltas = OTCService.objects.get_in_scope_in_season_lta_services(all_ltas)
+        service_id = None
 
-        for lta in ltas:
-            service_id = lta["service_id"]
-            operator_id = list(OTCService.objects.get_operator_id(service_id))
-            total_services_requiring_attention = len(
-                get_requires_attention_data(operator_id[0])
-            )
+        for lta in all_ltas:
+            context[
+                "total_in_scope_in_season_services"
+            ] = OTCService.objects.get_in_scope_in_season_lta_services(lta)
 
-            try:
-                context["services_require_attention_percentage"] = ceil(
-                    100
-                    * (
-                        total_services_requiring_attention
-                        / lta["total_in_scope_in_season_services"]
-                    )
+            reg_num_object = lta.registration_numbers.values("id")
+            if len(reg_num_object) > 0:
+                service_id = reg_num_object[0].get("id")
+                operator_id = list(OTCService.objects.get_operator_id(service_id))
+                context["total_services_requiring_attention"] = len(
+                    get_requires_attention_data(operator_id[0])
                 )
-            except ZeroDivisionError:
-                context["services_require_attention_percentage"] = 0
 
-            lta["services_require_attention_percentage"] = context[
-                "services_require_attention_percentage"
-            ]
-            self.update_lta_table(lta)
+                try:
+                    context["services_require_attention_percentage"] = ceil(
+                        100
+                        * (
+                            context["total_services_requiring_attention"]
+                            / context["total_in_scope_in_season_services"]
+                        )
+                    )
+                except ZeroDivisionError:
+                    context["services_require_attention_percentage"] = 0
 
         context["ltas"] = list(all_ltas.values_list("name", flat=True))
         return context
-
-    def update_lta_table(self, lta):
-        self.model.objects.filter(id=lta["id"]).update(
-            attention_score=lta["services_require_attention_percentage"],
-            total_in_scope_in_season_services=lta["total_in_scope_in_season_services"],
-        )
 
     def get_queryset(self):
         qs = self.model.objects.filter(name__isnull=False)
@@ -71,3 +66,32 @@ class LocalAuthorityView(BaseListView):
 class LocalAuthorityDetailView(BaseDetailView):
     template_name = "browse/local_authority/local_authority_detail.html"
     model = LocalAuthority
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        local_authority = self.object
+
+        context[
+            "total_in_scope_in_season_services"
+        ] = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+
+        reg_num_object = local_authority.registration_numbers.values("id")
+        if len(reg_num_object) > 0:
+            service_id = reg_num_object[0].get("id")
+            operator_id = list(OTCService.objects.get_operator_id(service_id))
+            context["total_services_requiring_attention"] = len(
+                get_requires_attention_data(operator_id[0])
+            )
+
+            try:
+                context["services_require_attention_percentage"] = ceil(
+                    100
+                    * (
+                        context["total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["services_require_attention_percentage"] = 0
+
+        return context
