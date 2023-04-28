@@ -63,7 +63,6 @@ class OTCAPIClient:
         }
         defaults = {"limit": API_RETURN_LIMIT, "page": 1}
         params = {**defaults, **kwargs}
-
         try:
             response = requests.get(
                 url=settings.OTC_API_URL,
@@ -159,3 +158,27 @@ class OTCAPIClient:
             )
             for record in response.bus_search:
                 yield record
+
+    def get_lta_names_by_registration_codes(self, registration_code: str) -> List:
+        logger.info(
+            f"Requesting all lta_names for {registration_code} from OTC API - "
+            f"page 1"
+        )
+        response = self._make_request(
+            page=1, latestVariation=True, regNo=registration_code
+        )
+        records = response.bus_search
+
+        total_pages = response.page.total_pages
+        for page in range(2, total_pages + 1):
+            msg = (
+                f"Requesting all LTA names for {registration_code} latest variations from "
+                f"OTC API - page {page} of {total_pages}"
+            )
+            logger.info(msg)
+            response = self._make_request(
+                page=page, latestVariation=True, regNo=registration_code
+            )
+            records += response.bus_search
+
+        return records

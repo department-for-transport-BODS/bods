@@ -105,11 +105,16 @@ class OperatorDetailView(BaseDetailView):
         )
         if is_fares_validator_active:
             try:
-                results = FaresValidationResult.objects.filter(
-                    organisation_id=organisation.id,
-                    revision_id=F("revision__dataset__live_revision_id"),
-                    revision__dataset__dataset_type=FaresType,
-                ).values("count")
+                results = (
+                    FaresValidationResult.objects.filter(
+                        organisation_id=organisation.id,
+                        revision_id=F("revision__dataset__live_revision_id"),
+                        revision__dataset__dataset_type=FaresType,
+                    )
+                    .annotate(status=F("revision__status"))
+                    .exclude(status__in=[EXPIRED, INACTIVE])
+                    .values("count")
+                )
             except FaresValidationResult.DoesNotExist:
                 results = []
             fares_non_compliant_count = len(
