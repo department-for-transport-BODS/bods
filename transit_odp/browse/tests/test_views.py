@@ -24,6 +24,10 @@ from transit_odp.browse.tests.comments_test import (
     DATA_LONGER_THAN_MAXLENGTH_WITH_CARRIAGE_RETURN,
     DATA_SHORTER_MAXLENGTH_WITH_CARRIAGE_RETURN,
 )
+from transit_odp.browse.views.local_authority import (
+    LocalAuthorityDetailView,
+    LocalAuthorityView,
+)
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
@@ -50,7 +54,14 @@ from transit_odp.organisation.factories import (
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import DatasetSubscription, Organisation
-from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
+from transit_odp.otc.factories import (
+    LicenceFactory,
+    LicenceModelFactory,
+    LocalAuthorityFactory,
+    OperatorFactory,
+    OperatorModelFactory,
+    ServiceModelFactory,
+)
 from transit_odp.pipelines.factories import (
     BulkDataArchiveFactory,
     ChangeDataArchiveFactory,
@@ -1099,6 +1110,150 @@ class TestOperatorDetailView:
             f"?{noc_query_param}&{token_query_param}"
         )
         assert context["fares_feed_url"] == fares_url
+
+
+class TestLTAView:
+    def test_local_authority_view_basic(self, request_factory: RequestFactory):
+        new_op = OperatorFactory()
+        new_lic = LicenceFactory(number="LD0000007")
+        o = OperatorModelFactory(**new_op.dict())
+        l1 = LicenceModelFactory(**new_lic.dict())
+        reg_number = l1.number + "/42"
+        service = [
+            ServiceModelFactory(
+                operator=o,
+                licence=l1,
+                registration_number=reg_number,
+                service_type_description="circular",
+                variation_number=0,
+            )
+        ]
+        LocalAuthorityFactory(id="1", name="first_LTA", registration_numbers=service)
+
+        request = request_factory.get("/local-authority/")
+        request.user = AnonymousUser()
+
+        response = LocalAuthorityView.as_view()(request)
+
+        assert response.status_code == 200
+        assert (
+            response.context_data["view"].template_name == "browse/local_authority.html"
+        )
+        assert response.context_data["q"] == ""
+        assert response.context_data["ordering"] == "name"
+
+        ltas_context = response.context_data["ltas"]
+        assert len(ltas_context) == 1
+
+
+class TestLTADetailView:
+    def test_local_authority_detail_view_timetable_stats_not_compliant(
+        self, request_factory: RequestFactory
+    ):
+        new_op = OperatorFactory()
+        new_lic = LicenceFactory(number="LD0000007")
+        o = OperatorModelFactory(**new_op.dict())
+        l1 = LicenceModelFactory(**new_lic.dict())
+        reg_number = l1.number + "/42"
+        service = [
+            ServiceModelFactory(
+                operator=o,
+                licence=l1,
+                registration_number=reg_number,
+                service_type_description="circular",
+                variation_number=0,
+            )
+        ]
+        local_authority = LocalAuthorityFactory(
+            id="1", name="first_LTA", registration_numbers=service
+        )
+        today = timezone.now().date()
+        month = timezone.now().date() + datetime.timedelta(weeks=4)
+        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+        total_services = 9
+        licence_number = "PD5000229"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(number=licence_number)
+
+        # Setup two TXCFileAttributes that will be 'Not Stale'
+        TXCFileAttributesFactory(
+            licence_number=new_lic.number,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+
+        TXCFileAttributesFactory(
+            licence_number=new_lic.number,
+            service_code=all_service_codes[1],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=75),
+            modification_datetime=timezone.now() - datetime.timedelta(days=50),
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+        TXCFileAttributesFactory(
+            licence_number=new_lic.number,
+            service_code=all_service_codes[3],
+            operating_period_end_date=None,
+            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+        TXCFileAttributesFactory(
+            licence_number=new_lic.number,
+            service_code=all_service_codes[4],
+            operating_period_end_date=datetime.date.today()
+            - datetime.timedelta(weeks=105),
+            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+        TXCFileAttributesFactory(
+            licence_number=new_lic.number,
+            service_code=all_service_codes[5],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+        )
+
+        # Create Seasonal Services - one in season, one out of season
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=today,
+            end=month,
+            registration_code=int(all_service_codes[6][-1:]),
+        )
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=month,
+            end=two_months,
+            registration_code=int(all_service_codes[7][-1:]),
+        )
+
+        otc_lic = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            ServiceModelFactory(
+                licence=otc_lic,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+            )
+
+        request = request_factory.get("/local-authority/")
+        request.user = UserFactory()
+
+        response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert (
+            context["view"].template_name
+            == "browse/local_authority/local_authority_detail.html"
+        )
+        # Eight out of 9 season seasonal service reduces to 1
+        assert context["total_in_scope_in_season_services"] == 1
+        # 2 non-stale, 1 requiring attention. 1/1 services requiring attention = 100%
+        assert context["services_require_attention_percentage"] == 100
 
 
 class TestGlobalFeedbackView:
