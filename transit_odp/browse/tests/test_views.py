@@ -1259,6 +1259,81 @@ class TestLTADetailView:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert context["services_require_attention_percentage"] == 75
 
+    def test_local_authority_detail_view_timetable_stats_compliant(
+        self, request_factory: RequestFactory
+    ):
+        org = OrganisationFactory()
+        month = timezone.now().date() + datetime.timedelta(weeks=4)
+        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+        service = []
+        total_services = 4
+        licence_number = "PD5000124"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+        dataset2 = DatasetFactory(organisation=org)
+
+        request = request_factory.get("/local-authority/")
+        request.user = UserFactory()
+
+        # Setup three TXCFileAttributes that will be 'Not Stale'
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[1],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+        TXCFileAttributesFactory(
+            revision=dataset2.live_revision,
+            service_code=all_service_codes[2],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+        )
+
+        # Create Out of Season Seasonal Service
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=month,
+            end=two_months,
+            registration_code=int(all_service_codes[3][-1:]),
+        )
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=timezone.now().date(),
+            end=month,
+            registration_code=int(all_service_codes[2][-1:]),
+        )
+
+        otc_lic = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            ServiceModelFactory(
+                licence=otc_lic,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+            )
+        local_authority = LocalAuthorityFactory(
+            id="1", name="test_LTA", registration_numbers=service
+        )
+
+        response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert (
+            context["view"].template_name
+            == "browse/local_authority/local_authority_detail.html"
+        )
+        assert context["total_in_scope_in_season_services"] == 0
+        assert context["services_require_attention_percentage"] == 0
+
 
 class TestGlobalFeedbackView:
     view_name = "global-feedback"
