@@ -16,9 +16,8 @@ class LocalAuthorityView(BaseListView):
         context = super().get_context_data(**kwargs)
         context["q"] = self.request.GET.get("q", "")
         context["ordering"] = self.request.GET.get("ordering", "name")
-        all_ltas = self.model.objects.filter(name__isnull=False)
-
-        for lta in all_ltas:
+        all_ltas_current_page = context["object_list"]
+        for lta in all_ltas_current_page:
             context[
                 "total_in_scope_in_season_services"
             ] = OTCService.objects.get_in_scope_in_season_lta_services(lta).count()
@@ -38,11 +37,11 @@ class LocalAuthorityView(BaseListView):
             except ZeroDivisionError:
                 context["services_require_attention_percentage"] = 0
 
-        context["ltas"] = list(all_ltas.values_list("name", flat=True))
+        context["ltas"] = list(all_ltas_current_page.values_list("name", flat=True))
         return context
 
     def get_queryset(self):
-        qs = self.model.objects.filter(name__isnull=False)
+        qs = self.model.objects.filter(name__isnull=False).exclude(name__exact="")
 
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
