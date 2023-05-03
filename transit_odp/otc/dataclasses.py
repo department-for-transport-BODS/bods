@@ -191,17 +191,18 @@ class Service(BaseModel):
         return v
 
 
-class LocalAuthority:
+class LocalAuthority(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    name: str = Field(alias="local_authorities")
-    registration_numbers: Optional[Service]
+    registration_number: str = Field(alias="registrationNumber")    
+    local_authorities: Optional[str] = Field(alias="localAuthorities")
 
     @validator(
-        "name",
-        pre=True,
+    "local_authorities",
+    pre=True
     )
+
     def none_to_str(cls, v):
         if v is None:
             return ""
