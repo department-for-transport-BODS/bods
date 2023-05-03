@@ -12,15 +12,11 @@ class PopulateLTA:
         self._client = OTCAPIClient()
 
     def populate_lta(self, registrations_from_service, total_count):
-        logger.info(
-                f"Requesting OTC API for all services with latest variations"
-            )
+        logger.info(f"Requesting OTC API for all services with latest variations")
         try:
             registrations = self._client.get_all_lta_names_latest_variations()
         except Exception as e:
-                logger.error(
-                    f"Error while fetching otc records, error message: {e}"
-                )
+            logger.error(f"Error while fetching otc records, error message: {e}")
         logger.info(f"The length of total registrations is {len(registrations)}")
         if registrations:
             current_processing_count = 0
@@ -48,7 +44,9 @@ class PopulateLTA:
 
                         lta.registration_numbers.add(service_id)
                     current_processing_count += 1
-                    logger.info(f"Completed {current_processing_count} of {total_count}")
+                    logger.info(
+                        f"Completed {current_processing_count} of {total_count}"
+                    )
 
     def refresh(self, registrations):
         """
@@ -62,8 +60,12 @@ class PopulateLTA:
             ).values_list("id")
             if _service:
                 _service_id = _service[0][0]
-                logger.info(f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship")
-                _ = LocalAuthority.objects.filter(registration_numbers=_service_id).delete()
+                logger.info(
+                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship"
+                )
+                _ = LocalAuthority.objects.filter(
+                    registration_numbers=_service_id
+                ).delete()
                 logger.info(
                     f"New registration that need update is: {registration.registration_number} and related service id is - {_service_id}"
                 )
@@ -75,10 +77,11 @@ class PopulateLTA:
 
                 for local_authority in unique_local_authorities:
                     logger.info(f"Unique local authority is: {local_authority}")
-                    lta, created = LocalAuthority.objects.get_or_create(name=local_authority)
+                    lta, created = LocalAuthority.objects.get_or_create(
+                        name=local_authority
+                    )
                     if created:
                         logger.info("LocalAuthority object created")
                     else:
                         logger.info("LocalAuthority object exists")
                     lta.registration_numbers.add(_service_id)
-

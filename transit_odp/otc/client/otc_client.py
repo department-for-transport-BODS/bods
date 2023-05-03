@@ -161,13 +161,8 @@ class OTCAPIClient:
                 yield record
 
     def get_all_lta_names_latest_variations(self) -> List[LocalAuthority]:
-        logger.info(
-            f"Requesting all services from OTC API - "
-            f"page 1"
-        )
-        response = self._make_request(
-            page=1, latestVariation=True
-        )
+        logger.info(f"Requesting all services from OTC API - " f"page 1")
+        response = self._make_request(page=1, latestVariation=True)
         records = response.bus_search_lta
 
         total_pages = response.page.total_pages
@@ -177,9 +172,7 @@ class OTCAPIClient:
                 f"OTC API - page {page} of {total_pages}"
             )
             logger.info(msg)
-            response = self._make_request(
-                page=page, latestVariation=True
-            )
+            response = self._make_request(page=page, latestVariation=True)
             records += response.bus_search_lta
 
         return records

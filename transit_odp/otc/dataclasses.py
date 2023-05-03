@@ -195,14 +195,10 @@ class LocalAuthority(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    registration_number: str = Field(alias="registrationNumber")    
+    registration_number: str = Field(alias="registrationNumber")
     local_authorities: Optional[str] = Field(alias="localAuthorities")
 
-    @validator(
-    "local_authorities",
-    pre=True
-    )
-
+    @validator("local_authorities", pre=True)
     def none_to_str(cls, v):
         if v is None:
             return ""
