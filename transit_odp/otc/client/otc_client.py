@@ -15,7 +15,7 @@ from tenacity.retry import retry_if_exception_type
 from tenacity.stop import stop_after_attempt
 
 from transit_odp.otc.client.auth import OTCAuthenticator
-from transit_odp.otc.dataclasses import Registration
+from transit_odp.otc.dataclasses import Registration, LocalAuthority
 
 logger = logging.getLogger(__name__)
 API_RETURN_LIMIT = 100
@@ -38,6 +38,7 @@ class Page(BaseModel):
 class APIResponse(BaseModel):
     timestamp: datetime = Field(alias="timeStamp", default=datetime.now().isoformat())
     bus_search: List[Registration] = Field(alias="busSearch", default=[])
+    bus_search_lta: List[LocalAuthority] = Field(alias="busSearch", default=[])
     page: Page = Page()
 
     @validator("timestamp", pre=True)
@@ -159,26 +160,19 @@ class OTCAPIClient:
             for record in response.bus_search:
                 yield record
 
-    def get_lta_names_by_registration_codes(self, registration_code: str) -> List:
-        logger.info(
-            f"Requesting all lta_names for {registration_code} from OTC API - "
-            f"page 1"
-        )
-        response = self._make_request(
-            page=1, latestVariation=True, regNo=registration_code
-        )
-        records = response.bus_search
+    def get_all_lta_names_latest_variations(self) -> List[LocalAuthority]:
+        logger.info(f"Requesting all services from OTC API - " f"page 1")
+        response = self._make_request(page=1, latestVariation=True)
+        records = response.bus_search_lta
 
         total_pages = response.page.total_pages
         for page in range(2, total_pages + 1):
             msg = (
-                f"Requesting all LTA names for {registration_code} latest variations from "
+                f"Requesting all services - latest variations from "
                 f"OTC API - page {page} of {total_pages}"
             )
             logger.info(msg)
-            response = self._make_request(
-                page=page, latestVariation=True, regNo=registration_code
-            )
-            records += response.bus_search
+            response = self._make_request(page=page, latestVariation=True)
+            records += response.bus_search_lta
 
         return records
