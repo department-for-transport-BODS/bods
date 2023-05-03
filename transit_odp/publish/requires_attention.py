@@ -25,7 +25,7 @@ def get_otc_map_lta(lta) -> Dict[str, OTCService]:
     """
     return {
         service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_in_scope_in_season_lta_services(lta)
+        for service in OTCService.objects.get_otc_data_for_lta(lta)
     }
 
 
