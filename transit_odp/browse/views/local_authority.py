@@ -37,7 +37,9 @@ class LocalAuthorityView(BaseListView):
             except ZeroDivisionError:
                 context["services_require_attention_percentage"] = 0
 
-        context["ltas"] = list(all_ltas_current_page.values_list("name", flat=True))
+        context["ltas"] = {
+            "names": list(all_ltas_current_page.values_list("name", flat=True))
+        }
         return context
 
     def get_queryset(self):
