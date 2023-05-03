@@ -7,10 +7,15 @@ from transit_odp.otc.constants import (
     TrafficAreas,
 )
 from transit_odp.otc.dataclasses import Licence as RegistryLicence
+from transit_odp.otc.dataclasses import LocalAuthority as RegistryLocalAuthority
 from transit_odp.otc.dataclasses import Operator as RegistryOperator
 from transit_odp.otc.dataclasses import Service as RegistryService
-from transit_odp.otc.dataclasses import LocalAuthority as RegistryLocalAuthority
-from transit_odp.otc.managers import LicenceManager, OperatorManager, ServiceManager
+from transit_odp.otc.managers import (
+    LicenceManager,
+    LocalAuthorityManager,
+    OperatorManager,
+    ServiceManager,
+)
 
 
 class Licence(models.Model):
@@ -100,3 +105,5 @@ class LocalAuthority(models.Model):
                 Service(**service) for service in registry_lta.registration_numbers
             ],
         )
+
+    objects = LocalAuthorityManager()

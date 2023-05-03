@@ -130,6 +130,50 @@ class ServiceQuerySet(QuerySet):
             .distinct("licence__number", "registration_number", "service_number")
         )
 
+    def get_in_scope_in_season_lta_services(self, lta):
+        now = timezone.now()
+        all_in_scope_in_season_services_count = None
+
+        services_subquery = lta.registration_numbers.values("id")
+
+        if len(services_subquery) > 0:
+            seasonal_services_subquery = Subquery(
+                SeasonalService.objects.filter(
+                    licence_id__in=Subquery(services_subquery.values("licence_id"))
+                )
+                .filter(start__gt=now.date())
+                .add_registration_number()
+                .values("registration_number")
+            )
+
+            exemptions_subquery = Subquery(
+                ServiceCodeExemption.objects.add_registration_number()
+                .filter(licence_id__in=Subquery(services_subquery.values("licence_id")))
+                .values("registration_number")
+            )
+
+            all_in_scope_in_season_services_count = (
+                self.filter(id__in=Subquery(services_subquery.values("id")))
+                .annotate(otc_licence_number=F("licence__number"))
+                .exclude(registration_number__in=exemptions_subquery)
+                .exclude(registration_number__in=seasonal_services_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number", "service_number")
+            )
+
+        return all_in_scope_in_season_services_count
+
+    def get_operator_id(self, service_id: int):
+        from transit_odp.otc.models import Operator as OTCOperator
+
+        operator_id = self.filter(id=service_id).values_list("operator_id", flat=True)
+
+        otc_operator_id = OTCOperator.objects.filter(id__in=operator_id).values_list(
+            "operator_id", flat=True
+        )
+
+        return otc_operator_id
+
     def add_otc_stale_date(self):
         return self.annotate(
             effective_stale_date_otc_effective_date=TruncDate(
@@ -138,6 +182,16 @@ class ServiceQuerySet(QuerySet):
                     output_field=DateField(),
                 )
             )
+        )
+
+    def get_all_otc_data_for_lta(self, lta: int) -> TServiceQuerySet:
+        services_subquery = lta.registration_numbers.values("id")
+        return (
+            self.add_otc_stale_date()
+            .annotate(otc_licence_number=F("licence__number"))
+            .filter(id__in=services_subquery)
+            .order_by("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number", "service_number")
         )
 
     def get_all_otc_data_for_organisation(
@@ -173,6 +227,32 @@ class ServiceQuerySet(QuerySet):
 
         return (
             self.get_all_otc_data_for_organisation(organisation_id)
+            .exclude(registration_number__in=exemptions_subquery)
+            .exclude(registration_number__in=seasonal_services_subquery)
+            .order_by("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number", "service_number")
+        )
+
+    def get_otc_data_for_lta(self, lta: int) -> TServiceQuerySet:
+        now = timezone.now()
+        services_subquery = lta.registration_numbers.values("id")
+        # seasonal services that are out of season
+        seasonal_services_subquery = Subquery(
+            SeasonalService.objects.filter(
+                licence_id__in=Subquery(services_subquery.values("licence_id"))
+            )
+            .filter(start__gt=now.date())
+            .add_registration_number()
+            .values("registration_number")
+        )
+        exemptions_subquery = Subquery(
+            ServiceCodeExemption.objects.add_registration_number()
+            .filter(licence_id__in=Subquery(services_subquery.values("licence_id")))
+            .values("registration_number")
+        )
+
+        return (
+            self.get_all_otc_data_for_lta(lta)
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
             .order_by("licence__number", "registration_number", "service_number")
@@ -253,3 +333,7 @@ class LicenceQuerySet(QuerySet):
 class OperatorQuerySet(QuerySet):
     def add_service_count(self):
         return self.annotate(service_count=Count("services"))
+
+
+class LocalAuthorityQuerySet(QuerySet):
+    pass

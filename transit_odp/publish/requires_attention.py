@@ -3,6 +3,7 @@ from typing import Dict, List
 from django.utils.timezone import now
 
 from transit_odp.organisation.models.data import TXCFileAttributes
+from transit_odp.otc.models import Licence as OTCLicence
 from transit_odp.otc.models import Service as OTCService
 
 
@@ -17,6 +18,17 @@ def get_otc_map(org_id: int) -> Dict[str, OTCService]:
     }
 
 
+def get_otc_map_lta(lta) -> Dict[str, OTCService]:
+    """
+    Get a list of dictionaries which includes all OTC Services for a LTA,
+    excluding exempted services and Out of Season seasonal services.
+    """
+    return {
+        service.registration_number.replace("/", ":"): service
+        for service in OTCService.objects.get_otc_data_for_lta(lta)
+    }
+
+
 def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
     """
     Get a list of dictionaries of live TXCFileAttributes for an organisation
@@ -26,6 +38,23 @@ def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
         txcfa.service_code: txcfa
         for txcfa in TXCFileAttributes.objects.filter(
             revision__dataset__organisation_id=org_id
+        )
+        .get_active_live_revisions()
+        .add_staleness_dates()
+    }
+
+
+def get_txc_map_lta(lta: int) -> Dict[str, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for a LTA
+    with relevant effective staleness dates annotated.
+    """
+    licence_id = lta.registration_numbers.values("id").values("licence_id")
+    licence_number_otc = OTCLicence.objects.filter(id__in=licence_id).values("number")
+    return {
+        txcfa.service_code: txcfa
+        for txcfa in TXCFileAttributes.objects.filter(
+            licence_number__in=licence_number_otc
         )
         .get_active_live_revisions()
         .add_staleness_dates()
@@ -132,6 +161,28 @@ def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
 
     otc_map = get_otc_map(org_id)
     txcfa_map = get_txc_map(org_id)
+
+    for service_code, service in otc_map.items():
+        file_attribute = txcfa_map.get(service_code)
+        if file_attribute is None:
+            _update_data(object_list, service)
+        elif is_stale(service, file_attribute):
+            _update_data(object_list, service)
+    return object_list
+
+
+def get_requires_attention_data_lta(lta: int) -> List[Dict[str, str]]:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. not live
+    in BODS at all, or live but meeting new Staleness conditions.
+
+    Returns list of objects of each service requiring attention for a LTA.
+    """
+    object_list = []
+
+    otc_map = get_otc_map_lta(lta)
+    txcfa_map = get_txc_map_lta(lta)
 
     for service_code, service in otc_map.items():
         file_attribute = txcfa_map.get(service_code)
