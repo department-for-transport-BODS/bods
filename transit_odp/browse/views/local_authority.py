@@ -21,11 +21,9 @@ class LocalAuthorityView(BaseListView):
             context[
                 "total_in_scope_in_season_services"
             ] = OTCService.objects.get_in_scope_in_season_lta_services(lta).count()
-
             context["total_services_requiring_attention"] = len(
                 get_requires_attention_data_lta(lta)
             )
-
             try:
                 context["services_require_attention_percentage"] = ceil(
                     100
@@ -36,8 +34,9 @@ class LocalAuthorityView(BaseListView):
                 )
             except ZeroDivisionError:
                 context["services_require_attention_percentage"] = 0
-
-        context["ltas"] = list(all_ltas_current_page.values_list("name", flat=True))
+        context["ltas"] = {
+            "names": list(self.get_queryset().values_list("name", flat=True))
+        }
         return context
 
     def get_queryset(self):

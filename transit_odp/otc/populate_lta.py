@@ -25,7 +25,7 @@ class PopulateLTA:
                 service_id = registration_from_service[0]
                 filtered_results = []
                 for registration in registrations:
-                    if registration.registration_number == registration_from_service:
+                    if registration.registration_number == registration_from_service[1]:
                         filtered_results.append(registration)
                 logger.info(f"Filtered result is {filtered_results}")
                 if filtered_results:
