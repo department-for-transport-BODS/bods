@@ -18,7 +18,6 @@ class PopulateLTA:
         except Exception as e:
             logger.error(f"Error while fetching otc records, error message: {e}")
         logger.info(f"The length of total registrations is {len(registrations)}")
-        registrations_from_service = ["PB0000006/4", "PB0000006/7", "PB0000006/2"]
         if registrations:
             current_processing_count = 0
             for registration_from_service in registrations_from_service:
