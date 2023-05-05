@@ -18,11 +18,12 @@ class PopulateLTA:
         except Exception as e:
             logger.error(f"Error while fetching otc records, error message: {e}")
         logger.info(f"The length of total registrations is {len(registrations)}")
+        registrations_from_service = ["PB0000006/4", "PB0000006/7", "PB0000006/2"]
         if registrations:
             current_processing_count = 0
             for registration_from_service in registrations_from_service:
                 unique_local_authorities = set()
-                service_id = registration_from_service[0]
+                service_id = 13566
                 filtered_results = []
                 for registration in registrations:
                     if registration.registration_number == registration_from_service:
@@ -30,8 +31,11 @@ class PopulateLTA:
                 logger.info(f"Filtered result is {filtered_results}")
                 if filtered_results:
                     for reg in filtered_results:
-                        unique_local_authorities.add(reg.local_authorities)
-
+                        if "|" in reg.local_authorities:
+                            authorities = reg.local_authorities.split("|")
+                            unique_local_authorities.update(authorities)
+                        else:
+                            unique_local_authorities.add(reg.local_authorities)
                     for local_authority in unique_local_authorities:
                         logger.info(f"Unique local authority is: {local_authority}")
                         lta, created = LocalAuthority.objects.get_or_create(
@@ -70,11 +74,13 @@ class PopulateLTA:
                     f"New registration that need update is: {registration.registration_number} and related service id is - {_service_id}"
                 )
                 if registration.local_authorities is not None:
-                    unique_local_authorities.add(registration.local_authorities)
+                    if "|" in registration.local_authorities:
+                        authorities = registration.local_authorities.split("|")
+                        unique_local_authorities.update(authorities)
+                    else:
+                        unique_local_authorities.add(registration.local_authorities)
                 else:
                     unique_local_authorities.add("")
-                logger.info(f"Unique local authority is: {unique_local_authorities}")
-
                 for local_authority in unique_local_authorities:
                     logger.info(f"Unique local authority is: {local_authority}")
                     lta, created = LocalAuthority.objects.get_or_create(
