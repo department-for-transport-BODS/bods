@@ -63,8 +63,8 @@ class LocalAuthorityView(BaseListView):
         return ltas_list
 
     def get_queryset(self):
-        otc_name_list = list(LTAS_DICT.keys())
-        qs = self.model.objects.filter(name__in=otc_name_list)
+        lta_name_list = list(LTAS_DICT.keys())
+        qs = self.model.objects.filter(name__in=lta_name_list)
 
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
