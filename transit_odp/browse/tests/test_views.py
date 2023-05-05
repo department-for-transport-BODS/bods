@@ -1145,6 +1145,23 @@ class TestLTAView:
         ltas_context = response.context_data["ltas"]
         assert len(ltas_context) == 1
 
+    def test_operators_view_order_by_name(self, request_factory: RequestFactory):
+        ltas_list = [
+            LocalAuthorityFactory(id="1", name="Derby City Council"),
+            LocalAuthorityFactory(id="2", name="Cheshire East Council"),
+        ]
+        request = request_factory.get("/local-authority/?ordering=name")
+        request.user = AnonymousUser()
+
+        response = LocalAuthorityView.as_view()(request)
+        assert response.status_code == 200
+        expected_order = sorted([lta.name for lta in ltas_list])
+        ltas = response.context_data["ltas"]
+        assert ltas["names"] == expected_order
+
+        object_names = [obj.name for obj in response.context_data["object_list"]]
+        assert object_names == expected_order
+
 
 class TestLTADetailView:
     def test_local_authority_detail_view_timetable_stats_not_compliant(

@@ -30,8 +30,11 @@ class PopulateLTA:
                 logger.info(f"Filtered result is {filtered_results}")
                 if filtered_results:
                     for reg in filtered_results:
-                        unique_local_authorities.add(reg.local_authorities)
-
+                        if "|" in reg.local_authorities:
+                            authorities = reg.local_authorities.split("|")
+                            unique_local_authorities.update(authorities)
+                        else:
+                            unique_local_authorities.add(reg.local_authorities)
                     for local_authority in unique_local_authorities:
                         logger.info(f"Unique local authority is: {local_authority}")
                         lta, created = LocalAuthority.objects.get_or_create(
@@ -70,11 +73,13 @@ class PopulateLTA:
                     f"New registration that need update is: {registration.registration_number} and related service id is - {_service_id}"
                 )
                 if registration.local_authorities is not None:
-                    unique_local_authorities.add(registration.local_authorities)
+                    if "|" in registration.local_authorities:
+                        authorities = registration.local_authorities.split("|")
+                        unique_local_authorities.update(authorities)
+                    else:
+                        unique_local_authorities.add(registration.local_authorities)
                 else:
                     unique_local_authorities.add("")
-                logger.info(f"Unique local authority is: {unique_local_authorities}")
-
                 for local_authority in unique_local_authorities:
                     logger.info(f"Unique local authority is: {local_authority}")
                     lta, created = LocalAuthority.objects.get_or_create(
