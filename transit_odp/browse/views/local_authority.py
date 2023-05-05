@@ -1,6 +1,6 @@
 from math import ceil
 
-from transit_odp.browse.lta_constants import LTA_LIST, LTAS_DICT
+from transit_odp.browse.lta_constants import LTAS_DICT
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.otc.models import LocalAuthority
@@ -63,7 +63,8 @@ class LocalAuthorityView(BaseListView):
         return ltas_list
 
     def get_queryset(self):
-        qs = self.model.objects.filter(name__in=LTA_LIST)
+        otc_name_list = list(LTAS_DICT.keys())
+        qs = self.model.objects.filter(name__in=otc_name_list)
 
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
