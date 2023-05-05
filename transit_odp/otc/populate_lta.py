@@ -23,7 +23,7 @@ class PopulateLTA:
             current_processing_count = 0
             for registration_from_service in registrations_from_service:
                 unique_local_authorities = set()
-                service_id = 13566
+                service_id = registration_from_service[0]
                 filtered_results = []
                 for registration in registrations:
                     if registration.registration_number == registration_from_service[1]:
