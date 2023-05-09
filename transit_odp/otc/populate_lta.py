@@ -54,6 +54,7 @@ class PopulateLTA:
         """
         The method is used to update the database with updated local authorites from latest variations.
         """
+        total_services = []
         for registration in registrations:
             logger.info(f"Started executuion for registration: {registration}")
             unique_local_authorities = set()
@@ -62,6 +63,7 @@ class PopulateLTA:
             ).values_list("id")
             if _service:
                 _service_id = _service[0][0]
+                total_services.append(_service_id)
                 logger.info(
                     f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship"
                 )
@@ -89,3 +91,4 @@ class PopulateLTA:
                     else:
                         logger.info("LocalAuthority object exists")
                     lta.registration_numbers.add(_service_id)
+        logger.info(f"Job updated following services with IDs: {total_services}")
