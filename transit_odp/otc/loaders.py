@@ -185,6 +185,9 @@ class Loader:
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
+        logger.info(
+            f"Total count of registrations for refreshing LTAs is: {len(regs_to_update_lta)}"
+        )
         refresh_lta = PopulateLTA()
         refresh_lta.refresh(regs_to_update_lta)
         logger.info(f"Completed updating the local authorities.")

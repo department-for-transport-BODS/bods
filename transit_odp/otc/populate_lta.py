@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from transit_odp.otc.models import Service, LocalAuthority
 
 from transit_odp.otc.client import OTCAPIClient

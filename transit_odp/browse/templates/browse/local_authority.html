@@ -78,26 +78,16 @@
                                 name="ordering"
                                 aria-label="Order by"
                                 onchange="this.form.submit()">
-                                <option value="name" {% if ordering == "name" %}selected{% endif %}>
+                                <option value="mapped_name" {% if ordering == "mapped_name" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name A-Z' %}
                                     {% endfilter %}
                                 </option>
-                                <option value="-name" {% if ordering == "-name" %}selected{% endif %}>
+                                <option value="-mapped_name" {% if ordering == "-mapped_name" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name Z-A' %}
                                     {% endfilter %}
                                 </option>
-                                <!-- <option value="attention_score" {% if ordering == "attention_score" %}selected{% endif %}>
-                                    {% filter force_escape %}
-                                        {% trans 'Require attention 0-100%' %}
-                                    {% endfilter %}
-                                </option>
-                                <option value="-attention_score" {% if ordering == "-attention_score" %}selected{% endif %}>
-                                    {% filter force_escape %}
-                                        {% trans 'Require attention 100-0%' %}
-                                    {% endfilter %}
-                                </option> -->
                             </select>
                         </div>
                     </div>
