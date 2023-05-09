@@ -105,7 +105,7 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        local_authority = self.object
+        local_authority = self.lta_name_mapping(self.object)
 
         context[
             "total_in_scope_in_season_services"
@@ -129,3 +129,9 @@ class LocalAuthorityDetailView(BaseDetailView):
             context["services_require_attention_percentage"] = 0
 
         return context
+
+    def lta_name_mapping(self, lta_object):
+        for otc_name, value_name in LTAS_DICT.items():
+            if lta_object.name == otc_name:
+                lta_object.name = value_name
+        return lta_object
