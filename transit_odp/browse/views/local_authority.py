@@ -55,10 +55,12 @@ class LocalAuthorityView(BaseListView):
             context["ltas"] = {"names": [lta["mapped_name"] for lta in ltas_list]}
         elif ordering == "-mapped_name":
             ltas_list = self.lta_name_mapping(
-                list(reversed(self.get_queryset().values_list("name", flat=True)))
+                list((self.get_queryset().values_list("name", flat=True)))
             )
             ltas_list.sort(key=lambda lta: lta["mapped_name"])
-            context["ltas"] = {"names": [lta["mapped_name"] for lta in ltas_list]}
+            context["ltas"] = {
+                "names": [lta["mapped_name"] for lta in reversed(ltas_list)]
+            }
         return context
 
     def object_list_lta_mapping(self, object_list):
