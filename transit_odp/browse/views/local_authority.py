@@ -1,5 +1,7 @@
 from math import ceil
-from django.db.models import Value, CharField, Case, When
+
+from django.db.models import Case, CharField, Value, When
+
 from transit_odp.browse.lta_constants import LTAS_DICT
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
@@ -48,6 +50,12 @@ class LocalAuthorityView(BaseListView):
         elif ordering == "mapped_name":
             ltas_list = self.lta_name_mapping(
                 list(self.get_queryset().values_list("name", flat=True))
+            )
+            ltas_list.sort(key=lambda lta: lta["mapped_name"])
+            context["ltas"] = {"names": [lta["mapped_name"] for lta in ltas_list]}
+        elif ordering == "-mapped_name":
+            ltas_list = self.lta_name_mapping(
+                list(reversed(self.get_queryset().values_list("name", flat=True)))
             )
             ltas_list.sort(key=lambda lta: lta["mapped_name"])
             context["ltas"] = {"names": [lta["mapped_name"] for lta in ltas_list]}
