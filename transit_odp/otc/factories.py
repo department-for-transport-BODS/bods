@@ -13,6 +13,7 @@ from transit_odp.otc.constants import (
 )
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
 from transit_odp.otc.models import Licence as LicenceModel
+from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
 
@@ -125,6 +126,23 @@ class ServiceFactory(factory.Factory):
     subsidies_description = factory.fuzzy.FuzzyChoice(SubsidiesDescription.values)
     subsidies_details = factory.Faker("sentence")
     last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
+
+
+class LocalAuthorityFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = LocalAuthority
+
+    name = factory.Faker("name")
+
+    @factory.post_generation
+    def registration_numbers(self, create, extracted, **kwargs):
+        if not create:
+            # simple build, do nothing
+            return
+        if extracted:
+            # A list of groups were passed in, use them
+            for reg_num in extracted:
+                self.registration_numbers.add(reg_num)
 
 
 class LicenceModelFactory(factory.DjangoModelFactory, LicenceFactory):

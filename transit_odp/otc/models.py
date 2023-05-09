@@ -7,9 +7,15 @@ from transit_odp.otc.constants import (
     TrafficAreas,
 )
 from transit_odp.otc.dataclasses import Licence as RegistryLicence
+from transit_odp.otc.dataclasses import LocalAuthority as RegistryLocalAuthority
 from transit_odp.otc.dataclasses import Operator as RegistryOperator
 from transit_odp.otc.dataclasses import Service as RegistryService
-from transit_odp.otc.managers import LicenceManager, OperatorManager, ServiceManager
+from transit_odp.otc.managers import (
+    LicenceManager,
+    LocalAuthorityManager,
+    OperatorManager,
+    ServiceManager,
+)
 
 
 class Licence(models.Model):
@@ -85,3 +91,19 @@ class Service(models.Model):
         kwargs["operator"] = operator
         kwargs["licence"] = licence
         return cls(**kwargs)
+
+
+class LocalAuthority(models.Model):
+    name = models.TextField(blank=True, null=False)
+    registration_numbers = models.ManyToManyField(Service, related_name="registration")
+
+    @classmethod
+    def from_registry_lta(cls, registry_lta: RegistryLocalAuthority):
+        return cls(
+            name=registry_lta.name,
+            registration_numbers=[
+                Service(**service) for service in registry_lta.registration_numbers
+            ],
+        )
+
+    objects = LocalAuthorityManager()
