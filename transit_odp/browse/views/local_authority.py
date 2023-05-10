@@ -39,6 +39,11 @@ class LocalAuthorityView(BaseListView):
                 )
             except ZeroDivisionError:
                 context["services_require_attention_percentage"] = 0
+            setattr(
+                lta,
+                "services_require_attention_percentage",
+                context["services_require_attention_percentage"],
+            )
 
         ordering = self.request.GET.get("ordering", "mapped_name")
         if ordering == "name":
