@@ -56,7 +56,7 @@ class PopulateLTA:
         """
         total_services = []
         for registration in registrations:
-            logger.info(f"Started executuion for registration: {registration}")
+            logger.info(f"Started execution for registration: {registration}")
             unique_local_authorities = set()
             _service = Service.objects.filter(
                 registration_number=registration.registration_number
@@ -64,12 +64,6 @@ class PopulateLTA:
             if _service:
                 _service_id = _service[0][0]
                 total_services.append(_service_id)
-                logger.info(
-                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship"
-                )
-                _ = LocalAuthority.objects.filter(
-                    registration_numbers=_service_id
-                ).delete()
                 logger.info(
                     f"New registration that need update is: {registration.registration_number} and related service id is - {_service_id}"
                 )
