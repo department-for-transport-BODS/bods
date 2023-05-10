@@ -5,7 +5,7 @@ from typing import Set, Tuple, Union
 from django.db import transaction
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
-from transit_odp.otc.models import Licence, Operator, Service
+from transit_odp.otc.models import Licence, Operator, Service, LocalAuthority
 
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.populate_lta import PopulateLTA
@@ -185,6 +185,16 @@ class Loader:
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
+        for registration in regs_to_update_lta:
+            _service = Service.objects.filter(
+                registration_number=registration.registration_number
+            ).values_list("id")
+            if _service:
+                _service_id = _service[0][0]
+                LocalAuthority.objects.filter(registration_numbers=_service_id).delete()
+                logger.info(
+                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship "
+                )
         logger.info(
             f"Total count of registrations for refreshing LTAs is: {len(regs_to_update_lta)}"
         )
