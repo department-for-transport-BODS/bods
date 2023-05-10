@@ -191,11 +191,10 @@ class Loader:
             ).values_list("id")
             if _service:
                 _service_id = _service[0][0]
-                LocalAuthority.objects.filter(
-                            registration_numbers=_service_id).delete()
+                LocalAuthority.objects.filter(registration_numbers=_service_id).delete()
                 logger.info(
-                            f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship "
-                        )
+                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship "
+                )
         logger.info(
             f"Total count of registrations for refreshing LTAs is: {len(regs_to_update_lta)}"
         )
