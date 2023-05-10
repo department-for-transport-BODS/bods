@@ -96,16 +96,40 @@ class ServiceCodesCSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("staleness_status"),
         ),
         CSVColumn(
-            header="Licence Number",
+            header="Dataset Licence Number",
+            accessor="test",
+        ),
+        CSVColumn(
+            header="Dataset Service Code",
+            accessor="test",
+        ),
+        CSVColumn(
+            header="Dataset Line Name",
+            accessor="test",
+        ),
+        CSVColumn(
+            header="OTC Licence Number",
             accessor=lambda otc_service: otc_service.get("licence_number"),
         ),
         CSVColumn(
-            header="Service Code",
+            header="OTC Registration Number",
             accessor=lambda otc_service: otc_service.get("service_code"),
         ),
         CSVColumn(
-            header="Line",
+            header="OTC Service Number",
             accessor=lambda otc_service: otc_service.get("line_number"),
+        ),
+        CSVColumn(
+            header="Dataset Revision Number",
+            accessor="test",
+        ),
+        CSVColumn(
+            header="Last Modified Date",
+            accessor="test",
+        ),
+        CSVColumn(
+            header="Effective Last Modified Date",
+            accessor="test",
         ),
         CSVColumn(
             header="Dataset ID",
