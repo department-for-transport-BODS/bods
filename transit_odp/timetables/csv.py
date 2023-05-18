@@ -158,7 +158,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             " by the publisher or their supplier",
         ),
         "licence_number": Column(
-            "Licence Number",
+            "Data set Licence Number",
             "The License number(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
@@ -168,7 +168,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "the operator/publisher to BODS.",
         ),
         "service_code": Column(
-            "Service Code",
+            "Data set Service Code",
             "The ServiceCode(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
@@ -229,12 +229,12 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "Else null.",
         ),
         "revision_number": Column(
-            "Service Revision Number",
+            "Data set Revision Number",
             "The service revision number date as extracted from the files "
             "provided by the operator/publisher to BODS.",
         ),
         "string_lines": Column(
-            "Line Name",
+            "Data set Line Name",
             "The line name(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
@@ -274,7 +274,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "registration_number": Column(
-            "Registration Number",
+            "OTC Registration Number",
             "The registration number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
@@ -289,7 +289,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "service_number": Column(
-            "Service Number",
+            "OTC Service Number",
             "The service number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
@@ -482,7 +482,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
     )
-
+    print(f"length of otc_df: {txc_df}")
     if txc_df.empty or otc_df.empty:
         raise EmptyDataFrame()
 

@@ -1065,6 +1065,14 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         return self.get_active_revisions().filter(
             revision__dataset__live_revision_id=F("revision_id")
         )
+    
+    # def get_active_live_revisions(self):
+    #     """
+    #     Filter for revisions with certain order as defined below:-
+    #     """
+    #     return self.get_active_revisions().filter(
+    #         revision__dataset__live_revision_id=F("revision_id")
+    #     )
 
     def add_dq_score(self):
         from transit_odp.data_quality.models.report import DataQualityReport
@@ -1157,17 +1165,15 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         )
 
     def get_active_txc_files(self):
-        return (
-            self.get_active_live_revisions()
-            .add_bods_compliant()
-            .add_dq_score()
-            .add_revision_details()
-            .add_organisation_name()
-            .add_string_lines()
-            .order_by(
-                "service_code", "-revision__dataset_id", "operating_period_start_date"
-            )
-            .distinct("service_code")
+        return (self.get_active_live_revisions()
+        .add_bods_compliant()
+        .add_dq_score()
+        .add_revision_details()
+        .add_organisation_name()
+        .add_string_lines()
+        .order_by(
+            "service_code", "-revision__published_at", "-revision_number", "-modification_datetime", "-operating_period_start_date", "-filename"
+        ).distinct("service_code")
         )
 
     def get_overall_data_catalogue(self):
