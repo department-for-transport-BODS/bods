@@ -1,8 +1,8 @@
 from datetime import timedelta
 from math import ceil
-from typing import Optional
+from typing import Dict, Optional
 
-from django.db.models import Case, CharField, Value, When
+from django.db.models import Case, CharField, Subquery, Value, When
 from django.http import HttpResponse
 from django.views import View
 
@@ -14,7 +14,54 @@ from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.requires_attention import get_requires_attention_data_lta
+from transit_odp.publish.requires_attention import (
+    evaluate_staleness,
+    get_requires_attention_data_lta,
+    get_txc_map_lta,
+    is_stale,
+)
+
+STALENESS_STATUS = [
+    "Stale - End date passed",
+    "Stale - 12 months old",
+    "Stale - OTC Variation",
+]
+
+
+def get_all_otc_map_lta(lta) -> Dict[str, OTCService]:
+    """
+    Get a dictionary which includes all OTC Services for an organisation.
+    """
+    return {
+        service.registration_number.replace("/", ":"): service
+        for service in OTCService.objects.get_all_otc_data_for_lta(lta)
+    }
+
+
+def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
+    """
+    Get a dictionary which includes all the Seasonal Services
+    for an organisation.
+    """
+    services_subquery = lta.registration_numbers.values("id")
+    return {
+        service.registration_number.replace("/", ":"): service
+        for service in SeasonalService.objects.filter(
+            licence_id__in=Subquery(services_subquery.values("licence_id"))
+        )
+        .add_registration_number()
+        .add_seasonal_status()
+    }
+
+
+def get_service_code_exemption_map(lta) -> Dict[str, ServiceCodeExemption]:
+    services_subquery = lta.registration_numbers.values("id")
+    return {
+        service.registration_number.replace("/", ":"): service
+        for service in ServiceCodeExemption.objects.add_registration_number().filter(
+            licence_id__in=Subquery(services_subquery.values("licence_id"))
+        )
+    }
 
 
 class LocalAuthorityView(BaseListView):
@@ -174,7 +221,7 @@ class LocalAuthorityExportView(View):
     def render_to_response(self):
         lta = self.lta_name_mapping()
         csv_filename = f"{lta.name}_detailed service code export detailed export.csv"
-        csv_export = LTACSV(lta.id)
+        csv_export = LTACSV(lta)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
@@ -352,12 +399,66 @@ class LTACSV(CSVBuilder):
             }
         )
 
-    def __init__(self, lta_id: int):
-        self._lta = lta_id
+    def __init__(self, lta):
+        self._lta = lta
         self._object_list = []
 
     def modify_dataset_line_name(self, line_names: list) -> str:
         return " ".join(line_name for line_name in line_names)
 
+    def _get_require_attention(
+        self,
+        exemption: Optional[ServiceCodeExemption],
+        seasonal_service: Optional[SeasonalService],
+    ) -> str:
+        if exemption or (seasonal_service and not seasonal_service.seasonal_status):
+            return "No"
+        return "Yes"
+
+    def get_otc_service_bods_data(self, lta) -> None:
+        """
+        Compares an LTA's OTC Services dictionaries list with
+        TXCFileAttributes dictionaries list and the SeasonalService list
+        to determine which OTC Services require attention and which
+        doesn't ie. not live in BODS at all, or live but meeting new
+        Staleness conditions.
+        """
+        otc_map = get_all_otc_map_lta(lta)
+        txcfa_map = get_txc_map_lta(lta)
+        seasonal_service_map = get_seasonal_service_map(lta)
+        service_code_exemption_map = get_service_code_exemption_map(lta)
+        services_code = set(otc_map)
+        services_code.update(set(txcfa_map))
+        services_code = sorted(services_code)
+
+        for service_code in services_code:
+            service = otc_map.get(service_code)
+            file_attribute = txcfa_map.get(service_code)
+            seasonal_service = seasonal_service_map.get(service_code)
+            exemption = service_code_exemption_map.get(service_code)
+
+            staleness_status = "Not Stale"
+            if file_attribute is None:
+                require_attention = self._get_require_attention(
+                    exemption, seasonal_service
+                )
+            elif service and is_stale(service, file_attribute):
+                rad = evaluate_staleness(service, file_attribute)
+                staleness_status = STALENESS_STATUS[rad.index(True)]
+                require_attention = self._get_require_attention(
+                    exemption, seasonal_service
+                )
+            else:
+                require_attention = "No"
+            self._update_data(
+                service,
+                file_attribute,
+                seasonal_service,
+                exemption,
+                staleness_status,
+                require_attention,
+            )
+
     def get_queryset(self):
+        self.get_otc_service_bods_data(self._lta)
         return self._object_list

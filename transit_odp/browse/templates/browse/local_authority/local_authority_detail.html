@@ -64,7 +64,7 @@
             </div>
             <ul class="govuk-list govuk-!-margin-top-5">
                 <li>
-                    <a class="govuk-link" href={% url 'local-authority-export' pk=lta_id host hosts.publish %}>
+                    <a class="govuk-link" href={% url 'local-authority-export' pk=lta_id host hosts.data %}>
                         {% filter force_escape %}{% trans 'Download detailed export' %}{% endfilter %}
                     </a>
                 </li>
