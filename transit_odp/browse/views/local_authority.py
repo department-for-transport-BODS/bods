@@ -28,6 +28,11 @@ STALENESS_STATUS = [
 ]
 
 
+def get_seasonal_service_status(otc_service: dict) -> str:
+    seasonal_service_status = otc_service.get("seasonal_status")
+    return "In Season" if seasonal_service_status else "Out of Season"
+
+
 def get_all_otc_map_lta(lta) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
@@ -243,7 +248,7 @@ class LTACSV(CSVBuilder):
         CSVColumn(
             header="OTC Status",
             accessor=lambda otc_service: "Registered"
-            if otc_service.get("licence_number")
+            if otc_service.get("otc_licence_number")
             else "Unregistered",
         ),
         CSVColumn(
@@ -252,12 +257,12 @@ class LTACSV(CSVBuilder):
             if otc_service.get("scope_status")
             else "In Scope",
         ),
-        # CSVColumn(
-        #     header="Seasonal Status",
-        #     accessor=lambda otc_service: get_seasonal_service_status(otc_service)
-        #     if otc_service.get("seasonal_status") is not None
-        #     else "Not Seasonal",
-        # ),
+        CSVColumn(
+            header="Seasonal Status",
+            accessor=lambda otc_service: get_seasonal_service_status(otc_service)
+            if otc_service.get("seasonal_status") is not None
+            else "Not Seasonal",
+        ),
         CSVColumn(
             header="Staleness Status",
             accessor=lambda otc_service: otc_service.get("staleness_status"),
@@ -372,10 +377,6 @@ class LTACSV(CSVBuilder):
                 "revision_number": file_attribute and file_attribute.revision_number,
                 "last_modified_date": file_attribute
                 and (file_attribute.modification_datetime.date()),
-                "operating_period_start_date": file_attribute
-                and (file_attribute.operating_period_start_date),
-                "operating_period_end_date": file_attribute
-                and (file_attribute.operating_period_end_date),
                 "dataset_id": file_attribute and file_attribute.revision.dataset_id,
                 "seasonal_status": seasonal_service
                 and seasonal_service.seasonal_status,
