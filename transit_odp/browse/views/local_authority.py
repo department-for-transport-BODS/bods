@@ -82,9 +82,11 @@ class LocalAuthorityView(BaseListView):
         all_ltas_current_page = context["object_list"]
 
         for lta in all_ltas_current_page:
-            context[
-                "total_in_scope_in_season_services"
-            ] = OTCService.objects.get_in_scope_in_season_lta_services(lta).count()
+            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta)
+            if otc_qs:
+                context["total_in_scope_in_season_services"] = otc_qs.count()
+            else:
+                context["total_in_scope_in_season_services"] = 0
             context["total_services_requiring_attention"] = len(
                 get_requires_attention_data_lta(lta)
             )
@@ -180,13 +182,11 @@ class LocalAuthorityDetailView(BaseDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         local_authority = self.lta_name_mapping(self.object)
-        context["lta_id"] = local_authority.id
-
-        context[
-            "total_in_scope_in_season_services"
-        ] = OTCService.objects.get_in_scope_in_season_lta_services(
-            local_authority
-        ).count()
+        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+        if otc_qs:
+            context["total_in_scope_in_season_services"] = otc_qs.count()
+        else:
+            context["total_in_scope_in_season_services"] = 0
 
         context["total_services_requiring_attention"] = len(
             get_requires_attention_data_lta(local_authority)
