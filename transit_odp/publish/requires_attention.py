@@ -1,9 +1,9 @@
 from typing import Dict, List
 
+from django.db.models import Subquery
 from django.utils.timezone import now
 
 from transit_odp.organisation.models.data import TXCFileAttributes
-from transit_odp.otc.models import Licence as OTCLicence
 from transit_odp.otc.models import Service as OTCService
 
 
@@ -58,15 +58,28 @@ def get_txc_map_lta(lta: int) -> Dict[str, TXCFileAttributes]:
     Get a list of dictionaries of live TXCFileAttributes for a LTA
     with relevant effective staleness dates annotated.
     """
-    licence_id = lta.registration_numbers.values("id").values("licence_id")
-    licence_number_otc = OTCLicence.objects.filter(id__in=licence_id).values("number")
+    service_code_subquery = Subquery(
+        OTCService.objects.filter(id__in=lta.registration_numbers.values("id"))
+        .add_service_code()
+        .values("service_code")
+    )
     return {
         txcfa.service_code: txcfa
         for txcfa in TXCFileAttributes.objects.filter(
-            licence_number__in=licence_number_otc
+            service_code__in=service_code_subquery
         )
         .get_active_live_revisions()
         .add_staleness_dates()
+        .add_organisation_name()
+        .order_by(
+            "service_code",
+            "-revision__published_at",
+            "-revision_number",
+            "-modification_datetime",
+            "-operating_period_start_date",
+            "-filename",
+        )
+        .distinct("service_code")
     }
 
 
