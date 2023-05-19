@@ -482,7 +482,6 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
     )
-    print(f"length of otc_df: {txc_df}")
     if txc_df.empty or otc_df.empty:
         raise EmptyDataFrame()
 
