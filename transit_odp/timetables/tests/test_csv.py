@@ -48,9 +48,9 @@ def test_service_in_bods_but_not_in_otc():
         assert (
             row["National Operator Code"] == txc_file_attributes.national_operator_code
         )
-        assert row["Licence Number"] == txc_file_attributes.licence_number
-        assert row["Service Code"] == txc_file_attributes.service_code
-        assert row["Line Name"] == "line1 line2"
+        assert row["Data set Licence Number"] == txc_file_attributes.licence_number
+        assert row["Data set Service Code"] == txc_file_attributes.service_code
+        assert row["Data set Line Name"] == "line1 line2"
         assert row["Origin"] == txc_file_attributes.origin
         assert row["Destination"] == txc_file_attributes.destination
 
@@ -67,7 +67,9 @@ def test_service_in_bods_and_otc():
     df = _get_timetable_catalogue_dataframe()
     for index, row in df.iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
-        service = Service.objects.get(registration_number=row["Registration Number"])
+        service = Service.objects.get(
+            registration_number=row["OTC Registration Number"]
+        )
         operator = service.operator
         licence = service.licence
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
@@ -81,9 +83,9 @@ def test_service_in_bods_and_otc():
         assert (
             row["National Operator Code"] == txc_file_attributes.national_operator_code
         )
-        assert row["Licence Number"] == txc_file_attributes.licence_number
-        assert row["Service Code"] == txc_file_attributes.service_code
-        assert row["Line Name"] == "line1 line2"
+        assert row["Data set Licence Number"] == txc_file_attributes.licence_number
+        assert row["Data set Service Code"] == txc_file_attributes.service_code
+        assert row["Data set Line Name"] == "line1 line2"
         assert row["Origin"] == txc_file_attributes.origin
         assert row["Destination"] == txc_file_attributes.destination
 
@@ -91,8 +93,8 @@ def test_service_in_bods_and_otc():
         assert row["Operator Name"] == operator.operator_name
         assert row["Address"] == operator.address
         assert row["OTC Licence Number"] == licence.number
-        assert row["Registration Number"] == service.registration_number
-        assert row["Service Number"] == service.service_number
+        assert row["OTC Registration Number"] == service.registration_number
+        assert row["OTC Service Number"] == service.service_number
         assert row["Start Point"] == service.start_point
         assert row["Finish Point"] == service.finish_point
         assert row["Via"] == service.via
@@ -109,7 +111,9 @@ def test_service_in_otc_and_not_in_bods():
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[5:].iterrows():
-        service = Service.objects.get(registration_number=row["Registration Number"])
+        service = Service.objects.get(
+            registration_number=row["OTC Registration Number"]
+        )
         operator = service.operator
         licence = service.licence
 
@@ -120,8 +124,8 @@ def test_service_in_otc_and_not_in_bods():
         assert row["Operator Name"] == operator.operator_name
         assert row["Address"] == operator.address
         assert row["OTC Licence Number"] == licence.number
-        assert row["Registration Number"] == service.registration_number
-        assert row["Service Number"] == service.service_number
+        assert row["OTC Registration Number"] == service.registration_number
+        assert row["OTC Service Number"] == service.service_number
         assert row["Start Point"] == service.start_point
         assert row["Finish Point"] == service.finish_point
         assert row["Via"] == service.via
@@ -156,9 +160,9 @@ def test_unregistered_services_in_bods():
         assert (
             row["National Operator Code"] == txc_file_attributes.national_operator_code
         )
-        assert row["Licence Number"] == txc_file_attributes.licence_number
-        assert row["Service Code"] == txc_file_attributes.service_code
-        assert row["Line Name"] == "line1 line2"
+        assert row["Data set Licence Number"] == txc_file_attributes.licence_number
+        assert row["Data set Service Code"] == txc_file_attributes.service_code
+        assert row["Data set Line Name"] == "line1 line2"
         assert row["Origin"] == txc_file_attributes.origin
         assert row["Destination"] == txc_file_attributes.destination
 
