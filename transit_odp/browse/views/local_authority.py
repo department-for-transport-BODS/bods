@@ -272,15 +272,15 @@ class LTACSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("operator_name"),
         ),
         CSVColumn(
-            header="Dataset Licence Number",
+            header="Data set Licence Number",
             accessor=lambda otc_service: otc_service.get("licence_number"),
         ),
         CSVColumn(
-            header="Dataset Service Code",
+            header="Data set Service Code",
             accessor=lambda otc_service: otc_service.get("service_code"),
         ),
         CSVColumn(
-            header="Dataset Line Name",
+            header="Data set Line Name",
             accessor=lambda otc_service: otc_service.get("line_number"),
         ),
         CSVColumn(
@@ -304,7 +304,7 @@ class LTACSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("otc_service_number"),
         ),
         CSVColumn(
-            header="Dataset Revision Number",
+            header="Data set Revision Number",
             accessor=lambda otc_service: otc_service.get("revision_number"),
         ),
         CSVColumn(
