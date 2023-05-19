@@ -445,7 +445,6 @@ class LTACSV(CSVBuilder):
         seasonal_service_map = get_seasonal_service_map(lta)
         service_code_exemption_map = get_service_code_exemption_map(lta)
         services_code = set(otc_map)
-        services_code.update(set(txcfa_map))
         services_code = sorted(services_code)
 
         for service_code in services_code:
