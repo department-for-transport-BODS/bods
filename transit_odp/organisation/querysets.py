@@ -1066,14 +1066,6 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             revision__dataset__live_revision_id=F("revision_id")
         )
 
-    # def get_active_live_revisions(self):
-    #     """
-    #     Filter for revisions with certain order as defined below:-
-    #     """
-    #     return self.get_active_revisions().filter(
-    #         revision__dataset__live_revision_id=F("revision_id")
-    #     )
-
     def add_dq_score(self):
         from transit_odp.data_quality.models.report import DataQualityReport
 
