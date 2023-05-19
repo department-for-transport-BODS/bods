@@ -58,6 +58,7 @@ def get_txc_map_lta(lta: int) -> Dict[str, TXCFileAttributes]:
         )
         .get_active_live_revisions()
         .add_staleness_dates()
+        .add_organisation_name()
         .order_by(
             "service_code",
             "-revision__published_at",

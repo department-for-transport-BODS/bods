@@ -284,6 +284,14 @@ class LTACSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("line_number"),
         ),
         CSVColumn(
+            header="Operating Period Start Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
+        ),
+        CSVColumn(
+            header="Operating Period End Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
+        ),
+        CSVColumn(
             header="OTC Licence Number",
             accessor=lambda otc_service: otc_service.get("otc_licence_number"),
         ),
@@ -306,6 +314,10 @@ class LTACSV(CSVBuilder):
         CSVColumn(
             header="Effective Last Modified Date",
             accessor=lambda otc_service: otc_service.get("last_modified_date"),
+        ),
+        CSVColumn(
+            header="XML Filename",
+            accessor=lambda otc_service: otc_service.get("xml_filename"),
         ),
         CSVColumn(
             header="Dataset ID",
@@ -368,16 +380,20 @@ class LTACSV(CSVBuilder):
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service and service.service_number,
-                "operator_name": file_attribute
-                and file_attribute.national_operator_code,
+                "operator_name": file_attribute and file_attribute.organisation_name,
                 "licence_number": file_attribute and file_attribute.licence_number,
                 "service_code": file_attribute and file_attribute.service_code,
                 "line_name": file_attribute
                 and self.modify_dataset_line_name(file_attribute.line_names),
+                "operating_period_start_date": file_attribute
+                and (file_attribute.operating_period_start_date),
+                "operating_period_end_date": file_attribute
+                and (file_attribute.operating_period_end_date),
                 "revision_number": file_attribute and file_attribute.revision_number,
                 "last_modified_date": file_attribute
                 and (file_attribute.modification_datetime.date()),
                 "dataset_id": file_attribute and file_attribute.revision.dataset_id,
+                "xml_filename": file_attribute and file_attribute.filename,
                 "seasonal_status": seasonal_service
                 and seasonal_service.seasonal_status,
                 "seasonal_start": seasonal_service and seasonal_service.start,
