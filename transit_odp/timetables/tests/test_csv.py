@@ -67,7 +67,9 @@ def test_service_in_bods_and_otc():
     df = _get_timetable_catalogue_dataframe()
     for index, row in df.iterrows():
         dataset = Dataset.objects.get(id=row["Dataset ID"])
-        service = Service.objects.get(registration_number=row["OTC Registration Number"])
+        service = Service.objects.get(
+            registration_number=row["OTC Registration Number"]
+        )
         operator = service.operator
         licence = service.licence
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
@@ -109,7 +111,9 @@ def test_service_in_otc_and_not_in_bods():
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[5:].iterrows():
-        service = Service.objects.get(registration_number=row["OTC Registration Number"])
+        service = Service.objects.get(
+            registration_number=row["OTC Registration Number"]
+        )
         operator = service.operator
         licence = service.licence
 
