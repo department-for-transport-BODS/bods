@@ -18,6 +18,7 @@ from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
 from transit_odp.browse.views.guide_me import BrowseGuideMeView
 from transit_odp.browse.views.local_authority import (
     LocalAuthorityDetailView,
+    LocalAuthorityExportView,
     LocalAuthorityView,
 )
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
@@ -88,6 +89,11 @@ urlpatterns = [
                                 "",
                                 view=LocalAuthorityDetailView.as_view(),
                                 name="local-authority-detail",
+                            ),
+                            path(
+                                "export/",
+                                view=LocalAuthorityExportView.as_view(),
+                                name="local-authority-export",
                             ),
                         ]
                     ),

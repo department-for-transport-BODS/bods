@@ -1140,17 +1140,17 @@ class TestLTAView:
             response.context_data["view"].template_name == "browse/local_authority.html"
         )
         assert response.context_data["q"] == ""
-        assert response.context_data["ordering"] == "name"
+        assert response.context_data["ordering"] == "mapped_name"
 
         ltas_context = response.context_data["ltas"]
         assert len(ltas_context) == 1
 
-    def test_operators_view_order_by_name(self, request_factory: RequestFactory):
+    def test_lta_view_order_by_name(self, request_factory: RequestFactory):
         ltas_list = [
             LocalAuthorityFactory(id="1", name="Derby City Council"),
             LocalAuthorityFactory(id="2", name="Cheshire East Council"),
         ]
-        request = request_factory.get("/local-authority/?ordering=name")
+        request = request_factory.get("/local-authority/?ordering=mapped_name")
         request.user = AnonymousUser()
 
         response = LocalAuthorityView.as_view()(request)
@@ -1185,7 +1185,7 @@ class TestLTADetailView:
                 )
             )
         local_authority = LocalAuthorityFactory(
-            id="1", name="first_LTA", registration_numbers=service
+            id="1", name="Dorset County Council", registration_numbers=service
         )
         today = timezone.now().date()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
@@ -1338,7 +1338,7 @@ class TestLTADetailView:
                 effective_date=datetime.date(year=2020, month=1, day=1),
             )
         local_authority = LocalAuthorityFactory(
-            id="1", name="test_LTA", registration_numbers=service
+            id="1", name="Dorset County Council", registration_numbers=service
         )
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
