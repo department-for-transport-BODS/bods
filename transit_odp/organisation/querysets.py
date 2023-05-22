@@ -1165,7 +1165,12 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_organisation_name()
             .add_string_lines()
             .order_by(
-                "service_code", "-revision__dataset_id", "operating_period_start_date"
+                "service_code",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
             )
             .distinct("service_code")
         )
