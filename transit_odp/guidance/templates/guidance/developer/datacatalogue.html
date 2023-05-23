@@ -43,7 +43,7 @@
     <p class="govuk-body">
         {% filter force_escape %}
             {% blocktrans %}
-                The data catalogue zip contains 4 distinct CSVs:
+                The data catalogue zip contains 6 distinct CSVs:
             {% endblocktrans %}
         {% endfilter %}
     </p>
@@ -71,6 +71,14 @@
             <li>
                 {% filter force_escape %}
                     {% blocktrans %}
+                    Fares data catalogue: this contains a 
+                    detailed granular view of the fares data within BODS.
+                    {% endblocktrans %}
+                {% endfilter %}
+            </li>
+            <li>
+                {% filter force_escape %}
+                    {% blocktrans %}
                         Organisations data catalogue: this contains
                         helpful counts of data at an organisation level:
                         which is at the level of the publishing operators
@@ -82,6 +90,13 @@
                 {% filter force_escape %}
                     {% blocktrans %}
                         Location data catalogue: this contains an overview of the location data within BODS.
+                    {% endblocktrans %}
+                {% endfilter %}
+            </li>
+            <li>
+                {% filter force_escape %}
+                    {% blocktrans %}
+                        Operator NOC data catalogue: this describes all organisations on BODS and the National Operator Codes (NOCs) that are associated with them.
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
@@ -103,6 +118,9 @@
 
     <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Timetables data catalogue:' %}{% endfilter %}</h4>
     {% include "../snippets/datacatalogue_table.html" with definitions_map=timetable_column_map %}
+
+    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Fares data catalogue:' %}{% endfilter %}</h4>
+    {% include "../snippets/datacatalogue_table.html" with definitions_map=fares_data_column_map %}
 
     <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Organisations data catalogue:' %}{% endfilter %}</h4>
     {% include "../snippets/datacatalogue_table.html" with definitions_map=org_column_map %}

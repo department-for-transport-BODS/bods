@@ -1,6 +1,32 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "May 2023 (1.26.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            A new feature to enable each local transport authority (LTA) to review the completeness of their timetable data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An enhancement to the ‘Timetable Data Catalogue’ and the ‘Operator’s Service Code’ report to consistently select the most up to date file for analysis.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the fares publish process to enable all fares files to be uploaded (including fares files with missing NaPTAN data).
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "April 2023 (1.25.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

@@ -76,7 +76,7 @@ class ServiceCodesCSV(CSVBuilder):
         CSVColumn(
             header="OTC Status",
             accessor=lambda otc_service: "Registered"
-            if otc_service.get("licence_number")
+            if otc_service.get("otc_licence_number")
             else "Unregistered",
         ),
         CSVColumn(
@@ -96,16 +96,52 @@ class ServiceCodesCSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("staleness_status"),
         ),
         CSVColumn(
-            header="Licence Number",
+            header="Data set Licence Number",
             accessor=lambda otc_service: otc_service.get("licence_number"),
         ),
         CSVColumn(
-            header="Service Code",
+            header="Data set Service Code",
             accessor=lambda otc_service: otc_service.get("service_code"),
         ),
         CSVColumn(
-            header="Line",
-            accessor=lambda otc_service: otc_service.get("line_number"),
+            header="Data set Line Name",
+            accessor=lambda otc_service: otc_service.get("line_name"),
+        ),
+        CSVColumn(
+            header="OTC Licence Number",
+            accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+        ),
+        CSVColumn(
+            header="OTC Registration Number",
+            accessor=lambda otc_service: otc_service.get("otc_registration_number"),
+        ),
+        CSVColumn(
+            header="OTC Service Number",
+            accessor=lambda otc_service: otc_service.get("otc_service_number"),
+        ),
+        CSVColumn(
+            header="Data set Revision Number",
+            accessor=lambda otc_service: otc_service.get("revision_number"),
+        ),
+        CSVColumn(
+            header="Last Modified Date",
+            accessor=lambda otc_service: otc_service.get("last_modified_date"),
+        ),
+        CSVColumn(
+            header="Effective Last Modified Date",
+            accessor=lambda otc_service: otc_service.get("last_modified_date"),
+        ),
+        CSVColumn(
+            header="Operating Period Start Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
+        ),
+        CSVColumn(
+            header="Operating Period End Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
+        ),
+        CSVColumn(
+            header="XML Filename",
+            accessor=lambda otc_service: otc_service.get("xml_filename"),
         ),
         CSVColumn(
             header="Dataset ID",
@@ -169,9 +205,21 @@ class ServiceCodesCSV(CSVBuilder):
             {
                 "require_attention": require_attention,
                 "scope_status": exemption and exemption.registration_number,
-                "licence_number": service and service.otc_licence_number,
-                "service_code": service and service.registration_number,
-                "line_number": service and service.service_number,
+                "otc_licence_number": service and service.otc_licence_number,
+                "otc_registration_number": service and service.registration_number,
+                "otc_service_number": service and service.service_number,
+                "licence_number": file_attribute and file_attribute.licence_number,
+                "service_code": file_attribute and file_attribute.service_code,
+                "line_name": file_attribute
+                and self.modify_dataset_line_name(file_attribute.line_names),
+                "revision_number": file_attribute and file_attribute.revision_number,
+                "last_modified_date": file_attribute
+                and (file_attribute.modification_datetime.date()),
+                "operating_period_start_date": file_attribute
+                and (file_attribute.operating_period_start_date),
+                "operating_period_end_date": file_attribute
+                and (file_attribute.operating_period_end_date),
+                "xml_filename": file_attribute and file_attribute.filename,
                 "dataset_id": file_attribute and file_attribute.revision.dataset_id,
                 "seasonal_status": seasonal_service
                 and seasonal_service.seasonal_status,
@@ -194,6 +242,9 @@ class ServiceCodesCSV(CSVBuilder):
                 and (service.effective_stale_date_otc_effective_date),
             }
         )
+
+    def modify_dataset_line_name(self, line_names: list) -> str:
+        return " ".join(line_name for line_name in line_names)
 
     def _get_require_attention(
         self,
