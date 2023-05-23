@@ -135,11 +135,12 @@ class ServiceQuerySet(QuerySet):
         all_in_scope_in_season_services_count = None
 
         services_subquery = lta.registration_numbers.values("id")
-
         if len(services_subquery) > 0:
             seasonal_services_subquery = Subquery(
                 SeasonalService.objects.filter(
-                    licence_id__in=Subquery(services_subquery.values("licence_id"))
+                    licence__organisation__licences__number__in=Subquery(
+                        services_subquery.values("licence__number")
+                    )
                 )
                 .filter(start__gt=now.date())
                 .add_registration_number()
@@ -148,7 +149,11 @@ class ServiceQuerySet(QuerySet):
 
             exemptions_subquery = Subquery(
                 ServiceCodeExemption.objects.add_registration_number()
-                .filter(licence_id__in=Subquery(services_subquery.values("licence_id")))
+                .filter(
+                    licence__organisation__licences__number__in=Subquery(
+                        services_subquery.values("licence__number")
+                    )
+                )
                 .values("registration_number")
             )
 
@@ -239,7 +244,9 @@ class ServiceQuerySet(QuerySet):
         # seasonal services that are out of season
         seasonal_services_subquery = Subquery(
             SeasonalService.objects.filter(
-                licence_id__in=Subquery(services_subquery.values("licence_id"))
+                licence__organisation__licences__number__in=Subquery(
+                    services_subquery.values("licence__number")
+                )
             )
             .filter(start__gt=now.date())
             .add_registration_number()
@@ -247,7 +254,11 @@ class ServiceQuerySet(QuerySet):
         )
         exemptions_subquery = Subquery(
             ServiceCodeExemption.objects.add_registration_number()
-            .filter(licence_id__in=Subquery(services_subquery.values("licence_id")))
+            .filter(
+                licence__organisation__licences__number__in=Subquery(
+                    services_subquery.values("licence__number")
+                )
+            )
             .values("registration_number")
         )
 
