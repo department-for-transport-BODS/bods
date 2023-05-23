@@ -52,7 +52,9 @@ def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
     return {
         service.registration_number.replace("/", ":"): service
         for service in SeasonalService.objects.filter(
-            licence_id__in=Subquery(services_subquery.values("licence_id"))
+            licence__organisation__licences__number__in=Subquery(
+                services_subquery.values("licence__number")
+            )
         )
         .add_registration_number()
         .add_seasonal_status()
@@ -64,7 +66,9 @@ def get_service_code_exemption_map(lta) -> Dict[str, ServiceCodeExemption]:
     return {
         service.registration_number.replace("/", ":"): service
         for service in ServiceCodeExemption.objects.add_registration_number().filter(
-            licence_id__in=Subquery(services_subquery.values("licence_id"))
+            licence__organisation__licences__number__in=Subquery(
+                services_subquery.values("licence__number")
+            )
         )
     }
 
