@@ -13,8 +13,8 @@ from django.core.files.base import File
 from django.db.models import Avg, Case, CharField, OuterRef, Q, Subquery, Value, When
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
-from waffle import flag_is_active
 from django_hosts.resolvers import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
@@ -168,7 +168,9 @@ class ConsumerCSV(CSVBuilder):
         CSVColumn(header="Last log-in", accessor="last_login"),
         CSVColumn(header="Notes", accessor="notes"),
     ]
-    queryset = User.objects.filter(account_type=DeveloperType).order_by("pk")
+
+    def get_queryset(self):
+        return User.objects.filter(account_type=DeveloperType).order_by("pk")
 
 
 class PublisherCSV(CSVBuilder):
@@ -277,7 +279,9 @@ class DatasetPublishingCSV(CSVBuilder):
 
 
 class OperationalStatsCSV(CSVBuilder):
-    queryset = OperationalStats.objects.all().order_by("-date")
+    def get_queryset(self):
+        return OperationalStats.objects.all().order_by("-date")
+
     columns = [
         CSVColumn(header="Date", accessor="date"),
         CSVColumn(
@@ -475,7 +479,6 @@ class APIRequestArchive:
 
     def zip_as_file(self, archive):
         with zipfile.ZipFile(archive, mode="w", compression=ZIP_DEFLATED) as zin:
-
             builder = RawConsumerRequestCSV()
             builder.queryset = builder.get_queryset().filter(
                 created__range=(self.start, self.end)
