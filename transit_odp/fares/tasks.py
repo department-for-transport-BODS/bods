@@ -86,7 +86,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 def task_download_fares_file(task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    context = DatasetPipelineLoggerContext(component_name="FaresPipeline", object_id=revision.dataset.id)
     adapter = PipelineAdapter(logger, {"context": context})
 
     task.update_progress(10)
