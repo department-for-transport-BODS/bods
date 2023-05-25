@@ -1,5 +1,3 @@
-from math import ceil
-
 from django.http import HttpResponse
 from django.utils.timezone import now
 from django.views import View
@@ -31,7 +29,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
             "total_in_scope_in_season_services"
         ] = OTCService.objects.get_in_scope_in_season_services(org_id).count()
         try:
-            context["services_require_attention_percentage"] = ceil(
+            context["services_require_attention_percentage"] = round(
                 100
                 * (
                     context["services_requiring_attention"]
