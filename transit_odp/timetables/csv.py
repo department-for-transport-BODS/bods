@@ -108,17 +108,17 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "date' (if present)  is sooner than 'Effective stale date due to "
             "effective last modified date' and today’s date from which the "
             "file is created equals or passes 'Effective stale date due to end "
-            "date' and Last modified date < OTC Effective start date - FALSE. "
+            "date' and Last modified date < OTC Effective start date = FALSE. "
             "</br></br>"
             "Stale - 12 months old: If 'Effective stale date due to effective "
             "last modified' date is sooner than 'Effective stale date due to "
             "end date' (if present) and today’s date from which the file is "
             "created equals or passes 'Effective stale date due to effective "
             "last modified date' and Last modified date < OTC Effective start "
-            "date - FALSE. </br></br>"
+            "date = FALSE. </br></br>"
             "Stale - OTC Variation: If Last modified date < 'Effective stale date "
-            "due to OTC effective date' - TRUE and "
-            "Today’s date greater than or equal to than "
+            "due to OTC effective date' = TRUE and "
+            "Today’s date greater than or equal to "
             "'Effective stale date due to OTC effective date'.",
         ),
         "organisation_name": Column(
