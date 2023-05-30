@@ -74,6 +74,7 @@ class TimetableSearchFilterForm(GOVUKForm):
         # Change field labels
         self.fields["area"].label_from_instance = lambda obj: obj.name
         self.fields["organisation"].label_from_instance = lambda obj: obj.name
+        self.initial["status"] = FeedStatus.live.value
         is_pti_compliant = self.fields["is_pti_compliant"]
         is_pti_compliant.label_from_instance = (
             lambda obj: "PTI compliant" if obj else "Not PTI compliant"
@@ -146,6 +147,7 @@ class AVLSearchFilterForm(GOVUKForm):
         self.fields["avl_compliance_status_cached"].label += mark_safe(
             render_to_string("browse/snippets/help_modals/AVL_bods_compliance.html")
         )
+        self.initial["status"] = FeedStatus.live.value
 
     def get_layout(self):
         return Layout(
@@ -193,6 +195,7 @@ class FaresSearchFilterForm(GOVUKForm):
         # Change field labels
         self.fields["area"].label_from_instance = lambda obj: obj.name
         self.fields["organisation"].label_from_instance = lambda obj: obj.name
+        self.initial["status"] = FeedStatus.live.value
         self.is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
         if self.is_fares_validator_active:
             is_fares_compliant = self.fields["is_fares_compliant"]

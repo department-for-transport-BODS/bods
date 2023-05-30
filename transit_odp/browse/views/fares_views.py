@@ -87,6 +87,7 @@ class FaresSearchView(BaseSearchView):
             .get_dataset_type(dataset_type=FaresType)
             .get_published()
             .get_viewable_statuses()
+            .add_pretty_status()
             .get_active_org()
             .add_organisation_name()
             .add_live_data()
@@ -98,7 +99,19 @@ class FaresSearchView(BaseSearchView):
         if keywords:
             qs = qs.search(keywords)
 
+        status = self.request.GET.getlist("status", [])
+        status_list = []
+        if not self.request.resolver_match.kwargs:
+            if len(status) == 0:
+                status_list = ["live"]
+                qs = qs.filter(status__in=status_list)
         return qs
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        if not self.request.GET:
+            kwargs["query_params"] = {"status": "Published"}
+        return kwargs
 
 
 class FaresDatasetDetailView(DetailView):
