@@ -87,7 +87,6 @@ class FaresSearchView(BaseSearchView):
             .get_dataset_type(dataset_type=FaresType)
             .get_published()
             .get_viewable_statuses()
-            .add_pretty_status()
             .get_active_org()
             .add_organisation_name()
             .add_live_data()

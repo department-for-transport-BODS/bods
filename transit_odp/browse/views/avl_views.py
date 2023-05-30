@@ -49,7 +49,6 @@ class AVLSearchView(BaseSearchView):
             .add_organisation_name()
             .add_avl_compliance_status_cached()
             .add_live_data()
-            .add_pretty_status()
             .order_by(*self.get_ordering())
         )
 

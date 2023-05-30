@@ -281,7 +281,6 @@ class SearchView(BaseSearchView):
             .get_published()
             .get_active_org()
             .get_viewable_statuses()
-            .add_pretty_status()
             .add_organisation_name()
             .add_live_data()
             .add_admin_area_names()
