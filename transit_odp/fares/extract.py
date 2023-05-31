@@ -55,12 +55,13 @@ class FaresDataCatalogueExtractor:
     @property
     def national_operator_code(self):
         try:
-            path = ["organisations", "Operator", "PublicCode"]
+            path = ["CompositeFrame[not(contains(@id, 'METADATA'))]", "frames", "ResourceFrame","organisations", "Operator", "PublicCode"]
             national_operator_code_list = (
-                self.documents.get_multiple_attr_text_from_xpath(path)
+            self.documents.get_multiple_attr_text_from_xpath(path)
             )
 
             if national_operator_code_list:
+                print("The national operator codes are:->", national_operator_code_list)
                 return national_operator_code_list
             return []
         except IndexError:
