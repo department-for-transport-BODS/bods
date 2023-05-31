@@ -145,7 +145,7 @@
                 </li>
                 <li class="govuk-!-margin-bottom-3">
                     <a class="govuk-link"
-                        href="{% url 'search' host hosts.data %}?organisation={{ object.id }}">
+                        href="{% url 'search' host hosts.data %}?organisation={{ object.id }}&status=live">
                         {% filter force_escape %}{% trans 'Browse Timetables data' %}{% endfilter %}
                     </a>
                 </li>
@@ -207,7 +207,7 @@
             <ul class="govuk-list govuk-!-margin-top-5">
                 <li class="govuk-!-margin-bottom-3">
                     <a class="govuk-link"
-                        href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}">
+                        href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}&status=live">
                         {% filter force_escape %}{% trans 'Browse Location data' %}{% endfilter %}
                     </a>
                 </li>
@@ -280,7 +280,7 @@
             <ul class="govuk-list govuk-!-margin-top-5">
                 <li class="govuk-!-margin-bottom-3">
                     <a class="govuk-link"
-                        href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}">
+                        href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}&status=live">
                         {% filter force_escape %}{% trans 'Browse Fares data' %}{% endfilter %}
                     </a>
                 </li>
