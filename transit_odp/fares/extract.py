@@ -68,7 +68,6 @@ class FaresDataCatalogueExtractor:
             )
 
             if national_operator_code_list:
-                print("The national operator codes are:->", national_operator_code_list)
                 return national_operator_code_list
             return []
         except IndexError:

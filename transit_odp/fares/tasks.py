@@ -292,7 +292,9 @@ def task_retry_unavailable_fares():
 
 @shared_task(ignore_errors=True)
 def task_update_fares_validation_existing_dataset():
-    existing_fares = Dataset.objects.get_existing_fares_dataset()
+    existing_fares = (
+        Dataset.objects.get_existing_fares_dataset_with_no_validation_report()
+    )
     count = existing_fares.count()
     logger.info(f"There are {count} datasets with no validation report.")
     for fares_dataset in existing_fares:
@@ -319,3 +321,49 @@ def task_update_fares_validation_existing_dataset():
 
         task.update_progress(100)
         task.to_success()
+
+
+@shared_task(ignore_errors=True)
+def task_update_fares_catalogue_data_existing_datasets():
+    """This is a one-off task to update the DataCatalogueMetaData model data"""
+    existing_fares = Dataset.objects.get_existing_fares_dataset()
+    total_count = existing_fares.count()
+    logger.info(f"There are {total_count} datasets in total.")
+    current_count = 0
+    failed_datasets = []
+    for fares_dataset in existing_fares:
+        try:
+            logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+            revision = fares_dataset.live_revision
+            revision_id = revision.id
+            try:
+                revision = DatasetRevision.objects.get(
+                    pk=revision_id, dataset__dataset_type=FaresType
+                )
+            except DatasetRevision.DoesNotExist as exc:
+                message = f"DatasetRevision {revision_id} does not exist."
+                logger.exception(message, exc_info=True)
+                raise PipelineException(message) from exc
+
+            task_id = uuid.uuid4()
+            task = DatasetETLTaskResult.objects.create(
+                revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
+            )
+
+            task_download_fares_file(task.id)
+            task_run_fares_etl(task.id)
+
+            current_count += 1
+            task.to_success()
+            logger.info(f"The task completed for {current_count} of {total_count}")
+        except Exception as exc:
+            failed_datasets.append(fares_dataset.id)
+            message = f"Error processing dataset id {fares_dataset.id}: {exc}"
+            logger.exception(message, exc_info=True)
+    success_count = total_count - len(failed_datasets)
+    logger.info(
+        f"Total number of datasets processed successfully is {success_count} out of {total_count}"
+    )
+    logger.info(
+        f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
+    )
