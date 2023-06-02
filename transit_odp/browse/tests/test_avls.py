@@ -34,7 +34,6 @@ class BaseAVLSearchView:
     template_path = "browse/avl/search.html"
 
     def setup_feeds(self):
-
         self.organisation1 = OrganisationFactory(name="Alpha")
         self.organisation2 = OrganisationFactory(name="Beta")
         self.admin_areas = [AdminAreaFactory(name=name) for name in "ABCDE"]
@@ -85,13 +84,21 @@ class BaseAVLSearchView:
             is_published=True,
             admin_areas=self.admin_areas,
         )
+
+        DatasetRevisionFactory(
+            dataset__organisation=self.organisation2,
+            dataset__dataset_type=self.dataset_type,
+            status=FeedStatus.inactive.value,
+            is_published=True,
+            admin_areas=(b,),
+        )
+
         stops = [
             StopPointFactory(admin_area=admin_area) for admin_area in self.admin_areas
         ]
         FaresMetadataFactory(revision=revision, stops=stops)
 
     def test_get_success_page(self, client_factory):
-
         client = client_factory(host=self.host)
         response = client.get(self.url)
         assert response.status_code == 200
@@ -103,8 +110,8 @@ class BaseAVLSearchView:
         response = client.get(self.url)
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        # no filtering; so display all published live, expired, error feeds
-        assert response.context_data["object_list"].count() == 5
+        # filter and show only live datasets
+        assert response.context_data["object_list"].count() == 4
 
     def test_search_no_filters_inactive_org(self, client_factory):
         self.setup_feeds()
@@ -120,7 +127,7 @@ class BaseAVLSearchView:
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 5
+        assert response.context_data["object_list"].count() == 4
 
     def test_search_filters_status(self, client_factory):
         self.setup_feeds()
@@ -163,7 +170,11 @@ class BaseAVLSearchView:
         client = client_factory(host=self.host)
         response = client.get(
             self.url,
-            data={"ordering": "-name", "publisher": self.organisation1.id},
+            data={
+                "ordering": "-name",
+                "publisher": self.organisation1.id,
+                "status": "",
+            },
         )
 
         assert response.status_code == 200

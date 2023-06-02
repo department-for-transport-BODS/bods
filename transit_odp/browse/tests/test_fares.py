@@ -101,7 +101,11 @@ class TestFaresSearchView(BaseAVLSearchView):
         client = client_factory(host=self.host)
         response = client.get(
             self.url,
-            data={"ordering": "-name", "publisher": self.organisation1.id},
+            data={
+                "ordering": "-name",
+                "publisher": self.organisation1.id,
+                "status": "",
+            },
         )
 
         assert response.status_code == 200
