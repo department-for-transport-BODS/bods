@@ -110,7 +110,8 @@ class LocalAuthorityView(BaseListView):
                 context["services_require_attention_percentage"],
             )
 
-            context["ltas"] = {"names": lta.name}
+        ltas = {"names": [lta.name for lta in all_ltas_current_page]}
+        context["ltas"] = ltas
         return context
 
     def object_list_lta_mapping(self, object_list):
