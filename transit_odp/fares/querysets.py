@@ -71,9 +71,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_string_user_type()
             .add_organisation_name()
             .add_compliance_status()
-            .exclude(
-                fares_metadata_id__revision__dataset__live_revision__status=INACTIVE
-            )
+            .exclude(fares_metadata_id__revision__status=INACTIVE)
         )
 
     def add_revision_and_dataset(self):
