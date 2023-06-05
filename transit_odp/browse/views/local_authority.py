@@ -1,5 +1,4 @@
 from datetime import timedelta
-from math import ceil
 from typing import Dict, Optional
 
 from django.db.models import Case, CharField, Subquery, Value, When
@@ -95,7 +94,7 @@ class LocalAuthorityView(BaseListView):
                 get_requires_attention_data_lta(lta)
             )
             try:
-                context["services_require_attention_percentage"] = ceil(
+                context["services_require_attention_percentage"] = round(
                     100
                     * (
                         context["total_services_requiring_attention"]
@@ -197,7 +196,7 @@ class LocalAuthorityDetailView(BaseDetailView):
         )
 
         try:
-            context["services_require_attention_percentage"] = ceil(
+            context["services_require_attention_percentage"] = round(
                 100
                 * (
                     context["total_services_requiring_attention"]
