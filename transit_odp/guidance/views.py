@@ -7,11 +7,10 @@ from django_hosts import reverse
 import config
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP
 from transit_odp.common.view_mixins import BODSBaseView
-from transit_odp.organisation.csv.organisation import ORG_COLUMN_MAP
-from transit_odp.organisation.csv.overall import OVERALL_COLUMN_MAP
-from transit_odp.timetables.csv import TIMETABLE_COLUMN_MAP
 from transit_odp.fares_validator.csv import FARES_DATA_COLUMN_MAP
-
+from transit_odp.organisation.csv.organisation import FEATURE_FLAG_ORG_COLUMN_MAP
+from transit_odp.organisation.csv.overall import FEATURE_FLAG_OVERALL_COLUMN_MAP
+from transit_odp.timetables.csv import TIMETABLE_COLUMN_MAP
 
 Section = namedtuple("Section", "name,title,template")
 
@@ -152,10 +151,10 @@ class DeveloperReqView(BODSBaseView, SectionedTemplateView):
         context = super().get_context_data(**kwargs)
         context["api_base"] = reverse("api:api-root", host=config.hosts.DATA_HOST)
         context["pti_link_on_bods"] = settings.PTI_PDF_URL
-        context["overall_column_map"] = OVERALL_COLUMN_MAP
+        context["overall_column_map"] = FEATURE_FLAG_OVERALL_COLUMN_MAP
         context["timetable_column_map"] = TIMETABLE_COLUMN_MAP
         context["fares_data_column_map"] = FARES_DATA_COLUMN_MAP
-        context["org_column_map"] = ORG_COLUMN_MAP
+        context["org_column_map"] = FEATURE_FLAG_ORG_COLUMN_MAP
         context["location_definitions"] = AVL_COLUMN_MAP
         return context
 
