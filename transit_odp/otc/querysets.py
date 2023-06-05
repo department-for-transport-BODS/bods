@@ -127,7 +127,7 @@ class ServiceQuerySet(QuerySet):
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
             .order_by("licence__number", "registration_number", "service_number")
-            .distinct("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number")
         )
 
     def get_in_scope_in_season_lta_services(self, lta):
@@ -212,7 +212,7 @@ class ServiceQuerySet(QuerySet):
             .annotate(otc_licence_number=F("licence__number"))
             .filter(licence__number__in=licences_subquery)
             .order_by("licence__number", "registration_number", "service_number")
-            .distinct("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number")
         )
 
     def get_otc_data_for_organisation(self, organisation_id: int) -> TServiceQuerySet:
@@ -235,7 +235,7 @@ class ServiceQuerySet(QuerySet):
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
             .order_by("licence__number", "registration_number", "service_number")
-            .distinct("licence__number", "registration_number", "service_number")
+            .distinct("licence__number", "registration_number")
         )
 
     def get_otc_data_for_lta(self, lta: int) -> TServiceQuerySet:

@@ -60,6 +60,12 @@ class BaseOrganisationListView(SiteAdminViewMixin, FilterView):
             dataset_type=self.dataset_type,
         )
 
+        status = self.request.GET.getlist("status", [])
+        status_list = []
+        if len(status) == 0:
+            status_list = ["live"]
+            queryset = queryset.filter(live_revision__status__in=status_list)
+
         latest_revision_subquery = DatasetRevision.objects.filter(
             dataset_id=OuterRef("id"), status="success"
         ).order_by("-modified")
@@ -120,6 +126,9 @@ class OrganisationAVLListView(BaseOrganisationListView):
         context = super().get_context_data(**kwargs)
         context.update({"title": _(f"{ self.organisation.name } location data feeds")})
 
+        if not self.request.GET:
+            context["query_params"] = {"status": "Published"}
+
         return context
 
 
@@ -136,6 +145,9 @@ class OrganisationFaresListView(BaseOrganisationListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"title": _(f"{ self.organisation.name } fares data sets")})
+
+        if not self.request.GET:
+            context["query_params"] = {"status": "Published"}
 
         return context
 
@@ -157,5 +169,8 @@ class OrganisationTimetableListView(BaseOrganisationListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"title": _(f"{ self.organisation.name } timetables data sets")})
+
+        if not self.request.GET:
+            context["query_params"] = {"status": "Published"}
 
         return context

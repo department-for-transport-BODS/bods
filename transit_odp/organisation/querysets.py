@@ -693,13 +693,17 @@ class DatasetQuerySet(models.QuerySet):
 
         return self.annotate(has_validation_report=Exists(faresReport))
 
-    def get_existing_fares_dataset(self):
+    def get_existing_fares_dataset_with_no_validation_report(self):
         qs = (
             self.get_active()
             .filter(dataset_type=FaresType)
             .add_fares_report_exists()
             .filter(has_validation_report=False)
         )
+        return qs
+
+    def get_existing_fares_dataset(self):
+        qs = self.get_active().filter(dataset_type=FaresType)
         return qs
 
     def get_local_timetables(self):

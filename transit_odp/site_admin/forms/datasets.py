@@ -41,6 +41,7 @@ class BaseDatasetSearchFilterForm(GOVUKForm):
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
+        initial=FeedStatus.live.value,
     )
 
     def __init__(self, *args, **kwargs):
@@ -68,4 +69,5 @@ class AVLSearchFilterForm(BaseDatasetSearchFilterForm):
             (FeedStatus.success.value, "Draft"),
         ),
         required=False,
+        initial=FeedStatus.live.value,
     )

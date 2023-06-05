@@ -47,11 +47,11 @@ Published Status                             Published: Published to BODS by an 
 OTC Status                                   Registered: Registered and not cancelled within the OTC database. Unregistered: Not Registered within the OTC.
 Scope Status                                 In scope: Default status for published or unpublished services to BODS. Assumed in scope unless marked as exempt in the service code exemption flow. Out of Scope: Service code has been marked as exempt by the DVSA in the service code exemption flow.
 Seasonal Status                              In season: Service code has been marked with a date range within the seasonal services flow and the date from which the file is created falls within the date range for that service code. Out of Season: Service code has been marked with a date range within the seasonal services flow and the date from which the file is created falls outside the date range for that service code. Not Seasonal: Default status for published or unpublished services to BODS. Assumed Not seasonal unless service code has been marked with a date range within the seasonal services flow.
-Staleness Status                             Not Stale: Default status for service codes published to BODS. 
+Staleness Status                             Not Stale: Default status for service codes published to BODS.
 
-Stale - End date passed: If 'Effective stale date due to end date' (if present)  is sooner than 'Effective stale date due to effective last modified date' and today’s date from which the file is created equals or passes 'Effective stale date due to end date' and Last modified date < 'Effective stale date due to OTC effective date = FALSE. 
+Stale - End date passed: If 'Effective stale date due to end date' (if present)  is sooner than 'Effective stale date due to effective last modified date' and today’s date from which the file is created equals or passes 'Effective stale date due to end date' and Last modified date < 'Effective stale date due to OTC effective date' = FALSE.
 
-Stale - 12 months old: If 'Effective stale date due to effective last modified' date is sooner than 'Effective stale date due to end date' (if present) and today’s date from which the file is created equals or passes 'Effective stale date due to effective last modified date' and Last modified date < 'Effective stale date due to OTC effective date = FALSE. 
+Stale - 12 months old: If 'Effective stale date due to effective last modified' date is sooner than 'Effective stale date due to end date' (if present) and today’s date from which the file is created equals or passes 'Effective stale date due to effective last modified date' and Last modified date < 'Effective stale date due to OTC effective date' = FALSE.
 
 Stale - OTC Variation: If Last modified date < 'Effective stale date due to OTC effective date' - TRUE and Today’s date greater than or equal to than 'Effective stale date due to OTC effective date'.
 Organisation Name                            The name of the operator/publisher providing data on BODS.
@@ -158,5 +158,5 @@ Compliance Report URL                        The link to the exact report genera
 
 Operator NOC data catalogue:
 Field name                                   Definition
-operator				                     The name of the operator on BODS
-noc					                         The National Operator Code (NOC) that is associated with that operator on BODS
+Operator				                     The name of the operator on BODS
+Noc					                         The National Operator Code (NOC) that is associated with that operator on BODS

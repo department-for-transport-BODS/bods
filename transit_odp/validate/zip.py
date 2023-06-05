@@ -42,7 +42,7 @@ class ZippedValidator:
         >>> f.close()
     """
 
-    def __init__(self, file, max_file_size=5e9, data_file_ext=".xml"):
+    def __init__(self, file, max_file_size=1e10, data_file_ext=".xml"):
         self.file = file
         self.file.seek(0)
         self.max_file_size = max_file_size
