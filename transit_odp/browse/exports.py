@@ -1,13 +1,14 @@
 import io
 import logging
 import zipfile
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 from typing import BinaryIO
 
 from waffle import flag_is_active
 
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
 from transit_odp.browse.constants import INTRO, INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE
+from transit_odp.common.collections import Column
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.fares_validator.csv import (
     FARES_DATA_COLUMN_MAP,
@@ -40,6 +41,20 @@ LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
 OTC_EMPTY_WARNING = "OTC Licence is not populated."
 FARES_FILENAME = "fares_data_catalogue.csv"
+
+OPERATOR_NOC_MAP = OrderedDict(
+    {
+        "operator": Column(
+            "Operator",
+            "The name of the operator on BODS",
+        ),
+        "noc": Column(
+            "Noc",
+            "The National Operator Code (NOC) that is associated with "
+            "that operator on BODS ",
+        ),
+    }
+)
 
 
 def get_feed_status(dataset):
@@ -116,6 +131,15 @@ def create_guidance_file_string() -> str:
         result += [
             row_template.format(field_name=field_name, definition=definition)
             for field_name, definition in AVL_COLUMN_MAP.values()
+        ]
+
+        operators = "\nOperator NOC data catalogue:"
+        result.append(
+            header_template.format(header=operators, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in OPERATOR_NOC_MAP.values()
         ]
 
     else:
