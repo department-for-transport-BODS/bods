@@ -118,9 +118,8 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "last modified date' and Last modified date < 'Effective stale date "
             "due to OTC effective date' = FALSE. </br></br>"
             "Stale - OTC Variation: If Last modified date < 'Effective stale date "
-            "due to OTC effective date' - TRUE and "
-            "Today’s date greater than or equal to than "
-            "'Effective stale date due to OTC effective date'.",
+            "due to OTC effective date' = TRUE and Today’s date greater"
+            " than or equal to 'Effective stale date due to OTC effective date'.",
         ),
         "organisation_name": Column(
             "Organisation Name",
