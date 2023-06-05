@@ -1076,12 +1076,13 @@ class TestTXCFileAttributesQueryset:
         for fa in file_attributes:
             assert fa.revision.name[:3] == "new"
 
-    def test_repeating_service_codes_in_same_dataset(self):
+    def test_repeating_service_codes_in_same_dataset_higher_revision(self):
         """
         Given we have a service code that is shared across multiple TxC files in the
         same dataset when we apply the queryset method get_active_txc_files
-        Then we pick the txc attribute (service_code) that belongs to the earliest
-        operating_period_start_date
+        Then we pick the txc attribute (service_code) that belongs to the latest
+        revision_number, modification_datetime, latest operating_period_start_date
+        and finally sorted by filename in descending order
         """
 
         for number in range(3):
@@ -1089,19 +1090,103 @@ class TestTXCFileAttributesQueryset:
             revision = DatasetRevisionFactory(name=f"old{number}", is_published=True)
             TXCFileAttributesFactory(
                 revision=revision,
+                revision_number=2,
                 service_code=service_code,
+                modification_datetime=datetime(2022, 10, 26, 0, 0, tzinfo=pytz.UTC),
                 operating_period_start_date=datetime(2020, 12, 25, 0, 0),
             )
             TXCFileAttributesFactory(
                 revision=revision,
+                revision_number=1,
                 service_code=service_code,
+                modification_datetime=datetime(2022, 10, 23, 0, 0, tzinfo=pytz.UTC),
                 operating_period_start_date=datetime(2021, 1, 1, 0, 0),
             )
 
         file_attributes = TXCFileAttributes.objects.get_active_txc_files()
         assert file_attributes.count() == 3
         for fa in file_attributes:
+            assert fa.revision_number == 2
+            assert fa.modification_datetime == datetime(
+                2022, 10, 26, 0, 0, tzinfo=pytz.UTC
+            )
             assert fa.operating_period_start_date == datetime(2020, 12, 25, 0, 0).date()
+
+    def test_repeating_service_codes_in_same_dataset_higher_modification_dt(self):
+        """
+        Given we have a service code that is shared across multiple TxC files in the
+        same dataset when we apply the queryset method get_active_txc_files
+        Then we pick the txc attribute (service_code) that belongs to the latest
+        revision_number, modification_datetime, latest operating_period_start_date
+        and finally sorted by filename in descending order
+        """
+        for number in range(3):
+            service_code = f"PF0000{number}"
+            revision = DatasetRevisionFactory(name=f"old{number}", is_published=True)
+            TXCFileAttributesFactory(
+                revision=revision,
+                revision_number=2,
+                service_code=service_code,
+                modification_datetime=datetime(2022, 10, 26, 0, 0, tzinfo=pytz.UTC),
+                operating_period_start_date=datetime(2020, 12, 25, 0, 0),
+            )
+            TXCFileAttributesFactory(
+                revision=revision,
+                revision_number=2,
+                service_code=service_code,
+                modification_datetime=datetime(2022, 10, 23, 0, 0, tzinfo=pytz.UTC),
+                operating_period_start_date=datetime(2021, 1, 1, 0, 0),
+            )
+
+        file_attributes = TXCFileAttributes.objects.get_active_txc_files()
+        assert file_attributes.count() == 3
+        for fa in file_attributes:
+            assert fa.revision_number == 2
+            assert fa.modification_datetime == datetime(
+                2022, 10, 26, 0, 0, tzinfo=pytz.UTC
+            )
+            assert fa.operating_period_start_date == datetime(2020, 12, 25, 0, 0).date()
+
+    def test_repeating_service_codes_in_same_dataset_all_same_sort_by_filename(self):
+        """
+        Given we have a service code that is shared across multiple TxC files in the
+        same dataset when we apply the queryset method get_active_txc_files
+        Then we pick the txc attribute (service_code) that belongs to the latest
+        revision_number, modification_datetime, latest operating_period_start_date
+        and finally sorted by filename in descending order
+        """
+        for number in range(3):
+            service_code = f"PF0000{number}"
+            revision = DatasetRevisionFactory(name=f"old{number}", is_published=True)
+            TXCFileAttributesFactory(
+                revision=revision,
+                revision_number=3,
+                service_code=service_code,
+                modification_datetime=datetime(2022, 10, 23, 0, 0, tzinfo=pytz.UTC),
+                operating_period_start_date=datetime(2021, 1, 1, 0, 0),
+                filename="AMSY_32S_AMSYPC00011412032_20230108_-_4cd2921b-0bd5-4e9b-8fcf-9706375c8375.xml",
+            )
+            TXCFileAttributesFactory(
+                revision=revision,
+                revision_number=3,
+                service_code=service_code,
+                modification_datetime=datetime(2022, 10, 23, 0, 0, tzinfo=pytz.UTC),
+                operating_period_start_date=datetime(2021, 1, 1, 0, 0),
+                filename="AMSY_32S_AMSYPC00011412032_20230108_-_c033128f-cffd-4e45-a78d-f0ff648957bc.xml",
+            )
+
+        file_attributes = TXCFileAttributes.objects.get_active_txc_files()
+        assert file_attributes.count() == 3
+        for fa in file_attributes:
+            assert fa.revision_number == 3
+            assert fa.modification_datetime == datetime(
+                2022, 10, 23, 0, 0, tzinfo=pytz.UTC
+            )
+            assert fa.operating_period_start_date == datetime(2021, 1, 1, 0, 0).date()
+            assert (
+                fa.filename
+                == "AMSY_32S_AMSYPC00011412032_20230108_-_c033128f-cffd-4e45-a78d-f0ff648957bc.xml"
+            )
 
 
 class TestConsumerFeedbackQuerySet:

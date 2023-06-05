@@ -1,13 +1,22 @@
 from datetime import timedelta
 from typing import Dict, Optional
 
+from django.db.models import Case, CharField, Subquery, Value, When
+from django.http import HttpResponse
+from django.views import View
+
+from transit_odp.browse.lta_constants import LTAS_DICT
+from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
+from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
-    get_txc_map,
+    get_requires_attention_data_lta,
+    get_txc_map_lta,
     is_stale,
 )
 
@@ -23,45 +32,211 @@ def get_seasonal_service_status(otc_service: dict) -> str:
     return "In Season" if seasonal_service_status else "Out of Season"
 
 
-def get_service_code_exemption_map(
-    organisation_id: int,
-) -> Dict[str, ServiceCodeExemption]:
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in ServiceCodeExemption.objects.add_registration_number().filter(
-            licence__organisation__id=organisation_id
-        )
-    }
-
-
-def get_all_otc_map(organisation_id: int) -> Dict[str, OTCService]:
+def get_all_otc_map_lta(lta) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
     """
     return {
         service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_all_otc_data_for_organisation(
-            organisation_id
-        )
+        for service in OTCService.objects.get_all_otc_data_for_lta(lta)
     }
 
 
-def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]:
+def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
     """
     Get a dictionary which includes all the Seasonal Services
     for an organisation.
     """
+    services_subquery = lta.registration_numbers.values("id")
     return {
         service.registration_number.replace("/", ":"): service
         for service in SeasonalService.objects.filter(
-            licence__organisation_id=organisation_id
+            licence__organisation__licences__number__in=Subquery(
+                services_subquery.values("licence__number")
+            )
         )
         .add_registration_number()
         .add_seasonal_status()
     }
 
 
-class ServiceCodesCSV(CSVBuilder):
+def get_service_code_exemption_map(lta) -> Dict[str, ServiceCodeExemption]:
+    services_subquery = lta.registration_numbers.values("id")
+    return {
+        service.registration_number.replace("/", ":"): service
+        for service in ServiceCodeExemption.objects.add_registration_number().filter(
+            licence__organisation__licences__number__in=Subquery(
+                services_subquery.values("licence__number")
+            )
+        )
+    }
+
+
+class LocalAuthorityView(BaseListView):
+    template_name = "browse/local_authority.html"
+    model = LocalAuthority
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object_list"] = self.object_list_lta_mapping(context["object_list"])
+        context["q"] = self.request.GET.get("q", "")
+        context["ordering"] = self.request.GET.get("ordering", "mapped_name")
+        all_ltas_current_page = context["object_list"]
+
+        for lta in all_ltas_current_page:
+            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta)
+            if otc_qs:
+                context["total_in_scope_in_season_services"] = otc_qs.count()
+            else:
+                context["total_in_scope_in_season_services"] = 0
+            context["total_services_requiring_attention"] = len(
+                get_requires_attention_data_lta(lta)
+            )
+            try:
+                context["services_require_attention_percentage"] = round(
+                    100
+                    * (
+                        context["total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["services_require_attention_percentage"] = 0
+            setattr(
+                lta,
+                "services_require_attention_percentage",
+                context["services_require_attention_percentage"],
+            )
+
+        ordering = self.request.GET.get("ordering", "mapped_name")
+        if ordering == "name":
+            context["ltas"] = {
+                "names": self.lta_name_mapping(
+                    list(self.get_queryset().values_list("name", flat=True))
+                )
+            }
+        elif ordering == "mapped_name":
+            ltas_list = self.lta_name_mapping(
+                list(self.get_queryset().values_list("name", flat=True))
+            )
+            ltas_list.sort(key=lambda lta: lta["mapped_name"])
+            context["ltas"] = {"names": [lta["mapped_name"] for lta in ltas_list]}
+        elif ordering == "-mapped_name":
+            ltas_list = self.lta_name_mapping(
+                list((self.get_queryset().values_list("name", flat=True)))
+            )
+            ltas_list.sort(key=lambda lta: lta["mapped_name"])
+            context["ltas"] = {
+                "names": [lta["mapped_name"] for lta in reversed(ltas_list)]
+            }
+        return context
+
+    def object_list_lta_mapping(self, object_list):
+        new_object_list = []
+        for otc_name, value_name in LTAS_DICT.items():
+            for lta_object in object_list:
+                if lta_object.name == otc_name:
+                    lta_object.name = value_name
+                    new_object_list.append(lta_object)
+        return new_object_list
+
+    def lta_name_mapping(self, all_otc_ltas: list):
+        ltas_list = []
+        for otc_name, value_name in LTAS_DICT.items():
+            for otc_lta in all_otc_ltas:
+                if otc_lta == otc_name:
+                    ltas_list.append({"name": otc_lta, "mapped_name": value_name})
+        return ltas_list
+
+    def get_queryset(self):
+        lta_name_list = list(LTAS_DICT.keys())
+        qs = self.model.objects.filter(name__in=lta_name_list)
+        # Add annotated field "mapped_name"
+        qs = qs.annotate(
+            mapped_name=Case(
+                *[
+                    When(name=name, then=Value(mapped_name, output_field=CharField()))
+                    for name, mapped_name in LTAS_DICT.items()
+                ],
+                default=Value("", output_field=CharField()),
+            )
+        )
+        search_term = self.request.GET.get("q", "").strip()
+        if search_term:
+            qs = qs.filter(mapped_name__icontains=search_term)
+
+        qs = qs.order_by(*self.get_ordering())
+        return qs
+
+    def get_ordering(self):
+        ordering = self.request.GET.get("ordering", "mapped_name")
+        if ordering == "mapped_name":
+            ordering = ("mapped_name",)
+        elif isinstance(ordering, str):
+            ordering = (ordering,)
+        return ordering
+
+
+class LocalAuthorityDetailView(BaseDetailView):
+    template_name = "browse/local_authority/local_authority_detail.html"
+    model = LocalAuthority
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        local_authority = self.lta_name_mapping(self.object)
+        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+        if otc_qs:
+            context["total_in_scope_in_season_services"] = otc_qs.count()
+        else:
+            context["total_in_scope_in_season_services"] = 0
+
+        context["total_services_requiring_attention"] = len(
+            get_requires_attention_data_lta(local_authority)
+        )
+
+        try:
+            context["services_require_attention_percentage"] = round(
+                100
+                * (
+                    context["total_services_requiring_attention"]
+                    / context["total_in_scope_in_season_services"]
+                )
+            )
+        except ZeroDivisionError:
+            context["services_require_attention_percentage"] = 0
+
+        return context
+
+    def lta_name_mapping(self, lta_object):
+        for otc_name, value_name in LTAS_DICT.items():
+            if lta_object.name == otc_name:
+                lta_object.name = value_name
+        return lta_object
+
+
+class LocalAuthorityExportView(View):
+    def get(self, *args, **kwargs):
+        self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
+        return self.render_to_response()
+
+    def lta_name_mapping(self):
+        for otc_name, value_name in LTAS_DICT.items():
+            if self.lta.name == otc_name:
+                self.lta.name = value_name
+        return self.lta
+
+    def render_to_response(self):
+        lta = self.lta_name_mapping()
+        csv_filename = f"{lta.name}_detailed service code export detailed export.csv"
+        csv_export = LTACSV(lta)
+        file_ = csv_export.to_string()
+        response = HttpResponse(file_, content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
+        return response
+
+
+class LTACSV(CSVBuilder):
     columns = [
         CSVColumn(
             header="Requires Attention",
@@ -96,6 +271,10 @@ class ServiceCodesCSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("staleness_status"),
         ),
         CSVColumn(
+            header="Operator Name",
+            accessor=lambda otc_service: otc_service.get("operator_name"),
+        ),
+        CSVColumn(
             header="Data set Licence Number",
             accessor=lambda otc_service: otc_service.get("licence_number"),
         ),
@@ -105,7 +284,15 @@ class ServiceCodesCSV(CSVBuilder):
         ),
         CSVColumn(
             header="Data set Line Name",
-            accessor=lambda otc_service: otc_service.get("line_name"),
+            accessor=lambda otc_service: otc_service.get("line_number"),
+        ),
+        CSVColumn(
+            header="Operating Period Start Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
+        ),
+        CSVColumn(
+            header="Operating Period End Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
         ),
         CSVColumn(
             header="OTC Licence Number",
@@ -130,14 +317,6 @@ class ServiceCodesCSV(CSVBuilder):
         CSVColumn(
             header="Effective Last Modified Date",
             accessor=lambda otc_service: otc_service.get("last_modified_date"),
-        ),
-        CSVColumn(
-            header="Operating Period Start Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
-        ),
-        CSVColumn(
-            header="Operating Period End Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
         ),
         CSVColumn(
             header="XML Filename",
@@ -174,8 +353,8 @@ class ServiceCodesCSV(CSVBuilder):
             ),
         ),
         CSVColumn(
-            header="Last modified date < Effective stale "
-            "date due to OTC effective date",
+            header="Last modified date < Effective "
+            "stale date due to OTC effective date",
             accessor=lambda otc_service: otc_service.get(
                 "last_modified_lt_effective_stale_date_otc"
             ),
@@ -187,10 +366,6 @@ class ServiceCodesCSV(CSVBuilder):
             ),
         ),
     ]
-
-    def __init__(self, organisation_id: int):
-        self._organisation_id = organisation_id
-        self._object_list = []
 
     def _update_data(
         self,
@@ -208,19 +383,20 @@ class ServiceCodesCSV(CSVBuilder):
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service and service.service_number,
+                "operator_name": file_attribute and file_attribute.organisation_name,
                 "licence_number": file_attribute and file_attribute.licence_number,
                 "service_code": file_attribute and file_attribute.service_code,
                 "line_name": file_attribute
                 and self.modify_dataset_line_name(file_attribute.line_names),
-                "revision_number": file_attribute and file_attribute.revision_number,
-                "last_modified_date": file_attribute
-                and (file_attribute.modification_datetime.date()),
                 "operating_period_start_date": file_attribute
                 and (file_attribute.operating_period_start_date),
                 "operating_period_end_date": file_attribute
                 and (file_attribute.operating_period_end_date),
-                "xml_filename": file_attribute and file_attribute.filename,
+                "revision_number": file_attribute and file_attribute.revision_number,
+                "last_modified_date": file_attribute
+                and (file_attribute.modification_datetime.date()),
                 "dataset_id": file_attribute and file_attribute.revision.dataset_id,
+                "xml_filename": file_attribute and file_attribute.filename,
                 "seasonal_status": seasonal_service
                 and seasonal_service.seasonal_status,
                 "seasonal_start": seasonal_service and seasonal_service.start,
@@ -243,6 +419,10 @@ class ServiceCodesCSV(CSVBuilder):
             }
         )
 
+    def __init__(self, lta):
+        self._lta = lta
+        self._object_list = []
+
     def modify_dataset_line_name(self, line_names: list) -> str:
         return " ".join(line_name for line_name in line_names)
 
@@ -255,20 +435,19 @@ class ServiceCodesCSV(CSVBuilder):
             return "No"
         return "Yes"
 
-    def get_otc_service_bods_data(self, organisation_id: int) -> None:
+    def get_otc_service_bods_data(self, lta) -> None:
         """
-        Compares an organisation's OTC Services dictionaries list with
+        Compares an LTA's OTC Services dictionaries list with
         TXCFileAttributes dictionaries list and the SeasonalService list
         to determine which OTC Services require attention and which
         doesn't ie. not live in BODS at all, or live but meeting new
         Staleness conditions.
         """
-        otc_map = get_all_otc_map(organisation_id)
-        txcfa_map = get_txc_map(organisation_id)
-        seasonal_service_map = get_seasonal_service_map(organisation_id)
-        service_code_exemption_map = get_service_code_exemption_map(organisation_id)
+        otc_map = get_all_otc_map_lta(lta)
+        txcfa_map = get_txc_map_lta(lta)
+        seasonal_service_map = get_seasonal_service_map(lta)
+        service_code_exemption_map = get_service_code_exemption_map(lta)
         services_code = set(otc_map)
-        services_code.update(set(txcfa_map))
         services_code = sorted(services_code)
 
         for service_code in services_code:
@@ -300,5 +479,5 @@ class ServiceCodesCSV(CSVBuilder):
             )
 
     def get_queryset(self):
-        self.get_otc_service_bods_data(self._organisation_id)
+        self.get_otc_service_bods_data(self._lta)
         return self._object_list

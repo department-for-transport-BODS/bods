@@ -1,5 +1,3 @@
-from math import ceil
-
 from django.db.models import Count, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
@@ -67,7 +65,7 @@ class OperatorDetailView(BaseDetailView):
             "total_in_scope_in_season_services"
         ] = OTCService.objects.get_in_scope_in_season_services(organisation.id).count()
         try:
-            context["services_require_attention_percentage"] = ceil(
+            context["services_require_attention_percentage"] = round(
                 100
                 * (
                     context["total_services_requiring_attention"]

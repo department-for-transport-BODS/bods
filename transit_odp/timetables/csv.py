@@ -108,17 +108,17 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "date' (if present)  is sooner than 'Effective stale date due to "
             "effective last modified date' and today’s date from which the "
             "file is created equals or passes 'Effective stale date due to end "
-            "date' and Last modified date < OTC Effective start date - FALSE. "
+            "date' and Last modified date < OTC Effective start date = FALSE. "
             "</br></br>"
             "Stale - 12 months old: If 'Effective stale date due to effective "
             "last modified' date is sooner than 'Effective stale date due to "
             "end date' (if present) and today’s date from which the file is "
             "created equals or passes 'Effective stale date due to effective "
             "last modified date' and Last modified date < OTC Effective start "
-            "date - FALSE. </br></br>"
+            "date = FALSE. </br></br>"
             "Stale - OTC Variation: If Last modified date < 'Effective stale date "
-            "due to OTC effective date' - TRUE and "
-            "Today’s date greater than or equal to than "
+            "due to OTC effective date' = TRUE and "
+            "Today’s date greater than or equal to "
             "'Effective stale date due to OTC effective date'.",
         ),
         "organisation_name": Column(
@@ -158,7 +158,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             " by the publisher or their supplier",
         ),
         "licence_number": Column(
-            "Licence Number",
+            "Data set Licence Number",
             "The License number(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
@@ -168,7 +168,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "the operator/publisher to BODS.",
         ),
         "service_code": Column(
-            "Service Code",
+            "Data set Service Code",
             "The ServiceCode(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
@@ -229,12 +229,12 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "Else null.",
         ),
         "revision_number": Column(
-            "Service Revision Number",
+            "Data set Revision Number",
             "The service revision number date as extracted from the files "
             "provided by the operator/publisher to BODS.",
         ),
         "string_lines": Column(
-            "Line Name",
+            "Data set Line Name",
             "The line name(s) as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
@@ -274,7 +274,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "registration_number": Column(
-            "Registration Number",
+            "OTC Registration Number",
             "The registration number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
@@ -289,7 +289,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "service_number": Column(
-            "Service Number",
+            "OTC Service Number",
             "The service number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
@@ -482,7 +482,6 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
     )
-
     if txc_df.empty or otc_df.empty:
         raise EmptyDataFrame()
 

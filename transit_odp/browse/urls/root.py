@@ -16,6 +16,11 @@ from transit_odp.browse.views.contact_operator import (
 )
 from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
 from transit_odp.browse.views.guide_me import BrowseGuideMeView
+from transit_odp.browse.views.local_authority import (
+    LocalAuthorityDetailView,
+    LocalAuthorityExportView,
+    LocalAuthorityView,
+)
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
@@ -64,6 +69,31 @@ urlpatterns = [
                                 "contact/success/",
                                 view=ContactOperatorFeedbackSuccessView.as_view(),
                                 name="feedback-operator-success",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
+    path(
+        "local-authority/",
+        include(
+            [
+                path("", view=LocalAuthorityView.as_view(), name="local-authority"),
+                path(
+                    "<int:pk>/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=LocalAuthorityDetailView.as_view(),
+                                name="local-authority-detail",
+                            ),
+                            path(
+                                "export/",
+                                view=LocalAuthorityExportView.as_view(),
+                                name="local-authority-export",
                             ),
                         ]
                     ),

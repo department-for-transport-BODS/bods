@@ -5,8 +5,10 @@ from typing import Set, Tuple, Union
 from django.db import transaction
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
-from transit_odp.otc.models import Licence, Operator, Service
+from transit_odp.otc.models import Licence, Operator, Service, LocalAuthority
+
 from transit_odp.otc.registry import Registry
+from transit_odp.otc.populate_lta import PopulateLTA
 
 logger = getLogger(__name__)
 
@@ -172,12 +174,35 @@ class Loader:
             raise LoadFailedException("Cannot calculate last run date of task")
 
         with transaction.atomic():
-            self.registry.get_variations_since(most_recently_modified.last_modified)
+            _registrations = self.registry.get_variations_since(
+                most_recently_modified.last_modified
+            )
             self.load_licences()
             self.load_operators()
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
+            self.refresh_lta(_registrations)
+
+    def refresh_lta(self, regs_to_update_lta):
+        for registration in regs_to_update_lta:
+            _service = Service.objects.filter(
+                registration_number=registration.registration_number
+            ).values_list("id")
+            if _service:
+                _service_id = _service[0][0]
+                _ = LocalAuthority.registration_numbers.through.objects.filter(
+                    service_id=_service_id
+                ).delete()
+                logger.info(
+                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship "
+                )
+        logger.info(
+            f"Total count of registrations for refreshing LTAs is: {len(regs_to_update_lta)}"
+        )
+        refresh_lta = PopulateLTA()
+        refresh_lta.refresh(regs_to_update_lta)
+        logger.info(f"Completed updating the local authorities.")
 
     def _delete_all_otc_data(self) -> None:
         logger.info("Clearing OTC tables")

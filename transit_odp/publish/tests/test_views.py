@@ -1794,7 +1794,7 @@ def test_require_attention_empty_search_box(publish_client):
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 4
-    assert response.context["services_require_attention_percentage"] == 58
+    assert response.context["services_require_attention_percentage"] == 57
 
 
 def test_require_attention_field_in_search_box(publish_client):
@@ -1843,7 +1843,7 @@ def test_require_attention_field_in_search_box(publish_client):
 
     assert response.status_code == 200
     assert len(response.context["table"].data) == 1
-    assert response.context["services_require_attention_percentage"] == 58
+    assert response.context["services_require_attention_percentage"] == 57
 
 
 def test_require_attention_search_no_results(publish_client):
@@ -1881,7 +1881,7 @@ def test_require_attention_search_no_results(publish_client):
 
     assert response.status_code == 200
     assert len(response.context["table"].data) == 0
-    assert response.context["services_require_attention_percentage"] == 34
+    assert response.context["services_require_attention_percentage"] == 33
 
 
 def test_require_attention_seasonal_services(publish_client):
@@ -1991,7 +1991,7 @@ def test_require_attention_stale_otc_effective_date(publish_client):
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 5
-    assert response.context["services_require_attention_percentage"] == 72
+    assert response.context["services_require_attention_percentage"] == 71
 
 
 def test_require_attention_stale_end_date(publish_client):
@@ -2048,7 +2048,7 @@ def test_require_attention_stale_end_date(publish_client):
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 5
-    assert response.context["services_require_attention_percentage"] == 72
+    assert response.context["services_require_attention_percentage"] == 71
 
 
 def test_require_attention_stale_last_modified_date(publish_client):
@@ -2106,7 +2106,7 @@ def test_require_attention_stale_last_modified_date(publish_client):
 
     assert response.status_code == 200
     assert len(response.context["view"].object_list) == 5
-    assert response.context["services_require_attention_percentage"] == 72
+    assert response.context["services_require_attention_percentage"] == 71
 
 
 def test_require_attention_all_variations(publish_client):

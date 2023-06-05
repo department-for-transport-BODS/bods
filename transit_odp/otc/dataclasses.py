@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 from django.utils.timezone import make_aware
 from pydantic import Field, validator
@@ -42,6 +42,7 @@ class Registration(BaseModel):
     tao_covered_by_area: Optional[str] = Field(alias="taoCoveredByArea")
     registration_code: Optional[int] = Field(alias="registrationCode")
     last_modified: Optional[datetime] = Field(alias="lastModifiedOn")
+    local_authorities: Optional[str] = Field(alias="localAuthorities")
 
     @validator(
         "licence_granted_date",
@@ -184,6 +185,20 @@ class Service(BaseModel):
         "service_type_description",
         pre=True,
     )
+    def none_to_str(cls, v):
+        if v is None:
+            return ""
+        return v
+
+
+class LocalAuthority(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+
+    registration_number: str = Field(alias="registrationNumber")
+    local_authorities: Optional[str] = Field(alias="localAuthorities")
+
+    @validator("local_authorities", pre=True)
     def none_to_str(cls, v):
         if v is None:
             return ""
