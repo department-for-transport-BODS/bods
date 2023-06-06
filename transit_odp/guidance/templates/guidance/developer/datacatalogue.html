@@ -131,4 +131,7 @@
     <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Location data catalogue:' %}{% endfilter %}</h4>
     {% include "../snippets/datacatalogue_table.html" with definitions_map=location_definitions %}
 
+    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Operator NOC data catalogue:' %}{% endfilter %}</h4>
+    {% include "../snippets/datacatalogue_table.html" with definitions_map=operator_noc_column_map %}
+
 {% endblock %}
