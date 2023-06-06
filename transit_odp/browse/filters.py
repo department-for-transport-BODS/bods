@@ -1,14 +1,6 @@
 import django_filters as filters
 from django.db.models import Q
 
-from transit_odp.avl.constants import (
-    AWAITING_REVIEW,
-    COMPLIANT,
-    MORE_DATA_NEEDED,
-    NON_COMPLIANT,
-    PARTIALLY_COMPLIANT,
-    UNDERGOING,
-)
 from transit_odp.browse.forms import (
     AVLSearchFilterForm,
     FaresSearchFilterForm,
@@ -60,20 +52,8 @@ class AVLSearchFilter(filters.FilterSet):
         choices=(
             ("", "All statuses"),
             (FeedStatus.live.value, "Published"),
-            (FeedStatus.error.value, "No vehicle activity"),
             (FeedStatus.inactive.value, "Inactive"),
         ),
-    )
-
-    avl_compliance_status_cached = filters.ChoiceFilter(
-        choices=(
-            (UNDERGOING, UNDERGOING),
-            (PARTIALLY_COMPLIANT, PARTIALLY_COMPLIANT),
-            (MORE_DATA_NEEDED, MORE_DATA_NEEDED),
-            (AWAITING_REVIEW, AWAITING_REVIEW),
-            (COMPLIANT, COMPLIANT),
-            (NON_COMPLIANT, NON_COMPLIANT),
-        )
     )
 
     class Meta:
