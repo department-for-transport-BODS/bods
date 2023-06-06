@@ -109,45 +109,18 @@ class LocalAuthorityView(BaseListView):
                 context["services_require_attention_percentage"],
             )
 
-        ordering = self.request.GET.get("ordering", "mapped_name")
-        if ordering == "name":
-            context["ltas"] = {
-                "names": self.lta_name_mapping(
-                    list(self.get_queryset().values_list("name", flat=True))
-                )
-            }
-        elif ordering == "mapped_name":
-            ltas_list = self.lta_name_mapping(
-                list(self.get_queryset().values_list("name", flat=True))
-            )
-            ltas_list.sort(key=lambda lta: lta["mapped_name"])
-            context["ltas"] = {"names": [lta["mapped_name"] for lta in ltas_list]}
-        elif ordering == "-mapped_name":
-            ltas_list = self.lta_name_mapping(
-                list((self.get_queryset().values_list("name", flat=True)))
-            )
-            ltas_list.sort(key=lambda lta: lta["mapped_name"])
-            context["ltas"] = {
-                "names": [lta["mapped_name"] for lta in reversed(ltas_list)]
-            }
+        ltas = {"names": [lta.name for lta in all_ltas_current_page]}
+        context["ltas"] = ltas
         return context
 
     def object_list_lta_mapping(self, object_list):
         new_object_list = []
-        for otc_name, value_name in LTAS_DICT.items():
-            for lta_object in object_list:
+        for lta_object in object_list:
+            for otc_name, value_name in LTAS_DICT.items():
                 if lta_object.name == otc_name:
                     lta_object.name = value_name
                     new_object_list.append(lta_object)
         return new_object_list
-
-    def lta_name_mapping(self, all_otc_ltas: list):
-        ltas_list = []
-        for otc_name, value_name in LTAS_DICT.items():
-            for otc_lta in all_otc_ltas:
-                if otc_lta == otc_name:
-                    ltas_list.append({"name": otc_lta, "mapped_name": value_name})
-        return ltas_list
 
     def get_queryset(self):
         lta_name_list = list(LTAS_DICT.keys())
