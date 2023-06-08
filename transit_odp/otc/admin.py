@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from transit_odp.otc.models import Service
+from transit_odp.otc.models import Service, LocalAuthorityMappingAdmin
 
 
 @admin.register(Service)
@@ -81,3 +81,5 @@ class ServiceAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, instance=None):
         return False
+
+admin.site.register(LocalAuthorityMappingAdmin)

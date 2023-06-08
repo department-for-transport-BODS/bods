@@ -107,3 +107,12 @@ class LocalAuthority(models.Model):
         )
 
     objects = LocalAuthorityManager()
+
+
+class LocalAuthorityMappingAdmin(models.Model):
+    otc_lta_name = models.CharField(max_length=255, unique=True)
+    ui_lta_name = models.CharField(max_length=255)
+    atco_code = models.IntegerField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.otc_lta_name
