@@ -10,13 +10,6 @@
 
 {% block dataset_result_content %}
     <li>
-        <span class="item__key">{% trans 'BODS compliant data:' %}</span>
-        {% if item.avl_compliance_status_cached == "Partially compliant" or item.avl_compliance_status_cached == "Non-compliant" %}
-            <i class="fas fa-exclamation-circle fa"></i>
-        {% endif %}
-        <span class="item__value">{{ item.avl_compliance_status_cached }}</span>
-    </li>
-    <li>
         <span class="item__key">{% trans 'Data type:' %}</span>
         <span class="item__value">
             {% trans 'Bus location data' %}
