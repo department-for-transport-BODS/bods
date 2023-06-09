@@ -38,7 +38,6 @@ class TimetableSearchFilterForm(GOVUKForm):
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
-        initial=FeedStatus.live.value,
     )
 
     is_pti_compliant = forms.NullBooleanField(
@@ -115,7 +114,6 @@ class AVLSearchFilterForm(GOVUKForm):
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
-        initial=FeedStatus.live.value,
     )
 
     def __init__(self, *args, **kwargs):
@@ -156,7 +154,6 @@ class FaresSearchFilterForm(GOVUKForm):
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
-        initial=FeedStatus.live.value,
     )
 
     is_fares_compliant = forms.NullBooleanField(

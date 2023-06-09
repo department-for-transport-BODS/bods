@@ -21,7 +21,7 @@ from transit_odp.users.factories import UserFactory
 pytestmark = pytest.mark.django_db
 
 
-class BaseAVLSearchView:
+class TestBaseAVLSearchView:
     host = DATA_HOST
     url = reverse("avl-search", host=host)
     dataset_type = AVLType
@@ -104,8 +104,8 @@ class BaseAVLSearchView:
         response = client.get(self.url)
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        # filter and show only live datasets
-        assert response.context_data["object_list"].count() == 4
+        # no filtering; so display all published live, expired, error feeds
+        assert response.context_data["object_list"].count() == 6
 
     def test_search_no_filters_inactive_org(self, client_factory):
         self.setup_feeds()
@@ -121,7 +121,7 @@ class BaseAVLSearchView:
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 4
+        assert response.context_data["object_list"].count() == 6
 
     def test_search_filters_status(self, client_factory):
         self.setup_feeds()

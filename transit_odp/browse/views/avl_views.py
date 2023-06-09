@@ -55,20 +55,7 @@ class AVLSearchView(BaseSearchView):
         keywords = self.request.GET.get("q", "").strip()
         if keywords:
             qs = qs.search(keywords)
-
-        status = self.request.GET.getlist("status", [])
-        status_list = []
-        if not self.request.resolver_match.kwargs:
-            if len(status) == 0:
-                status_list = ["live"]
-                qs = qs.filter(status__in=status_list)
         return qs
-
-    def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
-        if not self.request.GET:
-            kwargs["query_params"] = {"status": "Published"}
-        return kwargs
 
 
 class AVLDatasetDetailView(BaseDetailView):
