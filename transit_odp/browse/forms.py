@@ -8,14 +8,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from waffle import flag_is_active
 
-from transit_odp.avl.constants import (
-    AWAITING_REVIEW,
-    COMPLIANT,
-    MORE_DATA_NEEDED,
-    NON_COMPLIANT,
-    PARTIALLY_COMPLIANT,
-    UNDERGOING,
-)
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import ConsumerFeedback, Organisation
@@ -46,7 +38,6 @@ class TimetableSearchFilterForm(GOVUKForm):
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
-        initial=FeedStatus.live.value,
     )
 
     is_pti_compliant = forms.NullBooleanField(
@@ -120,24 +111,8 @@ class AVLSearchFilterForm(GOVUKForm):
         choices=(
             ("", "All statuses"),
             (FeedStatus.live.value, "Published"),
-            (FeedStatus.error.value, "No vehicle activity"),
             (FeedStatus.inactive.value, "Inactive"),
         ),
-        required=False,
-        initial=FeedStatus.live.value,
-    )
-
-    avl_compliance_status_cached = forms.ChoiceField(
-        choices=(
-            ("", "All statuses"),
-            (UNDERGOING, UNDERGOING),
-            (PARTIALLY_COMPLIANT, PARTIALLY_COMPLIANT),
-            (AWAITING_REVIEW, AWAITING_REVIEW),
-            (MORE_DATA_NEEDED, MORE_DATA_NEEDED),
-            (COMPLIANT, COMPLIANT),
-            (NON_COMPLIANT, NON_COMPLIANT),
-        ),
-        label="BODS Compliance",
         required=False,
     )
 
@@ -145,15 +120,11 @@ class AVLSearchFilterForm(GOVUKForm):
         super().__init__(*args, **kwargs)
         # Change field labels
         self.fields["organisation"].label_from_instance = lambda obj: obj.name
-        self.fields["avl_compliance_status_cached"].label += mark_safe(
-            render_to_string("browse/snippets/help_modals/AVL_bods_compliance.html")
-        )
 
     def get_layout(self):
         return Layout(
             Field("organisation", css_class="govuk-!-width-full"),
             Field("status", css_class="govuk-!-width-full"),
-            Field("avl_compliance_status_cached", css_class="govuk-!-width-full"),
             ButtonSubmit("submitform", "submit", content=_("Apply filter")),
         )
 
@@ -183,7 +154,6 @@ class FaresSearchFilterForm(GOVUKForm):
             (FeedStatus.inactive.value, "Inactive"),
         ),
         required=False,
-        initial=FeedStatus.live.value,
     )
 
     is_fares_compliant = forms.NullBooleanField(
