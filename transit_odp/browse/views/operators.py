@@ -1,14 +1,18 @@
-from django.db.models import Count, F
+from math import floor
+
+from django.db.models import Avg, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
 
 from config.hosts import DATA_HOST, PUBLISH_HOST
+from transit_odp.avl.constants import MORE_DATA_NEEDED
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
-from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.organisation.models import Dataset, Organisation
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import get_requires_attention_data
 
@@ -53,6 +57,18 @@ class OperatorDetailView(BaseDetailView):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True).add_nocs_string()
 
+    def get_overall_ppc_score(self, avl_dt):
+        avl_datasets = (
+            avl_dt.add_avl_compliance_status_cached()
+            .add_post_publishing_check_stats()
+            .order_by("avl_feed_status", "-modified")
+            .get_active()
+            .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
+        )
+        return avl_datasets.exclude(percent_matching=float(NO_PPC_DATA)).aggregate(
+            Avg("percent_matching")
+        )
+
     def get_context_data(self, **kwargs):
         is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
         context = super().get_context_data(**kwargs)
@@ -75,20 +91,25 @@ class OperatorDetailView(BaseDetailView):
         except ZeroDivisionError:
             context["services_require_attention_percentage"] = 0
 
-        avl_dataset_revisions = (
-            DatasetRevision.objects.filter(dataset__organisation_id=organisation.id)
-            .filter(dataset__dataset_type=AVLType)
-            .aggregate(dataset_count=Count("dataset_id", distinct=True))
-        )
         avl_datasets = (
-            AVLDataset.objects.filter(organisation=organisation)
-            .annotate(status=F("live_revision__status"))
-            .exclude(status__in=[EXPIRED, INACTIVE])
-            .add_draft_revisions()
+            AVLDataset.objects.filter(
+                organisation=organisation,
+                dataset_type=AVLType,
+            )
+            .select_related("organisation")
+            .select_related("live_revision")
+            .order_by("id")
         )
-        avl_non_compliant_count = avl_datasets.get_needs_attention_count()
-        context["avl_total_datasets"] = avl_dataset_revisions["dataset_count"]
-        context["avl_non_compliant"] = avl_non_compliant_count
+        overall_ppc_score = self.get_overall_ppc_score(avl_datasets)[
+            "percent_matching__avg"
+        ]
+        context.update(
+            {
+                "overall_ppc_score": floor(overall_ppc_score)
+                if overall_ppc_score
+                else overall_ppc_score,
+            }
+        )
 
         fares_datasets = (
             Dataset.objects.filter(
