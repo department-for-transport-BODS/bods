@@ -1,6 +1,32 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "June 2023 (1.27.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An update to enable the BODS team to maintain relationships between data from external sources (OTC and NaPTAN) and Local Transport Authorities Combined Authorities.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improved user experience for consumers to more easily find active published data through the browse screens and the API.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the way we handle OTC data to present the services that are considered active.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "May 2023 (1.26.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
