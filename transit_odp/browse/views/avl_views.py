@@ -55,15 +55,6 @@ class AVLSearchView(BaseSearchView):
         keywords = self.request.GET.get("q", "").strip()
         if keywords:
             qs = qs.search(keywords)
-        # status "live" and "error" is considered as Published for AVL datasets
-        status = self.request.GET.getlist("status", [])
-        if "live" in status:
-            status.append("error")
-        status_list = []
-        if not self.request.resolver_match.kwargs:
-            if len(status) == 0:
-                status_list = ["live", "error"]
-                qs = qs.filter(status__in=status_list)
         return qs
 
 
