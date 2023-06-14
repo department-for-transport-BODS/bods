@@ -18,7 +18,6 @@ from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
-    NO_ACTIVITY,
     ORG_ACTIVE,
     ORG_INACTIVE,
     ORG_NOT_YET_INVITED,
@@ -618,7 +617,7 @@ class TestDatasetQuerySet:
 
     @pytest.mark.parametrize(
         "status, expected",
-        [("live", "published"), ("inactive", "inactive"), ("error", NO_ACTIVITY)],
+        [("live", "published"), ("inactive", "inactive"), ("error", "published")],
     )
     def test_add_pretty_status_for_avl(self, status, expected):
         AVLDatasetRevisionFactory(status=status)

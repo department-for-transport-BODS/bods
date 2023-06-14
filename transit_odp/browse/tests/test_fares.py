@@ -3,7 +3,7 @@ from django_hosts import reverse
 
 from config.hosts import DATA_HOST
 from transit_odp.browse.tests.test_avls import (
-    BaseAVLSearchView,
+    TestBaseAVLSearchView,
     TestUserAVLFeedbackView,
 )
 from transit_odp.naptan.models import AdminArea
@@ -20,7 +20,7 @@ from transit_odp.users.factories import UserFactory
 pytestmark = pytest.mark.django_db
 
 
-class TestFaresSearchView(BaseAVLSearchView):
+class TestFaresSearchView(TestBaseAVLSearchView):
     host = DATA_HOST
     url = reverse("search-fares", host=host)
     dataset_type = FaresType
@@ -76,8 +76,8 @@ class TestFaresSearchView(BaseAVLSearchView):
         response = client.get(self.url)
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        # no filtering; so display all published live
-        assert response.context_data["object_list"].count() == 4
+        # no filtering; so display all datasets
+        assert response.context_data["object_list"].count() == 5
 
     def test_search_no_filters_inactive_org(self, client_factory):
         self.setup_feeds()
@@ -89,7 +89,12 @@ class TestFaresSearchView(BaseAVLSearchView):
             is_published=True,
         )
         client = client_factory(host=self.host)
-        response = client.get(self.url)
+        response = client.get(
+            self.url,
+            data={
+                "status": "live",
+            },
+        )
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
