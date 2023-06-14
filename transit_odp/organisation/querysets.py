@@ -345,7 +345,11 @@ class DatasetQuerySet(models.QuerySet):
         return self.annotate(
             status=Case(
                 When(
-                    Q(live_revision__status__in=["live", "error"]),
+                    Q(live_revision__status="live"),
+                    then=Value("published", output_field=CharField()),
+                ),
+                When(
+                    Q(live_revision__status="error", dataset_type=AVLType),
                     then=Value("published", output_field=CharField()),
                 ),
                 default=F("live_revision__status"),
