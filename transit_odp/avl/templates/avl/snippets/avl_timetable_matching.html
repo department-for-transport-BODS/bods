@@ -7,11 +7,7 @@
     {% endif %}
 
     {% if not properties.avl_timetables_matching %}
-        {% if properties.avl_compliance_status_cached == "Unavailable due to dormant feed" %}
-            {% trans 'Unavailable due to dormant feed' %}
-        {% else %}
-            {% trans 'Undergoing validation' %}
-        {% endif %}
+        {% trans 'Pending' %}
     {% else %}
         {{ properties.avl_timetables_matching }}
         {% trans 'completely matched AVL to Timetables' %}
