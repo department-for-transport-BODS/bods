@@ -172,39 +172,73 @@
                     </div>
                 </div>
             {% endif %}
+
             <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
             <h3 class="govuk-heading-m govuk-!-margin-top-7">
                 {% filter force_escape %}{% trans 'Location data' %}{% endfilter %}
             </h3>
+            <p class="govuk-body">
+                {% filter force_escape %}
+                    {% blocktrans %}
+                        The AVL to Timetables feed matching is a weekly score of a published data
+                        feed. Daily random samples of data packets are collected for each published
+                        feed to be matched and then collated together to create a weekly report along
+                        with a weekly associated summary score for that report. This is usually done
+                        on Monday every week.
+                    {% endblocktrans %}
+                {% endfilter %}
+            </p>
+            <p class="govuk-body">
+                {% filter force_escape %}
+                    {% trans 'This is the latest matching score for this feed.' %}
+                {% endfilter %}
+            </p>
+            <p class="govuk-body">
+                {% filter force_escape %}
+                    {% blocktrans %}
+                        Please note that BODS doesn't check every single packet of data but we
+                        do a random sampling throughout the day in order to determine these
+                        reports and scores.
+                    {% endblocktrans %}
+                {% endfilter %}
+            </p>
+            <p class="govuk-body">
+                {% filter force_escape %}
+                    {% blocktrans %}
+                        Please download the report and work with your technology suppliers to
+                        provide the most accurate data so that download data consumers and
+                        eventually your bus passengers can benefit.
+                    {% endblocktrans %}
+                {% endfilter %}
+            </p>
             <div id="feed-stat-list" class="govuk-grid-row">
                 <div class="govuk-grid-column-one-quarter">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">{{ avl_total_datasets }}</span>
-                        <span class="feed-stat__label">
-                            {% filter force_escape %}{% trans 'Data feeds' %}{% endfilter %}
-                        </span>
-                    </div>
-                </div>
-                <div class="govuk-grid-column-one-half">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">{{ avl_non_compliant }}</span>
-                        <span class="feed-stat__label">
-                            {% filter force_escape %}{% trans 'Non-compliant' %}{% endfilter %}
-                        </span>
-                    </div>
-                    <div class="govuk-!-margin-top-2">
-                        <a class="govuk-link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-                            <i class="fas fa-play govuk-!-margin-right-1">
-                            </i>
-                            {% filter force_escape %}{% trans 'What does this mean?' %}{% endfilter %}
-                        </a>
-                    </div>
+                    {% if overall_ppc_score is not None %}
+                        <div class="feed-stat">
+                            <span class="feed-stat__value">{{ overall_ppc_score|floatformat:"0" }}%</span>
+                            <span class="feed-stat__label">
+                                {% filter force_escape %}{% trans 'Weekly overall AVL to timetables matching score' %}{% endfilter %}
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="feed-stat">
+                            <div>
+                                <span class="feed-stat__value">
+                                    {% trans 'Pending' %}
+                                </span>
+                            </div>
+                            <p class="feed-stat__label">{% trans 'Weekly overall AVL to timetables matching score' %}</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <ul class="govuk-list govuk-!-margin-top-5">
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'ppc-archive' pk1=object.id host hosts.publish %}">
+                        {% filter force_escape %}{% trans 'Download matching report' %}{% endfilter %}
+                    </a>
+                </li>
                 <li class="govuk-!-margin-bottom-3">
                     <a class="govuk-link"
                         href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}&status=live">
