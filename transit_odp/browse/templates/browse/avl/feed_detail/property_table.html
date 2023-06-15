@@ -14,28 +14,10 @@
 
 {% block datatype_content %}
     <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">
-            {% filter force_escape %}{% trans 'BODS Compliant data' %}{% endfilter %}
-            {% include 'browse/snippets/help_modals/AVL_bods_compliance.html' %}
-        </th>
-        {% if show_url %}
-            <td class="govuk-table__cell dont-break-out" colspan="2">
-                <div class="stacked">
-                    <span>
-                        <i class="fas fa-exclamation-circle fa"></i>
-                        {{ property.avl_compliance_status_cached }}
-                    </span>
-                    <a class="govuk-link"
-                        href="{% url "avl:validation-report-download" pk1=property.organisation_id pk=property.id host hosts.publish %}">
-                        {% trans "Download validation report" %}
-                    </a>
-                </div>
-            </td>
-        {% else %}
-            <td class="govuk-table__cell dont-break-out govuk-!-padding-top-0 govuk-!-padding-bottom-5" colspan="2">
-                {{ property.avl_compliance_status_cached }}
-            </td>
-        {% endif %}
+        <th scope="row" class="govuk-table__header">{% trans 'AVL to Timetables feed matching' %}{% include 'publish/snippets/help_modals/AVL_timetables_feed_matching.html' %}</th>
+        <td class="govuk-table__cell govuk-!-padding-3">
+            {% include 'avl/snippets/avl_timetable_matching.html'%}
+        </td>
     </tr>
     <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header">{% trans 'SIRI-VM version' %}</th>
