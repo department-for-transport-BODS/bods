@@ -38,6 +38,7 @@ from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
+    NO_ACTIVITY,
     ORG_ACTIVE,
     ORG_INACTIVE,
     ORG_NOT_YET_INVITED,
@@ -341,6 +342,19 @@ class DatasetQuerySet(models.QuerySet):
             published_at=F("live_revision__published_at"),
         )
 
+    def add_modified_status_for_error(self):
+        """Annotates the queryset with 'live' status if the status is 'error'"""
+        return self.annotate(
+            status=Case(
+                When(
+                    Q(live_revision__status="error"),
+                    then=Value("live", output_field=CharField()),
+                ),
+                default=F("live_revision__status"),
+                output_field=CharField(),
+            )
+        )
+
     def add_pretty_status(self):
         return self.annotate(
             status=Case(
@@ -350,7 +364,7 @@ class DatasetQuerySet(models.QuerySet):
                 ),
                 When(
                     Q(live_revision__status="error", dataset_type=AVLType),
-                    then=Value("published", output_field=CharField()),
+                    then=Value(NO_ACTIVITY, output_field=CharField()),
                 ),
                 default=F("live_revision__status"),
                 output_field=CharField(),
