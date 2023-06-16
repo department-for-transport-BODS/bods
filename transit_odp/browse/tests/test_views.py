@@ -1052,8 +1052,7 @@ class TestOperatorDetailView:
         assert response.status_code == 200
         context = response.context_data
 
-        assert context["avl_total_datasets"] == num_datasets
-        assert context["avl_non_compliant"] == 1
+        assert context["overall_ppc_score"] is None
 
     def test_operator_detail_view_fares_stats(self, request_factory: RequestFactory):
         org = OrganisationFactory()
