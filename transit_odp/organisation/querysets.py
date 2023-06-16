@@ -38,6 +38,7 @@ from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
+    NO_ACTIVITY,
     ORG_ACTIVE,
     ORG_INACTIVE,
     ORG_NOT_YET_INVITED,
@@ -363,7 +364,7 @@ class DatasetQuerySet(models.QuerySet):
                 ),
                 When(
                     Q(live_revision__status="error", dataset_type=AVLType),
-                    then=Value("published", output_field=CharField()),
+                    then=Value(NO_ACTIVITY, output_field=CharField()),
                 ),
                 default=F("live_revision__status"),
                 output_field=CharField(),
