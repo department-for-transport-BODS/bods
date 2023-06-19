@@ -117,7 +117,7 @@ class LocalAuthorityView(BaseListView):
         new_object_list = []
         for lta_object in object_list:
             for otc_name, value_name in LTAS_DICT.items():
-                if lta_object.name == otc_name:
+                if lta_object.name.strip() == otc_name:
                     lta_object.name = value_name
                     new_object_list.append(lta_object)
         return new_object_list
@@ -183,7 +183,7 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def lta_name_mapping(self, lta_object):
         for otc_name, value_name in LTAS_DICT.items():
-            if lta_object.name == otc_name:
+            if lta_object.name.strip() == otc_name:
                 lta_object.name = value_name
         return lta_object
 
@@ -195,7 +195,7 @@ class LocalAuthorityExportView(View):
 
     def lta_name_mapping(self):
         for otc_name, value_name in LTAS_DICT.items():
-            if self.lta.name == otc_name:
+            if self.lta.name.strip() == otc_name:
                 self.lta.name = value_name
         return self.lta
 
