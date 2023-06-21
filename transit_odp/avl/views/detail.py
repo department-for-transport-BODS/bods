@@ -92,7 +92,7 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
                 + "%"
             )
         except (ObjectDoesNotExist, ZeroDivisionError, AttributeError):
-            pass
+            return str(0) + "%"
 
         if hasattr(revision, "metadata"):
             siri_version = revision.metadata.schema_version
