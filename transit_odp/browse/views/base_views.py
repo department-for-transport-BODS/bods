@@ -105,7 +105,7 @@ class BaseSearchView(BaseFilterView):
 
         kwargs["query_params"] = self.translate_query_params()
         kwargs["q"] = self.request.GET.get("q", "")
-        kwargs["ordering"] = self.request.GET.get("ordering", "name")
+        kwargs["ordering"] = self.request.GET.get("ordering", "-published_at")
         return kwargs
 
 
