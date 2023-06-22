@@ -87,7 +87,7 @@ class ServiceAdmin(admin.ModelAdmin):
 class LocalAuthoritiesForm(forms.ModelForm):
     class Meta:
         model = LocalAuthority
-        fields = '__all__'
+        fields = ["name", "ui_lta_name", "atco_code"]
 
 
 @admin.register(LocalAuthority)
@@ -100,14 +100,12 @@ class LocalAuthorityAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-    
+
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ['name']
+            return ["name"]
         else:
             return []
-
-
