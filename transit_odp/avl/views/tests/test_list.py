@@ -1,4 +1,3 @@
-import re
 from datetime import date, timedelta
 from math import floor
 
@@ -7,7 +6,7 @@ from django.db.models.fields import timezone
 from django_hosts.resolvers import reverse
 
 import config.hosts
-from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
+from transit_odp.avl.constants import MORE_DATA_NEEDED, PENDING
 from transit_odp.avl.factories import PostPublishingCheckReportFactory
 from transit_odp.avl.models import PPCReportType
 from transit_odp.organisation.constants import INACTIVE, AVLType
@@ -376,7 +375,7 @@ class TestAVLListView:
             granularity=PPCReportType.WEEKLY,
             created=today,
         )
-        expected_score = UNDERGOING
+        expected_score = PENDING
 
         client = client_factory(host=self.host)
         client.force_login(user=user)
@@ -395,35 +394,7 @@ class TestAVLListView:
             organisation=organisation,
             dataset_type=AVLType,
         )
-        expected_score = UNDERGOING
-
-        client = client_factory(host=self.host)
-        client.force_login(user=user)
-        url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
-        response = client.get(url)
-        table = response.context["table"]
-        assert len(table.rows) == 1
-        row = table.rows[0]
-        assert row.get_cell("percent_matching") == expected_score
-
-    def test_table_ppc_score_dormant(self, client_factory):
-        organisation = OrganisationFactory()
-        user = OrgStaffFactory(organisations=(organisation,))
-        today = date.today()
-
-        dataset = DatasetFactory(
-            organisation=organisation,
-            dataset_type=AVLType,
-            avl_compliance_cached__status=MORE_DATA_NEEDED,
-        )
-        PostPublishingCheckReportFactory(
-            dataset=dataset,
-            vehicle_activities_analysed=10,
-            vehicle_activities_completely_matching=1,
-            granularity=PPCReportType.WEEKLY,
-            created=today,
-        )
-        expected_score = MORE_DATA_NEEDED
+        expected_score = PENDING
 
         client = client_factory(host=self.host)
         client.force_login(user=user)
@@ -493,44 +464,6 @@ class TestAVLFeedMatchingView:
         assert (
             response.context_data["properties"]["avl_timetables_matching"] == expected
         )
-
-    def test_feed_more_data_needed(self, client_factory):
-        """
-        GIVEN : an AVL dataset with avl_compliance_cached__status =
-                'Unavailable due to dormant feed' (MORE_DATA_NEEDED)
-
-        WHEN  : An invalid PostPublishingCheckReport has been created with
-                1. dataset created in GIVEN
-                2. granularity = daily
-
-        THEN  : the view should display the table with 2 rows with
-                'Unavailable due to dormant feed'
-        """
-        organisation = OrganisationFactory()
-        user = OrgStaffFactory(organisations=(organisation,))
-        today = date.today()
-        dataset = DatasetFactory(
-            organisation=organisation,
-            dataset_type=AVLType,
-            avl_compliance_cached__status=MORE_DATA_NEEDED,
-        )
-        PostPublishingCheckReportFactory(
-            dataset=dataset,
-            vehicle_activities_analysed=234,
-            vehicle_activities_completely_matching=123,
-            granularity=PPCReportType.DAILY,
-            created=today,
-        )
-        client = client_factory(host=self.host)
-        client.force_login(user=user)
-        url = reverse(
-            "avl:feed-detail", args=(organisation.id, dataset.id), host=self.host
-        )
-        response = client.get(url)
-
-        RE_WORD = re.compile(MORE_DATA_NEEDED)
-        occur_more_data_needed = RE_WORD.findall(str(response.content))
-        assert len(occur_more_data_needed) == 2
 
     def test_each_feed_ppc_score_post_publishing_more_rows(
         self,
