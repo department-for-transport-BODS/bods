@@ -117,14 +117,22 @@ class LocalAuthorityView(BaseListView):
         new_object_list = []
         for lta_object in object_list:
             for otc_name, value_name in LTAS_DICT.items():
-                if lta_object.name.strip() == otc_name:
+                if lta_object.name.strip() == otc_name.strip():
                     lta_object.name = value_name
                     new_object_list.append(lta_object)
         return new_object_list
 
+    def remove_whitespace_otc_name(self, otc_objects):
+        for otc_object in otc_objects:
+            otc_object.name = otc_object.name.strip()
+        return otc_objects
+
     def get_queryset(self):
         lta_name_list = list(LTAS_DICT.keys())
-        qs = self.model.objects.filter(name__in=lta_name_list)
+        otc_objects = self.remove_whitespace_otc_name(self.model.objects.all())
+        qs = otc_objects.filter(
+            name__in=[lta_name.strip() for lta_name in lta_name_list]
+        )
         # Add annotated field "mapped_name"
         qs = qs.annotate(
             mapped_name=Case(
@@ -183,7 +191,7 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def lta_name_mapping(self, lta_object):
         for otc_name, value_name in LTAS_DICT.items():
-            if lta_object.name.strip() == otc_name:
+            if lta_object.name.strip() == otc_name.strip():
                 lta_object.name = value_name
         return lta_object
 
@@ -195,7 +203,7 @@ class LocalAuthorityExportView(View):
 
     def lta_name_mapping(self):
         for otc_name, value_name in LTAS_DICT.items():
-            if self.lta.name.strip() == otc_name:
+            if self.lta.name.strip() == otc_name.strip():
                 self.lta.name = value_name
         return self.lta
 
