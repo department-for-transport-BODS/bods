@@ -139,7 +139,7 @@ class TestBaseAVLSearchView:
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 4
+        assert response.context_data["object_list"].count() == 5
 
     def test_search_filters_operator(self, client_factory):
         self.setup_feeds()
