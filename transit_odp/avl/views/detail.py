@@ -91,9 +91,7 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
                 )
                 + "%"
             )
-        except ZeroDivisionError:
-            return str(0) + "%"
-        except (ObjectDoesNotExist, AttributeError):
+        except (ObjectDoesNotExist, ZeroDivisionError, AttributeError):
             pass
 
         if hasattr(revision, "metadata"):

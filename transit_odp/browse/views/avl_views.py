@@ -2,6 +2,7 @@ import logging
 
 from allauth.account.adapter import get_adapter
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
@@ -14,7 +15,7 @@ from transit_odp.avl.constants import (
     NON_COMPLIANT,
     PARTIALLY_COMPLIANT,
 )
-from transit_odp.avl.models import CAVLDataArchive
+from transit_odp.avl.models import CAVLDataArchive, PostPublishingCheckReport
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.filters import AVLSearchFilter
 from transit_odp.browse.tables import DatasetPaginatorTable
@@ -107,6 +108,26 @@ class AVLDatasetDetailView(BaseDetailView):
             )
             feed_api = f"{feed_api}?api_key={user.auth_token}"
 
+        kwargs["pk1"] = dataset.organisation_id
+
+        ppc_weekly_score = None
+        try:
+            ppc_avl_dataset = (
+                PostPublishingCheckReport.objects.filter(granularity="weekly")
+                .filter(dataset__id=self.object.id)
+                .order_by("-created")
+            ).first()
+            ppc_weekly_score = (
+                str(
+                    ppc_avl_dataset.vehicle_activities_completely_matching
+                    * 100
+                    // ppc_avl_dataset.vehicle_activities_analysed,
+                )
+                + "%"
+            )
+        except (ObjectDoesNotExist, ZeroDivisionError, AttributeError):
+            pass
+
         kwargs.update(
             {
                 "notification": is_subscribed,
@@ -115,6 +136,7 @@ class AVLDatasetDetailView(BaseDetailView):
                 "show_url": show_url,
             }
         )
+        kwargs["properties"] = {"avl_timetables_matching": ppc_weekly_score}
 
         return kwargs
 
