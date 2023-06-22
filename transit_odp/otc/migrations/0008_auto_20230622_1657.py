@@ -6,27 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('otc', '0007_localauthority'),
+        ("otc", "0007_localauthority"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='localauthority',
-            options={'verbose_name': 'Local Authority', 'verbose_name_plural': 'Local Authorities'},
+            name="localauthority",
+            options={
+                "verbose_name": "Local Authority",
+                "verbose_name_plural": "Local Authorities",
+            },
         ),
         migrations.AddField(
-            model_name='localauthority',
-            name='atco_code',
+            model_name="localauthority",
+            name="atco_code",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='localauthority',
-            name='ui_lta_name',
+            model_name="localauthority",
+            name="ui_lta_name",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='localauthority',
-            name='name',
+            model_name="localauthority",
+            name="name",
             field=models.TextField(blank=True, unique=True),
         ),
     ]
