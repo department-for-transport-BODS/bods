@@ -112,8 +112,7 @@ class LocalAuthority(models.Model):
 
     def __str__(self) -> str:
         return self.name
-    
-    class Meta:
-        verbose_name_plural = 'Local Authorities'
-        verbose_name = 'Local Authority'
 
+    class Meta:
+        verbose_name_plural = "Local Authorities"
+        verbose_name = "Local Authority"
