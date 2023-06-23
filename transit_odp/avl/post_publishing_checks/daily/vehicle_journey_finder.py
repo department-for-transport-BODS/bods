@@ -435,6 +435,15 @@ class VehicleJourneyFinder:
             return []
         return service_orgs
 
+    def get_service_code(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[List[TransXChangeElement]]:
+        try:
+            service_code = vj.txc_xml.get_service_codes()
+        except NoElement:
+            return []
+        return service_code
+
     def get_working_days(
         self, org: TransXChangeElement
     ) -> Optional[TransXChangeElement]:
@@ -534,13 +543,37 @@ class VehicleJourneyFinder:
             )
             return False
 
-        if len(vehicle_journeys) > 1:
+        return True
+
+    def filter_by_service_code(
+        self, vehicle_journeys: List[TxcVehicleJourney], result: ValidationResult
+    ):
+        for vj in reversed(vehicle_journeys):
+            txc_file_list = []
+            service_code_list = []
+            txc_file_list.append(vj.txc_xml)
+            service_code = self.get_service_code(vj)
+            service_code_list.append(service_code)
+
+        txc_xml_set = set(txc_file_list)
+        service_code_set = set(service_code_list)
+
+        if len(txc_xml_set) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
-                "Found more than one matching vehicle journey in timetables",
+                "Found more than one matching vehicle journey in \
+                timetables belonging to a single service code",
             )
             return False
-
+        elif len(service_code_set) == 1:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "Found more than one matching vehicle journey in \
+                timetables belonging to a single service code",
+            )
+            return False
+        elif len(service_code_set) > 1:
+            return False
         return True
 
     def record_journey_match(
@@ -621,6 +654,9 @@ class VehicleJourneyFinder:
                 recorded_at_time, vehicle_journeys, result
             ):
                 return None
+
+        if not self.filter_by_service_code(vehicle_journeys, result):
+            return None
 
         # If we get to this point, we've matched the SIRI-VM MonitoredVehicleJourney
         # to exactly one TXC VehicleJourney. Update result to record a match.
