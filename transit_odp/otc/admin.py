@@ -96,6 +96,7 @@ class LocalAuthorityAdmin(admin.ModelAdmin):
     list_display = ("name", "ui_lta_name", "atco_code")
     search_fields = ("name", "ui_lta_name")
     list_filter = ("name",)
+    ordering = ("name",)
     form = LocalAuthoritiesForm
 
     def has_add_permission(self, request):
