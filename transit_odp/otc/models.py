@@ -94,8 +94,10 @@ class Service(models.Model):
 
 
 class LocalAuthority(models.Model):
-    name = models.TextField(blank=True, null=False)
+    name = models.TextField(blank=True, null=False, unique=True)
     registration_numbers = models.ManyToManyField(Service, related_name="registration")
+    ui_lta_name = models.CharField(blank=True, max_length=255, null=True)
+    atco_code = models.IntegerField(blank=True, null=True)
 
     @classmethod
     def from_registry_lta(cls, registry_lta: RegistryLocalAuthority):
@@ -107,3 +109,10 @@ class LocalAuthority(models.Model):
         )
 
     objects = LocalAuthorityManager()
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Local Authorities"
+        verbose_name = "Local Authority"
