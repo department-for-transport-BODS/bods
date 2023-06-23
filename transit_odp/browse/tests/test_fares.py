@@ -26,6 +26,24 @@ class TestFaresSearchView(TestBaseAVLSearchView):
     dataset_type = FaresType
     template_path = "browse/fares/search.html"
 
+    def test_search_filters_status(self, client_factory):
+        self.setup_feeds()
+        client = client_factory(host=self.host)
+        response = client.get(
+            self.url,
+            data={
+                "q": "",
+                "area": "",
+                "organisation": "",
+                "status": FeedStatus.live.value,
+                "start": "",
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == self.template_path
+        assert response.context_data["object_list"].count() == 4
+
     def test_search_filters_admin_area(self, client_factory):
         self.setup_feeds()
         fished_out_admin_area = AdminArea.objects.get(name="A")
