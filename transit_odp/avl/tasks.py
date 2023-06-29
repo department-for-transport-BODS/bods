@@ -117,12 +117,15 @@ def task_validate_avl_feed(task_id: str):
 def task_create_sirivm_zipfile(self):
     URL = f"{settings.CAVL_CONSUMER_URL}/datafeed"
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
-
+    start = time.time()
     try:
         response = requests.get(URL)
+        end_time_response = timezone.now().strftime("%Y-%m-%d_%H%M%S")
+        logger.debug(f"Request to {URL} took {end_time_response-start:.2f} seconds")
     except RequestException:
         logger.error("Unable to retrieve siri vm data.", exc_info=True)
     else:
+        start_file_op = time.time()
         bytesio = io.BytesIO()
         with ZipFile(bytesio, mode="w", compression=ZIP_DEFLATED) as zf:
             zf.writestr("siri.xml", response.content)
@@ -135,9 +138,14 @@ def task_create_sirivm_zipfile(self):
 
         if archive is None:
             archive = CAVLDataArchive(data_format=CAVLDataArchive.SIRIVM)
-
+        end_database_op = time.time()
+        logger.debug(
+            f"Database operation took {end_database_op-start_file_op:.2f} seconds"
+        )
         archive.data = file_
         archive.save()
+        end = time.time()
+        logger.debug(f"File+Archive operation took {end-end_database_op:.2f} seconds")
 
 
 @shared_task()
@@ -149,20 +157,24 @@ def task_create_gtfsrt_zipfile():
     archiver = GTFSRTArchiver(url)
     archiver.archive()
     end = time.time()
-    logger.debug(_prefix + f"Finished archivng in {end-start:.2f} seconds.")
+    logger.debug(_prefix + f"Finished archiving in {end-start:.2f} seconds.")
 
 
 @shared_task(bind=True)
 def task_create_sirivm_tfl_zipfile(self):
+    start = time.time()
+    logger.debug(f"Starting to create sirivm_tfl_zipfile with url")
     url = f"{settings.CAVL_CONSUMER_URL}/datafeed"
     params = {"operatorRef": "TFLO"}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
-
     try:
         response = requests.get(url, params=params, timeout=30)
+        api_end_time = time.time()
+        logger.debug(f"Request to cavl took {api_end_time-start:.2f} seconds")
     except RequestException:
         logger.error("Unable to retrieve siri vm data for TfL.", exc_info=True)
     else:
+        start_file_creation = time.time()
         bytesio = io.BytesIO()
         with ZipFile(bytesio, mode="w", compression=ZIP_DEFLATED) as zf:
             zf.writestr("siri_tfl.xml", response.content)
@@ -175,9 +187,14 @@ def task_create_sirivm_tfl_zipfile(self):
 
         if archive is None:
             archive = CAVLDataArchive(data_format=CAVLDataArchive.SIRIVM_TFL)
-
+        end_database_op = time.time()
+        logger.debug(
+            f"Database operation completed in {end_database_op-start_file_creation:.2f} seconds"
+        )
         archive.data = file_
         archive.save()
+        end = time.time()
+        logger.debug(f"AWS bucket operation took {end-end_database_op:.2f} seconds")
 
 
 @shared_task(ignore_result=True)
