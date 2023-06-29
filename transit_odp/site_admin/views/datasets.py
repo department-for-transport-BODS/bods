@@ -119,7 +119,6 @@ class OrganisationAVLListView(BaseOrganisationListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"title": _(f"{ self.organisation.name } location data feeds")})
-
         return context
 
 
@@ -136,7 +135,6 @@ class OrganisationFaresListView(BaseOrganisationListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"title": _(f"{ self.organisation.name } fares data sets")})
-
         return context
 
 
@@ -157,5 +155,4 @@ class OrganisationTimetableListView(BaseOrganisationListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"title": _(f"{ self.organisation.name } timetables data sets")})
-
         return context

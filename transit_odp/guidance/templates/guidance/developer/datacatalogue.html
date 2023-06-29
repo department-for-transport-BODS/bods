@@ -71,8 +71,8 @@
             <li>
                 {% filter force_escape %}
                     {% blocktrans %}
-                    Fares data catalogue: this contains a 
-                    detailed granular view of the fares data within BODS.
+                        Fares data catalogue: this contains a
+                        detailed granular view of the fares data within BODS.
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
@@ -82,21 +82,24 @@
                         Organisations data catalogue: this contains
                         helpful counts of data at an organisation level:
                         which is at the level of the publishing operators
-                        (e.g. overall service data)
+                        (e.g. overall service data).
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
             <li>
                 {% filter force_escape %}
                     {% blocktrans %}
-                        Location data catalogue: this contains an overview of the location data within BODS.
+                        Location data catalogue: this contains an overview of the
+                        location data within BODS.
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
             <li>
                 {% filter force_escape %}
                     {% blocktrans %}
-                        Operator NOC data catalogue: this describes all organisations on BODS and the National Operator Codes (NOCs) that are associated with them.
+                        Operator NOC data catalogue: this describes all
+                        organisations on BODS and the National Operator Codes
+                        (NOCs) that are associated with them.
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
@@ -127,5 +130,8 @@
 
     <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Location data catalogue:' %}{% endfilter %}</h4>
     {% include "../snippets/datacatalogue_table.html" with definitions_map=location_definitions %}
+
+    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Operator NOC data catalogue:' %}{% endfilter %}</h4>
+    {% include "../snippets/datacatalogue_table.html" with definitions_map=operator_noc_column_map %}
 
 {% endblock %}

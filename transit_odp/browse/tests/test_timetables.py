@@ -108,7 +108,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
         assert translated_query_params["organisation"] == self.organisation1.name
 
     @pytest.mark.parametrize(
-        "is_pti_compliant,expected_results", (("True", 4), ("False", 4), ("", 8))
+        "is_pti_compliant,expected_results", (("True", 5), ("False", 4), ("", 9))
     )
     def test_can_search_using_bods_compliance(
         self, client_factory, is_pti_compliant, expected_results
@@ -150,7 +150,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 4
+        assert response.context_data["object_list"].count() == 5
 
 
 class TestUserTimetableFeedbackView(TestUserAVLFeedbackView):

@@ -7,6 +7,8 @@ from defusedxml.ElementTree import ParseError
 from lxml import etree
 
 from transit_odp.validate.exceptions import ValidationException
+from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
+
 from transit_odp.validate.utils import get_file_size
 
 logger = logging.getLogger(__name__)
@@ -33,7 +35,7 @@ class DangerousXML(XMLValidationException):
 
 
 class FileValidator:
-    def __init__(self, source, max_file_size=5e9):
+    def __init__(self, source, max_file_size=10e9):
         self.source = source
         if self.is_file:
             self.source.seek(0)
@@ -135,10 +137,14 @@ class XMLValidator(FileValidator):
 
 def validate_xml_files_in_zip(zip_file, schema=None):
     """Validate all the xml files in a zip archive."""
+    context = DatasetPipelineLoggerContext(component_name="FaresPipeline")
+    adapter = PipelineAdapter(logger, {"context": context})
     with zipfile.ZipFile(zip_file) as zout:
         filenames = [name for name in zout.namelist() if name.endswith("xml")]
         lxml_schema = get_lxml_schema(schema)
-        for name in filenames:
+        total_files = len(filenames)
+        for index, name in enumerate(filenames, 1):
+            adapter.info(f"XML Validation of file {index} of {total_files} - {name}.")
             with zout.open(name) as xmlout:
                 XMLValidator(xmlout, schema=lxml_schema).validate()
 

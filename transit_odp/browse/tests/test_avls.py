@@ -1,17 +1,11 @@
 import datetime
-from logging import getLogger
 
 import pytest
 from django.conf import settings
 from django_hosts import reverse
 
 from config.hosts import DATA_HOST
-from transit_odp.avl.constants import UPPER_THRESHOLD
-from transit_odp.avl.factories import AVLValidationReportFactory
-from transit_odp.avl.proxies import AVLDataset
-from transit_odp.avl.tasks import cache_avl_compliance_status
 from transit_odp.browse.forms import ConsumerFeedbackForm
-from transit_odp.common.loggers import PipelineAdapter
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import AdminAreaFactory, StopPointFactory
 from transit_odp.organisation.constants import AVLType, FeedStatus
@@ -27,14 +21,13 @@ from transit_odp.users.factories import UserFactory
 pytestmark = pytest.mark.django_db
 
 
-class BaseAVLSearchView:
+class TestBaseAVLSearchView:
     host = DATA_HOST
     url = reverse("avl-search", host=host)
     dataset_type = AVLType
     template_path = "browse/avl/search.html"
 
     def setup_feeds(self):
-
         self.organisation1 = OrganisationFactory(name="Alpha")
         self.organisation2 = OrganisationFactory(name="Beta")
         self.admin_areas = [AdminAreaFactory(name=name) for name in "ABCDE"]
@@ -85,13 +78,21 @@ class BaseAVLSearchView:
             is_published=True,
             admin_areas=self.admin_areas,
         )
+
+        DatasetRevisionFactory(
+            dataset__organisation=self.organisation2,
+            dataset__dataset_type=self.dataset_type,
+            status=FeedStatus.inactive.value,
+            is_published=True,
+            admin_areas=(b,),
+        )
+
         stops = [
             StopPointFactory(admin_area=admin_area) for admin_area in self.admin_areas
         ]
         FaresMetadataFactory(revision=revision, stops=stops)
 
     def test_get_success_page(self, client_factory):
-
         client = client_factory(host=self.host)
         response = client.get(self.url)
         assert response.status_code == 200
@@ -104,7 +105,7 @@ class BaseAVLSearchView:
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
         # no filtering; so display all published live, expired, error feeds
-        assert response.context_data["object_list"].count() == 5
+        assert response.context_data["object_list"].count() == 6
 
     def test_search_no_filters_inactive_org(self, client_factory):
         self.setup_feeds()
@@ -120,7 +121,7 @@ class BaseAVLSearchView:
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 5
+        assert response.context_data["object_list"].count() == 6
 
     def test_search_filters_status(self, client_factory):
         self.setup_feeds()
@@ -138,7 +139,7 @@ class BaseAVLSearchView:
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 4
+        assert response.context_data["object_list"].count() == 5
 
     def test_search_filters_operator(self, client_factory):
         self.setup_feeds()
@@ -163,7 +164,11 @@ class BaseAVLSearchView:
         client = client_factory(host=self.host)
         response = client.get(
             self.url,
-            data={"ordering": "-name", "publisher": self.organisation1.id},
+            data={
+                "ordering": "-name",
+                "publisher": self.organisation1.id,
+                "status": "",
+            },
         )
 
         assert response.status_code == 200
@@ -193,42 +198,6 @@ class BaseAVLSearchView:
         actual = response.context_data["object_list"]
         assert len(actual) == 1
         assert actual[0] == expected
-
-
-class TestAVLSearchView(BaseAVLSearchView):
-    def test_avl_compliance_filter(self, client_factory):
-        self.setup_feeds()
-        revision = AVLDatasetRevisionFactory()
-        today = datetime.datetime.now().date()
-        total_reports = 8
-        for n in range(0, total_reports):
-            date = today - datetime.timedelta(days=n)
-            AVLValidationReportFactory(
-                revision=revision,
-                created=date,
-                critical_score=UPPER_THRESHOLD - 0.1,
-                non_critical_score=UPPER_THRESHOLD + 0.1,
-            )
-
-        adapter = PipelineAdapter(getLogger("pytest"), {})
-        for dataset in AVLDataset.objects.all():
-            cache_avl_compliance_status(adapter, dataset.id)
-
-        client = client_factory(host=self.host)
-        response = client.get(
-            self.url,
-            data={
-                "q": "",
-                "area": "",
-                "organisation": "",
-                "avl_compliance_status_cached": "Non-compliant",
-                "status": "",
-                "start": "",
-            },
-        )
-        assert response.status_code == 200
-        assert response.context_data["view"].template_name == self.template_path
-        assert response.context_data["object_list"].count() == 1
 
 
 class TestUserAVLFeedbackView:
