@@ -1,4 +1,5 @@
 import io
+import time
 from logging import getLogger
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -68,24 +69,42 @@ class ConsumerAPIArchiver:
             raise ArchivingError(msg)
         else:
             self._access_time = timezone.now()
+            logger.info(
+                f"Total time elapsed to get response from {self.url} is {response.elapsed.total_seconds()} for job-task_create_gtfsrt_zipfile"
+            )
             return response.content
 
     def get_file(self, content):
+        start_get_file_op = time.time()
         bytesio = io.BytesIO()
         with ZipFile(bytesio, mode="w", compression=ZIP_DEFLATED) as zf:
             zf.writestr(self.content_filename, content)
+        end_file_op = time.time()
+        logger.info(
+            f"File operation took {end_file_op-start_get_file_op:.2f} seconds for job-task_create_gtfsrt_zipfile"
+        )
         return bytesio
 
     def get_object(self):
+        start_db_op = time.time()
         archive = CAVLDataArchive.objects.filter(data_format=self.data_format).last()
         if archive is None:
             archive = CAVLDataArchive(data_format=self.data_format)
+        end_db_op = time.time()
+        logger.info(
+            f"File operation took {end_db_op-start_db_op:.2f} seconds for job-task_create_gtfsrt_zipfile"
+        )
         return archive
 
     def save_to_database(self, bytesio):
+        start_s3_op = time.time()
         file_ = File(bytesio, name=self.filename)
         self._archive.data = file_
         self._archive.save()
+        end_s3_op = time.time()
+        logger.info(
+            f"S3 archive operation took {end_s3_op-start_s3_op:.2f} seconds for job-task_create_gtfsrt_zipfile"
+        )
 
 
 class SiriVMArchiver(ConsumerAPIArchiver):
