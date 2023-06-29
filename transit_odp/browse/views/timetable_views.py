@@ -1,4 +1,5 @@
 import logging
+import time
 from collections import namedtuple
 from datetime import datetime, timedelta
 
@@ -334,7 +335,12 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def get(self, request, *args, **kwargs):
         if self.kwargs.get("id") == TravelineRegions.ALL.lower():
+            db_starttime = datetime.now()
             ResourceRequestCounter.from_request(request)
+            db_endtime = datetime.now()
+            logger.info(
+                f"Database call for GTFS ResourceRequestCounter took {(db_endtime-db_starttime).total_seconds()} seconds"
+            )
         return self.render_to_response()
 
     def render_to_response(self):
@@ -345,19 +351,30 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
         return FileResponse(gtfs.file, filename=gtfs.filename, as_attachment=True)
 
     def get_download_file(self, id_):
+        s3_start = datetime.now()
         downloader = GTFSFileDownloader(get_gtfs_bucket_service)
         gtfs = downloader.download_file_by_id(id_)
+        s3_endtime = datetime.now()
+        logger.info(
+            f"S3 bucket download for GTFS took {(s3_endtime-s3_start).total_seconds()} seconds"
+        )
         return gtfs
 
 
 class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
     def get_object(self, queryset=None):
+        db_starttime = datetime.now()
         try:
-            return BulkDataArchive.objects.filter(
+            bulk_data_archive = BulkDataArchive.objects.filter(
                 dataset_type=TimetableType,
                 compliant_archive=False,
                 traveline_regions="All",
             ).earliest()  # as objects are already ordered by '-created' in model Meta
+            db_endtime = datetime.now()
+            logger.info(
+                f"Database call for bulk archive took {(db_endtime-db_starttime).total_seconds()} seconds"
+            )
+            return bulk_data_archive
         except BulkDataArchive.DoesNotExist:
             raise Http404(
                 _("No %(verbose_name)s found matching the query")
@@ -365,7 +382,13 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             )
 
     def get_download_file(self):
-        return self.object.data
+        s3_start = datetime.now()
+        data = self.object.data
+        s3_endtime = datetime.now()
+        logger.info(
+            f"S3 bucket download for bulk archive took {(s3_endtime-s3_start).total_seconds()} seconds"
+        )
+        return data
 
 
 class DownloadBulkDataArchiveRegionsView(DownloadView):
@@ -374,12 +397,18 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
         return self.render_to_response()
 
     def get_object(self, region_code: str = "All"):
+        db_starttime = datetime.now()
         try:
-            return BulkDataArchive.objects.filter(
+            region_bulk_data_archive = BulkDataArchive.objects.filter(
                 dataset_type=TimetableType,
                 compliant_archive=False,
                 traveline_regions=region_code,
             ).earliest()  # as objects are already ordered by '-created' in model Meta
+            db_endtime = datetime.now()
+            logger.info(
+                f"Database call for region-wise bulk archive took {(db_endtime-db_starttime).total_seconds()} seconds"
+            )
+            return region_bulk_data_archive
         except BulkDataArchive.DoesNotExist:
             raise Http404(
                 _("No %(verbose_name)s found matching the query")
@@ -387,7 +416,13 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
             )
 
     def get_download_file(self, *args):
-        return self.object.data
+        s3_start = datetime.now()
+        data = self.object.data
+        s3_endtime = datetime.now()
+        logger.info(
+            f"S3 bucket download for region-wise bulk archive took {(s3_endtime-s3_start).total_seconds()} seconds"
+        )
+        return data
 
 
 class DownloadCompliantBulkDataArchiveView(DownloadView):
