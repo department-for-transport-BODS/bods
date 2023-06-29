@@ -120,7 +120,7 @@ def task_create_sirivm_zipfile(self):
     start = time.time()
     try:
         response = requests.get(URL)
-        end_time_response = timezone.now().strftime("%Y-%m-%d_%H%M%S")
+        end_time_response = time.time()
         logger.debug(f"Request to {URL} took {end_time_response-start:.2f} seconds")
     except RequestException:
         logger.error("Unable to retrieve siri vm data.", exc_info=True)
