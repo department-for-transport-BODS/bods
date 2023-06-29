@@ -145,7 +145,7 @@ def task_create_sirivm_zipfile(self):
         archive.data = file_
         archive.save()
         end = time.time()
-        logger.debug(f"File+Archive operation took {end-end_database_op:.2f} seconds")
+        logger.debug(f"S3 archive operation took {end-end_database_op:.2f} seconds")
 
 
 @shared_task()
