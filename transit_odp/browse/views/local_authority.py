@@ -1,11 +1,12 @@
+from collections import OrderedDict
 from datetime import timedelta
 from typing import Dict, Optional
 
-from django.db.models import Case, CharField, Subquery, Value, When
+from django.db.models import Subquery
+from django.db.models.functions import Trim
 from django.http import HttpResponse
 from django.views import View
 
-from transit_odp.browse.lta_constants import LTAS_DICT
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
@@ -25,6 +26,8 @@ STALENESS_STATUS = [
     "Stale - 12 months old",
     "Stale - OTC Variation",
 ]
+
+COMBINED_AUTHORITY_DICT = OrderedDict()
 
 
 def get_seasonal_service_status(otc_service: dict) -> str:
@@ -79,10 +82,10 @@ class LocalAuthorityView(BaseListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object_list"] = self.object_list_lta_mapping(context["object_list"])
         context["q"] = self.request.GET.get("q", "")
-        context["ordering"] = self.request.GET.get("ordering", "mapped_name")
+        context["ordering"] = self.request.GET.get("ordering", "ui_lta_name").strip()
         all_ltas_current_page = context["object_list"]
+        ids_list = {}
 
         for lta in all_ltas_current_page:
             otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta)
@@ -90,6 +93,11 @@ class LocalAuthorityView(BaseListView):
                 context["total_in_scope_in_season_services"] = otc_qs.count()
             else:
                 context["total_in_scope_in_season_services"] = 0
+            setattr(
+                lta,
+                "total_in_scope_in_season_services",
+                context["total_in_scope_in_season_services"],
+            )
             context["total_services_requiring_attention"] = len(
                 get_requires_attention_data_lta(lta)
             )
@@ -109,44 +117,95 @@ class LocalAuthorityView(BaseListView):
                 context["services_require_attention_percentage"],
             )
 
-        ltas = {"names": [lta.name for lta in all_ltas_current_page]}
+            if lta.ui_lta_name.strip() not in ids_list:
+                ids_list[lta.ui_lta_name.strip()] = [lta.id]
+            else:
+                ids_list[lta.ui_lta_name.strip()].append(lta.id)
+
+        all_ltas_current_page = self.combined_authorities_check(
+            all_ltas_current_page, ids_list
+        )
+
+        ltas = {
+            "names": list(
+                set([lta.ui_lta_name.strip() for lta in all_ltas_current_page])
+            )
+        }
         context["ltas"] = ltas
         return context
 
-    def object_list_lta_mapping(self, object_list):
-        new_object_list = []
-        for lta_object in object_list:
-            for otc_name, value_name in LTAS_DICT.items():
-                if lta_object.name == otc_name:
-                    lta_object.name = value_name
-                    new_object_list.append(lta_object)
-        return new_object_list
+    def combined_authorities_check(self, all_ltas_current_page, ids_dict):
+        COMBINED_AUTHORITY_DICT.clear()
+
+        for current_lta in all_ltas_current_page:
+            for lta in ids_dict.values():
+                if len(lta) > 1:
+                    for lta_id in lta:
+                        if current_lta.id == lta_id:
+                            if (
+                                current_lta.ui_lta_name.strip()
+                                not in COMBINED_AUTHORITY_DICT
+                            ):
+                                COMBINED_AUTHORITY_DICT[current_lta.ui_lta_name] = {
+                                    "ids": [lta_id],
+                                    "services_require_attention_percentage": [
+                                        current_lta.services_require_attention_percentage
+                                    ],
+                                    "total_in_scope_in_season_services": [
+                                        current_lta.total_in_scope_in_season_services
+                                    ],
+                                }
+                            else:
+                                COMBINED_AUTHORITY_DICT[
+                                    current_lta.ui_lta_name.strip()
+                                ]["ids"].append(lta_id)
+                                COMBINED_AUTHORITY_DICT[
+                                    current_lta.ui_lta_name.strip()
+                                ]["services_require_attention_percentage"].append(
+                                    current_lta.services_require_attention_percentage
+                                )
+                                COMBINED_AUTHORITY_DICT[
+                                    current_lta.ui_lta_name.strip()
+                                ]["total_in_scope_in_season_services"].append(
+                                    current_lta.total_in_scope_in_season_services
+                                )
+
+        return self.set_stats(COMBINED_AUTHORITY_DICT, all_ltas_current_page)
+
+    def set_stats(self, combined_authority_dict, all_ltas_current_page):
+        for current_lta in all_ltas_current_page:
+            for ui_lta_name, values in combined_authority_dict.items():
+                if current_lta.ui_lta_name == ui_lta_name:
+                    current_lta.services_require_attention_percentage = int(
+                        sum(values["services_require_attention_percentage"])
+                        / len(values["services_require_attention_percentage"])
+                    )
+                    COMBINED_AUTHORITY_DICT[current_lta.ui_lta_name.strip()][
+                        "updated_services_require_attention_percentage"
+                    ] = current_lta.services_require_attention_percentage
+                    current_lta.total_in_scope_in_season_services = sum(
+                        values["total_in_scope_in_season_services"]
+                    )
+                    COMBINED_AUTHORITY_DICT[current_lta.ui_lta_name.strip()][
+                        "updated_total_in_scope_in_season_services"
+                    ] = current_lta.total_in_scope_in_season_services
+        return all_ltas_current_page
 
     def get_queryset(self):
-        lta_name_list = list(LTAS_DICT.keys())
-        qs = self.model.objects.filter(name__in=lta_name_list)
-        # Add annotated field "mapped_name"
-        qs = qs.annotate(
-            mapped_name=Case(
-                *[
-                    When(name=name, then=Value(mapped_name, output_field=CharField()))
-                    for name, mapped_name in LTAS_DICT.items()
-                ],
-                default=Value("", output_field=CharField()),
-            )
-        )
+        qs = self.model.objects.all()
+
+        qs = qs.annotate(lta_name=Trim("ui_lta_name"))
+
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
-            qs = qs.filter(mapped_name__icontains=search_term)
+            qs = qs.filter(lta_name__icontains=search_term)
 
         qs = qs.order_by(*self.get_ordering())
         return qs
 
     def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "mapped_name")
-        if ordering == "mapped_name":
-            ordering = ("mapped_name",)
-        elif isinstance(ordering, str):
+        ordering = self.request.GET.get("ordering", "lta_name").strip()
+        if isinstance(ordering, str):
             ordering = (ordering,)
         return ordering
 
@@ -157,7 +216,19 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        local_authority = self.lta_name_mapping(self.object)
+        local_authority = self.object
+
+        if COMBINED_AUTHORITY_DICT.values():
+            for combined_authority in COMBINED_AUTHORITY_DICT.values():
+                if local_authority.id in combined_authority["ids"]:
+                    context["total_in_scope_in_season_services"] = combined_authority[
+                        "updated_total_in_scope_in_season_services"
+                    ]
+                    context[
+                        "services_require_attention_percentage"
+                    ] = combined_authority[
+                        "updated_services_require_attention_percentage"
+                    ]
         otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
         if otc_qs:
             context["total_in_scope_in_season_services"] = otc_qs.count()
@@ -181,27 +252,15 @@ class LocalAuthorityDetailView(BaseDetailView):
 
         return context
 
-    def lta_name_mapping(self, lta_object):
-        for otc_name, value_name in LTAS_DICT.items():
-            if lta_object.name == otc_name:
-                lta_object.name = value_name
-        return lta_object
-
 
 class LocalAuthorityExportView(View):
     def get(self, *args, **kwargs):
         self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
         return self.render_to_response()
 
-    def lta_name_mapping(self):
-        for otc_name, value_name in LTAS_DICT.items():
-            if self.lta.name == otc_name:
-                self.lta.name = value_name
-        return self.lta
-
     def render_to_response(self):
-        lta = self.lta_name_mapping()
-        csv_filename = f"{lta.name}_detailed service code export detailed export.csv"
+        lta = self.lta
+        csv_filename = f"{lta.ui_lta_name.strip()}_detailed service code export detailed export.csv"
         csv_export = LTACSV(lta)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
