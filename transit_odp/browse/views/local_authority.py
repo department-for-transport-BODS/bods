@@ -180,15 +180,19 @@ class LocalAuthorityView(BaseListView):
                         sum(values["services_require_attention_percentage"])
                         / len(values["services_require_attention_percentage"])
                     )
-                    COMBINED_AUTHORITY_DICT[current_lta.ui_lta_name.strip()][
+                    combined_authority_dict[current_lta.ui_lta_name.strip()][
                         "updated_services_require_attention_percentage"
                     ] = current_lta.services_require_attention_percentage
+
                     current_lta.total_in_scope_in_season_services = sum(
                         values["total_in_scope_in_season_services"]
                     )
-                    COMBINED_AUTHORITY_DICT[current_lta.ui_lta_name.strip()][
+                    combined_authority_dict[current_lta.ui_lta_name.strip()][
                         "updated_total_in_scope_in_season_services"
                     ] = current_lta.total_in_scope_in_season_services
+
+        self.request.session["combined_authority_dict"] = combined_authority_dict
+
         return all_ltas_current_page
 
     def get_queryset(self):
@@ -217,9 +221,10 @@ class LocalAuthorityDetailView(BaseDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         local_authority = self.object
+        combined_authority_dict = self.request.session.get("combined_authority_dict")
 
-        if COMBINED_AUTHORITY_DICT.values():
-            for combined_authority in COMBINED_AUTHORITY_DICT.values():
+        if combined_authority_dict.values():
+            for combined_authority in combined_authority_dict.values():
                 if local_authority.id in combined_authority["ids"]:
                     context["total_in_scope_in_season_services"] = combined_authority[
                         "updated_total_in_scope_in_season_services"
@@ -229,26 +234,52 @@ class LocalAuthorityDetailView(BaseDetailView):
                     ] = combined_authority[
                         "updated_services_require_attention_percentage"
                     ]
-        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
-        if otc_qs:
-            context["total_in_scope_in_season_services"] = otc_qs.count()
+                else:
+                    otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
+                        local_authority
+                    )
+                    if otc_qs:
+                        context["total_in_scope_in_season_services"] = otc_qs.count()
+                    else:
+                        context["total_in_scope_in_season_services"] = 0
+
+                    context["total_services_requiring_attention"] = len(
+                        get_requires_attention_data_lta(local_authority)
+                    )
+
+                    try:
+                        context["services_require_attention_percentage"] = round(
+                            100
+                            * (
+                                context["total_services_requiring_attention"]
+                                / context["total_in_scope_in_season_services"]
+                            )
+                        )
+                    except ZeroDivisionError:
+                        context["services_require_attention_percentage"] = 0
         else:
-            context["total_in_scope_in_season_services"] = 0
-
-        context["total_services_requiring_attention"] = len(
-            get_requires_attention_data_lta(local_authority)
-        )
-
-        try:
-            context["services_require_attention_percentage"] = round(
-                100
-                * (
-                    context["total_services_requiring_attention"]
-                    / context["total_in_scope_in_season_services"]
-                )
+            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
+                local_authority
             )
-        except ZeroDivisionError:
-            context["services_require_attention_percentage"] = 0
+            if otc_qs:
+                context["total_in_scope_in_season_services"] = otc_qs.count()
+            else:
+                context["total_in_scope_in_season_services"] = 0
+
+            context["total_services_requiring_attention"] = len(
+                get_requires_attention_data_lta(local_authority)
+            )
+
+            try:
+                context["services_require_attention_percentage"] = round(
+                    100
+                    * (
+                        context["total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["services_require_attention_percentage"] = 0
 
         return context
 
@@ -256,12 +287,31 @@ class LocalAuthorityDetailView(BaseDetailView):
 class LocalAuthorityExportView(View):
     def get(self, *args, **kwargs):
         self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
+        self.combined_authority_dict = self.request.session.get(
+            "combined_authority_dict"
+        )
         return self.render_to_response()
 
     def render_to_response(self):
         lta = self.lta
-        csv_filename = f"{lta.ui_lta_name.strip()}_detailed service code export detailed export.csv"
-        csv_export = LTACSV(lta)
+        combined_authority_dict = self.combined_authority_dict
+        combined_authorities = []
+        updated_ui_lta_name = lta.ui_lta_name.replace(",", " ").strip()
+        csv_filename = (
+            f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
+        )
+
+        if combined_authority_dict.values():
+            for combined_authority in combined_authority_dict.values():
+                if lta.id in combined_authority["ids"]:
+                    combined_authorities = [
+                        LocalAuthority.objects.get(id=lta_id)
+                        for lta_id in combined_authority["ids"]
+                    ]
+                    break
+                else:
+                    combined_authorities = [lta]
+        csv_export = LTACSV(combined_authorities)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
@@ -451,8 +501,8 @@ class LTACSV(CSVBuilder):
             }
         )
 
-    def __init__(self, lta):
-        self._lta = lta
+    def __init__(self, combined_authorities):
+        self._combined_authorities = combined_authorities
         self._object_list = []
 
     def modify_dataset_line_name(self, line_names: list) -> str:
@@ -511,5 +561,6 @@ class LTACSV(CSVBuilder):
             )
 
     def get_queryset(self):
-        self.get_otc_service_bods_data(self._lta)
+        for lta in self._combined_authorities:
+            self.get_otc_service_bods_data(lta)
         return self._object_list
