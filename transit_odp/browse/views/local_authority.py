@@ -86,7 +86,7 @@ class LocalAuthorityView(BaseListView):
         context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
         ids_list = {}
-        combined_auth_ids = []
+        # combined_auth_ids = []
 
         for lta in all_ltas_current_page:
             if lta.ui_lta_name_trimmed not in ids_list:
@@ -97,8 +97,8 @@ class LocalAuthorityView(BaseListView):
         for lta_id_list in ids_list.values():
             for lta in all_ltas_current_page:
                 if lta.id in lta_id_list:
-                    if len(lta_id_list) > 1 and lta_id_list not in combined_auth_ids:
-                        combined_auth_ids.append(lta_id_list)
+                    if len(lta_id_list) > 1:
+                        context["combined_auth_ids"] = lta_id_list
 
                     lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
                     otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
@@ -132,7 +132,7 @@ class LocalAuthorityView(BaseListView):
                         context["services_require_attention_percentage"],
                     )
 
-        context["combined_auth_ids"] = combined_auth_ids
+        # context["combined_auth_ids"] = combined_auth_ids
 
         ltas = {
             "names": list(
@@ -141,67 +141,6 @@ class LocalAuthorityView(BaseListView):
         }
         context["ltas"] = ltas
         return context
-
-    def combined_authorities_check(self, all_ltas_current_page, ids_dict):
-        COMBINED_AUTHORITY_DICT.clear()
-
-        for current_lta in all_ltas_current_page:
-            for lta in ids_dict.values():
-                if len(lta) > 1:
-                    for lta_id in lta:
-                        if current_lta.id == lta_id:
-                            if (
-                                current_lta.ui_lta_name.strip()
-                                not in COMBINED_AUTHORITY_DICT
-                            ):
-                                COMBINED_AUTHORITY_DICT[current_lta.ui_lta_name] = {
-                                    "ids": [lta_id],
-                                    "services_require_attention_percentage": [
-                                        current_lta.services_require_attention_percentage
-                                    ],
-                                    "total_in_scope_in_season_services": [
-                                        current_lta.total_in_scope_in_season_services
-                                    ],
-                                }
-                            else:
-                                COMBINED_AUTHORITY_DICT[
-                                    current_lta.ui_lta_name.strip()
-                                ]["ids"].append(lta_id)
-                                COMBINED_AUTHORITY_DICT[
-                                    current_lta.ui_lta_name.strip()
-                                ]["services_require_attention_percentage"].append(
-                                    current_lta.services_require_attention_percentage
-                                )
-                                COMBINED_AUTHORITY_DICT[
-                                    current_lta.ui_lta_name.strip()
-                                ]["total_in_scope_in_season_services"].append(
-                                    current_lta.total_in_scope_in_season_services
-                                )
-
-        return self.set_stats(COMBINED_AUTHORITY_DICT, all_ltas_current_page)
-
-    def set_stats(self, combined_authority_dict, all_ltas_current_page):
-        for current_lta in all_ltas_current_page:
-            for ui_lta_name, values in combined_authority_dict.items():
-                if current_lta.ui_lta_name == ui_lta_name:
-                    current_lta.services_require_attention_percentage = int(
-                        sum(values["services_require_attention_percentage"])
-                        / len(values["services_require_attention_percentage"])
-                    )
-                    combined_authority_dict[current_lta.ui_lta_name.strip()][
-                        "updated_services_require_attention_percentage"
-                    ] = current_lta.services_require_attention_percentage
-
-                    current_lta.total_in_scope_in_season_services = sum(
-                        values["total_in_scope_in_season_services"]
-                    )
-                    combined_authority_dict[current_lta.ui_lta_name.strip()][
-                        "updated_total_in_scope_in_season_services"
-                    ] = current_lta.total_in_scope_in_season_services
-
-        self.request.session["combined_authority_dict"] = combined_authority_dict
-
-        return all_ltas_current_page
 
     def get_queryset(self):
         qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
@@ -230,13 +169,18 @@ class LocalAuthorityDetailView(BaseDetailView):
         context = super().get_context_data(**kwargs)
         local_authority = self.object
         combined_authority_ids = self.request.GET.get("combined_auth_ids")
-        print("combined_authority_ids>>", combined_authority_ids)
+        lta_objs = []
 
         if combined_authority_ids:
             combined_authority_ids = [
                 int(lta_id.replace("[", "").replace("]", ""))
                 for lta_id in combined_authority_ids.split(",")
             ]
+            for combined_authority_id in combined_authority_ids:
+                if combined_authority_id == local_authority.id:
+                    lta_objs.append(local_authority)
+                else:
+                    lta_objs.append(self.model.objects.get(id=combined_authority_id))
         else:
             combined_authority_ids = []
         # if combined_authority_dict.values():
