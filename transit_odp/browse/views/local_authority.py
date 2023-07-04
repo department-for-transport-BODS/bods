@@ -208,7 +208,7 @@ class LocalAuthorityView(BaseListView):
         return qs
 
     def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "lta_name").strip()
+        ordering = self.request.GET.get("ordering", "ui_lta_name").strip()
         if isinstance(ordering, str):
             ordering = (ordering,)
         return ordering

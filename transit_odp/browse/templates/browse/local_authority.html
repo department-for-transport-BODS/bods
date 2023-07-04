@@ -79,12 +79,12 @@
                                 name="ordering"
                                 aria-label="Order by"
                                 onchange="this.form.submit()">
-                                <option value="lta_name" {% if ordering == "lta_name" %}selected{% endif %}>
+                                <option value="ui_lta_name" {% if ordering == "ui_lta_name" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name A-Z' %}
                                     {% endfilter %}
                                 </option>
-                                <option value="-lta_name" {% if ordering == "-lta_name" %}selected{% endif %}>
+                                <option value="-ui_lta_name" {% if ordering == "-ui_lta_name" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name Z-A' %}
                                     {% endfilter %}
