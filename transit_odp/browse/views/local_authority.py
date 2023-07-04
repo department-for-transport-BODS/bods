@@ -86,7 +86,6 @@ class LocalAuthorityView(BaseListView):
         context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
         ids_list = {}
-        # combined_auth_ids = []
 
         for lta in all_ltas_current_page:
             if lta.ui_lta_name_trimmed not in ids_list:
@@ -108,11 +107,6 @@ class LocalAuthorityView(BaseListView):
                         context["total_in_scope_in_season_services"] = otc_qs
                     else:
                         context["total_in_scope_in_season_services"] = 0
-                    # setattr(
-                    #     lta,
-                    #     "total_in_scope_in_season_services",
-                    #     context["total_in_scope_in_season_services"],
-                    # )
                     context[
                         "total_services_requiring_attention"
                     ] = get_requires_attention_data_lta(lta_list)
@@ -131,8 +125,6 @@ class LocalAuthorityView(BaseListView):
                         "services_require_attention_percentage",
                         context["services_require_attention_percentage"],
                     )
-
-        # context["combined_auth_ids"] = combined_auth_ids
 
         ltas = {
             "names": list(
