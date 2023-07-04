@@ -193,7 +193,7 @@ def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
     return object_list
 
 
-def get_requires_attention_data_lta(lta: int) -> List[Dict[str, str]]:
+def get_requires_attention_data_lta(lta_list: List) -> int:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. not live
@@ -201,15 +201,23 @@ def get_requires_attention_data_lta(lta: int) -> List[Dict[str, str]]:
 
     Returns list of objects of each service requiring attention for a LTA.
     """
-    object_list = []
 
-    otc_map = get_otc_map_lta(lta)
-    txcfa_map = get_txc_map_lta(lta)
+    total_services_requiring_attention = 0
+    for lta in lta_list:
+        object_list = []
+        lta_services_requiring_attention = 0
+        otc_map = get_otc_map_lta(lta)
+        txcfa_map = get_txc_map_lta(lta)
 
-    for service_code, service in otc_map.items():
-        file_attribute = txcfa_map.get(service_code)
-        if file_attribute is None:
-            _update_data(object_list, service)
-        elif is_stale(service, file_attribute):
-            _update_data(object_list, service)
-    return object_list
+        for service_code, service in otc_map.items():
+            file_attribute = txcfa_map.get(service_code)
+            if file_attribute is None:
+                _update_data(object_list, service)
+            elif is_stale(service, file_attribute):
+                _update_data(object_list, service)
+        lta_services_requiring_attention = len(object_list)
+        total_services_requiring_attention = (
+            total_services_requiring_attention + lta_services_requiring_attention
+        )
+
+    return total_services_requiring_attention

@@ -109,9 +109,9 @@ class LocalAuthorityView(BaseListView):
                         "total_in_scope_in_season_services",
                         context["total_in_scope_in_season_services"],
                     )
-                    context["total_services_requiring_attention"] = len(
-                        get_requires_attention_data_lta(lta)
-                    )
+                    context[
+                        "total_services_requiring_attention"
+                    ] = get_requires_attention_data_lta(lta_list)
                     try:
                         context["services_require_attention_percentage"] = round(
                             100
