@@ -30,13 +30,13 @@
         <div class="govuk-grid-row govuk-!-margin-top-5">
             <div class="govuk-grid-column-two-thirds">
                 <div class="search-list__heading">
-                    {% if paginator.count > 1 %}
+                    {% if updated_result > 1 %}
                         <span class="govuk-body">
                             {% filter force_escape %}
-                                {{ paginator.count }} {% trans 'results' %}
+                                {{ updated_result }} {% trans 'results' %}
                             {% endfilter %}
                         </span>
-                    {% elif paginator.count == 1 %}
+                    {% elif updated_result == 1 %}
                         <span class="govuk-body">
                             {% filter force_escape %}
                                 {% trans '1 result' %}
@@ -123,7 +123,7 @@
                     {% endfor %}
                 </div>
 
-                {% if paginator.count > 0 %}
+                {% if updated_result > 0 %}
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                     {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
                 {% endif %}
