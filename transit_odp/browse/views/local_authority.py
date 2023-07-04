@@ -83,59 +83,58 @@ class LocalAuthorityView(BaseListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["q"] = self.request.GET.get("q", "")
-        context["ordering"] = self.request.GET.get("ordering", "ui_lta_name").strip()
+        context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
         ids_list = {}
 
         for lta in all_ltas_current_page:
-            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta)
-            if otc_qs:
-                context["total_in_scope_in_season_services"] = otc_qs.count()
+            if lta.ui_lta_name_trimmed not in ids_list:
+                ids_list[lta.ui_lta_name_trimmed] = [lta.id]
             else:
-                context["total_in_scope_in_season_services"] = 0
-            setattr(
-                lta,
-                "total_in_scope_in_season_services",
-                context["total_in_scope_in_season_services"],
-            )
-            context["total_services_requiring_attention"] = len(
-                get_requires_attention_data_lta(lta)
-            )
-            try:
-                context["services_require_attention_percentage"] = round(
-                    100
-                    * (
-                        context["total_services_requiring_attention"]
-                        / context["total_in_scope_in_season_services"]
+                ids_list[lta.ui_lta_name_trimmed].append(lta.id)
+
+        for lta_id_list in ids_list.values():
+            for lta in all_ltas_current_page:
+                if lta.id in lta_id_list:
+                    lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
+                    otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
+                        lta_list
                     )
-                )
-            except ZeroDivisionError:
-                context["services_require_attention_percentage"] = 0
-            setattr(
-                lta,
-                "services_require_attention_percentage",
-                context["services_require_attention_percentage"],
-            )
+                    if otc_qs:
+                        context["total_in_scope_in_season_services"] = otc_qs
+                    else:
+                        context["total_in_scope_in_season_services"] = 0
+                    setattr(
+                        lta,
+                        "total_in_scope_in_season_services",
+                        context["total_in_scope_in_season_services"],
+                    )
+                    context["total_services_requiring_attention"] = len(
+                        get_requires_attention_data_lta(lta)
+                    )
+                    try:
+                        context["services_require_attention_percentage"] = round(
+                            100
+                            * (
+                                context["total_services_requiring_attention"]
+                                / context["total_in_scope_in_season_services"]
+                            )
+                        )
+                    except ZeroDivisionError:
+                        context["services_require_attention_percentage"] = 0
+                    setattr(
+                        lta,
+                        "services_require_attention_percentage",
+                        context["services_require_attention_percentage"],
+                    )
 
-            if lta.ui_lta_name is not None:
-                if lta.ui_lta_name.strip() not in ids_list:
-                    ids_list[lta.ui_lta_name.strip()] = [lta.id]
-                else:
-                    ids_list[lta.ui_lta_name.strip()].append(lta.id)
-
-        all_ltas_current_page = self.combined_authorities_check(
-            all_ltas_current_page, ids_list
-        )
+        # all_ltas_current_page = self.combined_authorities_check(
+        #     all_ltas_current_page, ids_list
+        # )
 
         ltas = {
             "names": list(
-                set(
-                    [
-                        lta.ui_lta_name.strip()
-                        for lta in all_ltas_current_page
-                        if lta.ui_lta_name is not None
-                    ]
-                )
+                set([lta.ui_lta_name_trimmed for lta in all_ltas_current_page])
             )
         }
         context["ltas"] = ltas
@@ -203,19 +202,19 @@ class LocalAuthorityView(BaseListView):
         return all_ltas_current_page
 
     def get_queryset(self):
-        qs = self.model.objects.all().exclude(ui_lta_name__isnull=True)
-
-        qs = qs.annotate(lta_name=Trim("ui_lta_name"))
+        qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
+            ui_lta_name_trimmed=Trim("ui_lta_name")
+        )
 
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
-            qs = qs.filter(lta_name__icontains=search_term)
+            qs = qs.filter(ui_lta_name_trimmed__icontains=search_term)
 
         qs = qs.order_by(*self.get_ordering())
         return qs
 
     def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "ui_lta_name").strip()
+        ordering = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         if isinstance(ordering, str):
             ordering = (ordering,)
         return ordering
