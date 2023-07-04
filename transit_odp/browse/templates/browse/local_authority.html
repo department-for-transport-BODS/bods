@@ -79,12 +79,12 @@
                                 name="ordering"
                                 aria-label="Order by"
                                 onchange="this.form.submit()">
-                                <option value="ui_lta_name" {% if ordering == "ui_lta_name" %}selected{% endif %}>
+                                <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name A-Z' %}
                                     {% endfilter %}
                                 </option>
-                                <option value="-ui_lta_name" {% if ordering == "-ui_lta_name" %}selected{% endif %}>
+                                <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name Z-A' %}
                                     {% endfilter %}
@@ -102,7 +102,7 @@
                             {% if not forloop.first %}
                                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                             {% endif %}
-                            {% include 'browse/snippets/results/local_authority.html' with item=value host=host hosts_data=hosts.data %}
+                            {% include 'browse/snippets/results/local_authority.html' with item=value host=host hosts_data=hosts.data combined_auth_ids=combined_auth_ids %}
                         {% endfor %}
                     {% empty %}
                         <div>

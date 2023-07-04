@@ -86,6 +86,7 @@ class LocalAuthorityView(BaseListView):
         context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
         ids_list = {}
+        combined_auth_ids = []
 
         for lta in all_ltas_current_page:
             if lta.ui_lta_name_trimmed not in ids_list:
@@ -96,6 +97,9 @@ class LocalAuthorityView(BaseListView):
         for lta_id_list in ids_list.values():
             for lta in all_ltas_current_page:
                 if lta.id in lta_id_list:
+                    if len(lta_id_list) > 1 and lta_id_list not in combined_auth_ids:
+                        combined_auth_ids.append(lta_id_list)
+
                     lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
                     otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
                         lta_list
@@ -128,9 +132,7 @@ class LocalAuthorityView(BaseListView):
                         context["services_require_attention_percentage"],
                     )
 
-        # all_ltas_current_page = self.combined_authorities_check(
-        #     all_ltas_current_page, ids_list
-        # )
+        context["combined_auth_ids"] = combined_auth_ids
 
         ltas = {
             "names": list(
@@ -227,65 +229,70 @@ class LocalAuthorityDetailView(BaseDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         local_authority = self.object
-        combined_authority_dict = self.request.session.get("combined_authority_dict")
+        combined_authority_ids = self.request.GET.get("combined_auth_ids")
+        print("combined_authority_ids>>", combined_authority_ids)
 
-        if combined_authority_dict.values():
-            for combined_authority in combined_authority_dict.values():
-                if local_authority.id in combined_authority["ids"]:
-                    context["total_in_scope_in_season_services"] = combined_authority[
-                        "updated_total_in_scope_in_season_services"
-                    ]
-                    context[
-                        "services_require_attention_percentage"
-                    ] = combined_authority[
-                        "updated_services_require_attention_percentage"
-                    ]
-                else:
-                    otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
-                        local_authority
-                    )
-                    if otc_qs:
-                        context["total_in_scope_in_season_services"] = otc_qs.count()
-                    else:
-                        context["total_in_scope_in_season_services"] = 0
-
-                    context["total_services_requiring_attention"] = len(
-                        get_requires_attention_data_lta(local_authority)
-                    )
-
-                    try:
-                        context["services_require_attention_percentage"] = round(
-                            100
-                            * (
-                                context["total_services_requiring_attention"]
-                                / context["total_in_scope_in_season_services"]
-                            )
-                        )
-                    except ZeroDivisionError:
-                        context["services_require_attention_percentage"] = 0
+        if combined_authority_ids:
+            combined_authority_ids = [
+                int(lta_id) for lta_id in combined_authority_ids.split(",")
+            ]
         else:
-            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
-                local_authority
-            )
-            if otc_qs:
-                context["total_in_scope_in_season_services"] = otc_qs.count()
-            else:
-                context["total_in_scope_in_season_services"] = 0
+            combined_authority_ids = []
+        # if combined_authority_dict.values():
+        #     for combined_authority in combined_authority_dict.values():
+        #         if local_authority.id in combined_authority["ids"]:
+        #             context["total_in_scope_in_season_services"] = combined_authority[
+        #                 "updated_total_in_scope_in_season_services"
+        #             ]
+        #             context[
+        #                 "services_require_attention_percentage"
+        #             ] = combined_authority[
+        #                 "updated_services_require_attention_percentage"
+        #             ]
+        #         else:
+        #             otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
+        #                 local_authority
+        #             )
+        #             if otc_qs:
+        #                 context["total_in_scope_in_season_services"] = otc_qs.count()
+        #             else:
+        #                 context["total_in_scope_in_season_services"] = 0
 
-            context["total_services_requiring_attention"] = len(
-                get_requires_attention_data_lta(local_authority)
-            )
+        #             context["total_services_requiring_attention"] = len(
+        #                 get_requires_attention_data_lta(local_authority)
+        #             )
 
-            try:
-                context["services_require_attention_percentage"] = round(
-                    100
-                    * (
-                        context["total_services_requiring_attention"]
-                        / context["total_in_scope_in_season_services"]
-                    )
+        #             try:
+        #                 context["services_require_attention_percentage"] = round(
+        #                     100
+        #                     * (
+        #                         context["total_services_requiring_attention"]
+        #                         / context["total_in_scope_in_season_services"]
+        #                     )
+        #                 )
+        #             except ZeroDivisionError:
+        #                 context["services_require_attention_percentage"] = 0
+        # else:
+        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+        if otc_qs:
+            context["total_in_scope_in_season_services"] = otc_qs.count()
+        else:
+            context["total_in_scope_in_season_services"] = 0
+
+        context["total_services_requiring_attention"] = len(
+            get_requires_attention_data_lta(local_authority)
+        )
+
+        try:
+            context["services_require_attention_percentage"] = round(
+                100
+                * (
+                    context["total_services_requiring_attention"]
+                    / context["total_in_scope_in_season_services"]
                 )
-            except ZeroDivisionError:
-                context["services_require_attention_percentage"] = 0
+            )
+        except ZeroDivisionError:
+            context["services_require_attention_percentage"] = 0
 
         return context
 
