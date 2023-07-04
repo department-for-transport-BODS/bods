@@ -561,8 +561,7 @@ class VehicleJourneyFinder:
         if len(txc_file_list) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
-                "Found more than one matching vehicle journey in \
-                timetables belonging to a single service code",
+                "Found more than one matching vehicle journey in timetables belonging to a single service code",
             )
             return False
         elif len(service_code_list) == 1:

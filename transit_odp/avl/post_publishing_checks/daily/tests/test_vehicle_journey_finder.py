@@ -204,9 +204,7 @@ def test_filter_by_service_code(txc_files, expected_result):
         txc_vehicle_journeys, result
     )
 
-    assert len(txc_vehicle_journeys) == return_result
-    assert (
-        result.errors[ErrorCategory.GENERAL]
-        == "Found more than one matching vehicle journey in \
-                                                    timetables belonging to a single service code"
-    )
+    assert return_result == expected_result
+    assert result.errors[ErrorCategory.GENERAL] == [
+        "Found more than one matching vehicle journey in timetables belonging to a single service code"
+    ]

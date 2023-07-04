@@ -1,48 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <TransXChange FileName="vehicle_journeys.xml" RevisionNumber="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
   <ServicedOrganisations>
-    <ServicedOrganisation CreationDateTime="2022-12-07T11:35:15" Modification="new" RevisionNumber="1">
-      <OrganisationCode>test</OrganisationCode>
-      <Name>test Schools</Name>
-      <WorkingDays>
-        <DateRange>
-          <StartDate>2023-01-03</StartDate>
-          <EndDate>2023-02-10</EndDate>
-          <Description>KPMG Schools</Description>
-        </DateRange>
-        <DateRange>
-          <StartDate>2023-02-19</StartDate>
-          <EndDate>2023-03-31</EndDate>
-          <Description>KPMG Schools</Description>
-        </DateRange>
-      </WorkingDays>
-    </ServicedOrganisation>
-    <ServicedOrganisation CreationDateTime="2022-12-07T11:35:15" Modification="new" RevisionNumber="0">
-      <OrganisationCode>KPMG</OrganisationCode>
-      <Name>KPMG Schools</Name>
-      <WorkingDays>
-        <DateRange>
-          <StartDate>2023-01-03</StartDate>
-          <EndDate>2023-02-10</EndDate>
-          <Description>KPMG Schools</Description>
-        </DateRange>
-        <DateRange>
-          <StartDate>2023-02-19</StartDate>
-          <EndDate>2023-03-31</EndDate>
-          <Description>KPMG Schools</Description>
-        </DateRange>
-        <DateRange>
-          <StartDate>2023-04-16</StartDate>
-          <EndDate>2023-05-26</EndDate>
-          <Description>KPMG Schools</Description>
-        </DateRange>
-        <DateRange>
-          <StartDate>2023-06-04</StartDate>
-          <EndDate>2023-07-25</EndDate>
-          <Description>KPMG Schools</Description>
-        </DateRange>
-      </WorkingDays>
-    </ServicedOrganisation>
   </ServicedOrganisations>
   <StopPoints>
   </StopPoints>
@@ -51,76 +9,12 @@
   <Routes>
   </Routes>
   <JourneyPatternSections>
-    <JourneyPatternSection id="JPS51">
-      <JourneyPatternTimingLink id="JPTL511">
-        <From>
-          <StopPointRef>Earth</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </From>
-        <To>
-          <StopPointRef>Mars</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </To>
-      </JourneyPatternTimingLink>
-      <JourneyPatternTimingLink id="JPTL512">
-        <From>
-          <StopPointRef>Mars</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </From>
-        <To>
-          <StopPointRef>Jupiter</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </To>
-      </JourneyPatternTimingLink>
-      <JourneyPatternTimingLink id="JPTL513">
-        <From>
-          <StopPointRef>Jupiter</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </From>
-        <To>
-          <StopPointRef>Saturn</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </To>
-      </JourneyPatternTimingLink>
-    </JourneyPatternSection>
-    <JourneyPatternSection id="JPS52">
-      <JourneyPatternTimingLink id="JPTL521">
-        <From>
-          <StopPointRef>Saturn</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </From>
-        <To>
-          <StopPointRef>Uranus</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </To>
-      </JourneyPatternTimingLink>
-      <JourneyPatternTimingLink id="JPTL522">
-        <From>
-          <StopPointRef>Uranus</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </From>
-        <To>
-          <StopPointRef>Neptune</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </To>
-      </JourneyPatternTimingLink>
-      <JourneyPatternTimingLink id="JPTL523">
-        <From>
-          <StopPointRef>Neptune</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </From>
-        <To>
-          <StopPointRef>Pluto</StopPointRef>
-          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
-        </To>
-      </JourneyPatternTimingLink>
-    </JourneyPatternSection>
   </JourneyPatternSections>
   <Operators>
   </Operators>
   <Services>
     <Service>
-      <ServiceCode>123</ServiceCode>
+      <ServiceCode>456</ServiceCode>
       <Lines>
         <Line id="L1">
           <LineName>Victoria</LineName>
@@ -137,31 +31,6 @@
         </RegularDayType>
       </OperatingProfile>
       <StandardService>
-        <JourneyPattern id="JP5">
-          <Direction>outbound</Direction>
-          <JourneyPatternSectionRefs>JPS51</JourneyPatternSectionRefs>
-          <JourneyPatternSectionRefs>JPS52</JourneyPatternSectionRefs>
-        </JourneyPattern>
-        <JourneyPattern id="JP6">
-          <Direction>inboundAndOutbound</Direction>
-          <DestinationDisplay>Mercury</DestinationDisplay>
-          <JourneyPatternSectionRefs>JPS61</JourneyPatternSectionRefs>
-          <JourneyPatternSectionRefs>JPS62</JourneyPatternSectionRefs>
-        </JourneyPattern>
-        <JourneyPattern id="JP7">
-          <Direction>inbound</Direction>
-        </JourneyPattern>
-        <JourneyPattern id="JP8">
-          <Direction>clockwise</Direction>
-        </JourneyPattern>
-        <JourneyPattern id="JP9">
-          <Direction>circular</Direction>
-        </JourneyPattern>
-        <JourneyPattern id="JP10">
-          <Direction>anticlockwise</Direction>
-        </JourneyPattern>
-        <JourneyPattern id="JP11">
-        </JourneyPattern>
       </StandardService>
     </Service>
   </Services>
@@ -195,27 +64,6 @@
       </OperatingProfile>
       <LineRef>L2</LineRef>
       <JourneyPatternRef>JP5</JourneyPatternRef>
-    </VehicleJourney>
-    <VehicleJourney SequenceNumber="2">
-      <OperatingProfile>
-        <RegularDayType>
-          <DaysOfWeek>
-            <Monday />
-            <Tuesday />
-            <Wednesday />
-            <Thursday />
-            <Friday />
-          </DaysOfWeek>
-        </RegularDayType>
-        <ServicedOrganisationDayType>
-          <DaysOfNonOperation>
-            <WorkingDays>
-              <ServicedOrganisationRef>KPMG</ServicedOrganisationRef>
-            </WorkingDays>
-          </DaysOfNonOperation>
-        </ServicedOrganisationDayType>
-      </OperatingProfile>
-      <JourneyPatternRef>JP9</JourneyPatternRef>
     </VehicleJourney>
   </VehicleJourneys>
 </TransXChange>
