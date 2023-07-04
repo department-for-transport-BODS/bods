@@ -117,10 +117,11 @@ class LocalAuthorityView(BaseListView):
                 context["services_require_attention_percentage"],
             )
 
-            if lta.ui_lta_name.strip() not in ids_list:
-                ids_list[lta.ui_lta_name.strip()] = [lta.id]
-            else:
-                ids_list[lta.ui_lta_name.strip()].append(lta.id)
+            if lta.ui_lta_name is not None:
+                if lta.ui_lta_name.strip() not in ids_list:
+                    ids_list[lta.ui_lta_name.strip()] = [lta.id]
+                else:
+                    ids_list[lta.ui_lta_name.strip()].append(lta.id)
 
         all_ltas_current_page = self.combined_authorities_check(
             all_ltas_current_page, ids_list
@@ -128,7 +129,13 @@ class LocalAuthorityView(BaseListView):
 
         ltas = {
             "names": list(
-                set([lta.ui_lta_name.strip() for lta in all_ltas_current_page])
+                set(
+                    [
+                        lta.ui_lta_name.strip()
+                        for lta in all_ltas_current_page
+                        if lta.ui_lta_name is not None
+                    ]
+                )
             )
         }
         context["ltas"] = ltas
@@ -196,7 +203,7 @@ class LocalAuthorityView(BaseListView):
         return all_ltas_current_page
 
     def get_queryset(self):
-        qs = self.model.objects.all()
+        qs = self.model.objects.all().exclude(ui_lta_name__isnull=True)
 
         qs = qs.annotate(lta_name=Trim("ui_lta_name"))
 
