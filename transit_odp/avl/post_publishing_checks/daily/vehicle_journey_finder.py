@@ -553,26 +553,26 @@ class VehicleJourneyFinder:
             service_code_list = []
             txc_file_list.append(vj.txc_xml)
             service_code = self.get_service_code(vj)
-            service_code_list.append(service_code)
+            service_code_list.append(service_code[0])
 
-        txc_xml_set = set(txc_file_list)
-        service_code_set = set(service_code_list)
+        # txc_xml_set = set(txc_file_list)
+        # service_code_set = set(service_code_list)
 
-        if len(txc_xml_set) == 1:
+        if len(txc_file_list) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in \
                 timetables belonging to a single service code",
             )
             return False
-        elif len(service_code_set) == 1:
+        elif len(service_code_list) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in \
                 timetables belonging to a single service code",
             )
             return False
-        elif len(service_code_set) > 1:
+        elif len(service_code_list) > 1:
             return False
         return True
 
