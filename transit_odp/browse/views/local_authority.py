@@ -108,11 +108,11 @@ class LocalAuthorityView(BaseListView):
                         context["total_in_scope_in_season_services"] = otc_qs
                     else:
                         context["total_in_scope_in_season_services"] = 0
-                    setattr(
-                        lta,
-                        "total_in_scope_in_season_services",
-                        context["total_in_scope_in_season_services"],
-                    )
+                    # setattr(
+                    #     lta,
+                    #     "total_in_scope_in_season_services",
+                    #     context["total_in_scope_in_season_services"],
+                    # )
                     context[
                         "total_services_requiring_attention"
                     ] = get_requires_attention_data_lta(lta_list)
@@ -234,7 +234,8 @@ class LocalAuthorityDetailView(BaseDetailView):
 
         if combined_authority_ids:
             combined_authority_ids = [
-                int(lta_id) for lta_id in combined_authority_ids.split(",")
+                int(lta_id.replace("[", "").replace("]", ""))
+                for lta_id in combined_authority_ids.split(",")
             ]
         else:
             combined_authority_ids = []
