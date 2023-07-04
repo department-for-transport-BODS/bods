@@ -159,7 +159,7 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        local_authority = self.object
+        # local_authority = self.object
         combined_authority_ids = self.request.GET.get("combined_auth_ids")
         lta_objs = []
 
@@ -169,55 +169,18 @@ class LocalAuthorityDetailView(BaseDetailView):
                 for lta_id in combined_authority_ids.split(",")
             ]
             for combined_authority_id in combined_authority_ids:
-                if combined_authority_id == local_authority.id:
-                    lta_objs.append(local_authority)
-                else:
-                    lta_objs.append(self.model.objects.get(id=combined_authority_id))
+                lta_objs.append(self.model.objects.get(id=combined_authority_id))
         else:
             combined_authority_ids = []
-        # if combined_authority_dict.values():
-        #     for combined_authority in combined_authority_dict.values():
-        #         if local_authority.id in combined_authority["ids"]:
-        #             context["total_in_scope_in_season_services"] = combined_authority[
-        #                 "updated_total_in_scope_in_season_services"
-        #             ]
-        #             context[
-        #                 "services_require_attention_percentage"
-        #             ] = combined_authority[
-        #                 "updated_services_require_attention_percentage"
-        #             ]
-        #         else:
-        #             otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
-        #                 local_authority
-        #             )
-        #             if otc_qs:
-        #                 context["total_in_scope_in_season_services"] = otc_qs.count()
-        #             else:
-        #                 context["total_in_scope_in_season_services"] = 0
 
-        #             context["total_services_requiring_attention"] = len(
-        #                 get_requires_attention_data_lta(local_authority)
-        #             )
-
-        #             try:
-        #                 context["services_require_attention_percentage"] = round(
-        #                     100
-        #                     * (
-        #                         context["total_services_requiring_attention"]
-        #                         / context["total_in_scope_in_season_services"]
-        #                     )
-        #                 )
-        #             except ZeroDivisionError:
-        #                 context["services_require_attention_percentage"] = 0
-        # else:
-        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_objs)
         if otc_qs:
-            context["total_in_scope_in_season_services"] = otc_qs.count()
+            context["total_in_scope_in_season_services"] = otc_qs
         else:
             context["total_in_scope_in_season_services"] = 0
 
-        context["total_services_requiring_attention"] = len(
-            get_requires_attention_data_lta(local_authority)
+        context["total_services_requiring_attention"] = get_requires_attention_data_lta(
+            lta_objs
         )
 
         try:
@@ -236,7 +199,7 @@ class LocalAuthorityDetailView(BaseDetailView):
 
 class LocalAuthorityExportView(View):
     def get(self, *args, **kwargs):
-        self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
+        # self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
         self.combined_authority_dict = self.request.session.get(
             "combined_authority_dict"
         )
