@@ -35,27 +35,54 @@ def get_seasonal_service_status(otc_service: dict) -> str:
     return "In Season" if seasonal_service_status else "Out of Season"
 
 
-def get_all_otc_map_lta(lta) -> Dict[str, OTCService]:
+def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
     """
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     return {
         service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_all_otc_data_for_lta(lta)
+        for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
     }
 
 
-def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
+def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
     """
     Get a dictionary which includes all the Seasonal Services
     for an organisation.
     """
-    services_subquery = lta.registration_numbers.values("id")
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     return {
         service.registration_number.replace("/", ":"): service
         for service in SeasonalService.objects.filter(
             licence__organisation__licences__number__in=Subquery(
-                services_subquery.values("licence__number")
+                final_subquery.values("licence__number")
             )
         )
         .add_registration_number()
@@ -63,13 +90,26 @@ def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
     }
 
 
-def get_service_code_exemption_map(lta) -> Dict[str, ServiceCodeExemption]:
-    services_subquery = lta.registration_numbers.values("id")
+def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     return {
         service.registration_number.replace("/", ":"): service
         for service in ServiceCodeExemption.objects.add_registration_number().filter(
             licence__organisation__licences__number__in=Subquery(
-                services_subquery.values("licence__number")
+                final_subquery.values("licence__number")
             )
         )
     }
@@ -202,32 +242,26 @@ class LocalAuthorityDetailView(BaseDetailView):
 
 class LocalAuthorityExportView(View):
     def get(self, *args, **kwargs):
-        # self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
-        self.combined_authority_dict = self.request.session.get(
-            "combined_authority_dict"
-        )
         return self.render_to_response()
 
     def render_to_response(self):
-        lta = self.lta
-        combined_authority_dict = self.combined_authority_dict
-        combined_authorities = []
-        updated_ui_lta_name = lta.ui_lta_name.replace(",", " ").strip()
+        combined_authority_ids = self.request.GET.get("combined_auth_ids")
+        lta_objs = []
+
+        if combined_authority_ids:
+            combined_authority_ids = [
+                int(lta_id.replace("[", "").replace("]", ""))
+                for lta_id in combined_authority_ids.split(",")
+            ]
+            for combined_authority_id in combined_authority_ids:
+                lta_objs.append(self.model.objects.get(id=combined_authority_id))
+        else:
+            combined_authority_ids = []
+        updated_ui_lta_name = lta_objs[0].ui_lta_name.replace(",", " ").strip()
         csv_filename = (
             f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
         )
-
-        if combined_authority_dict.values():
-            for combined_authority in combined_authority_dict.values():
-                if lta.id in combined_authority["ids"]:
-                    combined_authorities = [
-                        LocalAuthority.objects.get(id=lta_id)
-                        for lta_id in combined_authority["ids"]
-                    ]
-                    break
-                else:
-                    combined_authorities = [lta]
-        csv_export = LTACSV(combined_authorities)
+        csv_export = LTACSV(lta_objs)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
@@ -433,7 +467,7 @@ class LTACSV(CSVBuilder):
             return "No"
         return "Yes"
 
-    def get_otc_service_bods_data(self, lta) -> None:
+    def get_otc_service_bods_data(self, lta_list) -> None:
         """
         Compares an LTA's OTC Services dictionaries list with
         TXCFileAttributes dictionaries list and the SeasonalService list
@@ -441,10 +475,10 @@ class LTACSV(CSVBuilder):
         doesn't ie. not live in BODS at all, or live but meeting new
         Staleness conditions.
         """
-        otc_map = get_all_otc_map_lta(lta)
-        txcfa_map = get_txc_map_lta(lta)
-        seasonal_service_map = get_seasonal_service_map(lta)
-        service_code_exemption_map = get_service_code_exemption_map(lta)
+        otc_map = get_all_otc_map_lta(lta_list)
+        txcfa_map = get_txc_map_lta(lta_list)
+        seasonal_service_map = get_seasonal_service_map(lta_list)
+        service_code_exemption_map = get_service_code_exemption_map(lta_list)
         services_code = set(otc_map)
         services_code = sorted(services_code)
 
@@ -477,6 +511,5 @@ class LTACSV(CSVBuilder):
             )
 
     def get_queryset(self):
-        for lta in self._combined_authorities:
-            self.get_otc_service_bods_data(lta)
+        self.get_otc_service_bods_data(self._combined_authorities)
         return self._object_list
