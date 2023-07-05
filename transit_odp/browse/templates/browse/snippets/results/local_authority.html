@@ -2,7 +2,7 @@
 
 <div class="search-result">
     <div class="search-result__heading">
-        <a class='govuk-link' href="{% url 'local-authority-detail' pk=item.id host hosts.data %}?combined_auth_ids={{ combined_auth_ids }}">
+        <a class='govuk-link' href="{% url 'local-authority-detail' pk=item.id host hosts.data %}?combined_auth_ids={{ item.combined_auth_ids }}">
             {{ item.ui_lta_name }}
         </a>
     </div>

@@ -139,8 +139,7 @@ class LocalAuthorityView(BaseListView):
         for lta_id_list in ids_list.values():
             for lta in all_ltas_current_page:
                 if lta.id in lta_id_list:
-                    if len(lta_id_list) > 1:
-                        context["combined_auth_ids"] = lta_id_list
+                    setattr(lta, "combined_auth_ids", lta_id_list)
 
                     lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
                     otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
