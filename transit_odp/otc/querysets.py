@@ -201,7 +201,6 @@ class ServiceQuerySet(QuerySet):
         )
 
     def get_all_otc_data_for_lta(self, final_subquery) -> TServiceQuerySet:
-        # services_subquery = lta.registration_numbers.values("id")
         return (
             self.add_otc_stale_date()
             .annotate(otc_licence_number=F("licence__number"))
