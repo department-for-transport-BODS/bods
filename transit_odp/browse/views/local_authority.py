@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from datetime import timedelta
 from typing import Dict, Optional
 
@@ -26,8 +25,6 @@ STALENESS_STATUS = [
     "Stale - 12 months old",
     "Stale - OTC Variation",
 ]
-
-COMBINED_AUTHORITY_DICT = OrderedDict()
 
 
 def get_seasonal_service_status(otc_service: dict) -> str:
