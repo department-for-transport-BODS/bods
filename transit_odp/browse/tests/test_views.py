@@ -1136,7 +1136,6 @@ class TestLTAView:
 
         request = request_factory.get("/local-authority/")
         request.user = AnonymousUser()
-        request.session = {}
 
         response = LocalAuthorityView.as_view()(request)
 
@@ -1145,7 +1144,7 @@ class TestLTAView:
             response.context_data["view"].template_name == "browse/local_authority.html"
         )
         assert response.context_data["q"] == ""
-        assert response.context_data["ordering"] == "ui_lta_name"
+        assert response.context_data["ordering"] == "ui_lta_name_trimmed"
 
         ltas_context = response.context_data["ltas"]
         assert len(ltas_context) == 1
@@ -1159,9 +1158,8 @@ class TestLTAView:
                 id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
             ),
         ]
-        request = request_factory.get("/local-authority/?ordering=ui_lta_name")
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
         request.user = AnonymousUser()
-        request.session = {}
 
         response = LocalAuthorityView.as_view()(request)
         assert response.status_code == 200
@@ -1276,7 +1274,6 @@ class TestLTADetailView:
 
         request = request_factory.get("/local-authority/")
         request.user = UserFactory()
-        request.session = {}
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
         assert response.status_code == 200
@@ -1306,7 +1303,6 @@ class TestLTADetailView:
 
         request = request_factory.get("/local-authority/")
         request.user = UserFactory()
-        request.session = {}
 
         # Setup three TXCFileAttributes that will be 'Not Stale'
         TXCFileAttributesFactory(
