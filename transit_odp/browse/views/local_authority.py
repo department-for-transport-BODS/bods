@@ -202,7 +202,7 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # local_authority = self.object
+        local_authority = self.object
         combined_authority_ids = self.request.GET.get("combined_auth_ids")
         lta_objs = []
 
@@ -211,10 +211,13 @@ class LocalAuthorityDetailView(BaseDetailView):
                 int(lta_id.replace("[", "").replace("]", ""))
                 for lta_id in combined_authority_ids.split(",")
             ]
-            for combined_authority_id in combined_authority_ids:
-                lta_objs.append(self.model.objects.get(id=combined_authority_id))
+            if local_authority.id in combined_authority_ids:
+                for combined_authority_id in combined_authority_ids:
+                    lta_objs.append(self.model.objects.get(id=combined_authority_id))
+            else:
+                lta_objs.append(local_authority)
         else:
-            combined_authority_ids = []
+            lta_objs.append(local_authority)
 
         otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_objs)
         if otc_qs:
@@ -242,9 +245,11 @@ class LocalAuthorityDetailView(BaseDetailView):
 
 class LocalAuthorityExportView(View):
     def get(self, *args, **kwargs):
+        self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
         return self.render_to_response()
 
     def render_to_response(self):
+        lta = self.lta
         combined_authority_ids = self.request.GET.get("combined_auth_ids")
         lta_objs = []
 
@@ -253,10 +258,13 @@ class LocalAuthorityExportView(View):
                 int(lta_id.replace("[", "").replace("]", ""))
                 for lta_id in combined_authority_ids.split(",")
             ]
-            for combined_authority_id in combined_authority_ids:
-                lta_objs.append(self.model.objects.get(id=combined_authority_id))
+            if lta.id in combined_authority_ids:
+                for combined_authority_id in combined_authority_ids:
+                    lta_objs.append(self.model.objects.get(id=combined_authority_id))
+            else:
+                lta_objs.append(lta)
         else:
-            combined_authority_ids = []
+            lta_objs.append(lta)
         updated_ui_lta_name = lta_objs[0].ui_lta_name.replace(",", " ").strip()
         csv_filename = (
             f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
