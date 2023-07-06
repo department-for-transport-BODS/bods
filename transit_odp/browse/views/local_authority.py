@@ -196,6 +196,9 @@ class LocalAuthorityDetailView(BaseDetailView):
     template_name = "browse/local_authority/local_authority_detail.html"
     model = LocalAuthority
 
+    def get_object(self, queryset=None):
+        return None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         combined_authority_ids = self.request.GET.get("combined_auth_ids")

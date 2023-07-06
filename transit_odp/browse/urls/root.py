@@ -82,21 +82,14 @@ urlpatterns = [
             [
                 path("", view=LocalAuthorityView.as_view(), name="local-authority"),
                 path(
-                    "<int:pk>/",
-                    include(
-                        [
-                            path(
-                                "detail/",
-                                view=LocalAuthorityDetailView.as_view(),
-                                name="local-authority-detail",
-                            ),
-                            path(
-                                "export/",
-                                view=LocalAuthorityExportView.as_view(),
-                                name="local-authority-export",
-                            ),
-                        ]
-                    ),
+                    "detail/",
+                    view=LocalAuthorityDetailView.as_view(),
+                    name="local-authority-detail",
+                ),
+                path(
+                    "export/",
+                    view=LocalAuthorityExportView.as_view(),
+                    name="local-authority-export",
                 ),
             ]
         ),
