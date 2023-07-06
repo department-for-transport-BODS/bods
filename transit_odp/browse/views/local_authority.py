@@ -136,7 +136,7 @@ class LocalAuthorityView(BaseListView):
         for lta_id_list in ids_list.values():
             for lta in all_ltas_current_page:
                 if lta.id in lta_id_list:
-                    setattr(lta, "combined_auth_ids", lta_id_list)
+                    setattr(lta, "auth_ids", lta_id_list)
 
                     lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
                     otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
@@ -201,9 +201,9 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        combined_authority_ids = self.request.GET.get("combined_auth_ids")
+        combined_authority_ids = self.request.GET.get("auth_ids")
         lta_objs = []
-        context["combined_auth_ids"] = combined_authority_ids
+        context["auth_ids"] = combined_authority_ids
 
         if combined_authority_ids:
             combined_authority_ids = [
@@ -244,7 +244,7 @@ class LocalAuthorityExportView(View):
 
     def render_to_response(self):
         lta_objs = []
-        combined_authority_ids = self.request.GET.get("combined_auth_ids")
+        combined_authority_ids = self.request.GET.get("auth_ids")
 
         if combined_authority_ids:
             combined_authority_ids = [

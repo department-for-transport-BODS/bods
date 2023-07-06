@@ -102,7 +102,7 @@
                             {% if not forloop.first %}
                                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                             {% endif %}
-                            {% include 'browse/snippets/results/local_authority.html' with item=value host=host hosts_data=hosts.data combined_auth_ids=combined_auth_ids %}
+                            {% include 'browse/snippets/results/local_authority.html' with item=value host=host hosts_data=hosts.data auth_ids=auth_ids %}
                         {% endfor %}
                     {% empty %}
                         <div>
