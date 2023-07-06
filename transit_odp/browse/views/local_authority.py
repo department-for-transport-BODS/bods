@@ -197,7 +197,14 @@ class LocalAuthorityDetailView(BaseDetailView):
     model = LocalAuthority
 
     def get_object(self, queryset=None):
-        return None
+        combined_authority_ids = self.request.GET.get("auth_ids")
+        if combined_authority_ids:
+            combined_authority_ids = [
+                int(lta_id.replace("[", "").replace("]", ""))
+                for lta_id in combined_authority_ids.split(",")
+            ]
+        qs = self.model.objects.get(id=combined_authority_ids[0])
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
