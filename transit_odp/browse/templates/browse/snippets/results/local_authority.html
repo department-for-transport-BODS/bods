@@ -2,8 +2,8 @@
 
 <div class="search-result">
     <div class="search-result__heading">
-        <a class='govuk-link' href="{% url 'local-authority-detail' item.id host hosts.data %}">
-            {{ item.name }}
+        <a class='govuk-link' href="{% url 'local-authority-detail' host hosts.data %}?auth_ids={{ item.auth_ids }}">
+            {{ item.ui_lta_name }}
         </a>
     </div>
     <ul class="key-value-list">

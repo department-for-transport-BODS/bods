@@ -1127,7 +1127,12 @@ class TestLTAView:
                 variation_number=0,
             )
         ]
-        LocalAuthorityFactory(id="1", name="first_LTA", registration_numbers=service)
+        LocalAuthorityFactory(
+            id="1",
+            name="first_LTA",
+            ui_lta_name="First LTA",
+            registration_numbers=service,
+        )
 
         request = request_factory.get("/local-authority/")
         request.user = AnonymousUser()
@@ -1139,26 +1144,30 @@ class TestLTAView:
             response.context_data["view"].template_name == "browse/local_authority.html"
         )
         assert response.context_data["q"] == ""
-        assert response.context_data["ordering"] == "mapped_name"
+        assert response.context_data["ordering"] == "ui_lta_name_trimmed"
 
         ltas_context = response.context_data["ltas"]
         assert len(ltas_context) == 1
 
     def test_lta_view_order_by_name(self, request_factory: RequestFactory):
         ltas_list = [
-            LocalAuthorityFactory(id="1", name="Derby City Council"),
-            LocalAuthorityFactory(id="2", name="Cheshire East Council"),
+            LocalAuthorityFactory(
+                id="1", name="Derby Council", ui_lta_name="Derby City Council"
+            ),
+            LocalAuthorityFactory(
+                id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
+            ),
         ]
-        request = request_factory.get("/local-authority/?ordering=mapped_name")
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
         request.user = AnonymousUser()
 
         response = LocalAuthorityView.as_view()(request)
         assert response.status_code == 200
-        expected_order = sorted([lta.name for lta in ltas_list])
+        expected_order = sorted([lta.ui_lta_name for lta in ltas_list])
         ltas = response.context_data["ltas"]
         assert ltas["names"] == expected_order
 
-        object_names = [obj.name for obj in response.context_data["object_list"]]
+        object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
         assert object_names == expected_order
 
 
@@ -1184,7 +1193,10 @@ class TestLTADetailView:
                 )
             )
         local_authority = LocalAuthorityFactory(
-            id="1", name="Dorset County Council", registration_numbers=service
+            id="1",
+            name="Dorset Council",
+            ui_lta_name="Dorset County Council",
+            registration_numbers=service,
         )
         today = timezone.now().date()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
@@ -1337,7 +1349,10 @@ class TestLTADetailView:
                 effective_date=datetime.date(year=2020, month=1, day=1),
             )
         local_authority = LocalAuthorityFactory(
-            id="1", name="Dorset County Council", registration_numbers=service
+            id="1",
+            name="Dorset Council",
+            ui_lta_name="Dorset County Council",
+            registration_numbers=service,
         )
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)

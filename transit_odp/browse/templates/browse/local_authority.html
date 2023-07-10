@@ -4,6 +4,7 @@
 {% load i18n %}
 {% load query_transform %}
 {% load static %}
+{% load filters %}
 
 {% block title_tag %}
     {% filter force_escape %}
@@ -29,13 +30,13 @@
         <div class="govuk-grid-row govuk-!-margin-top-5">
             <div class="govuk-grid-column-two-thirds">
                 <div class="search-list__heading">
-                    {% if paginator.count > 1 %}
+                    {% if updated_result > 1 %}
                         <span class="govuk-body">
                             {% filter force_escape %}
-                                {{ paginator.count }} {% trans 'results' %}
+                                {{ updated_result }} {% trans 'results' %}
                             {% endfilter %}
                         </span>
-                    {% elif paginator.count == 1 %}
+                    {% elif updated_result == 1 %}
                         <span class="govuk-body">
                             {% filter force_escape %}
                                 {% trans '1 result' %}
@@ -78,12 +79,12 @@
                                 name="ordering"
                                 aria-label="Order by"
                                 onchange="this.form.submit()">
-                                <option value="mapped_name" {% if ordering == "mapped_name" %}selected{% endif %}>
+                                <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name A-Z' %}
                                     {% endfilter %}
                                 </option>
-                                <option value="-mapped_name" {% if ordering == "-mapped_name" %}selected{% endif %}>
+                                <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
                                     {% filter force_escape %}
                                         {% trans 'Name Z-A' %}
                                     {% endfilter %}
@@ -93,12 +94,16 @@
                     </div>
                 </div>
 
+                {% regroup object_list by item.ui_lta_name.item.id as grouped_object_list %}
+
                 <div class="search-result__list">
-                    {% for item in object_list %}
-                        {% if not forloop.first %}
-                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                        {% endif %}
-                        {% include 'browse/snippets/results/local_authority.html' %}
+                    {% for group_object in grouped_object_list %}
+                        {% for value in group_object.list|unique_by_property:'ui_lta_name' %}
+                            {% if not forloop.first %}
+                                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                            {% endif %}
+                            {% include 'browse/snippets/results/local_authority.html' with item=value host=host hosts_data=hosts.data auth_ids=auth_ids %}
+                        {% endfor %}
                     {% empty %}
                         <div>
                             <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
@@ -118,7 +123,7 @@
                     {% endfor %}
                 </div>
 
-                {% if paginator.count > 0 %}
+                {% if updated_result > 0 %}
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                     {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
                 {% endif %}
