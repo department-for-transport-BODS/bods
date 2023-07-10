@@ -567,11 +567,11 @@ class VehicleJourneyFinder:
         elif len(service_code_list) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
-                "Found more than one matching vehicle journey in \
-                timetables belonging to a single service code",
+                "Found more than one matching vehicle journey in timetables belonging to a single service code",
             )
             return False
         elif len(service_code_list) > 1:
+            result = None
             return False
         return True
 
@@ -654,8 +654,9 @@ class VehicleJourneyFinder:
             ):
                 return None
 
-        if not self.filter_by_service_code(vehicle_journeys, result):
-            return None
+        if len(vehicle_journeys) > 1:
+            if not self.filter_by_service_code(vehicle_journeys, result):
+                return None
 
         # If we get to this point, we've matched the SIRI-VM MonitoredVehicleJourney
         # to exactly one TXC VehicleJourney. Update result to record a match.
