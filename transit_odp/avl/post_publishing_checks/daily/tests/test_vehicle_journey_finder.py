@@ -187,12 +187,26 @@ def test_filter_by_days_of_operation():
 
 
 @pytest.mark.parametrize(
-    "txc_files,expected_result",
+    "txc_files,expected_result,expected_error",
     [
-        (["vehicle_journeys5.xml", "vehicle_journeys6.xml"], False),
+        (
+            ["vehicle_journeys5.xml"],
+            False,
+            [
+                "Found more than one matching vehicle journey in timetables belonging to a single service code"
+            ],
+        ),
+        (["vehicle_journeys5.xml", "vehicle_journeys6.xml"], False, []),
+        (
+            ["vehicle_journeys4.xml", "vehicle_journeys5.xml"],
+            False,
+            [
+                "Found more than one matching vehicle journey in timetables belonging to a single service code"
+            ],
+        ),
     ],
 )
-def test_filter_by_service_code(txc_files, expected_result):
+def test_filter_by_service_code(txc_files, expected_result, expected_error):
     txc_filenames = [str(DATA_DIR / xml) for xml in txc_files]
     txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
     txc_vehicle_journeys = [
@@ -205,6 +219,4 @@ def test_filter_by_service_code(txc_files, expected_result):
     )
 
     assert return_result == expected_result
-    assert result.errors[ErrorCategory.GENERAL] == [
-        "Found more than one matching vehicle journey in timetables belonging to a single service code"
-    ]
+    assert result.errors[ErrorCategory.GENERAL] == expected_error

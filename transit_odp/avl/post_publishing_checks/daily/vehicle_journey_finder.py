@@ -548,29 +548,29 @@ class VehicleJourneyFinder:
     def filter_by_service_code(
         self, vehicle_journeys: List[TxcVehicleJourney], result: ValidationResult
     ):
+        txc_file_list = []
+        service_code_list = []
         for vj in reversed(vehicle_journeys):
-            txc_file_list = []
-            service_code_list = []
-            txc_file_list.append(vj.txc_xml)
-            service_code = self.get_service_code(vj)
-            service_code_list.append(service_code[0])
+            txc_file_list.append(vj.txc_xml.name)
+            service_code = self.get_service_code(vj)[0].text
+            service_code_list.append(service_code)
 
-        # txc_xml_set = set(txc_file_list)
-        # service_code_set = set(service_code_list)
+        txc_file_set = set(txc_file_list)
+        service_code_set = set(service_code_list)
 
-        if len(txc_file_list) == 1:
+        if len(txc_file_set) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in timetables belonging to a single service code",
             )
             return False
-        elif len(service_code_list) == 1:
+        elif len(service_code_set) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in timetables belonging to a single service code",
             )
             return False
-        elif len(service_code_list) > 1:
+        elif len(service_code_set) > 1:
             result = None
             return False
         return True
