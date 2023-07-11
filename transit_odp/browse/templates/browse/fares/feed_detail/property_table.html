@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block owner_search_link %}
-    {% url 'search-fares' host host.name %}?organisation={{ property.organisation.id }}
+    {% url 'search-fares' host host.name %}?organisation={{ property.organisation.id }}&status=live
 {% endblock %}
 
 
