@@ -194,6 +194,16 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             effective_stale_date_otc_effective_date=TruncDate(
                 ExpressionWrapper(
+                    F("effective_date") - timedelta(days=42),
+                    output_field=DateField(),
+                )
+            )
+        )
+
+    def add_otc_association_date(self):
+        return self.annotate(
+            association_date_otc_effective_date=TruncDate(
+                ExpressionWrapper(
                     F("effective_date") - timedelta(days=70),
                     output_field=DateField(),
                 )
