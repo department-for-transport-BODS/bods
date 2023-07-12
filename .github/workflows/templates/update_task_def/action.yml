@@ -2,37 +2,37 @@ name: update_task_definition
 
 # Were we can define the inputs that our action will accept
 inputs:
-  service: 
+  service:
+    description: The name of the service
     required: true
-  container: 
+  container:
+    description: The name of the container inside the task definition needing patched
     required: true
   environment:
+    description: The environment being targeted
     required: true
   image_id:
+    description: The updated image
     required: true
+
+description: Updates a task definition with new image name and deploys it
 
 runs:
   using: "composite"
   steps:
-
-  # aws-ecs/deploy-service-update 
+  # aws-ecs/deploy-service-update
   - name: Download task definition
     shell: bash
+    env:
+      UPDATED_TASK_NAME: "${{ inputs.environment }}-${{ inputs.service }}-task-definition.json"
     run: |
-      aws ecs describe-task-definition --task-definition bodds_${{ inputs.service }}_${{ inputs.environment }} --query taskDefinition > ${{ github.workspace }}/task-definition.json
-
-  - name: Fill in the new image ID in the Amazon ECS task definition
-    id: task-def
-    uses: aws-actions/amazon-ecs-render-task-definition@v1
-    with:
-      task-definition: task-definition.json
-      container-name: ${{ inputs.container }}
-      image: ${{ inputs.image_id }}
+      aws ecs describe-task-definition --include TAGS --task-definition bodds_${{ inputs.service }}_${{ inputs.environment }} | jq '.taskDefinition["containerDefinitions"][] |= if (.name=="${{ inputs.container }}" ) then (.image = "${{ inputs.image_id }}") else . end' > $UPDATED_TASK_NAME
+      cat $UPDATED_TASK_NAME
 
   - name: Deploy Amazon ECS task definition
     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
     with:
-      task-definition: ${{ steps.task-def.outputs.task-definition }}
+      task-definition: "${{ inputs.environment }}-${{ inputs.service }}-task-definition.json"
       service: ${{ inputs.service }}
       cluster: bodds-${{ inputs.environment }}
       wait-for-service-stability: true
