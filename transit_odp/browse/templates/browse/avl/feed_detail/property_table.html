@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block owner_search_link %}
-    {% url 'avl-search' host host.name %}?organisation={{ property.organisation.id }}
+    {% url 'avl-search' host host.name %}?organisation={{ property.organisation.id }}&status=live
 {% endblock %}
 
 {% block datatype_content %}

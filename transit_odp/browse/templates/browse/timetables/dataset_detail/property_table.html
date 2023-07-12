@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block owner_search_link %}
-    {% url 'search' host host.name %}?organisation={{ property.organisation.id }}
+    {% url 'search' host host.name %}?organisation={{ property.organisation.id }}&status=live
 {% endblock %}
 
 {% block datatype_content %}
