@@ -21,18 +21,16 @@ runs:
   using: "composite"
   steps:
   # aws-ecs/deploy-service-update
-  - name: Download task definition
-    shell: bash
-    env:
-      UPDATED_TASK_NAME: "${{ inputs.environment }}-${{ inputs.service }}-task-definition.json"
-    run: |
-      aws ecs describe-task-definition --include TAGS --task-definition bodds_${{ inputs.service }}_${{ inputs.environment }} | jq '.taskDefinition["containerDefinitions"][] |= if (.name=="${{ inputs.container }}" ) then (.image = "${{ inputs.image_id }}") else . end' > $UPDATED_TASK_NAME
-      cat $UPDATED_TASK_NAME
-
-  - name: Deploy Amazon ECS task definition
-    uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-    with:
-      task-definition: "${{ inputs.environment }}-${{ inputs.service }}-task-definition.json"
-      service: ${{ inputs.service }}
-      cluster: bodds-${{ inputs.environment }}
-      wait-for-service-stability: true
+    - name: Download task definition
+      shell: bash
+      env:
+        TASK_FAMILY: bodds_${{ inputs.service }}_${{ inputs.environment }}
+        IMAGE: ${{ inputs.image_id }}
+        CONTAINER: ${{ inputs.container }}
+        CLUSTER: bodds-${{ inputs.environment }}
+        SERVICE: ${{ inputs.service }}
+      run: |
+        aws ecs describe-task-definition --include TAGS --task-definition $TASK_FAMILY | jq '.taskDefinition.containerDefinitions[] |= if (.name=="$CONTAINER" ) then (.image = $IMAGE) else . end | .taskDefinition["tags"] = .tags | .taskDefinition | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatabilities) | del(.registeredAt) | del(.registeredBy) | del(.compatibilities)' > ${{ github.workspace }}/task-definition.json
+        aws ecs register-task-definition --cli-input-json file://${{ github.workspace }}/task-definition.json
+        def_arn=$( aws ecs describe-task-definition --task-definition bodds_squid_uat --query taskDefinition.taskDefinitionArn --output text )
+        aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition $def_arn
