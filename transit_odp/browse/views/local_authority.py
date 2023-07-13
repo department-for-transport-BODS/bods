@@ -1,11 +1,11 @@
 from datetime import timedelta
 from typing import Dict, Optional
 
-from django.db.models import Case, CharField, Subquery, Value, When
+from django.db.models import Subquery
+from django.db.models.functions import Trim
 from django.http import HttpResponse
 from django.views import View
 
-from transit_odp.browse.lta_constants import LTAS_DICT
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
@@ -32,27 +32,54 @@ def get_seasonal_service_status(otc_service: dict) -> str:
     return "In Season" if seasonal_service_status else "Out of Season"
 
 
-def get_all_otc_map_lta(lta) -> Dict[str, OTCService]:
+def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
     """
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     return {
         service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_all_otc_data_for_lta(lta)
+        for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
     }
 
 
-def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
+def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
     """
     Get a dictionary which includes all the Seasonal Services
     for an organisation.
     """
-    services_subquery = lta.registration_numbers.values("id")
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     return {
         service.registration_number.replace("/", ":"): service
         for service in SeasonalService.objects.filter(
             licence__organisation__licences__number__in=Subquery(
-                services_subquery.values("licence__number")
+                final_subquery.values("licence__number")
             )
         )
         .add_registration_number()
@@ -60,13 +87,26 @@ def get_seasonal_service_map(lta) -> Dict[str, SeasonalService]:
     }
 
 
-def get_service_code_exemption_map(lta) -> Dict[str, ServiceCodeExemption]:
-    services_subquery = lta.registration_numbers.values("id")
+def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     return {
         service.registration_number.replace("/", ":"): service
         for service in ServiceCodeExemption.objects.add_registration_number().filter(
             licence__organisation__licences__number__in=Subquery(
-                services_subquery.values("licence__number")
+                final_subquery.values("licence__number")
             )
         )
     }
@@ -79,74 +119,75 @@ class LocalAuthorityView(BaseListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object_list"] = self.object_list_lta_mapping(context["object_list"])
+        context["updated_result"] = (
+            self.get_queryset().values("ui_lta_name_trimmed").distinct().count()
+        )
         context["q"] = self.request.GET.get("q", "")
-        context["ordering"] = self.request.GET.get("ordering", "mapped_name")
+        context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
+        ids_list = {}
 
         for lta in all_ltas_current_page:
-            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta)
-            if otc_qs:
-                context["total_in_scope_in_season_services"] = otc_qs.count()
+            if lta.ui_lta_name_trimmed not in ids_list:
+                ids_list[lta.ui_lta_name_trimmed] = [lta.id]
             else:
-                context["total_in_scope_in_season_services"] = 0
-            context["total_services_requiring_attention"] = len(
-                get_requires_attention_data_lta(lta)
-            )
-            try:
-                context["services_require_attention_percentage"] = round(
-                    100
-                    * (
-                        context["total_services_requiring_attention"]
-                        / context["total_in_scope_in_season_services"]
-                    )
-                )
-            except ZeroDivisionError:
-                context["services_require_attention_percentage"] = 0
-            setattr(
-                lta,
-                "services_require_attention_percentage",
-                context["services_require_attention_percentage"],
-            )
+                ids_list[lta.ui_lta_name_trimmed].append(lta.id)
 
-        ltas = {"names": [lta.name for lta in all_ltas_current_page]}
+        for lta_id_list in ids_list.values():
+            for lta in all_ltas_current_page:
+                if lta.id in lta_id_list:
+                    setattr(lta, "auth_ids", lta_id_list)
+
+                    lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
+                    otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
+                        lta_list
+                    )
+                    if otc_qs:
+                        context["total_in_scope_in_season_services"] = otc_qs
+                    else:
+                        context["total_in_scope_in_season_services"] = 0
+                    context[
+                        "total_services_requiring_attention"
+                    ] = get_requires_attention_data_lta(lta_list)
+                    try:
+                        context["services_require_attention_percentage"] = round(
+                            100
+                            * (
+                                context["total_services_requiring_attention"]
+                                / context["total_in_scope_in_season_services"]
+                            )
+                        )
+                    except ZeroDivisionError:
+                        context["services_require_attention_percentage"] = 0
+                    setattr(
+                        lta,
+                        "services_require_attention_percentage",
+                        context["services_require_attention_percentage"],
+                    )
+
+        ltas = {
+            "names": list(
+                set([lta.ui_lta_name_trimmed for lta in all_ltas_current_page])
+            )
+        }
         context["ltas"] = ltas
         return context
 
-    def object_list_lta_mapping(self, object_list):
-        new_object_list = []
-        for lta_object in object_list:
-            for otc_name, value_name in LTAS_DICT.items():
-                if lta_object.name == otc_name:
-                    lta_object.name = value_name
-                    new_object_list.append(lta_object)
-        return new_object_list
-
     def get_queryset(self):
-        lta_name_list = list(LTAS_DICT.keys())
-        qs = self.model.objects.filter(name__in=lta_name_list)
-        # Add annotated field "mapped_name"
-        qs = qs.annotate(
-            mapped_name=Case(
-                *[
-                    When(name=name, then=Value(mapped_name, output_field=CharField()))
-                    for name, mapped_name in LTAS_DICT.items()
-                ],
-                default=Value("", output_field=CharField()),
-            )
+        qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
+            ui_lta_name_trimmed=Trim("ui_lta_name")
         )
+
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
-            qs = qs.filter(mapped_name__icontains=search_term)
+            qs = qs.filter(ui_lta_name_trimmed__icontains=search_term)
 
         qs = qs.order_by(*self.get_ordering())
         return qs
 
     def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "mapped_name")
-        if ordering == "mapped_name":
-            ordering = ("mapped_name",)
-        elif isinstance(ordering, str):
+        ordering = self.request.GET.get("ordering", "ui_lta_name_trimmed")
+        if isinstance(ordering, str):
             ordering = (ordering,)
         return ordering
 
@@ -155,17 +196,39 @@ class LocalAuthorityDetailView(BaseDetailView):
     template_name = "browse/local_authority/local_authority_detail.html"
     model = LocalAuthority
 
+    def get_object(self, queryset=None):
+        combined_authority_ids = self.request.GET.get("auth_ids")
+        if combined_authority_ids:
+            combined_authority_ids = [
+                int(lta_id.replace("[", "").replace("]", ""))
+                for lta_id in combined_authority_ids.split(",")
+            ]
+        qs = self.model.objects.get(id=combined_authority_ids[0])
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        local_authority = self.lta_name_mapping(self.object)
-        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(local_authority)
+        combined_authority_ids = self.request.GET.get("auth_ids")
+        lta_objs = []
+        context["auth_ids"] = combined_authority_ids
+
+        if combined_authority_ids:
+            combined_authority_ids = [
+                int(lta_id.replace("[", "").replace("]", ""))
+                for lta_id in combined_authority_ids.split(",")
+            ]
+
+        for combined_authority_id in combined_authority_ids:
+            lta_objs.append(self.model.objects.get(id=combined_authority_id))
+
+        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_objs)
         if otc_qs:
-            context["total_in_scope_in_season_services"] = otc_qs.count()
+            context["total_in_scope_in_season_services"] = otc_qs
         else:
             context["total_in_scope_in_season_services"] = 0
 
-        context["total_services_requiring_attention"] = len(
-            get_requires_attention_data_lta(local_authority)
+        context["total_services_requiring_attention"] = get_requires_attention_data_lta(
+            lta_objs
         )
 
         try:
@@ -181,28 +244,29 @@ class LocalAuthorityDetailView(BaseDetailView):
 
         return context
 
-    def lta_name_mapping(self, lta_object):
-        for otc_name, value_name in LTAS_DICT.items():
-            if lta_object.name == otc_name:
-                lta_object.name = value_name
-        return lta_object
-
 
 class LocalAuthorityExportView(View):
     def get(self, *args, **kwargs):
-        self.lta = LocalAuthority.objects.get(id=kwargs["pk"])
         return self.render_to_response()
 
-    def lta_name_mapping(self):
-        for otc_name, value_name in LTAS_DICT.items():
-            if self.lta.name == otc_name:
-                self.lta.name = value_name
-        return self.lta
-
     def render_to_response(self):
-        lta = self.lta_name_mapping()
-        csv_filename = f"{lta.name}_detailed service code export detailed export.csv"
-        csv_export = LTACSV(lta)
+        lta_objs = []
+        combined_authority_ids = self.request.GET.get("auth_ids")
+
+        if combined_authority_ids:
+            combined_authority_ids = [
+                int(lta_id.replace("[", "").replace("]", ""))
+                for lta_id in combined_authority_ids.split(",")
+            ]
+
+        for combined_authority_id in combined_authority_ids:
+            lta_objs.append(LocalAuthority.objects.get(id=combined_authority_id))
+
+        updated_ui_lta_name = lta_objs[0].ui_lta_name.replace(",", " ").strip()
+        csv_filename = (
+            f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
+        )
+        csv_export = LTACSV(lta_objs)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
@@ -392,8 +456,8 @@ class LTACSV(CSVBuilder):
             }
         )
 
-    def __init__(self, lta):
-        self._lta = lta
+    def __init__(self, combined_authorities):
+        self._combined_authorities = combined_authorities
         self._object_list = []
 
     def modify_dataset_line_name(self, line_names: list) -> str:
@@ -408,7 +472,7 @@ class LTACSV(CSVBuilder):
             return "No"
         return "Yes"
 
-    def get_otc_service_bods_data(self, lta) -> None:
+    def get_otc_service_bods_data(self, lta_list) -> None:
         """
         Compares an LTA's OTC Services dictionaries list with
         TXCFileAttributes dictionaries list and the SeasonalService list
@@ -416,10 +480,10 @@ class LTACSV(CSVBuilder):
         doesn't ie. not live in BODS at all, or live but meeting new
         Staleness conditions.
         """
-        otc_map = get_all_otc_map_lta(lta)
-        txcfa_map = get_txc_map_lta(lta)
-        seasonal_service_map = get_seasonal_service_map(lta)
-        service_code_exemption_map = get_service_code_exemption_map(lta)
+        otc_map = get_all_otc_map_lta(lta_list)
+        txcfa_map = get_txc_map_lta(lta_list)
+        seasonal_service_map = get_seasonal_service_map(lta_list)
+        service_code_exemption_map = get_service_code_exemption_map(lta_list)
         services_code = set(otc_map)
         services_code = sorted(services_code)
 
@@ -452,5 +516,5 @@ class LTACSV(CSVBuilder):
             )
 
     def get_queryset(self):
-        self.get_otc_service_bods_data(self._lta)
+        self.get_otc_service_bods_data(self._combined_authorities)
         return self._object_list
