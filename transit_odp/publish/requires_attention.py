@@ -147,10 +147,18 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
     effective_stale_date_otc_effective_date = (
         service.effective_stale_date_otc_effective_date
     )
+    association_date_otc_effective_date = service.association_date_otc_effective_date
+    operating_period_start_date = file_attribute.operating_period_start_date
+
+    is_data_associated = (
+        last_modified >= association_date_otc_effective_date
+        or operating_period_start_date == effective_date
+    )
 
     staleness_otc = (
-        effective_stale_date_otc_effective_date > last_modified
-        and effective_stale_date_otc_effective_date <= today
+        not is_data_associated
+        if today >= effective_stale_date_otc_effective_date
+        else False
     )
     staleness_end_date = (
         (
