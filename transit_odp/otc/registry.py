@@ -88,7 +88,7 @@ class Registry:
                 ):
                     self.update_registered_variations(variation)
 
-    def get_variations_since(self, when: datetime) -> List[Service]:
+    def get_variations_since(self, when: datetime, services_to_check) -> List[Service]:
         """
         looks up all latest variations since a given date, any variations in the
         RegistrationStatusEnum.to_change() will be looked up again. This leaves both
@@ -97,8 +97,18 @@ class Registry:
         """
         look_up_again = set()
         regs_to_update_lta = []
-        for registration in self._client.get_latest_variations_since(when):
-            regs_to_update_lta.append(registration)
+        registrations = []
+
+        for reg in services_to_check:
+            registration = self._client.get_latest_variations_by_registration_code(reg)
+            registrations.append(registration)
+
+        for reg in self._client.get_latest_variations_since(when):
+
+            registrations.append(reg)
+            regs_to_update_lta.append(reg)
+
+        for registration in registrations:
             if registration.registration_status in RegistrationStatusEnum.to_change():
                 look_up_again.add(registration.registration_number)
             else:
@@ -193,7 +203,7 @@ class Registry:
         if variation.effective_date:
             if variation.effective_date > date.today():
                 self.update(variation)
-
+            
     def update(self, registration: Registration) -> None:
         """
         Performs normalisation and drops duplicates, will keep highest variation

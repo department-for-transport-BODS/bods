@@ -117,6 +117,26 @@ class OTCAPIClient:
             updated_on += timedelta(days=1)
 
         return variations
+    
+    def get_latest_variations_by_registration_code(self, registration_code: str) -> List[Registration]:
+        variations = []
+        logger.info(
+                f"Requesting latest variation for {registration_code} from OTC API"
+            )
+        response = self._make_request(
+            page=1, regNo=registration_code, latestVariation=True
+        )
+        variations += response.bus_search
+
+        for page in range(2, response.page.total_pages + 1):
+            response = self._make_request(
+                page=page,
+                regNo=registration_code,
+                latestVariation=True,
+            )
+            variations += response.bus_search
+
+        return variations
 
     @lru_cache(maxsize=128, typed=False)
     def get_variations_by_registration_code_desc(

@@ -1,11 +1,13 @@
 from functools import cached_property
 from logging import getLogger
 from typing import Set, Tuple, Union
+from datetime import date
+from itertools import chain
 
-from django.db import transaction
+from django.db import transaction, connection
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
-from transit_odp.otc.models import Licence, Operator, Service, LocalAuthority
+from transit_odp.otc.models import Licence, Operator, Service, InactiveService, LocalAuthority
 
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.populate_lta import PopulateLTA
@@ -166,6 +168,15 @@ class Loader:
             .order_by("last_modified")
             .last()
         )
+        service_with_valid_effective_date = (
+            Service.objects.filter(effective_date__lte=date.today()).values_list('registration_number', flat=True)
+        )
+        print("service_with_valid_effective_date", len(service_with_valid_effective_date))
+        inactive_service_with_valid_effective_date = (
+            InactiveService.objects.filter(effective_date__lte=date.today()).values_list('registration_number', flat=True)
+        )
+        services_to_check = list(chain(service_with_valid_effective_date, inactive_service_with_valid_effective_date))
+
         if (
             most_recently_modified is None
             or most_recently_modified.last_modified is None
@@ -175,8 +186,9 @@ class Loader:
 
         with transaction.atomic():
             _registrations = self.registry.get_variations_since(
-                most_recently_modified.last_modified
+                most_recently_modified.last_modified, services_to_check
             )
+         
             self.load_licences()
             self.load_operators()
             self.load_services()
