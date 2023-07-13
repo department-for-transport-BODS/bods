@@ -109,7 +109,89 @@ def test_lta_queryset():
         (licence_number2, registration_number3),
     ]
 
-    lta_codes_csv = LTACSV(local_authority_1)
+    lta_codes_csv = LTACSV([local_authority_1])
+    queryset = lta_codes_csv.get_queryset()
+
+    assert len(queryset) == len(expected_pairs_org1)
+    queryset_pairs = [
+        (service["otc_licence_number"], service["otc_registration_number"])
+        for service in queryset
+    ]
+    assert sorted(queryset_pairs) == sorted(expected_pairs_org1)
+
+
+def test_combined_authority_lta_queryset():
+    services_list_1 = []
+    services_list_2 = []
+    licence_number1 = "PD000001"
+    otc_lic1 = LicenceModelFactory(number=licence_number1)
+    registration_number1 = f"{licence_number1}/1"
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=registration_number1,
+            service_type_description=FLEXIBLE_REG,
+        )
+    )
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=registration_number1,
+            service_type_description=SCHOOL_OR_WORKS,
+        )
+    )
+
+    licence_number2 = "PA000002"
+    otc_lic2 = LicenceModelFactory(number=licence_number2)
+    registration_number2 = f"{licence_number2}/1"
+    registration_number3 = f"{licence_number2}/2"
+    registration_number6 = f"{licence_number2}/3"
+    services_list_1.append(
+        ServiceModelFactory(licence=otc_lic2, registration_number=registration_number2)
+    )
+    services_list_1.append(
+        ServiceModelFactory(licence=otc_lic2, registration_number=registration_number3)
+    )
+    services_list_1.append(
+        ServiceModelFactory(licence=otc_lic2, registration_number=registration_number6)
+    )
+
+    licence_number3 = "PB000003"
+    otc_lic3 = LicenceModelFactory(number=licence_number3)
+    registration_number4 = f"{licence_number3}/1"
+    registration_number5 = f"{licence_number3}/2"
+    # Service created but not adding to the list of services for the LTA
+    ServiceModelFactory(licence=otc_lic3, registration_number=registration_number4)
+    # Service created but linked to a diffent LTA
+    services_list_2.append(
+        ServiceModelFactory(licence=otc_lic3, registration_number=registration_number5)
+    )
+
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services_list_1
+    )
+
+    local_authority_2 = LocalAuthorityFactory(
+        id="2", name="second_LTA", registration_numbers=services_list_2
+    )
+
+    org1 = OrganisationFactory()
+    bods_lic = BODSLicenceFactory(organisation=org1, number=licence_number1)
+
+    # Published but exempted service codes should be included in response
+    ServiceCodeExemptionFactory(
+        licence=bods_lic, registration_code=int(registration_number6.split("/")[1])
+    )
+
+    expected_pairs_org1 = [
+        (licence_number1, registration_number1),
+        (licence_number2, registration_number2),
+        (licence_number2, registration_number6),
+        (licence_number2, registration_number3),
+        (licence_number3, registration_number5),
+    ]
+
+    lta_codes_csv = LTACSV([local_authority_1, local_authority_2])
     queryset = lta_codes_csv.get_queryset()
 
     assert len(queryset) == len(expected_pairs_org1)
@@ -373,7 +455,7 @@ def test_lta_csv_output():
         id="1", name="first_LTA", registration_numbers=services_list_1
     )
 
-    lta_codes_csv = LTACSV(local_authority_1)
+    lta_codes_csv = LTACSV([local_authority_1])
     csv_string = lta_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
 
@@ -717,7 +799,7 @@ def test_seasonal_status_lta_csv_output():
         id="1", name="first_LTA", registration_numbers=services_list_1
     )
 
-    lta_codes_csv = LTACSV(local_authority_1)
+    lta_codes_csv = LTACSV([local_authority_1])
     csv_string = lta_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
 

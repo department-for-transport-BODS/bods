@@ -11,7 +11,11 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
-    {% breadcrumb_url 'Timetables Data' 'search' host hosts.data %}
+    <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="{% url 'search' host hosts.data %}?status=live">
+            Timetables Data
+        </a>
+    </li>
     {% with name=object.name|truncatechars:19 %}
         {% breadcrumb name %}
     {% endwith %}

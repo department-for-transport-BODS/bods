@@ -97,7 +97,6 @@ class FaresSearchView(BaseSearchView):
         keywords = self.request.GET.get("q", "").strip()
         if keywords:
             qs = qs.search(keywords)
-
         return qs
 
 

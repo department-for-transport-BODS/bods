@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import BooleanField, Case, CharField, F, Func, Q, Value, When
 
+from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.querysets import DatasetQuerySet
 
 
@@ -70,6 +71,7 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
             .add_string_user_type()
             .add_organisation_name()
             .add_compliance_status()
+            .exclude(fares_metadata_id__revision__status=INACTIVE)
         )
 
     def add_revision_and_dataset(self):

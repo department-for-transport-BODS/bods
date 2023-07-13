@@ -31,206 +31,206 @@
             {% include "organisation/snippets/psv_licence_panel.html" %}
             <table class="govuk-table manage-users-table govuk-!-margin-top-8"">
                 <caption class="govuk-table__caption manage-users-table__caption">{% trans 'Organisation detail' %}</caption>
-                <tbody class="govuk-table__body">
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell"></td>
-                        <td colspan="2" class="govuk-table__cell"></td>
-                    </tr>
-
-                    {# Short name #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Short name' %}</td>
-                        <td colspan="2" class="govuk-table__cell">{{ properties.short_name }}</td>
-                    </tr>
-
-                    {# Status #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Status' %}</td>
-                        <td colspan="2" class="govuk-table__cell">{{ properties.status }}</td>
-                    </tr>
-
-                    {# Operator ID #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Operator ID' %}</td>
-                        <td colspan="2" class="govuk-table__cell">{{ properties.operator_id }}</td>
-                    </tr>
-
-                    {# National operator Code #}
-                    {% for noc in properties.nocs %}
+                    <tbody class="govuk-table__body">
                         <tr class="govuk-table__row">
-                            <td class="govuk-table__cell manage-users-table__key"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {% if forloop.first %}{% trans 'National operator Code' %}{% endif %}
-                            </td>
-                            <td colspan="2" class="govuk-table__cell"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {{ noc }}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                            <td class="govuk-table__cell"></td>
+                                <td colspan="2" class="govuk-table__cell"></td>
+                                    </tr>
 
-                    {# PSV Licence Number #}
-                    {% for licence in properties.licences %}
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell manage-users-table__key"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {% if forloop.first %}{% trans 'PSV Licence Number' %}{% endif %}
-                            </td>
-                            <td colspan="2" class="govuk-table__cell"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {{ licence.number }}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                                    {# Short name #}
+                                    <tr class="govuk-table__row">
+                                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Short name' %}</td>
+                                            <td colspan="2" class="govuk-table__cell">{{ properties.short_name }}</td>
+                                                </tr>
 
-                    {% if not properties.licences %}
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell manage-users-table__key">
-                                {% trans 'PSV Licence Number' %}
-                            </td>
-                            <td colspan="2" class="govuk-table__cell"></td>
-                        </tr>
-                    {% endif %}
+                                                {# Status #}
+                                                <tr class="govuk-table__row">
+                                                    <td class="govuk-table__cell manage-users-table__key">{% trans 'Status' %}</td>
+                                                        <td colspan="2" class="govuk-table__cell">{{ properties.status }}</td>
+                                                            </tr>
 
-                    {# Service codes exempt #}
-                    {% if not properties.service_code_exemptions %}
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell manage-users-table__key">
-                                {% trans 'Service codes exempt' %}
-                            </td>
-                            <td colspan="2" class="govuk-table__cell"></td>
-                        </tr>
-                    {% endif %}
+                                                            {# Operator ID #}
+                                                            <tr class="govuk-table__row">
+                                                                <td class="govuk-table__cell manage-users-table__key">{% trans 'Operator ID' %}</td>
+                                                                    <td colspan="2" class="govuk-table__cell">{{ properties.operator_id }}</td>
+                                                                        </tr>
 
-                    {% for exempt_code in properties.service_code_exemptions %}
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell manage-users-table__key"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {% if forloop.first %}{% trans 'Service codes exempt' %}{% endif %}
-                            </td>
-                            <td class="govuk-table__cell"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {{ exempt_code.registration_number }}
-                            </td>
-                            <td class="govuk-table__cell"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {{ exempt_code.justification }}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                                                                        {# National operator Code #}
+                                                                        {% for noc in properties.nocs %}
+                                                                            <tr class="govuk-table__row">
+                                                                                <td class="govuk-table__cell manage-users-table__key"
+                                                                                    {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                    {% if forloop.first %}{% trans 'National operator Code' %}{% endif %}
+                                                                                    </td>
+                                                                                    <td colspan="2" class="govuk-table__cell"
+                                                                                        {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                        {{ noc }}
+                                                                                        </td>
+                                                                                        </tr>
+                                                                        {% endfor %}
 
-                    {# Date added to BODS #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Date added to BODS' %}</td>
-                        <td colspan="2" class="govuk-table__cell">{{ properties.date_added|date:"d M Y" }}</td>
-                    </tr>
+                                                                        {# PSV Licence Number #}
+                                                                        {% for licence in properties.licences %}
+                                                                            <tr class="govuk-table__row">
+                                                                                <td class="govuk-table__cell manage-users-table__key"
+                                                                                    {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                    {% if forloop.first %}{% trans 'PSV Licence Number' %}{% endif %}
+                                                                                    </td>
+                                                                                    <td colspan="2" class="govuk-table__cell"
+                                                                                        {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                        {{ licence.number }}
+                                                                                        </td>
+                                                                                        </tr>
+                                                                        {% endfor %}
 
-                    {# Last active #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Last active' %}</td>
-                        <td colspan="2" class="govuk-table__cell">{{ properties.last_active|date:"d M Y" }}</td>
-                    </tr>
+                                                                        {% if not properties.licences %}
+                                                                            <tr class="govuk-table__row">
+                                                                                <td class="govuk-table__cell manage-users-table__key">
+                                                                                    {% trans 'PSV Licence Number' %}
+                                                                                    </td>
+                                                                                    <td colspan="2" class="govuk-table__cell"></td>
+                                                                                        </tr>
+                                                                        {% endif %}
 
-                    {# Agents #}
-                    {% for agent in properties.agents %}
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell manage-users-table__key"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {% if forloop.first %}{% trans 'Agents' %}{% endif %}
-                            </td>
-                            <td class="govuk-table__cell"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                {{ agent.email }}
-                            </td>
-                            <td class="govuk-table__cell"
-                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
-                                <a class="govuk-link"
-                                    href="{% url 'users:agent-detail' pk=agent.id host hosts.admin %}">
-                                    View details
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                                                                        {# Service codes exempt #}
+                                                                        {% if not properties.service_code_exemptions %}
+                                                                            <tr class="govuk-table__row">
+                                                                                <td class="govuk-table__cell manage-users-table__key">
+                                                                                    {% trans 'Service codes exempt' %}
+                                                                                    </td>
+                                                                                    <td colspan="2" class="govuk-table__cell"></td>
+                                                                                        </tr>
+                                                                        {% endif %}
 
-                    {# Timetables data sets created #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Timetables data sets created' %}</td>
-                        <td class="govuk-table__cell">{{ properties.timetables_created|default_if_none:"0" }}</td>
-                        <td class="govuk-table__cell">
-                            <a class="govuk-link"
-                                href="{% url 'users:organisation-timetables-list' pk=object.id host hosts.admin %}">
-                                {% trans "View timetables data sets" %}
-                            </a>
-                        </td>
-                    </tr>
+                                                                        {% for exempt_code in properties.service_code_exemptions %}
+                                                                            <tr class="govuk-table__row">
+                                                                                <td class="govuk-table__cell manage-users-table__key"
+                                                                                    {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                    {% if forloop.first %}{% trans 'Service codes exempt' %}{% endif %}
+                                                                                    </td>
+                                                                                    <td class="govuk-table__cell"
+                                                                                        {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                        {{ exempt_code.registration_number }}
+                                                                                        </td>
+                                                                                        <td class="govuk-table__cell"
+                                                                                            {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                            {{ exempt_code.justification }}
+                                                                                            </td>
+                                                                                            </tr>
+                                                                        {% endfor %}
 
-                    {# Bus location data feeds created #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Bus location data feeds created' %}</td>
-                        <td class="govuk-table__cell">{{ properties.avls_created|default_if_none:"0" }}</td>
-                        <td class="govuk-table__cell">
-                            <a class="govuk-link"
-                                href="{% url 'users:organisation-avl-list' pk=object.id host hosts.admin %}">
-                                {% trans "View bus location data feeds" %}
-                            </a>
-                        </td>
-                    </tr>
+                                                                        {# Date added to BODS #}
+                                                                        <tr class="govuk-table__row">
+                                                                            <td class="govuk-table__cell manage-users-table__key">{% trans 'Date added to BODS' %}</td>
+                                                                                <td colspan="2" class="govuk-table__cell">{{ properties.date_added|date:"d M Y" }}</td>
+                                                                                    </tr>
 
-                    {# Fares data sets created #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Fares data sets created' %}</td>
-                        <td class="govuk-table__cell">{{ properties.fares_created|default_if_none:"0" }}</td>
-                        <td class="govuk-table__cell">
-                            <a class="govuk-link"
-                                href="{% url 'users:organisation-fares-list' pk=object.id host hosts.admin %}">
-                                {% trans "View fares data sets" %}
-                            </a>
-                        </td>
-                    </tr>
+                                                                                    {# Last active #}
+                                                                                    <tr class="govuk-table__row">
+                                                                                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Last active' %}</td>
+                                                                                            <td colspan="2" class="govuk-table__cell">{{ properties.last_active|date:"d M Y" }}</td>
+                                                                                                </tr>
 
-                    {# Key contact #}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell manage-users-table__key">{% trans 'Key contact' %}</td>
-                        <td class="govuk-table__cell">{{ properties.key_contact }}</td>
-                        <td class="govuk-table__cell">
-                            <a class="govuk-link"
-                                href="{% url 'users:org-user-manage' pk=object.id host hosts.admin %}">
-                                {% trans 'View organisation users' %}
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="govuk-grid-column-one-third">
-            {% include "common/snippets/organisation_helpful_links.html" %}
-        </div>
-    </div>
+                                                                                                {# Agents #}
+                                                                                                {% for agent in properties.agents %}
+                                                                                                    <tr class="govuk-table__row">
+                                                                                                        <td class="govuk-table__cell manage-users-table__key"
+                                                                                                            {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                                            {% if forloop.first %}{% trans 'Agents' %}{% endif %}
+                                                                                                            </td>
+                                                                                                            <td class="govuk-table__cell"
+                                                                                                                {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                                                {{ agent.email }}
+                                                                                                                </td>
+                                                                                                                <td class="govuk-table__cell"
+                                                                                                                    {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+                                                                                                                    <a class="govuk-link"
+                                                                                                                        href="{% url 'users:agent-detail' pk=agent.id host hosts.admin %}">
+                                                                                                                            View details
+                                                                                                                            </a>
+                                                                                                                            </td>
+                                                                                                                            </tr>
+                                                                                                {% endfor %}
+
+                                                                                                {# Timetables data sets created #}
+                                                                                                <tr class="govuk-table__row">
+                                                                                                    <td class="govuk-table__cell manage-users-table__key">{% trans 'Timetables data sets created' %}</td>
+                                                                                                        <td class="govuk-table__cell">{{ properties.timetables_created|default_if_none:"0" }}</td>
+                                                                                                            <td class="govuk-table__cell">
+                                                                                                                <a class="govuk-link"
+                                                                                                                    href="{% url 'users:organisation-timetables-list' pk=object.id host hosts.admin %}?status=live">
+                                                                                                                        {% trans "View timetables data sets" %}
+                                                                                                                        </a>
+                                                                                                                        </td>
+                                                                                                                        </tr>
+
+                                                                                                                        {# Bus location data feeds created #}
+                                                                                                                        <tr class="govuk-table__row">
+                                                                                                                            <td class="govuk-table__cell manage-users-table__key">{% trans 'Bus location data feeds created' %}</td>
+                                                                                                                                <td class="govuk-table__cell">{{ properties.avls_created|default_if_none:"0" }}</td>
+                                                                                                                                    <td class="govuk-table__cell">
+                                                                                                                                        <a class="govuk-link"
+                                                                                                                                            href="{% url 'users:organisation-avl-list' pk=object.id host hosts.admin %}?status=live">
+                                                                                                                                                {% trans "View bus location data feeds" %}
+                                                                                                                                                </a>
+                                                                                                                                                </td>
+                                                                                                                                                </tr>
+
+                                                                                                                                                {# Fares data sets created #}
+                                                                                                                                                <tr class="govuk-table__row">
+                                                                                                                                                    <td class="govuk-table__cell manage-users-table__key">{% trans 'Fares data sets created' %}</td>
+                                                                                                                                                        <td class="govuk-table__cell">{{ properties.fares_created|default_if_none:"0" }}</td>
+                                                                                                                                                            <td class="govuk-table__cell">
+                                                                                                                                                                <a class="govuk-link"
+                                                                                                                                                                    href="{% url 'users:organisation-fares-list' pk=object.id host hosts.admin %}?status=live">
+                                                                                                                                                                        {% trans "View fares data sets" %}
+                                                                                                                                                                        </a>
+                                                                                                                                                                        </td>
+                                                                                                                                                                        </tr>
+
+                                                                                                                                                                        {# Key contact #}
+                                                                                                                                                                        <tr class="govuk-table__row">
+                                                                                                                                                                            <td class="govuk-table__cell manage-users-table__key">{% trans 'Key contact' %}</td>
+                                                                                                                                                                                <td class="govuk-table__cell">{{ properties.key_contact }}</td>
+                                                                                                                                                                                    <td class="govuk-table__cell">
+                                                                                                                                                                                        <a class="govuk-link"
+                                                                                                                                                                                            href="{% url 'users:org-user-manage' pk=object.id host hosts.admin %}">
+                                                                                                                                                                                                {% trans 'View organisation users' %}
+                                                                                                                                                                                                </a>
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                </tbody>
+                                                                                                                                                                                                </table>
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                                <div class="govuk-grid-column-one-third">
+                                                                                                                                                                                                    {% include "common/snippets/organisation_helpful_links.html" %}
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                    </div>
 
 
-    <div class="btn-group-justified">
-        {% if not properties.registration_complete %}
-            <a role="button" class="govuk-button govuk-button--secondary app-!-mr-sm-4"
-                href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">
-                {% trans 'Edit' %}
-            </a>
-        {% elif properties.is_active %}
-            <a role="button" class="govuk-button govuk-button--secondary app-!-mr-sm-4"
-                href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">
-                {% trans 'Edit' %}
-            </a>
-            <a role="button" class="govuk-button govuk-button--warning"
-                href="{% url 'users:organisation-archive' pk=object.id host hosts.admin %}">
-                {% trans 'Deactivate organisation' %}
-            </a>
+                                                                                                                                                                                                    <div class="btn-group-justified">
+                                                                                                                                                                                                        {% if not properties.registration_complete %}
+                                                                                                                                                                                                            <a role="button" class="govuk-button govuk-button--secondary app-!-mr-sm-4"
+                                                                                                                                                                                                                href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">
+                                                                                                                                                                                                                    {% trans 'Edit' %}
+                                                                                                                                                                                                                    </a>
+                                                                                                                                                                                                        {% elif properties.is_active %}
+                                                                                                                                                                                                            <a role="button" class="govuk-button govuk-button--secondary app-!-mr-sm-4"
+                                                                                                                                                                                                                href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">
+                                                                                                                                                                                                                    {% trans 'Edit' %}
+                                                                                                                                                                                                                    </a>
+                                                                                                                                                                                                                    <a role="button" class="govuk-button govuk-button--warning"
+                                                                                                                                                                                                                        href="{% url 'users:organisation-archive' pk=object.id host hosts.admin %}">
+                                                                                                                                                                                                                            {% trans 'Deactivate organisation' %}
+                                                                                                                                                                                                                            </a>
 
-        {% else %}
-            <a role="button" class="govuk-button govuk-button--warning"
-                href="{% url 'users:organisation-archive' pk=object.id host hosts.admin %}">
-                {% trans 'Activate organisation' %}
-            </a>
-        {% endif %}
-    </div>
+                                                                                                                                                                                                        {% else %}
+                                                                                                                                                                                                            <a role="button" class="govuk-button govuk-button--warning"
+                                                                                                                                                                                                                href="{% url 'users:organisation-archive' pk=object.id host hosts.admin %}">
+                                                                                                                                                                                                                    {% trans 'Activate organisation' %}
+                                                                                                                                                                                                                    </a>
+                                                                                                                                                                                                        {% endif %}
+                                                                                                                                                                                                        </div>
 
 
 {% endblock %}

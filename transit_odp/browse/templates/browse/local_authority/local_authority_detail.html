@@ -13,7 +13,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Local Authority Profiles' 'local-authority' %}
-    {% with name=object.name|truncatechars:19 %}
+    {% with name=object.ui_lta_name|truncatechars:19 %}
         {% breadcrumb name %}
     {% endwith %}
 {% endblock %}
@@ -22,7 +22,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l">
-                {{ object.name }}
+                {{ object.ui_lta_name }}
             </h1>
 
             <h3 class="govuk-heading-m govuk-!-margin-top-3">
@@ -64,7 +64,7 @@
             </div>
             <ul class="govuk-list govuk-!-margin-top-5">
                 <li>
-                    <a class="govuk-link" href={% url 'local-authority-export' pk=object.id host hosts.data %}>
+                    <a class="govuk-link" href="{% url 'local-authority-export' host hosts.data %}?auth_ids={{ auth_ids }}">
                         {% filter force_escape %}{% trans 'Download detailed export' %}{% endfilter %}
                     </a>
                 </li>

@@ -1,6 +1,7 @@
 from django.contrib import admin
+from django import forms
 
-from transit_odp.otc.models import Service
+from transit_odp.otc.models import Service, LocalAuthority
 
 
 @admin.register(Service)
@@ -81,3 +82,31 @@ class ServiceAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, instance=None):
         return False
+
+
+class LocalAuthoritiesForm(forms.ModelForm):
+    class Meta:
+        model = LocalAuthority
+        fields = ["name", "ui_lta_name", "atco_code"]
+
+
+@admin.register(LocalAuthority)
+class LocalAuthorityAdmin(admin.ModelAdmin):
+    list_per_page = 50
+    list_display = ("name", "ui_lta_name", "atco_code")
+    search_fields = ("name", "ui_lta_name")
+    list_filter = ("name",)
+    ordering = ("name",)
+    form = LocalAuthoritiesForm
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["name"]
+        else:
+            return []

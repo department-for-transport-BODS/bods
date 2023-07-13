@@ -7,6 +7,7 @@ COMPLIANT = "Compliant"
 NON_COMPLIANT = "Non-compliant"
 MORE_DATA_NEEDED = "Unavailable due to dormant feed"
 VALIDATION_TERMINATED = "Validation terminated"
+PENDING = "Pending"
 
 COMPLIANCE_STATUS_CHOICES = [
     (UNDERGOING, UNDERGOING),

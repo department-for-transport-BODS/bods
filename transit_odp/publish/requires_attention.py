@@ -18,14 +18,14 @@ def get_otc_map(org_id: int) -> Dict[str, OTCService]:
     }
 
 
-def get_otc_map_lta(lta) -> Dict[str, OTCService]:
+def get_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     """
     Get a list of dictionaries which includes all OTC Services for a LTA,
     excluding exempted services and Out of Season seasonal services.
     """
     return {
         service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_otc_data_for_lta(lta)
+        for service in OTCService.objects.get_otc_data_for_lta(lta_list)
     }
 
 
@@ -53,13 +53,27 @@ def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
     }
 
 
-def get_txc_map_lta(lta: int) -> Dict[str, TXCFileAttributes]:
+def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
     """
     Get a list of dictionaries of live TXCFileAttributes for a LTA
     with relevant effective staleness dates annotated.
     """
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    final_subquery = None
+    for service_queryset in services_subquery_list:
+        if final_subquery is None:
+            final_subquery = service_queryset
+        else:
+            final_subquery = final_subquery | service_queryset
+    final_subquery = final_subquery.distinct()
+
     service_code_subquery = Subquery(
-        OTCService.objects.filter(id__in=lta.registration_numbers.values("id"))
+        OTCService.objects.filter(id__in=Subquery(final_subquery.values("id")))
         .add_service_code()
         .values("service_code")
     )
@@ -193,7 +207,7 @@ def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
     return object_list
 
 
-def get_requires_attention_data_lta(lta: int) -> List[Dict[str, str]]:
+def get_requires_attention_data_lta(lta_list: List) -> int:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. not live
@@ -202,9 +216,9 @@ def get_requires_attention_data_lta(lta: int) -> List[Dict[str, str]]:
     Returns list of objects of each service requiring attention for a LTA.
     """
     object_list = []
-
-    otc_map = get_otc_map_lta(lta)
-    txcfa_map = get_txc_map_lta(lta)
+    lta_services_requiring_attention = 0
+    otc_map = get_otc_map_lta(lta_list)
+    txcfa_map = get_txc_map_lta(lta_list)
 
     for service_code, service in otc_map.items():
         file_attribute = txcfa_map.get(service_code)
@@ -212,4 +226,6 @@ def get_requires_attention_data_lta(lta: int) -> List[Dict[str, str]]:
             _update_data(object_list, service)
         elif is_stale(service, file_attribute):
             _update_data(object_list, service)
-    return object_list
+    lta_services_requiring_attention = len(object_list)
+
+    return lta_services_requiring_attention
