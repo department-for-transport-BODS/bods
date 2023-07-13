@@ -5,6 +5,7 @@ from typing import List, Optional, Set, Tuple
 from transit_odp.otc.client import OTCAPIClient
 from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
+from transit_odp.otc.models import InactiveService
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +195,12 @@ class Registry:
             if variation.effective_date:
                 if variation.effective_date <= date.today():
                     self.update(variation)
+                else:
+                    InactiveService.objects.create(
+                        registration_number=variation.registration_number,
+                        registration_status=variation.registration_status,
+                        effective_date=variation.effective_date,
+                    )
             else:
                 self.update(variation)
         else:
@@ -203,7 +210,13 @@ class Registry:
         if variation.effective_date:
             if variation.effective_date > date.today():
                 self.update(variation)
-            
+            else:
+                InactiveService.objects.create(
+                    registration_number=variation.registration_number,
+                    registration_status=variation.registration_status,
+                    effective_date=variation.effective_date,
+                )
+
     def update(self, registration: Registration) -> None:
         """
         Performs normalisation and drops duplicates, will keep highest variation

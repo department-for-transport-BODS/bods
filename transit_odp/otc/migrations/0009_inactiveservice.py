@@ -6,17 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('otc', '0008_auto_20230622_1657'),
+        ("otc", "0008_auto_20230622_1657"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InactiveService',
+            name="InactiveService",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('registration_number', models.CharField(max_length=20)),
-                ('registration_status', models.CharField(blank=True, max_length=20)),
-                ('effective_date', models.DateField(null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("registration_number", models.CharField(max_length=20)),
+                ("registration_status", models.CharField(blank=True, max_length=20)),
+                ("effective_date", models.DateField(null=True)),
             ],
         ),
     ]

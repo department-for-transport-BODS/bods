@@ -117,12 +117,14 @@ class OTCAPIClient:
             updated_on += timedelta(days=1)
 
         return variations
-    
-    def get_latest_variations_by_registration_code(self, registration_code: str) -> List[Registration]:
+
+    def get_latest_variations_by_registration_code(
+        self, registration_code: str
+    ) -> List[Registration]:
         variations = []
         logger.info(
-                f"Requesting latest variation for {registration_code} from OTC API"
-            )
+            f"Requesting latest variation for registration - {registration_code} from OTC API"
+        )
         response = self._make_request(
             page=1, regNo=registration_code, latestVariation=True
         )

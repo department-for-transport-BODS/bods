@@ -10,6 +10,9 @@ from transit_odp.otc.dataclasses import Licence as RegistryLicence
 from transit_odp.otc.dataclasses import LocalAuthority as RegistryLocalAuthority
 from transit_odp.otc.dataclasses import Operator as RegistryOperator
 from transit_odp.otc.dataclasses import Service as RegistryService
+
+# from transit_odp.otc.dataclasses import InactiveService as RegistryInactiveService
+
 from transit_odp.otc.managers import (
     LicenceManager,
     LocalAuthorityManager,
@@ -123,6 +126,9 @@ class InactiveService(models.Model):
     registration_status = models.CharField(max_length=20, blank=True, null=False)
     effective_date = models.DateField(null=True)
 
-
-
-
+    # @classmethod
+    # def from_registry_service(
+    #     cls, registry_service: RegistryInactiveService
+    # ):
+    #     kwargs = registry_service.dict()
+    #     return cls(**kwargs)

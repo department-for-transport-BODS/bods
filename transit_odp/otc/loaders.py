@@ -7,7 +7,13 @@ from itertools import chain
 from django.db import transaction, connection
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
-from transit_odp.otc.models import Licence, Operator, Service, InactiveService, LocalAuthority
+from transit_odp.otc.models import (
+    Licence,
+    Operator,
+    Service,
+    InactiveService,
+    LocalAuthority,
+)
 
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.populate_lta import PopulateLTA
@@ -140,6 +146,18 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
+    # def load_inactive_services(self):
+
+    #     services = []
+
+    #     for key in self.get_missing_services():
+    #         service = self.registry.get_service_by_key(*key)
+
+    #         services.append(InactiveService.from_registry_service(service))
+
+    #     logger.info(f"loading {len(services)} new services into database")
+    #     Service.objects.bulk_create(services)
+
     def delete_bad_data(self):
         to_delete_services = self.registry.filter_by_status(
             *RegistrationStatusEnum.to_delete()
@@ -168,14 +186,18 @@ class Loader:
             .order_by("last_modified")
             .last()
         )
-        service_with_valid_effective_date = (
-            Service.objects.filter(effective_date__lte=date.today()).values_list('registration_number', flat=True)
+        service_with_valid_effective_date = Service.objects.filter(
+            effective_date=date.today()
+        ).values_list("registration_number", flat=True)
+        inactive_service_with_valid_effective_date = InactiveService.objects.filter(
+            effective_date=date.today()
+        ).values_list("registration_number", flat=True)
+        services_to_check = list(
+            chain(
+                service_with_valid_effective_date,
+                inactive_service_with_valid_effective_date,
+            )
         )
-        print("service_with_valid_effective_date", len(service_with_valid_effective_date))
-        inactive_service_with_valid_effective_date = (
-            InactiveService.objects.filter(effective_date__lte=date.today()).values_list('registration_number', flat=True)
-        )
-        services_to_check = list(chain(service_with_valid_effective_date, inactive_service_with_valid_effective_date))
 
         if (
             most_recently_modified is None
@@ -188,7 +210,7 @@ class Loader:
             _registrations = self.registry.get_variations_since(
                 most_recently_modified.last_modified, services_to_check
             )
-         
+
             self.load_licences()
             self.load_operators()
             self.load_services()

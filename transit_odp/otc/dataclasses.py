@@ -191,6 +191,12 @@ class Service(BaseModel):
         return v
 
 
+# class InactiveService(BaseModel):
+#     registration_number: str
+#     registration_status: Optional[str]
+#     effective_date: Optional[date]
+
+
 class LocalAuthority(BaseModel):
     class Config:
         allow_population_by_field_name = True
