@@ -69,6 +69,17 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
             "The linename for the particular publisher as extracted from "
             "the TransXChange or NeTEx file they provided.",
         ),
+        "avl_to_timtables_matching_score": Column(
+            "% AVL to Timetables feed matching score",
+            "The latest score for the active AVL feed this row belongs to (Data ID).",
+        ),
+        "matching_report_url": Column(
+            "Latest matching report URL",
+            (
+                "This will be the same report url as the AVL data feed page "
+                "report url from the dataset review page."
+            ),
+        ),
     }
 )
 
@@ -145,6 +156,8 @@ DATASET_FIELDS = (
     "upload_filename",
     "id",
     "name",
+    "avl_to_timtables_matching_score",
+    "matching_report_url",
 )
 
 TXC_FILE_ATTRIBUTE_FIELDS = (
