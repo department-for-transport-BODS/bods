@@ -159,6 +159,7 @@ DATASET_FIELDS = (
     "id",
     "name",
     "avl_to_timtables_matching_score",
+    "matching_report_url",
 )
 
 TXC_FILE_ATTRIBUTE_FIELDS = (
