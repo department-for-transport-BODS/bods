@@ -177,7 +177,7 @@ class Loader:
         """
         The method is used to update the database, add and remove unnecessary objects.
         """
-        days_ago = date.today - timedelta(days=settings.OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA)
+        days_ago = date.today() - timedelta(days=settings.OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA)
 
         most_recently_modified = (
             Service.objects.filter(last_modified__isnull=False)
