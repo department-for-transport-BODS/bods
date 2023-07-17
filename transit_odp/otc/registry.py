@@ -108,7 +108,7 @@ class Registry:
 
             registrations.append(reg)
             regs_to_update_lta.append(reg)
-            
+
         registrations = list(set(registrations))
 
         for registration in registrations:
