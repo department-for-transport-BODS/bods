@@ -119,9 +119,13 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         Staleness Status - Not Stale:
             Default status for service codes published to BODS
         Staleness Status - Stale - OTC Variation:
-            If last_modified < effective_stale_date_otc_effective_date
+            Staleness Status - Stale - OTC Variation
+            When Associated data is No
             AND
-            Today >= effective_stale_date_otc_effective_date
+            today >= Effective stale date due to OTC effective date
+            NB: Associated data is Yes IF
+            (last modified date >= Association date due to OTC effective date
+            OR Operating period start date = OTC effective date).
         Staleness Status - Stale - End Date Passed:
             If effective_stale_date_end_date (if present) <
                 effective_stale_date_last_modified_date
