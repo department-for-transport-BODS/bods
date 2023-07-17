@@ -180,7 +180,6 @@ class Loader:
         days_ago = date.today() - timedelta(
             days=settings.OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA
         )
-
         most_recently_modified = (
             Service.objects.filter(last_modified__isnull=False)
             .order_by("last_modified")

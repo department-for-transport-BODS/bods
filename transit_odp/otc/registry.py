@@ -100,16 +100,15 @@ class Registry:
         regs_to_update_lta = []
         registrations = []
 
-        for reg in services_to_check:
-            registration = self._client.get_latest_variations_by_registration_code(reg)
-            registrations.append(registration)
+        for reg in self._client.get_latest_variations_by_registration_code(
+            services_to_check
+        ):
+            registrations.append(reg)
 
         for reg in self._client.get_latest_variations_since(when):
-
-            registrations.append(reg)
-            regs_to_update_lta.append(reg)
-
-        registrations = list(set(registrations))
+            if reg not in registrations:
+                registrations.append(reg)
+                regs_to_update_lta.append(reg)
 
         for registration in registrations:
             if registration.registration_status in RegistrationStatusEnum.to_change():
