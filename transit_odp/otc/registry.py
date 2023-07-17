@@ -108,6 +108,8 @@ class Registry:
 
             registrations.append(reg)
             regs_to_update_lta.append(reg)
+            
+        registrations = list(set(registrations))
 
         for registration in registrations:
             if registration.registration_status in RegistrationStatusEnum.to_change():
@@ -210,12 +212,6 @@ class Registry:
         if variation.effective_date:
             if variation.effective_date > date.today():
                 self.update(variation)
-            else:
-                InactiveService.objects.create(
-                    registration_number=variation.registration_number,
-                    registration_status=variation.registration_status,
-                    effective_date=variation.effective_date,
-                )
 
     def update(self, registration: Registration) -> None:
         """
