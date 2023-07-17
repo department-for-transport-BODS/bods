@@ -30,15 +30,15 @@ from django.db.models.expressions import Exists
 from django.db.models.functions import Cast, Coalesce, Concat, Substr, TruncDate, Upper
 from django.db.models.query import Prefetch
 from django.utils import timezone
+from django_hosts import reverse
 
-from config.hosts import DATA_HOST
+from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
-    NO_ACTIVITY,
     ORG_ACTIVE,
     ORG_INACTIVE,
     ORG_NOT_YET_INVITED,
@@ -364,7 +364,7 @@ class DatasetQuerySet(models.QuerySet):
                 ),
                 When(
                     Q(live_revision__status="error", dataset_type=AVLType),
-                    then=Value(NO_ACTIVITY, output_field=CharField()),
+                    then=Value("published", output_field=CharField()),
                 ),
                 default=F("live_revision__status"),
                 output_field=CharField(),
@@ -906,6 +906,77 @@ class DatasetQuerySet(models.QuerySet):
             )
         )
 
+    def add_ppc_stats(self):
+        from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+
+        created_at = (
+            PostPublishingCheckReport.objects.filter(
+                granularity=PPCReportType.WEEKLY.value
+            )
+            .filter(dataset=OuterRef("pk"))
+            .order_by("-created")
+        )
+
+        return self.annotate(
+            vehicles_completely_matching=Coalesce(
+                Subquery(
+                    created_at.values("vehicle_activities_completely_matching")[:1]
+                ),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                Subquery(created_at.values("vehicle_activities_analysed")[:1]),
+                Value(NO_PPC_DATA),
+            ),
+            avl_to_timtables_matching_score=Case(
+                When(
+                    Q(dataset_type=AVLType),
+                    then=Case(
+                        When(
+                            vehicles_analysed__gt=0,
+                            then=ExpressionWrapper(
+                                F("vehicles_completely_matching")
+                                * 100.0
+                                / F("vehicles_analysed"),
+                                output_field=FloatField(),
+                            ),
+                        ),
+                        default=Value(None, output_field=FloatField()),
+                    ),
+                )
+            ),
+        )
+
+    def add_matching_report_url(self):
+        dataset_id = 123
+        organisation_id = 45
+        avl_matching_report_url = reverse(
+            "avl:download-matching-report",
+            kwargs={"pk": dataset_id, "pk1": organisation_id},
+            host=PUBLISH_HOST,
+        )
+        first_url_path, second_url_path = avl_matching_report_url.split(
+            str(organisation_id)
+        )
+        third_url_path, fourth_url_path = second_url_path.split(str(dataset_id))
+
+        return self.annotate(
+            matching_report_url=Case(
+                When(
+                    Q(dataset_type=AVLType),
+                    then=Concat(
+                        Value(first_url_path),
+                        F("organisation_id"),
+                        Value(third_url_path),
+                        F("id"),
+                        Value(fourth_url_path),
+                    ),
+                ),
+                default=None,
+                output_field=CharField(null=True),
+            )
+        )
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
@@ -916,6 +987,8 @@ class DatasetQuerySet(models.QuerySet):
             .add_pretty_status()
             .add_pretty_dataset_type()
             .add_last_updated_including_avl()
+            .add_ppc_stats()
+            .add_matching_report_url()
             .exclude(live_revision__status=EXPIRED)
         )
 
