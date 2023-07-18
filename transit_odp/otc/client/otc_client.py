@@ -139,7 +139,7 @@ class OTCAPIClient:
                 )
                 variations += response.bus_search
 
-            return variations
+        return variations
 
     @lru_cache(maxsize=128, typed=False)
     def get_variations_by_registration_code_desc(

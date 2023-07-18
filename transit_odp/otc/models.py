@@ -122,6 +122,8 @@ class LocalAuthority(models.Model):
 
 
 class InactiveService(models.Model):
-    registration_number = models.CharField(max_length=20, blank=False, null=False)
+    registration_number = models.CharField(
+        max_length=20, blank=False, null=False, unique=True
+    )
     registration_status = models.CharField(max_length=20, blank=True, null=False)
     effective_date = models.DateField(null=True)
