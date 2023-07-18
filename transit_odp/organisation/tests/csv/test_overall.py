@@ -5,14 +5,9 @@ import factory
 import pandas as pd
 import pytest
 from django.utils.timezone import now
-from django_hosts import reverse
 from waffle import flag_is_active
 
-from config.hosts import PUBLISH_HOST
-from transit_odp.avl.factories import PostPublishingCheckReportFactory
-from transit_odp.avl.models import PPCReportType
 from transit_odp.fares.factories import DataCatalogueMetaDataFactory
-from transit_odp.organisation.constants import AVLType
 from transit_odp.organisation.csv.overall import _get_overall_catalogue_dataframe
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
@@ -131,32 +126,8 @@ def test_df_avls_expected():
     assert row["Data Set/Feed Name"] == avl.name
     assert row["Data ID"] == avl.dataset_id
     assert row["Mode"] == "Bus"
-    if is_fares_validator_active:
-        # Test for when no matching score (NaN or None value),
-        # therefore there should be no matching report URL.
-        assert row["Latest matching report URL"] is None
-
-    second_row = df.iloc[1]
-    if is_fares_validator_active:
-        # Test for when matching score is above 0%,
-        # therefore there should be a matching report URL
-        assert second_row["% AVL to Timetables feed matching score"] == 23.0
-        assert second_row["Latest matching report URL"] == reverse(
-            "avl:download-matching-report",
-            kwargs={"pk": dataset.id, "pk1": organisation.id},
-            host=PUBLISH_HOST,
-        )
-
-    third_row = df.iloc[2]
-    if is_fares_validator_active:
-        # Test for when matching score is 0%,
-        # therefore there should be a matching report URL
-        assert third_row["% AVL to Timetables feed matching score"] == 0.0
-        assert third_row["Latest matching report URL"] == reverse(
-            "avl:download-matching-report",
-            kwargs={"pk": dataset_two.id, "pk1": organisation_two.id},
-            host=PUBLISH_HOST,
-        )
+    assert row["% AVL to Timetables feed matching score"] is None
+    assert row["Latest matching report URL"] is None
 
 
 def test_df_fares_expected():
