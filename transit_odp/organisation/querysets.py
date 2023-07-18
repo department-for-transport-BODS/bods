@@ -963,7 +963,7 @@ class DatasetQuerySet(models.QuerySet):
         return self.annotate(
             matching_report_url=Case(
                 When(
-                    Q(dataset_type=AVLType),
+                    Q(dataset_type=AVLType) & ~Q(avl_to_timtables_matching_score=None),
                     then=Concat(
                         Value(first_url_path),
                         F("organisation_id"),

@@ -2,10 +2,10 @@ import datetime
 
 import pandas as pd
 import pytest
+from django.utils.timezone import now
 from waffle import flag_is_active
 
-from django.utils.timezone import now
-
+from transit_odp.fares.factories import DataCatalogueMetaDataFactory
 from transit_odp.organisation.csv.overall import _get_overall_catalogue_dataframe
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
@@ -14,7 +14,6 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.fares.factories import DataCatalogueMetaDataFactory
 
 pytestmark = pytest.mark.django_db
 is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
@@ -99,6 +98,8 @@ def test_df_avls_expected():
     assert row["Data Set/Feed Name"] == avl.name
     assert row["Data ID"] == avl.dataset_id
     assert row["Mode"] == "Bus"
+    assert row["% AVL to Timetables feed matching score"] is None
+    assert row["Latest matching report URL"] is None
 
 
 def test_df_fares_expected():
