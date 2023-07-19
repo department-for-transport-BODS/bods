@@ -5,6 +5,7 @@ from typing import List, Optional, Set, Tuple
 from transit_odp.otc.client import OTCAPIClient
 from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
+from transit_odp.otc.models import InactiveService
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +89,7 @@ class Registry:
                 ):
                     self.update_registered_variations(variation)
 
-    def get_variations_since(self, when: datetime) -> List[Service]:
+    def get_variations_since(self, when: datetime, services_to_check) -> List[Service]:
         """
         looks up all latest variations since a given date, any variations in the
         RegistrationStatusEnum.to_change() will be looked up again. This leaves both
@@ -97,8 +98,19 @@ class Registry:
         """
         look_up_again = set()
         regs_to_update_lta = []
-        for registration in self._client.get_latest_variations_since(when):
-            regs_to_update_lta.append(registration)
+        registrations = []
+
+        for reg in self._client.get_latest_variations_by_registration_code(
+            services_to_check
+        ):
+            registrations.append(reg)
+
+        for reg in self._client.get_latest_variations_since(when):
+            if reg not in registrations:
+                registrations.append(reg)
+                regs_to_update_lta.append(reg)
+
+        for registration in registrations:
             if registration.registration_status in RegistrationStatusEnum.to_change():
                 look_up_again.add(registration.registration_number)
             else:
@@ -184,6 +196,12 @@ class Registry:
             if variation.effective_date:
                 if variation.effective_date <= date.today():
                     self.update(variation)
+                else:
+                    InactiveService.objects.get_or_create(
+                        registration_number=variation.registration_number,
+                        registration_status=variation.registration_status,
+                        effective_date=variation.effective_date,
+                    )
             else:
                 self.update(variation)
         else:
