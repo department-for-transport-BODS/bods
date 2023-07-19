@@ -1,4 +1,4 @@
-FROM python:3.9-alpine3.16
+FROM debian:latest
 # This Docker image preinstalls Pandas into the Alpine OS
 
 RUN apk --update add --no-cache g++

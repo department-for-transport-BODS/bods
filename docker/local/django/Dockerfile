@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=python:3.9-alpine3.16
+ARG BASE_IMAGE=debian:latest
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
