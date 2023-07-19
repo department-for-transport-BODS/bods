@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<TransXChange FileName="vehicle_journeys.xml" RevisionNumber="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+  <ServicedOrganisations>
+  </ServicedOrganisations>
+  <StopPoints>
+  </StopPoints>
+  <RouteSections>
+  </RouteSections>
+  <Routes>
+  </Routes>
+  <JourneyPatternSections>
+  </JourneyPatternSections>
+  <Operators>
+  </Operators>
+  <Services>
+    <Service>
+      <ServiceCode>456</ServiceCode>
+      <Lines>
+        <Line id="L1">
+          <LineName>Victoria</LineName>
+        </Line>
+        <Line id="L2">
+          <LineName>Piccadilly</LineName>
+        </Line>
+      </Lines>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Tuesday/>
+          </DaysOfWeek>
+        </RegularDayType>
+      </OperatingProfile>
+      <StandardService>
+      </StandardService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <VehicleJourney SequenceNumber="1">
+      <Operational>
+        <Block>
+          <BlockNumber>Jenny</BlockNumber>
+        </Block>
+        <TicketMachine>
+          <JourneyCode>502</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <ServicedOrganisationDayType>
+          <DaysOfOperation>
+            <WorkingDays>
+              <ServicedOrganisationRef>KPMG</ServicedOrganisationRef>
+            </WorkingDays>
+          </DaysOfOperation>
+        </ServicedOrganisationDayType>
+      </OperatingProfile>
+      <LineRef>L2</LineRef>
+      <JourneyPatternRef>JP5</JourneyPatternRef>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>

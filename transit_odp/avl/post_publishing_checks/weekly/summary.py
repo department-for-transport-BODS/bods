@@ -122,6 +122,9 @@ class AggregatedDailyReports:
             }
         ).fillna("-")
 
+        # Reorder all fields + exclude 'LineRef' field
+        df = pd.concat([df.loc[0:3], df.loc[5:]]).loc[[5, 7, 1, 2, 6, 3, 0, 8]]
+
         cols = list(PPC_SUMMARY_FIELDS.keys())
 
         return df[cols]
