@@ -14,7 +14,7 @@ from django.db.models.expressions import (
     When,
 )
 from django.db.models.fields import CharField, FloatField
-from django.db.models.functions import Coalesce, Floor
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from transit_odp.avl.constants import (
@@ -403,13 +403,11 @@ class AVLDatasetQuerySet(DatasetQuerySet):
             avl_to_timtables_matching_score=Case(
                 When(
                     vehicles_analysed__gt=0,
-                    then=Floor(
-                        ExpressionWrapper(
-                            F("vehicles_completely_matching")
-                            * 100.0
-                            / F("vehicles_analysed"),
-                            output_field=FloatField(),
-                        )
+                    then=ExpressionWrapper(
+                        F("vehicles_completely_matching")
+                        * 100.0
+                        / F("vehicles_analysed"),
+                        output_field=FloatField(),
                     ),
                 ),
                 default=Value(None, output_field=FloatField()),

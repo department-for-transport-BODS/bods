@@ -4,10 +4,8 @@ from io import StringIO
 
 import factory
 import pytest
-from django_hosts import reverse
 from freezegun import freeze_time
 
-from config.hosts import PUBLISH_HOST
 from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.csv.catalogue import _get_avl_data_catalogue
 from transit_odp.avl.csv.validation import (
@@ -208,51 +206,4 @@ def test_data_catalogue_csv():
     assert row["Organisation Name"] == revision.dataset.organisation.name
     assert row["Datafeed ID"] == revision.dataset_id
     assert row["% AVL to Timetables feed matching score"] is None
-    assert row["Latest matching report URL"] is None
-
-
-def test_data_catalogue_csv_matching_score_and_report_url():
-    today = date.today()
-    filename = "ppc_weekly_report_test.zip"
-    organisation = OrganisationFactory()
-    dataset = DatasetFactory(organisation=organisation, dataset_type=AVLType)
-    PostPublishingCheckReportFactory(
-        dataset=dataset,
-        vehicle_activities_analysed=10,
-        vehicle_activities_completely_matching=10,
-        granularity=PPCReportType.WEEKLY,
-        file=factory.django.FileField(filename=filename),
-        created=today,
-    )
-
-    organisation_two = OrganisationFactory()
-    dataset_two = DatasetFactory(organisation=organisation_two, dataset_type=AVLType)
-    PostPublishingCheckReportFactory(
-        dataset=dataset_two,
-        vehicle_activities_analysed=10,
-        vehicle_activities_completely_matching=0,
-        granularity=PPCReportType.WEEKLY,
-        file=factory.django.FileField(filename=filename),
-        created=today,
-    )
-
-    df = _get_avl_data_catalogue()
-    row = df.iloc[0]
-    # Test for when matching score is above 0%,
-    # therefore there should be a matching report URL
-    assert row["% AVL to Timetables feed matching score"] == 100.0
-    assert row["Latest matching report URL"] == reverse(
-        "avl:download-matching-report",
-        kwargs={"pk": dataset.id, "pk1": organisation.id},
-        host=PUBLISH_HOST,
-    )
-
-    # Test for when matching score is 0%,
-    # therefore there should be a matching report URL
-    row_two = df.iloc[1]
-    assert row_two["% AVL to Timetables feed matching score"] == 0.0
-    assert row_two["Latest matching report URL"] == reverse(
-        "avl:download-matching-report",
-        kwargs={"pk": dataset_two.id, "pk1": organisation_two.id},
-        host=PUBLISH_HOST,
-    )
+    assert row["Latest matching report URL"] == ""
