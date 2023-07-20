@@ -3,15 +3,9 @@ from datetime import datetime, timedelta
 from io import StringIO
 
 import pytest
-from django_hosts import reverse
 from freezegun import freeze_time
 
-from config.hosts import PUBLISH_HOST
-from transit_odp.avl.constants import (
-    MORE_DATA_NEEDED,
-    PARTIALLY_COMPLIANT,
-    UPPER_THRESHOLD,
-)
+from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.csv.catalogue import _get_avl_data_catalogue
 from transit_odp.avl.csv.validation import (
     HEADERS,
@@ -201,30 +195,5 @@ def test_data_catalogue_csv():
     row = df.iloc[0]
     assert row["Organisation Name"] == revision.dataset.organisation.name
     assert row["Datafeed ID"] == revision.dataset_id
-    assert row["Feed Compliance Status"] == PARTIALLY_COMPLIANT
-    assert row["Compliance Report URL"] == reverse(
-        "avl:validation-report-download",
-        kwargs={"pk": revision.dataset_id, "pk1": revision.dataset.organisation_id},
-        host=PUBLISH_HOST,
-    )
-
-
-def test_more_data_needed_doesnt_show_report():
-    revision = AVLDatasetRevisionFactory()
-    today = datetime.now().date()
-    total_reports = 8
-    for n in range(0, total_reports):
-        date = today - timedelta(days=n)
-        AVLValidationReportFactory(
-            revision=revision,
-            created=date,
-            non_critical_score=UPPER_THRESHOLD - 0.1,
-            critical_score=UPPER_THRESHOLD + 0.1,
-            vehicle_activity_count=0,
-        )
-    df = _get_avl_data_catalogue()
-    row = df.iloc[0]
-    assert row["Organisation Name"] == revision.dataset.organisation.name
-    assert row["Datafeed ID"] == revision.dataset_id
-    assert row["Feed Compliance Status"] == MORE_DATA_NEEDED
-    assert row["Compliance Report URL"] == ""
+    assert row["% AVL to Timetables feed matching score"] is None
+    assert row["Latest matching report URL"] == ""
