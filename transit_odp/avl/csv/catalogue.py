@@ -26,7 +26,7 @@ AVL_COLUMN_MAP = OrderedDict(
             "% AVL to Timetables feed matching score",
             (
                 "This will be the latest score for the AVL "
-                "feed this row belongs to (Data ID).",
+                "feed this row belongs to (Data ID)."
             ),
         ),
         "matching_report_url": Column(
