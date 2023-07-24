@@ -65,7 +65,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
-    && pip3 install cython
+    && pip3 install 'cython<3'
 
 
 # Install python packages
@@ -77,6 +77,7 @@ COPY ./pyproject.toml ./poetry.lock ./
 RUN python --version \
     && pip install poetry==1.2.2 \
     && poetry config virtualenvs.create false \
+    && poetry run python -m pip install 'pyproj<3' --no-build-isolation \
     && poetry install --no-dev
 
 # Create non-privileged user

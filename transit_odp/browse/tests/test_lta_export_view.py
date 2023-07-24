@@ -522,9 +522,9 @@ def test_lta_csv_output():
     # last modified date < Effective stale date due to OTC effective date
     # TXCFileAttributes("effective_stale_date_last_modified_date")
     # < OTCService("effective_stale_date_otc_effective_date")
-    assert csv_output["row0"][26] == '"2023-04-14"'
+    assert csv_output["row0"][26] == '"2023-05-12"'
     # effective stale date due to OTC effective date
-    # OTCService("effective_date") - 70 days
+    # OTCService("effective_date") - 42 days
 
     assert csv_output["row1"][0] == '"Yes"'
     assert csv_output["row1"][1] == '"Unpublished"'
@@ -547,7 +547,7 @@ def test_lta_csv_output():
     assert csv_output["row1"][23] == '""'
     assert csv_output["row1"][24] == '""'
     assert csv_output["row1"][25] == '""'
-    assert csv_output["row1"][26] == '"2023-04-14"'
+    assert csv_output["row1"][26] == '"2023-05-12"'
 
     assert csv_output["row2"][0] == '"No"'
     assert csv_output["row2"][1] == '"Unpublished"'
@@ -563,7 +563,7 @@ def test_lta_csv_output():
     assert csv_output["row2"][13] == '"PD0000099:2"'
     assert csv_output["row2"][14] == '"Line2"'
     assert csv_output["row2"][16] == '""'
-    assert csv_output["row2"][26] == '"2023-04-14"'
+    assert csv_output["row2"][26] == '"2023-05-12"'
 
     assert csv_output["row3"][0] == '"Yes"'
     assert csv_output["row3"][1] == '"Published"'
@@ -590,7 +590,7 @@ def test_lta_csv_output():
     assert csv_output["row3"][23] == '"2023-01-13"'
     assert csv_output["row3"][24] == '"2023-06-24"'
     assert csv_output["row3"][25] == '"True"'
-    assert csv_output["row3"][26] == '"2023-01-13"'
+    assert csv_output["row3"][26] == '"2023-02-10"'
 
     assert csv_output["row4"][0] == '"Yes"'
     assert csv_output["row4"][1] == '"Published"'
@@ -611,7 +611,7 @@ def test_lta_csv_output():
     assert csv_output["row4"][19] == f'"{dataset4.id}"'
     assert csv_output["row4"][24] == '"2024-06-23"'
     assert csv_output["row4"][25] == '"False"'
-    assert csv_output["row4"][26] == '"2022-04-14"'
+    assert csv_output["row4"][26] == '"2022-05-12"'
 
     assert csv_output["row5"][0] == '"No"'
     assert csv_output["row5"][1] == '"Published"'
@@ -629,7 +629,7 @@ def test_lta_csv_output():
     assert csv_output["row5"][19] == f'"{dataset5.id}"'
     assert csv_output["row5"][24] == '"2023-01-24"'
     assert csv_output["row5"][25] == '"True"'
-    assert csv_output["row5"][26] == '"2023-11-15"'
+    assert csv_output["row5"][26] == '"2023-12-13"'
 
     assert csv_output["row6"][0] == '"Yes"'
     assert csv_output["row6"][1] == '"Published"'
@@ -649,7 +649,7 @@ def test_lta_csv_output():
     assert csv_output["row6"][22] == '"2024-02-24"'
     assert csv_output["row6"][24] == '"2023-01-24"'
     assert csv_output["row6"][25] == '"False"'
-    assert csv_output["row6"][26] == '"2020-11-15"'
+    assert csv_output["row6"][26] == '"2020-12-13"'
 
     assert csv_output["row7"][0] == '"No"'
     assert csv_output["row7"][1] == '"Published"'
@@ -666,7 +666,7 @@ def test_lta_csv_output():
     assert csv_output["row7"][14] == '"Line7"'
     assert csv_output["row7"][24] == '"2023-01-24"'
     assert csv_output["row7"][25] == '"False"'
-    assert csv_output["row7"][26] == '"2020-11-15"'
+    assert csv_output["row7"][26] == '"2020-12-13"'
 
     assert csv_output["row8"][0] == '"No"'
     assert csv_output["row8"][1] == '"Published"'
@@ -683,7 +683,7 @@ def test_lta_csv_output():
     assert csv_output["row8"][14] == '"Line8"'
     assert csv_output["row8"][24] == '"2024-02-24"'
     assert csv_output["row8"][25] == '"False"'
-    assert csv_output["row8"][26] == '"2020-11-15"'
+    assert csv_output["row8"][26] == '"2020-12-13"'
 
 
 @freeze_time("2023-02-28")
@@ -827,7 +827,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row0"][23] == '"2023-05-16"'
     assert csv_output["row0"][24] == '"2023-01-28"'
     assert csv_output["row0"][25] == '"True"'
-    assert csv_output["row0"][26] == '"2023-11-19"'
+    assert csv_output["row0"][26] == '"2023-12-17"'
 
     assert csv_output["row1"][0] == '"No"'
     assert csv_output["row1"][1] == '"Published"'
@@ -853,7 +853,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row1"][23] == '"2023-05-12"'
     assert csv_output["row1"][24] == '"2023-01-24"'
     assert csv_output["row1"][25] == '"True"'
-    assert csv_output["row1"][26] == '"2023-11-15"'
+    assert csv_output["row1"][26] == '"2023-12-13"'
 
     assert csv_output["row2"][0] == '"No"'
     assert csv_output["row2"][1] == '"Published"'
@@ -879,7 +879,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row2"][23] == '"2023-05-12"'
     assert csv_output["row2"][24] == '"2023-01-24"'
     assert csv_output["row2"][25] == '"True"'
-    assert csv_output["row2"][26] == '"2023-11-15"'
+    assert csv_output["row2"][26] == '"2023-12-13"'
 
     assert csv_output["row3"][0] == '"Yes"'
     assert csv_output["row3"][1] == '"Published"'
@@ -904,4 +904,4 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row3"][23] == '""'
     assert csv_output["row3"][24] == '"2023-01-28"'
     assert csv_output["row3"][25] == '"False"'
-    assert csv_output["row3"][26] == '"2020-11-19"'
+    assert csv_output["row3"][26] == '"2020-12-17"'

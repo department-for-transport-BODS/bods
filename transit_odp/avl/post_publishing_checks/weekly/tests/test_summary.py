@@ -382,13 +382,83 @@ def test_ppc_summary(
         {
             "AVLtoTimetable matching summary": [
                 {
+                    "SIRI field": "BlockRef",
+                    "TXC match field": "BlockNumber",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "DatedVehicleJourneyRef",
+                    "TXC match field": "TicketMachine/JourneyCode",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "DestinationRef",
+                    "TXC match field": "JourneyPatternTimingLink/To/StopPointRef",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "DirectionRef",
+                    "TXC match field": "Direction",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
                     "SIRI field": "LineRef",
                     "TXC match field": "LineName",
-                    "Total vehicleActivities analysed": 20,
-                    "Total count of SIRI fields populated": 20,
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
                     "%populated": "100.0%",
                     "Successful match with TXC": "15",
                     "%match": "85.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "OperatorRef",
+                    "TXC match field": "NationalOperatorCode",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "OriginRef",
+                    "TXC match field": "JourneyPatternTimingLink/from/StopPointRef",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "PublishedLineName",
+                    "TXC match field": "LineName",
+                    "Total vehicleActivities analysed": 185,
+                    "Total count of SIRI fields populated": 185,
+                    "%populated": "100.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
                     "Notes": "dummy_1",
                 },
             ]
@@ -396,7 +466,77 @@ def test_ppc_summary(
         {
             "AVLtoTimetable matching summary": [
                 {
+                    "SIRI field": "BlockRef",
+                    "TXC match field": "BlockNumber",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "DatedVehicleJourneyRef",
+                    "TXC match field": "TicketMachine/JourneyCode",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "DestinationRef",
+                    "TXC match field": "JourneyPatternTimingLink/To/StopPointRef",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "DirectionRef",
+                    "TXC match field": "Direction",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
                     "SIRI field": "LineRef",
+                    "TXC match field": "LineName",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "OperatorRef",
+                    "TXC match field": "NationalOperatorCode",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "OriginRef",
+                    "TXC match field": "JourneyPatternTimingLink/from/StopPointRef",
+                    "Total vehicleActivities analysed": 50,
+                    "Total count of SIRI fields populated": 30,
+                    "%populated": "40.0%",
+                    "Successful match with TXC": "20",
+                    "%match": "11.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "PublishedLineName",
                     "TXC match field": "LineName",
                     "Total vehicleActivities analysed": 50,
                     "Total count of SIRI fields populated": 30,
@@ -418,7 +558,7 @@ def test_ppc_summary(
     df = result.get_summary_report()
     columns = df.columns
 
-    assert df.shape == (2, 8)
+    assert df.shape == (8, 8)
     assert columns[0] == "SIRI field"
     assert columns[1] == "TXC match field"
     assert columns[2] == "Total vehicleActivities analysed"
@@ -428,20 +568,31 @@ def test_ppc_summary(
     assert columns[6] == "%match"
     assert columns[7] == "Notes"
 
-    assert df.iloc[0]["SIRI field"] == "LineRef"
-    assert df.iloc[0]["TXC match field"] == "LineName"
-    assert df.iloc[0]["Total vehicleActivities analysed"] == 70
-    assert df.iloc[0]["Total count of SIRI fields populated"] == 50
-    assert df.iloc[0]["%populated"] == str(50 * 100 // 70) + "%"
-    assert df.iloc[0]["Successful match with TXC"] == 35
-    assert df.iloc[0]["%match"] == str(35 * 100 // 70) + "%"
+    # Check order of fields
+    assert df.iloc[0]["SIRI field"] == "OperatorRef"
+    assert df.iloc[1]["SIRI field"] == "PublishedLineName"
+    assert df.iloc[2]["SIRI field"] == "DatedVehicleJourneyRef"
+    assert df.iloc[3]["SIRI field"] == "DestinationRef"
+    assert df.iloc[4]["SIRI field"] == "OriginRef"
+    assert df.iloc[5]["SIRI field"] == "DirectionRef"
+    assert df.iloc[6]["SIRI field"] == "BlockRef"
+
+    # Check "LineRef" is not included in the summary
+    assert not (df["SIRI field"].str.contains("LineRef").any())
+
+    assert df.iloc[0]["TXC match field"] == "NationalOperatorCode"
+    assert df.iloc[0]["Total vehicleActivities analysed"] == 235
+    assert df.iloc[0]["Total count of SIRI fields populated"] == 215
+    assert df.iloc[0]["%populated"] == str(215 * 100 // 235) + "%"
+    assert df.iloc[0]["Successful match with TXC"] == 20
+    assert df.iloc[0]["%match"] == str(20 * 100 // 235) + "%"
     assert df.iloc[0]["Notes"] == "dummy_1"
 
     # All fields complete matching row 2 daily reports aggregated
     # 2 x 50 = 100 for analysed vehicles
     # 2 x 25 = 50 for all fields matching vehicles
-    assert df.iloc[1]["Successful match with TXC"] == 50
-    assert df.iloc[1]["%match"] == "50%"
+    assert df.iloc[1]["Successful match with TXC"] == 20
+    assert df.iloc[1]["%match"] == "8%"
 
 
 @patch("json.load")
@@ -456,7 +607,77 @@ def test_ppc_summary_no_data(
         {
             "AVLtoTimetable matching summary": [
                 {
+                    "SIRI field": "BlockRef",
+                    "TXC match field": "BlockNumber",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "DatedVehicleJourneyRef",
+                    "TXC match field": "TicketMachine/JourneyCode",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "DestinationRef",
+                    "TXC match field": "JourneyPatternTimingLink/To/StopPointRef",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "DirectionRef",
+                    "TXC match field": "Direction",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
                     "SIRI field": "LineRef",
+                    "TXC match field": "LineName",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "15",
+                    "%match": "85.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "OperatorRef",
+                    "TXC match field": "NationalOperatorCode",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "OriginRef",
+                    "TXC match field": "JourneyPatternTimingLink/from/StopPointRef",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_1",
+                },
+                {
+                    "SIRI field": "PublishedLineName",
                     "TXC match field": "LineName",
                     "Total vehicleActivities analysed": 0,
                     "Total count of SIRI fields populated": 0,
@@ -470,7 +691,77 @@ def test_ppc_summary_no_data(
         {
             "AVLtoTimetable matching summary": [
                 {
+                    "SIRI field": "BlockRef",
+                    "TXC match field": "BlockNumber",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "DatedVehicleJourneyRef",
+                    "TXC match field": "TicketMachine/JourneyCode",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "DestinationRef",
+                    "TXC match field": "JourneyPatternTimingLink/To/StopPointRef",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "DirectionRef",
+                    "TXC match field": "Direction",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
                     "SIRI field": "LineRef",
+                    "TXC match field": "LineName",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "OperatorRef",
+                    "TXC match field": "NationalOperatorCode",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "OriginRef",
+                    "TXC match field": "JourneyPatternTimingLink/from/StopPointRef",
+                    "Total vehicleActivities analysed": 0,
+                    "Total count of SIRI fields populated": 0,
+                    "%populated": "0.0%",
+                    "Successful match with TXC": "0",
+                    "%match": "0.0%",
+                    "Notes": "dummy_2",
+                },
+                {
+                    "SIRI field": "PublishedLineName",
                     "TXC match field": "LineName",
                     "Total vehicleActivities analysed": 0,
                     "Total count of SIRI fields populated": 0,
@@ -492,7 +783,7 @@ def test_ppc_summary_no_data(
     df = result.get_summary_report()
     columns = df.columns
 
-    assert df.shape == (2, 8)
+    assert df.shape == (8, 8)
     assert columns[0] == "SIRI field"
     assert columns[1] == "TXC match field"
     assert columns[2] == "Total vehicleActivities analysed"
@@ -502,8 +793,8 @@ def test_ppc_summary_no_data(
     assert columns[6] == "%match"
     assert columns[7] == "Notes"
 
-    assert df.iloc[0]["SIRI field"] == "LineRef"
-    assert df.iloc[0]["TXC match field"] == "LineName"
+    assert df.iloc[0]["SIRI field"] == "OperatorRef"
+    assert df.iloc[0]["TXC match field"] == "NationalOperatorCode"
     assert df.iloc[0]["Total vehicleActivities analysed"] == 0
     assert df.iloc[0]["Total count of SIRI fields populated"] == 0
     assert df.iloc[0]["%populated"] == "0%"
