@@ -1,10 +1,13 @@
 import csv
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from io import StringIO
 
+import factory
 import pytest
+from django_hosts import reverse
 from freezegun import freeze_time
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.csv.catalogue import _get_avl_data_catalogue
 from transit_odp.avl.csv.validation import (
@@ -14,7 +17,11 @@ from transit_odp.avl.csv.validation import (
     ValidationReportExporter,
     isoformat_from_time_ns,
 )
-from transit_odp.avl.factories import AVLValidationReportFactory
+from transit_odp.avl.factories import (
+    AVLValidationReportFactory,
+    PostPublishingCheckReportFactory,
+)
+from transit_odp.avl.models import PPCReportType
 from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
@@ -23,7 +30,12 @@ from transit_odp.avl.validation.factories import (
     SchemaValidationResponseFactory,
     ValidationResponseFactory,
 )
-from transit_odp.organisation.factories import AVLDatasetRevisionFactory
+from transit_odp.organisation.constants import AVLType
+from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
+    DatasetFactory,
+    OrganisationFactory,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -197,3 +209,27 @@ def test_data_catalogue_csv():
     assert row["Datafeed ID"] == revision.dataset_id
     assert row["% AVL to Timetables feed matching score"] is None
     assert row["Latest matching report URL"] == ""
+
+
+def test_data_catalogue_csv_matching_score_and_report_url():
+    organisation = OrganisationFactory()
+    today = date.today()
+    dataset = DatasetFactory(organisation=organisation, dataset_type=AVLType)
+    filename = "ppc_weekly_report_test.zip"
+    PostPublishingCheckReportFactory(
+        dataset=dataset,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=10,
+        granularity=PPCReportType.WEEKLY,
+        file=factory.django.FileField(filename=filename),
+        created=today,
+    )
+
+    df = _get_avl_data_catalogue()
+    row = df.iloc[0]
+    assert row["% AVL to Timetables feed matching score"] == 100.0
+    assert row["Latest matching report URL"] == reverse(
+        "avl:download-matching-report",
+        kwargs={"pk": dataset.id, "pk1": organisation.id},
+        host=PUBLISH_HOST,
+    )
