@@ -74,9 +74,8 @@ def test_df_timetables_expected():
     assert row["Line Name"] == "line1 line2"
     if is_fares_validator_active:
         assert row["XML File Name"] == fa.filename
-        # Test for no matching score and no matching report URL for timetables datasets
         assert row["% AVL to Timetables feed matching score"] is None
-        assert row["Latest matching report URL"] is None
+        assert row["Latest matching report URL"] == ""
     else:
         assert row["TXC File Name"] == fa.filename
 
@@ -131,9 +130,10 @@ def test_df_avls_expected():
     assert row["Data Set/Feed Name"] == avl.name
     assert row["Data ID"] == avl.dataset_id
     assert row["Mode"] == "Bus"
-    # Test for no matching score, therefore no matching report URL
-    assert row["% AVL to Timetables feed matching score"] is None
-    assert row["Latest matching report URL"] == ""
+    if is_fares_validator_active:
+        # Test for no matching score, therefore no matching report URL
+        assert row["% AVL to Timetables feed matching score"] is None
+        assert row["Latest matching report URL"] == ""
 
 
 def test_df_avls_matching_score_and_report_url():
@@ -159,12 +159,13 @@ def test_df_avls_matching_score_and_report_url():
 
     df = _get_overall_catalogue_dataframe()
     row = df.iloc[0]
-    assert row["% AVL to Timetables feed matching score"] == 20.0
-    assert row["Latest matching report URL"] == reverse(
-        "avl:download-matching-report",
-        kwargs={"pk": dataset.id, "pk1": organisation.id},
-        host=PUBLISH_HOST,
-    )
+    if is_fares_validator_active:
+        assert row["% AVL to Timetables feed matching score"] == 20.0
+        assert row["Latest matching report URL"] == reverse(
+            "avl:download-matching-report",
+            kwargs={"pk": dataset.id, "pk1": organisation.id},
+            host=PUBLISH_HOST,
+        )
 
 
 def test_df_fares_expected():
@@ -195,6 +196,5 @@ def test_df_fares_expected():
     assert row["Data ID"] == fare.dataset_id
     assert row["Mode"] == "Bus"
     if is_fares_validator_active:
-        # Test for no matching score and no matching report URL for fares datasets
         assert row["% AVL to Timetables feed matching score"] is None
-        assert row["Latest matching report URL"] is None
+        assert row["Latest matching report URL"] == ""
