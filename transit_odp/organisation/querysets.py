@@ -30,9 +30,8 @@ from django.db.models.expressions import Exists
 from django.db.models.functions import Cast, Coalesce, Concat, Substr, TruncDate, Upper
 from django.db.models.query import Prefetch
 from django.utils import timezone
-from django_hosts import reverse
 
-from config.hosts import DATA_HOST, PUBLISH_HOST
+from config.hosts import DATA_HOST
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
@@ -947,36 +946,6 @@ class DatasetQuerySet(models.QuerySet):
             ),
         )
 
-    def add_matching_report_url(self):
-        dataset_id = 123
-        organisation_id = 45
-        avl_matching_report_url = reverse(
-            "avl:download-matching-report",
-            kwargs={"pk": dataset_id, "pk1": organisation_id},
-            host=PUBLISH_HOST,
-        )
-        first_url_path, second_url_path = avl_matching_report_url.split(
-            str(organisation_id)
-        )
-        third_url_path, fourth_url_path = second_url_path.split(str(dataset_id))
-
-        return self.annotate(
-            matching_report_url=Case(
-                When(
-                    Q(dataset_type=AVLType) & ~Q(avl_to_timtables_matching_score=None),
-                    then=Concat(
-                        Value(first_url_path),
-                        F("organisation_id"),
-                        Value(third_url_path),
-                        F("id"),
-                        Value(fourth_url_path),
-                    ),
-                ),
-                default=None,
-                output_field=CharField(null=True),
-            )
-        )
-
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
@@ -988,7 +957,6 @@ class DatasetQuerySet(models.QuerySet):
             .add_pretty_dataset_type()
             .add_last_updated_including_avl()
             .add_ppc_stats()
-            .add_matching_report_url()
             .exclude(live_revision__status=EXPIRED)
         )
 
