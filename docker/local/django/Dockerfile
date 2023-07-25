@@ -39,7 +39,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
             binutils \
             geos-dev \
     && pip3 install --upgrade pip \
-    && pip3 install cython
+    && pip3 install 'cython<3'
 
 COPY ./pyproject.toml ./poetry.lock ./package.json ./package-lock.json ./
 
@@ -47,6 +47,7 @@ RUN python --version \
     && npm install \
     && pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
+    && poetry run python -m pip install 'pyproj<3' --no-build-isolation \
     && poetry install
 
 ARG UID=1000

@@ -194,6 +194,16 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             effective_stale_date_otc_effective_date=TruncDate(
                 ExpressionWrapper(
+                    F("effective_date") - timedelta(days=42),
+                    output_field=DateField(),
+                )
+            )
+        )
+
+    def add_otc_association_date(self):
+        return self.annotate(
+            association_date_otc_effective_date=TruncDate(
+                ExpressionWrapper(
                     F("effective_date") - timedelta(days=70),
                     output_field=DateField(),
                 )
@@ -203,6 +213,7 @@ class ServiceQuerySet(QuerySet):
     def get_all_otc_data_for_lta(self, final_subquery) -> TServiceQuerySet:
         return (
             self.add_otc_stale_date()
+            .add_otc_association_date()
             .annotate(otc_licence_number=F("licence__number"))
             .filter(id__in=final_subquery)
             .order_by("licence__number", "registration_number", "service_number")
@@ -219,6 +230,7 @@ class ServiceQuerySet(QuerySet):
         )
         return (
             self.add_otc_stale_date()
+            .add_otc_association_date()
             .annotate(otc_licence_number=F("licence__number"))
             .filter(licence__number__in=licences_subquery)
             .order_by("licence__number", "registration_number", "service_number")
