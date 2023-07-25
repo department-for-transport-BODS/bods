@@ -46,13 +46,13 @@ OPERATOR_NOC_MAP = OrderedDict(
     {
         "operator": Column(
             "Operator",
-            "The name of the operator on BODS",
+            "The name of the operator on BODS.",
         ),
         "noc": Column(
             "NOC",
             (
                 "The National Operator Code (NOC) that is associated with "
-                "that operator on BODS "
+                "that operator on BODS."
             ),
         ),
     }

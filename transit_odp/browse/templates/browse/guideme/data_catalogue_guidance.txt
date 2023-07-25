@@ -39,6 +39,8 @@ Mode                                         The mode of transport as extracted 
 National Operator Code                       The National Operator Codes for the particular publisher as extracted from the TransXChange or NeTEx file they provided.
 Service Code                                 The ServiceCode for the particular publisher as extracted from the TransXChange file they provided.
 Line Name                                    The linename for the particular publisher as extracted from the TransXChange or NeTEx file they provided.
+% AVL to Timetables feed matching score	     The latest score for the active AVL feed this row belongs to (Data ID).
+Latest matching report URL	                 This will be the same report url as the AVL data feed page report url from the dataset review page.
 
 Timetables data catalogue:
 Field name                                   Definition
@@ -148,15 +150,17 @@ Number of Published Fare Datasets            The total number of published fares
 % Compliant Published Fare Datasets          The percentage of an organisation's published fare datasets that are BODS compliant.
 Number of Pass Products                      The total number of pass products as extracted from the files provided by the operator/publisher to BODS.
 Number of Trip Products                      The total number of trip limited products as extracted from the files provided by the operator/publisher to BODS.
+% Operator overall AVL to Timetables matching scoreThe overall score for an operator as per ‘Review my location data’ blue dashboard for an operator.
+Archived matching reports URL 		         The same archived reports url as the ‘Review my location data’ blue dashboard for an operator in Download all archived matching reports.
 
 Location data catalogue:
 Field name                                   Definition
-Organisation Name                            The name of the operator/publisher providing data on BODS
-Datafeed ID                                  The internal BODS generated ID of the operator/publisher providing data on BODS
-Feed Compliance Status                       The compliance status of data feed on BODS as a result of the SIRI-VM validation checks done on BODS to check for the mandatory SIRI-VM profile elements
-Compliance Report URL                        The link to the exact report generated as a result of the SIRI-VM validation check done on BODS. The results of the validation check can be viewed here
+Organisation Name                            The name of the operator/publisher providing data on BODS.
+Datafeed ID                                  The internal BODS generated ID of the operator/publisher providing data on BODS.
+% AVL to Timetables feed matching score	     This will be the latest score for the AVL feed this row belongs to (Data ID).
+Latest matching report URL                   This will be the same report url as the AVL data feed page report url from the dataset review page.
 
 Operator NOC data catalogue:
 Field name                                   Definition
-Operator				                     The name of the operator on BODS
-Noc					                         The National Operator Code (NOC) that is associated with that operator on BODS
+Operator				                     The name of the operator on BODS.
+Noc					                         The National Operator Code (NOC) that is associated with that operator on BODS.
