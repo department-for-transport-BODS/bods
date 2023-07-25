@@ -14,6 +14,7 @@ from django.db.models.expressions import (
     When,
 )
 from django.db.models.fields import CharField, FloatField
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from transit_odp.avl.constants import (
@@ -28,6 +29,7 @@ from transit_odp.avl.constants import (
     UPPER_THRESHOLD,
     VALIDATION_TERMINATED,
 )
+from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.organisation.constants import ERROR, EXPIRED, INACTIVE
 from transit_odp.organisation.querysets import DatasetQuerySet
 
@@ -376,13 +378,49 @@ class AVLDatasetQuerySet(DatasetQuerySet):
         contain_org = Q(organisation__in=organisations)
         return self.filter(contain_org | has_keyword)
 
+    def add_ppc_stats(self):
+        from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+
+        created_at = (
+            PostPublishingCheckReport.objects.filter(
+                granularity=PPCReportType.WEEKLY.value
+            )
+            .filter(dataset=OuterRef("pk"))
+            .order_by("-created")
+        )
+
+        return self.annotate(
+            vehicles_completely_matching=Coalesce(
+                Subquery(
+                    created_at.values("vehicle_activities_completely_matching")[:1]
+                ),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                Subquery(created_at.values("vehicle_activities_analysed")[:1]),
+                Value(NO_PPC_DATA),
+            ),
+            avl_to_timtables_matching_score=Case(
+                When(
+                    vehicles_analysed__gt=0,
+                    then=ExpressionWrapper(
+                        F("vehicles_completely_matching")
+                        * 100.0
+                        / F("vehicles_analysed"),
+                        output_field=FloatField(),
+                    ),
+                ),
+                default=Value(None, output_field=FloatField()),
+            ),
+        )
+
     def get_location_data_catalogue(self):
         return (
             self.get_published()
             .get_active()
             .add_live_name()
             .add_organisation_name()
-            .add_avl_compliance_status()
+            .add_ppc_stats()
         )
 
     def get_needs_attention_count(self) -> int:
