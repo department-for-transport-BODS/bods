@@ -27,7 +27,15 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.functions import Cast, Coalesce, Concat, Substr, TruncDate, Upper
+from django.db.models.functions import (
+    Cast,
+    Coalesce,
+    Concat,
+    Floor,
+    Substr,
+    TruncDate,
+    Upper,
+)
 from django.db.models.query import Prefetch
 from django.utils import timezone
 
@@ -929,15 +937,17 @@ class DatasetQuerySet(models.QuerySet):
             ),
             avl_to_timtables_matching_score=Case(
                 When(
-                    Q(dataset_type=AVLType),
+                    Q(dataset_type=AVLType) & ~Q(live_revision__status=INACTIVE),
                     then=Case(
                         When(
                             vehicles_analysed__gt=0,
-                            then=ExpressionWrapper(
-                                F("vehicles_completely_matching")
-                                * 100.0
-                                / F("vehicles_analysed"),
-                                output_field=FloatField(),
+                            then=Floor(
+                                ExpressionWrapper(
+                                    F("vehicles_completely_matching")
+                                    * 100.0
+                                    / F("vehicles_analysed"),
+                                    output_field=FloatField(),
+                                )
                             ),
                         ),
                         default=Value(None, output_field=FloatField()),

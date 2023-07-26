@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+import pandas as pd
 from django_hosts import reverse
 from pandas import DataFrame, Series
 
@@ -48,13 +49,16 @@ AVL_FIELDS = (
 
 
 def get_matching_report_url(row: Series) -> str:
+    if row["avl_to_timtables_matching_score"] is None or pd.isna(
+        row["avl_to_timtables_matching_score"]
+    ):
+        return None
     if row["avl_to_timtables_matching_score"] is not None:
         return reverse(
             "avl:download-matching-report",
             kwargs={"pk": row["id"], "pk1": row["organisation_id"]},
             host=PUBLISH_HOST,
         )
-    return ""
 
 
 def _get_avl_data_catalogue() -> DataFrame:
