@@ -179,6 +179,10 @@ DATACATALOGUE_ATTRIBUTE_FIELDS = (
 
 
 def get_matching_report_url(row: Series) -> str:
+    if row["avl_to_timtables_matching_score"] is None or pd.isna(
+        row["avl_to_timtables_matching_score"]
+    ):
+        return None
     if (
         row["dataset_type_pretty"] == "Automatic Vehicle Locations"
         and row["avl_to_timtables_matching_score"] is not None
@@ -188,7 +192,6 @@ def get_matching_report_url(row: Series) -> str:
             kwargs={"pk": row["id"], "pk1": row["organisation_id"]},
             host=PUBLISH_HOST,
         )
-    return ""
 
 
 def _get_overall_catalogue_dataframe() -> DataFrame:

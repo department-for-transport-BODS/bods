@@ -973,15 +973,17 @@ class DatasetQuerySet(models.QuerySet):
             ),
             avl_to_timtables_matching_score=Case(
                 When(
-                    Q(dataset_type=AVLType),
+                    Q(dataset_type=AVLType) & ~Q(live_revision__status=INACTIVE),
                     then=Case(
                         When(
                             vehicles_analysed__gt=0,
-                            then=ExpressionWrapper(
-                                F("vehicles_completely_matching")
-                                * 100.0
-                                / F("vehicles_analysed"),
-                                output_field=FloatField(),
+                            then=Floor(
+                                ExpressionWrapper(
+                                    F("vehicles_completely_matching")
+                                    * 100.0
+                                    / F("vehicles_analysed"),
+                                    output_field=FloatField(),
+                                )
                             ),
                         ),
                         default=Value(None, output_field=FloatField()),

@@ -49,6 +49,10 @@ AVL_FIELDS = (
 
 
 def get_matching_report_url(row: Series) -> str:
+    if row["avl_to_timtables_matching_score"] is None or pd.isna(
+        row["avl_to_timtables_matching_score"]
+    ):
+        return None
     if row["avl_to_timtables_matching_score"] is not None:
         return reverse(
             "avl:download-matching-report",
