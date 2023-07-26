@@ -1,17 +1,14 @@
 import csv
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from io import StringIO
 
+import factory
 import pytest
 from django_hosts import reverse
 from freezegun import freeze_time
 
 from config.hosts import PUBLISH_HOST
-from transit_odp.avl.constants import (
-    MORE_DATA_NEEDED,
-    PARTIALLY_COMPLIANT,
-    UPPER_THRESHOLD,
-)
+from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.csv.catalogue import _get_avl_data_catalogue
 from transit_odp.avl.csv.validation import (
     HEADERS,
@@ -20,7 +17,11 @@ from transit_odp.avl.csv.validation import (
     ValidationReportExporter,
     isoformat_from_time_ns,
 )
-from transit_odp.avl.factories import AVLValidationReportFactory
+from transit_odp.avl.factories import (
+    AVLValidationReportFactory,
+    PostPublishingCheckReportFactory,
+)
+from transit_odp.avl.models import PPCReportType
 from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
@@ -29,7 +30,12 @@ from transit_odp.avl.validation.factories import (
     SchemaValidationResponseFactory,
     ValidationResponseFactory,
 )
-from transit_odp.organisation.factories import AVLDatasetRevisionFactory
+from transit_odp.organisation.constants import AVLType
+from transit_odp.organisation.factories import (
+    AVLDatasetRevisionFactory,
+    DatasetFactory,
+    OrganisationFactory,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -201,30 +207,52 @@ def test_data_catalogue_csv():
     row = df.iloc[0]
     assert row["Organisation Name"] == revision.dataset.organisation.name
     assert row["Datafeed ID"] == revision.dataset_id
-    assert row["Feed Compliance Status"] == PARTIALLY_COMPLIANT
-    assert row["Compliance Report URL"] == reverse(
-        "avl:validation-report-download",
-        kwargs={"pk": revision.dataset_id, "pk1": revision.dataset.organisation_id},
+    assert row["% AVL to Timetables feed matching score"] is None
+    assert row["Latest matching report URL"] is None
+
+
+def test_data_catalogue_csv_matching_score_and_report_url():
+    today = date.today()
+    filename = "ppc_weekly_report_test.zip"
+    organisation = OrganisationFactory()
+    dataset = DatasetFactory(organisation=organisation, dataset_type=AVLType)
+    PostPublishingCheckReportFactory(
+        dataset=dataset,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=10,
+        granularity=PPCReportType.WEEKLY,
+        file=factory.django.FileField(filename=filename),
+        created=today,
+    )
+
+    organisation_two = OrganisationFactory()
+    dataset_two = DatasetFactory(organisation=organisation_two, dataset_type=AVLType)
+    PostPublishingCheckReportFactory(
+        dataset=dataset_two,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=0,
+        granularity=PPCReportType.WEEKLY,
+        file=factory.django.FileField(filename=filename),
+        created=today,
+    )
+
+    df = _get_avl_data_catalogue()
+    row = df.iloc[0]
+    # Test for when matching score is above 0%,
+    # therefore there should be a matching report URL
+    assert row["% AVL to Timetables feed matching score"] == 100.0
+    assert row["Latest matching report URL"] == reverse(
+        "avl:download-matching-report",
+        kwargs={"pk": dataset.id, "pk1": organisation.id},
         host=PUBLISH_HOST,
     )
 
-
-def test_more_data_needed_doesnt_show_report():
-    revision = AVLDatasetRevisionFactory()
-    today = datetime.now().date()
-    total_reports = 8
-    for n in range(0, total_reports):
-        date = today - timedelta(days=n)
-        AVLValidationReportFactory(
-            revision=revision,
-            created=date,
-            non_critical_score=UPPER_THRESHOLD - 0.1,
-            critical_score=UPPER_THRESHOLD + 0.1,
-            vehicle_activity_count=0,
-        )
-    df = _get_avl_data_catalogue()
-    row = df.iloc[0]
-    assert row["Organisation Name"] == revision.dataset.organisation.name
-    assert row["Datafeed ID"] == revision.dataset_id
-    assert row["Feed Compliance Status"] == MORE_DATA_NEEDED
-    assert row["Compliance Report URL"] == ""
+    # Test for when matching score is 0%,
+    # therefore there should be a matching report URL
+    row_two = df.iloc[1]
+    assert row_two["% AVL to Timetables feed matching score"] == 0.0
+    assert row_two["Latest matching report URL"] == reverse(
+        "avl:download-matching-report",
+        kwargs={"pk": dataset_two.id, "pk1": organisation_two.id},
+        host=PUBLISH_HOST,
+    )
