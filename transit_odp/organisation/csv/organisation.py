@@ -1,10 +1,13 @@
 from collections import OrderedDict
 from datetime import datetime
 
+import pandas as pd
 from django.db.models.expressions import F
+from django_hosts import reverse
 from pandas import DataFrame, NamedAgg, Series, isna, merge
 from waffle import flag_is_active
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import FaresMetadata
 from transit_odp.fares_validator.models import FaresValidationResult
@@ -53,6 +56,7 @@ ORG_FIELDS = [
     "nocs_string",
     "licence_string",
     "number_of_licences",
+    "operator_avl_to_timtables_matching_score",
 ]
 
 FEATURE_FLAG_ORG_COLUMN_MAP = OrderedDict(
@@ -210,19 +214,46 @@ FEATURE_FLAG_ORG_COLUMN_MAP = OrderedDict(
         ),
         "number_of_revisions_count": Column(
             "Number of Published Fare Datasets",
-            "The total number of published fares datasets provided by the operator/publisher to BODS.",
+            (
+                "The total number of published fares datasets "
+                "provided by the operator/publisher to BODS."
+            ),
         ),
         "compliant_fares_count": Column(
             "% Compliant Published Fare Datasets",
-            "The percentage of an organisation's published fare datasets that are BODS compliant.",
+            (
+                "The percentage of an organisation's published "
+                "fare datasets that are BODS compliant."
+            ),
         ),
         "num_of_pass_products_count": Column(
             "Number of Pass Products",
-            "The total number of pass products as extracted from the files provided by the operator/publisher to BODS.",
+            (
+                "The total number of pass products as extracted from "
+                "the files provided by the operator/publisher to BODS."
+            ),
         ),
         "num_of_trip_products_count": Column(
             "Number of Trip Products",
-            "The total number of trip limited products as extracted from the files provided by the operator/publisher to BODS.",
+            (
+                "The total number of trip limited products as extracted "
+                "from the files provided by the operator/publisher to BODS."
+            ),
+        ),
+        "operator_avl_to_timtables_matching_score": Column(
+            "% Operator overall AVL to Timetables matching score",
+            (
+                "The overall score for an operator as per ‘Review my "
+                "location data’ blue dashboard for an operator."
+            ),
+        ),
+        "archived_matching_report_url": Column(
+            "Archived matching reports URL",
+            (
+                "The same archived reports url as the ‘Review my location "
+                "data’ blue dashboard for an operator in Download all "
+                "archived matching reports."
+            ),
         ),
     }
 )
@@ -597,13 +628,28 @@ def _get_service_stats() -> DataFrame:
     return service_code_count
 
 
+def get_archived_matching_report_url(row: Series) -> str:
+    if row["operator_avl_to_timtables_matching_score"] is None or pd.isna(
+        row["operator_avl_to_timtables_matching_score"]
+    ):
+        return None
+    if row["operator_avl_to_timtables_matching_score"] is not None:
+        return reverse(
+            "ppc-archive",
+            kwargs={"pk1": row["id"]},
+            host=PUBLISH_HOST,
+        )
+
+
 def _get_organisation_details_dataframe() -> DataFrame:
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     orgs = DataFrame.from_records(
         Organisation.objects.values("id", "name")
         .add_nocs_string(delimiter=";")
         .add_licence_string(delimiter=";")
         .add_number_of_licences()
         .add_permit_holder()
+        .add_avl_stats()
         .values(*ORG_FIELDS)
     )
 
@@ -623,6 +669,11 @@ def _get_organisation_details_dataframe() -> DataFrame:
         .add_last_active()
         .values(*ORG_USER_FIELDS)
     )
+
+    if is_fares_validator_active:
+        orgs["archived_matching_report_url"] = orgs.apply(
+            lambda x: get_archived_matching_report_url(x), axis=1
+        )
 
     orgs = orgs.merge(orgs_with_datasets, on="id")
     orgs = orgs.merge(orgs_with_users, on="id")
