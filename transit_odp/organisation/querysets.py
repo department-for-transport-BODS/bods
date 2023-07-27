@@ -41,6 +41,7 @@ from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
