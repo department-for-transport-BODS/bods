@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.aggregates.general import ArrayAgg, StringAgg
 from django.db import models
 from django.db.models import (
+    Avg,
     BooleanField,
     Case,
     CharField,
@@ -40,6 +41,7 @@ from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
@@ -308,6 +310,41 @@ class OrganisationQuerySet(models.QuerySet):
         interesting ways.
         """
         return self.annotate(total_subscriptions=Count("dataset__subscribers"))
+
+    def get_overall_ppc_score_subquery(self):
+        from transit_odp.avl.proxies import AVLDataset
+
+        avl_datasets = (
+            AVLDataset.objects.filter(
+                organisation=OuterRef("id"),
+                dataset_type=AVLType,
+            )
+            .select_related("organisation")
+            .select_related("live_revision")
+            .order_by("id")
+            .add_avl_compliance_status_cached()
+            .add_post_publishing_check_stats()
+            .order_by("avl_feed_status", "-modified")
+            .get_active()
+            .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
+            .exclude(percent_matching=NO_PPC_DATA)
+            .values("organisation")
+            .annotate(
+                overall_ppc_score=Avg("percent_matching", output_field=FloatField())
+            )
+            .values("overall_ppc_score")
+        )
+
+        return avl_datasets
+
+    def add_avl_stats(self):
+        overall_ppc_score_subquery = self.get_overall_ppc_score_subquery()
+
+        return self.annotate(
+            operator_avl_to_timtables_matching_score=Floor(
+                Subquery(overall_ppc_score_subquery)
+            )
+        )
 
     def add_data_catalogue_fields(self):
         return (
