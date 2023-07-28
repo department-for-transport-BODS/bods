@@ -12,6 +12,7 @@ class Registration(BaseModel):
 
     registration_number: str = Field(alias="registrationNumber")
     variation_number: int = Field(alias="variationNumber")
+    other_service_number: Optional[str] = Field(alias="otherServiceNumber")
     service_number: Optional[str] = Field(alias="serviceNumber")
     current_traffic_area: Optional[str] = Field(alias="trafficAreaId")
     licence_number: Optional[str] = Field(alias="licenceNumber")
@@ -107,6 +108,37 @@ class Registration(BaseModel):
         if v.lower() in EMPTY_VALUES:
             raise ValueError(f"{v} is an empty value but it is required")
         return v
+
+    @validator("service_number", pre=True)
+    def combine_service_numbers(cls, v, values):
+
+        other_service_number = values.get("other_service_number", "")
+
+        # Function to split a string at different delimiters and return a list of numbers
+        def split_at_delimiters(s):
+            delimiters = [",", " ", "-", "|"]
+            numbers = set()
+            current_number = ""
+            for char in s:
+                if char in delimiters:
+                    if current_number.strip():
+                        numbers.add(current_number.strip())
+                    current_number = ""
+                else:
+                    current_number += char
+            if current_number.strip():
+                numbers.add(current_number.strip())
+            return numbers
+
+        service_numbers = split_at_delimiters(v) if v else set()
+        other_service_numbers = (
+            split_at_delimiters(other_service_number) if other_service_number else set()
+        )
+
+        combined_service_numbers = sorted(service_numbers | other_service_numbers)
+        result = " ".join(combined_service_numbers)
+
+        return result
 
 
 class Licence(BaseModel):
