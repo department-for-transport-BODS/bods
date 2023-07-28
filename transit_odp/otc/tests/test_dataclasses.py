@@ -63,21 +63,49 @@ json_data = {
 def create_registration_objects(json_data):
     registrations = []
     for item in json_data["busSearch"]:
-        reg = Registration(
-            service_number=item["serviceNumber"],
-            other_service_number=item["otherServiceNumber"],
+        registration = Registration(
+            registration_number=item["registrationNumber"],
             variation_number=item["variationNumber"],
-            # Add other fields as needed...
+            other_service_number=item["otherServiceNumber"],
+            service_number=item["serviceNumber"],
+            current_traffic_area=item["trafficAreaId"],
+            licence_number=item["licenceNumber"],
+            discs_in_possession=item["discsInPossession"],
+            authdiscs=item["authDiscs"],
+            licence_granted_date=item["grantedDate"],
+            licence_expiry_date=item["expiryDate"],
+            description=item["licenceType"],
+            operator_id=item["operatorId"],
+            operator_name=item["operatorName"],
+            trading_name=item["tradingName"],
+            address=item["contactAddress1"],
+            start_point=item["startPoint"],
+            finish_point=item["finishPoint"],
+            via=item["via"],
+            effective_date=item["effectiveDate"],
+            received_date=item["receivedDate"],
+            end_date=item["endDate"],
+            service_type_other_details=item["otherDetails"],
+            licence_status=item["licenceStatus"],
+            registration_status=item["registrationStatus"],
+            public_text=item["publicationText"],
+            service_type_description=item["busServiceTypeDescription"],
+            short_notice=item["isShortNotice"],
+            subsidies_description=item["subsidised"],
+            subsidies_details=item["subsidyDetail"],
+            auth_description=item["localAuthorities"],
+            tao_covered_by_area=item["taoCoveredByArea"],
+            registration_code=item["registrationCode"],
+            last_modified=item["lastModifiedOn"],
+            local_authorities=item["localAuthorities"],
         )
-        registrations.append(reg)
+        registrations.append(registration)
     return registrations
 
 
 def test_combine_service_numbers():
-    # Create Registration objects from JSON data
     registrations = create_registration_objects(json_data)
 
-    # Test combine_service_numbers on each Registration object
     for reg in registrations:
         combined_numbers = reg.combine_service_numbers()
-        print(combined_numbers)  # Replace with assertions based on your requirements
+        print(combined_numbers)
