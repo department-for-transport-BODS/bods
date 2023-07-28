@@ -92,7 +92,7 @@ def test_composite_frame_valid_between(valid_between, from_date, expected):
                 "violation",
                 "6",
                 "Attribute 'ref' of 'TypeOfFrameRef' in 'CompositeFrame' "
-                "does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'",
+                "does not contain 'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_FARE_OFFER'",
             ],
         ),
         (
@@ -111,7 +111,7 @@ def test_value_of_type_of_frame_ref(
 ):
     """
     Test if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
-    UK_PI_NETWORK_OFFER in it.
+    UK_PI_NETWORK_FARE_OFFER in it.
     """
     type_of_frame_ref_ref_contains_valid_ref = """
     <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_LINE_FARE_OFFER:FXCP" version="fxc:v1.0"/>
