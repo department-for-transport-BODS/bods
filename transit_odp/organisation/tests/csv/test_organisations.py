@@ -1,19 +1,24 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import factory
 import pytest
+from django_hosts import reverse
 from freezegun import freeze_time
 from waffle import flag_is_active
 
+from config.hosts import PUBLISH_HOST
+from transit_odp.avl.factories import PostPublishingCheckReportFactory
+from transit_odp.avl.models import PPCReportType
 from transit_odp.data_quality.factories import PTIValidationResultFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.fares_validator.factories import FaresValidationResultFactory
-from transit_odp.organisation.constants import ORG_ACTIVE
+from transit_odp.organisation.constants import ORG_ACTIVE, AVLType
 from transit_odp.organisation.csv.organisation import (
     _get_organisation_catalogue_dataframe,
 )
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
+    DatasetFactory,
     DatasetRevisionFactory,
     FaresDatasetRevisionFactory,
     LicenceFactory,
@@ -202,8 +207,218 @@ def test_df_organisations():
         )
         assert row["Number of Pass Products"] == no_of_pass_products
         assert row["Number of Trip Products"] == no_of_trip_products
+        assert row["% Operator overall AVL to Timetables matching score"] is None
+        assert row["Archived matching reports URL"] is None
     else:
         assert row["Number of Fare Products"] == no_of_fares_products
+
+
+def test_df_organisations_overall_matching_score_archived_report_url():
+    registered_service_count = 3
+    unregistered_service_count = 2
+    valid_operating_service_count = 3
+    future_operating_services_count = 2
+    no_of_licences = 3
+    published_exempted_service_codes_count = 2
+    unpublished_otc_services = 3
+    no_of_fares_products = 10
+    avl_revisions = 2
+
+    today_ppc = date.today()
+    now = datetime.now()
+    today = now.date()
+    before = today - timedelta(days=2)
+    after = today + timedelta(days=2)
+    organisation = OrganisationFactory(
+        licence_required=True, nocs=["test1", "test2", "test3"]
+    )
+    organisation2 = OrganisationFactory()
+    organisation3 = OrganisationFactory()
+    licences = LicenceFactory.create_batch(no_of_licences, organisation=organisation)
+    OrgAdminFactory.create_batch(5, organisations=(organisation,), last_login=now)
+    InvitationFactory(organisation=organisation, account_type=OrgAdminType, sent=now)
+    timetable_revision = DatasetRevisionFactory(dataset__organisation=organisation)
+    AVLDatasetRevisionFactory.create_batch(
+        avl_revisions, dataset__organisation=organisation
+    )
+    fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
+    FaresMetadataFactory(
+        revision=fares_revision, num_of_fare_products=no_of_fares_products
+    )
+    FaresValidationResultFactory(revision=fares_revision, count=no_of_fares_products)
+    TXCFileAttributesFactory.create_batch(
+        unregistered_service_count,
+        revision=timetable_revision,
+        service_code=factory.Sequence(lambda n: f"UZ0000{n:03}:{n}"),
+        operating_period_start_date=before,
+        operating_period_end_date=before,
+    )
+    TXCFileAttributesFactory.create_batch(
+        registered_service_count,
+        revision=timetable_revision,
+        service_code=factory.Sequence(lambda n: f"RE0000{n:03}:{n}"),
+        operating_period_start_date=before,
+        operating_period_end_date=before,
+    )
+
+    TXCFileAttributesFactory.create_batch(
+        valid_operating_service_count,
+        revision=timetable_revision,
+        operating_period_start_date=before,
+        operating_period_end_date=after,
+        service_code=factory.Sequence(lambda n: f"VA0000{n:03}:{n}"),
+    )
+    # "Valid" operating dates, note VA for valid!
+    TXCFileAttributesFactory.create_batch(
+        future_operating_services_count,
+        revision=timetable_revision,
+        operating_period_start_date=after,
+        service_code=factory.Sequence(lambda n: f"FT0000{n:03}:{n}"),
+    )
+    # "Future" start, note FT for future!
+
+    org_licences = [lic.number for lic in licences]
+    otc_licences = [LicenceModelFactory(number=lic) for lic in org_licences]
+
+    for idx, licence in enumerate(otc_licences + otc_licences[:2]):
+        # registered services in BODS
+        service = ServiceModelFactory(
+            licence=licence,
+            service_type_description=SCHOOL_OR_WORKS,
+            subsidies_description=SubsidiesDescription.NO,
+            registration_code=factory.sequence(lambda n: n + 100),
+        )
+        TXCFileAttributesFactory(
+            licence_number=service.licence.number,
+            service_code=service.registration_number.replace("/", ":"),
+            revision=timetable_revision,
+        )
+        if idx < published_exempted_service_codes_count:
+            org_licence = next(lic for lic in licences if lic.number == licence.number)
+            ServiceCodeExemptionFactory(
+                licence=org_licence, registration_code=service.registration_code
+            )
+
+    # registered services not in BODS
+    not_published_sc = ServiceModelFactory.create_batch(
+        unpublished_otc_services,
+        licence=otc_licences[2],
+        registration_code=factory.sequence(lambda n: n + 100),
+    )
+    for x in not_published_sc:
+        org_licence = next(lic for lic in licences if lic.number == x.licence.number)
+        ServiceCodeExemptionFactory(
+            licence=org_licence, registration_code=x.registration_code
+        )
+
+    dataset1 = DatasetFactory(
+        organisation=organisation,
+        dataset_type=AVLType,
+    )
+    dataset2 = DatasetFactory(
+        organisation=organisation,
+        dataset_type=AVLType,
+    )
+    dataset3 = DatasetFactory(
+        organisation=organisation,
+        dataset_type=AVLType,
+    )
+    dataset4 = DatasetFactory(
+        organisation=organisation2,
+        dataset_type=AVLType,
+    )
+    dataset5 = DatasetFactory(
+        organisation=organisation2,
+        dataset_type=AVLType,
+    )
+    dataset6 = DatasetFactory(
+        organisation=organisation3,
+        dataset_type=AVLType,
+    )
+    dataset7 = DatasetFactory(
+        organisation=organisation3,
+        dataset_type=AVLType,
+    )
+
+    PostPublishingCheckReportFactory(
+        dataset=dataset1,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=1,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset2,
+        vehicle_activities_analysed=230,
+        vehicle_activities_completely_matching=120,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset3,
+        vehicle_activities_analysed=100,
+        vehicle_activities_completely_matching=90,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset4,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=10,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset5,
+        vehicle_activities_analysed=230,
+        vehicle_activities_completely_matching=230,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset6,
+        vehicle_activities_analysed=10,
+        vehicle_activities_completely_matching=0,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+    PostPublishingCheckReportFactory(
+        dataset=dataset7,
+        vehicle_activities_analysed=230,
+        vehicle_activities_completely_matching=0,
+        granularity=PPCReportType.WEEKLY,
+        created=today_ppc,
+    )
+
+    df = _get_organisation_catalogue_dataframe()
+    row = df.iloc[0]
+    row2 = df.iloc[1]
+    row3 = df.iloc[2]
+
+    # Test for when matching score is greater than or equal to
+    # 0% for different organisations,
+    # therefore there should be a matching report URL for each org.
+    if is_fares_validator_active:
+        assert row["% Operator overall AVL to Timetables matching score"] == 50.0
+        assert row["Archived matching reports URL"] == reverse(
+            "ppc-archive",
+            args=(organisation.id,),
+            host=PUBLISH_HOST,
+        )
+
+        assert row2["% Operator overall AVL to Timetables matching score"] == 100.0
+        assert row2["Archived matching reports URL"] == reverse(
+            "ppc-archive",
+            args=(organisation2.id,),
+            host=PUBLISH_HOST,
+        )
+
+        assert row3["% Operator overall AVL to Timetables matching score"] == 0.0
+        assert row3["Archived matching reports URL"] == reverse(
+            "ppc-archive",
+            args=(organisation3.id,),
+            host=PUBLISH_HOST,
+        )
 
 
 @pytest.mark.skip
