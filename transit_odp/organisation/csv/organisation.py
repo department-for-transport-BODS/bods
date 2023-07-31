@@ -628,7 +628,7 @@ def _get_service_stats() -> DataFrame:
     return service_code_count
 
 
-def get_archived_matching_report_url(row: Series) -> str:
+def _get_archived_matching_report_url(row: Series) -> str:
     if row["operator_avl_to_timtables_matching_score"] is None or pd.isna(
         row["operator_avl_to_timtables_matching_score"]
     ):
@@ -642,7 +642,6 @@ def get_archived_matching_report_url(row: Series) -> str:
 
 
 def _get_organisation_details_dataframe() -> DataFrame:
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     orgs = DataFrame.from_records(
         Organisation.objects.values("id", "name")
         .add_nocs_string(delimiter=";")
@@ -669,11 +668,6 @@ def _get_organisation_details_dataframe() -> DataFrame:
         .add_last_active()
         .values(*ORG_USER_FIELDS)
     )
-
-    if is_fares_validator_active:
-        orgs["archived_matching_report_url"] = orgs.apply(
-            lambda x: get_archived_matching_report_url(x), axis=1
-        )
 
     orgs = orgs.merge(orgs_with_datasets, on="id")
     orgs = orgs.merge(orgs_with_users, on="id")
