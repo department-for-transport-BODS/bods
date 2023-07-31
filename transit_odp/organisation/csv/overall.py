@@ -1,9 +1,11 @@
 from collections import OrderedDict
 
 import pandas as pd
-from pandas import DataFrame, merge
+from django_hosts import reverse
+from pandas import DataFrame, Series, merge
 from waffle import flag_is_active
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.common.collections import Column
 from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.organisation.csv import EmptyDataFrame
@@ -68,6 +70,17 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
             "Line Name",
             "The linename for the particular publisher as extracted from "
             "the TransXChange or NeTEx file they provided.",
+        ),
+        "avl_to_timtables_matching_score": Column(
+            "% AVL to Timetables feed matching score",
+            "The latest score for the active AVL feed this row belongs to (Data ID).",
+        ),
+        "matching_report_url": Column(
+            "Latest matching report URL",
+            (
+                "This will be the same report url as the AVL data feed page "
+                "report url from the dataset review page."
+            ),
         ),
     }
 )
@@ -145,6 +158,7 @@ DATASET_FIELDS = (
     "upload_filename",
     "id",
     "name",
+    "avl_to_timtables_matching_score",
 )
 
 TXC_FILE_ATTRIBUTE_FIELDS = (
@@ -164,6 +178,22 @@ DATACATALOGUE_ATTRIBUTE_FIELDS = (
 )
 
 
+def get_matching_report_url(row: Series) -> str:
+    if row["avl_to_timtables_matching_score"] is None or pd.isna(
+        row["avl_to_timtables_matching_score"]
+    ):
+        return None
+    if (
+        row["dataset_type_pretty"] == "Automatic Vehicle Locations"
+        and row["avl_to_timtables_matching_score"] is not None
+    ):
+        return reverse(
+            "avl:download-matching-report",
+            kwargs={"pk": row["id"], "pk1": row["organisation_id"]},
+            host=PUBLISH_HOST,
+        )
+
+
 def _get_overall_catalogue_dataframe() -> DataFrame:
     is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     dataset_df = DataFrame.from_records(
@@ -180,6 +210,10 @@ def _get_overall_catalogue_dataframe() -> DataFrame:
         raise EmptyDataFrame()
 
     if is_fares_validator_active:
+        dataset_df["matching_report_url"] = dataset_df.apply(
+            lambda x: get_matching_report_url(x), axis=1
+        )
+
         dataset_df_fares = dataset_df[dataset_df["dataset_type_pretty"] == "Fares"]
         dataset_df = dataset_df[dataset_df["dataset_type_pretty"] != "Fares"]
 

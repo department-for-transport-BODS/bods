@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.aggregates.general import ArrayAgg, StringAgg
 from django.db import models
 from django.db.models import (
+    Avg,
     BooleanField,
     Case,
     CharField,
@@ -27,18 +28,26 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import Exists
-from django.db.models.functions import Cast, Coalesce, Concat, Substr, TruncDate, Upper
+from django.db.models.functions import (
+    Cast,
+    Coalesce,
+    Concat,
+    Floor,
+    Substr,
+    TruncDate,
+    Upper,
+)
 from django.db.models.query import Prefetch
 from django.utils import timezone
 
 from config.hosts import DATA_HOST
+from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
     LIVE,
-    NO_ACTIVITY,
     ORG_ACTIVE,
     ORG_INACTIVE,
     ORG_NOT_YET_INVITED,
@@ -302,6 +311,41 @@ class OrganisationQuerySet(models.QuerySet):
         """
         return self.annotate(total_subscriptions=Count("dataset__subscribers"))
 
+    def get_overall_ppc_score_subquery(self):
+        from transit_odp.avl.proxies import AVLDataset
+
+        avl_datasets = (
+            AVLDataset.objects.filter(
+                organisation=OuterRef("id"),
+                dataset_type=AVLType,
+            )
+            .select_related("organisation")
+            .select_related("live_revision")
+            .order_by("id")
+            .add_avl_compliance_status_cached()
+            .add_post_publishing_check_stats()
+            .order_by("avl_feed_status", "-modified")
+            .get_active()
+            .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
+            .exclude(percent_matching=NO_PPC_DATA)
+            .values("organisation")
+            .annotate(
+                overall_ppc_score=Avg("percent_matching", output_field=FloatField())
+            )
+            .values("overall_ppc_score")
+        )
+
+        return avl_datasets
+
+    def add_avl_stats(self):
+        overall_ppc_score_subquery = self.get_overall_ppc_score_subquery()
+
+        return self.annotate(
+            operator_avl_to_timtables_matching_score=Floor(
+                Subquery(overall_ppc_score_subquery)
+            )
+        )
+
     def add_data_catalogue_fields(self):
         return (
             self.add_status()
@@ -364,7 +408,7 @@ class DatasetQuerySet(models.QuerySet):
                 ),
                 When(
                     Q(live_revision__status="error", dataset_type=AVLType),
-                    then=Value(NO_ACTIVITY, output_field=CharField()),
+                    then=Value("published", output_field=CharField()),
                 ),
                 default=F("live_revision__status"),
                 output_field=CharField(),
@@ -906,6 +950,49 @@ class DatasetQuerySet(models.QuerySet):
             )
         )
 
+    def add_ppc_stats(self):
+        from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
+
+        created_at = (
+            PostPublishingCheckReport.objects.filter(
+                granularity=PPCReportType.WEEKLY.value
+            )
+            .filter(dataset=OuterRef("pk"))
+            .order_by("-created")
+        )
+
+        return self.annotate(
+            vehicles_completely_matching=Coalesce(
+                Subquery(
+                    created_at.values("vehicle_activities_completely_matching")[:1]
+                ),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                Subquery(created_at.values("vehicle_activities_analysed")[:1]),
+                Value(NO_PPC_DATA),
+            ),
+            avl_to_timtables_matching_score=Case(
+                When(
+                    Q(dataset_type=AVLType) & ~Q(live_revision__status=INACTIVE),
+                    then=Case(
+                        When(
+                            vehicles_analysed__gt=0,
+                            then=Floor(
+                                ExpressionWrapper(
+                                    F("vehicles_completely_matching")
+                                    * 100.0
+                                    / F("vehicles_analysed"),
+                                    output_field=FloatField(),
+                                )
+                            ),
+                        ),
+                        default=Value(None, output_field=FloatField()),
+                    ),
+                )
+            ),
+        )
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
@@ -916,6 +1003,7 @@ class DatasetQuerySet(models.QuerySet):
             .add_pretty_status()
             .add_pretty_dataset_type()
             .add_last_updated_including_avl()
+            .add_ppc_stats()
             .exclude(live_revision__status=EXPIRED)
         )
 

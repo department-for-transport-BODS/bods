@@ -471,7 +471,7 @@ def get_scheduled_point_ref_text(stop_point):
 def check_value_of_type_of_frame_ref(context, composite_frames, *args):
     """
     Check if TypeOfFrameRef has either UK_PI_LINE_FARE_OFFER or
-    UK_PI_NETWORK_OFFER in it.
+    UK_PI_NETWORK_FARE_OFFER in it.
     """
     is_frame_ref_value_valid = False
     composite_frame = composite_frames[0]

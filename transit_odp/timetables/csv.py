@@ -404,11 +404,18 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         "effective_last_modified_date"
     ].apply(defer_one_year)
     df["effective_stale_date_from_otc_effective"] = df["effective_date"] - pd.Timedelta(
+        days=42
+    )
+    df["association_date_otc_effective_date"] = df["effective_date"] - pd.Timedelta(
         days=70
     )
 
     df["last_modified_lt_effective_stale_date_otc"] = (
         df["last_modified_date"] < df["effective_stale_date_from_otc_effective"]
+    )
+
+    df["today_lt_effective_stale_date_otc"] = (
+        today < df["effective_stale_date_from_otc_effective"]
     )
 
     staleness_end_date = (
@@ -431,9 +438,14 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         & (df["effective_stale_date_from_last_modified"] <= today)
         & (df["last_modified_date"] >= df["effective_date"])
     )
-    staleness_otc = (
-        df["last_modified_date"] < df["effective_stale_date_from_otc_effective"]
-    ) & (df["effective_stale_date_from_otc_effective"] <= today)
+
+    df["is_data_associated"] = (
+        df["last_modified_date"] >= df["association_date_otc_effective_date"]
+    ) | (df["operating_period_start_date"] == df["effective_date"])
+
+    not_stale_otc = df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+    staleness_otc = ~not_stale_otc
+
     df["staleness_status"] = np.select(
         condlist=[staleness_end_date, staleness_12_months, staleness_otc],
         choicelist=[
