@@ -140,7 +140,7 @@ class PostPublishingChecker:
             if txc_vehicle_journey:
                 data_matching.data_match(activity, txc_vehicle_journey, result)
 
-            if result:
+            if result.errors is not None:
                 results.append(result)
 
         results_writer = PostPublishingResultsJsonWriter(activity_date, feed_id)
