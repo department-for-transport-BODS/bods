@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 from datetime import date, timedelta
+from ddtrace import tracer
 
 from django.core.files import File
 
@@ -26,7 +27,8 @@ class WeeklyReport:
     def __init__(self, start_date: date = date.today()) -> None:
         self.start_date = start_date
         self.end_date = start_date - timedelta(days=6)
-
+        
+    @tracer.wrap(service='task_weekly_assimilate_post_publishing_check_reports', resource='generate')
     def generate(self) -> None:
         """Generate summary PPC report based on start_date - 1 week range of data."""
 

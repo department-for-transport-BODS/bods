@@ -7,7 +7,7 @@ import requests
 from django.core.files import File
 from django.utils import timezone
 from requests import RequestException
-
+from ddtrace import tracer
 from transit_odp.avl.models import CAVLDataArchive
 
 logger = getLogger(__name__)
@@ -55,7 +55,8 @@ class ConsumerAPIArchiver:
     @property
     def content_filename(self):
         return self.data_format_value + self.extension
-
+    
+    @tracer.wrap(service='task_validate_avl_feed', resource='archive')
     def archive(self):
         file_ = self.get_file(self.content)
         self.save_to_database(file_)

@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 import requests
 from django.conf import settings
 from requests.exceptions import RequestException
+from ddtrace import tracer
 
 from transit_odp.avl.client.interface import ICAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
@@ -99,6 +100,7 @@ class CAVLService(ICAVLService):
         if response.status_code == HTTPStatus.OK:
             return [Feed(**j) for j in response.json()]
 
+    @tracer.wrap(service='task_validate_avl_feed', resource='validate_feed')
     def validate_feed(
         self, url: str, username: str, password: str, **kwargs
     ) -> Optional[ValidationTaskResult]:

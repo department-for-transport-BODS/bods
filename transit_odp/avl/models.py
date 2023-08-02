@@ -6,6 +6,7 @@ from django.db.models.query_utils import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
+from ddtrace import tracer
 
 from transit_odp.avl.csv.validation import (
     SchemaValidationResponseExporter,
@@ -54,6 +55,7 @@ class AVLValidationReport(models.Model):
         )
 
     @classmethod
+    @tracer.wrap(service='task_cache_avl_compliance_status', resource='from_validation_response')
     def from_validation_response(cls, revision_id: int, response: ValidationResponse):
         summary = response.validation_summary
         exporter = ValidationReportExporter(response)

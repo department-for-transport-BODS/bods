@@ -1,6 +1,7 @@
 import datetime
 import logging
 from typing import List
+from ddtrace import tracer
 
 from transit_odp.avl.post_publishing_checks.constants import MiscFieldPPC, SirivmField
 from transit_odp.avl.post_publishing_checks.daily.data_matching import DataMatching
@@ -106,7 +107,8 @@ class PostPublishingChecker:
                 mvj.framed_vehicle_journey_ref.dated_vehicle_journey_ref,
             )
         return result
-
+    
+    @tracer.wrap(service='task_daily_post_publishing_checks_single_feed', resource='perform_checks')
     def perform_checks(
         self,
         activity_date: datetime.date,
