@@ -5,6 +5,12 @@ from celery import Celery
 from celery.schedules import crontab
 from django.apps import AppConfig, apps
 from django.conf import settings
+from ddtrace import patch_all
+
+patch_all()
+
+if os.environ.get("DD_PROFILING_ENABLED") == "true":
+    import ddtrace.profiling.auto
 
 if not settings.configured:
     # set the default Django settings module for the 'celery' program.
