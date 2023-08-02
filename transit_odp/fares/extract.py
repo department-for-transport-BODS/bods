@@ -2,6 +2,7 @@ import itertools
 from typing import List
 
 from waffle import flag_is_active
+from ddtrace import tracer
 
 from transit_odp.fares.netex import NeTExDocument
 
@@ -278,7 +279,8 @@ class NeTExDocumentsExtractor:
             fares_catalogue = FaresDataCatalogueExtractor(doc)
             fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
         return fares_catalogue_extracted_data
-
+    
+    @tracer.wrap(service='FaresPublishing', resource='netex_document_extractor')
     def to_dict(self):
         is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
         if is_fares_validator_active:

@@ -4,6 +4,7 @@ from typing import List
 from dateutil.parser import parse as parse_datetime_str
 from django.conf import settings
 from lxml import etree
+from ddtrace import tracer
 
 from transit_odp.common.xmlelements import XMLElement
 from transit_odp.pipelines.constants import SchemaCategory
@@ -266,7 +267,7 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
                     docs.append(NeTExDocument(xmlout))
     return docs
 
-
+@tracer.wrap(service='Publish', resource='get_documents_from_file')
 def get_documents_from_file(source) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
     if zipfile.is_zipfile(source):
@@ -275,7 +276,7 @@ def get_documents_from_file(source) -> List[NeTExDocument]:
         doc = NeTExDocument(source)
         return [doc]
 
-
+@tracer.wrap(service='Publish', resource='get_netex_schema')
 def get_netex_schema() -> etree.XMLSchema:
     """
     Helper method to return netex scheme object
