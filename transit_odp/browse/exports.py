@@ -5,6 +5,7 @@ from collections import OrderedDict, namedtuple
 from typing import BinaryIO
 
 from waffle import flag_is_active
+from ddtrace import tracer
 
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
 from transit_odp.browse.constants import INTRO, INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE
@@ -185,7 +186,7 @@ def create_guidance_file_string() -> str:
 
     return "\n".join(result)
 
-
+@tracer.wrap(service='task_create_data_catalogue_archive', resource='create_data_catalogue_file')
 def create_data_catalogue_file() -> BinaryIO:
     buffer_ = io.BytesIO()
     files = (CSVFile(NOC_FILENAME, DownloadOperatorNocCatalogueCSV),)
