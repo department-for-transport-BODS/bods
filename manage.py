@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 from ddtrace import patch_all
 
-patch_all()
-
 import os
 import sys
 
+patch_all()
 
 if os.environ.get("DD_PROFILING_ENABLED") == "true":
     import ddtrace.profiling.auto
