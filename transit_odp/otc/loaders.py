@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from itertools import chain
 from django.conf import settings
 from django.db import transaction, connection
+from ddtrace import tracer
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.models import (
@@ -39,16 +40,19 @@ class Loader:
 
         return db_item, set(changed_fields)
 
+    @tracer.wrap(service='otc_jobs', resource='get_missing_operators')
     def get_missing_operators(self) -> Set[int]:
         stored_ids = set(Operator.objects.values_list("operator_id", flat=True))
         new_ids = {service.operator.operator_id for service in self.registered_service}
         return new_ids - stored_ids
 
+    @tracer.wrap(service='otc_jobs', resource='get_missing_licences')
     def get_missing_licences(self) -> Set[str]:
         stored_ids = set(Licence.objects.values_list("number", flat=True))
         new_ids = {service.licence.number for service in self.registered_service}
         return new_ids - stored_ids
 
+    @tracer.wrap(service='otc_jobs', resource='get_missing_services')
     def get_missing_services(self) -> Set[Tuple[str, str]]:
         stored_ids = set(
             Service.objects.values_list(
@@ -61,6 +65,7 @@ class Loader:
         }
         return new_ids - stored_ids
 
+    @tracer.wrap(service='otc_jobs', resource='load_licences')
     def load_licences(self):
         licences = []
         for licence_number in self.get_missing_licences():
@@ -70,6 +75,7 @@ class Loader:
         logger.info(f"loading {len(licences)} new licences into database")
         Licence.objects.bulk_create(licences)
 
+    @tracer.wrap(service='otc_jobs', resource='load_operators')
     def load_operators(self):
         operators = []
         for op_id in self.get_missing_operators():
@@ -79,6 +85,7 @@ class Loader:
         logger.info(f"loading {len(operators)} new operators into database")
         Operator.objects.bulk_create(operators)
 
+    @tracer.wrap(service='otc_jobs', resource='load_services')
     def load_services(self):
         operator_map = {op.operator_id: op for op in Operator.objects.all()}
         licence_map = {lic.number: lic for lic in Licence.objects.all()}
@@ -94,6 +101,7 @@ class Loader:
         logger.info(f"loading {len(services)} new services into database")
         Service.objects.bulk_create(services)
 
+    @tracer.wrap(service='otc_jobs', resource='update_services_and_operators')
     def update_services_and_operators(self):
         all_services = Service.objects.select_related("operator", "licence").all()
         service_map = {
@@ -146,6 +154,7 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
+    @tracer.wrap(service='otc_jobs', resource='load_inactive_services')
     def load_inactive_services(self, variation):
 
         InactiveService.objects.create(
@@ -154,6 +163,7 @@ class Loader:
             effective_date=variation.effective_date,
         )
 
+    @tracer.wrap(service='otc_jobs', resource='delete_bad_data')
     def delete_bad_data(self):
         to_delete_services = self.registry.filter_by_status(
             *RegistrationStatusEnum.to_delete()
@@ -219,6 +229,7 @@ class Loader:
             self.delete_bad_data()
             self.refresh_lta(_registrations)
 
+    @tracer.wrap(service='otc_jobs', resource='refresh_lta')
     def refresh_lta(self, regs_to_update_lta):
         for registration in regs_to_update_lta:
             _service = Service.objects.filter(
@@ -239,6 +250,7 @@ class Loader:
         refresh_lta.refresh(regs_to_update_lta)
         logger.info(f"Completed updating the local authorities.")
 
+    @tracer.wrap(service='otc_jobs', resource='_delete_all_otc_data')
     def _delete_all_otc_data(self) -> None:
         logger.info("Clearing OTC tables")
         count, _ = Service.objects.all().delete()
