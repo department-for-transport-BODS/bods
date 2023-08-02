@@ -1,5 +1,3 @@
-import logging
-
 from datetime import date, datetime
 from typing import Optional, List
 
@@ -7,7 +5,6 @@ from django.utils.timezone import make_aware
 from pydantic import Field, validator
 from pydantic.main import BaseModel
 
-logger = logging.getLogger(__name__)
 
 class Registration(BaseModel):
     class Config:
@@ -117,7 +114,6 @@ class Registration(BaseModel):
 
         other_service_number = values.get("other_service_number", "")
         if not other_service_number:
-            logger.info(f"The value of service_number is {v}")
             return v
         # Function to split a string at different delimiters and return a list of numbers
         def split_at_delimiters(s):
@@ -139,7 +135,6 @@ class Registration(BaseModel):
         other_service_numbers = (
             split_at_delimiters(other_service_number) if other_service_number else set()
         )
-        logger.info(f"The value of service_numbers is {service_numbers} and other_service_numbers is {other_service_numbers}")
         combined_service_numbers = (service_numbers | other_service_numbers)
         result = "|".join(combined_service_numbers)
 
