@@ -571,7 +571,7 @@ class VehicleJourneyFinder:
             )
             return False
         elif len(service_code_set) > 1:
-            result = None
+            result.errors = None
             return False
         return True
 
