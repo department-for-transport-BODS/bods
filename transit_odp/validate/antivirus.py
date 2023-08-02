@@ -73,7 +73,7 @@ class FileScanner:
         logger.info("Antivirus scan: Started")
         self.clamav = ClamdNetworkSocket(host=host, port=port)
 
-    @tracer.wrap(service='Publishing', resource='antivirus_scan')
+    @tracer.wrap(service="Publishing", resource="antivirus_scan")
     def scan(self, file_: BinaryIO):
         try:
             result = self._perform_scan(file_)

@@ -44,7 +44,7 @@ DT_FORMAT = "%Y-%m-%d_%H-%M-%S"
 
 
 @shared_task(bind=True)
-@tracer.wrap(service='FaresPipeline', resource='task_run_fares_pipeline')
+@tracer.wrap(service="FaresPipeline", resource="task_run_fares_pipeline")
 def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
     logger.info(f"DatasetRevision {revision_id} => Starting fares ETL pipeline.")
     try:
@@ -85,7 +85,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
 
 @shared_task
-@tracer.wrap(service='FaresPipeline', resource='task_download_fares_file')
+@tracer.wrap(service="FaresPipeline", resource="task_download_fares_file")
 def task_download_fares_file(task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
@@ -122,7 +122,8 @@ def task_download_fares_file(task_id: int):
 
     task.update_progress(20)
 
-@tracer.wrap(service='FaresPipeline', resource='task_run_antivirus_check')
+
+@tracer.wrap(service="FaresPipeline", resource="task_run_antivirus_check")
 def task_run_antivirus_check(task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
@@ -146,7 +147,7 @@ def task_run_antivirus_check(task_id: int):
 
 
 @shared_task
-@tracer.wrap(service='FaresPipeline', resource='task_run_fares_validation')
+@tracer.wrap(service="FaresPipeline", resource="task_run_fares_validation")
 def task_run_fares_validation(task_id):
     """Task to validate a fares file."""
     task = get_etl_task_or_pipeline_exception(task_id)
@@ -185,7 +186,7 @@ def task_run_fares_validation(task_id):
 
 
 @shared_task
-@tracer.wrap(service='FaresPipeline', resource='task_set_fares_validation_result')
+@tracer.wrap(service="FaresPipeline", resource="task_set_fares_validation_result")
 def task_set_fares_validation_result(task_id):
     """Task to set validation errors in a fares file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
@@ -209,7 +210,7 @@ def task_set_fares_validation_result(task_id):
 
 
 @shared_task
-@tracer.wrap(service='FaresPipeline', resource='task_run_fares_etl')
+@tracer.wrap(service="FaresPipeline", resource="task_run_fares_etl")
 def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)

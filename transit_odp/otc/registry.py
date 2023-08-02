@@ -49,7 +49,7 @@ class Registry:
         self._licence_map = {}
         self._client = OTCAPIClient()
 
-    @tracer.wrap(service='task_get_all_otc_data', resource='sync_with_otc_registry')
+    @tracer.wrap(service="task_get_all_otc_data", resource="sync_with_otc_registry")
     def sync_with_otc_registry(self) -> None:
         """
         helper method that runs what is required to completely sync the
@@ -57,8 +57,10 @@ class Registry:
         """
         self.add_all_latest_registered_variations()
         self.add_all_older_registered_variations()
-    
-    @tracer.wrap(service='task_get_all_otc_data', resource='add_all_latest_registered_variations')
+
+    @tracer.wrap(
+        service="task_get_all_otc_data", resource="add_all_latest_registered_variations"
+    )
     def add_all_latest_registered_variations(self) -> None:
         """
         Updates services with all registered variations that have the highest
@@ -74,8 +76,10 @@ class Registry:
                 delete_status
             ):
                 self.update_to_delete_variations(registration)
-    
-    @tracer.wrap(service='task_get_all_otc_data', resource='add_all_older_registered_variations')
+
+    @tracer.wrap(
+        service="task_get_all_otc_data", resource="add_all_older_registered_variations"
+    )
     def add_all_older_registered_variations(self) -> None:
         """
         Makes individual calls to API for each registration code that has previously
@@ -92,8 +96,8 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(variation)
-    
-    @tracer.wrap(service='task_refresh_otc_data', resource='get_variations_since')
+
+    @tracer.wrap(service="task_refresh_otc_data", resource="get_variations_since")
     def get_variations_since(self, when: datetime, services_to_check) -> List[Service]:
         """
         looks up all latest variations since a given date, any variations in the
@@ -145,8 +149,8 @@ class Registry:
         return [
             service for service in self.services if service.registration_status in args
         ]
-    
-    @tracer.wrap(service='otc_jobs', resource='get_services_with_past_effective_date')
+
+    @tracer.wrap(service="otc_jobs", resource="get_services_with_past_effective_date")
     def get_services_with_past_effective_date(
         self, to_delete_services
     ) -> List[Service]:
@@ -159,7 +163,7 @@ class Registry:
                 service_list.append(service)
         return service_list
 
-    @tracer.wrap(service='otc_jobs', resource='get_latest_variations_by_id')
+    @tracer.wrap(service="otc_jobs", resource="get_latest_variations_by_id")
     def get_latest_variations_by_id(self, registration_number) -> List[Registration]:
         """
         Gets a list of the all variations by registration number that are ordered by
@@ -183,7 +187,7 @@ class Registry:
                 ]
         return []
 
-    @tracer.wrap(service='otc_jobs', resource='get_further_lookup_ids')
+    @tracer.wrap(service="otc_jobs", resource="get_further_lookup_ids")
     def get_further_lookup_ids(self) -> Set[str]:
         """
         Returns a set of all registration numbers whos latest variation is in
@@ -199,7 +203,7 @@ class Registry:
 
         return lookup_ids
 
-    @tracer.wrap(service='otc_jobs', resource='update_registered_variations')
+    @tracer.wrap(service="otc_jobs", resource="update_registered_variations")
     def update_registered_variations(self, variation: Registration) -> None:
         if variation.variation_number == 0:
             if variation.effective_date:
@@ -216,12 +220,12 @@ class Registry:
         else:
             self.update(variation)
 
-    @tracer.wrap(service='otc_jobs', resource='update_to_delete_variations')
+    @tracer.wrap(service="otc_jobs", resource="update_to_delete_variations")
     def update_to_delete_variations(self, variation: Registration) -> None:
         if variation.effective_date:
             self.update(variation)
 
-    @tracer.wrap(service='otc_jobs', resource='update')
+    @tracer.wrap(service="otc_jobs", resource="update")
     def update(self, registration: Registration) -> None:
         """
         Performs normalisation and drops duplicates, will keep highest variation

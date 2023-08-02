@@ -186,7 +186,10 @@ def create_guidance_file_string() -> str:
 
     return "\n".join(result)
 
-@tracer.wrap(service='task_create_data_catalogue_archive', resource='create_data_catalogue_file')
+
+@tracer.wrap(
+    service="task_create_data_catalogue_archive", resource="create_data_catalogue_file"
+)
 def create_data_catalogue_file() -> BinaryIO:
     buffer_ = io.BytesIO()
     files = (CSVFile(NOC_FILENAME, DownloadOperatorNocCatalogueCSV),)

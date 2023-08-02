@@ -16,8 +16,8 @@ class TransformationError(Exception):
 class NeTExDocumentsTransformer:
     def __init__(self, data: dict):
         self.data = data
-    
-    @tracer.wrap(service='FaresPublishing', resource='transform_fares_data')
+
+    @tracer.wrap(service="FaresPublishing", resource="transform_fares_data")
     def transform_data(self):
         extracted_stops = self.data.pop("stop_point_refs")
         naptan_stop_ids = self.transform_stops(extracted_stops)

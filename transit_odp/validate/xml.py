@@ -135,7 +135,8 @@ class XMLValidator(FileValidator):
             raise XMLSyntaxError(self.source.name, message=err.msg) from err
         return doc
 
-@tracer.wrap(service='Publish', resource='validate_xml_files_in_zip')
+
+@tracer.wrap(service="Publish", resource="validate_xml_files_in_zip")
 def validate_xml_files_in_zip(zip_file, schema=None):
     """Validate all the xml files in a zip archive."""
     context = DatasetPipelineLoggerContext(component_name="FaresPipeline")

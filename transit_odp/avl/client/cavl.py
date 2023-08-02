@@ -100,7 +100,7 @@ class CAVLService(ICAVLService):
         if response.status_code == HTTPStatus.OK:
             return [Feed(**j) for j in response.json()]
 
-    @tracer.wrap(service='task_validate_avl_feed', resource='validate_feed')
+    @tracer.wrap(service="task_validate_avl_feed", resource="validate_feed")
     def validate_feed(
         self, url: str, username: str, password: str, **kwargs
     ) -> Optional[ValidationTaskResult]:

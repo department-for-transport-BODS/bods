@@ -107,8 +107,11 @@ class PostPublishingChecker:
                 mvj.framed_vehicle_journey_ref.dated_vehicle_journey_ref,
             )
         return result
-    
-    @tracer.wrap(service='task_daily_post_publishing_checks_single_feed', resource='perform_checks')
+
+    @tracer.wrap(
+        service="task_daily_post_publishing_checks_single_feed",
+        resource="perform_checks",
+    )
     def perform_checks(
         self,
         activity_date: datetime.date,

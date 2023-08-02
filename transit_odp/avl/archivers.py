@@ -55,8 +55,8 @@ class ConsumerAPIArchiver:
     @property
     def content_filename(self):
         return self.data_format_value + self.extension
-    
-    @tracer.wrap(service='task_validate_avl_feed', resource='archive')
+
+    @tracer.wrap(service="task_validate_avl_feed", resource="archive")
     def archive(self):
         file_ = self.get_file(self.content)
         self.save_to_database(file_)

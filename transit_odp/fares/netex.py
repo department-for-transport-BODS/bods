@@ -267,7 +267,8 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
                     docs.append(NeTExDocument(xmlout))
     return docs
 
-@tracer.wrap(service='Publish', resource='get_documents_from_file')
+
+@tracer.wrap(service="Publish", resource="get_documents_from_file")
 def get_documents_from_file(source) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
     if zipfile.is_zipfile(source):
@@ -276,7 +277,8 @@ def get_documents_from_file(source) -> List[NeTExDocument]:
         doc = NeTExDocument(source)
         return [doc]
 
-@tracer.wrap(service='Publish', resource='get_netex_schema')
+
+@tracer.wrap(service="Publish", resource="get_netex_schema")
 def get_netex_schema() -> etree.XMLSchema:
     """
     Helper method to return netex scheme object
