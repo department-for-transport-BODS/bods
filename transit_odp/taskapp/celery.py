@@ -141,11 +141,11 @@ class CeleryAppConfig(AppConfig):
             "refresh_monthly_breakdown_csv": {
                 "task": PUBLISH_TASKS
                 + "task_generate_monthly_consumer_interaction_breakdowns",
-                "schedule": crontab(minute=40),
+                "schedule": crontab(minute=0, hour=3, day_of_month=1),
             },
             "refresh_weekly_consumer_interactions_stats": {
                 "task": PUBLISH_TASKS + "task_generate_consumer_interaction_stats",
-                "schedule": crontab(minute=55),
+                "schedule": crontab(day_of_week=6, hour=23, minute=0),
             },
             "weekly_post_publishing_checks_report": {
                 "task": AVL_TASKS

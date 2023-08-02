@@ -196,7 +196,7 @@ def test_filter_by_days_of_operation():
                 "Found more than one matching vehicle journey in timetables belonging to a single service code"
             ],
         ),
-        (["vehicle_journeys5.xml", "vehicle_journeys6.xml"], False, []),
+        (["vehicle_journeys5.xml", "vehicle_journeys6.xml"], False, None),
         (
             ["vehicle_journeys4.xml", "vehicle_journeys5.xml"],
             False,
@@ -219,4 +219,7 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
     )
 
     assert return_result == expected_result
-    assert result.errors[ErrorCategory.GENERAL] == expected_error
+    if result.errors is not None:
+        assert result.errors[ErrorCategory.GENERAL] == expected_error
+    else:
+        assert result.errors == expected_error
