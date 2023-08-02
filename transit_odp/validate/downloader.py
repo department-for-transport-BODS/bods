@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import requests
+from ddtrace import tracer
 
 from transit_odp.validate.utils import get_filetype_from_response
 
@@ -110,6 +111,7 @@ class DataDownloader:
             self.raise_for_status(response)
             return response
 
+    @tracer.wrap(service='Publishing', resource='task_download_xml_or_zip_file')
     def get(self, **kwargs) -> DownloaderResponse:
         """Get the response content.
 

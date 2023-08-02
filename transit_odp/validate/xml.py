@@ -5,6 +5,7 @@ from defusedxml import DefusedXmlException
 from defusedxml import ElementTree as detree
 from defusedxml.ElementTree import ParseError
 from lxml import etree
+from ddtrace import tracer
 
 from transit_odp.validate.exceptions import ValidationException
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
@@ -134,7 +135,7 @@ class XMLValidator(FileValidator):
             raise XMLSyntaxError(self.source.name, message=err.msg) from err
         return doc
 
-
+@tracer.wrap(service='Publish', resource='validate_xml_files_in_zip')
 def validate_xml_files_in_zip(zip_file, schema=None):
     """Validate all the xml files in a zip archive."""
     context = DatasetPipelineLoggerContext(component_name="FaresPipeline")
