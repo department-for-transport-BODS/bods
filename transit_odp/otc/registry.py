@@ -191,7 +191,8 @@ class Registry:
 
     def update_to_delete_variations(self, variation: Registration) -> None:
         if variation.effective_date:
-            self.update(variation)
+            if variation.effective_date > date.today():
+                self.update(variation)
 
     def update(self, registration: Registration) -> None:
         """
