@@ -6,11 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('otc', '0009_inactiveservice'),
+        ("otc", "0009_inactiveservice"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='InactiveService',
+            name="InactiveService",
         ),
     ]
