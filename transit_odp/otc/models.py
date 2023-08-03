@@ -10,9 +10,6 @@ from transit_odp.otc.dataclasses import Licence as RegistryLicence
 from transit_odp.otc.dataclasses import LocalAuthority as RegistryLocalAuthority
 from transit_odp.otc.dataclasses import Operator as RegistryOperator
 from transit_odp.otc.dataclasses import Service as RegistryService
-
-# from transit_odp.otc.dataclasses import InactiveService as RegistryInactiveService
-
 from transit_odp.otc.managers import (
     LicenceManager,
     LocalAuthorityManager,
@@ -119,11 +116,3 @@ class LocalAuthority(models.Model):
     class Meta:
         verbose_name_plural = "Local Authorities"
         verbose_name = "Local Authority"
-
-
-class InactiveService(models.Model):
-    registration_number = models.CharField(
-        max_length=20, blank=False, null=False, unique=True
-    )
-    registration_status = models.CharField(max_length=20, blank=True, null=False)
-    effective_date = models.DateField(null=True)
