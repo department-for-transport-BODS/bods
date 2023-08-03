@@ -576,9 +576,6 @@ OTC_API_URL = env(
     "OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice"
 )
 OTC_API_KEY = env("OTC_API_KEY", default="")
-OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA = env.int(
-    "OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA", default=3
-)
 
 # Crispy forms
 # ------------------------------------------------------------------------------
