@@ -95,7 +95,7 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(variation)
-    
+
     @tracer.wrap(service="task_refresh_otc_data", resource="get_variations_since")
     def get_variations_since(self, when: datetime) -> List[Service]:
         """
