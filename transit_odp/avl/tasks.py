@@ -14,6 +14,7 @@ from django.db import transaction
 from django.utils import timezone
 from requests import RequestException
 from urllib3.exceptions import ReadTimeoutError
+from ddtrace import tracer
 
 from transit_odp.avl.archivers import GTFSRTArchiver
 from transit_odp.avl.client import CAVLService
@@ -119,7 +120,12 @@ def task_create_sirivm_zipfile(self):
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:
-        response = requests.get(URL)
+        with tracer.trace(
+            "get_datafeed",
+            service="task_create_sirivm_zipfile",
+            resource="get_cavl_datafeed",
+        ):
+            response = requests.get(URL)
         logger.info(
             f"Request to {URL} took {response.elapsed.total_seconds()} seconds for job-task_create_sirivm_zipfile"
         )
@@ -174,7 +180,12 @@ def task_create_sirivm_tfl_zipfile(self):
     params = {"operatorRef": "TFLO"}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     try:
-        response = requests.get(url, params=params, timeout=30)
+        with tracer.trace(
+            "get_datafeed",
+            service="task_create_sirivm_tfl_zipfile",
+            resource="get_cavl_datafeed",
+        ):
+            response = requests.get(url, params=params, timeout=30)
         logger.info(
             f"Request to cavl took {response.elapsed.total_seconds()} seconds for job-task_create_sirivm_tfl_zipfile"
         )

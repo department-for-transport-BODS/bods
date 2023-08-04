@@ -75,6 +75,7 @@ class ConsumerAPIArchiver:
             )
             return response.content
 
+    @tracer.wrap(service="task_validate_avl_feed", resource="get_file")
     def get_file(self, content):
         start_get_file_op = time.time()
         bytesio = io.BytesIO()
@@ -86,6 +87,7 @@ class ConsumerAPIArchiver:
         )
         return bytesio
 
+    @tracer.wrap(service="task_validate_avl_feed", resource="get_object")
     def get_object(self):
         start_db_op = time.time()
         archive = CAVLDataArchive.objects.filter(data_format=self.data_format).last()
@@ -97,6 +99,7 @@ class ConsumerAPIArchiver:
         )
         return archive
 
+    @tracer.wrap(service="task_validate_avl_feed", resource="save_to_database")
     def save_to_database(self, bytesio):
         start_s3_op = time.time()
         file_ = File(bytesio, name=self.filename)
