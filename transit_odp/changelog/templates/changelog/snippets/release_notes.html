@@ -1,6 +1,37 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "August 2023 (1.28.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            Application monitoring dashboards and alerts to enable the BODS team to effectively investigate and resolve availability incidents.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An enhancement to the location data matching algorithm to exclude duplicate journeys due to service codes.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An enhancement to the logic used to calculate staleness when changes are made to the registration for a service.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the way BODS validates fares files for products that grant access to multiple services.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "July 2023 (1.27.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

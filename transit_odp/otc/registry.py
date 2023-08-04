@@ -6,7 +6,6 @@ from ddtrace import tracer
 from transit_odp.otc.client import OTCAPIClient
 from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
-from transit_odp.otc.models import InactiveService
 
 logger = logging.getLogger(__name__)
 
@@ -96,9 +95,9 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(variation)
-
+    
     @tracer.wrap(service="task_refresh_otc_data", resource="get_variations_since")
-    def get_variations_since(self, when: datetime, services_to_check) -> List[Service]:
+    def get_variations_since(self, when: datetime) -> List[Service]:
         """
         looks up all latest variations since a given date, any variations in the
         RegistrationStatusEnum.to_change() will be looked up again. This leaves both
@@ -107,19 +106,8 @@ class Registry:
         """
         look_up_again = set()
         regs_to_update_lta = []
-        registrations = []
-
-        for reg in self._client.get_latest_variations_by_registration_code(
-            services_to_check
-        ):
-            registrations.append(reg)
-
-        for reg in self._client.get_latest_variations_since(when):
-            if reg not in registrations:
-                registrations.append(reg)
-                regs_to_update_lta.append(reg)
-
-        for registration in registrations:
+        for registration in self._client.get_latest_variations_since(when):
+            regs_to_update_lta.append(registration)
             if registration.registration_status in RegistrationStatusEnum.to_change():
                 look_up_again.add(registration.registration_number)
             else:
@@ -209,12 +197,6 @@ class Registry:
             if variation.effective_date:
                 if variation.effective_date <= date.today():
                     self.update(variation)
-                else:
-                    InactiveService.objects.get_or_create(
-                        registration_number=variation.registration_number,
-                        registration_status=variation.registration_status,
-                        effective_date=variation.effective_date,
-                    )
             else:
                 self.update(variation)
         else:
@@ -223,7 +205,8 @@ class Registry:
     @tracer.wrap(service="otc_jobs", resource="update_to_delete_variations")
     def update_to_delete_variations(self, variation: Registration) -> None:
         if variation.effective_date:
-            self.update(variation)
+            if variation.effective_date > date.today():
+                self.update(variation)
 
     @tracer.wrap(service="otc_jobs", resource="update")
     def update(self, registration: Registration) -> None:
