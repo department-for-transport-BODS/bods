@@ -2,9 +2,8 @@ import json
 import pytest
 from transit_odp.otc.dataclasses import (
     Registration,
-)  # Replace "your_module" with the actual module name
+)
 
-# Test data with valid values for required fields
 test_data_sets = [
     {
         "registrationNumber": "ABC123",
