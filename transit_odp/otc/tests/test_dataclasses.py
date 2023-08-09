@@ -22,34 +22,38 @@ test_data_sets = [
         "otherServiceNumber": "Park & Ride",
     },
     {
-        "registrationNumber": "ABC124",
+        "registrationNumber": "ABC121",
         "variationNumber": 1,
         "operatorId": 123,
         "contactAddress1": "231 Main St",
         "serviceNumber": "642|231,678",
-        "otherServiceNumber": "Park & Ride",
+        "otherServiceNumber": "231|435-456 21",
     },
     {
-        "registrationNumber": "ABC124",
+        "registrationNumber": "ABC125",
         "variationNumber": 1,
         "operatorId": 123,
         "contactAddress1": "231 Main St",
         "serviceNumber": "642|231,678",
-        "otherServiceNumber": "Park & Ride",
+        "otherServiceNumber": "",
     },
     {
-        "registrationNumber": "ABC124",
+        "registrationNumber": "ABC127",
         "variationNumber": 1,
         "operatorId": 123,
         "contactAddress1": "231 Main St",
-        "serviceNumber": "642|231,678",
-        "otherServiceNumber": "Park & Ride",
+        "serviceNumber": "Cotgrave Connection",
+        "otherServiceNumber": "878N 23H 909|POP",
     },
 ]
 
 expected_results = [
     "642",
-    "&|678|Park|231|642|Ride",
+    "642|231|678|Park|&|Ride",
+    "642|231|678|435|456|21",
+    "642|231,678",
+    "Cotgrave|Connection|878N|23H|909|POP",
+
 ]
 
 
