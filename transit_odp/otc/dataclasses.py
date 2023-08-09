@@ -4,9 +4,6 @@ from typing import Optional, List, OrderedDict
 from django.utils.timezone import make_aware
 from pydantic import Field, validator
 from pydantic.main import BaseModel
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class Registration(BaseModel):
@@ -135,11 +132,14 @@ class Registration(BaseModel):
             return numbers
 
         service_numbers = split_at_delimiters(v) if v else []
-        other_service_numbers = split_at_delimiters(other_service_number) if other_service_number else []
+        other_service_numbers = (
+            split_at_delimiters(other_service_number) if other_service_number else []
+        )
 
-        combined_service_numbers = list(OrderedDict.fromkeys(service_numbers + other_service_numbers))
+        combined_service_numbers = list(
+            OrderedDict.fromkeys(service_numbers + other_service_numbers)
+        )
         result = "|".join(combined_service_numbers)
-
         return result
 
 

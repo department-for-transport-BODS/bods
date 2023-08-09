@@ -1,4 +1,3 @@
-import json
 import pytest
 from transit_odp.otc.dataclasses import (
     Registration,
@@ -53,7 +52,6 @@ expected_results = [
     "642|231|678|435|456|21",
     "642|231,678",
     "Cotgrave|Connection|878N|23H|909|POP",
-
 ]
 
 
