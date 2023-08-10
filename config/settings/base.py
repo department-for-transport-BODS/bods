@@ -500,12 +500,12 @@ FEED_MONITOR_MAX_RETRY_ATTEMPTS = env(
 # NAPTAN import URL
 NAPTAN_IMPORT_URL = env(
     "NAPTAN_IMPORT_URL",
-    default="https://beta-naptan.dft.gov.uk/Download/File/NaPTAN.xml",
+    default="https://naptan.api.dft.gov.uk/v1/access-nodes?dataFormat=XML",
 )
 
 # NPTG import URL
 NPTG_IMPORT_URL = env(
-    "NPTG_IMPORT_URL", default="https://beta-naptan.dft.gov.uk/Download/File/NPTG.xml"
+    "NPTG_IMPORT_URL", default="https://naptan.api.dft.gov.uk/v1/nptg"
 )
 
 # Google Analytics Key
