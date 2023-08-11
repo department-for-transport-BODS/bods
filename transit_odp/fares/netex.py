@@ -259,7 +259,6 @@ class NeTExDocument:
 def get_documents_from_zip(zipfile_):
     """Returns a list NeTExDocuments from a zip file."""
     from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
-
     docs = []
     with zipfile.ZipFile(zipfile_) as zout:
         filenames = [name for name in zout.namelist() if name.endswith("xml")]

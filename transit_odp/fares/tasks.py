@@ -67,9 +67,9 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
-        task_run_fares_validation(task.id)
-        if is_fares_validator_active:
-            task_set_fares_validation_result(task.id)
+        # task_run_fares_validation(task.id)
+        # if is_fares_validator_active:
+        #     task_set_fares_validation_result(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
