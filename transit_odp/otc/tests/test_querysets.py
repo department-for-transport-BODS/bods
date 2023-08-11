@@ -1,4 +1,5 @@
 import pytest
+from django.db.models.expressions import datetime
 
 from transit_odp.organisation.factories import (
     DatasetFactory,
@@ -17,8 +18,13 @@ from transit_odp.otc.constants import (
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
 )
-from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
+from transit_odp.otc.factories import (
+    LicenceModelFactory,
+    OperatorModelFactory,
+    ServiceModelFactory,
+)
 from transit_odp.otc.models import Licence
+from transit_odp.otc.models import Operator as OTCOperator
 from transit_odp.otc.models import Service as OTCService
 
 pytestmark = pytest.mark.django_db
@@ -243,3 +249,24 @@ def test_get_missing_from_organisation():
     assert queryset.count() == len(expected_missing_service_codes)
     otc_service_codes = [s.service_code for s in queryset]
     assert sorted(otc_service_codes) == sorted(expected_missing_service_codes)
+
+
+def test_get_otc_organisation_name():
+    licence_number = "PD0000099"
+    otc_operator_name = "test_org_1"
+    num_otc_services = 10
+    service_codes = [f"{licence_number}:{n}" for n in range(num_otc_services)]
+    service_numbers = [f"Line{n}" for n in range(num_otc_services)]
+
+    otc_lic = LicenceModelFactory(number=licence_number)
+    otc_operator = OperatorModelFactory(operator_id=1, operator_name=otc_operator_name)
+    ServiceModelFactory(
+        operator=otc_operator,
+        licence=otc_lic,
+        registration_number=service_codes[0],
+        service_number=service_numbers[0],
+        effective_date=datetime.datetime(2023, 6, 24),
+    )
+
+    operator_name = OTCOperator.objects.get_otc_organisation_name(licence_number)
+    assert operator_name == otc_operator_name

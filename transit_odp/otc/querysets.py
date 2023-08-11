@@ -381,6 +381,26 @@ class OperatorQuerySet(QuerySet):
     def add_service_count(self):
         return self.annotate(service_count=Count("services"))
 
+    def get_otc_organisation_name(self, licence_number):
+        from transit_odp.otc.models import Licence as OTCLicence
+        from transit_odp.otc.models import Service as OTCService
+
+        try:
+            licence_subquery = OTCLicence.objects.filter(
+                number=licence_number
+            ).values_list("id", flat=True)
+            otc_operator_ids = OTCService.objects.filter(
+                licence_id__in=licence_subquery
+            ).values_list("operator_id", flat=True)
+
+            return (
+                self.filter(operator_id__in=otc_operator_ids)
+                .values_list("operator_name", flat=True)
+                .first()
+            )
+        except (OTCLicence.DoesNotExist, OTCService.DoesNotExist):
+            return None
+
 
 class LocalAuthorityQuerySet(QuerySet):
     pass
