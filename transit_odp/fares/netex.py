@@ -274,11 +274,14 @@ def get_documents_from_zip(zipfile_):
 
 def get_documents_from_file(source) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
+    from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
     if zipfile.is_zipfile(source):
         return get_documents_from_zip(source)
     else:
         doc = NeTExDocument(source)
-        return [doc]
+        extractor = NeTExDocumentsExtractor([doc])
+        extracted_data = extractor.to_dict()
+        return extracted_data
 
 
 def get_netex_schema() -> etree.XMLSchema:
