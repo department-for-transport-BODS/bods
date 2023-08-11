@@ -1,6 +1,7 @@
 import logging
 import uuid
 import zipfile
+import sys
 
 from celery import shared_task
 from django.conf import settings
@@ -213,19 +214,19 @@ def task_run_fares_etl(task_id):
     adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
-    docs = get_documents_from_file(file_)
+    extracted_data = get_documents_from_file(file_)
 
     task.update_progress(60)
-    try:
-        adapter.info("Creating fares extractor.")
-        extractor = NeTExDocumentsExtractor(docs)
-        extracted_data = extractor.to_dict()
-    except ExtractionError as exc:
-        adapter.error("Metadata extraction failed.", exc_info=True)
-        task.to_error("dataset_etl", exc.code)
-        raise PipelineException(exc.message) from exc
-    except Exception as exc:
-        task.handle_general_pipeline_exception(exc, adapter)
+    # try:
+    #     adapter.info("Creating fares extractor.")
+    #     extractor = NeTExDocumentsExtractor(docs)
+    #     extracted_data = extractor.to_dict()
+    # except ExtractionError as exc:
+    #     adapter.error("Metadata extraction failed.", exc_info=True)
+    #     task.to_error("dataset_etl", exc.code)
+    #     raise PipelineException(exc.message) from exc
+    # except Exception as exc:
+    #     task.handle_general_pipeline_exception(exc, adapter)
 
     task.update_progress(70)
     try:

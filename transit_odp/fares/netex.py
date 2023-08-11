@@ -11,6 +11,7 @@ from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.validate import XMLValidator
 
+
 _NETEX_NAMESPACE_PREFIX = "netex"
 _NETEX_NAMESPACE = "http://www.netex.org.uk/netex"
 NETEX_SCHEMA_URL = "http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd"
@@ -255,8 +256,10 @@ class NeTExDocument:
         return refs
 
 
-def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
+def get_documents_from_zip(zipfile_):
     """Returns a list NeTExDocuments from a zip file."""
+    from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
+
     docs = []
     with zipfile.ZipFile(zipfile_) as zout:
         filenames = [name for name in zout.namelist() if name.endswith("xml")]
@@ -264,16 +267,22 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
             if not name.startswith("__"):
                 with zout.open(name) as xmlout:
                     docs.append(NeTExDocument(xmlout))
-    return docs
+    extractor = NeTExDocumentsExtractor(docs)
+    extracted_data = extractor.to_dict()
+    return extracted_data
 
 
 def get_documents_from_file(source) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
+    from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
+
     if zipfile.is_zipfile(source):
         return get_documents_from_zip(source)
     else:
         doc = NeTExDocument(source)
-        return [doc]
+        extractor = NeTExDocumentsExtractor([doc])
+        extracted_data = extractor.to_dict()
+        return extracted_data
 
 
 def get_netex_schema() -> etree.XMLSchema:
