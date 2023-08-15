@@ -1,0 +1,23 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+
+{% block help_heading %}
+    {% trans "SIRI-SX" %}
+{% endblock %}
+
+{% block help_content %}
+    <p class="govuk-body">
+        {% blocktrans %}
+            The Service Interface for Real-time Information (SIRI) specifies a European
+            interface standard for exchanging information about the planned, current or
+            projected performance of real-time public transport operations between different
+            computer systems. The latest UK profile of SIRI can be found
+        {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% trans 'More information on this can be ' %}
+        <a class="govuk-link" href="http://siri.org.uk/schema/schemas.htm" target="_blank">
+            {% trans 'found here' %}
+        </a>.
+    </p>
+{% endblock %}
