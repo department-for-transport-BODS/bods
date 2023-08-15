@@ -1,4 +1,3 @@
-from transit_odp.organisation.constants import DatasetType
 from transit_odp.browse.views.base_views import BaseTemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
