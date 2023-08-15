@@ -1,9 +1,240 @@
 openapi: 3.0.3
 info:
-  title: $Title$
-  description: $Title$
+  description:
+    You can use the interactive documentation
+    to customise your API response using the available query parameters.
+    If you are registered and logged in, you will be given a full response.
+    Otherwise you will be given an example response.
+
+    <h1>Ready to use the API?</h1>
+
+    <a href="/guidance/requirements/?section=api">
+      View developer documentation
+    </a>
+
+    <h1>First time API user?</h1>
+
+    <a href="/guide-me">
+    Guide Me
+    </a>
+
+  title: Disruptions data API
+
   version: 1.0.0
+
 servers:
-  - url: '$https$'
+     - url: "/api/v1/"
+
+tags:
+  - name: SIRI-SX Disruptions
+
 paths:
-  $END$
+  /siri-sx:
+    get:
+      tags:
+        - SIRI-SX Disruptions
+      description: Returns all disruptions
+      responses:
+        200:
+          description: Successfully retrieved all disruptions.
+          content:
+            text/xml:
+              schema:
+                $ref: "#/components/schemas/Siri"
+        403:
+          description: Not authorised
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    Siri:
+      type: object
+      properties:
+        version:
+          type: string
+          example: "2.0"
+          xml:
+            attribute: true
+        xmlns:xsi:
+          type: string
+          example: "http://www.w3.org/2001/XMLSchema-instance"
+          xml:
+            attribute: true
+        xsi:schemaLocation:
+          type: string
+          example: "http://www.siri.org.uk/siri http://www.siri.org.uk/schema/2.0/xsd/siri.xsd"
+          xml:
+            attribute: true
+        ServiceDelivery:
+          type: object
+          properties:
+            ResponseTimestamp:
+              type: string
+              format: date-time
+              example: "2023-05-17T13:59:52.379Z"
+            ProducerRef:
+              type: string
+              example: "Department For Transport"
+            ResponseMessageIdentifier:
+              type: string
+              example: "8e2622ab-38a3-4fcb-b0d0-c083e2234ff6"
+            SituationExchangeDelivery:
+              type: object
+              properties:
+                ResponseTimeStamp:
+                  type: string
+                  format: date-time
+                  example: "2023-05-17T13:59:52.379Z"
+                Situations:
+                  type: object
+                  properties:
+                    PtSituationElement:
+                      type: object
+                      properties:
+                        CreationTime:
+                          type: string
+                          format: datetime
+                          example: "2023-05-17T13:59:52.379Z"
+                        ParticipantRef:
+                          type: string
+                          example: "TfGM"
+                        SituationNumber:
+                          type: string
+                          example: "3e0ae948-0d5c-4ba0-a799-59b568e4009b"
+                        Source:
+                          type: object
+                          properties:
+                            SourceType:
+                              type: string
+                              example: "feed"
+                            TimeOfCommunication:
+                              type: string
+                              format: datetime
+                              example: "2023-05-17T13:59:52.379Z"
+                        Progress:
+                          type: string
+                          example: "open"
+                        ValidityPeriod:
+                          type: object
+                          properties:
+                            StartTime:
+                              type: string
+                              format: datetime
+                              example: "2023-05-17T13:59:52.379Z"
+                            EndTime:
+                              type: string
+                              format: datetime
+                              example: "2023-05-18T13:59:52.379Z"
+                        PublicationWindow:
+                          type: object
+                          properties:
+                            StartTime:
+                              type: string
+                              format: datetime
+                              example: "2023-05-17T13:59:52.379Z"
+                            EndTime:
+                              type: string
+                              format: datetime
+                              example: "2023-05-18T13:59:52.379Z"
+                        EquipmentReason:
+                          type: string
+                          example: "constructionWork"
+                        Planned:
+                          type: boolean
+                          example: true
+                        Summary:
+                          type: string
+                          example: "Example summary of construction work"
+                        Description:
+                          type: string
+                          example: "Example description of construction work"
+                        Consequences:
+                          type: object
+                          properties:
+                            Consequence:
+                              type: object
+                              properties:
+                                Condition:
+                                  type: string
+                                  example: "unknown"
+                                Severity:
+                                  type: string
+                                  example: "normal"
+                                Affects:
+                                  type: object
+                                  properties:
+                                    Networks:
+                                      type: object
+                                      properties:
+                                        VehicleMode:
+                                          type: string
+                                          example: "bus"
+                                        AffectedLine:
+                                          type: object
+                                          properties:
+                                            AffectedOperator:
+                                              type: object
+                                              properties:
+                                                OperatorRef:
+                                                  type: string
+                                                  example: "SWIG"
+                                                OperatorName:
+                                                  type: string
+                                                  example: "Stagecoach"
+                                            LineRef:
+                                              type: number
+                                              example: 1
+                                    StopPoints:
+                                      type: object
+                                      properties:
+                                        AffectedStopPoint:
+                                          type: object
+                                          properties:
+                                            StopPointRef:
+                                              type: string
+                                              example: "1800WK05651"
+                                            StopPointName:
+                                              type: string
+                                              example: "Alexandra Park"
+                                            Location:
+                                              type: object
+                                              properties:
+                                                Longitude:
+                                                  type: string
+                                                  example: "-2.653355"
+                                                Latitude:
+                                                  type: string
+                                                  example: "53.53653"
+                                            AffectedModes:
+                                              type: object
+                                              properties:
+                                                Mode:
+                                                  type: object
+                                                  properties:
+                                                    VehicleMode:
+                                                      type: string
+
+                                                      example: "bus"
+                                Advice:
+                                  type: object
+                                  properties:
+                                    Details:
+                                      type: string
+                                      example: "Use alternative bus routes"
+                                Blocking:
+                                  type: object
+                                  properties:
+                                    JourneyPlanner:
+                                      type: boolean
+                                      example: false
+      xml:
+        namespace: "http://www.siri.org.uk/siri"
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Forbidden"
