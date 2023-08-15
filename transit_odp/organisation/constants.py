@@ -60,6 +60,7 @@ class DatasetType(int, ChoiceEnum):
     TIMETABLE = 1
     AVL = 2
     FARES = 3
+    DISRUPTION = 4
 
 
 TimetableType = DatasetType.TIMETABLE.value

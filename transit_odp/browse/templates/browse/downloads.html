@@ -144,8 +144,8 @@
      <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">
-                <a class="govuk-link" href=""
-                    onClick="">
+                <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}"
+                onClick="addGATagEvent('disruptions')">
                     {% trans 'Disruptions data' %}
                 </a>
             </p>
