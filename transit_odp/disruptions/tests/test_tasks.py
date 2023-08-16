@@ -21,7 +21,7 @@ def test_task_create_sirisx_zipfile(mrequests, marchive):
 
 @patch("transit_odp.disruptions.tasks.DisruptionsDataArchive")
 @patch("transit_odp.disruptions.tasks.requests")
-def test_task_create_sirivm_zipfile_exception(mrequests, marchive):
+def test_task_create_sirisx_zipfile_exception(mrequests, marchive):
     mrequests.get.side_effect = RequestException
     task_create_sirisx_zipfile()
     assert not marchive.objects.objects.last.called
