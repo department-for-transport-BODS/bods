@@ -20,7 +20,10 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models import Dataset
 from transit_odp.otc.factories import ServiceModelFactory
 from transit_odp.otc.models import Service
-from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
+from transit_odp.timetables.csv import (
+    _get_timetable_catalogue_dataframe,
+    add_operator_name,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -110,7 +113,8 @@ def test_service_in_otc_and_not_in_bods():
     TXCFileAttributesFactory.create_batch(5)
 
     df = _get_timetable_catalogue_dataframe()
-    for index, row in df[5:].iterrows():
+
+    for _, row in df[5:].iterrows():
         service = Service.objects.get(
             registration_number=row["OTC Registration Number"]
         )
@@ -135,6 +139,55 @@ def test_service_in_otc_and_not_in_bods():
         assert row["Received Date"] == service.received_date
         assert row["Service Type Other Details"] == service.service_type_other_details
         assert row["Requires Attention"] == "Yes"
+        # Test organisation name when status is unpublished:
+        assert row["Organisation Name"] == operator.operator_name
+
+
+def test_no_organisation_name():
+    """
+    Testing when there is no organisation name and
+    no operator name (not in otc, nor published to bods),
+    then "Organisation not yet created" should be returned.
+    """
+    row = {
+        "registration_number": float("nan"),
+        "service_type_description": float("nan"),
+        "variation_number": None,
+        "service_number": float("nan"),
+        "start_point": float("nan"),
+        "finish_point": float("nan"),
+        "via": float("nan"),
+        "effective_date": float("nan"),
+        "received_date": float("nan"),
+        "service_type_other_details": float("nan"),
+        "service_code": "GPtw",
+        "otc_operator_id": None,
+        "operator_name": float("nan"),
+        "address": float("nan"),
+        "otc_licence_number": float("nan"),
+        "licence_status": float("nan"),
+        "expiry_date": float("nan"),
+        "granted_date": float("nan"),
+        "filename": "along.xml",
+        "licence_number": "PF0002280",
+        "modification_datetime": "1983-08-22 18:02:19+00:00",
+        "national_operator_code": "HDHY",
+        "public_use": True,
+        "operating_period_start_date": "1979-12-28",
+        "operating_period_end_date": "1999-11-08",
+        "revision_number": 0,
+        "origin": "New Rebeccatown",
+        "destination": "Lake Benjamin",
+        "bods_compliant": "YES",
+        "score": None,
+        "dataset_id": 5,
+        "last_updated_date": "2023-08-14 17:10:02.004800+00:00",
+        "organisation_name": float("nan"),
+        "string_lines": "line1 line2, into a row (data type series) in a pandas",
+    }
+
+    organisation_name = add_operator_name(row)
+    assert organisation_name == "Organisation not yet created"
 
 
 def test_unregistered_services_in_bods():
@@ -392,9 +445,11 @@ def test_stale_12_months_old(effective, modified, period_end, is_stale):
     (
         # associated data No and today < effective stale date
         ("2023-04-01", "2023-01-01", "2025-01-01", "2022-01-01", False),
-        # operating period start = effective date, so association data Yes and today < effective stale date
+        # operating period start = effective date, so association data Yes
+        # and today < effective stale date
         ("2023-04-01", "2023-01-01", "2025-01-01", "2023-04-01", False),
-        # last modified date > associatoin date , so association data Yes and today > effective stale date
+        # last modified date > associatoin date , so association data Yes
+        # and today > effective stale date
         ("2023-03-01", "2023-02-01", "2025-01-01", "2023-01-01", False),
         # associated data No and today > effective stale date
         ("2023-03-01", "2022-12-01", "2025-01-01", "2023-01-01", True),
