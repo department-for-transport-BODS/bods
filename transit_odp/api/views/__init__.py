@@ -20,5 +20,5 @@ __all__ = [
     "FaresOpenApiView",
     "TimetablesApiView",
     "TimetablesViewSet",
-    "DisruptionsOpenApiView"
+    "DisruptionsOpenApiView",
 ]

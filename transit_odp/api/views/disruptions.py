@@ -16,20 +16,20 @@ logger = logging.getLogger(__name__)
 
 class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
     """View for Disruptions SIRI API."""
+
     template_name = "swagger_ui/disruptions.html"
 
 
 class DisruptionsApiView(views.APIView):
     """APIView for returning SIRI SX XML from the consumer API."""
+
     permission_classes = (IsAuthenticated,)
     renderer_classes = (XMLRender,)
 
     def get(self, format=None):
         """Get SIRI SX response from consumer API."""
         url = settings.SIRI_API_URL
-        headers = {
-            "x-api-key": settings.SIRI_API_KEY
-        }
+        headers = {"x-api-key": settings.SIRI_API_KEY}
         content, status_code = _get_consumer_api_response(url, headers)
         return Response(content, status=status_code, content_type="text/xml")
 

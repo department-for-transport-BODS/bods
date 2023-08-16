@@ -579,9 +579,7 @@ OTC_API_KEY = env("OTC_API_KEY", default="")
 
 # Disruptions API
 # ------------------------------------------------------------------------------
-SIRI_API_URL = env(
-    "SIRI_API_URL", default=""
-)
+SIRI_API_URL = env("SIRI_API_URL", default="")
 SIRI_API_KEY = env("SIRI_API_KEY", default="")
 
 # Crispy forms

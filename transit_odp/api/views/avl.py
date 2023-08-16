@@ -150,5 +150,3 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
         response_status = status.HTTP_200_OK
 
     return content, response_status
-
-

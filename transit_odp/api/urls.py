@@ -38,7 +38,11 @@ urlpatterns = [
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
     path("buslocation-openapi/", AVLOpenApiView.as_view(), name="avlopenapi"),
     path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi"),
-    path("disruptions-openapi/", DisruptionsOpenApiView.as_view(), name="disruptionsopenapi"),
+    path(
+        "disruptions-openapi/",
+        DisruptionsOpenApiView.as_view(),
+        name="disruptionsopenapi",
+    ),
     path("app/", include("transit_odp.api.app.urls")),
     path("v1/", include(router_v1.urls)),
     path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
