@@ -88,6 +88,9 @@ AWS_BUCKET_ACL = None
 # Bucket for SIRI VM cached files
 AWS_SIRIVM_STORAGE_BUCKET_NAME = env("DJANGO_AWS_SIRIVM_STORAGE_BUCKET_NAME")
 
+# Bucket for SIRI SX cached files
+AWS_SIRISX_STORAGE_BUCKET_NAME = env("DJANGO_AWS_SIRISX_STORAGE_BUCKET_NAME")
+
 
 # STATIC
 # ------------------------

@@ -170,6 +170,7 @@ LOCAL_APPS = [
     "transit_odp.users.apps.UsersAppConfig",
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
+    "transit_odp.disruptions.apps.DisruptionsConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -517,6 +518,11 @@ CAVL_URL = env("CAVL_URL")
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
 CAVL_VALIDATION_URL = env("CAVL_VALIDATION_URL")
 AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
+
+# Disruptions
+# ------------------------------------------------------------------------------
+DISRUPTIONS_API_URL = env("DISRUPTIONS_API_URL")
+DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY")
 
 # ITO GTFS Files
 # ------------------------------------------------------------------------------
