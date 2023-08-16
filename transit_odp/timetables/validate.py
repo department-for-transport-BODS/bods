@@ -24,6 +24,7 @@ CREATION_DATETIME_OBSERVATION = Observation(
         "published in BODS."
     ),
     category="Versioning",
+    condition="",
     reference="2.3",
     context="@CreationDateTime",
     number=0,
@@ -37,6 +38,7 @@ REVISION_NUMBER_OBSERVATION = Observation(
         "RevisionNumber for the dataset in BODS."
     ),
     category="Versioning",
+    condition="",
     reference="2.3",
     context="@RevisionNumber",
     number=0,
