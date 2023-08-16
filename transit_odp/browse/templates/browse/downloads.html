@@ -159,11 +159,19 @@
                     <b>{% trans 'Format' %}:</b>
                     {% trans 'SIRI-SX File' %} {% include "browse/snippets/help_modals/sirisx.html" %}
                 </li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
                 <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus, Tram, Light Rail' %}</li>
+                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
                 <li>
                     <b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Every minute Coverage: North of England (Greater Manchester, Merseyside, South Yorkshire, North Yorkshire, Nexus) Source: Local Authority' %}
+                    {% trans 'Every minute' %}
+                </li>
+                <li>
+                    <b>{% trans 'Coverage' %}:</b>
+                    {% trans 'North of England (Greater Manchester, Merseyside, South Yorkshire, North Yorkshire, Nexus)' %}
+                </li>
+                <li>
+                    <b>{% trans 'Source' %}:</b>
+                    {% trans 'Local Authority' %}
                 </li>
             </ul>
         </div>
