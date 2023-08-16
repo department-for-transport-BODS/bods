@@ -46,6 +46,11 @@
                     {% filter force_escape %}{% trans 'Fares data API' %}{% endfilter %}
                 </a>
             </li>
+             <li class="govuk-!-margin-bottom-4">
+                <a class="govuk-link-bold" href="{% url 'api:disruptionsopenapi' host hosts.data %}">
+                    {% filter force_escape %}{% trans 'Disruptions data API' %}{% endfilter %}
+                </a>
+            </li>
         </ul>
     </div>
 {% endblock %}

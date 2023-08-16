@@ -577,6 +577,13 @@ OTC_API_URL = env(
 )
 OTC_API_KEY = env("OTC_API_KEY", default="")
 
+# Disruptions API
+# ------------------------------------------------------------------------------
+SIRI_API_URL = env(
+    "SIRI_API_URL", default=""
+)
+SIRI_API_KEY = env("SIRI_API_KEY", default="")
+
 # Crispy forms
 # ------------------------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = (
@@ -636,3 +643,15 @@ if LOG_LEVEL:
             },
         },
     }
+
+    # DATABASES
+
+    # ------------------------------------------------------------------------------
+
+    # https://docs.djangoproject.com/en/dev/ref/settings/#databases
+
+    DATABASES = {
+        "default": {"ENGINE": "django.contrib.gis.db.backends.postgis", "NAME": "transit_odp", "USER": "transit_odp",
+                    "PASSWORD": "transit_odp", "HOST": "postgres", "PORT": "5432", }}
+
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True
