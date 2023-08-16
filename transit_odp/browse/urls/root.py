@@ -115,6 +115,7 @@ urlpatterns = [
     path("timetable/", include("transit_odp.browse.urls.timetables")),
     path("avl/", include("transit_odp.browse.urls.avl")),
     path("fares/", include("transit_odp.browse.urls.fares")),
+    path("disruptions/", include("transit_odp.browse.urls.disruptions")),
     path("account/", include("config.urls.allauth")),
     path(
         "account/",

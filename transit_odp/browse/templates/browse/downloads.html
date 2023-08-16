@@ -144,8 +144,8 @@
      <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">
-                <a class="govuk-link" href=""
-                    onClick="">
+                <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}"
+                onClick="addGATagEvent('disruptions')">
                     {% trans 'Disruptions data' %}
                 </a>
             </p>
@@ -163,7 +163,7 @@
                 <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus, Tram, Light Rail' %}</li>
                 <li>
                     <b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Every 5 minutes Coverage: North of England (Greater Manchester, Merseyside, South Yorkshire, North Yorkshire, Nexus) Source: Local Authority' %}
+                    {% trans 'Every minute Coverage: North of England (Greater Manchester, Merseyside, South Yorkshire, North Yorkshire, Nexus) Source: Local Authority' %}
                 </li>
             </ul>
         </div>
