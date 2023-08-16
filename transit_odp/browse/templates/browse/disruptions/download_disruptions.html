@@ -5,13 +5,13 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-    {% trans 'All fares data' %}
+    {% trans 'All disruption data' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
-    {% breadcrumb 'All Fares Data' %}
+    {% breadcrumb 'All Disruption Data' %}
 {% endblock %}
 
 {% block heading.title.text %}{% trans 'All disruption data' %}{% endblock %}

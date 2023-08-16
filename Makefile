@@ -15,6 +15,9 @@ kill:
 logs-%:
 	docker logs -f bods-$*-1
 
+restart-%:
+	docker restart bods-$*-1
+
 COMMAND ?= sh
 
 exec-%:
@@ -31,3 +34,9 @@ test-%:
 
 all-tests:
 	docker exec -it bods-django-1 pytest --no-cov --disable-warnings
+
+lint:
+	docker exec -it bods-django-1 black --check --config .black.toml .
+
+lint-fix:
+	docker exec -it bods-django-1 black --config .black.toml .
