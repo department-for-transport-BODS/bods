@@ -519,11 +519,6 @@ CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
 CAVL_VALIDATION_URL = env("CAVL_VALIDATION_URL")
 AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
 
-# Disruptions
-# ------------------------------------------------------------------------------
-DISRUPTIONS_API_URL = env("DISRUPTIONS_API_URL")
-DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY")
-
 # ITO GTFS Files
 # ------------------------------------------------------------------------------
 
@@ -582,6 +577,11 @@ OTC_API_URL = env(
     "OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice"
 )
 OTC_API_KEY = env("OTC_API_KEY", default="")
+
+# Disruptions API
+# ------------------------------------------------------------------------------
+DISRUPTIONS_API_URL = env("DISRUPTIONS_API_URL", default="")
+DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 
 # Crispy forms
 # ------------------------------------------------------------------------------
