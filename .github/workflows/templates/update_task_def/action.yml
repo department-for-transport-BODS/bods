@@ -31,4 +31,3 @@ runs:
         aws ecs register-task-definition --cli-input-json file://${{ github.workspace }}/task-definition.json
         def_arn=$( aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition.taskDefinitionArn --output text )
         aws ecs update-service --cluster $CLUSTER --service ${{ inputs.service }} --task-definition $def_arn
-        aws ecs wait services-stable --cluster $CLUSTER --services ${{ inputs.service }}
