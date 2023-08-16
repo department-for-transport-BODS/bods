@@ -1,4 +1,4 @@
-pyen# Prerequisites
+# Prerequisites
 
 Write prerequisite section describing the required tools.
 E.g. Docker/Docker Compose, pipenv, npm, Black, etc.

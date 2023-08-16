@@ -22,7 +22,6 @@ app_name = "api"
 router_v1 = DefaultRouter()
 router_v1.register(r"dataset", TimetablesViewSet, "feed")
 router_v1.register(r"fares/dataset", FaresDatasetViewset, "fares-api")
-# TODO DISRUPTIONS - add api url for disruptions here
 
 router_v2 = DefaultRouter()
 router_v2.register(r"operators", viewset=v2.OperatorViewSet, basename="operators")
