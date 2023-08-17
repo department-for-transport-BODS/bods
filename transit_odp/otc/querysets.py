@@ -394,7 +394,7 @@ class OperatorQuerySet(QuerySet):
             ).values_list("operator_id", flat=True)
 
             return (
-                self.filter(operator_id__in=otc_operator_ids)
+                self.filter(id__in=otc_operator_ids)
                 .values_list("operator_name", flat=True)
                 .first()
             )
