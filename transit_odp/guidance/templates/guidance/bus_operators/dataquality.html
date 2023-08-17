@@ -467,16 +467,45 @@
         </p>
         <p class="govuk-body govuk-!-margin-bottom-0">
             {% blocktrans trimmed %}
-                Using OperatorRef and LineRef from the SIRI data locate the TxC files that contain data for the operator and line.
-                There may be multiple files.Check which of the files contain data valid for the date of the SIRI data.
+                1.1: Using OperatorRef and LineRef from the SIRI data locate the TxC files that contain data for the operator and line.
+                There may be multiple files.
+            {% endblocktrans %}
+        </p>
+        <p class="govuk-body govuk-!-margin-bottom-0">
+            {% blocktrans trimmed %}
+                1.2: Check which of the files contain data valid for the date of the SIRI data.
                 This will require checking the OperatingPeriod to find data which is valid for the date being tested.
             {% endblocktrans %}
-            <ul class="govuk-list govuk-list--alpha">
+        </p>
+        <p class="govuk-body govuk-!-margin-bottom-0">
+            {% blocktrans trimmed %}
+                1.3: If there is more than one data set with a file with a TXC that contains the OperatorRef and LineRef then stop processing.
+            {% endblocktrans %}
+            <ul class="govuk-list govuk-list--number">
+                <li class="govuk-body govuk-!-padding-left-5">
+                    {% trans "If files are found in more than one dataset then stop processing." %}
+                </li>
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If file(s) found, continue to step 2." %}
                 </li>
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
+                    <ul class="govuk-list govuk-list--alpha">
+                        <li class="govuk-body govuk-!-padding-left-5">
+                            {% trans "Errors for this step" %}
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li class="govuk-body govuk-!-padding-left-5">
+                                    1.1: "No published TXC files found matching NOC {noc} and line name {line_name}"
+                                </li>
+                                <li class="govuk-body govuk-!-padding-left-5">
+                                    1.2: “No timetables found with VehicleActivity date in OperatingPeriod”
+                                </li>
+                                <li class="govuk-body govuk-!-padding-left-5">
+                                    1.3: "Matched OperatorRef and LineRef in more than one dataset"
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </p>
@@ -488,15 +517,25 @@
         </p>
         <p class="govuk-body govuk-!-margin-bottom-0">
             {% blocktrans trimmed %}
-                From the Step 1 subset of TxC files search each file for any that contain a JourneyCode that matches with the
+                2.1: From the Step 1 subset of TxC files search each file for any that contain a JourneyCode that matches with the
                 DatedVehicleJourneyRef from the SIRI journey.
             {% endblocktrans %}
-            <ul class="govuk-list govuk-list--alpha">
+            <ul class="govuk-list govuk-list--number">
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If file(s) found with matching JourneyCodes, continue to step 3." %}
                 </li>
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
+                    <ul class="govuk-list govuk-list--alpha">
+                        <li class="govuk-body govuk-!-padding-left-5">
+                            {% trans "Errors for this step" %}
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li class="govuk-body govuk-!-padding-left-5">
+                                    2.1: “No vehicle journeys found with JourneyCode {vehicle_journey_ref}“
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </p>
@@ -508,15 +547,25 @@
         </p>
         <p class="govuk-body govuk-!-margin-bottom-0">
             {% blocktrans trimmed %}
-                From the Step 2 subset of TxC files search each file for an OperatingProfile that is appropriate
+                3.1: From the Step 2 subset of TxC files search each file for an OperatingProfile that is appropriate
                 for the date of the SIRI data - type of day for date being tested. For example 1 April 2022 was a Friday.
             {% endblocktrans %}
-            <ul class="govuk-list govuk-list--alpha">
+            <ul class="govuk-list govuk-list--number">
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If file(s) found with a matching OperatingProfile, continue to step 4." %}
                 </li>
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If no matching OperatingProfile is found, then mark the vehicle journey as failed to be analysed." %}
+                    <ul class="govuk-list govuk-list--alpha">
+                        <li class="govuk-body govuk-!-padding-left-5">
+                            {% trans "Errors for this step" %}
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li class="govuk-body govuk-!-padding-left-5">
+                                    3.1: "No vehicle journeys found with OperatingProfile applicable to VehicleActivity date"
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </p>
@@ -548,14 +597,13 @@
         </p>
         <p class="govuk-body">
             {% blocktrans trimmed %}
-                You will have only one file when you reach this Step.
+                There may be more than one matching JourneyCode within a TxC
+                if it is used for example for journeys operating on weekdays and weekends, or those relating to a serviced organisation.
             {% endblocktrans %}
         </p>
         <p class="govuk-body">
             {% blocktrans trimmed %}
-                There may be more than one matching JourneyCode within a TxC
-                if it is used for example for journeys operating on weekdays and weekends, or those relating to a serviced organisation.
-                Search within the file to find the JourneyCode(s) with an OperatingProfile that is valid for the date being tested.
+                5.1: Search within the file to find the JourneyCode(s) with an OperatingProfile that is valid for the date being tested.
                 For those journeys which reference a serviced organisation, the logic will establish whether the ServicedOrganisation is
                 working on the day of the Siri journey to find the appropriate instance of the JourneyCode.
             {% endblocktrans %}
@@ -568,15 +616,43 @@
         </p>
         <p class="govuk-body">
             {% blocktrans trimmed %}
-                If the serviced organisation is not working on that day, there should be only one JourneyCode with the combination
+                5.2: If the serviced organisation is not working on that day, there should be only one JourneyCode with the combination
                 of the operating profile, ServicedOrganisation and DaysofNonOperation.
             {% endblocktrans %}
-            <ul class="govuk-list govuk-list--alpha">
+        </p>
+        <p class="govuk-body">
+            {% blocktrans trimmed %}
+                5.3: If there is no serviced organisation data for the JourneyCode with an appropriate operating profile, there should be only one JourneyCode.
+            {% endblocktrans %}
+            <ul class="govuk-list govuk-list--number">
                 <li class="govuk-body govuk-!-padding-left-5">
                     {% trans "If a single JourneyCode is identified, move to step 6." %}
                 </li>
                 <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If there is more than one valid JourneyCode found, mark the vehicle journey as failed to be analysed." %}
+                    {% trans "If there is more than one valid JourneyCode found, and" %}
+                    <ul class="govuk-list govuk-list--alpha">
+                        <li class="govuk-body govuk-!-padding-left-5">
+                            If there is only one TxC that is found at this point, then mark the vehicle journey as failed to be analysed.
+                        </li>
+                        <li class="govuk-body govuk-!-padding-left-5">
+                            If there is more than one TxC that is found at this point but each TxC has the same service code, then mark the vehicle journey as failed to be analysed.
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>
+                                    Errors for step 2a or 2b: “Found more than one matching vehicle journey in timetables belonging to a single service code“
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="govuk-body govuk-!-padding-left-5">
+                            If there is more than one TxC that is found at this point and there is more than one service code in the TxC files,
+                            then do not include this in the score for the operator. (i.e. remove this AVL message from the count of ‘Total vehicleActivities analysed’
+                            messages and the uncountedvehicles.csv)
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>
+                                    No errors for this step: The row for this will be removed from uncountedvehicleactivities.csv.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </p>
@@ -619,6 +695,19 @@
         </p>
         <p class="govuk-body">
             {% trans "The DestinationRef is the StopPointRef in the To element of the last JourneyPatternSection of the JourneyPattern." %}
+        </p>
+        <p class="govuk-body">
+            {% blocktrans trimmed %}
+                To identify the direction:
+                Find the direction associated with the JourneyPattern referenced in the isolated JourneyCode.
+            {% endblocktrans %}
+
+        </p>
+        <p class="govuk-body">
+            {% blocktrans trimmed %}
+                To identify the block:
+                Find the BlockNumber associated with the isolated JourneyCode.
+            {% endblocktrans %}
         </p>
     </p>
 

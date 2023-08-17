@@ -107,7 +107,7 @@ MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH = (
 MESSAGE_OBSERVATION_OPERATOR_ID = "'Operator' attribute 'id' format should be noc:xxxx"
 MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
     "Attribute 'ref' of 'TypeOfFrameRef' in 'CompositeFrame' does not contain "
-    "'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_OFFER'"
+    "'UK_PI_LINE_FARE_OFFER' or 'UK_PI_NETWORK_FARE_OFFER'"
 )
 MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING = (
     "Mandatory element 'TypeOfFrameRef' is missing or "

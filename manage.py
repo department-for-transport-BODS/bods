@@ -1,6 +1,14 @@
 #!/usr/bin/env python
+from ddtrace import patch_all
+
 import os
 import sys
+
+patch_all()
+
+if os.environ.get("DD_PROFILING_ENABLED") == "true":
+    import ddtrace.profiling.auto
+
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")

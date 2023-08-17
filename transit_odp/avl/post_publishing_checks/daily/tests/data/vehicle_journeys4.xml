@@ -120,6 +120,7 @@
   </Operators>
   <Services>
     <Service>
+    <ServiceCode>123</ServiceCode>
       <Lines>
         <Line id="L1">
           <LineName>Victoria</LineName>
