@@ -696,7 +696,7 @@ def test_lta_csv_output_unpublished_status_operator_name():
     service_numbers = [f"Line{n}" for n in range(num_otc_services)]
 
     otc_lic = LicenceModelFactory(id=10, number=licence_number)
-    otc_operator = OperatorModelFactory(operator_id=1, operator_name=otc_operator_name)
+    otc_operator = OperatorModelFactory(id=1, operator_name=otc_operator_name)
     service1 = ServiceModelFactory(
         operator=otc_operator,
         licence=otc_lic,
