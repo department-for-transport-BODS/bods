@@ -29,6 +29,7 @@ FARES_TASKS: Final = "transit_odp.fares.tasks."
 ADMIN_TASKS: Final = "transit_odp.site_admin.tasks."
 BROWSE_TASKS: Final = "transit_odp.browse.tasks."
 PUBLISH_TASKS: Final = "transit_odp.publish.tasks."
+DISRUPTIONS_TASKS: Final = "transit_odp.disruptions.tasks."
 
 
 class CeleryAppConfig(AppConfig):
@@ -166,5 +167,9 @@ class CeleryAppConfig(AppConfig):
             "task_update_fares_validation_existing_dataset": {
                 "task": FARES_TASKS + "task_update_fares_validation_existing_dataset",
                 "schedule": crontab(minute=0, hour=20),
+            },
+            "create_disruptions_zip": {
+                "task": DISRUPTIONS_TASKS + "task_create_sirisx_zipfile",
+                "schedule": 60.0,
             },
         }
