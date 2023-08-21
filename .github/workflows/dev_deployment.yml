@@ -69,14 +69,14 @@ jobs:
       id: base-image-changes
       with:
         filters: |
-          src:
+          django_base:
            - ./docker/production/django_base/Dockerfile
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
 
     - name: Build, tag, and push base image to Amazon ECR
-      if: steps.base-image-changes.outputs.src == 'true'  
+      if: steps.base-image-changes.outputs.django_base == 'true'  
       run: |
         echo "base_image=$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}" >> $GITHUB_OUTPUT
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -f ./docker/production/django_base/Dockerfile .
