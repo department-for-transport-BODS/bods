@@ -65,10 +65,17 @@ jobs:
         fi
     
     - name: Build, tag, and push base image to Amazon ECR
+      uses: dorny/paths-filter@v2
       id: build-base-image
+      with:
+        filters: |
+          src:
+           - ./docker/production/django_base/Dockerfile
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
+
+    - if: steps.build-base-image.outputs.src == 'true'  
       run: |
         echo "base_image=$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}" >> $GITHUB_OUTPUT
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -f ./docker/production/django_base/Dockerfile .
