@@ -12,6 +12,7 @@ from django.db.models.functions import Replace
 from lxml import etree
 
 from transit_odp.common.types import JSONFile, XMLFile
+from transit_odp.data_quality.pti.constants import FLEXIBLE_SERVICE, STANDARD_SERVICE
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
@@ -536,8 +537,8 @@ class PTIValidator:
         )
 
         if service_classification or flexible_jp or booking_arrangement:
-            return "FlexibleService"
-        return "StandardService"
+            return FLEXIBLE_SERVICE
+        return STANDARD_SERVICE
 
     def is_valid(self, source: XMLFile) -> bool:
         document = etree.parse(source)
