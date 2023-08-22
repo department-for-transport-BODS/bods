@@ -88,7 +88,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
       run: |
-        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=${{ steps.build-base-image.outputs.base_image }} .
+        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
     - name: Logout of Amazon ECR
