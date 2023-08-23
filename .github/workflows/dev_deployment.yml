@@ -71,13 +71,14 @@ jobs:
         filters: |
           django_base:
            - ./docker/production/django_base/Dockerfile
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
 
     - name: Build, tag, and push base image to Amazon ECR
-      if: steps.base-image-changes.outputs.django_base == 'true'  
+      if: steps.base-image-changes.outputs.django_base == 'true'
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}  
       run: |
+      
         echo "base_image=$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}" >> $GITHUB_OUTPUT
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -f ./docker/production/django_base/Dockerfile .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
@@ -87,8 +88,9 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        ECR_BASE_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}  
       run: |
-        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_BASE_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
     - name: Logout of Amazon ECR
