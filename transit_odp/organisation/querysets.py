@@ -359,7 +359,7 @@ class OrganisationQuerySet(models.QuerySet):
             .add_live_published_dataset_count_types()
         )
 
-    def get_organisation_name_lta_export(self, licence_number):
+    def get_organisation_name(self, licence_number):
         from transit_odp.organisation.models import Licence as BODSLicence
 
         try:

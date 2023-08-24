@@ -289,7 +289,7 @@ class TestOrganisationQuerySet:
 
         assert org.get_status() == expected
 
-    def test_get_organisation_name_lta_export(self):
+    def test_get_organisation_name(self):
         licence_number = "PD0000099"
         otc_operator_name = "test_org_1"
         num_otc_services = 10
@@ -305,9 +305,7 @@ class TestOrganisationQuerySet:
             service_number=service_numbers[0],
         )
 
-        operator_name = Organisation.objects.get_organisation_name_lta_export(
-            licence_number
-        )
+        operator_name = Organisation.objects.get_organisation_name(licence_number)
         assert operator_name == otc_operator_name
 
 

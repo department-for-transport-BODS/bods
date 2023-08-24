@@ -34,10 +34,7 @@ def get_seasonal_service_status(otc_service: dict) -> str:
 
 def get_operator_name(otc_service: dict) -> str:
     otc_licence_number = otc_service.get("otc_licence_number")
-    operator_name = Organisation.objects.get_organisation_name_lta_export(
-        otc_licence_number
-    )
-
+    operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
     if not operator_name:
         return "Organisation not yet created"
     else:
