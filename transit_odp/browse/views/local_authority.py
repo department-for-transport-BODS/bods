@@ -179,7 +179,12 @@ class LocalAuthorityView(BaseListView):
 
         ltas = {
             "names": list(
-                set([lta.ui_lta_name_trimmed for lta in all_ltas_current_page])
+                set(
+                    [
+                        lta.ui_lta_name_trimmed.replace("\xa0", " ")
+                        for lta in all_ltas_current_page
+                    ]
+                )
             )
         }
         context["ltas"] = ltas
