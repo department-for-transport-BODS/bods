@@ -10,6 +10,7 @@ from transit_odp.common.collections import Column
 from transit_odp.common.utils import round_down
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
+    Organisation,
     SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
@@ -340,11 +341,15 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
 
 def add_operator_name(row: Series) -> str:
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
-        if row["operator_name"] is None or pd.isna(row["operator_name"]):
+        otc_licence_number = row["otc_licence_number"]
+        operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
+
+        if not operator_name:
             return "Organisation not yet created"
         else:
-            return row["operator_name"]
-    return row["organisation_name"]
+            return operator_name
+    else:
+        return row["organisation_name"]
 
 
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:

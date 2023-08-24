@@ -13,17 +13,15 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     LicenceFactory,
+    OrganisationFactory,
     SeasonalServiceFactory,
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset
-from transit_odp.otc.factories import ServiceModelFactory
+from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 from transit_odp.otc.models import Service
-from transit_odp.timetables.csv import (
-    _get_timetable_catalogue_dataframe,
-    add_operator_name,
-)
+from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 
 pytestmark = pytest.mark.django_db
 
@@ -109,12 +107,17 @@ def test_service_in_bods_and_otc():
 
 
 def test_service_in_otc_and_not_in_bods():
-    ServiceModelFactory.create_batch(5)
-    TXCFileAttributesFactory.create_batch(5)
+    licence_number = "PD0000099"
+    org_name = "test_org_1"
+    org1 = OrganisationFactory(name=org_name)
+    LicenceFactory(organisation=org1, number=licence_number)
+    otc_lic = LicenceModelFactory(id=10, number=licence_number)
+    ServiceModelFactory(licence=otc_lic)
+    TXCFileAttributesFactory()
 
     df = _get_timetable_catalogue_dataframe()
 
-    for _, row in df[5:].iterrows():
+    for _, row in df[1:].iterrows():
         service = Service.objects.get(
             registration_number=row["OTC Registration Number"]
         )
@@ -140,54 +143,18 @@ def test_service_in_otc_and_not_in_bods():
         assert row["Service Type Other Details"] == service.service_type_other_details
         assert row["Requires Attention"] == "Yes"
         # Test organisation name when status is unpublished:
-        assert row["Organisation Name"] == operator.operator_name
+        assert row["Organisation Name"] == org_name
 
 
-def test_no_organisation_name():
-    """
-    Testing when there is no organisation name and
-    no operator name (not in otc, nor published to bods),
-    then "Organisation not yet created" should be returned.
-    """
-    row = {
-        "registration_number": float("nan"),
-        "service_type_description": float("nan"),
-        "variation_number": None,
-        "service_number": float("nan"),
-        "start_point": float("nan"),
-        "finish_point": float("nan"),
-        "via": float("nan"),
-        "effective_date": float("nan"),
-        "received_date": float("nan"),
-        "service_type_other_details": float("nan"),
-        "service_code": "GPtw",
-        "otc_operator_id": None,
-        "operator_name": float("nan"),
-        "address": float("nan"),
-        "otc_licence_number": float("nan"),
-        "licence_status": float("nan"),
-        "expiry_date": float("nan"),
-        "granted_date": float("nan"),
-        "filename": "along.xml",
-        "licence_number": "PF0002280",
-        "modification_datetime": "1983-08-22 18:02:19+00:00",
-        "national_operator_code": "HDHY",
-        "public_use": True,
-        "operating_period_start_date": "1979-12-28",
-        "operating_period_end_date": "1999-11-08",
-        "revision_number": 0,
-        "origin": "New Rebeccatown",
-        "destination": "Lake Benjamin",
-        "bods_compliant": "YES",
-        "score": None,
-        "dataset_id": 5,
-        "last_updated_date": "2023-08-14 17:10:02.004800+00:00",
-        "organisation_name": float("nan"),
-        "string_lines": "line1 line2, into a row (data type series) in a pandas",
-    }
+def test_service_in_otc_and_not_in_bods_no_organisation_name_created():
+    ServiceModelFactory.create_batch(5)
+    TXCFileAttributesFactory.create_batch(5)
 
-    organisation_name = add_operator_name(row)
-    assert organisation_name == "Organisation not yet created"
+    df = _get_timetable_catalogue_dataframe()
+
+    for _, row in df[5:].iterrows():
+        assert row["Published Status"] == "Unpublished"
+        assert row["Organisation Name"] == "Organisation not yet created"
 
 
 def test_unregistered_services_in_bods():
