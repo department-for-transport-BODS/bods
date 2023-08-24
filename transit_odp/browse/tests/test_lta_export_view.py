@@ -17,7 +17,6 @@ from transit_odp.otc.constants import FLEXIBLE_REG, SCHOOL_OR_WORKS
 from transit_odp.otc.factories import (
     LicenceModelFactory,
     LocalAuthorityFactory,
-    OperatorModelFactory,
     ServiceModelFactory,
 )
 
@@ -495,7 +494,7 @@ def test_lta_csv_output():
     assert csv_output["row0"][3] == '"In Scope"'  # scope status
     assert csv_output["row0"][4] == '"Out of Season"'  # seasonal status
     assert csv_output["row0"][5] == '"Not Stale"'  # staleness status
-    assert csv_output["row0"][6] == '"Organisation not yet created"'  # Operator Name
+    assert csv_output["row0"][6] == '"test_org_1"'  # Operator Name
     assert csv_output["row0"][7] == '""'  # Dataset Licence Number
     assert csv_output["row0"][8] == '""'  # Dataset Service Code
     assert csv_output["row0"][9] == '""'  # Dataset Line Name
@@ -533,7 +532,7 @@ def test_lta_csv_output():
     assert csv_output["row1"][3] == '"In Scope"'
     assert csv_output["row1"][4] == '"In Season"'
     assert csv_output["row1"][5] == '"Not Stale"'
-    assert csv_output["row1"][6] == '"Organisation not yet created"'
+    assert csv_output["row1"][6] == '"test_org_1"'
     assert csv_output["row1"][7] == '""'
     assert csv_output["row1"][8] == '""'
     assert csv_output["row1"][9] == '""'
@@ -556,7 +555,7 @@ def test_lta_csv_output():
     assert csv_output["row2"][3] == '"Out of Scope"'
     assert csv_output["row2"][4] == '"Not Seasonal"'
     assert csv_output["row2"][5] == '"Not Stale"'
-    assert csv_output["row2"][6] == '"Organisation not yet created"'
+    assert csv_output["row2"][6] == '"test_org_1"'
     assert csv_output["row2"][7] == '""'
     assert csv_output["row2"][8] == '""'
     assert csv_output["row2"][9] == '""'
@@ -687,43 +686,16 @@ def test_lta_csv_output():
     assert csv_output["row8"][26] == '"2020-12-13"'
 
 
-def test_lta_csv_output_unpublished_status_operator_name():
+def test_lta_csv_output_unpublished_status_no_organisation_name():
     services_list_1 = []
     licence_number = "PD0000099"
-    otc_operator_name = "test_org_1"
+    licence_number_two = "PD0000098"
     num_otc_services = 10
     service_codes = [f"{licence_number}:{n}" for n in range(num_otc_services)]
     service_numbers = [f"Line{n}" for n in range(num_otc_services)]
 
-    otc_lic = LicenceModelFactory(id=10, number=licence_number)
-    otc_operator = OperatorModelFactory(id=1, operator_name=otc_operator_name)
-    service1 = ServiceModelFactory(
-        operator=otc_operator,
-        licence=otc_lic,
-        registration_number=service_codes[0],
-        service_number=service_numbers[0],
-        effective_date=datetime.datetime(2023, 6, 24),
-    )
-    services_list_1.append(service1)
-
-    local_authority_1 = LocalAuthorityFactory(
-        id="1", name="first_LTA", registration_numbers=services_list_1
-    )
-
-    lta_codes_csv = LTACSV([local_authority_1])
-    csv_string = lta_codes_csv.to_string()
-    csv_output = get_csv_output(csv_string)
-
-    assert csv_output["row0"][1] == '"Unpublished"'  # published status
-    assert csv_output["row0"][6] == '"test_org_1"'  # Operator Name
-
-
-def test_lta_csv_output_unpublished_status_no_operator_name():
-    services_list_1 = []
-    licence_number = "PD0000099"
-    num_otc_services = 10
-    service_codes = [f"{licence_number}:{n}" for n in range(num_otc_services)]
-    service_numbers = [f"Line{n}" for n in range(num_otc_services)]
+    org1 = OrganisationFactory(name="test_org_1")
+    BODSLicenceFactory(organisation=org1, number=licence_number_two)
 
     otc_lic = LicenceModelFactory(id=10, number=licence_number)
     service1 = ServiceModelFactory(

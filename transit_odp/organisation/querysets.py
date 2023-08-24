@@ -359,6 +359,19 @@ class OrganisationQuerySet(models.QuerySet):
             .add_live_published_dataset_count_types()
         )
 
+    def get_organisation_name_lta_export(self, licence_number):
+        from transit_odp.organisation.models import Licence as BODSLicence
+
+        try:
+            org_id_list = BODSLicence.objects.filter(number=licence_number).values_list(
+                "organisation_id", flat=True
+            )
+            return (
+                self.filter(id__in=org_id_list).values_list("name", flat=True).first()
+            )
+        except BODSLicence.DoesNotExist:
+            return None
+
 
 class DatasetQuerySet(models.QuerySet):
     def add_live_data(self):
