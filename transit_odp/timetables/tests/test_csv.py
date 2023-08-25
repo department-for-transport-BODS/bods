@@ -13,12 +13,13 @@ from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     LicenceFactory,
+    OrganisationFactory,
     SeasonalServiceFactory,
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset
-from transit_odp.otc.factories import ServiceModelFactory
+from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 from transit_odp.otc.models import Service
 from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 
@@ -106,11 +107,17 @@ def test_service_in_bods_and_otc():
 
 
 def test_service_in_otc_and_not_in_bods():
-    ServiceModelFactory.create_batch(5)
-    TXCFileAttributesFactory.create_batch(5)
+    licence_number = "PD0000099"
+    org_name = "test_org_1"
+    org1 = OrganisationFactory(name=org_name)
+    LicenceFactory(organisation=org1, number=licence_number)
+    otc_lic = LicenceModelFactory(id=10, number=licence_number)
+    ServiceModelFactory(licence=otc_lic)
+    TXCFileAttributesFactory()
 
     df = _get_timetable_catalogue_dataframe()
-    for index, row in df[5:].iterrows():
+
+    for _, row in df[1:].iterrows():
         service = Service.objects.get(
             registration_number=row["OTC Registration Number"]
         )
@@ -135,6 +142,19 @@ def test_service_in_otc_and_not_in_bods():
         assert row["Received Date"] == service.received_date
         assert row["Service Type Other Details"] == service.service_type_other_details
         assert row["Requires Attention"] == "Yes"
+        # Test organisation name when status is unpublished:
+        assert row["Organisation Name"] == org_name
+
+
+def test_service_in_otc_and_not_in_bods_no_organisation_name_created():
+    ServiceModelFactory.create_batch(5)
+    TXCFileAttributesFactory.create_batch(5)
+
+    df = _get_timetable_catalogue_dataframe()
+
+    for _, row in df[5:].iterrows():
+        assert row["Published Status"] == "Unpublished"
+        assert row["Organisation Name"] == "Organisation not yet created"
 
 
 def test_unregistered_services_in_bods():
@@ -392,9 +412,11 @@ def test_stale_12_months_old(effective, modified, period_end, is_stale):
     (
         # associated data No and today < effective stale date
         ("2023-04-01", "2023-01-01", "2025-01-01", "2022-01-01", False),
-        # operating period start = effective date, so association data Yes and today < effective stale date
+        # operating period start = effective date, so association data Yes
+        # and today < effective stale date
         ("2023-04-01", "2023-01-01", "2025-01-01", "2023-04-01", False),
-        # last modified date > associatoin date , so association data Yes and today > effective stale date
+        # last modified date > associatoin date , so association data Yes
+        # and today > effective stale date
         ("2023-03-01", "2023-02-01", "2025-01-01", "2023-01-01", False),
         # associated data No and today > effective stale date
         ("2023-03-01", "2022-12-01", "2025-01-01", "2023-01-01", True),
