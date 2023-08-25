@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional, List
+from typing import Optional, List, OrderedDict
 
 from django.utils.timezone import make_aware
 from pydantic import Field, validator
@@ -12,6 +12,7 @@ class Registration(BaseModel):
 
     registration_number: str = Field(alias="registrationNumber")
     variation_number: int = Field(alias="variationNumber")
+    other_service_number: Optional[str] = Field(alias="otherServiceNumber")
     service_number: Optional[str] = Field(alias="serviceNumber")
     current_traffic_area: Optional[str] = Field(alias="trafficAreaId")
     licence_number: Optional[str] = Field(alias="licenceNumber")
@@ -107,6 +108,39 @@ class Registration(BaseModel):
         if v.lower() in EMPTY_VALUES:
             raise ValueError(f"{v} is an empty value but it is required")
         return v
+
+    @validator("service_number", pre=True)
+    def combine_service_numbers(cls, v, values):
+
+        other_service_number = values.get("other_service_number", "")
+        if not other_service_number:
+            return v
+        # Function to split a string at different delimiters and return a list of numbers
+        def split_at_delimiters(s):
+            delimiters = [",", " ", "-", "|"]
+            numbers = []
+            current_number = ""
+            for char in s:
+                if char in delimiters:
+                    if current_number.strip():
+                        numbers.append(current_number.strip())
+                    current_number = ""
+                else:
+                    current_number += char
+            if current_number.strip():
+                numbers.append(current_number.strip())
+            return numbers
+
+        service_numbers = split_at_delimiters(v) if v else []
+        other_service_numbers = (
+            split_at_delimiters(other_service_number) if other_service_number else []
+        )
+
+        combined_service_numbers = list(
+            OrderedDict.fromkeys(service_numbers + other_service_numbers)
+        )
+        result = "|".join(combined_service_numbers)
+        return result
 
 
 class Licence(BaseModel):

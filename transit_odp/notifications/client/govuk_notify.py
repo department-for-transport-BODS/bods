@@ -47,7 +47,6 @@ class GovUKNotifyEmail(NotificationBase):
         # This is now effectively a list of all the templates that need to move over
         return {
             "INVITE_USER": "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1",
-            "OPERATOR_INVITE_ACCEPTED": "46bf62b7-bd47-449e-bd86-2aa252fceac7",
             "OPERATOR_DATA_DELETED": "1b0c8b4f-e2ec-4004-a1c3-74f16649efba",
             "OPERATOR_DELETER_DATA_DELETED": "f7a1c6bf-9e4c-4896-a106-109f71fe52b6",
             "OPERATOR_DATA_ENDPOINT_UNREACHABLE_NOW_EXPIRING": (

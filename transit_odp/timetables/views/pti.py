@@ -18,7 +18,6 @@ from transit_odp.data_quality.pti.constants import (
     get_important_note,
 )
 from transit_odp.organisation.models import Dataset
-from transit_odp.users.views.mixins import OrgUserViewMixin
 
 TXC_NOTE = (
     "You need to update your data to 2.4 TxC schema in order to upload data to BODS."
@@ -157,7 +156,7 @@ class BaseViolationsCSVFileView(DetailView):
         return self.render_to_response()
 
 
-class ReviewViolationsCSVFileView(OrgUserViewMixin, BaseViolationsCSVFileView):
+class ReviewViolationsCSVFileView(BaseViolationsCSVFileView):
     def get_revision(self):
         dataset = self.get_object()
         revision = dataset.revisions.get_draft().first()
