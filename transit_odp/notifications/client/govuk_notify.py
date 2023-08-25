@@ -73,7 +73,7 @@ class GovUKNotifyEmail(NotificationBase):
                 "8466a24a-18b9-4b11-9512-9519a224d412"
             ),
             "OPERATOR_AGENT_REJECTED_INVITE": "b7edcd7f-5c86-4c6e-b085-c72efb487bc7",
-            "OPERATOR_AGENT_REMOVED": "66a9b1c9-5709-476d-a360-b2794a1a253b",
+            # "OPERATOR_AGENT_REMOVED": "66a9b1c9-5709-476d-a360-b2794a1a253b",
             "OPERATOR_NOC_CHANGED": "ca32baf1-a420-4893-98e8-04bd5e85a9c4",
             "DATASET_NO_LONGER_COMPLIANT": "3093797a-a1fa-4a08-8dc0-b0bfda4e3e64",
         }

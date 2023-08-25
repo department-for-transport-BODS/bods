@@ -1,6 +1,11 @@
 Hello,
 
-This email is to confirm that you have removed {{ agent_organisation }} as your agent on the Bus Open Data Service. No further action is required on your end.
+This email is to confirm that you have removed {{ agent_organisation }} as your agent on the Bus Open Data Service.
+
+Important:
+Please note it is your legal obligation as the operator to ensure that your data is up to date.
+
+For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
 
 Kind regards,
 Bus Open Data Service
