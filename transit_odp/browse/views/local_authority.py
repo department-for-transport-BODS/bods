@@ -9,7 +9,7 @@ from django.views import View
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
-from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models import Organisation, TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
@@ -30,6 +30,15 @@ STALENESS_STATUS = [
 def get_seasonal_service_status(otc_service: dict) -> str:
     seasonal_service_status = otc_service.get("seasonal_status")
     return "In Season" if seasonal_service_status else "Out of Season"
+
+
+def get_operator_name(otc_service: dict) -> str:
+    otc_licence_number = otc_service.get("otc_licence_number")
+    operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
+    if not operator_name:
+        return "Organisation not yet created"
+    else:
+        return operator_name
 
 
 def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
@@ -314,7 +323,10 @@ class LTACSV(CSVBuilder):
         ),
         CSVColumn(
             header="Operator Name",
-            accessor=lambda otc_service: otc_service.get("operator_name"),
+            accessor=lambda otc_service: get_operator_name(otc_service)
+            if otc_service.get("operator_name") is None
+            or otc_service.get("operator_name") == ""
+            else otc_service.get("operator_name"),
         ),
         CSVColumn(
             header="Data set Licence Number",
