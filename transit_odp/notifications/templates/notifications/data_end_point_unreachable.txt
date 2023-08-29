@@ -1,6 +1,6 @@
 Hello,
 
-The Bus Open Data Service is unable to access timetable/fares/AVL bus data hosted at the URL you provided.
+The Bus Open Data Service is unable to access the timetable/fares/AVL bus data hosted at the URL you provided.
 
 Operator: {{ organisation }}
 Dataset: {{ feed_name }}
@@ -10,7 +10,7 @@ Short Description: {{ feed_short_description }}
 Action required:
     1) Double check that this is the correct URL for the data you’d like to publish: {{ data_set_url }}
     2) Follow this link to review and if necessary, update the dataset with the correct URL for your bus data: {{ link }}
-    3) Review the notifications received from the Bus Open Data Service to ensure your data is successfully re-published
+    3) Review the notifications received from the Bus Open Data Service to ensure your data is successfully re-published.
 
 Important:
 If we are unable to access it after multiple attempts, we will send you an expiry notice. You are legally obliged to provide accurate and up-to-date bus data.
