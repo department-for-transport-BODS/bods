@@ -4,11 +4,13 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
+from pandas import Series
 
 from transit_odp.common.collections import Column
 from transit_odp.common.utils import round_down
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
+    Organisation,
     SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
@@ -337,6 +339,19 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
 )
 
 
+def add_operator_name(row: Series) -> str:
+    if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
+        otc_licence_number = row["otc_licence_number"]
+        operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
+
+        if not operator_name:
+            return "Organisation not yet created"
+        else:
+            return operator_name
+    else:
+        return row["organisation_name"]
+
+
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
     exists_in_bods = np.invert(pd.isna(df["dataset_id"]))
     exists_in_otc = np.invert(pd.isna(df["otc_licence_number"]))
@@ -512,6 +527,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         merged[field] = merged[field].astype(type_)
 
     merged.sort_values("dataset_id", inplace=True)
+    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
