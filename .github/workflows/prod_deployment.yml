@@ -131,6 +131,13 @@ jobs:
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
 
+    - name: Check for service stability 
+      uses: oryanmoshe/ecs-wait-action@v1.3
+      with:
+        ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
+        ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
+        verbose: true
+
     - name: Run pg migration 
       uses: "./.github/workflows/templates/run_pg_migration_task"
       with:

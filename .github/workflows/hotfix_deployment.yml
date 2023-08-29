@@ -141,6 +141,13 @@ jobs:
         subnets: ${{ secrets.SUBNETS }}
         security_groups: ${{ secrets.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
+        
+    - name: Check for service stability 
+      uses: oryanmoshe/ecs-wait-action@v1.3
+      with:
+        ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
+        ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
+        verbose: true
 
     - name: Invoke Lambda Function
       shell: bash
