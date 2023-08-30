@@ -1,29 +1,9 @@
-import logging
-from enum import Enum
-
 from datetime import date, datetime
 from typing import Optional, List, OrderedDict
 
 from django.utils.timezone import make_aware
 from pydantic import Field, validator
 from pydantic.main import BaseModel
-
-logger = logging.getLogger(__name__)
-
-
-class RegistrationStatusEnum(Enum):
-    ADMIN_CANCELLED = "Admin Cancelled"
-    CANCELLED = "Cancelled"
-    NEW = "New"
-    REFUSED = "Refused"
-    SURRENDERED = "Surrendered"
-    REVOKED = "Revoked"
-    CNS = "CNS"
-    CANCELLATION = "Cancellation"
-    EXPIRED = "Expired"
-    WITHDRAWN = "Withdrawn"
-    VARIATION = "Variation"
-    REGISTERED = "Registered"
 
 
 class Registration(BaseModel):
@@ -53,9 +33,7 @@ class Registration(BaseModel):
     end_date: Optional[date] = Field(alias="endDate")
     service_type_other_details: Optional[str] = Field(alias="otherDetails")
     licence_status: Optional[str] = Field(alias="licenceStatus")
-    registration_status: Optional[str] = Field(
-        alias="registrationStatus", enum=RegistrationStatusEnum
-    )
+    registration_status: Optional[str] = Field(alias="registrationStatus")
     public_text: Optional[str] = Field(alias="publicationText")
     service_type_description: Optional[str] = Field(
         alias="busServiceTypeDescription", max_length=1000
@@ -131,6 +109,12 @@ class Registration(BaseModel):
         # cannot be optional
         if v.lower() in EMPTY_VALUES:
             raise ValueError(f"{v} is an empty value but it is required")
+        return v
+
+    @validator("registration_status")
+    def validate_registration_number(cls, v):
+        if v is not None and v not in ALLOWED_REGISTRATION_STATUSES:
+            raise ValueError(f"Invalid registration status: {v}")
         return v
 
     @validator("service_number", pre=True)
@@ -264,3 +248,17 @@ class LocalAuthority(BaseModel):
 
 
 EMPTY_VALUES = ["", "n/a"]
+ALLOWED_REGISTRATION_STATUSES = [
+    "Admin Cancelled",
+    "Cancelled",
+    "New",
+    "Refused",
+    "Surrendered",
+    "Revoked",
+    "CNS",
+    "Cancellation",
+    "Expired",
+    "Withdrawn",
+    "Variation",
+    "Registered",
+]
