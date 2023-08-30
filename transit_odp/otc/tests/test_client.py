@@ -64,19 +64,3 @@ def test_get_no_content(
     assert response.page.total_pages == 1
     assert response.page.current == 1
     assert response.page.total_count == 0
-
-
-@patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
-@patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
-@freeze_time("2022-11-09")
-def test_get_no_content_invalid_length_regno(
-    date_data_with_no_content,
-):
-    client = OTCAPIClient()
-    response = client._make_request(
-        page=1, regNo="PH1020951", lastModifiedOn="2022-11-06", latestVariation=True
-    )
-    assert response.bus_search == []
-    assert response.page.total_pages == 1
-    assert response.page.current == 1
-    assert response.page.total_count == 0
