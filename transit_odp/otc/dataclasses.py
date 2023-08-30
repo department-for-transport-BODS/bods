@@ -1,3 +1,6 @@
+import logging
+from enum import Enum
+
 from datetime import date, datetime
 from typing import Optional, List, OrderedDict
 
@@ -5,22 +8,37 @@ from django.utils.timezone import make_aware
 from pydantic import Field, validator
 from pydantic.main import BaseModel
 
+logger = logging.getLogger(__name__)
+
+class RegistrationStatusEnum(Enum):
+    ADMIN_CANCELLED = "Admin Cancelled"
+    CANCELLED = "Cancelled"
+    NEW = "New"
+    REFUSED = "Refused"
+    SURRENDERED = "Surrendered"
+    REVOKED = "Revoked"
+    CNS = "CNS"
+    CANCELLATION = "Cancellation"
+    EXPIRED = "Expired"
+    WITHDRAWN = "Withdrawn"
+    VARIATION = "Variation"
+    REGISTERED = "Registered"
 
 class Registration(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    registration_number: str = Field(alias="registrationNumber")
+    registration_number: str = Field(alias="registrationNumber", max_length=20)
     variation_number: int = Field(alias="variationNumber")
     other_service_number: Optional[str] = Field(alias="otherServiceNumber")
-    service_number: Optional[str] = Field(alias="serviceNumber")
-    current_traffic_area: Optional[str] = Field(alias="trafficAreaId")
+    service_number: Optional[str] = Field(alias="serviceNumber", max_length=1000)
+    current_traffic_area: Optional[str] = Field(alias="trafficAreaId", max_length=1)
     licence_number: Optional[str] = Field(alias="licenceNumber")
     discs_in_possession: Optional[int] = Field(alias="discsInPossession")
     authdiscs: Optional[int] = Field(alias="authDiscs")
     licence_granted_date: Optional[date] = Field(alias="grantedDate")
     licence_expiry_date: Optional[date] = Field(alias="expiryDate")
-    description: Optional[str] = Field(alias="licenceType")
+    description: Optional[str] = Field(alias="licenceType",  max_length=25)
     operator_id: int = Field(alias="operatorId")
     operator_name: Optional[str] = Field(alias="operatorName")
     trading_name: Optional[str] = Field(alias="tradingName")
@@ -33,11 +51,11 @@ class Registration(BaseModel):
     end_date: Optional[date] = Field(alias="endDate")
     service_type_other_details: Optional[str] = Field(alias="otherDetails")
     licence_status: Optional[str] = Field(alias="licenceStatus")
-    registration_status: Optional[str] = Field(alias="registrationStatus")
+    registration_status: Optional[str] = Field(alias="registrationStatus", enum=RegistrationStatusEnum)
     public_text: Optional[str] = Field(alias="publicationText")
-    service_type_description: Optional[str] = Field(alias="busServiceTypeDescription")
+    service_type_description: Optional[str] = Field(alias="busServiceTypeDescription", max_length=1000)
     short_notice: Optional[bool] = Field(alias="isShortNotice")
-    subsidies_description: Optional[str] = Field(alias="subsidised")
+    subsidies_description: Optional[str] = Field(alias="subsidised", max_length=7)
     subsidies_details: Optional[str] = Field(alias="subsidyDetail")
     auth_description: Optional[str] = Field(alias="localAuthorities")
     tao_covered_by_area: Optional[str] = Field(alias="taoCoveredByArea")
@@ -108,7 +126,8 @@ class Registration(BaseModel):
         if v.lower() in EMPTY_VALUES:
             raise ValueError(f"{v} is an empty value but it is required")
         return v
-
+    
+    
     @validator("service_number", pre=True)
     def combine_service_numbers(cls, v, values):
 
