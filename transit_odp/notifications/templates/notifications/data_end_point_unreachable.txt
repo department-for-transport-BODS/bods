@@ -3,8 +3,8 @@ Hello,
 The Bus Open Data Service is unable to access the timetable/fares/AVL bus data hosted at the URL you provided.
 
 Operator: {{ organisation }}
-Dataset: {{ feed_name }}
-Dataset ID: {{ feed_id }}
+Data set/feed: {{ feed_name }}
+Data set/feed ID: {{ feed_id }}
 Short Description: {{ feed_short_description }}
 
 Action required:
