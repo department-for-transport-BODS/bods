@@ -10,6 +10,7 @@ from pydantic.main import BaseModel
 
 logger = logging.getLogger(__name__)
 
+
 class RegistrationStatusEnum(Enum):
     ADMIN_CANCELLED = "Admin Cancelled"
     CANCELLED = "Cancelled"
@@ -23,6 +24,7 @@ class RegistrationStatusEnum(Enum):
     WITHDRAWN = "Withdrawn"
     VARIATION = "Variation"
     REGISTERED = "Registered"
+
 
 class Registration(BaseModel):
     class Config:
@@ -38,7 +40,7 @@ class Registration(BaseModel):
     authdiscs: Optional[int] = Field(alias="authDiscs")
     licence_granted_date: Optional[date] = Field(alias="grantedDate")
     licence_expiry_date: Optional[date] = Field(alias="expiryDate")
-    description: Optional[str] = Field(alias="licenceType",  max_length=25)
+    description: Optional[str] = Field(alias="licenceType", max_length=25)
     operator_id: int = Field(alias="operatorId")
     operator_name: Optional[str] = Field(alias="operatorName")
     trading_name: Optional[str] = Field(alias="tradingName")
@@ -51,9 +53,13 @@ class Registration(BaseModel):
     end_date: Optional[date] = Field(alias="endDate")
     service_type_other_details: Optional[str] = Field(alias="otherDetails")
     licence_status: Optional[str] = Field(alias="licenceStatus")
-    registration_status: Optional[str] = Field(alias="registrationStatus", enum=RegistrationStatusEnum)
+    registration_status: Optional[str] = Field(
+        alias="registrationStatus", enum=RegistrationStatusEnum
+    )
     public_text: Optional[str] = Field(alias="publicationText")
-    service_type_description: Optional[str] = Field(alias="busServiceTypeDescription", max_length=1000)
+    service_type_description: Optional[str] = Field(
+        alias="busServiceTypeDescription", max_length=1000
+    )
     short_notice: Optional[bool] = Field(alias="isShortNotice")
     subsidies_description: Optional[str] = Field(alias="subsidised", max_length=7)
     subsidies_details: Optional[str] = Field(alias="subsidyDetail")
@@ -126,8 +132,7 @@ class Registration(BaseModel):
         if v.lower() in EMPTY_VALUES:
             raise ValueError(f"{v} is an empty value but it is required")
         return v
-    
-    
+
     @validator("service_number", pre=True)
     def combine_service_numbers(cls, v, values):
 
