@@ -33,7 +33,9 @@ class Registration(BaseModel):
     end_date: Optional[date] = Field(alias="endDate")
     service_type_other_details: Optional[str] = Field(alias="otherDetails")
     licence_status: Optional[str] = Field(alias="licenceStatus")
-    registration_status: Optional[str] = Field(alias="registrationStatus")
+    registration_status: Optional[str] = Field(
+        alias="registrationStatus", max_length=20
+    )
     public_text: Optional[str] = Field(alias="publicationText")
     service_type_description: Optional[str] = Field(
         alias="busServiceTypeDescription", max_length=1000
