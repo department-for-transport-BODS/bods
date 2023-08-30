@@ -542,13 +542,13 @@ class PTIValidator:
 
     def is_valid(self, source: XMLFile) -> bool:
         document = etree.parse(source)
-        service_type = self.check_service_type(document)
+        txc_service_type = self.check_service_type(document)
 
         service_observations = []
         service_observations = [
             x
             for x in self.schema.observations
-            if x.condition == service_type or x.condition == ""
+            if x.service_type == txc_service_type or x.service_type == "All"
         ]
         for observation in service_observations:
             elements = document.xpath(observation.context, namespaces=self.namespaces)

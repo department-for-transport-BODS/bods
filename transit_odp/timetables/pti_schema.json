@@ -9,7 +9,7 @@
     {
       "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. The private element can only be 'false' and cannot be set to 'true'.",
       "category": "Notes",
-      "condition": "",
+      "service_type": "All",
       "reference": "2.5",
       "context": "//x:Notes/x:Note/x:Private",
       "number": 8,
@@ -18,7 +18,7 @@
     {
       "details": "Serviced Organisations are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in the 'Name' element in 'ServicedOrganisation' field. Please provide a meaningful name for the organisation composed of more than 5 characters at least.",
       "category": "Serviced organisations",
-      "condition": "",
+      "service_type": "All",
       "reference": "3.2",
       "context": "//x:ServicedOrganisations/x:ServicedOrganisation",
       "number": 10,
@@ -30,7 +30,7 @@
     {
       "details": " Serviced Organisations are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'WorkingDays' field. Since your 'StartDate' value equals your 'CurrentDate' value, the 'Provisional' field cannot be set to 'true'. Please remove the values from the Provisional or set it to 'false'.",
       "category": "Serviced organisations",
-      "condition": "",
+      "service_type": "All",
       "reference": "3.2",
       "context": "//x:ServicedOrganisation/x:WorkingDays/x:DateRange",
       "number": 11,
@@ -44,7 +44,7 @@
     {
       "details": "Mandatory elements incorrect in 'OperatorGroup' field. Please make sure your TransxChange file contains not more than one operator element in the operator group",
       "category": "Operators, Garages and Registrations",
-      "condition": "",
+      "service_type": "All",
       "reference": "4.2",
       "context": "//x:Operators",
       "number": 12,
@@ -53,7 +53,7 @@
     {
       "details": "Mandatory elements incorrect in 'LicensedOperator' field. An Operators group cannot contain LicensedOperator, the field is not allowed. Please remove it.",
       "category": "Operators, Garages and Registrations",
-      "condition": "",
+      "service_type": "All",
       "reference": "4.2",
       "context": "//x:Operators",
       "number": 13,
@@ -62,7 +62,7 @@
     {
       "details": "Mandatory elements incorrect in 'RegistrationsGroup'. This should be left empty and is not allowed in the PTI 1.1 profile.",
       "category": "Operators, Garages and Registrations",
-      "condition": "",
+      "service_type": "All",
       "reference": "4.4",
       "context": "//x:Registrations",
       "number": 14,
@@ -71,7 +71,7 @@
     {
       "details": "Garages are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Garagecode' field. Please include a value in the Garagecode field.",
       "category": "Operators, Garages and Registrations",
-      "condition": "",
+      "service_type": "All",
       "reference": "4.3",
       "context": "//x:Garages/x:Garage",
       "number": 15,
@@ -80,7 +80,7 @@
     {
       "details": "Mandatory elements incorrect in 'ServicesGroup'. The ServicesGroup should only contain a single Service element",
       "category": "Services and Lines",
-      "condition": "StandardService",
+      "service_type": "StandardService",
       "reference": "5.2",
       "context": "//x:Services",
       "number": 17,
@@ -89,7 +89,7 @@
     {
       "details": "'Mandatory elements incorrect in 'ServicesGroup'. The ServicesGroup should only contain a single Service element except in cases when unregistered services are published with a single flexible service.",
       "category": "Services and Lines",
-      "condition": "FlexibleService",
+      "service_type": "FlexibleService",
       "reference": "5.2",
       "context": "//x:Services",
       "number": 17,
@@ -98,7 +98,7 @@
     {
       "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. Please do not include any of the following characters in the field:    , [ ] {{ }} ^ = @ : ; # $ £ ? % + < > « »  / | ~ _ ¬",
       "category": "Notes",
-      "condition": "",
+      "service_type": "All",
       "reference": "2.5",
       "context": "//x:Notes/x:Note/x:NoteText",
       "number": 7,
@@ -107,7 +107,7 @@
     {
       "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. The field you specified contains a date, please make sure that any date/time data is not included in notes and is used in the relevant date fields.",
       "category": "Notes",
-      "condition": "",
+      "service_type": "All",
       "reference": "2.5",
       "context": "//x:Notes/x:Note/x:NoteText",
       "number": 7,
@@ -116,7 +116,7 @@
     {
       "details": "Mandatory elements incorrect in 'OperatingProfile' field. Allowed values for <DaysofWeek> element in OperatingProfile are: <Monday/><Tuesday/><Wednesday/><Thursday/><Friday/><Staturday/><Sunday/>. Only above values are allowed. Grouped Values like <MondaytoFriday>are not allowed.",
       "category": "Vehicle journeys",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.3.3",
       "context": "//x:DaysOfWeek",
       "number": 41,
@@ -129,7 +129,7 @@
     {
       "details": "Serviced Organisations are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'ServicedOrganisatoin' field. When your service operators for more than a 9 month period, then please include a minimum of two dates.",
       "category": "Serviced organisations",
-      "condition": "",
+      "service_type": "All",
       "reference": "3.2",
       "context": "//x:ServicedOrganisation/x:WorkingDays/x:DateRange",
       "number": 9,
@@ -141,7 +141,7 @@
     {
       "details": "Mandatory elements incorrect in 'Holidays' field. Holidays must not be used. Please remove any entry values in this field.",
       "category": "Serviced organisations",
-      "condition": "",
+      "service_type": "All",
       "reference": "3.2",
       "context": "//x:ServicedOrganisation",
       "number": 50,
@@ -150,7 +150,7 @@
     {
       "details": "Mandatory element incorrect in 'StandardService' field. Please ensure that at least one 'JourneyPattern' is defined.",
       "category": "Services and Lines",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.3.2",
       "context": "//x:StandardService",
       "number": 21,
@@ -159,7 +159,7 @@
     {
       "details": "Mandatory elements incorrect in 'OutboundDescription' field. Please include values within the field. You can only leave it blank if you have filled in 'InboundDescription'",
       "category": "Services and Lines",
-      "condition": "StandardService",
+      "service_type": "StandardService",
       "reference": "5.5.4",
       "context": "//x:Line",
       "number": 25,
@@ -172,7 +172,7 @@
     {
       "details": "Mandatory elements incorrect in 'Route'. Should not contain ReversingManoeuvres element.",
       "category": "Routes and tracks",
-      "condition": "",
+      "service_type": "All",
       "reference": "7.2",
       "context": "//x:Route",
       "number": 30,
@@ -185,7 +185,7 @@
     {
       "details": "DepartureDayShift is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'DepartureDayShift' field. You have incorrect values inputted, you can only use '1' as an entry.",
       "category": "Vehicle journeys",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.2",
       "context": "//x:DepartureDayShift",
       "number": 46,
@@ -198,7 +198,7 @@
     {
       "details": "Tracks are optional. But if you are including it then it is required to be in the correct structure. Here, ySFou have an incorrect structure in 'Track' field. Please ensure a single Track contains sufficient Location elements defined between a pair of stops.",
       "category": "Routes and tracks",
-      "condition": "",
+      "service_type": "All",
       "reference": "7.1",
       "context": "//x:Track/x:Mapping",
       "number": 32,
@@ -211,7 +211,7 @@
     {
       "details": "Mandatory elements incorrect in 'BankHolidayOperation'. Every enumerated bank holiday allowed in BankHolidayOperation should appear in either DaysOfOperation or DaysOfNonOperation",
       "category": "Vehicle journeys",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.3.5",
       "context": "//x:BankHolidayOperation",
       "number": 43,
@@ -224,7 +224,7 @@
     {
       "details": "Mandatory elements incorrect in 'JourneyPatternTimingLink' field. Within the JourneyPatternTimingLink, the 'From SequenceNumber' and 'To SequenceNumber' are mandatory.",
       "category": "Journey timings on standard services",
-      "condition": "",
+      "service_type": "All",
       "reference": "8.4.4",
       "context": "//x:JourneyPatternTimingLink",
       "number": 38,
@@ -240,7 +240,7 @@
     {
       "details": "Mandatory elements incorrect in the 'ServiceCode' field. The values you provided are not in the correct format. Please use following the format <PF0000459:134> for registered services and <UZ000WNCT:GTT32> for unregistered services.",
       "category": "Services and Lines",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.3.2",
       "context": "//x:ServiceCode",
       "number": 18,
@@ -253,7 +253,7 @@
     {
       "details": "Mandatory element incorrect in 'OperatingPeriod'. Please specify an EndDate only if it is in the near future. If the EndDate is more than 4026 days (11 years) after the StartDate, then please remove it.",
       "category": "Services and Lines",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.3.3",
       "context": "//x:OperatingPeriod",
       "number": 20,
@@ -269,7 +269,7 @@
     {
       "details": "Mandatory elements incorrect in Destination Display.Please specify 'DestinationDisplay' or 'DynamicDestinationDisplay' in either JourneyPattern level or Vehicle Journey level. Please refer to Section 9.1 in BODS PTI v1.1 document to understand more on how to define them.",
       "category": "Vehicle journeys",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.1",
       "context": "//x:JourneyPattern",
       "number": 47,
@@ -282,7 +282,7 @@
     {
       "details": "Mandatory elements incorrect for Line ID. Please use the following format for Line ID: 'FESX:PF0000599:41:8:summer'. Where FESX is the NOC, Pf0000599:41 is the ServiceCode, 8 is the line name and summer is the season variant (if existing)",
       "category": "Services and Lines",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.5",
       "context": "//x:Line",
       "number": 24,
@@ -295,7 +295,7 @@
     {
       "details": "Mandatory elements incorrect in 'StandardService' field. For all non-flexible services please define them as 'StandardService'. For flexible services, please  use 'FlexibleService'.",
       "category": "Services and Lines",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.3.5",
       "context": "//x:Service",
       "number": 22,
@@ -308,7 +308,7 @@
     {
       "details": "Mandatory elements incorrect in 'JourneyPattern' field. If you have two links which follow on from each other, please ensure that the 'To' and 'From' in each have the same stop information. Refer to reference column for permitted elements and values",
       "category": "Journey timings on standard services",
-      "condition": "",
+      "service_type": "All",
       "reference": "8.4.3",
       "context": "//x:JourneyPatternSection",
       "number": 37,
@@ -321,7 +321,7 @@
     {
       "details": "Mandatory elements incorrect in 'JourneyPatternSection' field. For zero times, the vehicle journey sets times for all links. For non-zero times, vehicle journey should not include link times.",
       "category": "Journey timings on standard services",
-      "condition": "",
+      "service_type": "All",
       "reference": "8.1",
       "number": 34,
       "context": "//x:JourneyPatternTimingLink",
@@ -334,7 +334,7 @@
     {
       "details": "Mandatory element incorrect in 'ModificationDateTime' field. The field should only contain the date and time of revision. - Mandatory element incorrect in 'ModificationDateTime' field. The date/time specified in the field cannot be earlier than the one specified in the 'CreationDateTime' field.",
       "category": "Versioning",
-      "condition": "",
+      "service_type": "All",
       "reference": "2.3",
       "number": 2,
       "context": "/x:TransXChange",
@@ -347,7 +347,7 @@
     {
       "details": "Mandatory element incorrect in the 'Modification' field. Permitted values should be 'New' for first version files and 'Revise' for all other following versions.",
       "category": "Versioning",
-      "condition": "",
+      "service_type": "All",
       "reference": "2.3",
       "number": 3,
       "context": "/x:TransXChange",
@@ -360,7 +360,7 @@
     {
       "details": "Mandatory element incorrect in Location field. LayoverPoint is optional, however if you are including it then please specify 'Location'.",
       "category": "Layover Point",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.7.2",
       "number": 19,
       "context": "//x:LayoverPoint",
@@ -373,7 +373,7 @@
     {
       "details": "Mandatory elements incorrect in 'RouteSection'. Should not contain Direction.",
       "category": "Routes and tracks",
-      "condition": "",
+      "service_type": "All",
       "reference": "7.3",
       "number": 31,
       "context": "//x:RouteSection/x:RouteLink",
@@ -386,7 +386,7 @@
     {
       "details": "Mandatory Elements Missing",
       "category": "Vehicle Journey Interchange",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.6.1",
       "number": 50,
       "context": "//x:VehicleJourneyInterchange ",
@@ -405,7 +405,7 @@
     {
       "details": "Mandatory Elements Missing",
       "category": "Vehicle Journey Interchange",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.3.6.2",
       "number": 52,
       "context": "//x:JourneyPatternInterchange",
@@ -424,7 +424,7 @@
     {
       "details": "Mandatory elements incorrect in 'VehicleJourney' field. If you are providing VehicleJourneyRef then 'OperatingProfile’ can not be provided for that VehicleJourney.",
       "category": "Vehicle journeys",
-      "condition": "",
+      "service_type": "All",
       "reference": "9.2",
       "number": 39,
       "context": "//x:VehicleJourneys/x:VehicleJourney/x:VehicleJourneyRef",
@@ -437,7 +437,7 @@
     {
       "details": "Mandatory elements incorrect for Services and Lines. Please ensure that the lines defined in the lines group are related either spatially or temporally.",
       "category": "Services and Lines",
-      "condition": "",
+      "service_type": "All",
       "reference": "5.4",
       "number": 23,
       "context": "//x:Lines",
@@ -450,7 +450,7 @@
     {
       "details": " Mandatory elements incorrect in 'StopPoint' field. You cannot use this field for more than 2 months.",
       "category": "Stop points and stop areas",
-      "condition": "",
+      "service_type": "All",
       "reference": "6",
       "number": 28,
       "context": "//x:StopPoint",
@@ -463,7 +463,7 @@
     {
       "details": "Mandatory element 'NationalOperatorCode' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 104,
       "context": "//x:Operator",
@@ -476,7 +476,7 @@
     {
       "details": "Mandatory element 'LicenceNumber' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 127,
       "context": "//x:Operator",
@@ -489,7 +489,7 @@
     {
       "details": "Mandatory element 'PublicUse' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 105,
       "context": "//x:Service",
@@ -502,7 +502,7 @@
     {
       "details": "Mandatory element 'OperatorRef' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 110,
       "context": "//x:JourneyPattern",
@@ -515,7 +515,7 @@
     {
       "details": "Mandatory element 'Direction' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 111,
       "context": "//x:JourneyPattern",
@@ -528,7 +528,7 @@
     {
       "details": "Mandatory element 'RouteRef' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 112,
       "context": "//x:JourneyPattern",
@@ -541,7 +541,7 @@
     {
       "details": "Mandatory element 'JourneyPatternSectionRefs' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 113,
       "context": "//x:JourneyPattern",
@@ -554,7 +554,7 @@
     {
       "details": "Mandatory element 'RouteLinkRef' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 114,
       "context": "//x:JourneyPatternTimingLink",
@@ -567,7 +567,7 @@
     {
       "details": "Mandatory element 'TimingStatus' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 129,
       "context": "//x:JourneyPatternTimingLink/x:From",
@@ -580,7 +580,7 @@
     {
       "details": "Mandatory element 'TimingStatus' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 131,
       "context": "//x:JourneyPatternTimingLink/x:To",
@@ -593,7 +593,7 @@
     {
       "details": "Mandatory element 'OperatorRef' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 117,
       "context": "//x:VehicleJourney",
@@ -606,7 +606,7 @@
     {
       "details": "Mandatory element 'RunTime' missing",
       "category": "Mandatory Element",
-      "condition": "",
+      "service_type": "All",
       "reference": "0",
       "number": 118,
       "context": "//x:VehicleJourneyTimingLink",
