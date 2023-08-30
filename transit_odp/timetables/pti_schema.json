@@ -87,7 +87,7 @@
       "rules": [{ "test": "count(x:Service) = 1" }]
     },
     {
-      "details": "Mandatory elements incorrect in 'ServicesGroup'. The ServicesGroup should only contain a single Service element",
+      "details": "'Mandatory elements incorrect in 'ServicesGroup'. The ServicesGroup should only contain a single Service element except in cases when unregistered services are published with a single flexible service.",
       "category": "Services and Lines",
       "condition": "FlexibleService",
       "reference": "5.2",
