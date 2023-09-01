@@ -55,9 +55,6 @@ class GovUKNotifyEmail(NotificationBase):
             "OPERATOR_DATA_ENDPOINT_NOW_REACHABLE": (
                 "cc4e4f8f-d75e-4360-ac7f-e8eec5e9d340"
             ),
-            "OPERATOR_DATA_ENDPOINT_UNREACHABLE": (
-                "69dbd054-7bee-4b4d-9435-fd226578e836"
-            ),
             "OPERATOR_DATA_CHANGED": "0d64bbb3-2959-4670-871d-2077d8504f53",
             "AGENT_DATA_CHANGED": "9a6a7ac6-3f2c-4541-8fa8-5325ee05e151",
             "AGENT_INVITE_ACCEPTED": "d5ddb8c7-6ef0-42f3-9333-50aa28f2778f",
@@ -72,7 +69,6 @@ class GovUKNotifyEmail(NotificationBase):
                 "8466a24a-18b9-4b11-9512-9519a224d412"
             ),
             "OPERATOR_AGENT_REJECTED_INVITE": "b7edcd7f-5c86-4c6e-b085-c72efb487bc7",
-            "OPERATOR_AGENT_REMOVED": "66a9b1c9-5709-476d-a360-b2794a1a253b",
             "OPERATOR_NOC_CHANGED": "ca32baf1-a420-4893-98e8-04bd5e85a9c4",
             "DATASET_NO_LONGER_COMPLIANT": "3093797a-a1fa-4a08-8dc0-b0bfda4e3e64",
         }
