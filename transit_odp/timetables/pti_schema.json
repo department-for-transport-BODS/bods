@@ -615,6 +615,87 @@
           "test": "count(x:RunTime) > 0"
         }
       ]
+    },
+    {
+      "details": "'ServiceClasification' is not inputted as flexible.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 119,
+      "context": "//x:Service/x:ServiceClassification",
+      "rules": [
+        {
+          "test": "count(x:Flexible) = 1"
+        }
+      ]
+    },
+    {
+      "details": "There are no FlexibleJourneyPatterns present. At least one needs to be present for a flexible service.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 120,
+      "context": "//x:Service/x:FlexibleService",
+      "rules": [
+        {
+          "test": "count(x:FlexibleJourneyPattern) > 0"
+        }
+      ]
+    },
+    {
+      "details": "TXC-PTI does not support the use of the depreciated FlexibleZone and FixedStopPoints.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 121,
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
+      "rules": [
+        {
+          "test": "count(x:FlexibleZones) = 0"
+        },
+        {
+          "test": "count(x:FixedStopPoints) = 0"
+        }
+      ]
+    },
+    {
+      "details": "The description of BookingArrangements must be specified.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10.2",
+      "number": 122,
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
+      "rules": [
+        {
+          "test": "count(x:Description) = 1"
+        }
+      ]
+    },
+    {
+      "details": "At least one type of booking arrangement needs to be provided from Phone, Email, Address or WebAddress.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 123,
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
+      "rules": [
+        {
+          "test": "count(x:Phone) = 1 or count(x:Email) = 1 or count(x:WebAddress) = 1"
+        }
+      ]
+    },
+    {
+      "details": "No FlexibleServiceTimes have been specified.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 124,
+      "context": "//x:VehicleJourneys/x:FlexibleVehicleJourney",
+      "rules": [
+        {
+          "test": "count(x:FlexibleServiceTimes) > 0"
+        }
+      ]
     }
   ]
 }
