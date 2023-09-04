@@ -8,7 +8,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 from pydantic import Field, validator
-from pydantic.main import BaseModel
+from pydantic.main import BaseModel, ValidationError
 from requests import HTTPError, RequestException, Timeout
 from tenacity import retry, wait_exponential
 from tenacity.retry import retry_if_exception_type
@@ -88,8 +88,13 @@ class OTCAPIClient:
                 f"for params {params}"
             )
             return APIResponse()
-
-        return APIResponse(**response.json())
+        try:
+            return APIResponse(**response.json())
+        except ValidationError as exc:
+            logger.error("Validation error in OTC API response")
+            logger.error(f"Response JSON: {response.text}")
+            logger.error(f"Validation Error: {exc}")
+        return APIResponse()
 
     def get_latest_variations_since(self, when: datetime) -> List[Registration]:
         variations = []
