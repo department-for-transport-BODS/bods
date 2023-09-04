@@ -255,6 +255,11 @@ class NeTExDocument:
         return refs
 
 
+def process_document(xmlout):
+    doc = NeTExDocument(xmlout)
+    return doc
+
+
 def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
     """Returns a list NeTExDocuments from a zip file."""
     docs = []
@@ -263,7 +268,8 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
         for name in filenames:
             if not name.startswith("__"):
                 with zout.open(name) as xmlout:
-                    docs.append(NeTExDocument(xmlout))
+                    doc = process_document(xmlout)
+                    docs.append(doc)
     return docs
 
 
