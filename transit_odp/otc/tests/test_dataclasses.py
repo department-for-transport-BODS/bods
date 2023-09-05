@@ -1,7 +1,7 @@
 import pytest
-from transit_odp.otc.dataclasses import (
-    Registration,
-)
+from pydantic.main import ValidationError
+
+from transit_odp.otc.dataclasses import Registration
 
 test_data_sets = [
     {
@@ -69,3 +69,36 @@ def test_combine_service_numbers(test_data, expected_result):
     )
 
     assert combined_result == expected_result
+
+
+def test_registration_number_length_validation():
+    with pytest.raises(ValueError, match="ensure this value has at most 20 characters"):
+        Registration(registration_number="A" * 21)
+
+    registration = Registration(
+        registration_number="ABC123",
+        variation_number=1,
+        operator_id=1,
+        address="Main St",
+    )
+    assert registration.registration_number == "ABC123"
+
+
+def test_registration_status_invalid_string_validation():
+    with pytest.raises(ValueError, match="Invalid registration status"):
+        Registration(
+            registration_number="ABC123",
+            variation_number=1,
+            operator_id=1,
+            address="Main St",
+            registration_status="InvalidStatus",
+        )
+
+    registration = Registration(
+        registration_number="ABC123",
+        variation_number=1,
+        operator_id=1,
+        address="Main St",
+        registration_status="Registered",
+    )
+    assert registration.registration_status == "Registered"
