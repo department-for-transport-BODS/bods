@@ -170,6 +170,7 @@ LOCAL_APPS = [
     "transit_odp.users.apps.UsersAppConfig",
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
+    "transit_odp.disruptions.apps.DisruptionsConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -576,6 +577,11 @@ OTC_API_URL = env(
     "OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice"
 )
 OTC_API_KEY = env("OTC_API_KEY", default="")
+
+# Disruptions API
+# ------------------------------------------------------------------------------
+DISRUPTIONS_API_URL = env("DISRUPTIONS_API_URL", default="")
+DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 
 # Crispy forms
 # ------------------------------------------------------------------------------

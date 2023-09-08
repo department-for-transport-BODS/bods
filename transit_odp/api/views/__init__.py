@@ -7,6 +7,7 @@ from transit_odp.api.views.avl import (
 from transit_odp.api.views.base import DatasetBaseViewSet, DatasetViewSet
 from transit_odp.api.views.fares import FaresDatasetViewset, FaresOpenApiView
 from transit_odp.api.views.timetables import TimetablesApiView, TimetablesViewSet
+from transit_odp.api.views.disruptions import DisruptionsOpenApiView
 
 __all__ = [
     "AVLApiView",
@@ -19,4 +20,5 @@ __all__ = [
     "FaresOpenApiView",
     "TimetablesApiView",
     "TimetablesViewSet",
+    "DisruptionsOpenApiView",
 ]
