@@ -155,9 +155,16 @@ class LocalAuthorityView(BaseListView):
                         context["total_in_scope_in_season_services"] = otc_qs
                     else:
                         context["total_in_scope_in_season_services"] = 0
-                    context[
-                        "total_services_requiring_attention"
-                    ] = get_requires_attention_data_lta(lta_list)
+                    requires_attention_data_qs = get_requires_attention_data_lta(
+                        lta_list
+                    )
+                    if requires_attention_data_qs:
+                        context[
+                            "total_services_requiring_attention"
+                        ] = requires_attention_data_qs
+                    else:
+                        context["total_services_requiring_attention"] = 0
+
                     try:
                         context["services_require_attention_percentage"] = round(
                             100
