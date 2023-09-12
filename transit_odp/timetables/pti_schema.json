@@ -643,7 +643,7 @@
       ]
     },
     {
-      "details": "TXC-PTI does not support the use of the depreciated FlexibleZone and FixedStopPoints.",
+      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to OTH.",
       "category": "Flexible Service",
       "service_type": "FlexibleService",
       "reference": "10",
@@ -651,10 +651,7 @@
       "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
       "rules": [
         {
-          "test": "count(x:FlexibleZones) = 0"
-        },
-        {
-          "test": "count(x:FixedStopPoints) = 0"
+          "test": "check_flexible_service_timing_status(.)"
         }
       ]
     },

@@ -16,6 +16,7 @@ from transit_odp.data_quality.pti.constants import FLEXIBLE_SERVICE, STANDARD_SE
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
+    check_flexible_service_timing_status,
     contains_date,
     has_name,
     has_prohibited_chars,
@@ -470,6 +471,9 @@ class PTIValidator:
         self.fns = etree.FunctionNamespace(None)
         self.register_function("bool", cast_to_bool)
         self.register_function("contains_date", contains_date)
+        self.register_function(
+            "check_flexible_service_timing_status", check_flexible_service_timing_status
+        )
         self.register_function("date", cast_to_date)
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)
