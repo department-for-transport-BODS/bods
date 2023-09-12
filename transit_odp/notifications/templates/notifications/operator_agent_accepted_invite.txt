@@ -2,7 +2,9 @@ Hello,
 
 Your agent {{ agent_organisation }} has accepted your invitation to join the Bus Open Data Service and now can publish data on your behalf.
 
-You are receiving this email because you asked us to notify when team members accept your invitation. No further action is required from you at this point.
+You are receiving this email because you asked us to notify when team members accept your invitation.
+
+For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
 
 Kind regards,
 Bus Open Data Service
