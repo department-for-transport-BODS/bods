@@ -50,7 +50,7 @@
           <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
       {% endif %}
 
-      {% if Ï == 1 %}
+      {% if item.dataset_type == 1 %}
         {% include 'browse/snippets/results/timetables.html' %}
       {% elif item.dataset_type == 2 %}
         {% include 'browse/snippets/results/avl.html' %}
