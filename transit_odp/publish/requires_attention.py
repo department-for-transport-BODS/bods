@@ -23,10 +23,14 @@ def get_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     Get a list of dictionaries which includes all OTC Services for a LTA,
     excluding exempted services and Out of Season seasonal services.
     """
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_otc_data_for_lta(lta_list)
-    }
+    otc_data_lta_queryset = OTCService.objects.get_otc_data_for_lta(lta_list)
+    if otc_data_lta_queryset is not None:
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in otc_data_lta_queryset
+        }
+    else:
+        return {}
 
 
 def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
@@ -63,38 +67,40 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
-
-    service_code_subquery = Subquery(
-        OTCService.objects.filter(id__in=Subquery(final_subquery.values("id")))
-        .add_service_code()
-        .values("service_code")
-    )
-    return {
-        txcfa.service_code: txcfa
-        for txcfa in TXCFileAttributes.objects.filter(
-            service_code__in=service_code_subquery
+        service_code_subquery = Subquery(
+            OTCService.objects.filter(id__in=Subquery(final_subquery.values("id")))
+            .add_service_code()
+            .values("service_code")
         )
-        .get_active_live_revisions()
-        .add_staleness_dates()
-        .add_organisation_name()
-        .order_by(
-            "service_code",
-            "-revision__published_at",
-            "-revision_number",
-            "-modification_datetime",
-            "-operating_period_start_date",
-            "-filename",
-        )
-        .distinct("service_code")
-    }
+        return {
+            txcfa.service_code: txcfa
+            for txcfa in TXCFileAttributes.objects.filter(
+                service_code__in=service_code_subquery
+            )
+            .get_active_live_revisions()
+            .add_staleness_dates()
+            .add_organisation_name()
+            .order_by(
+                "service_code",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
+            )
+            .distinct("service_code")
+        }
+    else:
+        return None
 
 
 def _update_data(object_list: List[Dict[str, str]], service: OTCService) -> None:
@@ -233,11 +239,12 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     txcfa_map = get_txc_map_lta(lta_list)
 
     for service_code, service in otc_map.items():
-        file_attribute = txcfa_map.get(service_code)
-        if file_attribute is None:
-            _update_data(object_list, service)
-        elif is_stale(service, file_attribute):
-            _update_data(object_list, service)
+        if txcfa_map is not None:
+            file_attribute = txcfa_map.get(service_code)
+            if file_attribute is None:
+                _update_data(object_list, service)
+            elif is_stale(service, file_attribute):
+                _update_data(object_list, service)
     lta_services_requiring_attention = len(object_list)
 
     return lta_services_requiring_attention
