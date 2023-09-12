@@ -15,7 +15,6 @@
 
 {% block full_width_content %}
   <form>
-    {% block filter_form %}{% endblock filter_form %}
     {% with title="Location data" description="Search for specific operator or description" placeholder="Search by NOC, Operator or Description" %}
       {% include "browse/snippets/search_banner.html" %}
     {% endwith %}
