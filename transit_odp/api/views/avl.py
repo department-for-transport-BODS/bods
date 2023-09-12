@@ -5,13 +5,13 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import QueryDict
 from django.views.generic import TemplateView
-from lxml.etree import Element, SubElement, tostring
 from requests import RequestException
 from rest_framework import status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
+from transit_odp.api.utils.response_utils import create_xml_error_response
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
 
@@ -150,24 +150,3 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
         response_status = status.HTTP_200_OK
 
     return content, response_status
-
-
-def create_xml_error_response(error_msg, error_code):
-    """Create an xml error string response.
-
-    Args:
-        error_msg: Text to appear in the error_description element.
-        error_code: Text to appear in the error_code element.
-
-    Returns
-        An xml response string.
-
-    """
-    response = Element("response")
-
-    error = SubElement(response, "error_description")
-    error.text = error_msg
-
-    error_code_element = SubElement(response, "error_code")
-    error_code_element.text = f"{error_code}"
-    return tostring(response)
