@@ -100,7 +100,7 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
             .distinct("service_code")
         }
     else:
-        return None
+        return {}
 
 
 def _update_data(object_list: List[Dict[str, str]], service: OTCService) -> None:
@@ -239,12 +239,11 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     txcfa_map = get_txc_map_lta(lta_list)
 
     for service_code, service in otc_map.items():
-        if txcfa_map is not None:
-            file_attribute = txcfa_map.get(service_code)
-            if file_attribute is None:
-                _update_data(object_list, service)
-            elif is_stale(service, file_attribute):
-                _update_data(object_list, service)
+        file_attribute = txcfa_map.get(service_code)
+        if file_attribute is None:
+            _update_data(object_list, service)
+        elif is_stale(service, file_attribute):
+            _update_data(object_list, service)
     lta_services_requiring_attention = len(object_list)
 
     return lta_services_requiring_attention
