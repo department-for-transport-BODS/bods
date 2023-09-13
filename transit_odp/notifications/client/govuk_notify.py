@@ -64,7 +64,6 @@ class GovUKNotifyEmail(NotificationBase):
             "AGENT_LEAVES_ORGANISATION": "46719db6-98b6-4595-8f67-ecf5fbd5df8e",
             "AGENT_NOC_CHANGED": "b82b1df7-4e64-4117-b615-3ee789fa7ed1",
             "AGENT_REMOVED_BY_OPERATOR": "f1148060-86b4-4140-a852-c09ce973c0cf",
-            "OPERATOR_AGENT_INVITE_ACCEPTED": "7e8013f4-e092-477a-8ff7-9f7183ad814c",
             "OPERATOR_AGENT_LEAVES_ORGANISATION": (
                 "8466a24a-18b9-4b11-9512-9519a224d412"
             ),
