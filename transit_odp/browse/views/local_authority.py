@@ -51,18 +51,21 @@ def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
         if x.registration_numbers.values("id")
     ]
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
-    }
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
+        }
+    else:
+        return {}
 
 
 def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
@@ -75,25 +78,27 @@ def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
-
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in SeasonalService.objects.filter(
-            licence__organisation__licences__number__in=Subquery(
-                final_subquery.values("licence__number")
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in SeasonalService.objects.filter(
+                licence__organisation__licences__number__in=Subquery(
+                    final_subquery.values("licence__number")
+                )
             )
-        )
-        .add_registration_number()
-        .add_seasonal_status()
-    }
+            .add_registration_number()
+            .add_seasonal_status()
+        }
+    else:
+        return {}
 
 
 def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
@@ -103,22 +108,25 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
         if x.registration_numbers.values("id")
     ]
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in ServiceCodeExemption.objects.add_registration_number().filter(
-            licence__organisation__licences__number__in=Subquery(
-                final_subquery.values("licence__number")
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in ServiceCodeExemption.objects.add_registration_number().filter(
+                licence__organisation__licences__number__in=Subquery(
+                    final_subquery.values("licence__number")
+                )
             )
-        )
-    }
+        }
+    else:
+        return {}
 
 
 class LocalAuthorityView(BaseListView):
