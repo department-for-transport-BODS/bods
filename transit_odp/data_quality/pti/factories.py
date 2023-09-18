@@ -34,6 +34,7 @@ class ObservationFactory(Factory):
         model = Observation
 
     category = "Accessibility Information"
+    service_type = "All"
     details = "This should be happening."
     reference = "2.4.3"
     context = "//x:PassengerInfo"
