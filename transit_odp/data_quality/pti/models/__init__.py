@@ -22,7 +22,6 @@ class Rule(BaseModel):
 class Observation(BaseModel):
     details: str
     category: str
-    service_type: str
     reference: str
     context: str
     number: int
