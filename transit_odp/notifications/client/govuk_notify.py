@@ -47,6 +47,7 @@ class GovUKNotifyEmail(NotificationBase):
         # This is now effectively a list of all the templates that need to move over
         return {
             "INVITE_USER": "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1",
+            "OPERATOR_INVITE_ACCEPTED": "46bf62b7-bd47-449e-bd86-2aa252fceac7",
             "OPERATOR_DATA_DELETED": "1b0c8b4f-e2ec-4004-a1c3-74f16649efba",
             "OPERATOR_DELETER_DATA_DELETED": "f7a1c6bf-9e4c-4896-a106-109f71fe52b6",
             "OPERATOR_DATA_ENDPOINT_UNREACHABLE_NOW_EXPIRING": (
@@ -64,6 +65,7 @@ class GovUKNotifyEmail(NotificationBase):
             "AGENT_LEAVES_ORGANISATION": "46719db6-98b6-4595-8f67-ecf5fbd5df8e",
             "AGENT_NOC_CHANGED": "b82b1df7-4e64-4117-b615-3ee789fa7ed1",
             "AGENT_REMOVED_BY_OPERATOR": "f1148060-86b4-4140-a852-c09ce973c0cf",
+            "OPERATOR_AGENT_INVITE_ACCEPTED": "7e8013f4-e092-477a-8ff7-9f7183ad814c",
             "OPERATOR_AGENT_LEAVES_ORGANISATION": (
                 "8466a24a-18b9-4b11-9512-9519a224d412"
             ),
