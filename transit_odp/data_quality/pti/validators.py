@@ -12,15 +12,12 @@ from django.db.models.functions import Replace
 from lxml import etree
 
 from transit_odp.common.types import JSONFile, XMLFile
-from transit_odp.data_quality.pti.constants import FLEXIBLE_SERVICE, STANDARD_SERVICE
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
-    check_flexible_service_timing_status,
     contains_date,
     has_name,
     has_prohibited_chars,
-    has_unregistered_service_codes,
     is_member_of,
     regex,
     strip,
@@ -471,17 +468,11 @@ class PTIValidator:
         self.fns = etree.FunctionNamespace(None)
         self.register_function("bool", cast_to_bool)
         self.register_function("contains_date", contains_date)
-        self.register_function(
-            "check_flexible_service_timing_status", check_flexible_service_timing_status
-        )
         self.register_function("date", cast_to_date)
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)
         self.register_function("has_name", has_name)
         self.register_function("has_prohibited_chars", has_prohibited_chars)
-        self.register_function(
-            "has_unregistered_service_codes", has_unregistered_service_codes
-        )
         self.register_function("in", is_member_of)
         self.register_function("regex", regex)
         self.register_function("strip", strip)
@@ -522,39 +513,9 @@ class PTIValidator:
                 self.add_violation(violation)
                 break
 
-    def check_service_type(self, document):
-        servie_classification_xpath = (
-            "//x:Services/x:Service/x:ServiceClassification/x:Flexible"
-        )
-        service_classification = document.xpath(
-            servie_classification_xpath, namespaces=self.namespaces
-        )
-
-        flexible_jp_xpath = (
-            "//x:Services/x:Service/x:FlexibleService/x:FlexibleJourneyPattern"
-        )
-        flexible_jp = document.xpath(flexible_jp_xpath, namespaces=self.namespaces)
-
-        booking_arrangement_xpath = "//x:Services/x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements"
-        booking_arrangement = document.xpath(
-            booking_arrangement_xpath, namespaces=self.namespaces
-        )
-
-        if service_classification or flexible_jp or booking_arrangement:
-            return FLEXIBLE_SERVICE
-        return STANDARD_SERVICE
-
     def is_valid(self, source: XMLFile) -> bool:
         document = etree.parse(source)
-        txc_service_type = self.check_service_type(document)
-
-        service_observations = []
-        service_observations = [
-            x
-            for x in self.schema.observations
-            if x.service_type == txc_service_type or x.service_type == "All"
-        ]
-        for observation in service_observations:
+        for observation in self.schema.observations:
             elements = document.xpath(observation.context, namespaces=self.namespaces)
             for element in elements:
                 self.check_observation(observation, element)
