@@ -226,18 +226,3 @@ def validate_bank_holidays(context, bank_holidays):
     # optional Scottish holiday check
     scottish_removed = list(set(holidays) - set(SCOTTISH_BANK_HOLIDAYS))
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
-
-
-def has_unregistered_service_codes(context, services):
-    service_code_list = []
-    service = services[0]
-    ns = {"x": service.nsmap.get(None)}
-
-    service_list = service.xpath("x:Service", namespaces=ns)
-    for service in service_list:
-        service_code_list.append(service.xpath("string(x:ServiceCode)", namespaces=ns))
-    r = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
-    registered_service_code = list(filter(r.match, service_code_list))
-    if len(registered_service_code) > 1:
-        return False
-    return True
