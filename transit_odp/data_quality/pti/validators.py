@@ -260,7 +260,6 @@ class DestinationDisplayValidator:
         return True
 
     def validate(self):
-
         if self.journey_pattern_has_display():
             return True
 

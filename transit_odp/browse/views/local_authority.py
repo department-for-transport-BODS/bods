@@ -9,7 +9,7 @@ from django.views import View
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
-from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models import Organisation, TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
@@ -32,6 +32,15 @@ def get_seasonal_service_status(otc_service: dict) -> str:
     return "In Season" if seasonal_service_status else "Out of Season"
 
 
+def get_operator_name(otc_service: dict) -> str:
+    otc_licence_number = otc_service.get("otc_licence_number")
+    operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
+    if not operator_name:
+        return "Organisation not yet created"
+    else:
+        return operator_name
+
+
 def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
@@ -42,18 +51,21 @@ def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
         if x.registration_numbers.values("id")
     ]
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
-    }
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
+        }
+    else:
+        return {}
 
 
 def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
@@ -66,25 +78,27 @@ def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
-
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in SeasonalService.objects.filter(
-            licence__organisation__licences__number__in=Subquery(
-                final_subquery.values("licence__number")
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in SeasonalService.objects.filter(
+                licence__organisation__licences__number__in=Subquery(
+                    final_subquery.values("licence__number")
+                )
             )
-        )
-        .add_registration_number()
-        .add_seasonal_status()
-    }
+            .add_registration_number()
+            .add_seasonal_status()
+        }
+    else:
+        return {}
 
 
 def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
@@ -94,22 +108,25 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
         if x.registration_numbers.values("id")
     ]
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in ServiceCodeExemption.objects.add_registration_number().filter(
-            licence__organisation__licences__number__in=Subquery(
-                final_subquery.values("licence__number")
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in ServiceCodeExemption.objects.add_registration_number().filter(
+                licence__organisation__licences__number__in=Subquery(
+                    final_subquery.values("licence__number")
+                )
             )
-        )
-    }
+        }
+    else:
+        return {}
 
 
 class LocalAuthorityView(BaseListView):
@@ -146,9 +163,16 @@ class LocalAuthorityView(BaseListView):
                         context["total_in_scope_in_season_services"] = otc_qs
                     else:
                         context["total_in_scope_in_season_services"] = 0
-                    context[
-                        "total_services_requiring_attention"
-                    ] = get_requires_attention_data_lta(lta_list)
+                    requires_attention_data_qs = get_requires_attention_data_lta(
+                        lta_list
+                    )
+                    if requires_attention_data_qs:
+                        context[
+                            "total_services_requiring_attention"
+                        ] = requires_attention_data_qs
+                    else:
+                        context["total_services_requiring_attention"] = 0
+
                     try:
                         context["services_require_attention_percentage"] = round(
                             100
@@ -167,7 +191,12 @@ class LocalAuthorityView(BaseListView):
 
         ltas = {
             "names": list(
-                set([lta.ui_lta_name_trimmed for lta in all_ltas_current_page])
+                set(
+                    [
+                        lta.ui_lta_name_trimmed.replace("\xa0", " ")
+                        for lta in all_ltas_current_page
+                    ]
+                )
             )
         }
         context["ltas"] = ltas
@@ -309,7 +338,10 @@ class LTACSV(CSVBuilder):
         ),
         CSVColumn(
             header="Operator Name",
-            accessor=lambda otc_service: otc_service.get("operator_name"),
+            accessor=lambda otc_service: get_operator_name(otc_service)
+            if otc_service.get("operator_name") is None
+            or otc_service.get("operator_name") == ""
+            else otc_service.get("operator_name"),
         ),
         CSVColumn(
             header="Data set Licence Number",

@@ -45,6 +45,7 @@ from transit_odp.organisation.models import (
     TXCFileAttributes,
 )
 from transit_odp.organisation.querysets import ANONYMOUS, DATASET_LEVEL, GENERAL_LEVEL
+from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 from transit_odp.pipelines.factories import (
     DatasetETLTaskResultFactory,
     RemoteDatasetHealthCheckCountFactory,
@@ -287,6 +288,25 @@ class TestOrganisationQuerySet:
             )
 
         assert org.get_status() == expected
+
+    def test_get_organisation_name(self):
+        licence_number = "PD0000099"
+        otc_operator_name = "test_org_1"
+        num_otc_services = 10
+        service_codes = [f"{licence_number}:{n}" for n in range(num_otc_services)]
+        service_numbers = [f"Line{n}" for n in range(num_otc_services)]
+
+        org1 = OrganisationFactory(name="test_org_1")
+        LicenceFactory(organisation=org1, number=licence_number)
+        otc_lic = LicenceModelFactory(number=licence_number)
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[0],
+            service_number=service_numbers[0],
+        )
+
+        operator_name = Organisation.objects.get_organisation_name(licence_number)
+        assert operator_name == otc_operator_name
 
 
 @pytest.fixture

@@ -1,4 +1,5 @@
 import itertools
+
 from typing import List
 
 from waffle import flag_is_active
