@@ -270,3 +270,16 @@ def check_flexible_service_timing_status(context, flexiblejourneypatterns):
         timing_status_value == "OTH" for timing_status_value in timing_status_value_list
     )
     return result
+
+
+def has_pii_information(self, roots):
+    """
+    Checks if FileName attribute within the TransXchange root
+    element has personal identifiable information (PII).
+    """
+    root = roots[0]
+    file_name = root.attrib.get("FileName")
+    file_name_pii_check = re.findall("\\\\", file_name)
+    if len(file_name_pii_check) > 0:
+        return False
+    return True

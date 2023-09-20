@@ -12,6 +12,7 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_timing_status,
     contains_date,
     has_name,
+    has_pii_information,
     has_prohibited_chars,
     has_unregistered_service_codes,
     is_member_of,
@@ -253,4 +254,42 @@ def test_check_flexible_service_timing_status(values, expected):
         "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern", namespaces=NAMESPACE
     )
     actual = check_flexible_service_timing_status("", elements)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        (
+            "552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml",
+            True,
+        ),
+        (
+            r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+            False,
+        ),
+        (
+            r"Z:\Bus Services\Bus\Test\Fernhill TXC\Fernhill Travel 2021-06-10 11-54\Fernhill Travel WS1 2021-06-10 11-54.xml",
+            False,
+        ),
+        (
+            r"\\TANAT-000\Network-Data\Drives\Home\test.test\Desktop\transxchange new\done\completed\Tanat Valley Coaches 2021-06-23 13-02\Tanat Valley Coaches 74 2021-06-23 13-02.xml",
+            False,
+        ),
+        (
+            r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+            False,
+        ),
+    ],
+)
+def test_has_pii_information(values, expected):
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    transxchange_root = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="{0}" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+    </TransXChange>
+    """
+    string_xml = transxchange_root.format(values)
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath("/x:TransXChange", namespaces=NAMESPACE)
+    actual = has_pii_information("", elements)
     assert actual == expected
