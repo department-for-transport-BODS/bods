@@ -1,0 +1,21 @@
+{% extends "browse/snippets/results/disruptions_base.html" %}
+
+{% load i18n %}
+{% load waffle_tags %}
+
+{% block dataset_detail_link %}
+    <a class='govuk-link' href="{% url 'disruptions-data' host hosts.data %}">
+        {{ item.operatorPublicName }}
+    </a>
+{% endblock %}
+
+{% block dataset_result_content %}
+    <li>
+        <span class="item__key">{% trans 'Disrupted services:' %}</span>
+        <span class="item__value">{{ item.opId }}</span>
+    </li>
+    <li>
+        <span class="item__key">{% trans 'Last updated:' %}</span>
+        <span class="item__value">{{ item.changeDate|date:"j M Y G:i:s" }}</span>
+    </li>
+{% endblock %}

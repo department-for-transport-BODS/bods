@@ -101,6 +101,26 @@
                 <li><b>{% trans 'Data source' %}:</b> {% trans 'BODS' %}</li>
             </ul>
         </div>
+
+        <div class="govuk-grid-row govuk-!-margin-top-7">
+          <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}?status=live">
+              {% trans 'Disruptions data' %}
+          </a>
+          <p class="govuk-body govuk-!-padding-top-3">
+              {% blocktrans %}
+                  You can filter and browse the live locations of buses at a specific point.
+              {% endblocktrans %}
+          </p>
+          <ul class="govuk-list">
+              <li>
+                  <b>{% trans 'Format' %}:</b>
+                  {% trans 'SIRI-SX' %} {% include "browse/snippets/help_modals/netex.html" %}
+              </li>
+              <li><b>{% trans 'File type' %}:</b> {% trans 'XML file' %}</li>
+              <li><b>{% trans 'Data type' %}:</b> {% trans 'Real-Time' %}</li>
+              <li><b>{% trans 'Data source' %}:</b> {% trans 'Local authorities' %}</li>
+          </ul>
+        </div>
     </div>
 {% endblock %}
 
