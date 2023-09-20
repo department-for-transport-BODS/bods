@@ -196,7 +196,7 @@
       ]
     },
     {
-      "details": "Tracks are optional. But if you are including it then it is required to be in the correct structure. Here, ySFou have an incorrect structure in 'Track' field. Please ensure a single Track contains sufficient Location elements defined between a pair of stops.",
+      "details": "Tracks are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Track' field. Please ensure a single Track contains sufficient Location elements defined between a pair of stops.",
       "category": "Routes and tracks",
       "service_type": "All",
       "reference": "7.1",
