@@ -11,6 +11,7 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_date,
     check_flexible_service_timing_status,
     contains_date,
+    has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
     has_unregistered_service_codes,
@@ -204,6 +205,74 @@ def test_has_unregistered_service_codes(value, expected):
     doc = etree.fromstring(string_xml)
     elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
     actual = has_unregistered_service_codes("", elements)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("service_classification", "flexible", "expected"),
+    [
+        (True, True, True),
+        (True, False, False),
+        (False, False, False),
+    ],
+)
+def test_has_flexible_service_classification(
+    service_classification, flexible, expected
+):
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    service_classification_present = """
+        <ServiceClassification>
+        </ServiceClassification>
+    """
+    service_classification_flexible_present = """
+        <ServiceClassification>
+            <Flexible/>
+        </ServiceClassification>
+    """
+    service = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+		    <Service>
+                {0}
+                <FlexibleService>
+                    <FlexibleJourneyPattern id="jp_1">
+                        <BookingArrangements>
+                            <Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
+                            <Phone>
+                                <TelNationalNumber>0345 234 3344</TelNationalNumber>
+                            </Phone>
+                            <AllBookingsTaken>true</AllBookingsTaken>
+                        </BookingArrangements>
+                    </FlexibleJourneyPattern>
+			    </FlexibleService>
+            </Service>
+            <Service>
+                <StandardService>
+                    <Origin>Putteridge High School</Origin>
+                    <Destination>Church Street</Destination>
+                    <JourneyPattern id="jp_2">
+                    <DestinationDisplay>Church Street</DestinationDisplay>
+                    <OperatorRef>tkt_oid</OperatorRef>
+                    <Direction>inbound</Direction>
+                    <RouteRef>rt_0000</RouteRef>
+                    <JourneyPatternSectionRefs>js_1</JourneyPatternSectionRefs>
+                    </JourneyPattern>
+                </StandardService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    if service_classification:
+        if flexible:
+            string_xml = service.format(service_classification_flexible_present)
+        else:
+            string_xml = service.format(service_classification_present)
+    else:
+        string_xml = service
+
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath("//x:Service", namespaces=NAMESPACE)
+    actual = has_flexible_service_classification("", elements)
     assert actual == expected
 
 
