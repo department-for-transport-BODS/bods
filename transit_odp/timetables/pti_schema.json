@@ -693,19 +693,6 @@
           "test": "count(x:FlexibleServiceTimes) > 0"
         }
       ]
-    },
-    {
-      "details": "Your TransXchange contains personal identifiable information. Please download the new TransXchange tool here: https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-data.",
-      "category": "Personal Identifiable Information",
-      "service_type": "All",
-      "reference": "0",
-      "number": 125,
-      "context": "/x:TransXChange",
-      "rules": [
-        {
-          "test": "has_pii_information(.)"
-        }
-      ]
     }
   ]
 }

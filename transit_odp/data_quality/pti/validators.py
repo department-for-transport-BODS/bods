@@ -19,7 +19,6 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_timing_status,
     contains_date,
     has_name,
-    has_pii_information,
     has_prohibited_chars,
     has_unregistered_service_codes,
     is_member_of,
@@ -479,7 +478,6 @@ class PTIValidator:
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)
         self.register_function("has_name", has_name)
-        self.register_function("has_pii_information", has_pii_information)
         self.register_function("has_prohibited_chars", has_prohibited_chars)
         self.register_function(
             "has_unregistered_service_codes", has_unregistered_service_codes
