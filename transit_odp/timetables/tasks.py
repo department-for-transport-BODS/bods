@@ -30,6 +30,7 @@ from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
+    PrePTIValidator,
     TimetableFileValidator,
     TXCRevisionValidator,
 )
@@ -70,6 +71,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_scan_timetables.signature(args),
             task_timetable_file_check.signature(args),
             task_timetable_schema_check.signature(args),
+            task_pre_pti_check.signature(args),
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
             task_dqs_upload.signature(args),
@@ -230,6 +232,35 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
             adapter.info("Validation complete.")
             task.update_progress(40)
             return revision_id
+
+
+# For email notification to be triggered, look at this file:
+# transit_odp/organisation/notifications.py
+# Make new, seperate publish flow screens for this type of check?
+@shared_task
+def task_pre_pti_check(revision_id: int, task_id: int):
+    """
+    Pre-PTI checks such as personal identifiable information (PII),
+    publishing an already active dataset, and adding a service that
+    doesn't belong to your organisation.
+    """
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting Pre-PTI validation check.")
+
+    try:
+        violations = []
+        parser = TransXChangeDatasetParser(revision.upload_file)
+        file_names_list = parser.get_file_names()
+        validator = PrePTIValidator(file_names_list)
+        violations += validator.get_violations()
+    except Exception as exc:
+        task.handle_general_pipeline_exception(
+            exc, adapter, message="An unexpected exception has occurred."
+        )
+    adapter.info("Finished Pre-PTI validation check.")
+    return revision_id
 
 
 @shared_task()

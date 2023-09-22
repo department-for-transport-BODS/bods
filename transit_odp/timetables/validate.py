@@ -1,3 +1,4 @@
+import re
 import zipfile
 from logging import getLogger
 from typing import List, Optional
@@ -9,6 +10,7 @@ from lxml import etree
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
+from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.transxchange import TXCSchemaViolation
 from transit_odp.timetables.utils import get_transxchange_schema
@@ -290,4 +292,34 @@ class TXCRevisionValidator:
 
         self.validate_creation_datetime()
         self.validate_revision_number()
+        return self.violations
+
+
+class PrePTIValidator:
+    def __init__(self, file_names):
+        self.file_names = file_names
+        self.violations = []
+
+    def check_file_names_pii_information(self):
+        """
+        Checks if FileName attribute within the TransXchange root
+        element has personal identifiable information (PII).
+        """
+        result = []
+        file_names = self.file_names
+        for file_name in file_names:
+            file_name_pii_check = re.findall("\\\\", file_name)
+            if len(file_name_pii_check) > 0:
+                result.append(False)
+            else:
+                result.append(True)
+        return result
+
+    def get_violations(self):
+        """
+        Returns any revision violations.
+        """
+        result = self.check_file_names_pii_information()
+        if not all(result):
+            self.violations.append(PII_ERROR)
         return self.violations

@@ -440,6 +440,9 @@ class TransXChangeDatasetParser:
     def get_transxchange_versions(self) -> List[TransXChangeElement]:
         return [doc.get_transxchange_version() for doc in self.get_documents()]
 
+    def get_file_names(self) -> List[TransXChangeElement]:
+        return [doc.get_file_name() for doc in self.get_documents()]
+
     def get_stop_points(self):
         all_stops = []
         for doc in self.get_documents():
