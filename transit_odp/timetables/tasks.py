@@ -6,7 +6,7 @@ import celery
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils import timezone
 
 from transit_odp.common.loggers import (
@@ -407,3 +407,38 @@ def task_log_stuck_revisions() -> None:
     logger.info(f"There are {revisions.count()} revisions stuck in processing.")
     for revision in revisions:
         logger.info(f"Dataset {revision.dataset_id} => Revision is stuck.")
+
+
+@shared_task(ignore_errors=True)
+def task_delete_txc_datasets():
+    """This is a one-off task to delete datasets from BODS database"""
+    delete_txc_datasets_file_path = Path(__file__).parent / "delete_txc_datasets.txt"
+    try:
+        with open(delete_txc_datasets_file_path, 'r') as file:
+            dataset_ids = [int(id.strip()) for id in file.read().split(',') if id.strip()]
+            if not dataset_ids:
+                logger.info("No valid dataset IDs found in the file.")
+                return
+
+            logger.info(
+                f"Total number of datasets to be deleted is: {len(dataset_ids)}")
+            datasets = Dataset.objects.filter(id__in=dataset_ids)
+            deleted_count = 0
+            failed_deletion_ids = []
+
+            for dataset in datasets:
+                try:
+                    dataset.delete()
+                    deleted_count += 1
+                except IntegrityError as e:
+                    logger.error(f"Error deleting dataset {dataset.id}: {str(e)}")
+                    failed_deletion_ids.append(dataset.id)
+
+            logger.info(f"Total number of datasets deleted is: {deleted_count}")
+            if failed_deletion_ids:
+                logger.error(f"Failed to delete datasets with IDs: {failed_deletion_ids}")
+    except FileNotFoundError:
+        logger.warning("Delete txc datasets file not found.")
+        return []
+
+
