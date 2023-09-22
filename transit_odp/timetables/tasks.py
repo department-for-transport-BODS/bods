@@ -410,9 +410,9 @@ def task_log_stuck_revisions() -> None:
 
 
 @shared_task(ignore_errors=True)
-def task_delete_txc_datasets():
+def task_delete_datasets():
     """This is a one-off task to delete datasets from BODS database"""
-    delete_txc_datasets_file_path = Path(__file__).parent / "delete_txc_datasets.txt"
+    delete_txc_datasets_file_path = Path(__file__).parent / "delete_datasets.txt"
     try:
         with open(delete_txc_datasets_file_path, 'r') as file:
             dataset_ids = [int(id.strip()) for id in file.read().split(',') if id.strip()]
@@ -438,7 +438,7 @@ def task_delete_txc_datasets():
             if failed_deletion_ids:
                 logger.error(f"Failed to delete datasets with IDs: {failed_deletion_ids}")
     except FileNotFoundError:
-        logger.warning("Delete txc datasets file not found.")
+        logger.warning("Delete datasets file not found.")
         return []
 
 
