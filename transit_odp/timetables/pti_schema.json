@@ -656,19 +656,6 @@
       ]
     },
     {
-      "details": "The description of BookingArrangements must be specified.",
-      "category": "Flexible Service",
-      "service_type": "FlexibleService",
-      "reference": "10.2",
-      "number": 122,
-      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
-      "rules": [
-        {
-          "test": "count(x:Description) = 1"
-        }
-      ]
-    },
-    {
       "details": "At least one type of booking arrangement needs to be provided from Phone, Email, Address or WebAddress.",
       "category": "Flexible Service",
       "service_type": "FlexibleService",
