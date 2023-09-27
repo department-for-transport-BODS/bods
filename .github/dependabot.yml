@@ -10,9 +10,19 @@ updates:
     target-branch: "dev"
     schedule:
       interval: "daily"
+    assignees:
+      - "pritish-ranjan01"
+      - "surabhika"
+    reviewers:
+      - "PCridKPMG"
 
   - package-ecosystem: "npm"
     directory: "/"
     target-branch: "dev"
     schedule:
       interval: "daily"
+    assignees:
+      - "pritish-ranjan01"
+      - "surabhika"
+    reviewers:
+      - "PCridKPMG"
