@@ -42,7 +42,7 @@ django-rest-swagger = "~=2.2.0"
 django-storages = {extras = ["boto3"], version = "~=1.8"}
 django-tables2 = "~=2.3.0"
 djangorestframework = "~=3.11.0"
-djangorestframework-gis = "~=0.15"
+djangorestframework-gis = "~=1.0"
 ddtrace = "~=1.17.0"
 flower = "~=1.0.0"
 freezegun = "~=0.3.0"
