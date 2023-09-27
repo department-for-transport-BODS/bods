@@ -86,13 +86,7 @@ class DisruptionsDataView(ListView):
         # Validate the ordering value to prevent SQL injection
         if ordering not in ["name", "-name", "-lastUpdated"]:
             # ordering = '-lastUpdated'
-            ordering = "operatorPublicName"
-
-        if ordering == "name":
-            ordering = "operatorPublicName"
-
-        if ordering == "-name":
-            ordering = "-operatorPublicName"
+            ordering = "name"
 
         reverse_order = ordering.startswith("-")
 

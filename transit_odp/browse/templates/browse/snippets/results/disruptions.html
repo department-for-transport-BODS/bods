@@ -12,10 +12,14 @@
 {% block dataset_result_content %}
     <li>
         <span class="item__key">{% trans 'Disrupted services:' %}</span>
-        <span class="item__value">{{ item.opId }}</span>
+        <span class="item__value">{{ item.name }}</span>
     </li>
     <li>
         <span class="item__key">{% trans 'Last updated:' %}</span>
-        <span class="item__value">{{ item.changeDate|date:"j M Y G:i:s" }}</span>
+        {% if item.lastUpdated %}
+            <span class="item__value">{{ item.lastUpdated|date:"j M Y G:i:s" }}</span>
+        {% else %}
+            <span class="item__value">{% now "j M Y G:i:s" %}</span>
+        {% endif %}
     </li>
 {% endblock %}

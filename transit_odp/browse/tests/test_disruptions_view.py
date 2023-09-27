@@ -15,37 +15,52 @@ class TestDisruptionsDataView:
     template_path = "browse/disruptions/disruptions_data.html"
     org_data = [
         {
-            "id": 50,
-            "nocCode": "A2BR",
-            "operatorPublicName": "A2B Bus and Coach",
-            "vosaPsvLicenseName": "",
-            "opId": "138245",
-            "pubNmId": "96067",
-            "nocCdQual": "",
-            "changeDate": "",
-            "changeAgent": "",
-            "changeComment": "",
-            "dateCeased": "",
-            "dataOwner": "",
-            "mode": "bus",
-            "dataSource": "bods",
+            "id": "5a6e9348-9bd7-46d8-b939-a394876b2ea5",
+            "name": "ABC",
+            "adminAreaCodes": [
+            "099",
+            "110",
+            "146",
+            "147"
+            ],
+            "stats": {
+            "disruptionReasonCount": {
+                "roadClosed": 13,
+                "routeDiversion": 1,
+                "maintenanceWork": 3,
+                "roadworks": 14,
+                "repairWork": 1,
+                "vandalism": 2,
+                "unknown": 1
+            },
+            "networkWideConsequencesCount": 2,
+            "operatorWideConsequencesCount": 9,
+            "servicesAffected": 54,
+            "servicesConsequencesCount": 32,
+            "stopsAffected": 41,
+            "stopsConsequencesCount": 7,
+            "totalConsequencesCount": 50
+            }
         },
         {
-            "id": 50,
-            "nocCode": "A2BR",
-            "operatorPublicName": "D2B Bus and Coach",
-            "vosaPsvLicenseName": "",
-            "opId": "138245",
-            "pubNmId": "96067",
-            "nocCdQual": "",
-            "changeDate": "",
-            "changeAgent": "",
-            "changeComment": "",
-            "dateCeased": "",
-            "dataOwner": "",
-            "mode": "bus",
-            "dataSource": "tnds",
-        },
+            "id": "169504c9-de3c-4399-a732-843a258e47ab",
+            "name": "SYMCA",
+            "adminAreaCodes": [
+            "083"
+            ],
+            "stats": {
+            "disruptionReasonCount": {
+
+            },
+            "networkWideConsequencesCount": 0,
+            "operatorWideConsequencesCount": 0,
+            "servicesAffected": 0,
+            "servicesConsequencesCount": 0,
+            "stopsAffected": 0,
+            "stopsConsequencesCount": 0,
+            "totalConsequencesCount": 0
+            }
+        }
     ]
 
     @patch(
@@ -73,8 +88,8 @@ class TestDisruptionsDataView:
         assert response.context_data["view"].template_name == self.template_path
         assert len(response.context_data["object_list"]) == 2
         assert (
-            response.context_data["object_list"][0]["operatorPublicName"]
-            == "D2B Bus and Coach"
+            response.context_data["object_list"][0]["name"]
+            == "SYMCA"
         )
 
     @patch(
@@ -83,13 +98,13 @@ class TestDisruptionsDataView:
     def test_display_with_search(self, mrequests, client_factory):
         mrequests.return_value = (self.org_data, 200)
         client = client_factory(host=self.host)
-        response = client.get(self.url, data={"q": "D2B"})
+        response = client.get(self.url, data={"q": "SYM"})
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
         assert len(response.context_data["object_list"]) == 1
         assert (
-            response.context_data["object_list"][0]["operatorPublicName"]
-            == "D2B Bus and Coach"
+            response.context_data["object_list"][0]["name"]
+            == "SYMCA"
         )
-        assert response.context_data["q"] == "D2B"
+        assert response.context_data["q"] == "SYM"
