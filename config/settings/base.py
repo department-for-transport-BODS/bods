@@ -582,6 +582,7 @@ OTC_API_KEY = env("OTC_API_KEY", default="")
 # ------------------------------------------------------------------------------
 DISRUPTIONS_API_URL = env("DISRUPTIONS_API_URL", default="")
 DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
+DISRUPTIONS_ORG_API_URL = env("DISRUPTIONS_ORG_API_URL", default="")
 
 # Crispy forms
 # ------------------------------------------------------------------------------
