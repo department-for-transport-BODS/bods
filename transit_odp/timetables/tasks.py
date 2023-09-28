@@ -410,18 +410,48 @@ def task_log_stuck_revisions() -> None:
         logger.info(f"Dataset {revision.dataset_id} => Revision is stuck.")
 
 
-def get_sirivm_storage():
-    if bucket_name := getattr(settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", False):
-        if not bucket_name:
-            raise ValueError("Bucket name AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME is not configured in settings")
-        return S3Boto3Storage(bucket_name=bucket_name)
+def get_s3_bucket_storage():
+    bucket_name = getattr(settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None)
+    if not bucket_name:
+        logger.error("Bucket name is not configured in settings.")
+        raise ValueError("Bucket name is not configured in settings.")
+
+    try:
+        storage = S3Boto3Storage(bucket_name=bucket_name)
+        logger.info(f"Successfully connected to S3 bucket: {bucket_name}")
+        return storage
+    except Exception as e:
+        logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
+        raise
 
 
-@shared_task(ignore_errors=True)
-def task_delete_datasets(dataset_id = None):
+def read_delete_datasets_file_from_s3():
+    try:
+        storage = get_s3_bucket_storage()
+        if not storage.exists("delete_datasets.txt"):
+            logger.warning("delete_datasets.txt does not exist in the S3 bucket.")
+            return ""
+
+        file = storage._open("delete_datasets.txt")
+        content = file.read().decode()
+        file.close()
+
+        if content:
+            logger.info("Successfully read content from delete_datasets.txt in S3.")
+        else:
+            logger.warning("delete_datasets.txt in S3 is empty.")
+
+        return content
+    except Exception as e:
+        logger.error(f"Error reading delete_datasets.txt from S3: {str(e)}")
+        raise
+
+
+@shared_task()
+def task_delete_datasets(dataset_id=None):
     """This is a one-off task to delete datasets from BODS database
-        If a dataset ID is provided as an argument, use it for deletion or proceed with the file in S3 bucket"""
-    
+    If a dataset ID is provided as an argument, use it for deletion or proceed with the file in S3 bucket"""
+
     if dataset_id is not None:
         try:
             dataset = Dataset.objects.get(id=dataset_id)
@@ -432,35 +462,35 @@ def task_delete_datasets(dataset_id = None):
                 logger.error(f"Error deleting dataset {dataset_id}: {str(e)}")
         except Dataset.DoesNotExist:
             logger.warning(f"Dataset with ID {dataset_id} does not exist.")
-    else:      
-        delete_txc_datasets_file_path = Path(__file__).parent / "delete_datasets.txt"
-        bucket_name = get_sirivm_storage()
-        logger.info(f"The bucket name is: {bucket_name}")
+    else:
         try:
-            with open(delete_txc_datasets_file_path, 'r') as file:
-                dataset_ids = [int(id.strip()) for id in file.read().split(',') if id.strip()]
-                if not dataset_ids:
-                    logger.info("No valid dataset IDs found in the file.")
-                    return
+            content = read_delete_datasets_file_from_s3()
+            dataset_ids = [int(id.strip()) for id in content.split(",") if id.strip()]
+            if not dataset_ids:
+                logger.info("No valid dataset IDs found in the file.")
+                return
+            logger.info(
+                f"Total number of datasets to be deleted is: {len(dataset_ids)}"
+            )
+            datasets = Dataset.objects.filter(id__in=dataset_ids)
+            deleted_count = 0
+            failed_deletion_ids = []
 
-                logger.info(
-                    f"Total number of datasets to be deleted is: {len(dataset_ids)}")
-                datasets = Dataset.objects.filter(id__in=dataset_ids)
-                deleted_count = 0
-                failed_deletion_ids = []
+            for dataset in datasets:
+                try:
+                    dataset.delete()
+                    deleted_count += 1
+                except IntegrityError as e:
+                    logger.error(f"Error deleting dataset {dataset.id}: {str(e)}")
+                    failed_deletion_ids.append(dataset.id)
 
-                for dataset in datasets:
-                    try:
-                        dataset.delete()
-                        deleted_count += 1
-                    except IntegrityError as e:
-                        logger.error(f"Error deleting dataset {dataset.id}: {str(e)}")
-                        failed_deletion_ids.append(dataset.id)
-
-                logger.info(f"Total number of datasets deleted is: {deleted_count}")
-                if failed_deletion_ids:
-                    logger.error(f"Failed to delete datasets with IDs: {failed_deletion_ids}")
-        except FileNotFoundError:
-            logger.warning("Delete datasets file not found.")
+            logger.info(f"Total number of datasets deleted is: {deleted_count}")
+            if failed_deletion_ids:
+                logger.error(
+                    f"Failed to delete datasets with IDs: {failed_deletion_ids}"
+                )
+        except Exception as e:  # Broad exception to capture unexpected errors from S3 or other sources.
+            logger.warning(
+                f"Error reading or processing the delete datasets file: {str(e)}"
+            )
             return []
-
