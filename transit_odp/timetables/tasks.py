@@ -411,7 +411,9 @@ def task_log_stuck_revisions() -> None:
 
 
 def get_sirivm_storage():
-    if bucket_name := getattr(settings, "AWS_SIRISX_STORAGE_BUCKET_NAME", False):
+    if bucket_name := getattr(settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", False):
+        if not bucket_name:
+            raise ValueError("Bucket name AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME is not configured in settings")
         return S3Boto3Storage(bucket_name=bucket_name)
 
 
@@ -432,8 +434,8 @@ def task_delete_datasets(dataset_id = None):
             logger.warning(f"Dataset with ID {dataset_id} does not exist.")
     else:      
         delete_txc_datasets_file_path = Path(__file__).parent / "delete_datasets.txt"
-        # bucket_name = get_sirivm_storage()
-        # logger.info(f"The bucket name is: {bucket_name}")
+        bucket_name = get_sirivm_storage()
+        logger.info(f"The bucket name is: {bucket_name}")
         try:
             with open(delete_txc_datasets_file_path, 'r') as file:
                 dataset_ids = [int(id.strip()) for id in file.read().split(',') if id.strip()]

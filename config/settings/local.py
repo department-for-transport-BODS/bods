@@ -109,9 +109,6 @@ if env("USE_DOCKER") == "yes":
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [ip[:-1] + "1" for ip in ips]
 
-# AWS_SIRISX_STORAGE_BUCKET_NAME = env("DJANGO_AWS_SIRISX_STORAGE_BUCKET_NAME")
-
-
 # django-extensions
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html
