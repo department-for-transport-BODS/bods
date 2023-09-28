@@ -114,7 +114,7 @@ class Registration(BaseModel):
         return v
 
     @validator("registration_status")
-    def validate_registration_number(cls, v):
+    def validate_registration_status(cls, v):
         if v is not None and v not in ALLOWED_REGISTRATION_STATUSES:
             raise ValueError(f"Invalid registration status: {v}")
         return v
