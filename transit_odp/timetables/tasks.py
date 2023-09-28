@@ -489,7 +489,7 @@ def task_delete_datasets(dataset_id=None):
                 logger.error(
                     f"Failed to delete datasets with IDs: {failed_deletion_ids}"
                 )
-        except Exception as e:  # Broad exception to capture unexpected errors from S3 or other sources.
+        except Exception as e:
             logger.warning(
                 f"Error reading or processing the delete datasets file: {str(e)}"
             )
