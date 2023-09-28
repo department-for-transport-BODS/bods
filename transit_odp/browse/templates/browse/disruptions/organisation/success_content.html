@@ -1,0 +1,45 @@
+{% load i18n %}
+{% load custom_filters %}
+
+{% include 'browse/disruptions/banner.html' %}
+{% include 'publish/snippets/dataset_map.html' %}
+<div class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+        <span class="govuk-body govuk-!-font-size-27 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.totalConsequencesCount }}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Registered in scope/in season services'%}</span>
+    </div>
+    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+        <span class="govuk-body govuk-!-font-size-27 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.servicesAffected }}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans '% of services disrupted'%}</span>
+    </div>
+    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+        <span class="govuk-body govuk-!-font-size-27 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.stopsAffected }}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Affected stops'%}</span>
+    </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-3">
+    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+        <span class="govuk-body govuk-!-font-size-27 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.servicesAffected }}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Affected services'%}</span>
+    </div>
+    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+        <span class="govuk-body govuk-!-font-size-27 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.operatorWideConsequencesCount }}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Operator wide disruptions'%}</span>
+    </div>
+    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+        <span class="govuk-body govuk-!-font-size-27 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.networkWideConsequencesCount }}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Network wide disruptions'%}</span>
+    </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-3 flex-container flex-direction-column">
+    <span class="govuk-body govuk-!-font-weight-bold govuk-!-padding-left-3">{% trans 'Most common reasons for disruption:' %}</span>
+    {% with object.stats.disruptionReasonCount|top_three_reasons as reasons %}
+    <ul>
+        {% for reason in reasons %}
+        <li><span class="govuk-body" >{{ reason }}</span></li>
+        {% endfor %}
+    </ul>
+    {% endwith %}
+</div>
+{% include 'browse/disruptions/subscribe_and_download.html' %}
+{% include 'browse/base/feedback.html' with feedback_url_name="org-detail"%}

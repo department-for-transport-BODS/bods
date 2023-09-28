@@ -12,7 +12,7 @@
 {% block dataset_result_content %}
     <li>
         <span class="item__key">{% trans 'Disrupted services:' %}</span>
-        <span class="item__value">{{ item.name }}</span>
+        <span class="item__value"><a class='govuk-link' href="{% url 'org-detail' pk=item.id host hosts.data %}">{{ item.name }}</a></span>
     </li>
     <li>
         <span class="item__key">{% trans 'Last updated:' %}</span>

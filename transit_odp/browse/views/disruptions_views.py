@@ -1,5 +1,8 @@
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django_hosts import reverse
+import config.hosts
+from collections import ChainMap
 
 from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
@@ -18,7 +21,6 @@ from django.core.paginator import Paginator
 from django.views.generic.list import ListView
 from django.core.paginator import Paginator
 from datetime import datetime
-from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +80,6 @@ class DisruptionsDataView(ListView):
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         if self.content is None:
             self.content, _ = _get_disruptions_organisation_data(url, headers)
-            cache.set("cached_org_data", self.content, 3600)
 
         keywords = self.request.GET.get("q", "").strip()
         # ordering = self.request.GET.get('ordering', '-lastUpdated')
@@ -126,4 +127,19 @@ class DisruptionsDataView(ListView):
         context["api_data"] = paginator.get_page(page)
         keywords = self.request.GET.get("q", "").strip()
         context["q"] = keywords
+        return context
+
+
+class DisruptionOrganisationDetailView(BaseTemplateView):
+    template_name = "browse/disruptions/organisation/organisation_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url = settings.DISRUPTIONS_ORG_API_URL + "/" + str(kwargs["pk"])
+        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content, _ = _get_disruptions_organisation_data(url, headers)
+        if content is None:
+            context["error"] = "true"
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        context["object"] = content
         return context
