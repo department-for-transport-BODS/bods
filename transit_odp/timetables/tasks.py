@@ -3,11 +3,10 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import celery
-
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import transaction, IntegrityError
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from transit_odp.common.loggers import (
@@ -16,7 +15,10 @@ from transit_odp.common.loggers import (
     get_dataset_adapter_from_revision,
 )
 from transit_odp.data_quality.models import SchemaViolation
-from transit_odp.data_quality.models.report import PTIValidationResult
+from transit_odp.data_quality.models.report import (
+    PostSchemaViolation,
+    PTIValidationResult,
+)
 from transit_odp.data_quality.tasks import upload_dataset_to_dqs
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
@@ -32,6 +34,7 @@ from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.utils import read_delete_datasets_file_from_s3
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
+    PostSchemaValidator,
     TimetableFileValidator,
     TXCRevisionValidator,
 )
@@ -72,6 +75,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_scan_timetables.signature(args),
             task_timetable_file_check.signature(args),
             task_timetable_schema_check.signature(args),
+            task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
             task_dqs_upload.signature(args),
@@ -231,6 +235,58 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
         else:
             adapter.info("Validation complete.")
             task.update_progress(40)
+            return revision_id
+
+
+@shared_task
+def task_post_schema_check(revision_id: int, task_id: int):
+    """
+    Post schema checks, such as personal identifiable information (PII),
+    publishing an already active dataset, and adding a service that
+    doesn't belong to your organisation.
+    """
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting post schema validation check.")
+
+    try:
+        violations = []
+        parser = TransXChangeDatasetParser(revision.upload_file)
+        file_names_list = parser.get_file_names()
+        validator = PostSchemaValidator(file_names_list)
+        violations += validator.get_violations()
+    except Exception as exc:
+        message = "TransXChange post schema issues found."
+        adapter.error(message, exc_info=True)
+        task.to_error("dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message) from exc
+    else:
+        adapter.info(f"{len(violations)} violations found.")
+        if len(violations) > 0:
+            schema_violations = [
+                PostSchemaViolation.from_violation(revision=revision, violation=v)
+                for v in violations
+            ]
+
+            with transaction.atomic():
+                # 'Update data' flow allows validation to occur multiple times
+                revision.post_schema_violations.all().delete()
+                PostSchemaViolation.objects.bulk_create(
+                    schema_violations, batch_size=BATCH_SIZE
+                )
+
+                message = "TransXChange post schema issues found."
+                task.to_error(
+                    "dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR
+                )
+                task.additional_info = message
+                task.save()
+            raise PipelineException(message)
+        else:
+            adapter.info("Completed post schema validation check.")
             return revision_id
 
 
@@ -414,7 +470,9 @@ def task_log_stuck_revisions() -> None:
 @shared_task()
 def task_delete_datasets(*args):
     """This is a one-off task to delete datasets from BODS database
-    If a dataset ID is provided as an argument, use it for deletion or proceed with the file in S3 bucket"""
+    If a dataset ID is provided as an argument, use it for deletion or proceed
+    with the file in S3 bucket
+    """
 
     if len(args) > 1:
         logger.error(
