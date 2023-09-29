@@ -105,7 +105,9 @@ class Loader:
             "Service": {"fields": set(), "items": []},
         }
 
-        for updated_service in self.registered_service:
+        possible_services_to_update = self.registered_service + self.to_delete_service
+
+        for updated_service in possible_services_to_update:
             if updated_service.variation_number == 0:
                 # This is a new service and wont need to be updated
                 continue
@@ -123,7 +125,10 @@ class Loader:
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()
 
-                for (db_item, kwargs,) in (
+                for (
+                    db_item,
+                    kwargs,
+                ) in (
                     (db_service.licence, updated_service_kwargs.pop("licence")),
                     (db_service.operator, updated_service_kwargs.pop("operator")),
                     (db_service, updated_service_kwargs),
@@ -154,9 +159,7 @@ class Loader:
         )
 
     def delete_bad_data(self):
-        to_delete_services = self.registry.filter_by_status(
-            *RegistrationStatusEnum.to_delete()
-        )
+        to_delete_services = self.to_delete_service
         services = {
             service.registration_number
             for service in self.registry.get_services_with_past_effective_date(
@@ -288,3 +291,7 @@ class Loader:
     @cached_property
     def registered_service(self):
         return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)
+
+    @cached_property
+    def to_delete_service(self):
+        return self.registry.filter_by_status(*RegistrationStatusEnum.to_delete())
