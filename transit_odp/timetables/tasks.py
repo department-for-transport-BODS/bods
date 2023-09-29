@@ -246,7 +246,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
     doesn't belong to your organisation.
     """
     task = get_etl_task_or_pipeline_exception(task_id)
-    revision = task.revision
+    revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting post schema validation check.")
 
