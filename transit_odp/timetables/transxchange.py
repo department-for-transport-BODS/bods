@@ -34,6 +34,16 @@ class TXCSchemaViolation(BaseModel):
         return cls(filename=filename, line=error.line, details=error.message)
 
 
+class TXCPostSchemaViolation(BaseModel):
+    filename: str
+    details: str
+
+    @classmethod
+    def from_error(cls, error):
+        filename = Path(error.filename).name
+        return cls(filename=filename, details=error.message)
+
+
 class TransXChangeElement(XMLElement):
     """A wrapper class to easily work lxml elements for TransXChange XML.
 

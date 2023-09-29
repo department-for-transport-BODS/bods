@@ -295,8 +295,8 @@ class TXCRevisionValidator:
         return self.violations
 
 
-class PrePTIValidator:
-    def __init__(self, file_names):
+class PostSchemaValidator:
+    def __init__(self, file_names=None):
         self.file_names = file_names
         self.violations = []
 

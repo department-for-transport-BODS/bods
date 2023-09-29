@@ -14,7 +14,10 @@ from transit_odp.data_quality.models.managers import DataQualityReportManager
 from transit_odp.data_quality.pti.models import Violation
 from transit_odp.data_quality.pti.report import PTIReport
 from transit_odp.organisation.models import DatasetRevision
-from transit_odp.timetables.transxchange import TXCSchemaViolation
+from transit_odp.timetables.transxchange import (
+    TXCPostSchemaViolation,
+    TXCSchemaViolation,
+)
 
 
 class DataQualityReport(models.Model):
@@ -196,4 +199,34 @@ class SchemaViolation(models.Model):
             filename=violation.filename,
             line=violation.line,
             details=violation.details,
+        )
+
+
+class PostSchemaViolation(models.Model):
+    revision = models.ForeignKey(
+        DatasetRevision,
+        on_delete=models.CASCADE,
+        related_name="post_schema_violations",
+        help_text=_("The revision that observation occurred in."),
+    )
+    filename = models.CharField(
+        max_length=256, help_text=_("The name of the file the observation occurs in.")
+    )
+    details = models.CharField(
+        max_length=1024, help_text=_("Details of the observation.")
+    )
+    created = CreationDateTimeField(_("DateTime observation was created."))
+
+    def __str__(self):
+        return (
+            f"revision_id={self.revision.id}, filename={self.filename!r}, "
+            f"created={self.created:%Y-%m-%d %H:%M:%S}"
+        )
+
+    @classmethod
+    def from_violation(cls, revision: object, violation: TXCPostSchemaViolation):
+        return cls(
+            revision_id=revision.id,
+            filename=revision.upload_file.name,
+            details=violation,
         )

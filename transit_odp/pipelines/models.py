@@ -104,7 +104,6 @@ class TaskResult(TimeStampedModel):
 
 
 class DatasetETLTaskResult(TaskResult):
-
     revision = models.ForeignKey(
         DatasetRevision, related_name="etl_results", on_delete=models.CASCADE
     )
@@ -122,6 +121,7 @@ class DatasetETLTaskResult(TaskResult):
     SCHEMA_VERSION_MISSING = "SCHEMA_VERSION_MISSING"
     SCHEMA_VERSION_NOT_SUPPORTED = "SCHEMA_VERSION_NOT_SUPPORTED"
     SCHEMA_ERROR = "SCHEMA_ERROR"
+    POST_SCHEMA_ERROR = "POST_SCHEMA_ERROR"
     DATASET_EXPIRED = "DATASET_EXPIRED"
     SUSPICIOUS_FILE = "SUSPICIOUS_FILE"
 
@@ -140,6 +140,7 @@ class DatasetETLTaskResult(TaskResult):
             SCHEMA_VERSION_MISSING,
             SCHEMA_VERSION_NOT_SUPPORTED,
             SCHEMA_ERROR,
+            POST_SCHEMA_ERROR,
             DATASET_EXPIRED,
             SUSPICIOUS_FILE,
         }
