@@ -6,7 +6,7 @@ import celery
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from transit_odp.common.loggers import (
@@ -31,6 +31,7 @@ from transit_odp.timetables.etl import TransXChangePipeline
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
+from transit_odp.timetables.utils import read_delete_datasets_file_from_s3
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -464,3 +465,61 @@ def task_log_stuck_revisions() -> None:
     logger.info(f"There are {revisions.count()} revisions stuck in processing.")
     for revision in revisions:
         logger.info(f"Dataset {revision.dataset_id} => Revision is stuck.")
+
+
+@shared_task()
+def task_delete_datasets(*args):
+    """This is a one-off task to delete datasets from BODS database
+    If a dataset ID is provided as an argument, use it for deletion or proceed
+    with the file in S3 bucket
+    """
+
+    if len(args) > 1:
+        logger.error(
+            "Too many arguments provided. This task expects only one dataset_id."
+        )
+        return
+
+    dataset_id = args[0] if args else None
+
+    if dataset_id is not None:
+        try:
+            dataset = Dataset.objects.get(id=dataset_id)
+            try:
+                dataset.delete()
+                logger.info(f"Deleted dataset with ID: {dataset_id}")
+            except IntegrityError as e:
+                logger.error(f"Error deleting dataset {dataset_id}: {str(e)}")
+        except Dataset.DoesNotExist:
+            logger.warning(f"Dataset with ID {dataset_id} does not exist.")
+    else:
+        try:
+            dataset_ids = read_delete_datasets_file_from_s3()
+            if not dataset_ids:
+                logger.info("No valid dataset IDs found in the file.")
+                return
+            logger.info(
+                f"Total number of datasets to be deleted is: {len(dataset_ids)}"
+            )
+            datasets = Dataset.objects.filter(id__in=dataset_ids)
+            deleted_count = 0
+            failed_deletion_ids = []
+
+            for dataset in datasets:
+                try:
+                    dataset.delete()
+                    deleted_count += 1
+                except IntegrityError as e:
+                    logger.error(f"Error deleting dataset {dataset.id}: {str(e)}")
+                    failed_deletion_ids.append(dataset.id)
+
+            logger.info(f"Total number of datasets deleted is: {deleted_count}")
+            if failed_deletion_ids:
+                logger.error(
+                    f"Failed to delete datasets with IDs: {failed_deletion_ids}"
+                )
+        except Exception as e:
+            logger.warning(
+                f"Error reading or processing the delete datasets file: {str(e)}"
+            )
+            return []
