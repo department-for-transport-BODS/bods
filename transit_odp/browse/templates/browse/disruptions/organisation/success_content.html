@@ -1,7 +1,12 @@
 {% load i18n %}
 {% load custom_filters %}
 
+{% if object.stats.networkWideConsequencesCount %}
 {% include 'browse/disruptions/banner.html' %}
+{% endif %}
+<div class="govuk-!-margin-bottom-2">
+    <span class="govuk-body">{% trans 'Overview of the available disruptions data' %}</span>
+</div>
 {% include 'publish/snippets/dataset_map.html' %}
 <div class="govuk-grid-row govuk-!-margin-top-6">
     <div class="govuk-grid-column-one-third flex-container flex-direction-column">
