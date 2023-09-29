@@ -106,7 +106,6 @@ class Loader:
         }
 
         possible_services_to_update = self.registered_service + self.to_delete_service
-
         for updated_service in possible_services_to_update:
             if updated_service.variation_number == 0:
                 # This is a new service and wont need to be updated
@@ -232,10 +231,12 @@ class Loader:
                     service_id=_service_id
                 ).delete()
                 logger.info(
-                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship "
+                    f"Deleting LTA mapping for service ID: {_service_id} \
+                    from the LTA relationship"
                 )
         logger.info(
-            f"Total count of registrations for refreshing LTAs is: {len(regs_to_update_lta)}"
+            f"Total count of registrations for refreshing \
+            LTAs is: {len(regs_to_update_lta)}"
         )
         refresh_lta = PopulateLTA()
         refresh_lta.refresh(regs_to_update_lta)
