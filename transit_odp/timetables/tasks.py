@@ -3,14 +3,12 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import celery
-import csv
 
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction, IntegrityError
 from django.utils import timezone
-from io import StringIO
 
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
@@ -31,6 +29,7 @@ from transit_odp.timetables.etl import TransXChangePipeline
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
+from transit_odp.timetables.utils import read_delete_datasets_file_from_s3
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     TimetableFileValidator,
@@ -42,7 +41,6 @@ from transit_odp.validate import (
     FileScanner,
     ValidationException,
 )
-from storages.backends.s3boto3 import S3Boto3Storage
 
 logger = getLogger(__name__)
 
@@ -413,55 +411,15 @@ def task_log_stuck_revisions() -> None:
         logger.info(f"Dataset {revision.dataset_id} => Revision is stuck.")
 
 
-def get_s3_bucket_storage():
-    bucket_name = getattr(settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None)
-    if not bucket_name:
-        logger.error("Bucket name is not configured in settings.")
-        raise ValueError("Bucket name is not configured in settings.")
-
-    try:
-        storage = S3Boto3Storage(bucket_name=bucket_name)
-        logger.info(f"Successfully connected to S3 bucket: {bucket_name}")
-        return storage
-    except Exception as e:
-        logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
-        raise
-
-
-def read_delete_datasets_file_from_s3():
-    try:
-        storage = get_s3_bucket_storage()
-        file_name = "delete_datasets.csv"
-        
-        if not storage.exists(file_name):
-            logger.warning(f"{file_name} does not exist in the S3 bucket.")
-            return []
-
-        file = storage._open(file_name)
-        content = file.read().decode()
-        file.close()
-        csv_file = StringIO(content)
-        reader = csv.DictReader(csv_file)
-        dataset_ids = [int(row["Dataset ID"]) for row in reader if row["Dataset ID"].strip()]
-
-        if dataset_ids:
-            logger.info(f"Successfully read {len(dataset_ids)} dataset IDs from {file_name} in S3.")
-        else:
-            logger.warning(f"{file_name} in S3 is empty or does not contain valid dataset IDs.")
-
-        return dataset_ids
-    except Exception as e:
-        logger.error(f"Error reading {file_name} from S3: {str(e)}")
-        raise
-
-
 @shared_task()
 def task_delete_datasets(*args):
     """This is a one-off task to delete datasets from BODS database
     If a dataset ID is provided as an argument, use it for deletion or proceed with the file in S3 bucket"""
 
     if len(args) > 1:
-        logger.error("Too many arguments provided. This task expects only one dataset_id.")
+        logger.error(
+            "Too many arguments provided. This task expects only one dataset_id."
+        )
         return
 
     dataset_id = args[0] if args else None
