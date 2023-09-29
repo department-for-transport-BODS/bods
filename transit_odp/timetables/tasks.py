@@ -3,11 +3,14 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import celery
+import csv
+
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction, IntegrityError
 from django.utils import timezone
+from io import StringIO
 
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
@@ -428,29 +431,40 @@ def get_s3_bucket_storage():
 def read_delete_datasets_file_from_s3():
     try:
         storage = get_s3_bucket_storage()
-        if not storage.exists("delete_datasets.txt"):
-            logger.warning("delete_datasets.txt does not exist in the S3 bucket.")
-            return ""
+        file_name = "delete_datasets.csv"
+        
+        if not storage.exists(file_name):
+            logger.warning(f"{file_name} does not exist in the S3 bucket.")
+            return []
 
-        file = storage._open("delete_datasets.txt")
+        file = storage._open(file_name)
         content = file.read().decode()
         file.close()
+        csv_file = StringIO(content)
+        reader = csv.DictReader(csv_file)
+        dataset_ids = [int(row["Dataset ID"]) for row in reader if row["Dataset ID"].strip()]
 
-        if content:
-            logger.info("Successfully read content from delete_datasets.txt in S3.")
+        if dataset_ids:
+            logger.info(f"Successfully read {len(dataset_ids)} dataset IDs from {file_name} in S3.")
         else:
-            logger.warning("delete_datasets.txt in S3 is empty.")
+            logger.warning(f"{file_name} in S3 is empty or does not contain valid dataset IDs.")
 
-        return content
+        return dataset_ids
     except Exception as e:
-        logger.error(f"Error reading delete_datasets.txt from S3: {str(e)}")
+        logger.error(f"Error reading {file_name} from S3: {str(e)}")
         raise
 
 
 @shared_task()
-def task_delete_datasets(dataset_id=None):
+def task_delete_datasets(*args):
     """This is a one-off task to delete datasets from BODS database
     If a dataset ID is provided as an argument, use it for deletion or proceed with the file in S3 bucket"""
+
+    if len(args) > 1:
+        logger.error("Too many arguments provided. This task expects only one dataset_id.")
+        return
+
+    dataset_id = args[0] if args else None
 
     if dataset_id is not None:
         try:
@@ -464,8 +478,7 @@ def task_delete_datasets(dataset_id=None):
             logger.warning(f"Dataset with ID {dataset_id} does not exist.")
     else:
         try:
-            content = read_delete_datasets_file_from_s3()
-            dataset_ids = [int(id.strip()) for id in content.split(",") if id.strip()]
+            dataset_ids = read_delete_datasets_file_from_s3()
             if not dataset_ids:
                 logger.info("No valid dataset IDs found in the file.")
                 return
