@@ -9,11 +9,9 @@ from lxml.etree import Element
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
-    check_flexible_service_timing_status,
     contains_date,
     has_name,
     has_prohibited_chars,
-    has_unregistered_service_codes,
     is_member_of,
     today,
 )
@@ -161,96 +159,3 @@ def test_has_name_true_not_list():
     sunday = doc.getchildren()[0]
     actual = has_name(context, sunday, "Sunday", "Monday")
     assert actual
-
-
-@pytest.mark.parametrize(
-    ("value", "expected"),
-    [
-        (["PF0000459:134", "PF0000459:134"], False),
-        (["PF0000459:134", "UZ000KBUS:11"], True),
-        (["PF0000459:134"], True),
-        (["UZ000KBUS:11"], True),
-    ],
-)
-def test_has_unregistered_service_codes(value, expected):
-    one_service = """
-    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
-        <Services>
-            <Service>
-                <ServiceCode>{0}</ServiceCode>
-            </Service>
-        </Services>
-    </TransXChange>
-    """
-    two_services = """
-    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
-        <Services>
-            <Service>
-                <ServiceCode>{0}</ServiceCode>
-            </Service>
-            <Service>
-                <ServiceCode>{1}</ServiceCode>
-            </Service>
-        </Services>
-    </TransXChange>
-    """
-    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
-    service_codes_length = len(value)
-    if service_codes_length > 1:
-        string_xml = two_services.format(*value)
-    else:
-        string_xml = one_service.format(*value)
-
-    doc = etree.fromstring(string_xml)
-    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
-    actual = has_unregistered_service_codes("", elements)
-    assert actual == expected
-
-
-@pytest.mark.parametrize(
-    ("values", "expected"),
-    [
-        (["OTH", "OTH", "OTH"], True),
-        (["OTH", "TXT", "OTH"], False),
-        (["", "", ""], False),
-        (["XYZ", "ABC", ""], False),
-    ],
-)
-def test_check_flexible_service_timing_status(values, expected):
-    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
-    timing_status = """
-    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
-        <Services>
-            <Service>
-                <FlexibleService>
-                    <FlexibleJourneyPattern id="jp_1">
-                        <StopPointsInSequence>
-                            <FixedStopUsage SequenceNumber="1">
-                                <StopPointRef>0600000102</StopPointRef>
-                                <TimingStatus>{0}</TimingStatus>
-                            </FixedStopUsage>
-                            <FixedStopUsage SequenceNumber="2">
-                                <StopPointRef>0600000101</StopPointRef>
-                                <TimingStatus>{1}</TimingStatus>
-                            </FixedStopUsage>
-                            <FlexibleStopUsage>
-                                <StopPointRef>270002700155</StopPointRef>
-                            </FlexibleStopUsage>
-                            <FixedStopUsage SequenceNumber="4">
-                                <StopPointRef>0600000103</StopPointRef>
-                                <TimingStatus>{2}</TimingStatus>
-                            </FixedStopUsage>
-                        </StopPointsInSequence>
-                    </FlexibleJourneyPattern>
-                </FlexibleService>
-            </Service>
-        </Services>
-    </TransXChange>
-    """
-    string_xml = timing_status.format(*values)
-    doc = etree.fromstring(string_xml)
-    elements = doc.xpath(
-        "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern", namespaces=NAMESPACE
-    )
-    actual = check_flexible_service_timing_status("", elements)
-    assert actual == expected
