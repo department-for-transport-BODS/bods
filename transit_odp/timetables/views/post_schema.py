@@ -13,7 +13,7 @@ from transit_odp.organisation.models import Dataset
 ERROR_TYPE = "Your TransXchange contains personal identifiable information"
 NEXT_STEPS = "Please download the new transXchange tool here"
 LINK = "https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-data"
-ADDITIONAL_SERVICES = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk\n"
+ADDITIONAL_SERVICES = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk"
 
 
 class PostSchemaCSV(CSVBuilder):
