@@ -12,7 +12,6 @@ from django.db.models.functions import Replace
 from lxml import etree
 
 from transit_odp.common.types import JSONFile, XMLFile
-from transit_odp.data_quality.pti.constants import FLEXIBLE_SERVICE, STANDARD_SERVICE
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,

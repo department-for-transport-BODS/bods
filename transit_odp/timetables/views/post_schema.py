@@ -1,7 +1,9 @@
+import io
 from abc import abstractmethod
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from django.db.models import CharField, Value
-from django.http import HttpResponse
+from django.http.response import FileResponse
 from django.views.generic.detail import DetailView
 
 from transit_odp.common.csv import CSVBuilder, CSVColumn
@@ -11,7 +13,7 @@ from transit_odp.organisation.models import Dataset
 ERROR_TYPE = "Your TransXchange contains personal identifiable information"
 NEXT_STEPS = "Please download the new transXchange tool here"
 LINK = "https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-data"
-ADDITIONAL_SERVICES = "List of services"
+ADDITIONAL_SERVICES = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk\n"
 
 
 class PostSchemaCSV(CSVBuilder):
@@ -48,12 +50,21 @@ class BasePostSchemaCSVView(DetailView):
 
     def render_to_response(self):
         dataset = self.get_object()
+        org_id = dataset.organisation_id
         revision = self.get_revision()
-        csv_filename = f"post_schema_error_report_{dataset.id}.csv"
-        csv_export = PostSchemaCSV(revision)
-        file_ = csv_export.to_string()
-        response = HttpResponse(file_, content_type="text/csv")
-        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
+        zip_filename = f"validation_{org_id}_{dataset.id}.zip"
+        csv_filename = "publisher_errors.csv"
+
+        buffer_ = io.BytesIO()
+        with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
+            csv_export = PostSchemaCSV(revision)
+            output = csv_export.to_string()
+            if csv_export.count() > 0:
+                zin.writestr(csv_filename, output)
+
+        buffer_.seek(0)
+        response = FileResponse(buffer_)
+        response["Content-Disposition"] = f"attachment; filename={zip_filename}"
         return response
 
     def get(self, *args, **kwargs):
