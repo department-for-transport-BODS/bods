@@ -259,7 +259,9 @@ def task_post_schema_check(revision_id: int, task_id: int):
     except Exception as exc:
         message = "TransXChange post schema issues found."
         adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR)
+        task.to_error(
+            "post_schema_dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR
+        )
         task.additional_info = message
         task.save()
         raise PipelineException(message) from exc
@@ -280,7 +282,8 @@ def task_post_schema_check(revision_id: int, task_id: int):
 
                 message = "TransXChange post schema issues found."
                 task.to_error(
-                    "dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR
+                    "post_schema_dataset_validate",
+                    DatasetETLTaskResult.POST_SCHEMA_ERROR,
                 )
                 task.additional_info = message
                 task.save()
