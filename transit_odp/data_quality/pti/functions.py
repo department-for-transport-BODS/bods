@@ -243,6 +243,31 @@ def has_unregistered_service_codes(context, services):
     return True
 
 
+def has_flexible_or_standard_service(context, services):
+    """
+    If it is a non-flexible service (flexible service is not defined),
+    then it should have a StandardService defined. If validation fails,
+    then a validation issue should be recorded in validation report.
+    """
+    for service in services:
+        ns = {"x": service.nsmap.get(None)}
+        service_classification = service.xpath(
+            "x:ServiceClassification/x:Flexible", namespaces=ns
+        )
+
+        if service_classification:
+            flexible_service_list = service.xpath("x:FlexibleService", namespaces=ns)
+            if flexible_service_list:
+                return True
+            return False
+        else:
+            standard_service_list = service.xpath("x:StandardService", namespaces=ns)
+            if standard_service_list:
+                return True
+            else:
+                return False
+
+
 def has_flexible_service_classification(context, services):
     """
     Check when file has detected a flexible service (includes a

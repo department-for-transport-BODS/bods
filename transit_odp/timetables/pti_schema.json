@@ -301,7 +301,7 @@
       "number": 22,
       "rules": [
         {
-          "test": "count(x:FlexibleService) = 1 or count(x:StandardService) = 1"
+          "test": "has_flexible_or_standard_service(.)"
         }
       ]
     },
