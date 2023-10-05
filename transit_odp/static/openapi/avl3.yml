@@ -46,7 +46,7 @@ paths:
               type: number
             minItems: 4
             maxItems: 4
-            example: [51.401, 51.509, 0.01, 0.201]
+            example: [-2.930, 53.374, -3.085, 53.453]
           style: form
           explode: false
 
