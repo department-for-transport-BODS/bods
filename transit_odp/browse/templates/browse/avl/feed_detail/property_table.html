@@ -28,12 +28,7 @@
     <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header">{% trans 'Feed details last updated' %}</th>
         <td class="govuk-table__cell dont-break-out">
-            {{ property.published_at|localtime|date:"j M Y H:i" }} {% trans 'by ' %}
-            {% if property.live_revision.published_by %}
-                {{ property.live_revision.published_by.username }}
-            {% else %}
-                {% trans 'System' %}
-            {% endif %}
+            {{ property.published_at|localtime|date:"j M Y H:i" }}
         </td>
         <td class="govuk-table__cell">
             <a class="govuk-link"
