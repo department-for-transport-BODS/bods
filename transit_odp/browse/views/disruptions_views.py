@@ -52,19 +52,21 @@ class DownloadDisruptionsDataArchiveView(ResourceCounterMixin, DownloadView):
 
 def _get_disruptions_organisation_data(url: str, headers: object):
     response_status = status.HTTP_400_BAD_REQUEST
+    response = {}
+    content = None
     try:
         response = requests.get(url, headers=headers, timeout=180)
+        elapsed_time = response.elapsed.total_seconds()
+        logger.info(
+            f"Request to get organisation data took {elapsed_time}s "
+            f"- status {response.status_code}"
+        )
+        
+        if response.status_code == 200:
+            content = response.json()
+            response_status = status.HTTP_200_OK
     except RequestException:
         return {}, response_status
-
-    elapsed_time = response.elapsed.total_seconds()
-    logger.info(
-        f"Request to get organisation data took {elapsed_time}s "
-        f"- status {response.status_code}"
-    )
-    if response.status_code == 200:
-        content = response.json()
-        response_status = status.HTTP_200_OK
 
     return content, response_status
 
@@ -137,9 +139,12 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
         context = super().get_context_data(**kwargs)
         url = settings.DISRUPTIONS_ORG_API_URL + "/" + str(kwargs["pk"])
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content = None
         content, _ = _get_disruptions_organisation_data(url, headers)
         if content is None:
             context["error"] = "true"
+        else:
+            context["object"] = content
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        context["object"] = content
+        context["org_id"] = str(kwargs["pk"])
         return context

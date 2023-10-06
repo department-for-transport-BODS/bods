@@ -4,7 +4,7 @@
   <ul class="govuk-list app-list--nav govuk-!-font-size-19">
     <li>
       <a class="govuk-link"
-         href="{% url "org-detail" pk=object.id host hosts.data %}"
+         href="{% url 'org-detail' pk=object.id host hosts.data %}"
       >
         {% if notification %}
            {% trans "Unsubscribe from this data feed" %}

@@ -13,7 +13,7 @@ def top_three_reasons(dictionary):
     # Sort the dictionary by values in descending order and take the top three items
     top_reasons = []
     count = 0
-    if dictionary is not None:
+    if dictionary is not None and isinstance(dictionary, dict):
         sorted_items = sorted(dictionary.items(), key=lambda x: x[1], reverse=True)
         for item in sorted_items:
             if count == 3:

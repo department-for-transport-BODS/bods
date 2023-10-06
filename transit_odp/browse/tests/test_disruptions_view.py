@@ -149,3 +149,15 @@ class TestDisruptionOrganisationDetailView:
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
         assert response.context_data["object"] == self.org_data
+
+    @patch(
+        "transit_odp.browse.views.disruptions_views._get_disruptions_organisation_data"
+    )
+    def test_organisation_details_view_with_error_data(self, mrequests, client_factory):
+        mrequests.return_value = (None, 200)
+        client = client_factory(host=self.host)
+        response = client.get(self.url)
+
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == self.template_path
+        assert response.context_data["object"] is None
