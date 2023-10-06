@@ -476,6 +476,7 @@ class PTIValidator:
         self.register_function(
             "check_flexible_service_timing_status", check_flexible_service_timing_status
         )
+
         self.register_function("date", cast_to_date)
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)

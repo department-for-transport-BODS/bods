@@ -54,6 +54,10 @@ ERROR_CODE_LOOKUP = {
         "description": "The dataset contained an XML file not compliant with "
         "the TransXChange schema"
     },
+    DatasetETLTaskResult.POST_SCHEMA_ERROR: {
+        "description": "The dataset contained an XML file not compliant with "
+        "post schema checks."
+    },
     DatasetETLTaskResult.DATASET_EXPIRED: {
         "description": "The data set has already expired"
     },

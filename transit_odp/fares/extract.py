@@ -1,6 +1,4 @@
 import itertools
-import os
-import psutil
 
 from typing import List
 
@@ -11,30 +9,16 @@ from transit_odp.fares.netex import NeTExDocument
 NeTExDocuments = List[NeTExDocument]
 
 
-def measure_memory(func):
-    def wrapper(*args, **kwargs):
-        process = psutil.Process(os.getpid())
-        before = process.memory_info().rss
-        result = func(*args, **kwargs)
-        after = process.memory_info().rss
-        print(f"Memory used by {func.__name__}: {after - before} bytes")
-        return result
-
-    return wrapper
-
-
 class ExtractionError(Exception):
     """Generic exception for extraction errors."""
 
     code = "SYSTEM_ERROR"
 
-    @measure_memory
     def __init__(self, message):
         self.message = message
 
 
 class FaresDataCatalogueExtractor:
-    @measure_memory
     def __init__(self, documents: NeTExDocuments):
         self.documents = documents
 

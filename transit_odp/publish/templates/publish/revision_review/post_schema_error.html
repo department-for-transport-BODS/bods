@@ -1,0 +1,21 @@
+{% load i18n %}
+
+{% include "publish/snippets/pti_panel/post_schema_fail.html" %}
+<a role="button"
+    class="govuk-button govuk-!-margin-top-3"
+    href="{% if is_update %}
+        {% url 'update-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}
+    {% else %}
+        {% url 'upload-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}
+    {% endif %}">
+    {{ _('Update data') }}
+</a>
+
+<hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+<h2 class="govuk-heading-l govuk-!-padding-top-5">
+    {{ object.name }}
+</h2>
+
+{% include "publish/snippets/error_summary_table.html" %}
+{% include 'publish/revision_review/delete_component.html' %}

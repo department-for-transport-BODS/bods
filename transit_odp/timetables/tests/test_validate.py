@@ -13,7 +13,7 @@ from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.tasks import task_scan_timetables
-from transit_odp.timetables.validate import TXCRevisionValidator
+from transit_odp.timetables.validate import PostSchemaValidator, TXCRevisionValidator
 from transit_odp.validate.antivirus import (
     AntiVirusError,
     ClamConnectionError,
@@ -348,3 +348,47 @@ def test_revision_number_service_and_line_violation(
     )
     validator.validate_revision_number()
     assert len(validator.violations) == violation_count
+
+
+@pytest.mark.parametrize(
+    (
+        "file_names",
+        "violation_count",
+    ),
+    [
+        (
+            [
+                "552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml",
+                "test.xml",
+            ],
+            0,
+        ),
+        (
+            [
+                r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+                "test.xml",
+                r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+            ],
+            1,
+        ),
+        (
+            [
+                r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+                r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+                r"\\TANAT-000\Network-Data\Drives\Home\test.test\Desktop\transxchange new\done\completed\Tanat Valley Coaches 2021-06-23 13-02\Tanat Valley Coaches 74 2021-06-23 13-02.xml",
+            ],
+            1,
+        ),
+    ],
+)
+def test_check_file_names_pii_information(file_names, violation_count):
+    """
+    Checks:
+
+    When the file names contain PII, then a violation is generated
+
+    When the file names does not contain PII, then a violation is not generated
+    """
+    validator = PostSchemaValidator(file_names)
+    violations = validator.get_violations()
+    assert len(violations) == violation_count
