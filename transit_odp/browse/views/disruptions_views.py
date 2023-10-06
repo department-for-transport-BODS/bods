@@ -83,6 +83,9 @@ class DisruptionsDataView(ListView):
         if self.content is None:
             self.content, _ = _get_disruptions_organisation_data(url, headers)
 
+        if self.content is None:
+            return []
+
         keywords = self.request.GET.get("q", "").strip()
         # ordering = self.request.GET.get('ordering', '-lastUpdated')
         ordering = self.request.GET.get("ordering", "operatorPublicName")

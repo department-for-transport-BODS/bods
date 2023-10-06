@@ -643,3 +643,25 @@ if LOG_LEVEL:
             },
         },
     }
+
+# Add the following in the databases section in base.py to successfully run the test cases that involve the db.
+
+# DATABASES
+
+# ------------------------------------------------------------------------------
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
+
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "transit_odp",
+        "USER": "transit_odp",
+        "PASSWORD": "transit_odp",
+        "HOST": "postgres",
+        "PORT": "5432",
+    }
+}
+
+DATABASES["default"]["ATOMIC_REQUESTS"] = True

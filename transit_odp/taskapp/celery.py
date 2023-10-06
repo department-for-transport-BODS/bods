@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from typing import Final
 from ddtrace import patch_all
@@ -90,7 +91,8 @@ class CeleryAppConfig(AppConfig):
             },
             "dqs_monitor": {
                 "task": PIPELINE_TASKS + "task_dqs_monitor",
-                "schedule": 60.0,
+                # "schedule": 60.0,
+                "schedule": timedelta(minutes=30000),
             },
             "update_bods_xsd_zip_files": {
                 "task": PIPELINE_TASKS + "task_update_xsd_zip_cache",
@@ -104,19 +106,23 @@ class CeleryAppConfig(AppConfig):
             },
             "monitor_avl_feeds": {
                 "task": AVL_TASKS + "task_monitor_avl_feeds",
-                "schedule": 30.0,
+                # "schedule": 30.0,
+                "schedule": timedelta(minutes=30000),
             },
             "create_siri_zip": {
                 "task": AVL_TASKS + "task_create_sirivm_zipfile",
-                "schedule": 10.0,
+                # "schedule": 10.0,timedelta(minutes=30)
+                "schedule": timedelta(minutes=30000),
             },
             "create_gtfsrt_zip": {
                 "task": AVL_TASKS + "task_create_gtfsrt_zipfile",
-                "schedule": 10.0,
+                # "schedule": 10.0,
+                "schedule": timedelta(minutes=30000),
             },
             "create_siri_tfl_zip": {
                 "task": AVL_TASKS + "task_create_sirivm_tfl_zipfile",
-                "schedule": 10.0,
+                # "schedule": 10.0,
+                "schedule": timedelta(minutes=30000),
             },
             "log_stuck_tasks": {
                 "task": TIMETABLE_TASKS + "task_log_stuck_revisions",
@@ -170,6 +176,7 @@ class CeleryAppConfig(AppConfig):
             },
             "create_disruptions_zip": {
                 "task": DISRUPTIONS_TASKS + "task_create_sirisx_zipfile",
-                "schedule": 60.0,
+                # "schedule": 60.0,
+                "schedule": timedelta(minutes=30000),
             },
         }
