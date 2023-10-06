@@ -61,7 +61,7 @@ def _get_disruptions_organisation_data(url: str, headers: object):
             f"Request to get organisation data took {elapsed_time}s "
             f"- status {response.status_code}"
         )
-        
+
         if response.status_code == 200:
             content = response.json()
             response_status = status.HTTP_200_OK

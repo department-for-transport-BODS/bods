@@ -14,7 +14,9 @@ from transit_odp.api.app.serializers import (
     StopPointSerializer,
 )
 from transit_odp.api.pagination import GeoJsonPagination
-from transit_odp.browse.views.disruptions_views import _get_disruptions_organisation_data
+from transit_odp.browse.views.disruptions_views import (
+    _get_disruptions_organisation_data,
+)
 from transit_odp.fares.models import FaresMetadata
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.models import DatasetRevision
@@ -24,6 +26,7 @@ from django.views import View
 from django.http import JsonResponse
 from django.conf import settings
 from rest_framework.views import APIView
+
 
 class DatasetRevisionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DatasetRevision.objects.all()
@@ -106,10 +109,16 @@ class FareStopsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DisruptionsInOrganisationView(viewsets.ViewSet):
-    
+
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
     def list(self, request):
-        url = settings.DISRUPTIONS_ORG_API_URL + "/" + request.GET.get('pk', None) + '/impacted/stops'
+        url = (
+            settings.DISRUPTIONS_ORG_API_URL
+            + "/"
+            + request.GET.get("pk", None)
+            + "/impacted/stops"
+        )
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = []
         content, _ = _get_disruptions_organisation_data(url, headers)
@@ -117,15 +126,15 @@ class DisruptionsInOrganisationView(viewsets.ViewSet):
         servicesGeoJson = {
             "type": "FeatureCollection",
             "count": len(content),
-            "features": content["services"]
+            "features": content["services"],
         }
 
         stopsGeoJson = {
             "type": "FeatureCollection",
             "count": len(content),
-            "features": content["stops"]
+            "features": content["stops"],
         }
 
         geoJson = {"stops": stopsGeoJson, "services": servicesGeoJson}
-       
+
         return JsonResponse(geoJson)
