@@ -10,9 +10,13 @@ from requests import RequestException
 
 from transit_odp.api.renders import XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
+from transit_odp.api.validators import validate_api_parameter_keys, validate_api_parameter_values
 
 logger = logging.getLogger(__name__)
 
+valid_parameters = [
+    "api_key"
+]
 
 class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
     """View for Disruptions SIRI API."""
@@ -30,6 +34,25 @@ class DisruptionsApiView(views.APIView):
         """Get SIRI SX response from consumer API."""
         url = settings.DISRUPTIONS_API_URL
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        # Check for invalid query parameter keys and values
+        invalid_parameter_keys = validate_api_parameter_keys(
+            self.request.query_params, valid_parameters
+        )
+        invalid_parameter_values = validate_api_parameter_values(
+            self.request.query_params
+        )
+        # TODO could be refactored to handle invalid keys and values in the
+        # same Response
+        if len(invalid_parameter_keys) > 0:
+            content = {"Unsupported query parameter": invalid_parameter_keys}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(invalid_parameter_values) > 0:
+            content = {
+                "Unsupported query parameter value for": invalid_parameter_values
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        
         content, status_code = _get_consumer_api_response(url, headers)
         return Response(content, status=status_code, content_type="text/xml")
 
