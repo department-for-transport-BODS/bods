@@ -40,15 +40,3 @@ lint:
 
 lint-fix:
 	docker exec -it bods-django-1 black --config .black.toml .
-
-test-disruptions-data: 
-	docker exec -it bods-django-1 pytest --no-cov --disable-warnings transit_odp/browse/tests/test_disruptions_view.py
-
-test-fares: 
-	docker exec -it bods-django-1 pytest --no-cov --disable-warnings transit_odp/browse/tests/test_fares.py
-
-test-custom-filters: 
-	docker exec -it bods-django-1 pytest --no-cov --disable-warnings transit_odp/browse/tests/test_custom_filters.py
-
-test-map:
-	docker exec -it bods-django-1 pytest --no-cov --disable-warnings transit_odp/api/tests/test_organisation_details.py
