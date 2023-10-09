@@ -1,4 +1,3 @@
-from datetime import timedelta
 import os
 from typing import Final
 from ddtrace import patch_all
