@@ -10,13 +10,15 @@ from requests import RequestException
 
 from transit_odp.api.renders import XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
-from transit_odp.api.validators import validate_api_parameter_keys, validate_api_parameter_values
+from transit_odp.api.validators import (
+    validate_api_parameter_keys,
+    validate_api_parameter_values,
+)
 
 logger = logging.getLogger(__name__)
 
-valid_parameters = [
-    "api_key"
-]
+valid_parameters = ["api_key"]
+
 
 class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
     """View for Disruptions SIRI API."""
@@ -52,7 +54,7 @@ class DisruptionsApiView(views.APIView):
                 "Unsupported query parameter value for": invalid_parameter_values
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        
+
         content, status_code = _get_consumer_api_response(url, headers)
         return Response(content, status=status_code, content_type="text/xml")
 
