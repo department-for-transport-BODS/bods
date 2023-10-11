@@ -301,7 +301,7 @@
       "number": 22,
       "rules": [
         {
-          "test": "count(x:FlexibleService) = 1 or count(x:StandardService) = 1"
+          "test": "has_flexible_or_standard_service(.)"
         }
       ]
     },
@@ -622,10 +622,10 @@
       "service_type": "FlexibleService",
       "reference": "10",
       "number": 119,
-      "context": "//x:Service/x:ServiceClassification",
+      "context": "//x:Service",
       "rules": [
         {
-          "test": "count(x:Flexible) = 1"
+          "test": "has_flexible_service_classification(.)"
         }
       ]
     },
