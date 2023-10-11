@@ -3,8 +3,6 @@ import zipfile
 from logging import getLogger
 from typing import List, Optional
 
-from dateutil.relativedelta import relativedelta
-from django.utils import timezone
 from lxml import etree
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
@@ -208,35 +206,6 @@ class TXCRevisionValidator:
         filtered.sort(key=lambda a: a.revision_number)
         return filtered
 
-    def validate_creation_datetime(self) -> None:
-        """
-        Validates that creation_datetime remains unchanged between revisions.
-        """
-        SIX_MONTHS_AGO = timezone.now() - relativedelta(months=6)
-
-        for draft in self.draft_attributes:
-            if draft.hash in self.live_hashes:
-                continue
-
-            lives = self.get_live_attribute_by_service_code(draft.service_code)
-
-            if len(lives) == 0:
-                continue
-
-            if (
-                draft.creation_datetime
-                not in [live.creation_datetime for live in lives]
-                and draft.creation_datetime < SIX_MONTHS_AGO
-            ):
-                self.violations.append(
-                    Violation(
-                        line=2,
-                        filename=draft.filename,
-                        name="CreationDateTime",
-                        observation=CREATION_DATETIME_OBSERVATION,
-                    )
-                )
-
     def validate_revision_number(self) -> None:
         """
         Validates that revision_number increments between revisions if the
@@ -290,7 +259,6 @@ class TXCRevisionValidator:
         if len(self.live_attributes) == 0:
             return self.violations
 
-        self.validate_creation_datetime()
         self.validate_revision_number()
         return self.violations
 
