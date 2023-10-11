@@ -273,6 +273,7 @@ def has_flexible_service_classification(context, services):
     Check when file has detected a flexible service (includes a
     FlexibleJourneyPattern or includes a BookingArrangements element),
     it has ServiceClassification and Flexible elements.
+    If the file also has a standard service, then return True.
     """
     for service in services:
         ns = {"x": service.nsmap.get(None)}
@@ -284,21 +285,20 @@ def has_flexible_service_classification(context, services):
             namespaces=ns,
         )
 
-        if flexible_journey_pattern_list or booking_arrangements_list:
-            service_classification_list = service.xpath(
-                "x:ServiceClassification", namespaces=ns
-            )
-            if service_classification_list:
-                for service_classification in service_classification_list:
-                    flexible_list = service_classification.xpath(
-                        "x:Flexible", namespaces=ns
-                    )
-                    if flexible_list:
-                        return True
-                    else:
-                        return False
-            else:
-                return False
+        if not flexible_journey_pattern_list and not booking_arrangements_list:
+            return True
+
+        service_classification_list = service.xpath(
+            "x:ServiceClassification", namespaces=ns
+        )
+        if not service_classification_list:
+            return False
+
+        for service_classification in service_classification_list:
+            if service_classification.xpath("x:Flexible", namespaces=ns):
+                return True
+
+        return False
 
 
 def check_flexible_service_timing_status(context, flexiblejourneypatterns):
