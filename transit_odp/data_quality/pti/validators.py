@@ -18,6 +18,8 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_date,
     check_flexible_service_timing_status,
     contains_date,
+    has_flexible_or_standard_service,
+    has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
     has_unregistered_service_codes,
@@ -479,6 +481,12 @@ class PTIValidator:
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)
         self.register_function("has_name", has_name)
+        self.register_function(
+            "has_flexible_or_standard_service", has_flexible_or_standard_service
+        )
+        self.register_function(
+            "has_flexible_service_classification", has_flexible_service_classification
+        )
         self.register_function("has_prohibited_chars", has_prohibited_chars)
         self.register_function(
             "has_unregistered_service_codes", has_unregistered_service_codes
