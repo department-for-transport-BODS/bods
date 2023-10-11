@@ -62,7 +62,7 @@ redis = "~=3.5.0"
 shapely = "~=1.7.0"
 stories = "~=1.0.0"
 tenacity = "~=6.2.0"
-whitenoise = "~=5.1.0"
+whitenoise = "~=6.6.0"
 openpyxl = "^3.0.10"
 django-waffle = "^3.0.0"
 
