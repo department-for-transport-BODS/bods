@@ -20,9 +20,9 @@ from transit_odp.otc.models import Service as OTCService
 TXC_COLUMNS = (
     "organisation_name",
     "dataset_id",
-    "score",
-    "bods_compliant",
-    "last_updated_date",
+    # "score",
+    # "bods_compliant",
+    # "last_updated_date",
     "filename",
     "licence_number",
     "modification_datetime",
@@ -62,6 +62,16 @@ SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
 
 TIMETABLE_COLUMN_MAP = OrderedDict(
     {
+        "service_code": Column(
+            "XML:Service Code",
+            "The ServiceCode(s) as extracted from the files provided by "
+            "the operator/publisher to BODS.",
+        ),
+        "string_lines": Column(
+            "XML:Line Name",
+            "The line name(s) as extracted from the files provided by "
+            "the operator/publisher to BODS.",
+        ),
         "requires_attention": Column(
             "Requires Attention",
             "No: Default state for correctly published services, will be “No” "
@@ -104,7 +114,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "been marked with a date range within the seasonal services flow.",
         ),
         "staleness_status": Column(
-            "Staleness Status",
+            "Timeliness Status",
             "Not Stale: Default status for service codes published to BODS. </br></br>"
             "Stale - End date passed: If 'Effective stale date due to end "
             "date' (if present)  is sooner than 'Effective stale date due to "
@@ -128,90 +138,25 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The name of the operator/publisher providing data on BODS.",
         ),
         "dataset_id": Column(
-            "Dataset ID",
+            "Data set ID",
             "The internal BODS generated ID of the dataset "
             "that contains the data for this row.",
         ),
-        "score": Column(
-            "DQ Score",
-            "The DQ score assigned to the publisher’s data set as a result of "
-            "the additional data quality checks done on timetables data on "
-            "BODS.",
-        ),
-        "bods_compliant": Column(
-            "BODS Compliant",
-            "The validation status and format of timetables data.",
-        ),
-        "last_updated_date": Column(
-            "Last Updated Date",
-            "The date that the data set/feed was last updated on BODS",
-        ),
-        "last_modified_date": Column(
-            "Last Modified Date",
-            "Date of last modified file within the service codes dataset.",
-        ),
-        "effective_last_modified_date": Column(
-            "Effective Last Modified Date",
-            "Equal to Last Modified Date.",
-        ),
-        "filename": Column(
-            "XML Filename",
-            "The exact name of the file provided to BODS. This is usually generated"
-            " by the publisher or their supplier",
-        ),
-        "licence_number": Column(
-            "Data set Licence Number",
-            "The License number(s) as extracted from the files provided by "
-            "the operator/publisher to BODS.",
-        ),
-        "national_operator_code": Column(
-            "National Operator Code",
-            "The National Operator Code(s) as extracted from the files provided by "
-            "the operator/publisher to BODS.",
-        ),
-        "service_code": Column(
-            "Data set Service Code",
-            "The ServiceCode(s) as extracted from the files provided by "
-            "the operator/publisher to BODS.",
-        ),
-        "public_use": Column(
-            "Public Use Flag",
-            "The Public Use Flag element as extracted from the files provided by "
-            "the operator/publisher to BODS.",
-        ),
-        "operating_period_start_date": Column(
-            "Operating Period Start Date",
-            "The operating period start date as extracted from the files provided by "
-            "the operator/publisher to BODS.",
-        ),
-        "operating_period_end_date": Column(
-            "Operating Period End Date",
-            "The operating period end date as extracted from the files "
-            "provided by the operator/publisher to BODS.",
-        ),
-        "effective_stale_date_from_end_date": Column(
-            "Effective stale date due to end date",
-            "If end date exists within the timetable file "
-            "Then take end date from TransXChange file minus 42 days.",
+        "effective_stale_date_from_otc_effective": Column(
+            "Date OTC variation needs to be published",
+            "Effective date” (timetable data catalogue) minus 70 days.",
         ),
         "effective_stale_date_from_last_modified": Column(
-            "Effective stale date due to effective last modified date",
+            "Date when data is over 1 year old",
             "Take 'Effective Last Modified date' from timetable data catalogue "
             "plus 12 months.",
         ),
-        "last_modified_lt_effective_stale_date_otc": Column(
-            "Last modified date < Effective stale date due to " "OTC effective date",
-            "If last modified date is less than "
-            "Effective stale date due to OTC effective date "
-            "Then TRUE "
-            "Else FALSE.",
-        ),
-        "effective_stale_date_from_otc_effective": Column(
-            "Effective stale date due to OTC effective date",
-            "Effective date” (timetable data catalogue) minus 70 days.",
+        "date_42_day_look_ahead": Column(
+            "Date for complete 42 day look ahead",
+            "description for date for complete 42 day look ahead",
         ),
         "effective_seasonal_start": Column(
-            "Effective Seasonal Start Date",
+            "Date seasonal service should be published",
             "If Seasonal Start Date is present "
             "Then Seasonal Start Date minus 42 days "
             "Else null.",
@@ -230,111 +175,170 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "Then take end date "
             "Else null.",
         ),
+        "filename": Column(
+            "XML:Filename",
+            "The exact name of the file provided to BODS. This is usually generated"
+            " by the publisher or their supplier",
+        ),
+        "last_modified_date": Column(
+            "XML:Last Modified Date",
+            "Date of last modified file within the service codes dataset.",
+        ),
+        "national_operator_code": Column(
+            "XML:National Operator Code",
+            "The National Operator Code(s) as extracted from the files provided by "
+            "the operator/publisher to BODS.",
+        ),
+        "licence_number": Column(
+            "XML:Licence Number",
+            "The License number(s) as extracted from the files provided by "
+            "the operator/publisher to BODS.",
+        ),
+        "public_use": Column(
+            "XML:Public Use Flag",
+            "The Public Use Flag element as extracted from the files provided by "
+            "the operator/publisher to BODS.",
+        ),
         "revision_number": Column(
-            "Data set Revision Number",
+            "XML:Revision Number",
             "The service revision number date as extracted from the files "
             "provided by the operator/publisher to BODS.",
         ),
-        "string_lines": Column(
-            "Data set Line Name",
-            "The line name(s) as extracted from the files provided by "
+        "operating_period_start_date": Column(
+            "XML:Operating Period Start Date",
+            "The operating period start date as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
+        "operating_period_end_date": Column(
+            "XML:Operating Period End Date",
+            "The operating period end date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
         "origin": Column(
-            "Origin",
+            "OTC:Origin",
             "The origin element as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
         "destination": Column(
-            "Destination",
+            "OTC:Destination",
             "The destination element as extracted from the files provided by "
             "the operator/publisher to BODS.",
         ),
         "otc_operator_id": Column(
-            "Operator ID",
+            "OTC:Operator ID",
             "The operator ID element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "operator_name": Column(
-            "Operator Name",
+            "OTC:Operator Name",
             "The operator name element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "address": Column(
-            "Address",
+            "OTC:Address",
             "The address as extracted from the database of the Office of "
             "the Traffic Commissioner (OTC)",
         ),
         "otc_licence_number": Column(
-            "OTC Licence Number",
+            "OTC:Licence Number",
             "The licence number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "licence_status": Column(
-            "Licence Status",
+            "OTC:Licence Status",
             "The licence status element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "registration_number": Column(
-            "OTC Registration Number",
+            "OTC:Registration Number",
             "The registration number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "service_type_description": Column(
-            "Service Type Description",
+            "OTC:Service Type Description",
             "The service type description element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "variation_number": Column(
-            "Variation Number",
+            "OTC:Variation Number",
             "The variation number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "service_number": Column(
-            "OTC Service Number",
+            "OTC:Service Number",
             "The service number element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "start_point": Column(
-            "Start Point",
+            "OTC:Start Point",
             "The start point element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "finish_point": Column(
-            "Finish Point",
+            "OTC:Finish Point",
             "The finish point element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "via": Column(
-            "Via",
+            "OTC:Via",
             "The via element as extracted from the database of the Office of "
             "the Traffic Commissioner (OTC)",
         ),
         "granted_date": Column(
-            "Granted Date",
+            "OTC:Granted Date",
             "The granted date element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "expiry_date": Column(
-            "Expiry Date",
+            "OTC:Expiry Date",
             "The expiry date element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "effective_date": Column(
-            "Effective Date",
+            "OTC:Effective Date",
             "The effective date element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "received_date": Column(
-            "Received Date",
+            "OTC:Received Date",
             "The received date element as extracted from the database of "
             "the Office of the Traffic Commissioner (OTC)",
         ),
         "service_type_other_details": Column(
-            "Service Type Other Details",
+            "OTC:Service Type Other Details",
             "The service type other details element as extracted from "
             "the database of the Office of the Traffic Commissioner (OTC)",
         ),
+        # "score": Column(
+        #     "DQ Score",
+        #     "The DQ score assigned to the publisher’s data set as a result of "
+        #     "the additional data quality checks done on timetables data on "
+        #     "BODS.",
+        # ),
+        # "bods_compliant": Column(
+        #     "BODS Compliant",
+        #     "The validation status and format of timetables data.",
+        # ),
+        # "last_updated_date": Column(
+        #     "Last Updated Date",
+        #     "The date that the data set/feed was last updated on BODS",
+        # ),
+        # "effective_last_modified_date": Column(
+        #     "Effective Last Modified Date",
+        #     "Equal to Last Modified Date.",
+        # ),
+        # "effective_stale_date_from_end_date": Column(
+        #     "Effective stale date due to end date",
+        #     "If end date exists within the timetable file "
+        #     "Then take end date from TransXChange file minus 42 days.",
+        # ),
+        # "last_modified_lt_effective_stale_date_otc": Column(
+        #     "Last modified date < Effective stale date due to " "OTC effective date",
+        #     "If last modified date is less than "
+        #     "Effective stale date due to OTC effective date "
+        #     "Then TRUE "
+        #     "Else FALSE.",
+        # ),
     }
 )
 
@@ -470,6 +474,8 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         ],
         default="Not Stale",
     )
+    df["date_42_day_look_ahead"] = today + 42
+
     return df
 
 
@@ -520,7 +526,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         ("otc_operator_id", "Int64"),
     )
 
-    txc_df["bods_compliant"] = txc_df["bods_compliant"].map(cast_boolean_to_string)
+    # txc_df["bods_compliant"] = txc_df["bods_compliant"].map(cast_boolean_to_string)
     merged = pd.merge(otc_df, txc_df, on="service_code", how="outer")
 
     for field, type_ in castings:
@@ -532,14 +538,15 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
     merged = add_requires_attention_column(merged, today)
-    merged["score"] = merged["score"].map(
-        lambda value: f"{int(round_down(value) * 100)}%" if not pd.isna(value) else ""
-    )
+    # merged["score"] = merged["score"].map(
+    #     lambda value: f"{int(round_down(value) * 100)}%" if not pd.isna(value) else ""
+    # )
     rename_map = {
         old_name: column_tuple.field_name
         for old_name, column_tuple in TIMETABLE_COLUMN_MAP.items()
     }
     merged = merged[TIMETABLE_COLUMN_MAP.keys()].rename(columns=rename_map)
+    print("merged:", merged)
     return merged
 
 
