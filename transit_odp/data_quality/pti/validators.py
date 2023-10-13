@@ -539,17 +539,12 @@ class PTIValidator:
             servie_classification_xpath, namespaces=self.namespaces
         )
 
-        flexible_jp_xpath = (
-            "//x:Services/x:Service/x:FlexibleService/x:FlexibleJourneyPattern"
-        )
-        flexible_jp = document.xpath(flexible_jp_xpath, namespaces=self.namespaces)
-
-        booking_arrangement_xpath = "//x:Services/x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements"
-        booking_arrangement = document.xpath(
-            booking_arrangement_xpath, namespaces=self.namespaces
+        flexible_service_xpath = "//x:Services/x:Service/x:FlexibleService"
+        flexible_service = document.xpath(
+            flexible_service_xpath, namespaces=self.namespaces
         )
 
-        if service_classification or flexible_jp or booking_arrangement:
+        if service_classification or flexible_service:
             return FLEXIBLE_SERVICE
         return STANDARD_SERVICE
 
