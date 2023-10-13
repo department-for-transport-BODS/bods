@@ -17,15 +17,12 @@ info:
   title: Fares data API
   version: 1.0.0
 
-servers:
-  - url: "/api/v1/fares"
-
 tags:
   - name: Data set
     description: Interact with fares datasets
 
 paths:
-  /dataset:
+  /api/v1/fares/dataset:
     get:
       tags:
         - Data set
@@ -69,31 +66,30 @@ paths:
               type: number
             minItems: 4
             maxItems: 4
-            example: [51.401, 51.509, 0.01, 0.201]
+            example: [-2.930, 53.374, -3.085, 53.453]
           description: >
-            Limit results to fares data sets that contain information for the area within the rectangular boundingBox you set using co-ordinates</br></br>
-            [minLatitude, maxLatitude, minLongitude, maxLongitude]
+            Limit results to fares data sets that contain information for the area within the rectangular boundingBox you set using co-ordinates.
+            [minLatitude, maxLatitude, minLongitude, maxLongitude]. The default values shown are for the Liverpool area.
 
         - name: limit
           in: query
-          description: The maximum number of records to return
+          description: The maximum number of records to return. The default value shown is 25.
           schema:
             type: integer
             format: int64
-            default: 25
             maximum: 100
             example: 25
 
         - name: offset
           in: query
           description:
-            Return results that match the query starting from the specified offset.<br/>
-            e.g. &offset=10&limit=25 returns results from 11 to 36
+            Return results that match the query starting from the specified offset.
+            e.g. If the offset=10 and limit=25, then results from 11 to 36 will be returned
+            The default value shown is 0.
           schema:
             type: integer
             format: int64
             maximum: 100
-            default: 0
             example: 0
 
       responses:
@@ -106,7 +102,7 @@ paths:
         400:
           description: Invalid data supplied
 
-  /dataset/{datasetID}:
+  /api/v1/fares/dataset/{datasetID}:
     get:
       tags:
         - Data set
