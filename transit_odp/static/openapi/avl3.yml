@@ -17,9 +17,6 @@ info:
   title: Location data API
   version: 1.0.0
 
-servers:
-  - url: "/api/v1"
-
 tags:
   - name: SIRI-VM Data feed
     description: Interact with SIRI-VM datafeeds
@@ -27,7 +24,7 @@ tags:
     description: Interact with GTFS-RT datafeeds
 
 paths:
-  /datafeed:
+  /api/v1/datafeed:
     get:
       tags:
         - SIRI-VM Data feed
@@ -109,7 +106,7 @@ paths:
         400:
           description: Invalid data supplied
 
-  /datafeed/{datafeedID}/:
+  /api/v1/datafeed/{datafeedID}/:
     get:
       tags:
         - SIRI-VM Data feed
@@ -133,7 +130,7 @@ paths:
         404:
           description: Datafeed not found
 
-  /gtfsrtdatafeed/:
+  /api/v1/gtfsrtdatafeed/:
     get:
       tags:
         - GTFS RT Data feed
@@ -154,13 +151,14 @@ paths:
             Limit results to bus location data with vehicle position within the
             rectangular boundingBox you set using co-ordinates.
             [minLongitude, minLatitude, maxLongitude, maxLatitude]
+            The default values shown are for the Liverpool area.
           schema:
             type: array
             items:
               type: number
             minItems: 4
             maxItems: 4
-            example: [51.401, 51.509, 0.01, 0.201]
+            example: [-2.930, 53.374, -3.085, 53.453]
           style: form
           explode: false
 

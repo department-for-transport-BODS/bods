@@ -17,15 +17,12 @@ info:
   title: Fares data API
   version: 1.0.0
 
-servers:
-  - url: "/api/v1/fares"
-
 tags:
   - name: Data set
     description: Interact with fares datasets
 
 paths:
-  /dataset:
+  /api/v1/fares/dataset:
     get:
       tags:
         - Data set
@@ -69,10 +66,10 @@ paths:
               type: number
             minItems: 4
             maxItems: 4
-            example: [51.401, 51.509, 0.01, 0.201]
+            example: [-2.930, 53.374, -3.085, 53.453]
           description: >
-            Limit results to fares data sets that contain information for the area within the rectangular boundingBox you set using co-ordinates.</br></br>
-            [minLatitude, maxLatitude, minLongitude, maxLongitude]
+            Limit results to fares data sets that contain information for the area within the rectangular boundingBox you set using co-ordinates.
+            [minLatitude, maxLatitude, minLongitude, maxLongitude]. The default values shown are for the Liverpool area.
 
         - name: limit
           in: query
@@ -105,7 +102,7 @@ paths:
         400:
           description: Invalid data supplied
 
-  /dataset/{datasetID}:
+  /api/v1/fares/dataset/{datasetID}:
     get:
       tags:
         - Data set
