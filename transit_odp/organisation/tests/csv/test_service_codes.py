@@ -188,7 +188,7 @@ def test_csv_output():
         operating_period_end_date=datetime.datetime(2023, 3, 24),
         modification_datetime=datetime.datetime(2023, 1, 24),
     )
-    # staleness_end_date = True => "Stale - End date passed"
+    # staleness_42_day_look_ahead = True => "Stale - 42 day look ahead"
     ServiceModelFactory(
         licence=otc_lic,
         registration_number=service_codes[4],
@@ -291,7 +291,7 @@ def test_csv_output():
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2023, 2, 24),
     )
-    # staleness_otc = False, staleness_end_date = False,
+    # staleness_otc = False, staleness_42_day_look_ahead = False,
     # staleness_12_months_old = False => Not Stale
     ServiceModelFactory(
         licence=otc_lic,
@@ -460,7 +460,7 @@ def test_csv_output():
     assert csv_output["row4"][2] == '"Registered"'
     assert csv_output["row4"][3] == '"In Scope"'
     assert csv_output["row4"][4] == '"In Season"'
-    assert csv_output["row4"][5] == '"Stale - End date passed"'
+    assert csv_output["row4"][5] == '"Stale - 42 day look ahead"'
     assert csv_output["row4"][6] == '"PD0000099"'
     assert csv_output["row4"][7] == '"PD0000099:4"'
     assert csv_output["row4"][8] == '"line1 line2"'
