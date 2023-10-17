@@ -448,9 +448,13 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     not_stale_otc = df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
     staleness_otc = ~not_stale_otc
 
-    forty_two_days_from_today = today + np.timedelta64(42, 'D')
+    forty_two_days_from_today = today + np.timedelta64(42, "D")
 
-    staleness_42_day_look_ahead = (staleness_otc == False) & pd.notna(df["operating_period_end_date"]) & (df["operating_period_end_date"] < forty_two_days_from_today)
+    staleness_42_day_look_ahead = (
+        (staleness_otc == False)
+        & pd.notna(df["operating_period_end_date"])
+        & (df["operating_period_end_date"] < forty_two_days_from_today)
+    )
     df["staleness_status"] = np.select(
         condlist=[staleness_42_day_look_ahead, staleness_12_months, staleness_otc],
         choicelist=[

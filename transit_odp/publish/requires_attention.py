@@ -173,10 +173,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         else False
     )
     staleness_42_day_look_ahead = (
-        (
-            not staleness_otc
-            and operating_period_end_date < forty_two_days_from_today
-        )
+        (not staleness_otc and operating_period_end_date < forty_two_days_from_today)
         if operating_period_end_date
         else False
     )
