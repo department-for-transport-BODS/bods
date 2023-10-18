@@ -429,6 +429,10 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         today < df["effective_stale_date_from_otc_effective"]
     )
 
+    """
+    effective_stale_date_from_end_date = effective_date - 42 days
+    effective_stale_date_from_last_modified = last_modified_date - 365 days (or 1 year)
+    """
     staleness_12_months = (
         (
             pd.isna(df["effective_stale_date_from_end_date"])
@@ -445,6 +449,13 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         df["last_modified_date"] >= df["association_date_otc_effective_date"]
     ) | (df["operating_period_start_date"] == df["effective_date"])
 
+    """
+    today_lt_effective_stale_date_otc is True if effective_stale_date_from_otc_effective
+    is less than today where 
+    effective_stale_date_from_otc_effective = effective_date - 42 days.
+    is_data_associated is set to true if operating period start date equals
+    effective date or last modified date is greater than (effective_date - 70 days)
+    """
     not_stale_otc = df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
     staleness_otc = ~not_stale_otc
 
