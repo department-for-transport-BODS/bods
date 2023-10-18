@@ -232,13 +232,30 @@ def has_unregistered_service_codes(context, services):
     service_code_list = []
     service = services[0]
     ns = {"x": service.nsmap.get(None)}
+    flexible_service_code = None
 
     service_list = service.xpath("x:Service", namespaces=ns)
     for service in service_list:
+        flexible = service.xpath("x:ServiceClassification/x:Flexible", namespaces=ns)
+        flexible_service = service.xpath("x:FlexibleService", namespaces=ns)
+        if flexible or flexible_service:
+            flexible_service_code = service.xpath(
+                "string(x:ServiceCode)", namespaces=ns
+            )
         service_code_list.append(service.xpath("string(x:ServiceCode)", namespaces=ns))
     r = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
     registered_service_code = list(filter(r.match, service_code_list))
+    unregistered_service_code = list(
+        filter(lambda s: not r.match(s), service_code_list)
+    )
+
     if len(registered_service_code) > 1:
+        return False
+    # Specific check for an unregistered flexible service + registered standard service
+    if (
+        flexible_service_code in unregistered_service_code
+        and len(registered_service_code) == 1
+    ):
         return False
     return True
 
@@ -318,6 +335,7 @@ def check_flexible_service_timing_status(context, flexiblejourneypatterns):
                 )
 
     result = all(
-        timing_status_value == "OTH" for timing_status_value in timing_status_value_list
+        timing_status_value == "otherPoint"
+        for timing_status_value in timing_status_value_list
     )
     return result

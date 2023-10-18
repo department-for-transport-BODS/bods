@@ -210,6 +210,43 @@ def test_has_unregistered_service_codes(value, expected):
 
 
 @pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (["UZ030ARBB:11", "PF0000508:53"], False),
+    ],
+)
+def test_has_unregistered_flexible_and_registered_standard_service_code(
+    value, expected
+):
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>{0}</ServiceCode>
+                <FlexibleService>
+                </FlexibleService>
+            </Service>
+            <Service>
+                <ServiceCode>{1}</ServiceCode>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    service_codes_length = len(value)
+    if service_codes_length > 1:
+        string_xml = services.format(*value)
+
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = has_unregistered_service_codes("", elements)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
     ("flexible_classification", "flexible_service", "standard_service", "expected"),
     [
         (True, True, True, True),
@@ -360,8 +397,8 @@ def test_has_flexible_service_classification(
 @pytest.mark.parametrize(
     ("values", "expected"),
     [
-        (["OTH", "OTH", "OTH"], True),
-        (["OTH", "TXT", "OTH"], False),
+        (["otherPoint", "otherPoint", "otherPoint"], True),
+        (["otherPoint", "TXT", "otherPoint"], False),
         (["", "", ""], False),
         (["XYZ", "ABC", ""], False),
     ],
