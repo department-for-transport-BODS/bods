@@ -29,14 +29,53 @@
     <script>
         BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/timetables3.yml" %}")
     </script>
+    <style>
+        /* Add CSS to hide the response section on page load */
+        .responses-wrapper {
+            display: none;
+        }
+    </style>
     <script>
-        $(document).ready(function () {
-            $(document).on("click", "button.btn.execute", function () {
-                gtag('event', 'Execute API button', {
-                    'event_category': 'button',
-                    'event_label': 'timetables swagger',
-                    'event_action': 'click'
+        // Function to show the response section
+        function showResponseSection() {
+            const responseSection = document.querySelector(".responses-wrapper");
+            if (responseSection) {
+                responseSection.style.display = "block";
+            }
+        }
+
+        function hideResponseSection() {
+            const responseSection = document.querySelector(".responses-wrapper");
+            if (responseSection) {
+                responseSection.style.display = "none";
+            }
+        }
+
+        function bindExecuteButtonClickEvent() {
+            $(document).on("click", "button.btn.btn-clear", function () {
+                // Your code here
+                hideResponseSection()
+            });
+
+            const executeButton = document.querySelector('button.execute');
+            if(executeButton) {
+                executeButton.addEventListener('click', function () {
+                    // Perform your custom action when the "Execute" button is clicked
+                    showResponseSection()
+                    gtag('event', 'Execute API button', {
+                        'event_category': 'button',
+                        'event_label': 'timetables swagger',
+                        'event_action': 'click'
+                    });
                 });
+            }
+            
+        }
+
+        $(document).ready(function () {
+            $(document).on("click", "button.btn.try-out__btn", function () {
+                // After "Try it out" is clicked, bind the click event to the "Execute" button
+                bindExecuteButtonClickEvent()
             });
         });
     </script>
