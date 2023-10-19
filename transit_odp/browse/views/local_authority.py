@@ -25,9 +25,9 @@ from collections import OrderedDict
 from transit_odp.browse.lta_column_headers import header_accessor_data
 
 STALENESS_STATUS = [
-    "Stale - 42 day look ahead",
-    "Stale - 12 months old",
-    "Stale - OTC Variation",
+    "42 day look ahead is incomplete",
+    "Service hasn't been updated within a year",
+    "OTC variation not published",
 ]
 
 
@@ -394,7 +394,7 @@ class LTACSV(CSVBuilder):
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
 
-            staleness_status = "Not Stale"
+            staleness_status = "Up to date"
             if file_attribute is None:
                 require_attention = self._get_require_attention(
                     exemption, seasonal_service

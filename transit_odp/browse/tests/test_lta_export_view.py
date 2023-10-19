@@ -285,7 +285,7 @@ def test_lta_csv_output():
         modification_datetime=datetime.datetime(2022, 6, 24),
         national_operator_code=national_operator_code,
     )
-    # staleness_otc = True => "Stale - OTC Variation"
+    # staleness_otc = True => "OTC variation not published"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -314,7 +314,7 @@ def test_lta_csv_output():
         modification_datetime=datetime.datetime(2023, 6, 24),
         national_operator_code=national_operator_code,
     )
-    # staleness_42_day_look_ahead = True => "Stale - 42 day look ahead"
+    # staleness_42_day_look_ahead = True => "42 day look ahead is incomplete"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -371,7 +371,7 @@ def test_lta_csv_output():
         modification_datetime=datetime.datetime(2022, 1, 24),
         national_operator_code=national_operator_code,
     )
-    # staleness_12_months_old = True => "Stale - 12 months old"
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -401,7 +401,7 @@ def test_lta_csv_output():
         modification_datetime=datetime.datetime(2022, 1, 24),
         national_operator_code=national_operator_code,
     )
-    # staleness_12_months_old = True => "Stale - 12 months old"
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -436,7 +436,7 @@ def test_lta_csv_output():
         national_operator_code=national_operator_code,
     )
     # staleness_otc = False, stalenes_42_day_look_ahead = False,
-    # staleness_12_months_old = False => Not Stale
+    # staleness_12_months_old = False => Up to date
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -489,7 +489,7 @@ def test_lta_csv_output():
     assert csv_output["row0"][4] == '"Registered"'  # OTC Status
     assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row0"][6] == '"Out of Season"'  # Seasonal Status
-    assert csv_output["row0"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row0"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row0"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row0"][9] == '""'  # Dataset ID
     assert csv_output["row0"][10] == '"2023-05-12"'
@@ -535,7 +535,7 @@ def test_lta_csv_output():
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
     assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row1"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row1"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row1"][9] == '""'  # Dataset ID
     assert (
@@ -579,7 +579,7 @@ def test_lta_csv_output():
     assert csv_output["row2"][4] == '"Registered"'  # OTC Status
     assert csv_output["row2"][5] == '"Out of Scope"'  # Scope Status
     assert csv_output["row2"][6] == '"Not Seasonal"'  # Seasonal Status
-    assert csv_output["row2"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row2"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row2"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row2"][9] == '""'  # Dataset ID
     assert (
@@ -615,7 +615,7 @@ def test_lta_csv_output():
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
     assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row3"][7] == '"Stale - OTC Variation"'  # Timeliness Status
+    assert csv_output["row3"][7] == '"OTC variation not published"'  # Timeliness Status
     assert csv_output["row3"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row3"][9] == f'"{dataset3.id}"'  # Dataset ID
     assert (
@@ -663,7 +663,9 @@ def test_lta_csv_output():
     assert csv_output["row4"][4] == '"Registered"'  # OTC Status
     assert csv_output["row4"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row4"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row4"][7] == '"Stale - 42 day look ahead"'  # Timeliness Status
+    assert (
+        csv_output["row4"][7] == '"42 day look ahead is incomplete"'
+    )  # Timeliness Status
     assert csv_output["row4"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row4"][9] == f'"{dataset4.id}"'  # Dataset ID
     assert (
@@ -711,7 +713,7 @@ def test_lta_csv_output():
     assert csv_output["row5"][4] == '"Registered"'  # OTC Status
     assert csv_output["row5"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row5"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row5"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row5"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row5"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row5"][9] == f'"{dataset5.id}"'  # Dataset ID
     assert (
@@ -759,7 +761,9 @@ def test_lta_csv_output():
     assert csv_output["row6"][4] == '"Registered"'  # OTC Status
     assert csv_output["row6"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row6"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row6"][7] == '"Stale - 12 months old"'  # Timeliness Status
+    assert (
+        csv_output["row6"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row6"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row6"][9] == f'"{dataset6.id}"'  # Dataset ID
     assert (
@@ -805,7 +809,9 @@ def test_lta_csv_output():
     assert csv_output["row7"][4] == '"Registered"'  # OTC Status
     assert csv_output["row7"][5] == '"Out of Scope"'  # Scope Status
     assert csv_output["row7"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row7"][7] == '"Stale - 12 months old"'  # Timeliness Status
+    assert (
+        csv_output["row7"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row7"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row7"][9] == f'"{dataset7.id}"'  # Dataset ID
     assert (
@@ -852,7 +858,7 @@ def test_lta_csv_output():
     assert csv_output["row8"][4] == '"Registered"'  # OTC Status
     assert csv_output["row8"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row8"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row8"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row8"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row8"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row8"][9] == f'"{dataset8.id}"'  # Dataset ID
     assert (
@@ -935,7 +941,7 @@ def test_seasonal_status_lta_csv_output():
     bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
     otc_lic = LicenceModelFactory(number=licence_number)
 
-    # Not Stale
+    # Up to date
     dataset0 = DatasetFactory(organisation=org)
     TXCFileAttributesFactory(
         revision=dataset0.live_revision,
@@ -1023,7 +1029,7 @@ def test_seasonal_status_lta_csv_output():
         operating_period_start_date=datetime.datetime(1999, 6, 26),
         national_operator_code=national_operator_code,
     )
-    # is_stale: staleness_12_months_old = True => "Stale - 12 months old"
+    # is_stale: staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -1056,7 +1062,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row0"][4] == '"Registered"'  # OTC Status
     assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row0"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row0"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row0"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row0"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row0"][9] == f'"{dataset0.id}"'  # Dataset ID
     assert (
@@ -1099,7 +1105,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
     assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row1"][6] == '"Out of Season"'  # Seasonal Status
-    assert csv_output["row1"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row1"][9] == f'"{dataset1.id}"'  # Dataset ID
     assert (
@@ -1142,7 +1148,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row2"][4] == '"Registered"'  # OTC Status
     assert csv_output["row2"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row2"][6] == '"Not Seasonal"'  # Seasonal Status
-    assert csv_output["row2"][7] == '"Not Stale"'  # Timeliness Status
+    assert csv_output["row2"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row2"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row2"][9] == f'"{dataset2.id}"'  # Dataset ID
     assert (
@@ -1183,7 +1189,9 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
     assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row3"][7] == '"Stale - 12 months old"'  # Timeliness Status
+    assert (
+        csv_output["row3"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row3"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row3"][9] == f'"{dataset3.id}"'  # Dataset ID
     assert (
