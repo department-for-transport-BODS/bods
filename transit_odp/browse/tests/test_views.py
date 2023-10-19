@@ -1165,7 +1165,7 @@ class TestLTAView:
         assert response.status_code == 200
         expected_order = sorted([lta.ui_lta_name for lta in ltas_list])
         ltas = response.context_data["ltas"]
-        assert sorted(ltas["names"]) == expected_order
+        assert ltas["names"] == expected_order
 
         object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
         assert object_names == expected_order
