@@ -9,7 +9,7 @@ from django.views import View
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
-from transit_odp.organisation.models import Organisation, TXCFileAttributes
+from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
@@ -20,6 +20,10 @@ from transit_odp.publish.requires_attention import (
     is_stale,
 )
 
+from datetime import timedelta
+from collections import OrderedDict
+from transit_odp.browse.lta_column_headers import header_accessor_data
+
 STALENESS_STATUS = [
     "Stale - 42 day look ahead",
     "Stale - 12 months old",
@@ -27,18 +31,12 @@ STALENESS_STATUS = [
 ]
 
 
-def get_seasonal_service_status(otc_service: dict) -> str:
-    seasonal_service_status = otc_service.get("seasonal_status")
-    return "In Season" if seasonal_service_status else "Out of Season"
-
-
-def get_operator_name(otc_service: dict) -> str:
-    otc_licence_number = otc_service.get("otc_licence_number")
-    operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
-    if not operator_name:
-        return "Organisation not yet created"
-    else:
-        return operator_name
+def create_columns(header_accessor_list):
+    columns = [
+        CSVColumn(header=header, accessor=accessor)
+        for header, accessor in header_accessor_list
+    ]
+    return columns
 
 
 def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
@@ -189,16 +187,16 @@ class LocalAuthorityView(BaseListView):
                         context["services_require_attention_percentage"],
                     )
 
-        ltas = {
-            "names": list(
-                set(
-                    [
-                        lta.ui_lta_name_trimmed.replace("\xa0", " ")
-                        for lta in all_ltas_current_page
-                    ]
-                )
-            )
-        }
+        names = []
+        name_set = set()
+
+        for lta in all_ltas_current_page:
+            cleaned_name = lta.ui_lta_name_trimmed.replace("\xa0", " ")
+            if cleaned_name not in name_set:
+                names.append(cleaned_name)
+                name_set.add(cleaned_name)
+
+        ltas = {"names": names}
         context["ltas"] = ltas
         return context
 
@@ -303,138 +301,7 @@ class LocalAuthorityExportView(View):
 
 
 class LTACSV(CSVBuilder):
-    columns = [
-        CSVColumn(
-            header="Requires Attention",
-            accessor=lambda otc_service: otc_service.get("require_attention"),
-        ),
-        CSVColumn(
-            header="Published Status",
-            accessor=lambda otc_service: "Published"
-            if otc_service.get("dataset_id")
-            else "Unpublished",
-        ),
-        CSVColumn(
-            header="OTC Status",
-            accessor=lambda otc_service: "Registered"
-            if otc_service.get("otc_licence_number")
-            else "Unregistered",
-        ),
-        CSVColumn(
-            header="Scope Status",
-            accessor=lambda otc_service: "Out of Scope"
-            if otc_service.get("scope_status")
-            else "In Scope",
-        ),
-        CSVColumn(
-            header="Seasonal Status",
-            accessor=lambda otc_service: get_seasonal_service_status(otc_service)
-            if otc_service.get("seasonal_status") is not None
-            else "Not Seasonal",
-        ),
-        CSVColumn(
-            header="Staleness Status",
-            accessor=lambda otc_service: otc_service.get("staleness_status"),
-        ),
-        CSVColumn(
-            header="Operator Name",
-            accessor=lambda otc_service: get_operator_name(otc_service)
-            if otc_service.get("operator_name") is None
-            or otc_service.get("operator_name") == ""
-            else otc_service.get("operator_name"),
-        ),
-        CSVColumn(
-            header="Data set Licence Number",
-            accessor=lambda otc_service: otc_service.get("licence_number"),
-        ),
-        CSVColumn(
-            header="Data set Service Code",
-            accessor=lambda otc_service: otc_service.get("service_code"),
-        ),
-        CSVColumn(
-            header="Data set Line Name",
-            accessor=lambda otc_service: otc_service.get("line_number"),
-        ),
-        CSVColumn(
-            header="Operating Period Start Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
-        ),
-        CSVColumn(
-            header="Operating Period End Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
-        ),
-        CSVColumn(
-            header="OTC Licence Number",
-            accessor=lambda otc_service: otc_service.get("otc_licence_number"),
-        ),
-        CSVColumn(
-            header="OTC Registration Number",
-            accessor=lambda otc_service: otc_service.get("otc_registration_number"),
-        ),
-        CSVColumn(
-            header="OTC Service Number",
-            accessor=lambda otc_service: otc_service.get("otc_service_number"),
-        ),
-        CSVColumn(
-            header="Data set Revision Number",
-            accessor=lambda otc_service: otc_service.get("revision_number"),
-        ),
-        CSVColumn(
-            header="Last Modified Date",
-            accessor=lambda otc_service: otc_service.get("last_modified_date"),
-        ),
-        CSVColumn(
-            header="Effective Last Modified Date",
-            accessor=lambda otc_service: otc_service.get("last_modified_date"),
-        ),
-        CSVColumn(
-            header="XML Filename",
-            accessor=lambda otc_service: otc_service.get("xml_filename"),
-        ),
-        CSVColumn(
-            header="Dataset ID",
-            accessor=lambda otc_service: otc_service.get("dataset_id"),
-        ),
-        CSVColumn(
-            header="Effective Seasonal Start Date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_seasonal_start_date"
-            ),
-        ),
-        CSVColumn(
-            header="Seasonal Start Date",
-            accessor=lambda otc_service: otc_service.get("seasonal_start"),
-        ),
-        CSVColumn(
-            header="Seasonal End Date",
-            accessor=lambda otc_service: otc_service.get("seasonal_end"),
-        ),
-        CSVColumn(
-            header="Effective stale date due to end date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_end_date"
-            ),
-        ),
-        CSVColumn(
-            header="Effective stale date due to Effective last modified date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_last_modified_date"
-            ),
-        ),
-        CSVColumn(
-            header="Last modified date < Effective "
-            "stale date due to OTC effective date",
-            accessor=lambda otc_service: otc_service.get(
-                "last_modified_lt_effective_stale_date_otc"
-            ),
-        ),
-        CSVColumn(
-            header="Effective stale date due to OTC effective date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_otc_effective_date"
-            ),
-        ),
-    ]
+    columns = create_columns(header_accessor_data)
 
     def _update_data(
         self,
@@ -485,6 +352,8 @@ class LTACSV(CSVBuilder):
                 ),
                 "effective_stale_date_otc_effective_date": service
                 and (service.effective_stale_date_otc_effective_date),
+                "national_operator_code": file_attribute
+                and file_attribute.national_operator_code,
             }
         )
 
