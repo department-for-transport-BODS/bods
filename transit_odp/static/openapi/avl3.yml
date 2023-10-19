@@ -17,6 +17,9 @@ info:
   title: Location data API
   version: 1.0.0
 
+servers:
+  - url: "/api/v1"
+
 tags:
   - name: SIRI-VM Data feed
     description: Interact with SIRI-VM datafeeds
@@ -24,7 +27,7 @@ tags:
     description: Interact with GTFS-RT datafeeds
 
 paths:
-  /api/v1/datafeed:
+  /datafeed:
     get:
       tags:
         - SIRI-VM Data feed
@@ -106,7 +109,7 @@ paths:
         400:
           description: Invalid data supplied
 
-  /api/v1/datafeed/{datafeedID}/:
+  /datafeed/{datafeedID}/:
     get:
       tags:
         - SIRI-VM Data feed
@@ -130,7 +133,7 @@ paths:
         404:
           description: Datafeed not found
 
-  /api/v1/gtfsrtdatafeed/:
+  /gtfsrtdatafeed/:
     get:
       tags:
         - GTFS RT Data feed

@@ -17,12 +17,15 @@ info:
   title: Fares data API
   version: 1.0.0
 
+servers:
+  - url: "/api/v1/fares"
+
 tags:
   - name: Data set
     description: Interact with fares datasets
 
 paths:
-  /api/v1/fares/dataset:
+  /dataset:
     get:
       tags:
         - Data set
@@ -102,7 +105,7 @@ paths:
         400:
           description: Invalid data supplied
 
-  /api/v1/fares/dataset/{datasetID}:
+  /dataset/{datasetID}:
     get:
       tags:
         - Data set

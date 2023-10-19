@@ -17,12 +17,15 @@ info:
   title: Timetables data API
   version: "1.0.0"
 
+servers:
+  - url: "/api/v1"
+
 tags:
   - name: timetables
     description: Interact with timetable datasets
 
 paths:
-  /api/v1/dataset:
+  /dataset:
     get:
       tags:
         - timetables
@@ -164,7 +167,7 @@ paths:
         "400":
           description: Invalid query parameters supplied
 
-  /api/v1/dataset/{datasetID}:
+  /dataset/{datasetID}:
     get:
       tags:
         - timetables
