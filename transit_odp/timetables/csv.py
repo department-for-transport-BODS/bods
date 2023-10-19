@@ -7,7 +7,6 @@ import pandas as pd
 from pandas import Series
 
 from transit_odp.common.collections import Column
-from transit_odp.common.utils import round_down
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
     Organisation,
@@ -146,14 +145,14 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "Date OTC variation needs to be published",
             "Effective date” (timetable data catalogue) minus 70 days.",
         ),
+        "date_42_day_look_ahead": Column(
+            "Date for complete 42 day look ahead",
+            "Today's date + 42 days.",
+        ),
         "effective_stale_date_from_last_modified": Column(
             "Date when data is over 1 year old",
             "Take 'Effective Last Modified date' from timetable data catalogue "
             "plus 12 months.",
-        ),
-        "date_42_day_look_ahead": Column(
-            "Date for complete 42 day look ahead",
-            "description for date for complete 42 day look ahead",
         ),
         "effective_seasonal_start": Column(
             "Date seasonal service should be published",
@@ -468,11 +467,11 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     df["staleness_status"] = np.select(
         condlist=[staleness_end_date, staleness_12_months, staleness_otc],
         choicelist=[
-            "Stale - End date passed",
-            "Stale - 12 months old",
-            "Stale - OTC Variation",
+            "42 day look ahead is incomplete",
+            "Service hasn't been updated within a year",
+            "OTC variation not published",
         ],
-        default="Not Stale",
+        default="Up to date",
     )
     df["date_42_day_look_ahead"] = today + 42
 
