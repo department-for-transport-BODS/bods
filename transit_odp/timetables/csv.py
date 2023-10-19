@@ -550,7 +550,6 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         for old_name, column_tuple in TIMETABLE_COLUMN_MAP.items()
     }
     merged = merged[TIMETABLE_COLUMN_MAP.keys()].rename(columns=rename_map)
-    print("merged:", merged)
     return merged
 
 
