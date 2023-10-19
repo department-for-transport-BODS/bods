@@ -905,7 +905,7 @@ class TestOperatorDetailView:
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
         )
 
-        # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+        # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
         TXCFileAttributesFactory(
             revision=live_revision,
             service_code=all_service_codes[4],
@@ -1239,7 +1239,7 @@ class TestLTADetailView:
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
         )
 
-        # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+        # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
         TXCFileAttributesFactory(
             revision=live_revision,
             licence_number=otc_lic.number,
