@@ -322,17 +322,16 @@ def test_seasonal_status(start, end, status):
         ("2022-01-01", "2022-06-01", "2023-03-01", True),
         # End date not present
         ("2022-01-01", "2022-06-01", None, False),
-        # First condition not satisfied
-        ("2021-01-01", "2021-06-01", "2023-02-01", False),
-        # Second condition not satisfied
-        ("2022-12-01", "2023-01-01", "2023-06-01", False),
-        # Third condition not satisfied
-        ("2022-07-01", "2022-06-01", "2023-03-01", False),
+        # Operating end date is not less than 42 day
+        # look ahead
+        ("2021-01-01", "2021-06-01", "2023-05-01", False),
+        # Staleness status is set to OTC Variation
+        ("2023-03-01", "2022-11-01", "2023-03-01", False),
     ),
 )
-def test_stale_end_date(effective, modified, period_end, is_stale):
+def test_stale_42_day_look_ahead(effective, modified, period_end, is_stale):
     """
-    Staleness Status - Stale - End date passed
+    Staleness Status - Stale - 42 day look ahead
     If “Effective stale date due to end date” (if present)  is sooner than
     “Effective stale date due to effective last modified date”
     and today’s date from which the file is created equals or passes
@@ -356,7 +355,7 @@ def test_stale_end_date(effective, modified, period_end, is_stale):
     LicenceFactory(number=otc_service.licence.number)
 
     df = _get_timetable_catalogue_dataframe()
-    assert (df["Staleness Status"][0] == "Stale - End date passed") == is_stale
+    assert (df["Staleness Status"][0] == "Stale - 42 day look ahead") == is_stale
     assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
 
 
@@ -365,7 +364,7 @@ def test_stale_end_date(effective, modified, period_end, is_stale):
     "effective, modified, period_end, is_stale",
     (
         # All conditions satisfied for staleness
-        ("2021-12-01", "2022-01-01", "2023-03-01", True),
+        ("2021-12-01", "2022-01-01", "2023-06-01", True),
         # End date not present
         ("2021-12-01", "2022-01-01", None, True),
         # First condition not satisfied
@@ -518,6 +517,6 @@ def test_stale_service_out_of_season():
     )
 
     df = _get_timetable_catalogue_dataframe()
-    assert df["Staleness Status"][0] == "Stale - End date passed"
+    assert df["Staleness Status"][0] == "Stale - 42 day look ahead"
     assert df["Seasonal Status"][0] == "Out of Season"
     assert df["Requires Attention"][0] == "No"

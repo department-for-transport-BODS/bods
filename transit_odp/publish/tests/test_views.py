@@ -1043,7 +1043,7 @@ class TestPublishView:
             modification_datetime=time_now - timedelta(weeks=100),
         )
 
-        # Set up a TXCFileAttributes that will be 'Stale - End Date Passed'
+        # Set up a TXCFileAttributes that will be 'Stale - 42 day look ahead'
         TXCFileAttributesFactory(
             revision=live_revision,
             service_code=all_service_codes[4],
@@ -2027,7 +2027,7 @@ def test_require_attention_stale_end_date(publish_client):
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
 
-    # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
     TXCFileAttributesFactory(
         revision=live_revision,
         service_code=all_service_codes[3],
@@ -2153,7 +2153,7 @@ def test_require_attention_all_variations(publish_client):
         modification_datetime=now() - timedelta(weeks=100),
     )
 
-    # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
     TXCFileAttributesFactory(
         revision=live_revision,
         service_code=all_service_codes[4],
