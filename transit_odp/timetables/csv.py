@@ -106,13 +106,9 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         "staleness_status": Column(
             "Staleness Status",
             "Not Stale: Default status for service codes published to BODS. </br></br>"
-            "Stale - End date passed: If 'Effective stale date due to end "
-            "date' (if present)  is sooner than 'Effective stale date due to "
-            "effective last modified date' and today’s date from which the "
-            "file is created equals or passes 'Effective stale date due to end "
-            "date' and Last modified date < 'Effective stale date due to OTC "
-            "effective date' = FALSE. "
-            "</br></br>"
+            "Stale - 42 day look ahead: If stateness status is not OTC Variation "
+            "and operating period end date is present and less than today’s date"
+            "plus 42 days.  </br></br>"
             "Stale - 12 months old: If 'Effective stale date due to effective "
             "last modified' date is sooner than 'Effective stale date due to "
             "end date' (if present) and today’s date from which the file is "
@@ -433,15 +429,10 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         today < df["effective_stale_date_from_otc_effective"]
     )
 
-    staleness_end_date = (
-        pd.notna(df["effective_stale_date_from_end_date"])
-        & (
-            df["effective_stale_date_from_end_date"]
-            < df["effective_stale_date_from_last_modified"]
-        )
-        & (df["effective_stale_date_from_end_date"] <= today)
-        & (df["last_modified_date"] >= df["effective_date"])
-    )
+    """
+    effective_stale_date_from_end_date = effective_date - 42 days
+    effective_stale_date_from_last_modified = last_modified_date - 365 days (or 1 year)
+    """
     staleness_12_months = (
         (
             pd.isna(df["effective_stale_date_from_end_date"])
@@ -458,13 +449,27 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         df["last_modified_date"] >= df["association_date_otc_effective_date"]
     ) | (df["operating_period_start_date"] == df["effective_date"])
 
+    """
+    today_lt_effective_stale_date_otc is True if effective_stale_date_from_otc_effective
+    is less than today where 
+    effective_stale_date_from_otc_effective = effective_date - 42 days.
+    is_data_associated is set to true if operating period start date equals
+    effective date or last modified date is greater than (effective_date - 70 days)
+    """
     not_stale_otc = df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
     staleness_otc = ~not_stale_otc
 
+    forty_two_days_from_today = today + np.timedelta64(42, "D")
+
+    staleness_42_day_look_ahead = (
+        (staleness_otc == False)
+        & pd.notna(df["operating_period_end_date"])
+        & (df["operating_period_end_date"] < forty_two_days_from_today)
+    )
     df["staleness_status"] = np.select(
-        condlist=[staleness_end_date, staleness_12_months, staleness_otc],
+        condlist=[staleness_42_day_look_ahead, staleness_12_months, staleness_otc],
         choicelist=[
-            "Stale - End date passed",
+            "Stale - 42 day look ahead",
             "Stale - 12 months old",
             "Stale - OTC Variation",
         ],
