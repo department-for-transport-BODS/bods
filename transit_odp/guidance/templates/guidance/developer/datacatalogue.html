@@ -79,10 +79,17 @@
             <li>
                 {% filter force_escape %}
                     {% blocktrans %}
+                        Disruptions data catalogue: this contains a detailed
+                        view of all of the disruptions active and pending
+                        within BODS.
+                    {% endblocktrans %}
+                {% endfilter %}
+            </li>
+            <li>
+                {% filter force_escape %}
+                    {% blocktrans %}
                         Organisations data catalogue: this contains
-                        helpful counts of data at an organisation level:
-                        which is at the level of the publishing operators
-                        (e.g. overall service data).
+                        helpful counts of data at an organisation level.
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
