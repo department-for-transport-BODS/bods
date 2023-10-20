@@ -21,7 +21,7 @@ from transit_odp.publish.requires_attention import (
 )
 
 STALENESS_STATUS = [
-    "Stale - End date passed",
+    "Stale - 42 day look ahead",
     "Stale - 12 months old",
     "Stale - OTC Variation",
 ]
