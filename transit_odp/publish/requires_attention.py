@@ -5,6 +5,7 @@ from django.utils.timezone import now
 
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
+from datetime import timedelta
 
 
 def get_otc_map(org_id: int) -> Dict[str, OTCService]:
@@ -23,10 +24,14 @@ def get_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     Get a list of dictionaries which includes all OTC Services for a LTA,
     excluding exempted services and Out of Season seasonal services.
     """
-    return {
-        service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_otc_data_for_lta(lta_list)
-    }
+    otc_data_lta_queryset = OTCService.objects.get_otc_data_for_lta(lta_list)
+    if otc_data_lta_queryset is not None:
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in otc_data_lta_queryset
+        }
+    else:
+        return {}
 
 
 def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
@@ -63,38 +68,40 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
 
-    final_subquery = None
-    for service_queryset in services_subquery_list:
-        if final_subquery is None:
-            final_subquery = service_queryset
-        else:
-            final_subquery = final_subquery | service_queryset
-    final_subquery = final_subquery.distinct()
-
-    service_code_subquery = Subquery(
-        OTCService.objects.filter(id__in=Subquery(final_subquery.values("id")))
-        .add_service_code()
-        .values("service_code")
-    )
-    return {
-        txcfa.service_code: txcfa
-        for txcfa in TXCFileAttributes.objects.filter(
-            service_code__in=service_code_subquery
+        service_code_subquery = Subquery(
+            OTCService.objects.filter(id__in=Subquery(final_subquery.values("id")))
+            .add_service_code()
+            .values("service_code")
         )
-        .get_active_live_revisions()
-        .add_staleness_dates()
-        .add_organisation_name()
-        .order_by(
-            "service_code",
-            "-revision__published_at",
-            "-revision_number",
-            "-modification_datetime",
-            "-operating_period_start_date",
-            "-filename",
-        )
-        .distinct("service_code")
-    }
+        return {
+            txcfa.service_code: txcfa
+            for txcfa in TXCFileAttributes.objects.filter(
+                service_code__in=service_code_subquery
+            )
+            .get_active_live_revisions()
+            .add_staleness_dates()
+            .add_organisation_name()
+            .order_by(
+                "service_code",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
+            )
+            .distinct("service_code")
+        }
+    else:
+        return {}
 
 
 def _update_data(object_list: List[Dict[str, str]], service: OTCService) -> None:
@@ -126,13 +133,12 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             NB: Associated data is Yes IF
             (last modified date >= Association date due to OTC effective date
             OR Operating period start date = OTC effective date).
-        Staleness Status - Stale - End Date Passed:
-            If effective_stale_date_end_date (if present) <
-                effective_stale_date_last_modified_date
+        Staleness Status - Stale - 42 Day Look Ahead:
+            If Operating period end date is present
             AND
-            Today >= effective_stale_date_end_date
+            Staleness status is not OTC Variation
             AND
-            last_modified >= OTC Service effective_date
+            Operating period end date < today + 42 days
         Staleness Status - Stale - 12 months old:
             If effective_stale_date_last_modified_date <
                 effective_stale_date_end_date (if present)
@@ -153,6 +159,8 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
     )
     association_date_otc_effective_date = service.association_date_otc_effective_date
     operating_period_start_date = file_attribute.operating_period_start_date
+    operating_period_end_date = file_attribute.operating_period_end_date
+    forty_two_days_from_today = today + timedelta(days=42)
 
     is_data_associated = (
         last_modified >= association_date_otc_effective_date
@@ -164,13 +172,9 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         if today >= effective_stale_date_otc_effective_date
         else False
     )
-    staleness_end_date = (
-        (
-            effective_stale_date_end_date < effective_stale_date_last_modified_date
-            and effective_stale_date_end_date <= today
-            and effective_date <= last_modified
-        )
-        if effective_stale_date_end_date
+    staleness_42_day_look_ahead = (
+        (not staleness_otc and operating_period_end_date < forty_two_days_from_today)
+        if operating_period_end_date
         else False
     )
     staleness_12_months_old = (
@@ -187,7 +191,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
     )
 
     return (
-        staleness_end_date,
+        staleness_42_day_look_ahead,
         staleness_12_months_old,
         staleness_otc,
     )

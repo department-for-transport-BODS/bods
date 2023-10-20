@@ -196,7 +196,7 @@
       ]
     },
     {
-      "details": "Tracks are optional. But if you are including it then it is required to be in the correct structure. Here, ySFou have an incorrect structure in 'Track' field. Please ensure a single Track contains sufficient Location elements defined between a pair of stops.",
+      "details": "Tracks are optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Track' field. Please ensure a single Track contains sufficient Location elements defined between a pair of stops.",
       "category": "Routes and tracks",
       "service_type": "All",
       "reference": "7.1",
@@ -301,7 +301,7 @@
       "number": 22,
       "rules": [
         {
-          "test": "count(x:FlexibleService) = 1 or count(x:StandardService) = 1"
+          "test": "has_flexible_or_standard_service(.)"
         }
       ]
     },
@@ -613,6 +613,71 @@
       "rules": [
         {
           "test": "count(x:RunTime) > 0"
+        }
+      ]
+    },
+    {
+      "details": "'ServiceClasification' is not inputted as flexible.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 119,
+      "context": "//x:Service",
+      "rules": [
+        {
+          "test": "has_flexible_service_classification(.)"
+        }
+      ]
+    },
+    {
+      "details": "There are no FlexibleJourneyPatterns present. At least one needs to be present for a flexible service.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 120,
+      "context": "//x:Service/x:FlexibleService",
+      "rules": [
+        {
+          "test": "count(x:FlexibleJourneyPattern) > 0"
+        }
+      ]
+    },
+    {
+      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to OTH.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 121,
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
+      "rules": [
+        {
+          "test": "check_flexible_service_timing_status(.)"
+        }
+      ]
+    },
+    {
+      "details": "At least one type of booking arrangement needs to be provided from Phone, Email, Address or WebAddress.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 123,
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
+      "rules": [
+        {
+          "test": "count(x:Phone) = 1 or count(x:Email) = 1 or count(x:WebAddress) = 1"
+        }
+      ]
+    },
+    {
+      "details": "No FlexibleServiceTimes have been specified.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 124,
+      "context": "//x:VehicleJourneys/x:FlexibleVehicleJourney",
+      "rules": [
+        {
+          "test": "count(x:FlexibleServiceTimes) > 0"
         }
       ]
     }

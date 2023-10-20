@@ -34,6 +34,16 @@ class TXCSchemaViolation(BaseModel):
         return cls(filename=filename, line=error.line, details=error.message)
 
 
+class TXCPostSchemaViolation(BaseModel):
+    filename: str
+    details: str
+
+    @classmethod
+    def from_error(cls, error):
+        filename = Path(error.filename).name
+        return cls(filename=filename, details=error.message)
+
+
 class TransXChangeElement(XMLElement):
     """A wrapper class to easily work lxml elements for TransXChange XML.
 
@@ -439,6 +449,9 @@ class TransXChangeDatasetParser:
 
     def get_transxchange_versions(self) -> List[TransXChangeElement]:
         return [doc.get_transxchange_version() for doc in self.get_documents()]
+
+    def get_file_names(self) -> List[TransXChangeElement]:
+        return [doc.get_file_name() for doc in self.get_documents()]
 
     def get_stop_points(self):
         all_stops = []

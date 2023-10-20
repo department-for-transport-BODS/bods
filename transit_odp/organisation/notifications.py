@@ -123,7 +123,7 @@ def send_revision_published_notification(dataset: Dataset):
         )
 
 
-def send_endpoint_validation_error_notification(dataset):
+def send_endpoint_validation_error_notification(dataset, task_name):
     revision = dataset.revisions.get_draft().first()
     if revision is None:
         return
@@ -136,6 +136,11 @@ def send_endpoint_validation_error_notification(dataset):
     else:
         live_revisions_published_date = None
 
+    if task_name == "dataset_validate":
+        report_link = revision.report_url
+    elif task_name == "post_schema_dataset_validate":
+        report_link = revision.post_schema_report_url
+
     if dataset.contact.is_agent_user:
         notifier.send_agent_data_endpoint_validation_error_notification(
             dataset_id=dataset.id,
@@ -146,7 +151,7 @@ def send_endpoint_validation_error_notification(dataset):
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
-            report_link=revision.report_url,
+            report_link=report_link,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
         )
@@ -159,7 +164,7 @@ def send_endpoint_validation_error_notification(dataset):
             published_at=live_revisions_published_date,
             comments=revision.comment,
             feed_detail_link=revision.draft_url,
-            report_link=revision.report_url,
+            report_link=report_link,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
         )

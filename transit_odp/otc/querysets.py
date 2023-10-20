@@ -273,42 +273,45 @@ class ServiceQuerySet(QuerySet):
             if x.registration_numbers.values("id")
         ]
 
-        final_subquery = None
-        for service_queryset in services_subquery_list:
-            if final_subquery is None:
-                final_subquery = service_queryset
-            else:
-                final_subquery = final_subquery | service_queryset
-        final_subquery = final_subquery.distinct()
+        if services_subquery_list:
+            final_subquery = None
+            for service_queryset in services_subquery_list:
+                if final_subquery is None:
+                    final_subquery = service_queryset
+                else:
+                    final_subquery = final_subquery | service_queryset
+            final_subquery = final_subquery.distinct()
 
-        # seasonal services that are out of season
-        seasonal_services_subquery = Subquery(
-            SeasonalService.objects.filter(
-                licence__organisation__licences__number__in=Subquery(
-                    final_subquery.values("licence__number")
+            # seasonal services that are out of season
+            seasonal_services_subquery = Subquery(
+                SeasonalService.objects.filter(
+                    licence__organisation__licences__number__in=Subquery(
+                        final_subquery.values("licence__number")
+                    )
                 )
+                .filter(start__gt=now.date())
+                .add_registration_number()
+                .values("registration_number")
             )
-            .filter(start__gt=now.date())
-            .add_registration_number()
-            .values("registration_number")
-        )
-        exemptions_subquery = Subquery(
-            ServiceCodeExemption.objects.add_registration_number()
-            .filter(
-                licence__organisation__licences__number__in=Subquery(
-                    final_subquery.values("licence__number")
+            exemptions_subquery = Subquery(
+                ServiceCodeExemption.objects.add_registration_number()
+                .filter(
+                    licence__organisation__licences__number__in=Subquery(
+                        final_subquery.values("licence__number")
+                    )
                 )
+                .values("registration_number")
             )
-            .values("registration_number")
-        )
 
-        return (
-            self.get_all_otc_data_for_lta(final_subquery)
-            .exclude(registration_number__in=exemptions_subquery)
-            .exclude(registration_number__in=seasonal_services_subquery)
-            .order_by("licence__number", "registration_number", "service_number")
-            .distinct("licence__number", "registration_number")
-        )
+            return (
+                self.get_all_otc_data_for_lta(final_subquery)
+                .exclude(registration_number__in=exemptions_subquery)
+                .exclude(registration_number__in=seasonal_services_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number")
+            )
+        else:
+            return None
 
     def search(self, keywords: str) -> TServiceQuerySet:
         """Searches License code, service number, and line number in

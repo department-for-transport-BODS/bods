@@ -241,3 +241,90 @@ def has_unregistered_service_codes(context, services):
     if len(registered_service_code) > 1:
         return False
     return True
+
+
+def has_flexible_or_standard_service(context, services):
+    """
+    If it is a non-flexible service (flexible service is not defined),
+    then it should have a StandardService defined. If validation fails,
+    then a validation issue should be recorded in validation report.
+    """
+    for service in services:
+        ns = {"x": service.nsmap.get(None)}
+        service_classification = service.xpath(
+            "x:ServiceClassification/x:Flexible", namespaces=ns
+        )
+
+        if service_classification:
+            flexible_service_list = service.xpath("x:FlexibleService", namespaces=ns)
+            if flexible_service_list:
+                return True
+            return False
+        else:
+            standard_service_list = service.xpath("x:StandardService", namespaces=ns)
+            if standard_service_list:
+                return True
+            else:
+                return False
+
+
+def has_flexible_service_classification(context, services):
+    """
+    Check when file has detected a flexible service (includes a
+    FlexibleJourneyPattern or includes a BookingArrangements element),
+    it has ServiceClassification and Flexible elements.
+    If the file also has a standard service, then return True.
+    """
+    for service in services:
+        ns = {"x": service.nsmap.get(None)}
+        flexible_journey_pattern_list = service.xpath(
+            "x:FlexibleService/x:FlexibleJourneyPattern", namespaces=ns
+        )
+        booking_arrangements_list = service.xpath(
+            "x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
+            namespaces=ns,
+        )
+
+        if not flexible_journey_pattern_list and not booking_arrangements_list:
+            return True
+
+        service_classification_list = service.xpath(
+            "x:ServiceClassification", namespaces=ns
+        )
+        if not service_classification_list:
+            return False
+
+        for service_classification in service_classification_list:
+            if service_classification.xpath("x:Flexible", namespaces=ns):
+                return True
+
+        return False
+
+
+def check_flexible_service_timing_status(context, flexiblejourneypatterns):
+    timing_status_value_list = []
+    flexiblejourneypattern = flexiblejourneypatterns[0]
+    ns = {"x": flexiblejourneypattern.nsmap.get(None)}
+    stop_points_in_seq_list = flexiblejourneypattern.xpath(
+        "x:StopPointsInSequence", namespaces=ns
+    )
+    for stop_points_in_seq in stop_points_in_seq_list:
+        fixed_stop_usage_list = stop_points_in_seq.xpath(
+            "x:FixedStopUsage", namespaces=ns
+        )
+        flexible_stop_usage_list = stop_points_in_seq.xpath(
+            "x:FlexibleStopUsage", namespaces=ns
+        )
+
+        if len(fixed_stop_usage_list) > 0 and len(flexible_stop_usage_list) > 0:
+            for fixed_stop_usage in fixed_stop_usage_list:
+                timing_status_value_list.append(
+                    _extract_text(
+                        fixed_stop_usage.xpath("x:TimingStatus", namespaces=ns), ""
+                    )
+                )
+
+    result = all(
+        timing_status_value == "OTH" for timing_status_value in timing_status_value_list
+    )
+    return result

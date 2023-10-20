@@ -1,6 +1,58 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "October 2023 (1.30.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            Functionality to remove and block timetable data that may have held PII (Personally Identifiable Information).
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to simplify the way datasets are displayed with the removal of usernames that published data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An enhancement to the way the registrations are imported when the effective date is in the future.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "September 2023 (1.29.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An enhancement to the Timetable Data Catalogue and the LTA detailed export to indicate the BODS organisation responsible for unpublished services registered with the OTC.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An addition of the Disruptions (Siri SX) data within the 'Download All' page on FBODS.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An addition of the Disruptions (Siri SX) data within the API on BODS.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "August 2023 (1.28.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
