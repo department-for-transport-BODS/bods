@@ -15,7 +15,7 @@ from tenacity.retry import retry_if_exception_type
 from tenacity.stop import stop_after_attempt
 
 from transit_odp.otc.client.auth import OTCAuthenticator
-from transit_odp.otc.dataclasses import Registration, LocalAuthority
+from transit_odp.otc.dataclasses import LocalAuthority, Registration
 
 logger = logging.getLogger(__name__)
 API_RETURN_LIMIT = 100
@@ -123,6 +123,29 @@ class OTCAPIClient:
 
         return variations
 
+    def get_latest_variations_by_registration_code(
+        self, registration_codes: list
+    ) -> List[Registration]:
+        variations = []
+        for registration_code in registration_codes:
+            logger.info(
+                f"Requesting latest variation for registration - {registration_code} from OTC API"
+            )
+            response = self._make_request(
+                page=1, regNo=registration_code, latestVariation=True
+            )
+            variations += response.bus_search
+
+            for page in range(2, response.page.total_pages + 1):
+                response = self._make_request(
+                    page=page,
+                    regNo=registration_code,
+                    latestVariation=True,
+                )
+                variations += response.bus_search
+
+        return variations
+
     @lru_cache(maxsize=128, typed=False)
     def get_variations_by_registration_code_desc(
         self, registration_code: str
@@ -166,7 +189,7 @@ class OTCAPIClient:
                 yield record
 
     def get_all_lta_names_latest_variations(self) -> List[LocalAuthority]:
-        logger.info(f"Requesting all services from OTC API - " f"page 1")
+        logger.info("Requesting all services from OTC API - page 1")
         response = self._make_request(page=1, latestVariation=True)
         records = response.bus_search_lta
 

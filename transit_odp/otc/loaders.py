@@ -1,14 +1,22 @@
+from datetime import date, timedelta
 from functools import cached_property
+from itertools import chain
 from logging import getLogger
 from typing import Set, Tuple, Union
 
+from django.conf import settings
 from django.db import transaction
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
-from transit_odp.otc.models import Licence, Operator, Service, LocalAuthority
-
-from transit_odp.otc.registry import Registry
+from transit_odp.otc.models import (
+    InactiveService,
+    Licence,
+    LocalAuthority,
+    Operator,
+    Service,
+)
 from transit_odp.otc.populate_lta import PopulateLTA
+from transit_odp.otc.registry import Registry
 
 logger = getLogger(__name__)
 
@@ -97,7 +105,8 @@ class Loader:
             "Service": {"fields": set(), "items": []},
         }
 
-        for updated_service in self.registered_service:
+        possible_services_to_update = self.registered_service + self.to_delete_service
+        for updated_service in possible_services_to_update:
             if updated_service.variation_number == 0:
                 # This is a new service and wont need to be updated
                 continue
@@ -115,7 +124,7 @@ class Loader:
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()
 
-                for db_item, kwargs, in (
+                for (db_item, kwargs,) in (
                     (db_service.licence, updated_service_kwargs.pop("licence")),
                     (db_service.operator, updated_service_kwargs.pop("operator")),
                     (db_service, updated_service_kwargs),
@@ -138,10 +147,15 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
-    def delete_bad_data(self):
-        to_delete_services = self.registry.filter_by_status(
-            *RegistrationStatusEnum.to_delete()
+    def load_inactive_services(self, variation):
+        InactiveService.objects.create(
+            registration_number=variation.registration_number,
+            registration_status=variation.registration_status,
+            effective_date=variation.effective_date,
         )
+
+    def delete_bad_data(self):
+        to_delete_services = self.to_delete_service
         services = {
             service.registration_number
             for service in self.registry.get_services_with_past_effective_date(
@@ -161,11 +175,29 @@ class Loader:
         """
         The method is used to update the database, add and remove unnecessary objects.
         """
+        days_ago = date.today() - timedelta(
+            days=settings.OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA
+        )
         most_recently_modified = (
             Service.objects.filter(last_modified__isnull=False)
             .order_by("last_modified")
             .last()
         )
+        service_with_valid_effective_date = Service.objects.filter(
+            effective_date__range=(days_ago, date.today())
+        ).values_list("registration_number", flat=True)
+        inactive_service_with_valid_effective_date = InactiveService.objects.filter(
+            effective_date__range=(days_ago, date.today())
+        ).values_list("registration_number", flat=True)
+        services_to_check = list(
+            set(
+                chain(
+                    service_with_valid_effective_date,
+                    inactive_service_with_valid_effective_date,
+                )
+            )
+        )
+
         if (
             most_recently_modified is None
             or most_recently_modified.last_modified is None
@@ -175,8 +207,9 @@ class Loader:
 
         with transaction.atomic():
             _registrations = self.registry.get_variations_since(
-                most_recently_modified.last_modified
+                most_recently_modified.last_modified, services_to_check
             )
+
             self.load_licences()
             self.load_operators()
             self.load_services()
@@ -195,14 +228,16 @@ class Loader:
                     service_id=_service_id
                 ).delete()
                 logger.info(
-                    f"Deleting LTA mapping for service ID: {_service_id} from the LTA relationship "
+                    f"Deleting LTA mapping for service ID: {_service_id} \
+                    from the LTA relationship"
                 )
         logger.info(
-            f"Total count of registrations for refreshing LTAs is: {len(regs_to_update_lta)}"
+            f"Total count of registrations for refreshing \
+            LTAs is: {len(regs_to_update_lta)}"
         )
         refresh_lta = PopulateLTA()
         refresh_lta.refresh(regs_to_update_lta)
-        logger.info(f"Completed updating the local authorities.")
+        logger.info("Completed updating the local authorities.")
 
     def _delete_all_otc_data(self) -> None:
         logger.info("Clearing OTC tables")
@@ -254,3 +289,7 @@ class Loader:
     @cached_property
     def registered_service(self):
         return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)
+
+    @cached_property
+    def to_delete_service(self):
+        return self.registry.filter_by_status(*RegistrationStatusEnum.to_delete())

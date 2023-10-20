@@ -104,7 +104,6 @@ class TaskResult(TimeStampedModel):
 
 
 class DatasetETLTaskResult(TaskResult):
-
     revision = models.ForeignKey(
         DatasetRevision, related_name="etl_results", on_delete=models.CASCADE
     )
@@ -122,6 +121,7 @@ class DatasetETLTaskResult(TaskResult):
     SCHEMA_VERSION_MISSING = "SCHEMA_VERSION_MISSING"
     SCHEMA_VERSION_NOT_SUPPORTED = "SCHEMA_VERSION_NOT_SUPPORTED"
     SCHEMA_ERROR = "SCHEMA_ERROR"
+    POST_SCHEMA_ERROR = "POST_SCHEMA_ERROR"
     DATASET_EXPIRED = "DATASET_EXPIRED"
     SUSPICIOUS_FILE = "SUSPICIOUS_FILE"
 
@@ -140,6 +140,7 @@ class DatasetETLTaskResult(TaskResult):
             SCHEMA_VERSION_MISSING,
             SCHEMA_VERSION_NOT_SUPPORTED,
             SCHEMA_ERROR,
+            POST_SCHEMA_ERROR,
             DATASET_EXPIRED,
             SUSPICIOUS_FILE,
         }
@@ -185,10 +186,15 @@ class DatasetETLTaskResult(TaskResult):
 
             # TODO - this is probably too tightly coupled
 
-            if task_name == "dataset_validate":
+            if (
+                task_name == "dataset_validate"
+                or task_name == "post_schema_dataset_validate"
+            ):
                 # Currently the only error template we have is when the validation
                 # fails. This may need to be redone if we expand notifying on errors
-                send_endpoint_validation_error_notification(self.revision.dataset)
+                send_endpoint_validation_error_notification(
+                    self.revision.dataset, task_name
+                )
 
             self.save()
 

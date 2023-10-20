@@ -1,14 +1,14 @@
+import re
 import zipfile
 from logging import getLogger
 from typing import List, Optional
 
-from dateutil.relativedelta import relativedelta
-from django.utils import timezone
 from lxml import etree
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
+from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.transxchange import TXCSchemaViolation
 from transit_odp.timetables.utils import get_transxchange_schema
@@ -206,35 +206,6 @@ class TXCRevisionValidator:
         filtered.sort(key=lambda a: a.revision_number)
         return filtered
 
-    def validate_creation_datetime(self) -> None:
-        """
-        Validates that creation_datetime remains unchanged between revisions.
-        """
-        SIX_MONTHS_AGO = timezone.now() - relativedelta(months=6)
-
-        for draft in self.draft_attributes:
-            if draft.hash in self.live_hashes:
-                continue
-
-            lives = self.get_live_attribute_by_service_code(draft.service_code)
-
-            if len(lives) == 0:
-                continue
-
-            if (
-                draft.creation_datetime
-                not in [live.creation_datetime for live in lives]
-                and draft.creation_datetime < SIX_MONTHS_AGO
-            ):
-                self.violations.append(
-                    Violation(
-                        line=2,
-                        filename=draft.filename,
-                        name="CreationDateTime",
-                        observation=CREATION_DATETIME_OBSERVATION,
-                    )
-                )
-
     def validate_revision_number(self) -> None:
         """
         Validates that revision_number increments between revisions if the
@@ -288,6 +259,35 @@ class TXCRevisionValidator:
         if len(self.live_attributes) == 0:
             return self.violations
 
-        self.validate_creation_datetime()
         self.validate_revision_number()
+        return self.violations
+
+
+class PostSchemaValidator:
+    def __init__(self, file_names=None):
+        self.file_names = file_names
+        self.violations = []
+
+    def check_file_names_pii_information(self):
+        """
+        Checks if FileName attribute within the TransXchange root
+        element has personal identifiable information (PII).
+        """
+        result = []
+        file_names = self.file_names
+        for file_name in file_names:
+            file_name_pii_check = re.findall("\\\\", file_name)
+            if len(file_name_pii_check) > 0:
+                result.append(False)
+            else:
+                result.append(True)
+        return result
+
+    def get_violations(self):
+        """
+        Returns any revision violations.
+        """
+        result = self.check_file_names_pii_information()
+        if not all(result):
+            self.violations.append(PII_ERROR)
         return self.violations

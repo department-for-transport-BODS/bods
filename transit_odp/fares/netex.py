@@ -1,7 +1,5 @@
 import zipfile
 from typing import List
-import os
-import psutil
 
 from dateutil.parser import parse as parse_datetime_str
 from django.conf import settings
@@ -19,18 +17,6 @@ _NETEX_NAMESPACE = "http://www.netex.org.uk/netex"
 NETEX_SCHEMA_URL = "http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd"
 NETEX_SCHEMA_ZIP_URL = settings.NETEX_SCHEMA_ZIP_URL
 NETEX_XSD_PATH = settings.NETEX_XSD_PATH
-
-
-def measure_memory(func):
-    def wrapper(*args, **kwargs):
-        process = psutil.Process(os.getpid())
-        before = process.memory_info().rss
-        result = func(*args, **kwargs)
-        after = process.memory_info().rss
-        print(f"Memory used by {func.__name__}: {after - before} bytes")
-        return result
-
-    return wrapper
 
 
 class NeTExValidator(XMLValidator):
@@ -275,7 +261,6 @@ def process_document(xmlout):
     return doc
 
 
-@measure_memory
 def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
     """Returns a list NeTExDocuments from a zip file."""
     docs = []
@@ -289,7 +274,6 @@ def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
     return docs
 
 
-@measure_memory
 def get_documents_from_file(source) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
     if zipfile.is_zipfile(source):
