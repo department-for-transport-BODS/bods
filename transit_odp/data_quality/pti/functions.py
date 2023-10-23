@@ -228,36 +228,25 @@ def validate_bank_holidays(context, bank_holidays):
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
 
 
-def has_unregistered_service_codes(context, services):
-    service_code_list = []
-    service = services[0]
-    ns = {"x": service.nsmap.get(None)}
-    flexible_service_code = None
+def check_service_group_validations(context, services):
+    print("test***************************")
+    services = services[0]
+    ns = {"x": services.nsmap.get(None)}
+    service_list = services.xpath("x:Service", namespaces=ns)
+    registered_code_regex = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
+    unregistered_code_regex = re.compile("UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+$")
 
-    service_list = service.xpath("x:Service", namespaces=ns)
-    for service in service_list:
-        flexible = service.xpath("x:ServiceClassification/x:Flexible", namespaces=ns)
-        flexible_service = service.xpath("x:FlexibleService", namespaces=ns)
-        if flexible or flexible_service:
-            flexible_service_code = service.xpath(
-                "string(x:ServiceCode)", namespaces=ns
-            )
-        service_code_list.append(service.xpath("string(x:ServiceCode)", namespaces=ns))
-    r = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
-    registered_service_code = list(filter(r.match, service_code_list))
-    unregistered_service_code = list(
-        filter(lambda s: not r.match(s), service_code_list)
-    )
+    registered_standard_service = len(list(filter(lambda s: registered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:StandardService",namespaces=ns), service_list)))
+    print(f"registered_service_code------------{registered_standard_service}")
+    unregistered_standard_service = len(list(filter(lambda s: unregistered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:StandardService",namespaces=ns), service_list)))
+    print(f"unregistered_standard_service------------{unregistered_standard_service}")
 
-    if len(registered_service_code) > 1:
-        return False
-    # Specific check for an unregistered flexible service + registered standard service
-    if (
-        flexible_service_code in unregistered_service_code
-        and len(registered_service_code) == 1
-    ):
-        return False
-    return True
+    registered_flexible_service = len(list(filter(lambda s: registered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:ServiceClassification/x:Flexible",namespaces=ns), service_list)))
+    print(f"registered_flexible_service------------{registered_flexible_service}")
+    unregistered_flexible_service = len(list(filter(lambda s: unregistered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:ServiceClassification/x:Flexible",namespaces=ns), service_list)))
+    print(f"unregistered_flexible_service------------{unregistered_flexible_service}")
+    
+    return False
 
 
 def has_flexible_or_standard_service(context, services):
