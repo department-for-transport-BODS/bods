@@ -10,12 +10,12 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
     check_flexible_service_timing_status,
+    check_service_group_validations,
     contains_date,
     has_flexible_or_standard_service,
     has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
-    has_unregistered_service_codes,
     is_member_of,
     today,
 )
@@ -165,59 +165,33 @@ def test_has_name_true_not_list():
     assert actual
 
 
-@pytest.mark.parametrize(
-    ("value", "expected"),
-    [
-        (["PF0000459:134", "PF0000459:134"], False),
-        (["PF0000459:134", "UZ000KBUS:11"], True),
-        (["PF0000459:134"], True),
-        (["UZ000KBUS:11"], True),
-    ],
-)
-def test_has_unregistered_service_codes(value, expected):
-    one_service = """
+def test_check_service_group_validations_with_flexible_and_standard_services():
+    services = """
     <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
         <Services>
             <Service>
-                <ServiceCode>{0}</ServiceCode>
-            </Service>
-        </Services>
-    </TransXChange>
-    """
-    two_services = """
-    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
-        <Services>
-            <Service>
-                <ServiceCode>{0}</ServiceCode>
+                <ServiceCode>UZ000KBUS:11</ServiceCode>
+                <StandardService>
+                </StandardService>
             </Service>
             <Service>
-                <ServiceCode>{1}</ServiceCode>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>PF0000459:134</ServiceCode>
             </Service>
         </Services>
     </TransXChange>
     """
     NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
-    service_codes_length = len(value)
-    if service_codes_length > 1:
-        string_xml = two_services.format(*value)
-    else:
-        string_xml = one_service.format(*value)
 
-    doc = etree.fromstring(string_xml)
+    doc = etree.fromstring(services)
     elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
-    actual = has_unregistered_service_codes("", elements)
-    assert actual == expected
+    actual = check_service_group_validations("", elements)
+    assert actual == True
 
 
-@pytest.mark.parametrize(
-    ("value", "expected"),
-    [
-        (["UZ030ARBB:11", "PF0000508:53"], False),
-    ],
-)
-def test_has_unregistered_flexible_and_registered_standard_service_code(
-    value, expected
-):
+def test_check_service_group_validations_with_unregistered_flexible_service():
     services = """
     <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
         <Services>
@@ -225,25 +199,224 @@ def test_has_unregistered_flexible_and_registered_standard_service_code(
                 <ServiceClassification>
 				    <Flexible/>
 			    </ServiceClassification>
-                <ServiceCode>{0}</ServiceCode>
-                <FlexibleService>
-                </FlexibleService>
-            </Service>
-            <Service>
-                <ServiceCode>{1}</ServiceCode>
+                <ServiceCode>UZ000KBUS:11</ServiceCode>
             </Service>
         </Services>
     </TransXChange>
     """
     NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
-    service_codes_length = len(value)
-    if service_codes_length > 1:
-        string_xml = services.format(*value)
 
-    doc = etree.fromstring(string_xml)
+    doc = etree.fromstring(services)
     elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
-    actual = has_unregistered_service_codes("", elements)
-    assert actual == expected
+    actual = check_service_group_validations("", elements)
+    assert actual == True
+
+
+def test_check_service_group_validations_with_registered_flexible_service():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>PF0000459:134</ServiceCode>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == True
+
+
+def test_check_service_group_validations_with_registered_standard_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceCode>PF0000459:134</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == True
+
+
+def test_check_service_group_validations_with_unregistered_standard_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceCode>UZ000KBUS:11</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == True
+
+
+def test_check_service_group_validations_with_two_registered_standard_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceCode>PF0000459:134</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+            <Service>
+                <ServiceCode>PF0000559:135</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == False
+
+
+def test_check_service_group_validations_with_registered_standard_and_unregistered_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceCode>UZ000KBUS:11</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+            <Service>
+                <ServiceCode>PF0000559:135</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == False
+
+
+def test_check_service_group_validations_with_registered_standard_and_registered_flexible_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>PF0000459:134</ServiceCode>
+            </Service>
+            <Service>
+                <ServiceCode>PF0000559:135</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == False
+
+
+def test_check_service_group_validations_with_registered_flexible_and_multiple_unregistered_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>PF0000459:134</ServiceCode>
+            </Service>
+            <Service>
+                <ServiceCode>UZ001KBUS:12</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>UZ002KBUS:13</ServiceCode>
+            </Service>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>UZ003KBUS:14</ServiceCode>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == True
+
+
+def test_check_service_group_validations_with_multiple_unregistered_services():
+    services = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <ServiceCode>UZ001KBUS:12</ServiceCode>
+                <StandardService>
+                </StandardService>
+            </Service>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>UZ002KBUS:13</ServiceCode>
+            </Service>
+            <Service>
+                <ServiceClassification>
+				    <Flexible/>
+			    </ServiceClassification>
+                <ServiceCode>UZ003KBUS:14</ServiceCode>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+
+    doc = etree.fromstring(services)
+    elements = doc.xpath("//x:Services", namespaces=NAMESPACE)
+    actual = check_service_group_validations("", elements)
+    assert actual == False
 
 
 @pytest.mark.parametrize(

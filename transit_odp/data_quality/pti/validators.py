@@ -22,7 +22,7 @@ from transit_odp.data_quality.pti.functions import (
     has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
-    has_unregistered_service_codes,
+    check_service_group_validations,
     is_member_of,
     regex,
     strip,
@@ -489,7 +489,7 @@ class PTIValidator:
         )
         self.register_function("has_prohibited_chars", has_prohibited_chars)
         self.register_function(
-            "has_unregistered_service_codes", has_unregistered_service_codes
+            "check_service_group_validations", check_service_group_validations
         )
         self.register_function("in", is_member_of)
         self.register_function("regex", regex)

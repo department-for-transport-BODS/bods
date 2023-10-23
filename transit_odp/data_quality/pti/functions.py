@@ -229,23 +229,60 @@ def validate_bank_holidays(context, bank_holidays):
 
 
 def check_service_group_validations(context, services):
-    print("test***************************")
     services = services[0]
     ns = {"x": services.nsmap.get(None)}
     service_list = services.xpath("x:Service", namespaces=ns)
     registered_code_regex = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
     unregistered_code_regex = re.compile("UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+$")
 
-    registered_standard_service = len(list(filter(lambda s: registered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:StandardService",namespaces=ns), service_list)))
-    print(f"registered_service_code------------{registered_standard_service}")
-    unregistered_standard_service = len(list(filter(lambda s: unregistered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:StandardService",namespaces=ns), service_list)))
-    print(f"unregistered_standard_service------------{unregistered_standard_service}")
+    registered_standard_service = len(
+        list(
+            filter(
+                lambda s: registered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                )
+                and s.xpath("x:StandardService", namespaces=ns),
+                service_list,
+            )
+        )
+    )
+    unregistered_services = len(
+        list(
+            filter(
+                lambda s: unregistered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                ),
+                service_list,
+            )
+        )
+    )
+    registered_flexible_service = len(
+        list(
+            filter(
+                lambda s: registered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                )
+                and s.xpath("x:ServiceClassification/x:Flexible", namespaces=ns),
+                service_list,
+            )
+        )
+    )
 
-    registered_flexible_service = len(list(filter(lambda s: registered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:ServiceClassification/x:Flexible",namespaces=ns), service_list)))
-    print(f"registered_flexible_service------------{registered_flexible_service}")
-    unregistered_flexible_service = len(list(filter(lambda s: unregistered_code_regex.match(s.xpath("string(x:ServiceCode)", namespaces=ns)) and s.xpath("x:ServiceClassification/x:Flexible",namespaces=ns), service_list)))
-    print(f"unregistered_flexible_service------------{unregistered_flexible_service}")
-    
+    total_services = (
+        registered_standard_service
+        + registered_flexible_service
+        + unregistered_services
+    )
+
+    # More than one services are allowed only when there is a registered flexible service.
+    # If there is a registered standard service then no other service types should be present
+    if total_services is 1 or (
+        total_services > 1
+        and registered_flexible_service is 1
+        and registered_standard_service is 0
+    ):
+        return True
+
     return False
 
 
