@@ -33,12 +33,12 @@ paths:
         - name: noc
           in: query
           description: |
-            Operators can operate using a single National Operator Codes (NOC)
-            or have multiple NOC associated with it. Download
-            [data catalogue](/catalogue/) to see the relationship between operators and NOC
+            Operators can operate using a single National Operator Code (NOC)
+            or have multiple NOCs associated. Download the
+            [data catalogue](/catalogue/) to see the relationship between operators and NOCs
             within the service.
-            Input a comma separated list of NOC to limit results to the operators
-            associated with the NOC provided.
+            To limit results to operators associated with multiple NOCs,
+            input a comma separated list of the relevant NOCs.
           schema:
             type: array
             items:
@@ -84,7 +84,7 @@ paths:
           in: query
           description:
             Return results that match the query starting from the specified offset.
-            e.g. If the offset=10 and limit=25, then results from 11 to 36 will be returned
+            e.g. If the offset=10 and limit=25, then results from 11 to 35 will be returned
             The default value shown is 0.
           schema:
             type: integer
@@ -103,7 +103,8 @@ paths:
       parameters:
         - name: datasetID
           in: path
-          description: (path)</br>limit results to a specific data feed of a publisher using the data feed ID.
+          description:
+            Limit results to a specific data set of a publisher using the data set ID.
           required: true
           schema:
             type: integer
