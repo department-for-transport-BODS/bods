@@ -46,8 +46,8 @@ paths:
         - name: noc
           in: query
           description: |
-            Limit results to data sets published by an operator identified by the specified National Operator Code.
-            The noc's entered will be inserted into a comma delimited query in the API.
+            Limit results to data sets published by an operator identified by the specified National Operator Code (NOC).
+            The NOCs entered will be inserted into a comma delimited query in the API.
           schema:
             type: array
             items:
@@ -69,7 +69,7 @@ paths:
           in: query
           description: |
             Return results that match the query starting from the specified offset
-            e.g. If the offset=10 and limit=25, then results from 11 to 36 will be returned.
+            e.g. If the offset=10 and limit=25, then results from 11 to 35 will be returned.
             The default value shown is 0.
           schema:
             type: integer
@@ -165,7 +165,7 @@ paths:
       parameters:
         - name: datasetID
           in: path
-          description: ID of dataset to return
+          description: Limit results to a specific data set of a publisher using the data set ID.
           required: true
           schema:
             type: integer
