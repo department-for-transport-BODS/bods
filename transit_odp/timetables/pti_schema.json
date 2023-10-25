@@ -664,7 +664,7 @@
       "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
       "rules": [
         {
-          "test": "count(x:BookingArrangements) > 0 and count(x:BookingArrangements/x:Phone) = 1 or count(x:BookingArrangements/x:Email) = 1 or count(x:BookingArrangements/x:WebAddress) = 1"
+          "test": "count(x:BookingArrangements) > 0 and (count(x:BookingArrangements/x:Phone) = 1 or count(x:BookingArrangements/x:Email) = 1 or count(x:BookingArrangements/x:WebAddress) = 1)"
         }
       ]
     },
