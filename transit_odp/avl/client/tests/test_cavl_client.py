@@ -30,12 +30,29 @@ class TestCAVLService:
         "status, expected_result, expected_message",
         [
             (HTTPStatus.CREATED, True, ["POST http://www.dummy.com/feed 201"]),
-            (HTTPStatus.BAD_REQUEST, False, ["POST http://www.dummy.com/feed 400", "[CAVL] Couldn't register feed <id=1>"]),
-            (HTTPStatus.NOT_FOUND, False, ["POST http://www.dummy.com/feed 404", "[CAVL] Couldn't register feed <id=1>"]),
+            (
+                HTTPStatus.BAD_REQUEST,
+                False,
+                [
+                    "POST http://www.dummy.com/feed 400",
+                    "[CAVL] Couldn't register feed <id=1>",
+                ],
+            ),
+            (
+                HTTPStatus.NOT_FOUND,
+                False,
+                [
+                    "POST http://www.dummy.com/feed 404",
+                    "[CAVL] Couldn't register feed <id=1>",
+                ],
+            ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 False,
-                ["POST http://www.dummy.com/feed 500", "[CAVL] Couldn't register feed <id=1>"],
+                [
+                    "POST http://www.dummy.com/feed 500",
+                    "[CAVL] Couldn't register feed <id=1>",
+                ],
             ),
         ],
     )
@@ -65,16 +82,30 @@ class TestCAVLService:
     @pytest.mark.parametrize(
         "status, expected_result, expected_message",
         [
-            (HTTPStatus.NO_CONTENT, True, ['DELETE http://www.dummy.com/feed/1 204']),
+            (HTTPStatus.NO_CONTENT, True, ["DELETE http://www.dummy.com/feed/1 204"]),
             (
                 HTTPStatus.NOT_FOUND,
                 False,
-                ["DELETE http://www.dummy.com/feed/1 404", "[CAVL] Dataset 1 => Does not exist in CAVL Service."]),
-            (HTTPStatus.BAD_REQUEST, False, ["DELETE http://www.dummy.com/feed/1 400", "[CAVL] Couldn't delete feed <id=1>"]),
+                [
+                    "DELETE http://www.dummy.com/feed/1 404",
+                    "[CAVL] Dataset 1 => Does not exist in CAVL Service.",
+                ],
+            ),
+            (
+                HTTPStatus.BAD_REQUEST,
+                False,
+                [
+                    "DELETE http://www.dummy.com/feed/1 400",
+                    "[CAVL] Couldn't delete feed <id=1>",
+                ],
+            ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 False,
-                ["DELETE http://www.dummy.com/feed/1 500", "[CAVL] Couldn't delete feed <id=1>"],
+                [
+                    "DELETE http://www.dummy.com/feed/1 500",
+                    "[CAVL] Couldn't delete feed <id=1>",
+                ],
             ),
         ],
     )
@@ -99,12 +130,29 @@ class TestCAVLService:
         "status, expected_result, expected_message",
         [
             (HTTPStatus.NO_CONTENT, True, ["POST http://www.dummy.com/feed/1 204"]),
-            (HTTPStatus.NOT_FOUND, False, ["POST http://www.dummy.com/feed/1 404", "[CAVL] Couldn't update feed <id=1>"]),
-            (HTTPStatus.BAD_REQUEST, False, ["POST http://www.dummy.com/feed/1 400", "[CAVL] Couldn't update feed <id=1>"]),
+            (
+                HTTPStatus.NOT_FOUND,
+                False,
+                [
+                    "POST http://www.dummy.com/feed/1 404",
+                    "[CAVL] Couldn't update feed <id=1>",
+                ],
+            ),
+            (
+                HTTPStatus.BAD_REQUEST,
+                False,
+                [
+                    "POST http://www.dummy.com/feed/1 400",
+                    "[CAVL] Couldn't update feed <id=1>",
+                ],
+            ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 False,
-                ["POST http://www.dummy.com/feed/1 500", "[CAVL] Couldn't update feed <id=1>"],
+                [
+                    "POST http://www.dummy.com/feed/1 500",
+                    "[CAVL] Couldn't update feed <id=1>",
+                ],
             ),
         ],
     )
@@ -134,19 +182,28 @@ class TestCAVLService:
                 ["GET http://www.dummy.com/feed/1 200"],
             ),
             (
-                HTTPStatus.NOT_FOUND, 
-                None, 
-                ["GET http://www.dummy.com/feed/1 404", "[CAVL] Couldn't fetch feed <id=1>"],
+                HTTPStatus.NOT_FOUND,
+                None,
+                [
+                    "GET http://www.dummy.com/feed/1 404",
+                    "[CAVL] Couldn't fetch feed <id=1>",
+                ],
             ),
             (
-                HTTPStatus.BAD_REQUEST, 
-                None, 
-                ["GET http://www.dummy.com/feed/1 400", "[CAVL] Couldn't fetch feed <id=1>"],
+                HTTPStatus.BAD_REQUEST,
+                None,
+                [
+                    "GET http://www.dummy.com/feed/1 400",
+                    "[CAVL] Couldn't fetch feed <id=1>",
+                ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 None,
-                ["GET http://www.dummy.com/feed/1 500", "[CAVL] Couldn't fetch feed <id=1>"],
+                [
+                    "GET http://www.dummy.com/feed/1 500",
+                    "[CAVL] Couldn't fetch feed <id=1>",
+                ],
             ),
         ],
     )
@@ -179,9 +236,21 @@ class TestCAVLService:
                 ],
                 ["GET http://www.dummy.com/feed 200"],
             ),
-            (HTTPStatus.NOT_FOUND, [], ["GET http://www.dummy.com/feed 404", "[CAVL] Couldn't fetch feeds"]),
-            (HTTPStatus.BAD_REQUEST, [], ["GET http://www.dummy.com/feed 400", "[CAVL] Couldn't fetch feeds"]),
-            (HTTPStatus.INTERNAL_SERVER_ERROR, [], ["GET http://www.dummy.com/feed 500", "[CAVL] Couldn't fetch feeds"]),
+            (
+                HTTPStatus.NOT_FOUND,
+                [],
+                ["GET http://www.dummy.com/feed 404", "[CAVL] Couldn't fetch feeds"],
+            ),
+            (
+                HTTPStatus.BAD_REQUEST,
+                [],
+                ["GET http://www.dummy.com/feed 400", "[CAVL] Couldn't fetch feeds"],
+            ),
+            (
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                [],
+                ["GET http://www.dummy.com/feed 500", "[CAVL] Couldn't fetch feeds"],
+            ),
         ],
     )
     def test_get_feeds(
@@ -230,11 +299,26 @@ class TestCAVLService:
     @pytest.mark.parametrize(
         "status, expected_message",
         [
-            (HTTPStatus.NOT_FOUND, ["POST http://www.dummy.com/validate 404", "[CAVL] Couldn't validate feed <url=dummy>"]),
-            (HTTPStatus.BAD_REQUEST, ["POST http://www.dummy.com/validate 400", "[CAVL] Couldn't validate feed <url=dummy>"]),
+            (
+                HTTPStatus.NOT_FOUND,
+                [
+                    "POST http://www.dummy.com/validate 404",
+                    "[CAVL] Couldn't validate feed <url=dummy>",
+                ],
+            ),
+            (
+                HTTPStatus.BAD_REQUEST,
+                [
+                    "POST http://www.dummy.com/validate 400",
+                    "[CAVL] Couldn't validate feed <url=dummy>",
+                ],
+            ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
-                ["POST http://www.dummy.com/validate 500", "[CAVL] Couldn't validate feed <url=dummy>"],
+                [
+                    "POST http://www.dummy.com/validate 500",
+                    "[CAVL] Couldn't validate feed <url=dummy>",
+                ],
             ),
         ],
     )

@@ -50,6 +50,7 @@ def test_get_datasets_published_at():
     assert len(datasets) == 1
     assert datasets[0] == expected
 
+
 def test_upload_change_data_archive(tmp_path):
     """Tests upload_bulk_data_archive creates BulkDataArchive with zipfile at outpath"""
     # Setup
@@ -69,6 +70,7 @@ def test_upload_change_data_archive(tmp_path):
     assert archive.published_at.date() == published_date
     with archive.data.open("r") as fin:
         assert fin.read() == "Some data"
+
 
 def test_run():
     """End-to-end test of the bulk data archive pipeline"""

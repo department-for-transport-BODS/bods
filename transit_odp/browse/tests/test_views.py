@@ -1164,7 +1164,7 @@ class TestLTAView:
 
         response = LocalAuthorityView.as_view()(request)
         assert response.status_code == 200
-        expected_order = ['Cheshire East Council', 'Derby City Council']
+        expected_order = ["Cheshire East Council", "Derby City Council"]
         ltas = response.context_data["ltas"]
         assert ltas["names"] == expected_order
 
@@ -1273,7 +1273,9 @@ class TestLTADetailView:
             registration_code=int(all_service_codes[7][-1:]),
         )
 
-        request = request_factory.get(f"/local-authority/?auth_ids={local_authority.id}")
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
+        )
         request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
@@ -1352,7 +1354,9 @@ class TestLTADetailView:
             ui_lta_name="Dorset County Council",
             registration_numbers=service,
         )
-        request = request_factory.get(f"/local-authority/?auth_ids={local_authority.id}")
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
+        )
         request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
