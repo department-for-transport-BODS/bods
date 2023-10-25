@@ -35,7 +35,7 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.common.loggers import PipelineAdapter
+from transit_odp.common.loggers import PipelineAdapter, DatafeedPipelineLoggerContext
 from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.feedback.models import Feedback
@@ -1041,7 +1041,8 @@ class TestOperatorDetailView:
             critical_count=2,
         )
 
-        adapter = PipelineAdapter(getLogger("pytest"), {})
+        context = DatafeedPipelineLoggerContext(object_id=-1)
+        adapter = PipelineAdapter(getLogger("pytest"), {"context": context})
         for dataset in AVLDataset.objects.all():
             cache_avl_compliance_status(adapter, dataset.id)
 
@@ -1163,7 +1164,7 @@ class TestLTAView:
 
         response = LocalAuthorityView.as_view()(request)
         assert response.status_code == 200
-        expected_order = sorted([lta.ui_lta_name for lta in ltas_list])
+        expected_order = ['Cheshire East Council', 'Derby City Council']
         ltas = response.context_data["ltas"]
         assert ltas["names"] == expected_order
 
@@ -1272,7 +1273,7 @@ class TestLTADetailView:
             registration_code=int(all_service_codes[7][-1:]),
         )
 
-        request = request_factory.get("/local-authority/")
+        request = request_factory.get(f"/local-authority/?auth_ids={local_authority.id}")
         request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
@@ -1300,9 +1301,6 @@ class TestLTADetailView:
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
-
-        request = request_factory.get("/local-authority/")
-        request.user = UserFactory()
 
         # Setup three TXCFileAttributes that will be 'Not Stale'
         TXCFileAttributesFactory(
@@ -1354,6 +1352,8 @@ class TestLTADetailView:
             ui_lta_name="Dorset County Council",
             registration_numbers=service,
         )
+        request = request_factory.get(f"/local-authority/?auth_ids={local_authority.id}")
+        request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
         assert response.status_code == 200
