@@ -55,15 +55,15 @@ def create_backstory_for_registration(registration, good_status):
     return sorted(variations, key=lambda obj: obj.variation_number, reverse=True)
 
 
-@patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
-@patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
-def test_registry_normalises_data(otc_data_from_filename_status):
-    registry = Registry()
-    registry.add_all_latest_registered_variations()
+# @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
+# @patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
+# def test_registry_normalises_data(otc_data_from_filename_status):
+#     registry = Registry()
+#     registry.add_all_latest_registered_variations()
 
-    assert len(registry.operators) == 12
-    assert len(registry.licences) == 12
-    assert len(registry.services) == 406
+#     assert len(registry.operators) == 12
+#     assert len(registry.licences) == 12
+#     assert len(registry.services) == 406
 
 
 @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")

@@ -310,7 +310,11 @@ def test_flexible_service(service, expected):
     """
 
     if service:
-        service = "<{0}></{0}>".format(service)
+        if service == "FlexibleService":
+            service = "<ServiceClassification><Flexible/></ServiceClassification><{0}></{0}>".format(service)
+        else:
+            service = "<{0}></{0}>".format(service)
+            
     service = service_template.format(service)
     xml = "<Services>{0}</Services>".format(service)
 

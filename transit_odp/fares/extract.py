@@ -281,9 +281,9 @@ class NeTExDocumentsExtractor:
         return fares_catalogue_extracted_data
 
     def to_dict(self):
-        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-        if is_fares_validator_active:
-            keys = [
+        # is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+        # if is_fares_validator_active:
+        keys = [
                 "schema_version",
                 "num_of_lines",
                 "num_of_fare_zones",
@@ -297,18 +297,18 @@ class NeTExDocumentsExtractor:
                 "stop_point_refs",
                 "fares_data_catalogue",
             ]
-        else:
-            keys = [
-                "schema_version",
-                "num_of_lines",
-                "num_of_fare_zones",
-                "num_of_sales_offer_packages",
-                "num_of_fare_products",
-                "num_of_user_profiles",
-                "valid_from",
-                "valid_to",
-                "stop_point_refs",
-            ]
+        # else:
+            # keys = [
+            #     "schema_version",
+            #     "num_of_lines",
+            #     "num_of_fare_zones",
+            #     "num_of_sales_offer_packages",
+            #     "num_of_fare_products",
+            #     "num_of_user_profiles",
+            #     "valid_from",
+            #     "valid_to",
+            #     "stop_point_refs",
+            # ]
         try:
             data = {key: getattr(self, key) for key in keys}
         except ValueError as err:

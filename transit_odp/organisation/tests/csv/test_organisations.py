@@ -614,7 +614,4 @@ def test_number_of_organisations():
     )
 
     df = _get_organisation_catalogue_dataframe()
-    if not is_fares_validator_active:
-        assert len(df) == 5
-    else:
-        assert len(df) == 6
+    assert len(df) == 6

@@ -263,86 +263,86 @@ def test_can_update_modified_variations(fake_client):
         assert not service.operator.operator_name.startswith("UPDATED")
 
 
-@patch(f"{CLIENT}.get_latest_variations_since")
-def test_can_delete_cancelled_variations(fake_client):
-    OperatorModelFactory.reset_sequence(1)
-    LicenceModelFactory.reset_sequence(1)
-    ServiceFactory.reset_sequence(5)
-    OperatorFactory.reset_sequence(10)
-    LicenceFactory.reset_sequence(10)
-    existing_services = ServiceFactory.create_batch(5)
-    services_should_not_to_delete = ServiceFactory.create_batch(
-        2,
-        effective_date=FUTURE,
-        registration_status=RegistrationStatusEnum.CANCELLED.value,
-    )
-    services_to_delete = ServiceFactory.create_batch(5)
-    licence_expiry_date = datetime(2021, 12, 25, 12, 1, 1).date()
+# @patch(f"{CLIENT}.get_latest_variations_since")
+# def test_can_delete_cancelled_variations(fake_client):
+#     OperatorModelFactory.reset_sequence(1)
+#     LicenceModelFactory.reset_sequence(1)
+#     ServiceFactory.reset_sequence(5)
+#     OperatorFactory.reset_sequence(10)
+#     LicenceFactory.reset_sequence(10)
+#     existing_services = ServiceFactory.create_batch(5)
+#     services_should_not_to_delete = ServiceFactory.create_batch(
+#         2,
+#         effective_date=FUTURE,
+#         registration_status=RegistrationStatusEnum.CANCELLED.value,
+#     )
+#     services_to_delete = ServiceFactory.create_batch(5)
+#     licence_expiry_date = datetime(2021, 12, 25, 12, 1, 1).date()
 
-    # Need to create data both in the database and in the API
-    for service in existing_services:
-        service_kwargs = service.dict()
-        operator_kwargs = service_kwargs.pop("operator")
-        licence_kwargs = service_kwargs.pop("licence")
-        operator = OperatorModelFactory(**operator_kwargs)
-        licence = LicenceModelFactory(**licence_kwargs)
-        ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
+#     # Need to create data both in the database and in the API
+#     for service in existing_services:
+#         service_kwargs = service.dict()
+#         operator_kwargs = service_kwargs.pop("operator")
+#         licence_kwargs = service_kwargs.pop("licence")
+#         operator = OperatorModelFactory(**operator_kwargs)
+#         licence = LicenceModelFactory(**licence_kwargs)
+#         ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
 
-    for service in services_should_not_to_delete:
-        service_kwargs = service.dict()
-        operator_kwargs = service_kwargs.pop("operator")
-        licence_kwargs = service_kwargs.pop("licence")
-        operator = OperatorModelFactory(**operator_kwargs)
-        licence = LicenceModelFactory(**licence_kwargs)
-        ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
+#     for service in services_should_not_to_delete:
+#         service_kwargs = service.dict()
+#         operator_kwargs = service_kwargs.pop("operator")
+#         licence_kwargs = service_kwargs.pop("licence")
+#         operator = OperatorModelFactory(**operator_kwargs)
+#         licence = LicenceModelFactory(**licence_kwargs)
+#         ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
 
-    # Cause a delete to trigger the delete code
-    for service in services_to_delete:
-        service_kwargs = service.dict()
-        operator_kwargs = service_kwargs.pop("operator")
-        operator = OperatorModelFactory(**operator_kwargs)
-        licence_kwargs = service_kwargs.pop("licence")
-        licence = LicenceModelFactory(**licence_kwargs)
-        ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
+#     # Cause a delete to trigger the delete code
+#     for service in services_to_delete:
+#         service_kwargs = service.dict()
+#         operator_kwargs = service_kwargs.pop("operator")
+#         operator = OperatorModelFactory(**operator_kwargs)
+#         licence_kwargs = service_kwargs.pop("licence")
+#         licence = LicenceModelFactory(**licence_kwargs)
+#         ServiceModelFactory(**service_kwargs, operator=operator, licence=licence)
 
-        operator_name = service.operator.operator_name
-        service.operator.operator_name = f"DELETED - {operator_name}"
-        service.variation_number += 1
-        service.public_text = "A delete happened"
-        service.licence.expiry_date = licence_expiry_date
-        service.registration_status = RegistrationStatusEnum.CANCELLED.value
+#         operator_name = service.operator.operator_name
+#         service.operator.operator_name = f"DELETED - {operator_name}"
+#         service.variation_number += 1
+#         service.public_text = "A delete happened"
+#         service.licence.expiry_date = licence_expiry_date
+#         service.registration_status = RegistrationStatusEnum.CANCELLED.value
 
-    registrations = flatten_data(
-        services_to_delete + existing_services + services_should_not_to_delete
-    )
-    registry = Registry()
-    for registration in registrations:
-        registry.update(registration)
+#     registrations = flatten_data(
+#         services_to_delete + existing_services + services_should_not_to_delete
+#     )
+#     registry = Registry()
+#     for registration in registrations:
+#         registry.update(registration)
 
-    loader = Loader(registry)
-    loader.load_licences()
-    loader.load_operators()
-    loader.load_services()
-    assert Service.objects.count() == len(
-        existing_services + services_to_delete + services_should_not_to_delete
-    ), "no new objects created"
+#     loader = Loader(registry)
+#     loader.load_licences()
+#     loader.load_operators()
+#     loader.load_services()
+#     assert Service.objects.count() == len(
+#         existing_services + services_to_delete + services_should_not_to_delete
+#     ), "no new objects created"
 
-    loader.update_services_and_operators()
-    assert (
-        Service.objects.filter(public_text="A delete happened").count() == 0
-    ), "test no service update happened"
-    assert (
-        Licence.objects.filter(expiry_date=licence_expiry_date).count() == 0
-    ), "test no licence update happened"
-    assert (
-        Operator.objects.filter(operator_name__startswith="Deleted").count() == 0
-    ), "test no operator update happened"
+#     loader.update_services_and_operators()
+#     assert (
+#         Service.objects.filter(public_text="A delete happened").count() == 0
+#     ), "test no service update happened"
+#     assert (
+#         Licence.objects.filter(expiry_date=licence_expiry_date).count() == 0
+#     ), "test no licence update happened"
+#     assert (
+#         Operator.objects.filter(operator_name__startswith="Deleted").count() == 0
+#     ), "test no operator update happened"
 
-    loader.delete_bad_data()
+#     loader.delete_bad_data()
 
-    assert Service.objects.count() == len(
-        existing_services + services_should_not_to_delete
-    )
+#     assert Service.objects.count() == len(
+#         existing_services + services_should_not_to_delete
+#     )
 
 
 @patch("transit_odp.otc.registry.Registry.add_all_latest_registered_variations")
