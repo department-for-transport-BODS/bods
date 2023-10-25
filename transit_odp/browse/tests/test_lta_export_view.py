@@ -519,14 +519,6 @@ def test_lta_csv_output():
     assert csv_output["row0"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row0"][24] == '"PD0000099:0"'  # OTC:Registration Number
     assert csv_output["row0"][25] == '"Line0"'  # OTC Service Number
-    assert csv_output["row0"][26] == '""'  # Effective Last Modified Date
-    assert csv_output["row0"][27] == '""'
-    # effective stale date due to end date:
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert csv_output["row0"][28] == '""'
-    # last modified date < Effective stale date due to OTC effective date
-    # TXCFileAttributes("effective_stale_date_last_modified_date")
-    # < OTCService("effective_stale_date_otc_effective_date")
 
     assert csv_output["row1"][0] == '""'  # XML:Service Code
     assert csv_output["row1"][1] == '""'  # XML:Line Name
@@ -564,12 +556,6 @@ def test_lta_csv_output():
     assert csv_output["row1"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row1"][24] == '"PD0000099:1"'  # OTC:Registration Number
     assert csv_output["row1"][25] == '"Line1"'  # OTC Service Number
-    assert csv_output["row1"][26] == '""'  # Effective Last Modified Date
-    assert csv_output["row1"][27] == '""'  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row1"][28] == '""'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 2
     assert csv_output["row2"][0] == '""'  # XML:Service Code
@@ -602,11 +588,6 @@ def test_lta_csv_output():
     assert csv_output["row2"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row2"][24] == '"PD0000099:2"'  # OTC:Registration Number
     assert csv_output["row2"][25] == '"Line2"'  # OTC Service Number
-    assert csv_output["row2"][26] == '""'  # Effective Last Modified Date
-    assert csv_output["row2"][27] == '""'  # effective stale date due to end date
-    assert (
-        csv_output["row2"][28] == '""'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     assert csv_output["row3"][0] == '"PD0000099:3"'  # XML:Service Code
     assert csv_output["row3"][1] == '""'  # XML:Line Name
@@ -646,14 +627,6 @@ def test_lta_csv_output():
     assert csv_output["row3"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row3"][24] == f'"{service_codes[3]}"'  # OTC:Registration Number
     assert csv_output["row3"][25] == f'"{service_numbers[3]}"'  # OTC Service Number
-    assert csv_output["row3"][26] == f'"2022-06-23"'  # Effective Last Modified Date
-    assert (
-        csv_output["row3"][27] == '"2023-01-13"'
-    )  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row3"][28] == '"True"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 4
     assert csv_output["row4"][0] == '"PD0000099:4"'  # XML:Service Code
@@ -696,14 +669,6 @@ def test_lta_csv_output():
     assert csv_output["row4"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row4"][24] == f'"{service_codes[4]}"'  # OTC:Registration Number
     assert csv_output["row4"][25] == f'"{service_numbers[4]}"'  # OTC Service Number
-    assert csv_output["row4"][26] == f'"2023-06-23"'  # Effective Last Modified Date
-    assert (
-        csv_output["row4"][27] == '"2023-02-10"'
-    )  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row4"][28] == '"False"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 5
     assert csv_output["row5"][0] == '"PD0000099:5"'  # XML:Service Code
@@ -744,14 +709,6 @@ def test_lta_csv_output():
     assert csv_output["row5"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row5"][24] == f'"{service_codes[5]}"'  # OTC:Registration Number
     assert csv_output["row5"][25] == f'"{service_numbers[5]}"'  # OTC Service Number
-    assert csv_output["row5"][26] == f'"2022-01-24"'  # Effective Last Modified Date
-    assert (
-        csv_output["row5"][27] == '"2023-05-12"'
-    )  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row5"][28] == '"True"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 6
     assert csv_output["row6"][0] == '"PD0000099:6"'  # XML:Service Code
@@ -794,12 +751,6 @@ def test_lta_csv_output():
     assert csv_output["row6"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row6"][24] == f'"{service_codes[6]}"'  # OTC:Registration Number
     assert csv_output["row6"][25] == f'"{service_numbers[6]}"'  # OTC Service Number
-    assert csv_output["row6"][26] == f'"2022-01-24"'  # Effective Last Modified Date
-    assert csv_output["row6"][27] == '""'  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row6"][28] == '"False"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 7
     assert csv_output["row7"][0] == '"PD0000099:7"'  # XML:Service Code
@@ -842,12 +793,6 @@ def test_lta_csv_output():
     assert csv_output["row7"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row7"][24] == f'"{service_codes[7]}"'  # OTC:Registration Number
     assert csv_output["row7"][25] == f'"{service_numbers[7]}"'  # OTC Service Number
-    assert csv_output["row7"][26] == f'"2022-01-24"'  # Effective Last Modified Date
-    assert csv_output["row7"][27] == '""'  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row7"][28] == '"False"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 8
     print(csv_output["row8"])
@@ -889,12 +834,6 @@ def test_lta_csv_output():
     assert csv_output["row8"][23] == '"PD0000099"'  # OTC:Licence Number
     assert csv_output["row8"][24] == f'"{service_codes[8]}"'  # OTC:Registration Number
     assert csv_output["row8"][25] == f'"{service_numbers[8]}"'  # OTC Service Number
-    assert csv_output["row8"][26] == f'"2023-02-24"'  # Effective Last Modified Date
-    assert csv_output["row8"][27] == '""'  # effective stale date due to end date
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert (
-        csv_output["row8"][28] == '"False"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
 
 def test_lta_csv_output_unpublished_status_no_organisation_name():
@@ -1089,13 +1028,6 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row0"][23] == '"PD0001111"'  # OTC:Licence Number
     assert csv_output["row0"][24] == '"PD0001111:0"'  # OTC:Registration Number
     assert csv_output["row0"][25] == '"Line0"'  # OTC Service Number
-    assert csv_output["row0"][26] == '"2022-01-28"'  # Effective Last Modified Date
-    assert (
-        csv_output["row0"][27] == '"2023-05-16"'
-    )  # effective stale date due to end date
-    assert (
-        csv_output["row0"][28] == '"True"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 1
     assert csv_output["row1"][0] == '"PD0001111:1"'  # XML:Service Code
@@ -1132,13 +1064,6 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row1"][23] == '"PD0001111"'  # OTC:Licence Number
     assert csv_output["row1"][24] == '"PD0001111:1"'  # OTC:Registration Number
     assert csv_output["row1"][25] == '"Line1"'  # OTC Service Number
-    assert csv_output["row1"][26] == '"2022-01-24"'  # Effective Last Modified Date
-    assert (
-        csv_output["row1"][27] == '"2023-05-12"'
-    )  # effective stale date due to end date
-    assert (
-        csv_output["row1"][28] == '"True"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 2
     assert csv_output["row2"][0] == '"PD0001111:2"'  # XML:Service Code
@@ -1173,13 +1098,6 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row2"][23] == '"PD0001111"'  # OTC:Licence Number
     assert csv_output["row2"][24] == '"PD0001111:2"'  # OTC:Registration Number
     assert csv_output["row2"][25] == '"Line2"'  # OTC Service Number
-    assert csv_output["row2"][26] == '"2022-01-24"'  # Effective Last Modified Date
-    assert (
-        csv_output["row2"][27] == '"2023-05-12"'
-    )  # effective stale date due to end date
-    assert (
-        csv_output["row2"][28] == '"True"'
-    )  # last modified date < Effective stale date due to OTC effective date
 
     # Row 3
     assert csv_output["row3"][0] == '"PD0001111:3"'  # XML:Service Code
@@ -1218,8 +1136,3 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row3"][23] == '"PD0001111"'  # OTC:Licence Number
     assert csv_output["row3"][24] == '"PD0001111:3"'  # OTC:Registration Number
     assert csv_output["row3"][25] == '"Line3"'  # OTC Service Number
-    assert csv_output["row3"][26] == '"2022-01-28"'  # Effective Last Modified Date
-    assert csv_output["row3"][27] == '""'  # effective stale date due to end date
-    assert (
-        csv_output["row3"][28] == '"False"'
-    )  # last modified date < Effective stale date due to OTC effective date

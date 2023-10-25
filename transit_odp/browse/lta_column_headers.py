@@ -100,19 +100,5 @@ header_accessor_data = [
         "OTC:Registration Number",
         lambda otc_service: otc_service.get("otc_registration_number"),
     ),
-    ("OTC Service Number", lambda otc_service: otc_service.get("otc_service_number")),
-    (
-        "Effective Last Modified Date",
-        lambda otc_service: otc_service.get("last_modified_date"),
-    ),
-    (
-        "Effective stale date due to end date",
-        lambda otc_service: otc_service.get("effective_stale_date_end_date"),
-    ),
-    (
-        "Last modified date < Effective stale date due to OTC effective date",
-        lambda otc_service: otc_service.get(
-            "last_modified_lt_effective_stale_date_otc"
-        ),
-    ),
+    ("OTC:Service Number", lambda otc_service: otc_service.get("otc_service_number")),
 ]

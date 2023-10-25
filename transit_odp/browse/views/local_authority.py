@@ -21,7 +21,6 @@ from transit_odp.publish.requires_attention import (
 )
 
 from datetime import timedelta
-from collections import OrderedDict
 from transit_odp.browse.lta_column_headers import header_accessor_data
 
 STALENESS_STATUS = [
