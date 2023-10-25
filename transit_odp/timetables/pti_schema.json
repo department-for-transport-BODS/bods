@@ -89,11 +89,11 @@
     {
       "details": "'Mandatory elements incorrect in 'ServicesGroup'. The ServicesGroup should only contain a single Service element except in cases when unregistered services are published with a single flexible service.",
       "category": "Services and Lines",
-      "service_type": "FlexibleService",
+      "service_type": "All",
       "reference": "5.2",
       "context": "//x:Services",
       "number": 17,
-      "rules": [{ "test": "has_unregistered_service_codes(.)" }]
+      "rules": [{ "test": "check_service_group_validations(.)" }]
     },
     {
       "details": "Notes field is optional. But if you are including it then it is required to be in the correct structure. Here, you have an incorrect structure in 'Notes' field. Please do not include any of the following characters in the field:    , [ ] {{ }} ^ = @ : ; # $ £ ? % + < > « »  / | ~ _ ¬",
@@ -617,7 +617,7 @@
       ]
     },
     {
-      "details": "'ServiceClasification' is not inputted as flexible.",
+      "details": "'ServiceClassification' is not inputted as flexible.",
       "category": "Flexible Service",
       "service_type": "FlexibleService",
       "reference": "10",
@@ -643,7 +643,7 @@
       ]
     },
     {
-      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to OTH.",
+      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to otherPoint.",
       "category": "Flexible Service",
       "service_type": "FlexibleService",
       "reference": "10",
@@ -661,10 +661,10 @@
       "service_type": "FlexibleService",
       "reference": "10",
       "number": 123,
-      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
       "rules": [
         {
-          "test": "count(x:Phone) = 1 or count(x:Email) = 1 or count(x:WebAddress) = 1"
+          "test": "count(x:BookingArrangements) > 0 and (count(x:BookingArrangements/x:Phone) = 1 or count(x:BookingArrangements/x:Email) = 1 or count(x:BookingArrangements/x:WebAddress) = 1)"
         }
       ]
     },
