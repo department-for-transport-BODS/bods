@@ -228,19 +228,62 @@ def validate_bank_holidays(context, bank_holidays):
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
 
 
-def has_unregistered_service_codes(context, services):
-    service_code_list = []
-    service = services[0]
-    ns = {"x": service.nsmap.get(None)}
+def check_service_group_validations(context, services):
+    services = services[0]
+    ns = {"x": services.nsmap.get(None)}
+    service_list = services.xpath("x:Service", namespaces=ns)
+    registered_code_regex = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
+    unregistered_code_regex = re.compile("UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+$")
 
-    service_list = service.xpath("x:Service", namespaces=ns)
-    for service in service_list:
-        service_code_list.append(service.xpath("string(x:ServiceCode)", namespaces=ns))
-    r = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
-    registered_service_code = list(filter(r.match, service_code_list))
-    if len(registered_service_code) > 1:
-        return False
-    return True
+    registered_standard_service = len(
+        list(
+            filter(
+                lambda s: registered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                )
+                and s.xpath("x:StandardService", namespaces=ns),
+                service_list,
+            )
+        )
+    )
+    unregistered_services = len(
+        list(
+            filter(
+                lambda s: unregistered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                ),
+                service_list,
+            )
+        )
+    )
+    registered_flexible_service = len(
+        list(
+            filter(
+                lambda s: registered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                )
+                and s.xpath("x:ServiceClassification/x:Flexible", namespaces=ns),
+                service_list,
+            )
+        )
+    )
+
+    total_services = (
+        registered_standard_service
+        + registered_flexible_service
+        + unregistered_services
+    )
+
+    # More than one services are allowed only when there is a registered flexible service.
+    # If there is a registered standard service then no other service types should be present
+    if total_services is 1 or (
+        total_services > 1
+        and registered_flexible_service is 1
+        and registered_standard_service is 0
+    ):
+        return True
+
+    return False
 
 
 def has_flexible_or_standard_service(context, services):
