@@ -1,15 +1,17 @@
 import io
 import logging
 import zipfile
-from collections import OrderedDict, namedtuple
-from typing import BinaryIO
 
+from collections import OrderedDict, namedtuple
+from requests import RequestException
+from typing import BinaryIO
 from waffle import flag_is_active
 
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
 from transit_odp.browse.constants import INTRO, INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE
 from transit_odp.common.collections import Column
 from transit_odp.common.csv import CSVBuilder, CSVColumn
+from transit_odp.disruptions.csv.catalogue import get_disruptions_data_catalogue_csv
 from transit_odp.fares_validator.csv import (
     FARES_DATA_COLUMN_MAP,
     get_fares_data_catalogue_csv,
@@ -41,6 +43,7 @@ LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
 OTC_EMPTY_WARNING = "OTC Licence is not populated."
 FARES_FILENAME = "fares_data_catalogue.csv"
+DISRUPTIONS_FILENAME="disruptions_data_catalogue.csv"
 
 OPERATOR_NOC_MAP = OrderedDict(
     {
@@ -217,6 +220,11 @@ def create_data_catalogue_file() -> BinaryIO:
         try:
             zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
         except EmptyDataFrame:
+            pass
+
+        try:
+            zin.writestr(DISRUPTIONS_FILENAME, get_disruptions_data_catalogue_csv())
+        except RequestException:
             pass
 
         if is_fares_validator_active:
