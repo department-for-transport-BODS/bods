@@ -115,22 +115,23 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "Up to date: Default status for service codes published to BODS. </br></br>"
             "Timeliness checks are evaluated in this order: </br></br>"
             "1) OTC Variation not published: </br>"
-            "If Last modified date is earlier than 'Date by which OTC change needs "
-            "to be applied to BODS' </br> and </br> today's date greater than "
-            "or equal to 'Date by which OTC change needs to be applied to BODS'</br>"
-            " and </br> No associated data has been published. </br>"
+            "If 'XML:Last modified date' is earlier than 'Date OTC variation needs "
+            "to be published' </br> and </br> 'Date OTC variation needs to be "
+            "published'is earlier than today's date.</br> and </br>"
+            "No associated data has been published. </br>"
             "NB there are two association methods: </br> Method 1: </br>"
-            "Data for that service code has been updated within 70 days of the OTC "
-            "variation effective date.</br> Method 2: </br>"
-            "Data for that service code has been updated with a 'Operating period  "
-            "start date' which equals OTC variation effective date. </br></br>"
+            "Data for that service code has been updated within 70 days before "
+            "the OTC variation effective date.</br> Method 2: </br>"
+            "Data for that service code has been updated with a 'XML:Operating "
+            "Period Start Date' which equals OTC variation effective date. </br></br>"
             "2) 42 day look ahead is incomplete: </br> If not out of date due to  "
             "'OTC variation not published' </br> and </br> 'XML:Operating Period "
             "End Date' is earlier than 'Date for complete 42 day look "
             "ahead'. </br></br>"
             "3) Service hasn't been updated within a year: If not out of date due to "
-            "'42 day lookahead is incomplete' </br> and </br> 'Date at which data "
-            "is 1 year old' is earlier than today's date.",
+            "'42 day lookahead is incomplete' or 'OTC variation not published'"
+            "</br> and </br> 'Date at which data is 1 year old' is earlier than "
+            "today's date.",
         ),
         "organisation_name": Column(
             "Organisation Name",
@@ -151,22 +152,22 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "effective_stale_date_from_last_modified": Column(
             "Date when data is over 1 year old",
-            "XML:Last Modified date from timetable data catalogue plus 12 months.",
+            "'XML:Last Modified date' from timetable data catalogue plus 12 months.",
         ),
         "effective_seasonal_start": Column(
             "Date seasonal service should be published",
-            "If Seasonal Start Date is present Then Seasonal Start Date minus "
-            "42 days Else null.",
+            "If Seasonal Start Date is present, then Seasonal Start Date minus "
+            "42 days, else null.",
         ),
         "seasonal_start": Column(
             "Seasonal Start Date",
             "If service has been assigned a date range from within the seasonal "
-            "services flow Then take start date Else null.",
+            "services flow, then take start date, else null.",
         ),
         "seasonal_end": Column(
             "Seasonal End Date",
             "If service has been assigned a date range from within the "
-            "seasonal services flow Then take end date Else null.",
+            "seasonal services flow, then take end date, else null.",
         ),
         "filename": Column(
             "XML:Filename",
@@ -219,88 +220,72 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "otc_operator_id": Column(
             "OTC:Operator ID",
-            "The operator ID element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The operator ID element as extracted from the OTC database.",
         ),
         "operator_name": Column(
             "OTC:Operator Name",
-            "The operator name element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The operator name element as extracted from the OTC database.",
         ),
         "address": Column(
             "OTC:Address",
-            "The address as extracted from the database of the Office of "
-            "the Traffic Commissioner (OTC).",
+            "The address as extracted from the OTC database.",
         ),
         "otc_licence_number": Column(
             "OTC:Licence Number",
-            "The licence number element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The licence number element as extracted from the OTC database.",
         ),
         "licence_status": Column(
             "OTC:Licence Status",
-            "The licence status element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The licence status element as extracted from the OTC database.",
         ),
         "registration_number": Column(
             "OTC:Registration Number",
-            "The registration number element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The registration number element as extracted from the OTC database.",
         ),
         "service_type_description": Column(
             "OTC:Service Type Description",
-            "The service type description element as extracted from the database "
-            "of the Office of the Traffic Commissioner (OTC).",
+            "The service type description element as extracted from the OTC database.",
         ),
         "variation_number": Column(
             "OTC:Variation Number",
-            "The variation number element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The variation number element as extracted from the OTC database.",
         ),
         "service_number": Column(
             "OTC:Service Number",
-            "The service number element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The service number element as extracted from the OTC database.",
         ),
         "start_point": Column(
             "OTC:Start Point",
-            "The start point element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The start point element as extracted from the OTC database.",
         ),
         "finish_point": Column(
             "OTC:Finish Point",
-            "The finish point element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The finish point element as extracted from the OTC database.",
         ),
         "via": Column(
             "OTC:Via",
-            "The via element as extracted from the database of the Office of "
-            "the Traffic Commissioner (OTC).",
+            "The via element as extracted from the OTC database.",
         ),
         "granted_date": Column(
             "OTC:Granted Date",
-            "The granted date element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The granted date element as extracted from the OTC database.",
         ),
         "expiry_date": Column(
             "OTC:Expiry Date",
-            "The expiry date element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The expiry date element as extracted from the OTC database.",
         ),
         "effective_date": Column(
             "OTC:Effective Date",
-            "The effective date element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The effective date element as extracted from the OTC database.",
         ),
         "received_date": Column(
             "OTC:Received Date",
-            "The received date element as extracted from the database of "
-            "the Office of the Traffic Commissioner (OTC).",
+            "The received date element as extracted from the OTC database.",
         ),
         "service_type_other_details": Column(
             "OTC:Service Type Other Details",
-            "The service type other details element as extracted from "
-            "the database of the Office of the Traffic Commissioner (OTC).",
+            "The service type other details element as extracted from the "
+            "OTC database.",
         ),
     }
 )
