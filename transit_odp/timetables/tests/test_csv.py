@@ -42,10 +42,7 @@ def test_service_in_bods_but_not_in_otc():
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Unregistered"
         assert row["Scope Status"] == "In Scope"
-        # assert row["DQ Score"] == "33%"
-        # assert row["BODS Compliant"] == "NO"
         assert row["XML:Filename"] == txc_file_attributes.filename
-        # assert row["Last Updated Date"] == dataset.live_revision.published_at
         assert (
             row["XML:National Operator Code"]
             == txc_file_attributes.national_operator_code
@@ -78,10 +75,7 @@ def test_service_in_bods_and_otc():
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Registered"
         assert row["Scope Status"] == "In Scope"
-        # assert row["DQ Score"] == "33%"
-        # assert row["BODS Compliant"] == "NO"
         assert row["XML:Filename"] == txc_file_attributes.filename
-        # assert row["Last Updated Date"] == dataset.live_revision.published_at
         assert (
             row["XML:National Operator Code"]
             == txc_file_attributes.national_operator_code
@@ -148,7 +142,6 @@ def test_service_in_otc_and_not_in_bods():
             row["OTC:Service Type Other Details"] == service.service_type_other_details
         )
         assert row["Requires Attention"] == "Yes"
-        # Test organisation name when status is unpublished:
         assert row["Organisation Name"] == org_name
 
 
@@ -179,10 +172,7 @@ def test_unregistered_services_in_bods():
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Unregistered"
         assert row["Scope Status"] == "In Scope"
-        # assert row["DQ Score"] == "33%"
-        # assert row["BODS Compliant"] == "NO"
         assert row["XML:Filename"] == txc_file_attributes.filename
-        # assert row["Last Updated Date"] == dataset.live_revision.published_at
         assert (
             row["XML:National Operator Code"]
             == txc_file_attributes.national_operator_code
@@ -279,7 +269,6 @@ def test_all_txc_file_attributes_belong_to_live_revisions():
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[:5].iterrows():
         assert row["OTC:Origin"] == "latest"
-        # assert row["DQ Score"] == "98%"
 
 
 @freeze_time("2023-02-14")
