@@ -1272,7 +1272,11 @@ class TestLTADetailView:
             registration_code=int(all_service_codes[7][-1:]),
         )
 
-        request = request_factory.get("/local-authority/")
+        params = {"auth_ids": ["1"]}
+        url = "/local-authority/?" + "&".join(
+            [f"{key}={','.join(value)}" for key, value in params.items()]
+        )
+        request = request_factory.get(url)
         request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
@@ -1301,7 +1305,11 @@ class TestLTADetailView:
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
 
-        request = request_factory.get("/local-authority/")
+        params = {"auth_ids": ["1"]}
+        url = "/local-authority/?" + "&".join(
+            [f"{key}={','.join(value)}" for key, value in params.items()]
+        )
+        request = request_factory.get(url)
         request.user = UserFactory()
 
         # Setup three TXCFileAttributes that will be 'Not Stale'
