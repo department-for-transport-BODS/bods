@@ -43,7 +43,7 @@ LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
 OTC_EMPTY_WARNING = "OTC Licence is not populated."
 FARES_FILENAME = "fares_data_catalogue.csv"
-DISRUPTIONS_FILENAME="disruptions_data_catalogue.csv"
+DISRUPTIONS_FILENAME = "disruptions_data_catalogue.csv"
 
 OPERATOR_NOC_MAP = OrderedDict(
     {

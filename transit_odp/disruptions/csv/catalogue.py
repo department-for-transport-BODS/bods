@@ -18,7 +18,7 @@ def get_disruptions_data_catalogue_csv() -> str:
 
         logger.info(
             f"Request to {URL} took {response.elapsed.total_seconds()} seconds for get_disruptions_data_catalogue_csv"
-        )    
+        )
 
         return response.text
     except RequestException:
