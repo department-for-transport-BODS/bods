@@ -92,7 +92,7 @@ pyyaml = "~=6.0.1"
 requests-mock = "~=1.9.3"
 safety = "~=1.10.3"
 watchdog = "~=0.10.0"
-werkzeug = "~=2.0.0"
+werkzeug = "~=3.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
