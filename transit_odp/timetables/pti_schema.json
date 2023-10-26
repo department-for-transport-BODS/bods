@@ -643,19 +643,6 @@
       ]
     },
     {
-      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to otherPoint.",
-      "category": "Flexible Service",
-      "service_type": "FlexibleService",
-      "reference": "10",
-      "number": 121,
-      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
-      "rules": [
-        {
-          "test": "check_flexible_service_timing_status(.)"
-        }
-      ]
-    },
-    {
       "details": "At least one type of booking arrangement needs to be provided from Phone, Email, Address or WebAddress.",
       "category": "Flexible Service",
       "service_type": "FlexibleService",

@@ -335,33 +335,3 @@ def has_flexible_service_classification(context, services):
                 return True
 
         return False
-
-
-def check_flexible_service_timing_status(context, flexiblejourneypatterns):
-    timing_status_value_list = []
-    flexiblejourneypattern = flexiblejourneypatterns[0]
-    ns = {"x": flexiblejourneypattern.nsmap.get(None)}
-    stop_points_in_seq_list = flexiblejourneypattern.xpath(
-        "x:StopPointsInSequence", namespaces=ns
-    )
-    for stop_points_in_seq in stop_points_in_seq_list:
-        fixed_stop_usage_list = stop_points_in_seq.xpath(
-            "x:FixedStopUsage", namespaces=ns
-        )
-        flexible_stop_usage_list = stop_points_in_seq.xpath(
-            "x:FlexibleStopUsage", namespaces=ns
-        )
-
-        if len(fixed_stop_usage_list) > 0 and len(flexible_stop_usage_list) > 0:
-            for fixed_stop_usage in fixed_stop_usage_list:
-                timing_status_value_list.append(
-                    _extract_text(
-                        fixed_stop_usage.xpath("x:TimingStatus", namespaces=ns), ""
-                    )
-                )
-
-    result = all(
-        timing_status_value == "otherPoint"
-        for timing_status_value in timing_status_value_list
-    )
-    return result
