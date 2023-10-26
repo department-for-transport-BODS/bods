@@ -368,9 +368,13 @@ def test_stale_42_day_look_ahead(effective, modified, period_end, is_stale):
         # End date not present
         ("2021-12-01", "2022-01-01", None, None, True),
         # 42 days look ahead is true
-        ("2022-01-01", "2022-06-01", "2023-03-01", None, False),
+        ("2022-01-01", "2023-06-01", "2023-03-01", None, False),
         # OTC variation is true
-        ("2023-03-01", "2022-12-01", "2025-01-01", "2023-01-01", False),
+        ("2023-03-01", "2023-12-01", "2025-01-01", "2023-01-01", False),
+        # today is equal to last modified date + 365 days
+        ("2022-01-01", "2022-02-14", "2023-06-01", None, True),
+        # 1 days short to be marked as 12 months stale
+        ("2022-01-01", "2022-02-15", "2023-06-01", None, False),
     ),
 )
 def test_stale_12_months_old(effective, modified, period_end, period_start, is_stale):
