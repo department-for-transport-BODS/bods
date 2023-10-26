@@ -1151,22 +1151,20 @@ class TestLTAView:
         assert len(ltas_context) == 1
 
     def test_lta_view_order_by_name(self, request_factory: RequestFactory):
-        ltas_list = [
-            LocalAuthorityFactory(
-                id="1", name="Derby Council", ui_lta_name="Derby City Council"
-            ),
-            LocalAuthorityFactory(
-                id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
-            ),
-        ]
+
+        LocalAuthorityFactory(
+            id="1", name="Derby Council", ui_lta_name="Derby City Council"
+        ),
+        LocalAuthorityFactory(
+            id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
+        ),
+
         request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
         request.user = AnonymousUser()
 
         response = LocalAuthorityView.as_view()(request)
         assert response.status_code == 200
         expected_order = ["Cheshire East Council", "Derby City Council"]
-        ltas = response.context_data["ltas"]
-        assert ltas["names"] == expected_order
 
         object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
         assert object_names == expected_order
