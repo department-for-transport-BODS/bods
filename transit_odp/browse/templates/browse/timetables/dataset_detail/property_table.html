@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load tz %}
 {% load filters %}
+{% load custom_filters %}
 
 {% block dataset_type %}
     {% trans "Timetables data" %}
@@ -42,7 +43,7 @@
             <td class="govuk-table__cell">
                 <div class="stacked">
                     {% trans "Data quality" %}
-                    {{ dq_score.score | percentage:0 }}
+                    {{ dq_score.score | round_percentage }}
                     <span class="status-indicator status-indicator--{{dq_score.css_indicator}}">
                         {{ dq_score.rag_level | upper }}
                     </span>
