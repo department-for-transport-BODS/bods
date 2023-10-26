@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from waffle.testutils import override_flag
 from dateutil.parser import parse as parse_datetime_str
 from dateutil.tz import tzutc
 
@@ -237,6 +238,8 @@ EXPECTED_METADATA_ZIP = {
 
 
 @pytest.mark.parametrize("filename,expected", SAMPLE_FILES)
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_get_metadata_from_documents(filename, expected):
     source = str(FIXTURES.joinpath(filename))
     docs = get_documents_from_file(source)
@@ -245,6 +248,8 @@ def test_get_metadata_from_documents(filename, expected):
     assert expected == actual
 
 
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_netex_extractor(netexdocuments):
     extractor = NeTExDocumentsExtractor(netexdocuments)
     assert EXPECTED_METADATA_ZIP == extractor.to_dict()
