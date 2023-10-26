@@ -643,7 +643,7 @@
       ]
     },
     {
-      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to OTH.",
+      "details": "FixedStopUsage and FlexibleStopUsage TimingStatus must be set to otherPoint.",
       "category": "Flexible Service",
       "service_type": "FlexibleService",
       "reference": "10",

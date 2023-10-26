@@ -276,10 +276,10 @@ def check_service_group_validations(context, services):
 
     # More than one services are allowed only when there is a registered flexible service.
     # If there is a registered standard service then no other service types should be present
-    if total_services is 1 or (
+    if total_services == 1 or (
         total_services > 1
-        and registered_flexible_service is 1
-        and registered_standard_service is 0
+        and registered_flexible_service == 1
+        and registered_standard_service == 0
     ):
         return True
 
