@@ -26,6 +26,66 @@ from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 pytestmark = pytest.mark.django_db
 
 
+def test_csv_output_order():
+    """
+    Test the order of the headers in the column.
+    """
+    for service in ServiceModelFactory.create_batch(5):
+        fa = TXCFileAttributesFactory(
+            licence_number=service.licence.number,
+            service_code=service.registration_number.replace("/", ":"),
+        )
+        DataQualityReportFactory(revision=fa.revision)
+        PTIValidationResultFactory(revision=fa.revision)
+
+    df = _get_timetable_catalogue_dataframe()
+    columns = df.columns
+
+    assert columns[0] == "XML:Service Code"
+    assert columns[1] == "XML:Line Name"
+    assert columns[2] == "Requires Attention"
+    assert columns[3] == "Published Status"
+    assert columns[4] == "OTC Status"
+    assert columns[5] == "Scope Status"
+    assert columns[6] == "Seasonal Status"
+    assert columns[7] == "Timeliness Status"
+    assert columns[8] == "Organisation Name"
+    assert columns[9] == "Data set ID"
+    assert columns[10] == "Date OTC variation needs to be published"
+    assert columns[11] == "Date for complete 42 day look ahead"
+    assert columns[12] == "Date when data is over 1 year old"
+    assert columns[13] == "Date seasonal service should be published"
+    assert columns[14] == "Seasonal Start Date"
+    assert columns[15] == "Seasonal End Date"
+    assert columns[16] == "XML:Filename"
+    assert columns[17] == "XML:Last Modified Date"
+    assert columns[18] == "XML:National Operator Code"
+    assert columns[19] == "XML:Licence Number"
+    assert columns[20] == "XML:Public Use Flag"
+    assert columns[21] == "XML:Revision Number"
+    assert columns[22] == "XML:Operating Period Start Date"
+    assert columns[23] == "XML:Operating Period End Date"
+    assert columns[24] == "OTC:Origin"
+    assert columns[25] == "OTC:Destination"
+    assert columns[26] == "OTC:Operator ID"
+    assert columns[27] == "OTC:Operator Name"
+    assert columns[28] == "OTC:Address"
+    assert columns[29] == "OTC:Licence Number"
+    assert columns[30] == "OTC:Licence Status"
+    assert columns[31] == "OTC:Registration Number"
+    assert columns[32] == "OTC:Service Type Description"
+    assert columns[33] == "OTC:Variation Number"
+    assert columns[34] == "OTC:Service Number"
+    assert columns[35] == "OTC:Start Point"
+    assert columns[36] == "OTC:Finish Point"
+    assert columns[37] == "OTC:Via"
+    assert columns[38] == "OTC:Granted Date"
+    assert columns[39] == "OTC:Expiry Date"
+    assert columns[40] == "OTC:Effective Date"
+    assert columns[41] == "OTC:Received Date"
+    assert columns[42] == "OTC:Service Type Other Details"
+
+
 def test_service_in_bods_but_not_in_otc():
     for fa in TXCFileAttributesFactory.create_batch(
         5, service_code=Sequence(lambda n: f"PD00000{n}")
@@ -37,7 +97,7 @@ def test_service_in_bods_but_not_in_otc():
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[:5].iterrows():
-        dataset = Dataset.objects.get(id=row["Dataset ID"])
+        dataset = Dataset.objects.get(id=row["Data set ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Unregistered"
@@ -55,6 +115,8 @@ def test_service_in_bods_but_not_in_otc():
 
 
 def test_service_in_bods_and_otc():
+    import datetime
+
     for service in ServiceModelFactory.create_batch(5):
         fa = TXCFileAttributesFactory(
             licence_number=service.licence.number,
@@ -65,32 +127,62 @@ def test_service_in_bods_and_otc():
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df.iterrows():
-        dataset = Dataset.objects.get(id=row["Dataset ID"])
+        dataset = Dataset.objects.get(id=row["Data set ID"])
         service = Service.objects.get(
-            registration_number=row["OTC Registration Number"]
+            registration_number=row["OTC:Registration Number"]
         )
         operator = service.operator
         licence = service.licence
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
+        date_OTC_variation_published = service.effective_date - timedelta(days=42)
+        date_complete_42_day_look_ahead = datetime.date.today() + timedelta(days=42)
+
+        assert row["XML:Service Code"] == txc_file_attributes.service_code
+        assert row["XML:Line Name"] == "line1 line2"
+        assert row["Requires Attention"] == "Yes"
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Registered"
         assert row["Scope Status"] == "In Scope"
+        assert row["Seasonal Status"] == "Not Seasonal"
+        assert row["Timeliness Status"] == "OTC variation not published"
+        assert row["Data set ID"] == dataset.id
+        assert (
+            row["Date OTC variation needs to be published"]
+            == date_OTC_variation_published
+        )
+        assert (
+            row["Date for complete 42 day look ahead"]
+            == date_complete_42_day_look_ahead
+        )
         assert row["XML:Filename"] == txc_file_attributes.filename
+        assert (
+            row["XML:Last Modified Date"]
+            == (txc_file_attributes.modification_datetime).date()
+        )
         assert (
             row["XML:National Operator Code"]
             == txc_file_attributes.national_operator_code
         )
         assert row["XML:Licence Number"] == txc_file_attributes.licence_number
-        assert row["XML:Service Code"] == txc_file_attributes.service_code
-        assert row["XML:Line Name"] == "line1 line2"
+        assert row["XML:Public Use Flag"] == txc_file_attributes.public_use
+        assert row["XML:Revision Number"] == txc_file_attributes.revision_number
+        assert (
+            row["XML:Operating Period Start Date"]
+            == txc_file_attributes.operating_period_start_date
+        )
+        assert (
+            row["XML:Operating Period End Date"]
+            == txc_file_attributes.operating_period_end_date
+        )
         assert row["OTC:Origin"] == txc_file_attributes.origin
         assert row["OTC:Destination"] == txc_file_attributes.destination
-
         assert row["OTC:Operator ID"] == operator.operator_id
         assert row["OTC:Operator Name"] == operator.operator_name
         assert row["OTC:Address"] == operator.address
         assert row["OTC:Licence Number"] == licence.number
         assert row["OTC:Registration Number"] == service.registration_number
+        assert row["OTC:Service Type Description"] == service.service_type_description
+        assert row["OTC:Variation Number"] == service.variation_number
         assert row["OTC:Service Number"] == service.service_number
         assert row["OTC:Start Point"] == service.start_point
         assert row["OTC:Finish Point"] == service.finish_point
@@ -117,7 +209,7 @@ def test_service_in_otc_and_not_in_bods():
 
     for _, row in df[1:].iterrows():
         service = Service.objects.get(
-            registration_number=row["OTC Registration Number"]
+            registration_number=row["OTC:Registration Number"]
         )
         operator = service.operator
         licence = service.licence
@@ -167,7 +259,7 @@ def test_unregistered_services_in_bods():
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[:5].iterrows():
-        dataset = Dataset.objects.get(id=row["Dataset ID"])
+        dataset = Dataset.objects.get(id=row["Data set ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Unregistered"
@@ -308,6 +400,14 @@ def test_seasonal_status(start, end, status):
 
     df = _get_timetable_catalogue_dataframe()
     assert df["Seasonal Status"][0] == status
+    if start and end is not None:
+        assert (
+            df["Seasonal Start Date"][0] == datetime.strptime(start, "%Y-%m-%d").date()
+        )
+        assert df["Seasonal End Date"][0] == datetime.strptime(end, "%Y-%m-%d").date()
+        assert df["Date seasonal service should be published"][0] == df[
+            "Seasonal Start Date"
+        ][0] - timedelta(days=42)
 
 
 @freeze_time("2023-02-14")
@@ -401,6 +501,10 @@ def test_stale_12_months_old(effective, modified, period_end, is_stale):
         df["Timeliness Status"][0] == "Service hasn't been updated within a year"
     ) == is_stale
     assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
+    assert (
+        df["Date when data is over 1 year old"][0]
+        == (txc.modification_datetime + timedelta(days=365)).date()
+    )
 
 
 @freeze_time("2023-02-14")
