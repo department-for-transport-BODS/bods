@@ -19,6 +19,9 @@ from transit_odp.otc.models import Service as OTCService
 TXC_COLUMNS = (
     "organisation_name",
     "dataset_id",
+    # "score",
+    # "bods_compliant",
+    # "last_updated_date",
     "filename",
     "licence_number",
     "modification_datetime",
@@ -287,6 +290,36 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
+        # "score": Column(
+        #     "DQ Score",
+        #     "The DQ score assigned to the publisher’s data set as a result of "
+        #     "the additional data quality checks done on timetables data on "
+        #     "BODS.",
+        # ),
+        # "bods_compliant": Column(
+        #     "BODS Compliant",
+        #     "The validation status and format of timetables data.",
+        # ),
+        # "last_updated_date": Column(
+        #     "Last Updated Date",
+        #     "The date that the data set/feed was last updated on BODS",
+        # ),
+        # "effective_last_modified_date": Column(
+        #     "Effective Last Modified Date",
+        #     "Equal to Last Modified Date.",
+        # ),
+        # "effective_stale_date_from_end_date": Column(
+        #     "Effective stale date due to end date",
+        #     "If end date exists within the timetable file "
+        #     "Then take end date from TransXChange file minus 42 days.",
+        # ),
+        # "last_modified_lt_effective_stale_date_otc": Column(
+        #     "Last modified date < Effective stale date due to " "OTC effective date",
+        #     "If last modified date is less than "
+        #     "Effective stale date due to OTC effective date "
+        #     "Then TRUE "
+        #     "Else FALSE.",
+        # ),
     }
 )
 
@@ -483,6 +516,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         ("otc_operator_id", "Int64"),
     )
 
+    # txc_df["bods_compliant"] = txc_df["bods_compliant"].map(cast_boolean_to_string)
     merged = pd.merge(otc_df, txc_df, on="service_code", how="outer")
 
     for field, type_ in castings:
@@ -494,7 +528,9 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
     merged = add_requires_attention_column(merged, today)
-
+    # merged["score"] = merged["score"].map(
+    #     lambda value: f"{int(round_down(value) * 100)}%" if not pd.isna(value) else ""
+    # )
     rename_map = {
         old_name: column_tuple.field_name
         for old_name, column_tuple in TIMETABLE_COLUMN_MAP.items()
