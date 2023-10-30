@@ -53,8 +53,7 @@
                 {% filter force_escape %}
                     {% blocktrans %}
                         Overall data catalogue: this contains a high-level
-                        overview of all the static data on BODS:
-                        timetables and fares data.
+                        overview of all timetables data on BODS.
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
@@ -80,17 +79,10 @@
             <li>
                 {% filter force_escape %}
                     {% blocktrans %}
-                        Disruptions data catalogue: this contains a detailed
-                        view of all of the disruptions active and pending
-                        within BODS.
-                    {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
                         Organisations data catalogue: this contains
-                        helpful counts of data at an organisation level.
+                        helpful counts of data at an organisation level:
+                        which is at the level of the publishing operators
+                        (e.g. overall service data).
                     {% endblocktrans %}
                 {% endfilter %}
             </li>
