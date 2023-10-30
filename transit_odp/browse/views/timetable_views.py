@@ -90,7 +90,7 @@ class DatasetDetailView(DetailView):
         # annotation get_live_dq_score and calculate the rag from that.
         kwargs["report_id"] = getattr(report, "id", None)
         kwargs["dq_score"] = (
-            get_data_quality_rag(report) if report and summary else None
+            get_data_quality_rag(report, True) if report and summary else None
         )
 
         # Handle errors produced by pipeline

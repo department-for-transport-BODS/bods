@@ -52,7 +52,7 @@ class ReportOverviewView(DetailView):
         context = super().get_context_data(**kwargs)
         report = self.get_object()
         summary = Summary.from_report_summary(report.summary)
-        rag = get_data_quality_rag(report)
+        rag = get_data_quality_rag(report, True)
         context.update(
             {
                 "title": report.revision.name,

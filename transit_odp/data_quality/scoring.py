@@ -148,14 +148,17 @@ class DataQualityCalculator:
         return round(total, 5)
 
 
-def get_data_quality_rag(report: DataQualityReport):
+def get_data_quality_rag(report: DataQualityReport, roundValue=False):
     # Required for transition to saving dq score in the database
     if report.score > 0.0:
         return DataQualityRAG.from_score(report.score)
 
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
     try:
-        score = calculator.calculate(report_id=report.id)
+        if roundValue:
+            score = round(calculator.calculate(report_id=report.id))
+        else:
+            score = calculator.calculate(report_id=report.id)
     except DQScoreException:
         rag = None
     else:
