@@ -612,8 +612,13 @@ def test_not_stale():
     LicenceFactory(number=otc_service.licence.number)
 
     df = _get_timetable_catalogue_dataframe()
+<<<<<<< HEAD
     assert df["Staleness Status"][0] == "Not Stale"
     assert df["Requires Attention"][0] == "No"
+=======
+    assert df["Timeliness Status"][0] == "Up to date"
+    assert df["Requires Attention"][0] == "Yes"
+>>>>>>> 00d9c888 (story/BODS-577: Fix test case)
 
 
 @freeze_time("2023-02-14")
