@@ -49,15 +49,23 @@ and fares data in NeTEx format. Other non-primary data on BODS (e.g disruptions 
 or GTFS converted forms) are not represented on the data catalogue.
 
 The data catalogue zip contains 6 distinct CSVs:
--   Overall data catalogue: this contains a high-level overview of all the static data on BODS: timetables and fares data.
--   Timetables data catalogue: this contains a detailed granular view of the timetables data within BODS. It also contains a detailed mapping of the BODS timetables data with the data from the Office of the Traffic Commissioner (OTC).
--   Fares data catalogue: this contains a detailed granular view of the fares data within BODS.
--   Disruptions data catalogue: this contains a detailed view of all of the disruptions active and pending within BODS.
--   Organisations data catalogue: this contains helpful counts of data at an organisation level.
--   Location data catalogue: this contains an overview of the location data within BODS.
--   Operator NOC data catalogue: this describes all organisations on BODS and the National Operator Codes (NOCs) that are associated with them.
+-   Overall data catalogue: this contains a high-level overview of all the static
+        data on BODS: timetables and fares data.
+-   Timetables data catalogue: this contains a detailed granular view of the
+        timetables data within BODS. It also contains a detailed mapping of the BODS
+        timetables data with the data from the Office of the Traffic Commissioner (OTC).
+-   Fares data catalogue: this contains a detailed granular view of the fares data
+        within BODS.
+-   Organisations data catalogue: this contains helpful counts of data at an
+        organisation level: which is at the level of the publishing operators
+        (e.g overall service data)
+-   Location data catalogue: this contains a detailed granular view of the
+        automatic vehicle location data within BODS.
+-   Operator NOC data catalogue: this describes all organisations on BODS and
+        the National Operator Codes (NOCs) that are associated with them.
 
 Field definitions:
-The data catalogue contains certain fields the definitions and explanations of which can be found below.
+The data catalogue contains certain fields the definitions and explanations of which
+can be found below.
 
 """
