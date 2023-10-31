@@ -1,6 +1,47 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "November 2023 (1.31.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An update to the PTI validation rules for flexible services.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the way the existing PTI validation rules apply to Creation Dates.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            The addition of a data catalogue for disruptions data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the API documentation especially for bounding boxes.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the way we measure look ahead and the way this impacts services that require attention.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the naming convention used in the LTA service completeness report.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "October 2023 (1.30.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
