@@ -143,57 +143,33 @@ def test_service_in_bods_and_otc():
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Registered"
         assert row["Scope Status"] == "In Scope"
-        assert row["Seasonal Status"] == "Not Seasonal"
-        assert row["Timeliness Status"] == "OTC variation not published"
-        assert row["Data set ID"] == dataset.id
+        assert row["DQ Score"] == "33%"
+        assert row["BODS Compliant"] == "NO"
+        assert row["XML Filename"] == txc_file_attributes.filename
+        assert row["Last Updated Date"] == dataset.live_revision.published_at
         assert (
-            row["Date OTC variation needs to be published"]
-            == date_OTC_variation_published
+            row["National Operator Code"] == txc_file_attributes.national_operator_code
         )
-        assert (
-            row["Date for complete 42 day look ahead"]
-            == date_complete_42_day_look_ahead
-        )
-        assert row["XML:Filename"] == txc_file_attributes.filename
-        assert (
-            row["XML:Last Modified Date"]
-            == (txc_file_attributes.modification_datetime).date()
-        )
-        assert (
-            row["XML:National Operator Code"]
-            == txc_file_attributes.national_operator_code
-        )
-        assert row["XML:Licence Number"] == txc_file_attributes.licence_number
-        assert row["XML:Public Use Flag"] == txc_file_attributes.public_use
-        assert row["XML:Revision Number"] == txc_file_attributes.revision_number
-        assert (
-            row["XML:Operating Period Start Date"]
-            == txc_file_attributes.operating_period_start_date
-        )
-        assert (
-            row["XML:Operating Period End Date"]
-            == txc_file_attributes.operating_period_end_date
-        )
-        assert row["OTC:Origin"] == txc_file_attributes.origin
-        assert row["OTC:Destination"] == txc_file_attributes.destination
-        assert row["OTC:Operator ID"] == operator.operator_id
-        assert row["OTC:Operator Name"] == operator.operator_name
-        assert row["OTC:Address"] == operator.address
-        assert row["OTC:Licence Number"] == licence.number
-        assert row["OTC:Registration Number"] == service.registration_number
-        assert row["OTC:Service Type Description"] == service.service_type_description
-        assert row["OTC:Variation Number"] == service.variation_number
-        assert row["OTC:Service Number"] == service.service_number
-        assert row["OTC:Start Point"] == service.start_point
-        assert row["OTC:Finish Point"] == service.finish_point
-        assert row["OTC:Via"] == service.via
-        assert row["OTC:Granted Date"] == licence.granted_date
-        assert row["OTC:Expiry Date"] == licence.expiry_date
-        assert row["OTC:Effective Date"] == service.effective_date
-        assert row["OTC:Received Date"] == service.received_date
-        assert (
-            row["OTC:Service Type Other Details"] == service.service_type_other_details
-        )
+        assert row["Data set Licence Number"] == txc_file_attributes.licence_number
+        assert row["Data set Service Code"] == txc_file_attributes.service_code
+        assert row["Data set Line Name"] == "line1 line2"
+        assert row["Origin"] == txc_file_attributes.origin
+        assert row["Destination"] == txc_file_attributes.destination
+
+        assert row["Operator ID"] == operator.operator_id
+        assert row["Operator Name"] == operator.operator_name
+        assert row["Address"] == operator.address
+        assert row["OTC Licence Number"] == licence.number
+        assert row["OTC Registration Number"] == service.registration_number
+        assert row["OTC Service Number"] == service.service_number
+        assert row["Start Point"] == service.start_point
+        assert row["Finish Point"] == service.finish_point
+        assert row["Via"] == service.via
+        assert row["Granted Date"] == licence.granted_date
+        assert row["Expiry Date"] == licence.expiry_date
+        assert row["Effective Date"] == service.effective_date
+        assert row["Received Date"] == service.received_date
+        assert row["Service Type Other Details"] == service.service_type_other_details
 
 
 def test_service_in_otc_and_not_in_bods():
@@ -584,8 +560,8 @@ def test_not_stale():
     LicenceFactory(number=otc_service.licence.number)
 
     df = _get_timetable_catalogue_dataframe()
-    assert df["Timeliness Status"][0] == "Up to date"
-    assert df["Requires Attention"][0] == "Yes"
+    assert df["Staleness Status"][0] == "Not Stale"
+    assert df["Requires Attention"][0] == "No"
 
 
 @freeze_time("2023-02-14")
