@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+
 from transit_odp.organisation.models import Organisation
 
 
@@ -23,7 +24,7 @@ def get_operator_name(otc_service: dict) -> str:
 
 header_accessor_data = [
     ("XML:Service Code", lambda otc_service: otc_service.get("service_code")),
-    ("XML:Line Name", lambda otc_service: otc_service.get("line_number")),
+    ("XML:Line Name", lambda otc_service: otc_service.get("line_name")),
     ("Requires Attention", lambda otc_service: otc_service.get("require_attention")),
     (
         "Published Status",
