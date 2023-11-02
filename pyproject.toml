@@ -21,7 +21,7 @@ clamd = "~=1.0.0"
 crispy-forms-govuk = "^0.2.0"
 decorator = "~=4.0.0"
 defusedxml = "~=0.6.0"
-django = "~=3.2.20"
+django = "~=3.2.23"
 django-allauth = "~=0.42.0"
 django-anymail = {extras = ["mailgun"], version = "~=7.1.0"}
 django-celery-beat = "~=2.2.0"
