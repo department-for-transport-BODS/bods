@@ -46,7 +46,7 @@ Bus Open Data Service AVL to Timetables data matching
 ________________________________________
 
 AVL to Timetable data matching
-The AVL to Timetable matching zip contains a series of CSVs which would gives a machine-readable results of the sampled AVL and Timetable data that resides in BODS currently.
+The AVL to Timetable matching zip contains a series of CSVs which give machine-readable results of the sampled AVL and Timetable data that currently reside in BODS.
 
 Note that the matching report only covers the data from primary data sources on BODS which is timetables data in TransXChange format, bus location data in SIRI-VM format.
 Fares data in NeTEX are not included in the AVL to Timetable matching report.
