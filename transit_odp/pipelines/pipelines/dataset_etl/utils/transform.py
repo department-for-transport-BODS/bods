@@ -176,7 +176,10 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
         .set_index(["file_id", "route_hash"])
     )
 
-    return routes or pd.DataFrame()
+    if routes.empty:
+        return pd.DataFrame()
+    
+    return routes
 
 
 def create_hash(s: pd.Series):

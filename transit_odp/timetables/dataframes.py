@@ -64,8 +64,8 @@ def provisional_stops_to_dataframe(stops, system=None):
         location = stop.get_element(["Place", "Location"])
 
         if system is None or system.lower() == GRID_LOCATION.lower():
-            easting = location.get_element(["Easting"]).text
-            northing = location.get_element(["Northing"]).text
+            easting = location.get_element(["Translation", "Easting"]).text
+            northing = location.get_element(["Translation", "Northing"]).text
             geometry = (
                 grid_gemotry_from_str(easting, northing)
                 if easting and northing
@@ -73,8 +73,8 @@ def provisional_stops_to_dataframe(stops, system=None):
             )
 
         elif system.lower() == WSG84_LOCATION.lower():
-            latitude = location.get_element(["Latitude"]).text
-            longitude = location.get_element(["Longitude"]).text
+            latitude = location.get_element(["Translation", "Latitude"]).text
+            longitude = location.get_element(["Translation", "Longitude"]).text
             geometry = (
                 wsg84_from_str(longitude, latitude) if latitude and longitude else None
             )
