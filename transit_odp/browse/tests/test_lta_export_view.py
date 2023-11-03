@@ -1,10 +1,11 @@
 from typing import Dict
-import faker
 
+import faker
 import pytest
 from django.db.models.expressions import datetime
 from freezegun import freeze_time
 
+from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.browse.views.local_authority import LTACSV
 from transit_odp.organisation.factories import DatasetFactory
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
@@ -20,7 +21,6 @@ from transit_odp.otc.factories import (
     LocalAuthorityFactory,
     ServiceModelFactory,
 )
-from transit_odp.browse.lta_column_headers import header_accessor_data
 
 pytestmark = pytest.mark.django_db
 FAKER = faker.Faker()
@@ -590,7 +590,7 @@ def test_lta_csv_output():
     assert csv_output["row2"][25] == '"Line2"'  # OTC Service Number
 
     assert csv_output["row3"][0] == '"PD0000099:3"'  # XML:Service Code
-    assert csv_output["row3"][1] == '""'  # XML:Line Name
+    assert csv_output["row3"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row3"][3] == '"Published"'  # Published Status
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
@@ -630,7 +630,7 @@ def test_lta_csv_output():
 
     # Row 4
     assert csv_output["row4"][0] == '"PD0000099:4"'  # XML:Service Code
-    assert csv_output["row4"][1] == '""'  # XML:Line Name
+    assert csv_output["row4"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row4"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row4"][3] == '"Published"'  # Published Status
     assert csv_output["row4"][4] == '"Registered"'  # OTC Status
@@ -672,7 +672,7 @@ def test_lta_csv_output():
 
     # Row 5
     assert csv_output["row5"][0] == '"PD0000099:5"'  # XML:Service Code
-    assert csv_output["row5"][1] == '""'  # XML:Line Name
+    assert csv_output["row5"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row5"][2] == '"No"'  # Requires Attention
     assert csv_output["row5"][3] == '"Published"'  # Published Status
     assert csv_output["row5"][4] == '"Registered"'  # OTC Status
@@ -712,7 +712,7 @@ def test_lta_csv_output():
 
     # Row 6
     assert csv_output["row6"][0] == '"PD0000099:6"'  # XML:Service Code
-    assert csv_output["row6"][1] == '""'  # XML:Line Name
+    assert csv_output["row6"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row6"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row6"][3] == '"Published"'  # Published Status
     assert csv_output["row6"][4] == '"Registered"'  # OTC Status
@@ -754,7 +754,7 @@ def test_lta_csv_output():
 
     # Row 7
     assert csv_output["row7"][0] == '"PD0000099:7"'  # XML:Service Code
-    assert csv_output["row7"][1] == '""'  # XML:Line Name
+    assert csv_output["row7"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row7"][2] == '"No"'  # Requires Attention
     assert csv_output["row7"][3] == '"Published"'  # Published Status
     assert csv_output["row7"][4] == '"Registered"'  # OTC Status
@@ -797,7 +797,7 @@ def test_lta_csv_output():
     # Row 8
     print(csv_output["row8"])
     assert csv_output["row8"][0] == '"PD0000099:8"'  # XML:Service Code
-    assert csv_output["row8"][1] == '""'  # XML:Line Name
+    assert csv_output["row8"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row8"][2] == '"No"'  # Requires Attention
     assert csv_output["row8"][3] == '"Published"'  # Published Status
     assert csv_output["row8"][4] == '"Registered"'  # OTC Status
@@ -968,7 +968,8 @@ def test_seasonal_status_lta_csv_output():
         operating_period_start_date=datetime.datetime(1999, 6, 26),
         national_operator_code=national_operator_code,
     )
-    # is_stale: staleness_12_months_old = True => "Service hasn't been updated within a year"
+    # is_stale:
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -995,7 +996,7 @@ def test_seasonal_status_lta_csv_output():
 
     # Row 0
     assert csv_output["row0"][0] == '"PD0001111:0"'  # XML:Service Code
-    assert csv_output["row0"][1] == '""'  # XML:Line Name
+    assert csv_output["row0"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row0"][2] == '"No"'  # Requires Attention
     assert csv_output["row0"][3] == '"Published"'  # Published Status
     assert csv_output["row0"][4] == '"Registered"'  # OTC Status
@@ -1031,7 +1032,7 @@ def test_seasonal_status_lta_csv_output():
 
     # Row 1
     assert csv_output["row1"][0] == '"PD0001111:1"'  # XML:Service Code
-    assert csv_output["row1"][1] == '""'  # XML:Line Name
+    assert csv_output["row1"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row1"][2] == '"No"'  # Requires Attention
     assert csv_output["row1"][3] == '"Published"'  # Published Status
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
@@ -1067,7 +1068,7 @@ def test_seasonal_status_lta_csv_output():
 
     # Row 2
     assert csv_output["row2"][0] == '"PD0001111:2"'  # XML:Service Code
-    assert csv_output["row2"][1] == '""'  # XML:Line Name
+    assert csv_output["row2"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row2"][2] == '"No"'  # Requires Attention
     assert csv_output["row2"][3] == '"Published"'  # Published Status
     assert csv_output["row2"][4] == '"Registered"'  # OTC Status
@@ -1101,7 +1102,7 @@ def test_seasonal_status_lta_csv_output():
 
     # Row 3
     assert csv_output["row3"][0] == '"PD0001111:3"'  # XML:Service Code
-    assert csv_output["row3"][1] == '""'  # XML:Line Name
+    assert csv_output["row3"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row3"][3] == '"Published"'  # Published Status
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
