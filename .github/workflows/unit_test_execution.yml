@@ -1,0 +1,132 @@
+on:
+  push:
+    branches:
+      - story/BODS-1713
+
+env:
+  ECR_REPOSITORY_NAME: ${{ vars.ECR_REPOSITORY }}
+  ECR_PYTHON_DEPENDENCIES_REPO: python_dependencies
+  REGION: eu-west-2 
+
+
+jobs:
+  prepare_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Configure AWS credentials
+        id: login-aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+  
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+
+      - name: Get region
+        id: get-region
+        run: |
+          REGION_DASHES=${{ env.REGION }}
+          REGION_UNDERSCORES="${REGION_DASHES//-/_}"
+          echo "REGION_UNDERSCORES=${REGION_UNDERSCORES}" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+
+      - name: Sanitise branch name
+        id: sanitise_branch_name
+        run: |
+          branch=${{ github.head_ref || github.ref_name }}
+          echo "branch=${branch//\//-}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT
+
+      - name: Update Django Base Image
+        id: "update_django_base"
+        uses: "./.github/workflows/templates/build_django_base"
+        with:
+          ecr_registry: ${{ steps.login-ecr.outputs.registry }}
+          python_dependencies_repo: ${{ env.ECR_PYTHON_DEPENDENCIES_REPO }}
+          docker_tag: ${{ steps.sanitise_branch_name.outputs.branch }}
+
+    outputs:
+      docker_username: ${{ steps.login-ecr.outputs[format('docker_username_{0}_dkr_ecr_{1}_amazonaws_com', steps.login-aws.outputs.aws-account-id, steps.get-region.outputs.REGION_UNDERSCORES)] }}
+      docker_password: ${{ steps.login-ecr.outputs[format('docker_password_{0}_dkr_ecr_{1}_amazonaws_com', steps.login-aws.outputs.aws-account-id, steps.get-region.outputs.REGION_UNDERSCORES)] }}
+      python_dependencies_image: ${{ format( '{0}/{1}:{2}', steps.login-ecr.outputs.registry, env.ECR_PYTHON_DEPENDENCIES_REPO, steps.sanitise_branch_name.outputs.branch ) }}
+  
+    
+          
+  run_tests:
+    needs: prepare_image
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.prepare_image.outputs.python_dependencies_image }}
+      credentials:
+        username: ${{ needs.prepare_image.outputs.docker_username }}
+        password: ${{ needs.prepare_image.outputs.docker_password }}
+      options: --user root
+      env:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
+        POSTGRES_DB: transit_odp
+        POSTGRES_USER: transit_odp
+        POSTGRES_PASSWORD: transit_odp
+        USE_DOCKER: no
+        DJANGO_SETTINGS_MODULE: config.settings.local
+        DJANGO_PARENT_HOST: bods.local
+        DJANGO_HOST_PORT: 8000
+        DJANGO_HOST_SCHEME: http
+        EMAIL_HOST: localhost
+        REDIS_URL: redis://redis:6379/0
+        CELERY_FLOWER_USER: admin
+        CELERY_FLOWER_PASSWORD: admin
+        CELERY_BROKER_VISIBILITY_TIMEOUT: 18000
+        DJANGO_ACCOUNT_ALLOW_REGISTRATION: True
+        GOV_NOTIFY_API_KEY: __change_me__
+        CAVL_URL: __change_me__
+        CAVL_VALIDATION_URL: __change_me__
+        CAVL_CONSUMER_URL: __change_me__
+        DATABASE_URL: postgis://transit_odp:transit_odp@postgres:5432/transit_odp
+        CELERY_BROKER_URL: redis://localhost:6379
+        PTI_START_DATE: 2021-04-01
+        PTI_PDF_URL: https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf
+        PTI_ENFORCED_DATE: 2021-08-02
+        DQS_URL: __change_me__
+
+
+    services:
+      postgres:
+        image: mdillon/postgis:10
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: transit_odp
+          POSTGRES_USER: transit_odp
+          POSTGRES_PASSWORD: transit_odp
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis:3.2
+        ports:
+          - 6379:6379
+
+    steps:
+
+      - name: Checkout
+        # working-directory: /app
+        uses: actions/checkout@v4
+
+      - name: Unit Test
+        id: unit_test
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+          pytest
+ 
