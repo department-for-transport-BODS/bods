@@ -178,7 +178,7 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
 
     if routes.empty:
         return pd.DataFrame()
-    
+
     return routes
 
 
