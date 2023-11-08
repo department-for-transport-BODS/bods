@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Dict, Optional
 
 from transit_odp.common.csv import CSVBuilder, CSVColumn
@@ -12,10 +12,15 @@ from transit_odp.publish.requires_attention import (
 )
 
 STALENESS_STATUS = [
-    "Stale - 42 day look ahead",
-    "Stale - 12 months old",
-    "Stale - OTC Variation",
+    "42 day look ahead is incomplete",
+    "Service hasn't been updated within a year",
+    "OTC variation not published",
 ]
+
+
+def get_42_day_look_ahead_date() -> str:
+    # Calculate today's date and the date 42 days from now
+    return (datetime.now() + timedelta(days=42)).strftime("%Y-%m-%d")
 
 
 def get_seasonal_service_status(otc_service: dict) -> str:
@@ -64,6 +69,14 @@ def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]
 class ServiceCodesCSV(CSVBuilder):
     columns = [
         CSVColumn(
+            header="XML:Service Code",
+            accessor=lambda otc_service: otc_service.get("service_code"),
+        ),
+        CSVColumn(
+            header="XML:Line Name",
+            accessor=lambda otc_service: otc_service.get("line_name"),
+        ),
+        CSVColumn(
             header="Requires Attention",
             accessor=lambda otc_service: otc_service.get("require_attention"),
         ),
@@ -92,63 +105,31 @@ class ServiceCodesCSV(CSVBuilder):
             else "Not Seasonal",
         ),
         CSVColumn(
-            header="Staleness Status",
+            header="Timeliness Status",
             accessor=lambda otc_service: otc_service.get("staleness_status"),
-        ),
-        CSVColumn(
-            header="Data set Licence Number",
-            accessor=lambda otc_service: otc_service.get("licence_number"),
-        ),
-        CSVColumn(
-            header="Data set Service Code",
-            accessor=lambda otc_service: otc_service.get("service_code"),
-        ),
-        CSVColumn(
-            header="Data set Line Name",
-            accessor=lambda otc_service: otc_service.get("line_name"),
-        ),
-        CSVColumn(
-            header="OTC Licence Number",
-            accessor=lambda otc_service: otc_service.get("otc_licence_number"),
-        ),
-        CSVColumn(
-            header="OTC Registration Number",
-            accessor=lambda otc_service: otc_service.get("otc_registration_number"),
-        ),
-        CSVColumn(
-            header="OTC Service Number",
-            accessor=lambda otc_service: otc_service.get("otc_service_number"),
-        ),
-        CSVColumn(
-            header="Data set Revision Number",
-            accessor=lambda otc_service: otc_service.get("revision_number"),
-        ),
-        CSVColumn(
-            header="Last Modified Date",
-            accessor=lambda otc_service: otc_service.get("last_modified_date"),
-        ),
-        CSVColumn(
-            header="Effective Last Modified Date",
-            accessor=lambda otc_service: otc_service.get("last_modified_date"),
-        ),
-        CSVColumn(
-            header="Operating Period Start Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
-        ),
-        CSVColumn(
-            header="Operating Period End Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
-        ),
-        CSVColumn(
-            header="XML Filename",
-            accessor=lambda otc_service: otc_service.get("xml_filename"),
         ),
         CSVColumn(
             header="Dataset ID",
             accessor=lambda otc_service: otc_service.get("dataset_id"),
         ),
         CSVColumn(
-            header="Effective Seasonal Start Date",
+            header="Date OTC variation needs to be published",
+            accessor=lambda otc_service: otc_service.get(
+                "effective_stale_date_otc_effective_date"
+            ),
+        ),
+        CSVColumn(
+            header="Date for complete 42 day look ahead",
+            accessor=lambda otc_service: get_42_day_look_ahead_date(),
+        ),
+        CSVColumn(
+            header="Date when data is over 1 year old",
+            accessor=lambda otc_service: otc_service.get(
+                "effective_stale_date_last_modified_date"
+            ),
+        ),
+        CSVColumn(
+            header="Date seasonal service should be published",
             accessor=lambda otc_service: otc_service.get(
                 "effective_seasonal_start_date"
             ),
@@ -162,29 +143,44 @@ class ServiceCodesCSV(CSVBuilder):
             accessor=lambda otc_service: otc_service.get("seasonal_end"),
         ),
         CSVColumn(
-            header="Effective stale date due to end date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_end_date"
-            ),
+            header="XML:Filename",
+            accessor=lambda otc_service: otc_service.get("xml_filename"),
         ),
         CSVColumn(
-            header="Effective stale date due to Effective last modified date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_last_modified_date"
-            ),
+            header="XML:Last Modified Date",
+            accessor=lambda otc_service: otc_service.get("last_modified_date"),
         ),
         CSVColumn(
-            header="Last modified date < Effective stale "
-            "date due to OTC effective date",
-            accessor=lambda otc_service: otc_service.get(
-                "last_modified_lt_effective_stale_date_otc"
-            ),
+            header="XML:National Operator Code",
+            accessor=lambda otc_service: otc_service.get("national_operator_code"),
         ),
         CSVColumn(
-            header="Effective stale date due to OTC effective date",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_otc_effective_date"
-            ),
+            header="XML:Licence Number",
+            accessor=lambda otc_service: otc_service.get("licence_number"),
+        ),
+        CSVColumn(
+            header="XML:Revision Number",
+            accessor=lambda otc_service: otc_service.get("revision_number"),
+        ),
+        CSVColumn(
+            header="XML:Operating Period Start Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
+        ),
+        CSVColumn(
+            header="XML:Operating Period End Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
+        ),
+        CSVColumn(
+            header="OTC:Licence Number",
+            accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+        ),
+        CSVColumn(
+            header="OTC:Registration Number",
+            accessor=lambda otc_service: otc_service.get("otc_registration_number"),
+        ),
+        CSVColumn(
+            header="OTC:Service Number",
+            accessor=lambda otc_service: otc_service.get("otc_service_number"),
         ),
     ]
 
@@ -212,6 +208,8 @@ class ServiceCodesCSV(CSVBuilder):
                 "service_code": file_attribute and file_attribute.service_code,
                 "line_name": file_attribute
                 and self.modify_dataset_line_name(file_attribute.line_names),
+                "national_operator_code": file_attribute
+                and file_attribute.national_operator_code,
                 "revision_number": file_attribute and file_attribute.revision_number,
                 "last_modified_date": file_attribute
                 and (file_attribute.modification_datetime.date()),
@@ -228,16 +226,8 @@ class ServiceCodesCSV(CSVBuilder):
                 "staleness_status": staleness_status,
                 "effective_seasonal_start_date": seasonal_service
                 and seasonal_service.start - timedelta(days=42),
-                "effective_stale_date_end_date": file_attribute
-                and file_attribute.effective_stale_date_end_date,
                 "effective_stale_date_last_modified_date": file_attribute
                 and file_attribute.effective_stale_date_last_modified_date,
-                "last_modified_lt_effective_stale_date_otc": service
-                and file_attribute
-                and (
-                    file_attribute.modification_datetime.date()
-                    < service.effective_stale_date_otc_effective_date
-                ),
                 "effective_stale_date_otc_effective_date": service
                 and (service.effective_stale_date_otc_effective_date),
             }
@@ -277,7 +267,7 @@ class ServiceCodesCSV(CSVBuilder):
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
 
-            staleness_status = "Not Stale"
+            staleness_status = "Up to date"
             if file_attribute is None:
                 require_attention = self._get_require_attention(
                     exemption, seasonal_service
