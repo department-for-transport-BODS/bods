@@ -155,6 +155,7 @@ def create_route_links(timing_links, stop_points):
 
 
 def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
+
     jp_sections["route_section_hash"] = timing_links.groupby(
         ["file_id", "jp_section_id"]
     )["route_link_ref"].apply(create_hash)
@@ -174,6 +175,9 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
         .drop_duplicates(["file_id", "route_hash"])
         .set_index(["file_id", "route_hash"])
     )
+
+    if routes.empty:
+        return pd.DataFrame()
 
     return routes
 

@@ -167,28 +167,33 @@ class TransXChangeExtractor:
         services = self.doc.get_services()
         journey_patterns = journey_patterns_to_dataframe(services)
 
-        # Create a file_id column and include as part of the index
-        journey_patterns["file_id"] = self.file_id
-        journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
+        jp_to_jps = pd.DataFrame()
+        if not journey_patterns.empty:
+            # Create a file_id column and include as part of the index
+            journey_patterns["file_id"] = self.file_id
+            journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
 
-        # Create association table between JourneyPattern and JourneyPatternSection
-        jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
-        journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
+            # Create association table between JourneyPattern and JourneyPatternSection
+            jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
+            journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
         return journey_patterns, jp_to_jps
 
     def extract_journey_pattern_sections(self):
-        sections = self.doc.get_journey_pattern_sections()
+        sections = self.doc.get_journey_pattern_sections(allow_none=True)
         timing_links = journey_pattern_sections_to_dataframe(sections)
-        timing_links["file_id"] = self.file_id
-        timing_links.set_index(["file_id", "jp_timing_link_id"], inplace=True)
 
-        # Aggregate jp_sections
-        jp_sections = (
-            timing_links.reset_index()[["file_id", "jp_section_id"]]
-            .drop_duplicates("jp_section_id")
-            .set_index(["file_id", "jp_section_id"])
-        )
+        jp_sections = pd.DataFrame()
+        if not timing_links.empty:
+            timing_links["file_id"] = self.file_id
+            timing_links.set_index(["file_id", "jp_timing_link_id"], inplace=True)
+
+            # Aggregate jp_sections
+            jp_sections = (
+                timing_links.reset_index()[["file_id", "jp_section_id"]]
+                .drop_duplicates("jp_section_id")
+                .set_index(["file_id", "jp_section_id"])
+            )
 
         return jp_sections, timing_links
 
