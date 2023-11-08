@@ -140,23 +140,19 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             AND
             Operating period end date < today + 42 days
         Staleness Status - Stale - 12 months old:
-            If effective_stale_date_last_modified_date <
-                effective_stale_date_end_date (if present)
+            If Staleness status is not OTC Variation
             AND
-            Today >= effective_stale_date_last_modified_date
+            Staleness status is not 42 day look ahead
             AND
-            last_modified >= OTC Service effective_date
+            last_modified + 365 days <= today
     """
     today = now().date()
     last_modified = file_attribute.modification_datetime.date()
-    effective_stale_date_last_modified_date = (
-        file_attribute.effective_stale_date_last_modified_date
-    )
-    effective_stale_date_end_date = file_attribute.effective_stale_date_end_date
     effective_date = service.effective_date
     effective_stale_date_otc_effective_date = (
         service.effective_stale_date_otc_effective_date
     )
+    # Service Effective date - 70 days
     association_date_otc_effective_date = service.association_date_otc_effective_date
     operating_period_start_date = file_attribute.operating_period_start_date
     operating_period_end_date = file_attribute.operating_period_end_date
@@ -178,16 +174,11 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         else False
     )
     staleness_12_months_old = (
-        (
-            effective_stale_date_last_modified_date < effective_stale_date_end_date
-            and effective_stale_date_last_modified_date <= today
-            and effective_date <= last_modified
-        )
-        if effective_stale_date_end_date
-        else (
-            effective_stale_date_last_modified_date <= today
-            and effective_date <= last_modified
-        )
+        True
+        if not staleness_42_day_look_ahead
+        and not staleness_otc
+        and (last_modified + timedelta(days=365) <= today)
+        else False
     )
 
     return (
