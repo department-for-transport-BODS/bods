@@ -60,14 +60,11 @@ def test_upload_change_data_archive(tmp_path):
     # Test
     archive = change_data_archive.upload_change_data_archive(zipped, timezone.now())
 
-    # Use the same source of date/time for your assertions
-    published_date = archive.published_at.date()
-
     # Assert
     qs = ChangeDataArchive.objects.all()
     assert len(qs) == 1
 
-    assert archive.published_at.date() == published_date
+    assert archive.published_at is not None
     with archive.data.open("r") as fin:
         assert fin.read() == "Some data"
 
