@@ -505,7 +505,9 @@ def test_stale_12_months_old(effective, modified, period_end, period_start, is_s
     assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
     assert (
         df["Date when data is over 1 year old"][0]
-        == txc.modification_datetime.replace(year=txc.modification_datetime.year+1).date()
+        == txc.modification_datetime.replace(
+            year=txc.modification_datetime.year + 1
+        ).date()
     )
 
 
