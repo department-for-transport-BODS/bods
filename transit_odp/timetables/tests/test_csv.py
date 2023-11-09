@@ -361,21 +361,23 @@ def test_stale_42_day_look_ahead(effective, modified, period_end, is_stale):
 
 @freeze_time("2023-02-14")
 @pytest.mark.parametrize(
-    "effective, modified, period_end, is_stale",
+    "effective, modified, period_end, period_start, is_stale",
     (
         # All conditions satisfied for staleness
-        ("2021-12-01", "2022-01-01", "2023-06-01", True),
+        ("2021-12-01", "2022-01-01", "2023-06-01", None, True),
         # End date not present
-        ("2021-12-01", "2022-01-01", None, True),
-        # First condition not satisfied
-        ("2021-01-01", "2021-06-01", "2022-05-01", False),
-        # Second condition not satisfied
-        ("2022-05-01", "2022-06-01", "2023-12-01", False),
-        # Third condition not satisfied
-        ("2022-02-01", "2022-01-01", "2023-03-01", False),
+        ("2021-12-01", "2022-01-01", None, None, True),
+        # 42 days look ahead is true
+        ("2022-01-01", "2023-06-01", "2023-03-01", None, False),
+        # OTC variation is true
+        ("2023-03-01", "2023-12-01", "2025-01-01", "2023-01-01", False),
+        # today is equal to last modified date + 365 days
+        ("2022-01-01", "2022-02-14", "2023-06-01", None, True),
+        # 1 days short to be marked as 12 months stale
+        ("2022-01-01", "2022-02-15", "2023-06-01", None, False),
     ),
 )
-def test_stale_12_months_old(effective, modified, period_end, is_stale):
+def test_stale_12_months_old(effective, modified, period_end, period_start, is_stale):
     """
     Staleness Status - Stale - 12 months old
     If “Effective stale date due to effective last modified” date is sooner
@@ -389,7 +391,7 @@ def test_stale_12_months_old(effective, modified, period_end, is_stale):
         licence_number=otc_service.licence.number,
         service_code=otc_service.registration_number.replace("/", ":"),
         modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
-        operating_period_start_date=None
+        operating_period_start_date=period_start
         if period_end is None
         else date.fromisoformat(period_end) - timedelta(days=100),
         operating_period_end_date=None

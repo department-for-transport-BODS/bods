@@ -64,8 +64,8 @@ def provisional_stops_to_dataframe(stops, system=None):
         location = stop.get_element(["Place", "Location"])
 
         if system is None or system.lower() == GRID_LOCATION.lower():
-            easting = location.get_element(["Easting"]).text
-            northing = location.get_element(["Northing"]).text
+            easting = location.get_element(["Translation", "Easting"]).text
+            northing = location.get_element(["Translation", "Northing"]).text
             geometry = (
                 grid_gemotry_from_str(easting, northing)
                 if easting and northing
@@ -73,8 +73,8 @@ def provisional_stops_to_dataframe(stops, system=None):
             )
 
         elif system.lower() == WSG84_LOCATION.lower():
-            latitude = location.get_element(["Latitude"]).text
-            longitude = location.get_element(["Longitude"]).text
+            latitude = location.get_element(["Translation", "Latitude"]).text
+            longitude = location.get_element(["Translation", "Longitude"]).text
             geometry = (
                 wsg84_from_str(longitude, latitude) if latitude and longitude else None
             )
@@ -92,27 +92,27 @@ def journey_patterns_to_dataframe(services):
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
         standard_service = service.get_element_or_none(["StandardService"])
-        if standard_service is None:
-            continue
 
-        for pattern in standard_service.get_elements(["JourneyPattern"]):
-            section_refs = pattern.get_elements(["JourneyPatternSectionRefs"])
-            direction = pattern.get_element_or_none(["Direction"])
-            all_items.append(
-                {
-                    "service_code": service_code,
-                    "journey_pattern_id": pattern["id"],
-                    "direction": direction.text if direction is not None else "",
-                    "jp_section_refs": [ref.text for ref in section_refs],
-                }
-            )
+        if standard_service:
+            for pattern in standard_service.get_elements(["JourneyPattern"]):
+                section_refs = pattern.get_elements(["JourneyPatternSectionRefs"])
+                direction = pattern.get_element_or_none(["Direction"])
+                all_items.append(
+                    {
+                        "service_code": service_code,
+                        "journey_pattern_id": pattern["id"],
+                        "direction": direction.text if direction is not None else "",
+                        "jp_section_refs": [ref.text for ref in section_refs],
+                    }
+                )
 
     journey_patterns = pd.DataFrame(all_items)
     # Note - 'journey_pattern_id' is not necessarily unique across all
     # services so we make it unique by service_code
-    journey_patterns["journey_pattern_id"] = journey_patterns["service_code"].str.cat(
-        journey_patterns["journey_pattern_id"], sep="-"
-    )
+    if not journey_patterns.empty:
+        journey_patterns["journey_pattern_id"] = journey_patterns[
+            "service_code"
+        ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
     return journey_patterns
 
 
@@ -142,29 +142,30 @@ def journey_pattern_section_from_journey_pattern(df: pd.DataFrame):
 
 def journey_pattern_sections_to_dataframe(sections):
     all_links = []
-    for section in sections:
-        id_ = section["id"]
-        links = section.get_elements(["JourneyPatternTimingLink"])
-        for order, link in enumerate(links):
-            from_stop_ref = link.get_element(["From", "StopPointRef"]).text
-            to_stop_ref = link.get_element(["To", "StopPointRef"]).text
-            timing_link_id = link["id"]
+    if sections is not None:
+        for section in sections:
+            id_ = section["id"]
+            links = section.get_elements(["JourneyPatternTimingLink"])
+            for order, link in enumerate(links):
+                from_stop_ref = link.get_element(["From", "StopPointRef"]).text
+                to_stop_ref = link.get_element(["To", "StopPointRef"]).text
+                timing_link_id = link["id"]
 
-            route_link_ref = link.get_element_or_none(["RouteLinkRef"])
-            if route_link_ref:
-                route_link_ref = route_link_ref.text
-            else:
-                route_link_ref = hash((from_stop_ref, to_stop_ref))
+                route_link_ref = link.get_element_or_none(["RouteLinkRef"])
+                if route_link_ref:
+                    route_link_ref = route_link_ref.text
+                else:
+                    route_link_ref = hash((from_stop_ref, to_stop_ref))
 
-            all_links.append(
-                {
-                    "jp_section_id": id_,
-                    "jp_timing_link_id": timing_link_id,
-                    "route_link_ref": route_link_ref,
-                    "order": order,
-                    "from_stop_ref": from_stop_ref,
-                    "to_stop_ref": to_stop_ref,
-                }
-            )
+                all_links.append(
+                    {
+                        "jp_section_id": id_,
+                        "jp_timing_link_id": timing_link_id,
+                        "route_link_ref": route_link_ref,
+                        "order": order,
+                        "from_stop_ref": from_stop_ref,
+                        "to_stop_ref": to_stop_ref,
+                    }
+                )
     timing_links = pd.DataFrame(all_links)
     return timing_links
