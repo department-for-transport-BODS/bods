@@ -65,7 +65,7 @@ class TestCAVLService:
         expected_message: list[str],
         **kwargs
     ) -> None:
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/feed"
         kwargs["m"].post(url, status_code=status)
 
@@ -119,7 +119,7 @@ class TestCAVLService:
         expected_message: list[str],
         **kwargs
     ) -> None:
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/feed/1"
         kwargs["m"].delete(url, status_code=status)
 
@@ -167,7 +167,7 @@ class TestCAVLService:
         expected_message: list[str],
         **kwargs
     ) -> None:
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/feed/1"
         kwargs["m"].post(url, status_code=status)
 
@@ -219,7 +219,7 @@ class TestCAVLService:
         expected_message: list[str],
         **kwargs
     ) -> None:
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/feed/1"
         response_mock = dict(id=1, publisher_id=1, url="dummy", username="dummy")
         kwargs["m"].get(url, json=response_mock, status_code=status)
@@ -266,7 +266,7 @@ class TestCAVLService:
         expected_message: list[str],
         **kwargs
     ) -> None:
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/feed"
         response_mock = [
             dict(id=1, publisher_id=1, url="dummy", username="dummy"),
@@ -335,7 +335,7 @@ class TestCAVLService:
         expected_message: list[str],
         **kwargs
     ) -> None:
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/validate"
         response_mock = dict(
             url="dummy", username="dummy", created="2022-12-12 00:00:00"
