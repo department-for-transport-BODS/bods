@@ -42,7 +42,7 @@ SAMPLE_FILES = [
             ],
             "fares_data_catalogue": [
                 {
-                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample1.xml",
+                    "xml_file_name": str(FIXTURES.joinpath("sample1.xml")),
                     "valid_from": "2020-01-01",
                     "valid_to": "2022-12-31",
                     "national_operator_code": ["HCTY"],
@@ -117,7 +117,7 @@ SAMPLE_FILES = [
             ],
             "fares_data_catalogue": [
                 {
-                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample2.xml",
+                    "xml_file_name": str(FIXTURES.joinpath("sample2.xml")),
                     "valid_from": "2020-01-01",
                     "valid_to": "2022-12-31",
                     "national_operator_code": ["BLAC"],
