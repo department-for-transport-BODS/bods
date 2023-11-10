@@ -405,6 +405,12 @@ def test_stale_12_months_old(effective, modified, period_end, period_start, is_s
     df = _get_timetable_catalogue_dataframe()
     assert (df["Staleness Status"][0] == "Stale - 12 months old") == is_stale
     assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
+    assert (
+        df["Date when data is over 1 year old"][0]
+        == txc.modification_datetime.replace(
+            year=txc.modification_datetime.year + 1
+        ).date()
+    )
 
 
 @freeze_time("2023-02-14")
