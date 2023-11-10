@@ -11,11 +11,13 @@ class LoggerContext(BaseModel):
 
 class PipelineAdapter(LoggerAdapter):
     def process(self, msg, kwargs):
-        context: LoggerContext = kwargs.pop("context", self.extra["context"])
-        prefix = "[{component_name}] {class_name} {object_id} => ".format(
-            **context.dict()
-        )
-        msg = prefix + msg
+        if "context" in self.extra:
+            context: LoggerContext = kwargs.pop("context", self.extra["context"])
+
+            prefix = "[{component_name}] {class_name} {object_id} => ".format(
+                **context.dict()
+            )
+            msg = prefix + msg
         return msg, kwargs
 
 
