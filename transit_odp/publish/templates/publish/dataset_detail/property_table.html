@@ -132,18 +132,6 @@
         </tr>
 
         <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Location' %}{% endfilter %}</th>
-            <td class="govuk-table__cell">{{ admin_areas }}</td>
-        </tr>
-        <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Bus stops' %}{% endfilter %}</th>
-            <td class="govuk-table__cell">{{ object.num_of_bus_stops }}</td>
-        </tr>
-        <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Bus routes' %}{% endfilter %}</th>
-            <td class="govuk-table__cell">{{ object.num_of_lines }}</td>
-        </tr>
-        <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Last updated' %}{% endfilter %}</th>
             <td class="govuk-table__cell">
                 <div class="flex-between">
@@ -162,26 +150,6 @@
                         {% endblock %}
                     </span>
                 </div>
-            </td>
-        </tr>
-        <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Earliest start date' %}{% endfilter %}</th>
-            <td class="govuk-table__cell">
-                {% if object.first_service_start is not None %}
-                    {{ object.first_service_start|localtime|date:"j M Y H:i" }}
-                {% else %}
-                    {% filter force_escape %}{% trans 'Start date not specified' %}{% endfilter %}
-                {% endif %}
-            </td>
-        </tr>
-        <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Earliest end date' %}{% endfilter %}</th>
-            <td class="govuk-table__cell">
-                {% if object.first_expiring_service is not None %}
-                    {{ object.first_expiring_service|localtime|date:"j M Y H:i" }}
-                {% else %}
-                    {% filter force_escape %}{% trans 'Expiry not specified' %}{% endfilter %}
-                {% endif %}
             </td>
         </tr>
     </tbody>
