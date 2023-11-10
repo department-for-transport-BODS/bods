@@ -8,6 +8,9 @@ from transit_odp.transmodel.managers import (
     ServicePatternStopManager,
 )
 
+from django.utils.translation import gettext_lazy as _
+from django.db.models import Q
+from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 class Service(models.Model):
     revision = models.ForeignKey(
@@ -169,3 +172,31 @@ class VehicleJourney(models.Model):
 
     def __str__(self):
         return f"{self.id}, timing_pattern: {self.id}, {self.start_time:%H:%M:%S}"
+
+class BookingArrangements(models.Model):
+    service_id = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='booking_arrangements')
+
+    description = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(_("email address"), null=True, blank=True)
+    phone_number = models.CharField(max_length=16, null=True, blank=True)
+    web_address = models.URLField(null=True, blank=True)
+
+    created = CreationDateTimeField(_("created"))
+    last_updated = ModificationDateTimeField(_("last_updated"))
+
+    class Meta:
+        ordering = ("service_id","last_updated")
+        # Add a CheckConstraint to ensure at least one of the columns has a value
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    Q(email__isnull=False, email__exact='') |
+                    Q(phone_number__isnull=False, phone_number__exact='') |
+                    Q(web_address__isnull=False, web_address__exact='')
+                ),
+                name='at_least_one_column_not_null_or_empty'
+            )
+        ]
+    
+    def __str__(self):
+        return f"{self.id}, service_id: {self.service_id}"
