@@ -228,19 +228,62 @@ def validate_bank_holidays(context, bank_holidays):
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
 
 
-def has_unregistered_service_codes(context, services):
-    service_code_list = []
-    service = services[0]
-    ns = {"x": service.nsmap.get(None)}
+def check_service_group_validations(context, services):
+    services = services[0]
+    ns = {"x": services.nsmap.get(None)}
+    service_list = services.xpath("x:Service", namespaces=ns)
+    registered_code_regex = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
+    unregistered_code_regex = re.compile("UZ[a-zA-Z0-9]{7}:[a-zA-Z0-9]+$")
 
-    service_list = service.xpath("x:Service", namespaces=ns)
-    for service in service_list:
-        service_code_list.append(service.xpath("string(x:ServiceCode)", namespaces=ns))
-    r = re.compile("[a-zA-Z]{2}\\d{7}:[a-zA-Z0-9]+$")
-    registered_service_code = list(filter(r.match, service_code_list))
-    if len(registered_service_code) > 1:
-        return False
-    return True
+    registered_standard_service = len(
+        list(
+            filter(
+                lambda s: registered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                )
+                and s.xpath("x:StandardService", namespaces=ns),
+                service_list,
+            )
+        )
+    )
+    unregistered_services = len(
+        list(
+            filter(
+                lambda s: unregistered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                ),
+                service_list,
+            )
+        )
+    )
+    registered_flexible_service = len(
+        list(
+            filter(
+                lambda s: registered_code_regex.match(
+                    s.xpath("string(x:ServiceCode)", namespaces=ns)
+                )
+                and s.xpath("x:ServiceClassification/x:Flexible", namespaces=ns),
+                service_list,
+            )
+        )
+    )
+
+    total_services = (
+        registered_standard_service
+        + registered_flexible_service
+        + unregistered_services
+    )
+
+    # More than one services are allowed only when there is a registered flexible service.
+    # If there is a registered standard service then no other service types should be present
+    if total_services == 1 or (
+        total_services > 1
+        and registered_flexible_service == 1
+        and registered_standard_service == 0
+    ):
+        return True
+
+    return False
 
 
 def has_flexible_or_standard_service(context, services):
@@ -270,22 +313,15 @@ def has_flexible_or_standard_service(context, services):
 
 def has_flexible_service_classification(context, services):
     """
-    Check when file has detected a flexible service (includes a
-    FlexibleJourneyPattern or includes a BookingArrangements element),
-    it has ServiceClassification and Flexible elements.
+    Check when file has detected a flexible service (includes
+    FlexibleService), it has ServiceClassification and Flexible elements.
     If the file also has a standard service, then return True.
     """
     for service in services:
         ns = {"x": service.nsmap.get(None)}
-        flexible_journey_pattern_list = service.xpath(
-            "x:FlexibleService/x:FlexibleJourneyPattern", namespaces=ns
-        )
-        booking_arrangements_list = service.xpath(
-            "x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements",
-            namespaces=ns,
-        )
+        flexible_service_list = service.xpath("x:FlexibleService", namespaces=ns)
 
-        if not flexible_journey_pattern_list and not booking_arrangements_list:
+        if not flexible_service_list:
             return True
 
         service_classification_list = service.xpath(
@@ -325,6 +361,7 @@ def check_flexible_service_timing_status(context, flexiblejourneypatterns):
                 )
 
     result = all(
-        timing_status_value == "OTH" for timing_status_value in timing_status_value_list
+        timing_status_value == "otherPoint"
+        for timing_status_value in timing_status_value_list
     )
     return result

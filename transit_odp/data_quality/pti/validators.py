@@ -22,7 +22,7 @@ from transit_odp.data_quality.pti.functions import (
     has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
-    has_unregistered_service_codes,
+    check_service_group_validations,
     is_member_of,
     regex,
     strip,
@@ -489,7 +489,7 @@ class PTIValidator:
         )
         self.register_function("has_prohibited_chars", has_prohibited_chars)
         self.register_function(
-            "has_unregistered_service_codes", has_unregistered_service_codes
+            "check_service_group_validations", check_service_group_validations
         )
         self.register_function("in", is_member_of)
         self.register_function("regex", regex)
@@ -539,17 +539,12 @@ class PTIValidator:
             servie_classification_xpath, namespaces=self.namespaces
         )
 
-        flexible_jp_xpath = (
-            "//x:Services/x:Service/x:FlexibleService/x:FlexibleJourneyPattern"
-        )
-        flexible_jp = document.xpath(flexible_jp_xpath, namespaces=self.namespaces)
-
-        booking_arrangement_xpath = "//x:Services/x:Service/x:FlexibleService/x:FlexibleJourneyPattern/x:BookingArrangements"
-        booking_arrangement = document.xpath(
-            booking_arrangement_xpath, namespaces=self.namespaces
+        flexible_service_xpath = "//x:Services/x:Service/x:FlexibleService"
+        flexible_service = document.xpath(
+            flexible_service_xpath, namespaces=self.namespaces
         )
 
-        if service_classification or flexible_jp or booking_arrangement:
+        if service_classification or flexible_service:
             return FLEXIBLE_SERVICE
         return STANDARD_SERVICE
 

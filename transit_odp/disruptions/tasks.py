@@ -21,7 +21,7 @@ SIRI_ZIP = "sirisx_{}.zip"
 
 @shared_task(bind=True)
 def task_create_sirisx_zipfile(self):
-    URL = f"{settings.DISRUPTIONS_API_URL}"
+    URL = f"{settings.DISRUPTIONS_API_BASE_URL}/siri-sx"
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:

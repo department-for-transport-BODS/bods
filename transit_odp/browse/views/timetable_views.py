@@ -1,5 +1,4 @@
 import logging
-import time
 from collections import namedtuple
 from datetime import datetime, timedelta
 
