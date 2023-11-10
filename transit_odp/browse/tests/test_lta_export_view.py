@@ -1,9 +1,11 @@
 from typing import Dict
 
+import faker
 import pytest
 from django.db.models.expressions import datetime
 from freezegun import freeze_time
 
+from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.browse.views.local_authority import LTACSV
 from transit_odp.organisation.factories import DatasetFactory
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
@@ -21,7 +23,10 @@ from transit_odp.otc.factories import (
 )
 
 pytestmark = pytest.mark.django_db
-CSV_NUMBER_COLUMNS = 27
+FAKER = faker.Faker()
+csv_columns = [header for header, _ in header_accessor_data]
+CSV_NUMBER_COLUMNS = len(csv_columns)
+national_operator_code = "".join(FAKER.random_letters(length=4)).upper()
 
 
 def get_csv_output(csv_string: str) -> Dict[str, list]:
@@ -275,10 +280,12 @@ def test_lta_csv_output():
         service_code=service_codes[3],
         revision_number="1",
         filename="test3.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
         operating_period_end_date=datetime.datetime(2023, 2, 24),
         modification_datetime=datetime.datetime(2022, 6, 24),
+        national_operator_code=national_operator_code,
     )
-    # staleness_otc = True => "Stale - OTC Variation"
+    # staleness_otc = True => "OTC variation not published"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -302,10 +309,12 @@ def test_lta_csv_output():
         licence_number=otc_lic.number,
         service_code=service_codes[4],
         filename="test4.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
         operating_period_end_date=datetime.datetime(2023, 3, 24),
         modification_datetime=datetime.datetime(2023, 6, 24),
+        national_operator_code=national_operator_code,
     )
-    # staleness_42_day_look_ahead = True => "Stale - 42 day look ahead"
+    # staleness_42_day_look_ahead = True => "42 day look ahead is incomplete"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -329,8 +338,10 @@ def test_lta_csv_output():
         licence_number=otc_lic.number,
         service_code=service_codes[5],
         filename="test5.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
+        national_operator_code=national_operator_code,
     )
     services_list_1.append(
         ServiceModelFactory(
@@ -355,10 +366,12 @@ def test_lta_csv_output():
         licence_number=otc_lic.number,
         service_code=service_codes[6],
         filename="test6.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2022, 1, 24),
+        national_operator_code=national_operator_code,
     )
-    # staleness_12_months_old = True => "Stale - 12 months old"
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -383,10 +396,12 @@ def test_lta_csv_output():
         licence_number=otc_lic.number,
         service_code=service_codes[7],
         filename="test7.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2022, 1, 24),
+        national_operator_code=national_operator_code,
     )
-    # staleness_12_months_old = True => "Stale - 12 months old"
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -399,6 +414,8 @@ def test_lta_csv_output():
     SeasonalServiceFactory(
         licence=bods_licence,
         registration_code=service_codes[7][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
     )
     # exemption exists
     ServiceCodeExemptionFactory(
@@ -413,11 +430,13 @@ def test_lta_csv_output():
         licence_number=otc_lic.number,
         service_code=service_codes[8],
         filename="test8.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2023, 2, 24),
+        national_operator_code=national_operator_code,
     )
     # staleness_otc = False, stalenes_42_day_look_ahead = False,
-    # staleness_12_months_old = False => Not Stale
+    # staleness_12_months_old = False => Up to date
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -429,20 +448,23 @@ def test_lta_csv_output():
     SeasonalServiceFactory(
         licence=bods_licence,
         registration_code=service_codes[8][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
     )
 
     # Testing something that IS in BODS but not in OTC
     licence_number = "PD0000055"
 
     bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
-    dataset8 = DatasetFactory(organisation=org1)
+    dataset9 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset8.live_revision,
+        revision=dataset9.live_revision,
         licence_number=bods_licence.number,
         operating_period_end_date=None,
         service_code="Z10",
         filename="test9.xml",
         modification_datetime=datetime.datetime(2023, 2, 24),
+        national_operator_code=national_operator_code,
     )
     SeasonalServiceFactory(
         licence=bods_licence,
@@ -459,231 +481,359 @@ def test_lta_csv_output():
     csv_string = lta_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
 
-    assert csv_output["header"] == [
-        '"Requires Attention"',
-        '"Published Status"',
-        '"OTC Status"',
-        '"Scope Status"',
-        '"Seasonal Status"',
-        '"Staleness Status"',
-        '"Operator Name"',
-        '"Data set Licence Number"',
-        '"Data set Service Code"',
-        '"Data set Line Name"',
-        '"Operating Period Start Date"',
-        '"Operating Period End Date"',
-        '"OTC Licence Number"',
-        '"OTC Registration Number"',
-        '"OTC Service Number"',
-        '"Data set Revision Number"',
-        '"Last Modified Date"',
-        '"Effective Last Modified Date"',
-        '"XML Filename"',
-        '"Dataset ID"',
-        '"Effective Seasonal Start Date"',
-        '"Seasonal Start Date"',
-        '"Seasonal End Date"',
-        '"Effective stale date due to end date"',
-        '"Effective stale date due to Effective last modified date"',
-        '"Last modified date < Effective stale date due to OTC effective date"',
-        '"Effective stale date due to OTC effective date"',
-    ]
-    assert csv_output["row0"][0] == '"No"'  # requires attention
-    assert csv_output["row0"][1] == '"Unpublished"'  # published status
-    assert csv_output["row0"][2] == '"Registered"'  # OTC status
-    assert csv_output["row0"][3] == '"In Scope"'  # scope status
-    assert csv_output["row0"][4] == '"Out of Season"'  # seasonal status
-    assert csv_output["row0"][5] == '"Not Stale"'  # staleness status
-    assert csv_output["row0"][6] == '"test_org_1"'  # Operator Name
-    assert csv_output["row0"][7] == '""'  # Dataset Licence Number
-    assert csv_output["row0"][8] == '""'  # Dataset Service Code
-    assert csv_output["row0"][9] == '""'  # Dataset Line Name
-    assert csv_output["row0"][10] == '""'  # Operating Period Start Date
-    assert csv_output["row0"][11] == '""'  # Operating Period End Date
-    assert csv_output["row0"][12] == '"PD0000099"'  # OTC Licence Number
-    assert csv_output["row0"][13] == '"PD0000099:0"'  # OTC Registration Number
-    assert csv_output["row0"][14] == '"Line0"'  # OTC Service Number
-    assert csv_output["row0"][15] == '""'  # Dataset Revision Number
-    assert csv_output["row0"][16] == '""'  # Last Modified Date
-    assert csv_output["row0"][17] == '""'  # Effective Last Modified Date
-    assert csv_output["row0"][18] == '""'  # XML Filename
-    assert csv_output["row0"][19] == '""'  # dataset id
-    assert csv_output["row0"][20] == '"2024-01-13"'
-    # effective seasonal start: SeasonalService("start") - 42 days
-    assert csv_output["row0"][21] == '"2024-02-24"'  # seasonal start date
-    assert csv_output["row0"][22] == '"2026-02-24"'  # seasonal end date
-    assert csv_output["row0"][23] == '""'
-    # effective stale date due to end date:
-    # TXCFileAttributes("operationg_period_end_date") - 42 days
-    assert csv_output["row0"][24] == '""'
-    # effective stale date due to effective last modified date:
-    # TXCFileAttributes("modification_datetime") + 365 days,
-    assert csv_output["row0"][25] == '""'
-    # last modified date < Effective stale date due to OTC effective date
-    # TXCFileAttributes("effective_stale_date_last_modified_date")
-    # < OTCService("effective_stale_date_otc_effective_date")
-    assert csv_output["row0"][26] == '"2023-05-12"'
-    # effective stale date due to OTC effective date
+    assert [header.strip('"') for header in csv_output["header"]] == csv_columns
+    assert csv_output["row0"][0] == '""'  # XML:Service Code
+    assert csv_output["row0"][1] == '""'  # XML:Line Name
+    assert csv_output["row0"][2] == '"No"'  # Requires Attention
+    assert csv_output["row0"][3] == '"Unpublished"'  # Published Status
+    assert csv_output["row0"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row0"][6] == '"Out of Season"'  # Seasonal Status
+    assert csv_output["row0"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row0"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row0"][9] == '""'  # Dataset ID
+    assert csv_output["row0"][10] == '"2023-05-12"'
+    # Date OTC variation needs to be published
     # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row0"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row0"][12] == '""'
+    # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days,
+    assert (
+        csv_output["row0"][13] == '"2024-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row0"][14] == '"2024-02-24"'  # Seasonal Start Date
+    assert csv_output["row0"][15] == '"2026-02-24"'  # Seasonal End Date
+    assert csv_output["row0"][16] == '""'  # XML:Filename
+    assert csv_output["row0"][17] == '""'  # XML:Last Modified Date
+    assert csv_output["row0"][18] == '""'  # XML:National Operator Code
+    assert csv_output["row0"][19] == '""'  # XML:Licence Number
+    assert csv_output["row0"][20] == '""'  # XML:Revision Number
+    assert csv_output["row0"][21] == '""'  # XML:Operating Period Start Dat
+    assert csv_output["row0"][22] == '""'
+    # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row0"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row0"][24] == '"PD0000099:0"'  # OTC:Registration Number
+    assert csv_output["row0"][25] == '"Line0"'  # OTC Service Number
 
-    assert csv_output["row1"][0] == '"Yes"'
-    assert csv_output["row1"][1] == '"Unpublished"'
-    assert csv_output["row1"][2] == '"Registered"'
-    assert csv_output["row1"][3] == '"In Scope"'
-    assert csv_output["row1"][4] == '"In Season"'
-    assert csv_output["row1"][5] == '"Not Stale"'
-    assert csv_output["row1"][6] == '"test_org_1"'
-    assert csv_output["row1"][7] == '""'
-    assert csv_output["row1"][8] == '""'
-    assert csv_output["row1"][9] == '""'
-    assert csv_output["row1"][12] == '"PD0000099"'
-    assert csv_output["row1"][13] == '"PD0000099:1"'
-    assert csv_output["row1"][14] == '"Line1"'
-    assert csv_output["row1"][15] == '""'
-    assert csv_output["row1"][16] == '""'
-    assert csv_output["row1"][20] == '"2022-01-13"'
-    assert csv_output["row1"][21] == '"2022-02-24"'
-    assert csv_output["row1"][22] == '"2024-02-24"'
-    assert csv_output["row1"][23] == '""'
-    assert csv_output["row1"][24] == '""'
-    assert csv_output["row1"][25] == '""'
-    assert csv_output["row1"][26] == '"2023-05-12"'
+    assert csv_output["row1"][0] == '""'  # XML:Service Code
+    assert csv_output["row1"][1] == '""'  # XML:Line Name
+    assert csv_output["row1"][2] == '"Yes"'  # Requires Attention
+    assert csv_output["row1"][3] == '"Unpublished"'  # Published Status
+    assert csv_output["row1"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row1"][6] == '"In Season"'  # Seasonal Status
+    assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row1"][9] == '""'  # Dataset ID
+    assert (
+        csv_output["row1"][10] == '"2023-05-12"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row1"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row1"][12] == '""'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days,
+    assert (
+        csv_output["row1"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row1"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row1"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row1"][16] == '""'  # XML:Filename
+    assert csv_output["row1"][17] == '""'  # XML:Last Modified Date
+    assert csv_output["row1"][18] == '""'  # XML:National Operator Code
+    assert csv_output["row1"][19] == '""'  # XML:Licence Number
+    assert csv_output["row1"][20] == '""'  # XML:Revision Number
+    assert csv_output["row1"][21] == '""'  # XML:Operating Period Start Date
+    assert csv_output["row1"][22] == '""'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row1"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row1"][24] == '"PD0000099:1"'  # OTC:Registration Number
+    assert csv_output["row1"][25] == '"Line1"'  # OTC Service Number
 
-    assert csv_output["row2"][0] == '"No"'
-    assert csv_output["row2"][1] == '"Unpublished"'
-    assert csv_output["row2"][2] == '"Registered"'
-    assert csv_output["row2"][3] == '"Out of Scope"'
-    assert csv_output["row2"][4] == '"Not Seasonal"'
-    assert csv_output["row2"][5] == '"Not Stale"'
-    assert csv_output["row2"][6] == '"test_org_1"'
-    assert csv_output["row2"][7] == '""'
-    assert csv_output["row2"][8] == '""'
-    assert csv_output["row2"][9] == '""'
-    assert csv_output["row2"][12] == '"PD0000099"'
-    assert csv_output["row2"][13] == '"PD0000099:2"'
-    assert csv_output["row2"][14] == '"Line2"'
-    assert csv_output["row2"][16] == '""'
-    assert csv_output["row2"][26] == '"2023-05-12"'
+    # Row 2
+    assert csv_output["row2"][0] == '""'  # XML:Service Code
+    assert csv_output["row2"][1] == '""'  # XML:Line Name
+    assert csv_output["row2"][2] == '"No"'  # Requires Attention
+    assert csv_output["row2"][3] == '"Unpublished"'  # Published Status
+    assert csv_output["row2"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row2"][5] == '"Out of Scope"'  # Scope Status
+    assert csv_output["row2"][6] == '"Not Seasonal"'  # Seasonal Status
+    assert csv_output["row2"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row2"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row2"][9] == '""'  # Dataset ID
+    assert (
+        csv_output["row2"][10] == '"2023-05-12"'
+    )  # Date OTC variation needs to be published
+    assert (
+        csv_output["row2"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row2"][12] == '""'  # Date when data is over 1 year old
+    assert csv_output["row2"][13] == '""'  # Date seasonal service should be published
+    assert csv_output["row2"][14] == '""'  # Seasonal Start Date
+    assert csv_output["row2"][15] == '""'  # Seasonal End Date
+    assert csv_output["row2"][16] == '""'  # XML:Filename
+    assert csv_output["row2"][17] == '""'  # XML:Last Modified Date
+    assert csv_output["row2"][18] == '""'  # XML:National Operator Code
+    assert csv_output["row2"][19] == '""'  # XML:Licence Number
+    assert csv_output["row2"][20] == '""'  # XML:Revision Number
+    assert csv_output["row2"][21] == '""'  # XML:Operating Period Start Date
+    assert csv_output["row2"][22] == '""'  # XML:Operating Period End Date
+    assert csv_output["row2"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row2"][24] == '"PD0000099:2"'  # OTC:Registration Number
+    assert csv_output["row2"][25] == '"Line2"'  # OTC Service Number
 
-    assert csv_output["row3"][0] == '"Yes"'
-    assert csv_output["row3"][1] == '"Published"'
-    assert csv_output["row3"][2] == '"Registered"'
-    assert csv_output["row3"][3] == '"In Scope"'
-    assert csv_output["row3"][4] == '"In Season"'
-    assert csv_output["row3"][5] == '"Stale - OTC Variation"'
-    assert csv_output["row3"][6] == '"test_org_1"'
-    assert csv_output["row3"][7] == '"PD0000099"'
-    assert csv_output["row3"][8] == '"PD0000099:3"'
-    assert csv_output["row3"][9] == '""'
-    assert csv_output["row3"][11] == '"2023-02-24"'
-    assert csv_output["row3"][12] == '"PD0000099"'
-    assert csv_output["row3"][13] == '"PD0000099:3"'
-    assert csv_output["row3"][14] == '"Line3"'
-    assert csv_output["row3"][15] == '"1"'
-    assert csv_output["row3"][16] == '"2022-06-23"'
-    assert csv_output["row3"][17] == '"2022-06-23"'
-    assert csv_output["row3"][18] == '"test3.xml"'
-    assert csv_output["row3"][19] == f'"{dataset3.id}"'
-    assert csv_output["row3"][20] == '"2022-01-13"'
-    assert csv_output["row3"][21] == '"2022-02-24"'
-    assert csv_output["row3"][22] == '"2024-02-24"'
-    assert csv_output["row3"][23] == '"2023-01-13"'
-    assert csv_output["row3"][24] == '"2023-06-24"'
-    assert csv_output["row3"][25] == '"True"'
-    assert csv_output["row3"][26] == '"2023-02-10"'
+    assert csv_output["row3"][0] == '"PD0000099:3"'  # XML:Service Code
+    assert csv_output["row3"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
+    assert csv_output["row3"][3] == '"Published"'  # Published Status
+    assert csv_output["row3"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
+    assert csv_output["row3"][7] == '"OTC variation not published"'  # Timeliness Status
+    assert csv_output["row3"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row3"][9] == f'"{dataset3.id}"'  # Dataset ID
+    assert (
+        csv_output["row3"][10] == '"2023-02-10"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row3"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row3"][12] == '"2023-06-24"'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days,
+    assert (
+        csv_output["row3"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row3"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row3"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row3"][16] == '"test3.xml"'  # XML:Filename
+    assert csv_output["row3"][17] == '"2022-06-23"'  # XML:Last Modified Date
+    assert (
+        csv_output["row3"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row3"][19] == '"PD0000099"'  # XML:Licence Number
+    assert csv_output["row3"][20] == '"1"'  # XML:Revision Number
+    assert csv_output["row3"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row3"][22] == '"2023-02-24"'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row3"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row3"][24] == f'"{service_codes[3]}"'  # OTC:Registration Number
+    assert csv_output["row3"][25] == f'"{service_numbers[3]}"'  # OTC Service Number
 
-    assert csv_output["row4"][0] == '"Yes"'
-    assert csv_output["row4"][1] == '"Published"'
-    assert csv_output["row4"][2] == '"Registered"'
-    assert csv_output["row4"][3] == '"In Scope"'
-    assert csv_output["row4"][4] == '"In Season"'
-    assert csv_output["row4"][5] == '"Stale - 42 day look ahead"'
-    assert csv_output["row4"][6] == '"test_org_1"'
-    assert csv_output["row4"][7] == '"PD0000099"'
-    assert csv_output["row4"][8] == '"PD0000099:4"'
-    assert csv_output["row4"][9] == '""'
-    assert csv_output["row3"][11] == '"2023-02-24"'
-    assert csv_output["row4"][12] == '"PD0000099"'
-    assert csv_output["row4"][13] == '"PD0000099:4"'
-    assert csv_output["row4"][14] == '"Line4"'
-    assert csv_output["row4"][16] == '"2023-06-23"'
-    assert csv_output["row4"][17] == '"2023-06-23"'
-    assert csv_output["row4"][19] == f'"{dataset4.id}"'
-    assert csv_output["row4"][24] == '"2024-06-23"'
-    assert csv_output["row4"][25] == '"False"'
-    assert csv_output["row4"][26] == '"2022-05-12"'
+    # Row 4
+    assert csv_output["row4"][0] == '"PD0000099:4"'  # XML:Service Code
+    assert csv_output["row4"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row4"][2] == '"Yes"'  # Requires Attention
+    assert csv_output["row4"][3] == '"Published"'  # Published Status
+    assert csv_output["row4"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row4"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row4"][6] == '"In Season"'  # Seasonal Status
+    assert (
+        csv_output["row4"][7] == '"42 day look ahead is incomplete"'
+    )  # Timeliness Status
+    assert csv_output["row4"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row4"][9] == f'"{dataset4.id}"'  # Dataset ID
+    assert (
+        csv_output["row4"][10] == '"2022-05-12"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row4"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row4"][12] == '"2024-06-23"'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days
+    assert (
+        csv_output["row4"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row4"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row4"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row4"][16] == '"test4.xml"'  # XML:Filename
+    assert csv_output["row4"][17] == '"2023-06-23"'  # XML:Last Modified Date
+    assert (
+        csv_output["row4"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row4"][19] == '"PD0000099"'  # XML:Licence Number
+    assert csv_output["row4"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row4"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row4"][22] == '"2023-03-24"'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row4"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row4"][24] == f'"{service_codes[4]}"'  # OTC:Registration Number
+    assert csv_output["row4"][25] == f'"{service_numbers[4]}"'  # OTC Service Number
 
-    assert csv_output["row5"][0] == '"No"'
-    assert csv_output["row5"][1] == '"Published"'
-    assert csv_output["row5"][2] == '"Registered"'
-    assert csv_output["row5"][3] == '"In Scope"'
-    assert csv_output["row5"][5] == '"Not Stale"'
-    assert csv_output["row5"][6] == '"test_org_1"'
-    assert csv_output["row5"][7] == '"PD0000099"'
-    assert csv_output["row5"][8] == '"PD0000099:5"'
-    assert csv_output["row5"][9] == '""'
-    assert csv_output["row5"][11] == '"2023-06-24"'
-    assert csv_output["row5"][12] == '"PD0000099"'
-    assert csv_output["row5"][13] == '"PD0000099:5"'
-    assert csv_output["row5"][14] == '"Line5"'
-    assert csv_output["row5"][19] == f'"{dataset5.id}"'
-    assert csv_output["row5"][24] == '"2023-01-24"'
-    assert csv_output["row5"][25] == '"True"'
-    assert csv_output["row5"][26] == '"2023-12-13"'
+    # Row 5
+    assert csv_output["row5"][0] == '"PD0000099:5"'  # XML:Service Code
+    assert csv_output["row5"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row5"][2] == '"No"'  # Requires Attention
+    assert csv_output["row5"][3] == '"Published"'  # Published Status
+    assert csv_output["row5"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row5"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row5"][6] == '"In Season"'  # Seasonal Status
+    assert csv_output["row5"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row5"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row5"][9] == f'"{dataset5.id}"'  # Dataset ID
+    assert (
+        csv_output["row5"][10] == '"2023-12-13"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row5"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row5"][12] == '"2023-01-24"'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days
+    assert (
+        csv_output["row5"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row5"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row5"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row5"][16] == '"test5.xml"'  # XML:Filename
+    assert csv_output["row5"][17] == '"2022-01-24"'  # XML:Last Modified Date
+    assert (
+        csv_output["row5"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row5"][19] == '"PD0000099"'  # XML:Licence Number
+    assert csv_output["row5"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row5"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row5"][22] == '"2023-06-24"'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row5"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row5"][24] == f'"{service_codes[5]}"'  # OTC:Registration Number
+    assert csv_output["row5"][25] == f'"{service_numbers[5]}"'  # OTC Service Number
 
-    assert csv_output["row6"][0] == '"Yes"'
-    assert csv_output["row6"][1] == '"Published"'
-    assert csv_output["row6"][2] == '"Registered"'
-    assert csv_output["row6"][3] == '"In Scope"'
-    assert csv_output["row6"][5] == '"Stale - 12 months old"'
-    assert csv_output["row6"][6] == '"test_org_1"'
-    assert csv_output["row6"][7] == '"PD0000099"'
-    assert csv_output["row6"][8] == '"PD0000099:6"'
-    assert csv_output["row6"][9] == '""'
-    assert csv_output["row6"][11] == '""'
-    assert csv_output["row6"][12] == '"PD0000099"'
-    assert csv_output["row6"][13] == '"PD0000099:6"'
-    assert csv_output["row6"][14] == '"Line6"'
-    assert csv_output["row6"][19] == f'"{dataset6.id}"'
-    assert csv_output["row6"][21] == '"2022-02-24"'
-    assert csv_output["row6"][22] == '"2024-02-24"'
-    assert csv_output["row6"][24] == '"2023-01-24"'
-    assert csv_output["row6"][25] == '"False"'
-    assert csv_output["row6"][26] == '"2020-12-13"'
+    # Row 6
+    assert csv_output["row6"][0] == '"PD0000099:6"'  # XML:Service Code
+    assert csv_output["row6"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row6"][2] == '"Yes"'  # Requires Attention
+    assert csv_output["row6"][3] == '"Published"'  # Published Status
+    assert csv_output["row6"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row6"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row6"][6] == '"In Season"'  # Seasonal Status
+    assert (
+        csv_output["row6"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
+    assert csv_output["row6"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row6"][9] == f'"{dataset6.id}"'  # Dataset ID
+    assert (
+        csv_output["row6"][10] == '"2020-12-13"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row6"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row6"][12] == '"2023-01-24"'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days
+    assert (
+        csv_output["row6"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row6"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row6"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row6"][16] == '"test6.xml"'  # XML:Filename
+    assert csv_output["row6"][17] == '"2022-01-24"'  # XML:Last Modified Date
+    assert (
+        csv_output["row6"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row6"][19] == '"PD0000099"'  # XML:Licence Number
+    assert csv_output["row6"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row6"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row6"][22] == '""'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row6"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row6"][24] == f'"{service_codes[6]}"'  # OTC:Registration Number
+    assert csv_output["row6"][25] == f'"{service_numbers[6]}"'  # OTC Service Number
 
-    assert csv_output["row7"][0] == '"No"'
-    assert csv_output["row7"][1] == '"Published"'
-    assert csv_output["row7"][2] == '"Registered"'
-    assert csv_output["row7"][3] == '"Out of Scope"'
-    assert csv_output["row7"][5] == '"Stale - 12 months old"'
-    assert csv_output["row7"][6] == '"test_org_1"'
-    assert csv_output["row7"][7] == '"PD0000099"'
-    assert csv_output["row7"][8] == '"PD0000099:7"'
-    assert csv_output["row7"][9] == '""'
-    assert csv_output["row7"][11] == '""'
-    assert csv_output["row7"][12] == '"PD0000099"'
-    assert csv_output["row7"][13] == '"PD0000099:7"'
-    assert csv_output["row7"][14] == '"Line7"'
-    assert csv_output["row7"][24] == '"2023-01-24"'
-    assert csv_output["row7"][25] == '"False"'
-    assert csv_output["row7"][26] == '"2020-12-13"'
+    # Row 7
+    assert csv_output["row7"][0] == '"PD0000099:7"'  # XML:Service Code
+    assert csv_output["row7"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row7"][2] == '"No"'  # Requires Attention
+    assert csv_output["row7"][3] == '"Published"'  # Published Status
+    assert csv_output["row7"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row7"][5] == '"Out of Scope"'  # Scope Status
+    assert csv_output["row7"][6] == '"In Season"'  # Seasonal Status
+    assert (
+        csv_output["row7"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
+    assert csv_output["row7"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row7"][9] == f'"{dataset7.id}"'  # Dataset ID
+    assert (
+        csv_output["row7"][10] == '"2020-12-13"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row7"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row7"][12] == '"2023-01-24"'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days
+    assert (
+        csv_output["row7"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row7"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row7"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row7"][16] == '"test7.xml"'  # XML:Filename
+    assert csv_output["row7"][17] == '"2022-01-24"'  # XML:Last Modified Date
+    assert (
+        csv_output["row7"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row7"][19] == '"PD0000099"'  # XML:Licence Number
+    assert csv_output["row7"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row7"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row7"][22] == '""'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row7"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row7"][24] == f'"{service_codes[7]}"'  # OTC:Registration Number
+    assert csv_output["row7"][25] == f'"{service_numbers[7]}"'  # OTC Service Number
 
-    assert csv_output["row8"][0] == '"No"'
-    assert csv_output["row8"][1] == '"Published"'
-    assert csv_output["row8"][2] == '"Registered"'
-    assert csv_output["row8"][3] == '"In Scope"'
-    assert csv_output["row8"][5] == '"Not Stale"'
-    assert csv_output["row8"][6] == '"test_org_1"'
-    assert csv_output["row8"][7] == '"PD0000099"'
-    assert csv_output["row8"][8] == '"PD0000099:8"'
-    assert csv_output["row8"][9] == '""'
-    assert csv_output["row8"][11] == '""'
-    assert csv_output["row8"][12] == '"PD0000099"'
-    assert csv_output["row8"][13] == '"PD0000099:8"'
-    assert csv_output["row8"][14] == '"Line8"'
-    assert csv_output["row8"][24] == '"2024-02-24"'
-    assert csv_output["row8"][25] == '"False"'
-    assert csv_output["row8"][26] == '"2020-12-13"'
+    # Row 8
+    print(csv_output["row8"])
+    assert csv_output["row8"][0] == '"PD0000099:8"'  # XML:Service Code
+    assert csv_output["row8"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row8"][2] == '"No"'  # Requires Attention
+    assert csv_output["row8"][3] == '"Published"'  # Published Status
+    assert csv_output["row8"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row8"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row8"][6] == '"In Season"'  # Seasonal Status
+    assert csv_output["row8"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row8"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row8"][9] == f'"{dataset8.id}"'  # Dataset ID
+    assert (
+        csv_output["row8"][10] == '"2020-12-13"'
+    )  # Date OTC variation needs to be published
+    # OTCService("effective_date") - 42 days
+    assert (
+        csv_output["row8"][11] == '"2023-04-07"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row8"][12] == '"2024-02-24"'  # Date when data is over 1 year old
+    # TXCFileAttributes("modification_datetime") + 365 days
+    assert (
+        csv_output["row8"][13] == '"2022-01-13"'
+    )  # Date seasonal service should be published
+    # effective seasonal start: SeasonalService("start") - 42 days
+    assert csv_output["row8"][14] == '"2022-02-24"'  # Seasonal Start Date
+    assert csv_output["row8"][15] == '"2024-02-24"'  # Seasonal End Date
+    assert csv_output["row8"][16] == '"test8.xml"'  # XML:Filename
+    assert csv_output["row8"][17] == '"2023-02-24"'  # XML:Last Modified Date
+    assert (
+        csv_output["row8"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row8"][19] == '"PD0000099"'  # XML:Licence Number
+    assert csv_output["row8"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row8"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row8"][22] == '""'  # XML:Operating Period End Date
+    # TXCFileAttributes("operationg_period_end_date") - 42 days
+    assert csv_output["row8"][23] == '"PD0000099"'  # OTC:Licence Number
+    assert csv_output["row8"][24] == f'"{service_codes[8]}"'  # OTC:Registration Number
+    assert csv_output["row8"][25] == f'"{service_numbers[8]}"'  # OTC Service Number
 
 
 def test_lta_csv_output_unpublished_status_no_organisation_name():
@@ -714,8 +864,8 @@ def test_lta_csv_output_unpublished_status_no_organisation_name():
     csv_string = lta_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
 
-    assert csv_output["row0"][1] == '"Unpublished"'  # published status
-    assert csv_output["row0"][6] == '"Organisation not yet created"'  # Operator Name
+    assert csv_output["row0"][3] == '"Unpublished"'  # published status
+    assert csv_output["row0"][8] == '"Organisation not yet created"'  # Operator Name
 
 
 @freeze_time("2023-02-28")
@@ -730,7 +880,7 @@ def test_seasonal_status_lta_csv_output():
     bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
     otc_lic = LicenceModelFactory(number=licence_number)
 
-    # Not Stale
+    # Up to date
     dataset0 = DatasetFactory(organisation=org)
     TXCFileAttributesFactory(
         revision=dataset0.live_revision,
@@ -739,6 +889,8 @@ def test_seasonal_status_lta_csv_output():
         filename="test0.xml",
         operating_period_end_date=datetime.datetime(2023, 6, 28),
         modification_datetime=datetime.datetime(2022, 1, 28),
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        national_operator_code=national_operator_code,
     )
     services_list_1.append(
         ServiceModelFactory(
@@ -764,6 +916,8 @@ def test_seasonal_status_lta_csv_output():
         filename="test1.xml",
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        national_operator_code=national_operator_code,
     )
     services_list_1.append(
         ServiceModelFactory(
@@ -790,6 +944,8 @@ def test_seasonal_status_lta_csv_output():
         filename="test2.xml",
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        national_operator_code=national_operator_code,
     )
     services_list_1.append(
         ServiceModelFactory(
@@ -809,8 +965,11 @@ def test_seasonal_status_lta_csv_output():
         filename="test3.xml",
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2022, 1, 28),
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        national_operator_code=national_operator_code,
     )
-    # is_stale: staleness_12_months_old = True => "Stale - 12 months old"
+    # is_stale:
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
     services_list_1.append(
         ServiceModelFactory(
             licence=otc_lic,
@@ -835,105 +994,146 @@ def test_seasonal_status_lta_csv_output():
     csv_string = lta_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
 
-    assert csv_output["row0"][0] == '"No"'
-    assert csv_output["row0"][1] == '"Published"'
-    assert csv_output["row0"][2] == '"Registered"'
-    assert csv_output["row0"][3] == '"In Scope"'
-    assert csv_output["row0"][4] == '"In Season"'
-    assert csv_output["row0"][5] == '"Not Stale"'
-    assert csv_output["row0"][6] == '"test_org_1"'
-    assert csv_output["row0"][7] == f'"{licence_number}"'
-    assert csv_output["row0"][8] == f'"{licence_number}:0"'
-    assert csv_output["row0"][9] == '""'
-    assert csv_output["row0"][11] == '"2023-06-28"'
-    assert csv_output["row0"][12] == f'"{licence_number}"'
-    assert csv_output["row0"][13] == f'"{licence_number}:0"'
-    assert csv_output["row0"][14] == '"Line0"'
-    assert csv_output["row0"][16] == '"2022-01-28"'
-    assert csv_output["row0"][17] == '"2022-01-28"'
-    assert csv_output["row0"][18] == '"test0.xml"'
-    assert csv_output["row0"][19] == f'"{dataset0.id}"'
-    assert csv_output["row0"][20] == '"2022-01-17"'
-    assert csv_output["row0"][21] == '"2022-02-28"'
-    assert csv_output["row0"][22] == '"2024-02-28"'
-    assert csv_output["row0"][23] == '"2023-05-16"'
-    assert csv_output["row0"][24] == '"2023-01-28"'
-    assert csv_output["row0"][25] == '"True"'
-    assert csv_output["row0"][26] == '"2023-12-17"'
+    # Row 0
+    assert csv_output["row0"][0] == '"PD0001111:0"'  # XML:Service Code
+    assert csv_output["row0"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row0"][2] == '"No"'  # Requires Attention
+    assert csv_output["row0"][3] == '"Published"'  # Published Status
+    assert csv_output["row0"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row0"][6] == '"In Season"'  # Seasonal Status
+    assert csv_output["row0"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row0"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row0"][9] == f'"{dataset0.id}"'  # Dataset ID
+    assert (
+        csv_output["row0"][10] == '"2023-12-17"'
+    )  # Date OTC variation needs to be published
+    assert (
+        csv_output["row0"][11] == '"2023-04-11"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row0"][12] == '"2023-01-28"'  # Date when data is over 1 year old
+    assert (
+        csv_output["row0"][13] == '"2022-01-17"'
+    )  # Date seasonal service should be published
+    assert csv_output["row0"][14] == '"2022-02-28"'  # Seasonal Start Date
+    assert csv_output["row0"][15] == '"2024-02-28"'  # Seasonal End Date
+    assert csv_output["row0"][16] == '"test0.xml"'  # XML:Filename
+    assert csv_output["row0"][17] == '"2022-01-28"'  # XML:Last Modified Date
+    assert (
+        csv_output["row0"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row0"][19] == '"PD0001111"'  # XML:Licence Number
+    assert csv_output["row0"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row0"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row0"][22] == '"2023-06-28"'  # XML:Operating Period End Date
+    assert csv_output["row0"][23] == '"PD0001111"'  # OTC:Licence Number
+    assert csv_output["row0"][24] == '"PD0001111:0"'  # OTC:Registration Number
+    assert csv_output["row0"][25] == '"Line0"'  # OTC Service Number
 
-    assert csv_output["row1"][0] == '"No"'
-    assert csv_output["row1"][1] == '"Published"'
-    assert csv_output["row1"][2] == '"Registered"'
-    assert csv_output["row1"][3] == '"In Scope"'
-    assert csv_output["row1"][4] == '"Out of Season"'
-    assert csv_output["row1"][5] == '"Not Stale"'
-    assert csv_output["row1"][6] == '"test_org_1"'
-    assert csv_output["row1"][7] == f'"{licence_number}"'
-    assert csv_output["row1"][8] == f'"{licence_number}:1"'
-    assert csv_output["row1"][9] == '""'
-    assert csv_output["row1"][11] == '"2023-06-24"'
-    assert csv_output["row1"][12] == f'"{licence_number}"'
-    assert csv_output["row1"][13] == f'"{licence_number}:1"'
-    assert csv_output["row1"][14] == '"Line1"'
-    assert csv_output["row1"][16] == '"2022-01-24"'
-    assert csv_output["row1"][17] == '"2022-01-24"'
-    assert csv_output["row1"][18] == '"test1.xml"'
-    assert csv_output["row1"][19] == f'"{dataset1.id}"'
-    assert csv_output["row1"][20] == '"2026-01-17"'
-    assert csv_output["row1"][21] == '"2026-02-28"'
-    assert csv_output["row1"][22] == '"2028-02-28"'
-    assert csv_output["row1"][23] == '"2023-05-12"'
-    assert csv_output["row1"][24] == '"2023-01-24"'
-    assert csv_output["row1"][25] == '"True"'
-    assert csv_output["row1"][26] == '"2023-12-13"'
+    # Row 1
+    assert csv_output["row1"][0] == '"PD0001111:1"'  # XML:Service Code
+    assert csv_output["row1"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row1"][2] == '"No"'  # Requires Attention
+    assert csv_output["row1"][3] == '"Published"'  # Published Status
+    assert csv_output["row1"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row1"][6] == '"Out of Season"'  # Seasonal Status
+    assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row1"][9] == f'"{dataset1.id}"'  # Dataset ID
+    assert (
+        csv_output["row1"][10] == '"2023-12-13"'
+    )  # Date OTC variation needs to be published
+    assert (
+        csv_output["row1"][11] == '"2023-04-11"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row1"][12] == '"2023-01-24"'  # Date when data is over 1 year old
+    assert (
+        csv_output["row1"][13] == '"2026-01-17"'
+    )  # Date seasonal service should be published
+    assert csv_output["row1"][14] == '"2026-02-28"'  # Seasonal Start Date
+    assert csv_output["row1"][15] == '"2028-02-28"'  # Seasonal End Date
+    assert csv_output["row1"][16] == '"test1.xml"'  # XML:Filename
+    assert csv_output["row1"][17] == '"2022-01-24"'  # XML:Last Modified Date
+    assert (
+        csv_output["row1"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row1"][19] == '"PD0001111"'  # XML:Licence Number
+    assert csv_output["row1"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row1"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row1"][22] == '"2023-06-24"'  # XML:Operating Period End Date
+    assert csv_output["row1"][23] == '"PD0001111"'  # OTC:Licence Number
+    assert csv_output["row1"][24] == '"PD0001111:1"'  # OTC:Registration Number
+    assert csv_output["row1"][25] == '"Line1"'  # OTC Service Number
 
-    assert csv_output["row2"][0] == '"No"'
-    assert csv_output["row2"][1] == '"Published"'
-    assert csv_output["row2"][2] == '"Registered"'
-    assert csv_output["row2"][3] == '"In Scope"'
-    assert csv_output["row2"][4] == '"Not Seasonal"'
-    assert csv_output["row2"][5] == '"Not Stale"'
-    assert csv_output["row2"][6] == '"test_org_1"'
-    assert csv_output["row2"][7] == f'"{licence_number}"'
-    assert csv_output["row2"][8] == f'"{licence_number}:2"'
-    assert csv_output["row2"][9] == '""'
-    assert csv_output["row2"][11] == '"2023-06-24"'
-    assert csv_output["row2"][12] == f'"{licence_number}"'
-    assert csv_output["row2"][13] == f'"{licence_number}:2"'
-    assert csv_output["row2"][14] == '"Line2"'
-    assert csv_output["row2"][16] == '"2022-01-24"'
-    assert csv_output["row2"][17] == '"2022-01-24"'
-    assert csv_output["row2"][18] == '"test2.xml"'
-    assert csv_output["row2"][19] == f'"{dataset2.id}"'
-    assert csv_output["row2"][20] == '""'
-    assert csv_output["row2"][21] == '""'
-    assert csv_output["row2"][22] == '""'
-    assert csv_output["row2"][23] == '"2023-05-12"'
-    assert csv_output["row2"][24] == '"2023-01-24"'
-    assert csv_output["row2"][25] == '"True"'
-    assert csv_output["row2"][26] == '"2023-12-13"'
+    # Row 2
+    assert csv_output["row2"][0] == '"PD0001111:2"'  # XML:Service Code
+    assert csv_output["row2"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row2"][2] == '"No"'  # Requires Attention
+    assert csv_output["row2"][3] == '"Published"'  # Published Status
+    assert csv_output["row2"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row2"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row2"][6] == '"Not Seasonal"'  # Seasonal Status
+    assert csv_output["row2"][7] == '"Up to date"'  # Timeliness Status
+    assert csv_output["row2"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row2"][9] == f'"{dataset2.id}"'  # Dataset ID
+    assert (
+        csv_output["row2"][10] == '"2023-12-13"'
+    )  # Date OTC variation needs to be published
+    assert (
+        csv_output["row2"][11] == '"2023-04-11"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row2"][12] == '"2023-01-24"'  # Date when data is over 1 year old
+    assert csv_output["row2"][13] == '""'  # Date seasonal service should be published
+    assert csv_output["row2"][14] == '""'  # Seasonal Start Date
+    assert csv_output["row2"][15] == '""'  # Seasonal End Date
+    assert csv_output["row2"][16] == '"test2.xml"'  # XML:Filename
+    assert csv_output["row2"][17] == '"2022-01-24"'  # XML:Last Modified Date
+    assert (
+        csv_output["row2"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row2"][19] == '"PD0001111"'  # XML:Licence Number
+    assert csv_output["row2"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row2"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row2"][22] == '"2023-06-24"'  # XML:Operating Period End Date
+    assert csv_output["row2"][23] == '"PD0001111"'  # OTC:Licence Number
+    assert csv_output["row2"][24] == '"PD0001111:2"'  # OTC:Registration Number
+    assert csv_output["row2"][25] == '"Line2"'  # OTC Service Number
 
-    assert csv_output["row3"][0] == '"Yes"'
-    assert csv_output["row3"][1] == '"Published"'
-    assert csv_output["row3"][2] == '"Registered"'
-    assert csv_output["row3"][3] == '"In Scope"'
-    assert csv_output["row3"][4] == '"In Season"'
-    assert csv_output["row3"][5] == '"Stale - 12 months old"'
-    assert csv_output["row3"][6] == '"test_org_1"'
-    assert csv_output["row3"][7] == f'"{licence_number}"'
-    assert csv_output["row3"][8] == f'"{licence_number}:3"'
-    assert csv_output["row3"][9] == '""'
-    assert csv_output["row3"][12] == f'"{licence_number}"'
-    assert csv_output["row3"][13] == f'"{licence_number}:3"'
-    assert csv_output["row3"][14] == '"Line3"'
-    assert csv_output["row3"][16] == '"2022-01-28"'
-    assert csv_output["row3"][17] == '"2022-01-28"'
-    assert csv_output["row3"][18] == '"test3.xml"'
-    assert csv_output["row3"][19] == f'"{dataset3.id}"'
-    assert csv_output["row3"][20] == '"2022-01-17"'
-    assert csv_output["row3"][21] == '"2022-02-28"'
-    assert csv_output["row3"][22] == '"2024-02-28"'
-    assert csv_output["row3"][23] == '""'
-    assert csv_output["row3"][24] == '"2023-01-28"'
-    assert csv_output["row3"][25] == '"False"'
-    assert csv_output["row3"][26] == '"2020-12-17"'
+    # Row 3
+    assert csv_output["row3"][0] == '"PD0001111:3"'  # XML:Service Code
+    assert csv_output["row3"][1] == '"line1 line2"'  # XML:Line Name
+    assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
+    assert csv_output["row3"][3] == '"Published"'  # Published Status
+    assert csv_output["row3"][4] == '"Registered"'  # OTC Status
+    assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
+    assert (
+        csv_output["row3"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
+    assert csv_output["row3"][8] == '"test_org_1"'  # Organisation Name
+    assert csv_output["row3"][9] == f'"{dataset3.id}"'  # Dataset ID
+    assert (
+        csv_output["row3"][10] == '"2020-12-17"'
+    )  # Date OTC variation needs to be published
+    assert (
+        csv_output["row3"][11] == '"2023-04-11"'
+    )  # Date for complete 42-day look ahead
+    assert csv_output["row3"][12] == '"2023-01-28"'  # Date when data is over 1 year old
+    assert (
+        csv_output["row3"][13] == '"2022-01-17"'
+    )  # Date seasonal service should be published
+    assert csv_output["row3"][14] == '"2022-02-28"'  # Seasonal Start Date
+    assert csv_output["row3"][15] == '"2024-02-28"'  # Seasonal End Date
+    assert csv_output["row3"][16] == '"test3.xml"'  # XML:Filename
+    assert csv_output["row3"][17] == '"2022-01-28"'  # XML:Last Modified Date
+    assert (
+        csv_output["row3"][18] == f'"{national_operator_code}"'
+    )  # XML:National Operator Code
+    assert csv_output["row3"][19] == '"PD0001111"'  # XML:Licence Number
+    assert csv_output["row3"][20] == '"0"'  # XML:Revision Number
+    assert csv_output["row3"][21] == '"1999-06-26"'  # XML:Operating Period Start Date
+    assert csv_output["row3"][22] == '""'  # XML:Operating Period End Date
+    assert csv_output["row3"][23] == '"PD0001111"'  # OTC:Licence Number
+    assert csv_output["row3"][24] == '"PD0001111:3"'  # OTC:Registration Number
+    assert csv_output["row3"][25] == '"Line3"'  # OTC Service Number

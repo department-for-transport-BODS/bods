@@ -28,7 +28,7 @@ class DisruptionsApiView(views.APIView):
 
     def get(self, format=None):
         """Get SIRI SX response from consumer API."""
-        url = settings.DISRUPTIONS_API_URL
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/siri-sx"
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content, status_code = _get_consumer_api_response(url, headers)
         return Response(content, status=status_code, content_type="text/xml")

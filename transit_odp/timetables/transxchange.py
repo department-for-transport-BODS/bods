@@ -249,7 +249,7 @@ class TransXChangeDocument:
         except NoElement:
             return False
 
-    def get_journey_pattern_sections(self):
+    def get_journey_pattern_sections(self, allow_none=False):
         """Get all the JourneyPatternSection elements in the TransXChangeDocument.
 
         Returns:
@@ -257,6 +257,10 @@ class TransXChangeDocument:
             JourneyPatternSection elements.
         """
         xpath = ["JourneyPatternSections", "JourneyPatternSection"]
+
+        if allow_none:
+            return self._root.get_elements_or_none(xpath)
+
         return self._root.get_elements(xpath)
 
     def get_operators(self):

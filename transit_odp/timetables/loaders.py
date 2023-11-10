@@ -186,7 +186,10 @@ class TransXChangeDataLoader:
                 }
                 for obj in created
             )
-        ).set_index("service_pattern_id")
+        )
+
+        if not created.empty:
+            created = created.set_index("service_pattern_id")
 
         service_patterns = service_patterns.join(created)
 
@@ -214,7 +217,8 @@ class TransXChangeDataLoader:
 
         # Add ServicePatterns to Service
         adapter.info("Adding service associations.")
-        add_service_associations(services, service_patterns)
+        if not service_patterns.empty:
+            add_service_associations(services, service_patterns)
 
         adapter.info("Finished loading service patterns.")
         return service_patterns
