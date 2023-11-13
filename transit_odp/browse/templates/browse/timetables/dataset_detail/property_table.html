@@ -59,18 +59,6 @@
         </tr>
     {% endif %}
     <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">{% trans 'Locations' %}</th>
-        <td class="govuk-table__cell" colspan="2">{{ admin_areas }}</td>
-    </tr>
-    <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">{% trans 'Bus stops' %}</th>
-        <td class="govuk-table__cell" colspan="2">{{ object.num_of_bus_stops }}</td>
-    </tr>
-    <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">{% trans 'Bus routes' %}</th>
-        <td class="govuk-table__cell" colspan="2">{{ object.num_of_lines }}</td>
-    </tr>
-    <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header">{% trans 'National Operator Code (NOC)' %}</th>
         <td class="govuk-table__cell" colspan="2">{{ object.nocs }}</td>
     </tr>
@@ -85,26 +73,6 @@
             >
                 {% trans 'View change log' %}
             </a>
-        </td>
-    </tr>
-    <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">{% trans 'Earliest start date' %}</th>
-        <td class="govuk-table__cell" colspan="2">
-            {% if object.first_service_start is not None %}
-                {{ object.first_service_start|localtime|date:"j M Y H:i" }}
-            {% else %}
-                {% trans 'Start date not specified' %}
-            {% endif %}
-        </td>
-    </tr>
-    <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">{% trans 'Earliest end date' %}</th>
-        <td class="govuk-table__cell" colspan="2">
-            {% if object.first_expiring_service is not None %}
-                {{ object.first_expiring_service|localtime|date:"j M Y H:i" }}
-            {% else %}
-                {% trans 'Expiry not specified' %}
-            {% endif %}
         </td>
     </tr>
 {% endblock %}
