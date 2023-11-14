@@ -21,10 +21,12 @@ class APIRequestAdmin(admin.ModelAdmin):
 
     readonly_fields = ("id", "created", "path_info", "query_string", "requestor_id")
 
+    @admin.display(
+        description="Created"
+    )
     def created_precise(self, obj):
         return obj.created.strftime("%d %b %Y %H:%M:%S")
 
-    created_precise.short_description = "Created"
 
     def get_ordering(self, request):
         return ()

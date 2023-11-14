@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from django.contrib import admin
 from django.http import FileResponse, HttpResponseForbidden
 from django.urls import reverse
@@ -21,14 +21,17 @@ class SchemaDefinitionAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
-                r"^download-file/(?P<pk>\d+)$",
+            path(
+                "download-file/<int:pk>",
                 self.download_file,
                 name="pipelines_schema_download-file",
             ),
         ]
         return urls
 
+    @admin.display(
+        description="Download Zip"
+    )
     def download_link(self, instance):
         return format_html(
             '<a href="{}">{}</a>',
@@ -36,7 +39,6 @@ class SchemaDefinitionAdmin(admin.ModelAdmin):
             instance.schema.name,
         )
 
-    download_link.short_description = "Download Zip"
 
     def download_file(self, request, pk):
         if request.user.is_anonymous or not request.user.is_superuser:

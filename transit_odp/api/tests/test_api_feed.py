@@ -127,7 +127,7 @@ class FeedAPITests(APITestCase):
 
     def test_permissions__unauth_no_access(self):
         # Test
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         # Assert
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -148,7 +148,7 @@ class FeedAPITests(APITestCase):
         )
         serializer = DatasetSerializer(feeds, many=True)
         expected = serializer.data
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         actual = response.data["results"]
 
@@ -167,7 +167,7 @@ class FeedAPITests(APITestCase):
             self.feed_list_url,
             {"name": "Developer cannot create feeds"},
             format="json",
-            HTTP_HOST=self.hostname,
+            headers={"host": self.hostname}
         )
 
         # Assert
@@ -194,7 +194,7 @@ class FeedAPITests(APITestCase):
                     "upload_file": fp,
                 },
                 format="json",
-                HTTP_HOST=self.hostname,
+                headers={"host": self.hostname}
             )
 
         # Assert
@@ -228,7 +228,7 @@ class FeedAPITests(APITestCase):
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data
 
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -254,7 +254,7 @@ class FeedAPITests(APITestCase):
         expected = serializer.data
 
         params = {"status": "live"}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -280,7 +280,7 @@ class FeedAPITests(APITestCase):
         expected = serializer.data
 
         params = {"status": ""}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -316,7 +316,7 @@ class FeedAPITests(APITestCase):
         expected = serializer.data
 
         params = {"noc": nocs}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -338,7 +338,7 @@ class FeedAPITests(APITestCase):
         partial_noc = noc[2:]
         expected = 0
         params = {"noc": [partial_noc]}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = len(response.data["results"])
         self.assertEqual(actual, expected)
 
@@ -374,7 +374,7 @@ class FeedAPITests(APITestCase):
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data
         params = {"noc": nocs}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -401,7 +401,7 @@ class FeedAPITests(APITestCase):
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data
         params = {"adminArea": atco_code}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
         self.assertEqual(actual, expected)
 
@@ -426,7 +426,7 @@ class FeedAPITests(APITestCase):
         serializer = DatasetSerializer(datasets, many=True)
         expected = serializer.data
 
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(expected, actual)
@@ -456,7 +456,7 @@ class FeedAPITests(APITestCase):
         expected = serializer.data
 
         params = {"startDateStart": self.now}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -490,7 +490,7 @@ class FeedAPITests(APITestCase):
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data
         params = {"startDateStart": start_date, "startDateEnd": end_date}
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
         self.assertEqual(actual, expected)
 
@@ -511,7 +511,7 @@ class FeedAPITests(APITestCase):
             reverse("api:feed-list", host=config.hosts.DATA_HOST)
             + "?Status=live&testparam=test"
         )
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
 
         # Assert
         self.assertEqual(response.status_code, 400)  # Bad request
@@ -534,7 +534,7 @@ class FeedAPITests(APITestCase):
             reverse("api:feed-list", host=config.hosts.DATA_HOST)
             + "?limit=123abc&offset=bg234"
         )
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
 
         # Assert
         self.assertEqual(response.status_code, 400)  # Bad request
@@ -569,7 +569,7 @@ class FeedAPITests(APITestCase):
             "startDateStart": test_date,
             "api_key": str(self.developer.auth_token),
         }
-        response = self.client.get(self.feed_list_url, params, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, params, headers={"host": self.hostname})
         actual = response.data["results"]
         self.assertEqual(actual, expected)
 
@@ -588,7 +588,7 @@ class FeedAPITests(APITestCase):
             reverse("api:feed-list", host=config.hosts.DATA_HOST)
             + "?search=nobodywilleversearchthis"
         )
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, 200, "Check this hasnt blown up")
         self.assertEqual(response.data["results"], [], "check we get an empty list")
 
@@ -621,7 +621,7 @@ class FeedAPITests(APITestCase):
             reverse("api:feed-list", host=config.hosts.DATA_HOST)
             + f"?search={dataset_to_test.live_revision.name}"
         )
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, 200, "Check this hasnt blown up")
         self.assertEqual(response.data["results"], expected)
 
@@ -648,6 +648,6 @@ class FeedAPITests(APITestCase):
         )
         serializer = DatasetSerializer(objs, many=True)
         expected = serializer.data
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         actual = response.data["results"]
         self.assertEqual(actual, expected)

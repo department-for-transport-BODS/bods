@@ -57,10 +57,12 @@ class ServiceAdmin(admin.ModelAdmin):
             .add_operator_details()
         )
 
+    @admin.display(
+        ordering="service_code"
+    )
     def service_code(self, instance):
         return instance.service_code
 
-    service_code.admin_order_field = "service_code"
 
     def operator_name(self, instance):
         return instance.operator_name

@@ -99,9 +99,15 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
 
 # STATIC
 # ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "config.custom_storage.MediaRootS3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
-DEFAULT_FILE_STORAGE = "config.custom_storage.MediaRootS3Boto3Storage"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
 
 # WhiteNoise

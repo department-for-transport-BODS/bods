@@ -35,5 +35,12 @@ class MediaRootS3Boto3Storage(S3Boto3Storage):
     file_overwrite = False
 
 
-DEFAULT_FILE_STORAGE = "config.settings.local_with_s3_media.MediaRootS3Boto3Storage"
+STORAGES = {
+    "default": {
+        "BACKEND": "config.settings.local_with_s3_media.MediaRootS3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"

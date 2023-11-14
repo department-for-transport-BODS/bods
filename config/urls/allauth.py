@@ -49,11 +49,11 @@ urlpatterns = [
         name="account_confirm_email",
     ),
     # password reset
-    re_path(
-        r"^password/reset/$", PasswordResetView.as_view(), name="account_reset_password"
+    path(
+        "password/reset/", PasswordResetView.as_view(), name="account_reset_password"
     ),
-    re_path(
-        r"^password/reset/done/$",
+    path(
+        "password/reset/done/",
         PasswordResetDoneView.as_view(),
         name="account_reset_password_done",
     ),

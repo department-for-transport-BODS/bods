@@ -79,16 +79,20 @@ class UserAdmin(auth_admin.UserAdmin):
     list_filter = auth_admin.UserAdmin.list_filter + ("account_type",)
     search_fields = ["username", "first_name", "last_name", "email"]
 
+    @admin.display(
+        description="opt_in_user_research"
+    )
     def opt_in_user_research(self, obj):
         if obj.organisation is None:
             return None
         return obj.opt_in_user_research
 
-    opt_in_user_research.short_description = "opt_in_user_research"
 
+    @admin.display(
+        description="share_app_usage"
+    )
     def share_app_usage(self, obj):
         if obj.organisation is None:
             return None
         return obj.share_app_usage
 
-    share_app_usage.short_description = "share_app_usage"
