@@ -156,8 +156,8 @@ class DatasetSubscriptionView(DatasetSubscriptionBaseView, UpdateView):
         # Send user to feed-detail if can't get HTTP_REFERER
         # (more likely to have come from feed-detail because users
         # can only subscribe from that page)
-        return self.request.META.get(
-            "HTTP_REFERER",
+        return self.request.headers.get(
+            "referer",
             reverse("feed-detail", args=[self.object.id], host=self.request.host.name),
         )
 

@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.db import models
@@ -61,8 +61,8 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
-                r"^download-avl-validation-report/(?P<pk>\d+)$",
+            path(
+                "download-avl-validation-report/<int:pk>",
                 self.download_validation_report,
                 name="avl-validation-report",
             ),
@@ -76,12 +76,15 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
             .select_related("revision", "revision__dataset__organisation")
         )
 
+    @admin.display(ordering="revision__dataset__id")
     def dataset_id(self, instance):
         return instance.revision.dataset_id
 
+    @admin.display(ordering="revision__dataset__organisation__name")
     def organisation_name(self, instance):
         return instance.revision.dataset.organisation.name
 
+    @admin.display(description="Download AVL validation report file")
     def download_report(self, instance):
         if instance.pk is None:
             return "Not available"
@@ -101,10 +104,6 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
         response = FileResponse(report.file.open("rb"), as_attachment=True)
         response["Content-Disposition"] = f"attachment; filename={report.file.name}"
         return response
-
-    dataset_id.admin_order_field = "revision__dataset__id"
-    organisation_name.admin_order_field = "revision__dataset__organisation__name"
-    download_report.short_description = "Download AVL validation report file"
 
 
 @admin.register(AVLSchemaValidationReport)
@@ -137,8 +136,8 @@ class AVLSchemaValidationReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
-                r"^download-avl-schema-report/(?P<pk>\d+)$",
+            path(
+                "download-avl-schema-report/<int:pk>",
                 self.download_schema_report,
                 name="avl-schema-report",
             ),
@@ -152,12 +151,15 @@ class AVLSchemaValidationReportAdmin(admin.ModelAdmin):
             .select_related("revision", "revision__dataset__organisation")
         )
 
+    @admin.display(ordering="revision__dataset__id")
     def dataset_id(self, instance):
         return instance.revision.dataset_id
 
+    @admin.display(ordering="revision__dataset__organisation__name")
     def organisation_name(self, instance):
         return instance.revision.dataset.organisation.name
 
+    @admin.display(description="Download AVL schema validation report file")
     def download_report(self, instance):
         if instance.pk is None:
             return "Not available"
@@ -177,10 +179,6 @@ class AVLSchemaValidationReportAdmin(admin.ModelAdmin):
         response = FileResponse(report.file.open("rb"), as_attachment=True)
         response["Content-Disposition"] = f"attachment; filename={report.file.name}"
         return response
-
-    dataset_id.admin_order_field = "revision__dataset__id"
-    organisation_name.admin_order_field = "revision__dataset__organisation__name"
-    download_report.short_description = "Download AVL schema validation report file"
 
 
 @admin.register(AVLDataset)
@@ -244,8 +242,8 @@ class PostPublishingCheckReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
-                r"^download-ppc-report/(?P<pk>\d+)$",
+            path(
+                "download-ppc-report/<int:pk>",
                 self.download_ppc_report,
                 name="post-publishing-check-report",
             ),

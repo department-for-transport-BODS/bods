@@ -98,7 +98,7 @@ class FaresAPITests(APITestCase):
             f"?boundingBox={top_right_y},{bot_left_y},{top_right_x},{bot_left_x}"
         )
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["results"], expected)
 
@@ -116,7 +116,7 @@ class FaresAPITests(APITestCase):
 
         query_params = "?boundingBox=12,,,"
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, expected)
 
@@ -135,7 +135,7 @@ class FaresAPITests(APITestCase):
         # Test - Get response from API
         query_params = "?boundingBox=12,ab,cd,ef"
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, expected)
 
@@ -155,7 +155,7 @@ class FaresAPITests(APITestCase):
         url = (
             reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
         )  # bbox with more than 4 values
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, expected)
 
@@ -172,7 +172,7 @@ class FaresAPITests(APITestCase):
 
         hidden_key = "is_dummy"
 
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
 
         results_with_hidden_key_displayed = [
             result for result in response.data["results"] if hidden_key in result
@@ -204,7 +204,7 @@ class FaresAPITests(APITestCase):
 
         query_params = "?status=published"
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)
@@ -231,7 +231,7 @@ class FaresAPITests(APITestCase):
 
         query_params = ""
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
-        response = self.client.get(url, HTTP_HOST=self.hostname)
+        response = self.client.get(url, headers={"host": self.hostname})
         actual = response.data["results"]
 
         self.assertEqual(actual, expected)

@@ -45,11 +45,10 @@ ROOT_SITE_ID = (
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 
-
+DD_REMOTE_CONFIGURATION_ENABLED = env("DD_REMOTE_CONFIGURATION_ENABLED", default=True)
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
@@ -242,6 +241,7 @@ MIDDLEWARE = [
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # STATIC

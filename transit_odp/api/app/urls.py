@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from django.urls import include
 from rest_framework.routers import DefaultRouter
 
@@ -20,5 +20,5 @@ router.register(r"service_pattern", views.ServicePatternViewSet, "service_patter
 router.register(r"fare_stops", views.FareStopsViewSet, "fare_stops")
 
 urlpatterns = [
-    url("", include(router.urls)),
+    path("", include(router.urls)),
 ]

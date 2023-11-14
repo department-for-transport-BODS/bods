@@ -33,9 +33,9 @@ class FieldNoErrors(Field):
     date does not have an individual error bar
     """
 
-    def render(self, form, form_style, context, **kwargs):
+    def render(self, form, context, **kwargs):
         context["suppress_form_group_error"] = True
-        return super().render(form, form_style, context, **kwargs)
+        return super().render(form, context=context, **kwargs)
 
 
 class DateDiv(Div):
@@ -44,7 +44,7 @@ class DateDiv(Div):
     errors are detected in its fields
     """
 
-    def render(self, form, form_style, context, **kwargs):
+    def render(self, form, context, **kwargs):
         show_error = False
         for field in self.fields:
             bound_field = form[field.fields[0]]
@@ -55,7 +55,7 @@ class DateDiv(Div):
         if show_error:
             self.css_class += " govuk-form-group--error"
 
-        return super().render(form, form_style, context, **kwargs)
+        return super().render(form, context=context, **kwargs)
 
 
 class LicenceNumberForm(GOVUKModelForm):
