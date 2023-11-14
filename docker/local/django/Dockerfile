@@ -1,8 +1,9 @@
-ARG BASE_IMAGE=python:3.9-alpine3.16
+ARG BASE_IMAGE=python:3.9-alpine3.18
+
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.2.2
+    POETRY_VERSION=1.6.1
 
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
@@ -12,8 +13,8 @@ WORKDIR /app
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && apk update \
     && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.16/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.16/community \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/main \
+            --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/community \
             --no-cache \
             gdal-dev \
             gdal \
