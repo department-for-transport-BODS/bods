@@ -171,7 +171,7 @@ jobs:
 
 
 
-  sandbox2:
+  run_unit_tests:
     needs: configure_dependencies_container
     runs-on: ubuntu-latest
     container:
@@ -254,13 +254,13 @@ jobs:
         run: |
           git config --global --add safe.directory $PWD
 
-      - name: Render reports to the PR
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.number }}
-        run:
-          gh pr comment $PR_NUMBER --body-file md_report.md
+      # - name: Render reports to the PR
+      #   if: always()
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
+      #     PR_NUMBER: ${{ github.event.number }}
+      #   run:
+      #     gh pr comment $PR_NUMBER --body-file md_report.md
 
       - name: Pytest coverage comment
         if: always()
@@ -269,3 +269,4 @@ jobs:
           pytest-xml-coverage-path: ./coverage.xml
           junitxml-path: ./junit_report.xml
           create-new-comment: true
+          hide-report: true
