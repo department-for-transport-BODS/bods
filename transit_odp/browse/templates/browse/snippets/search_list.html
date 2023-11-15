@@ -15,16 +15,19 @@
         </h3>
       {% endif %}
   </div>
-  <div class="govuk-body-s govuk-grid-row search-pillbox">
-    {% for key, value in query_params.items %}
-      <a href="{% query_chop key %}">
-        <div class="pill-item">
-          <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}">
-          <span class="pill-item__label">{{ value }}</span>
-        </div>
-      </a>
-    {% endfor %}
-  </div>
+  {% if hide_filters_box == True %}
+  {% else %}
+    <div class="govuk-body-s govuk-grid-row search-pillbox">
+      {% for key, value in query_params.items %}
+        <a href="{% query_chop key %}">
+          <div class="pill-item">
+            <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}">
+            <span class="pill-item__label">{{ value }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
   <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break">
 
     <div class="sort_container">
@@ -56,6 +59,8 @@
         {% include 'browse/snippets/results/avl.html' %}
       {% elif item.dataset_type == 3 %}
         {% include 'browse/snippets/results/fares.html' %}
+      {% elif item.dataset_type == 4 %}
+        {% include 'browse/snippets/results/disruptions.html' %}
       {% endif %}
 
     {% empty %}

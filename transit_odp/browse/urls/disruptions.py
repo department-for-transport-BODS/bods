@@ -1,6 +1,7 @@
 from django.urls import include, path
 from transit_odp.browse.views.disruptions_views import (
     DisruptionOrganisationDetailView,
+    DisruptionsDataView,
     DownloadDisruptionsDataArchiveView,
     DownloadDisruptionsView,
     DisruptionsDataView,

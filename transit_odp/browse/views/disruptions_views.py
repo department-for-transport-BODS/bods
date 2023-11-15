@@ -22,6 +22,8 @@ from django.views.generic.list import ListView
 from django.core.paginator import Paginator
 from datetime import datetime
 
+from transit_odp.organisation.constants import DatasetType
+
 logger = logging.getLogger(__name__)
 
 
@@ -78,7 +80,7 @@ class DisruptionsDataView(ListView):
     content = None
 
     def get_queryset(self):
-        url = settings.DISRUPTIONS_ORG_API_URL
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations"
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         if self.content is None:
             self.content, _ = _get_disruptions_organisation_data(url, headers)
@@ -86,43 +88,59 @@ class DisruptionsDataView(ListView):
         if self.content is None:
             return []
 
-        keywords = self.request.GET.get("q", "").strip()
-        # ordering = self.request.GET.get('ordering', '-lastUpdated')
-        ordering = self.request.GET.get("ordering", "operatorPublicName")
-        # Validate the ordering value to prevent SQL injection
-        if ordering not in ["name", "-name", "-lastUpdated"]:
-            # ordering = '-lastUpdated'
-            ordering = "name"
+        ordering = self.request.GET.get("ordering", "-modified")
+
+        if ordering not in ["-modified", "name", "-name"]:
+            ordering = "-modified"
 
         reverse_order = ordering.startswith("-")
 
-        filtered_list = [
-            item
-            for item in self.content
-            if any(
-                isinstance(value, str) and keywords in value for value in item.values()
+        orgs_to_show = list(
+            filter(
+                lambda d: d["stats"]["lastUpdated"]
+                or d["stats"]["totalDisruptionsCount"],
+                self.content,
             )
-        ]
+        )
 
-        # Sort the data based on the selected field
-        if ordering == "last_updated":
-            # Sort by last_updated date
-            filtered_list = sorted(
-                filtered_list,
+        if ordering == "-modified":
+            sorted_orgs = sorted(
+                orgs_to_show,
                 key=lambda item: datetime.strptime(
-                    item[ordering.lstrip("-")], "%d/%m/%Y"
-                ),
+                    item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                )
+                if item["stats"]["lastUpdated"]
+                else datetime.min,
                 reverse=reverse_order,
             )
         else:
-            # Sort by other fields (e.g., publicName)
-            filtered_list = sorted(
-                filtered_list,
+            sorted_orgs = sorted(
+                orgs_to_show,
                 key=lambda item: item[ordering.lstrip("-")].lower(),
                 reverse=reverse_order,
             )
 
-        return filtered_list
+        mapped_orgs = [
+            dict(
+                item,
+                **{
+                    "dataset_type": DatasetType.DISRUPTIONS.value,
+                    "stats": dict(
+                        item["stats"],
+                        **{
+                            "lastUpdated": datetime.strptime(
+                                item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                            )
+                            if item["stats"]["lastUpdated"]
+                            else ""
+                        },
+                    ),
+                },
+            )
+            for item in sorted_orgs
+        ]
+
+        return mapped_orgs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -132,6 +150,7 @@ class DisruptionsDataView(ListView):
         context["api_data"] = paginator.get_page(page)
         keywords = self.request.GET.get("q", "").strip()
         context["q"] = keywords
+        context["ordering"] = self.request.GET.get("ordering", "-modified")
         return context
 
 
@@ -140,7 +159,8 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        url = settings.DISRUPTIONS_ORG_API_URL + "/" + str(kwargs["pk"])
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['pk'])}"
+
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = None
         content, _ = _get_disruptions_organisation_data(url, headers)

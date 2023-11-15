@@ -1,6 +1,8 @@
 from _elementtree import ParseError
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.http import JsonResponse
+from config import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
@@ -109,16 +111,10 @@ class FareStopsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DisruptionsInOrganisationView(viewsets.ViewSet):
-
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def list(self, request):
-        url = (
-            settings.DISRUPTIONS_ORG_API_URL
-            + "/"
-            + request.GET.get("pk", None)
-            + "/impacted/stops"
-        )
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{request.GET.get('pk', None)}/impacted/stops"
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = []
         content, _ = _get_disruptions_organisation_data(url, headers)

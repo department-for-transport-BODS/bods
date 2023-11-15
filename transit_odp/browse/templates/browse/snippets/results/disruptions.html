@@ -4,22 +4,22 @@
 {% load waffle_tags %}
 
 {% block dataset_detail_link %}
-    <a class='govuk-link' href="{% url 'disruptions-data' host hosts.data %}">
-        {{ item.operatorPublicName }}
+    <a class='govuk-link' href="{% url 'org-detail' pk=item.id host hosts.data %}">
+        {{ item.name }}
     </a>
 {% endblock %}
 
 {% block dataset_result_content %}
     <li>
-        <span class="item__key">{% trans 'Disrupted services:' %}</span>
-        <span class="item__value"><a class='govuk-link' href="{% url 'org-detail' pk=item.id host hosts.data %}">{{ item.name }}</a></span>
+        <span class="item__key">{% trans 'Active disruptions:' %}</span>
+        <span class="item__value">{{ item.stats.totalDisruptionsCount }}</span>
     </li>
     <li>
         <span class="item__key">{% trans 'Last updated:' %}</span>
-        {% if item.lastUpdated %}
-            <span class="item__value">{{ item.lastUpdated|date:"j M Y G:i:s" }}</span>
+        {% if item.stats.lastUpdated %}
+            <span class="item__value">{{ item.stats.lastUpdated|date:"j M Y G:i:s" }}</span>
         {% else %}
-            <span class="item__value">{% now "j M Y G:i:s" %}</span>
+            <span class="item__value">-</span>
         {% endif %}
     </li>
 {% endblock %}

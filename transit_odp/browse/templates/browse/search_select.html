@@ -68,7 +68,7 @@
             </a>
             <p class="govuk-body govuk-!-padding-top-3">
                 {% blocktrans %}
-                    You can filter and browse the live locations of buses at a specific point in time.
+                    You can browse the live locations of buses at a specific point in time.
                 {% endblocktrans %}
             </p>
             <ul class="govuk-list">
@@ -103,12 +103,12 @@
         </div>
 
         <div class="govuk-grid-row govuk-!-margin-top-7">
-          <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}?status=live">
+          <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}">
               {% trans 'Disruptions data' %}
           </a>
           <p class="govuk-body govuk-!-padding-top-3">
               {% blocktrans %}
-                  You can filter and browse the live locations of buses at a specific point.
+                  You can filter and browse specific disruptions data
               {% endblocktrans %}
           </p>
           <ul class="govuk-list">
