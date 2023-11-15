@@ -231,7 +231,7 @@ jobs:
         id: install_git
         run: |
           apk update
-          apk add git github-cli
+          apk add git
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -241,26 +241,11 @@ jobs:
         run: |
           poetry config virtualenvs.create false
           poetry install
-          pip install pytest-md-report
 
       - name: "Run Tests"
         id: run_tests
         run: |
-          pytest -vv --junitxml=junit_report.xml --md-report --md-report-flavor gfm --md-report-output md_report.md
-
-      - name: "Make Directory git-safe safe"
-        id: make_directory_git_safe
-        if: always()
-        run: |
-          git config --global --add safe.directory $PWD
-
-      # - name: Render reports to the PR
-      #   if: always()
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
-      #     PR_NUMBER: ${{ github.event.number }}
-      #   run:
-      #     gh pr comment $PR_NUMBER --body-file md_report.md
+          pytest -vv --junitxml=junit_report.xml
 
       - name: Pytest coverage comment
         if: always()
