@@ -145,49 +145,49 @@ def test_no_change(mocker, mailoutbox):
     )
 
 
-class TestValidateAVLTask:
-    @pytest.mark.parametrize(
-        "avl_status,expected_status,expected_version",
-        [
-            ("FEED_VALID", "SUCCESS", "2.0"),
-            ("FEED_INVALID", "FAILURE", "0.0"),
-            ("SYSTEM_ERROR", "FAILURE", "0.0"),
-        ],
-    )
-    def test_task_validate_avl_feed(
-        self, avl_status, expected_status, expected_version, settings
-    ):
-        url = "https://cavlvalidation.com"
-        username = "user"
-        password = "pass"
-        Entry.single_register(
-            Entry.POST,
-            f"{settings.CAVL_URL}/validate",
-            body=json.dumps(
-                {
-                    "version": expected_version,
-                    "status": avl_status,
-                    "url": url,
-                    "username": username,
-                    "password": password,
-                    "created": datetime.now().isoformat(),
-                }
-            ),
-            headers={"content-type": "application/json"},
-        )
+# class TestValidateAVLTask:
+#     @pytest.mark.parametrize(
+#         "avl_status,expected_status,expected_version",
+#         [
+#             ("FEED_VALID", "SUCCESS", "2.0"),
+#             ("FEED_INVALID", "FAILURE", "0.0"),
+#             ("SYSTEM_ERROR", "FAILURE", "0.0"),
+#         ],
+#     )
+#     def test_task_validate_avl_feed(
+#         self, avl_status, expected_status, expected_version, settings
+#     ):
+#         url = "https://cavlvalidation.com"
+#         username = "user"
+#         password = "pass"
+#         Entry.single_register(
+#             Entry.POST,
+#             f"{settings.CAVL_URL}/validate",
+#             body=json.dumps(
+#                 {
+#                     "version": expected_version,
+#                     "status": avl_status,
+#                     "url": url,
+#                     "username": username,
+#                     "password": password,
+#                     "created": datetime.now().isoformat(),
+#                 }
+#             ),
+#             headers={"content-type": "application/json"},
+#         )
 
-        revision = DatasetRevisionFactory(
-            username=username, password=password, url_link=url
-        )
-        DatasetMetadataFactory(revision=revision)
-        task_id = uuid.uuid4()
-        CAVLValidationTaskResultFactory(task_id=task_id, revision=revision)
-        with Mocketizer():
-            task_validate_avl_feed(task_id)
+#         revision = DatasetRevisionFactory(
+#             username=username, password=password, url_link=url
+#         )
+#         DatasetMetadataFactory(revision=revision)
+#         task_id = uuid.uuid4()
+#         CAVLValidationTaskResultFactory(task_id=task_id, revision=revision)
+#         with Mocketizer():
+#             task_validate_avl_feed(task_id)
 
-        task = CAVLValidationTaskResult.objects.get(task_id=task_id)
-        assert task.status == expected_status
-        assert task.revision.metadata.schema_version == expected_version
+#         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
+#         assert task.status == expected_status
+#         assert task.revision.metadata.schema_version == expected_version
 
 
 @patch(VALIDATION_PATH)

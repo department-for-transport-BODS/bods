@@ -673,12 +673,14 @@ def test_lta_csv_output():
     # Row 5
     assert csv_output["row5"][0] == '"PD0000099:5"'  # XML:Service Code
     assert csv_output["row5"][1] == '"line1 line2"'  # XML:Line Name
-    assert csv_output["row5"][2] == '"No"'  # Requires Attention
+    assert csv_output["row5"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row5"][3] == '"Published"'  # Published Status
     assert csv_output["row5"][4] == '"Registered"'  # OTC Status
     assert csv_output["row5"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row5"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row5"][7] == '"Up to date"'  # Timeliness Status
+    assert (
+        csv_output["row5"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row5"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row5"][9] == f'"{dataset5.id}"'  # Dataset ID
     assert (
@@ -997,12 +999,14 @@ def test_seasonal_status_lta_csv_output():
     # Row 0
     assert csv_output["row0"][0] == '"PD0001111:0"'  # XML:Service Code
     assert csv_output["row0"][1] == '"line1 line2"'  # XML:Line Name
-    assert csv_output["row0"][2] == '"No"'  # Requires Attention
+    assert csv_output["row0"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row0"][3] == '"Published"'  # Published Status
     assert csv_output["row0"][4] == '"Registered"'  # OTC Status
     assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row0"][6] == '"In Season"'  # Seasonal Status
-    assert csv_output["row0"][7] == '"Up to date"'  # Timeliness Status
+    assert (
+        csv_output["row0"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row0"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row0"][9] == f'"{dataset0.id}"'  # Dataset ID
     assert (
@@ -1038,7 +1042,9 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
     assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row1"][6] == '"Out of Season"'  # Seasonal Status
-    assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
+    assert (
+        csv_output["row1"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row1"][9] == f'"{dataset1.id}"'  # Dataset ID
     assert (
@@ -1069,12 +1075,14 @@ def test_seasonal_status_lta_csv_output():
     # Row 2
     assert csv_output["row2"][0] == '"PD0001111:2"'  # XML:Service Code
     assert csv_output["row2"][1] == '"line1 line2"'  # XML:Line Name
-    assert csv_output["row2"][2] == '"No"'  # Requires Attention
+    assert csv_output["row2"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row2"][3] == '"Published"'  # Published Status
     assert csv_output["row2"][4] == '"Registered"'  # OTC Status
     assert csv_output["row2"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row2"][6] == '"Not Seasonal"'  # Seasonal Status
-    assert csv_output["row2"][7] == '"Up to date"'  # Timeliness Status
+    assert (
+        csv_output["row2"][7] == '"Service hasn\'t been updated within a year"'
+    )  # Timeliness Status
     assert csv_output["row2"][8] == '"test_org_1"'  # Organisation Name
     assert csv_output["row2"][9] == f'"{dataset2.id}"'  # Dataset ID
     assert (

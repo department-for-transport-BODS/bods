@@ -1,0 +1,75 @@
+name: check_node_dependencies
+
+inputs:
+  ecr_registry:
+    description: ECR Registry URL
+    required: true
+
+
+  python_dependencies_repo:
+    description: Python dependencies image repository name
+    required: true
+    default: python_dependencies  
+
+  docker_tag:
+    description: Tag to add to images
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: "Check Python Dependencies"
+      id: check_for_python_change
+      shell: bash
+      run: |
+        changed=false
+        if git diff --exit-code HEAD^..HEAD docker/production/python_dependencies/Dockerfile; then
+          true
+        else
+          changed=true
+        fi
+        if git diff --exit-code -I '^version =' HEAD^..HEAD pyproject.toml; then
+          true
+        else
+          changed=true
+        fi
+        if git diff --exit-code -I '^version =' HEAD^..HEAD poetry.lock; then
+          true
+        else
+          changed=true
+        fi
+        echo "changed=${changed}" >> $GITHUB_OUTPUT
+
+    - name: "Check if images with required tag exist in Amazon ECR"
+      shell: bash
+      id: check_images
+      run: |
+        if docker manifest inspect ${{ inputs.ecr_registry }}/${{ inputs.python_dependencies_repo }}:${{ inputs.docker_tag }} >/dev/null; then
+            echo "python_dependencies_exists=true" >> $GITHUB_OUTPUT
+        else
+            echo "python_dependencies_exists=false" >> $GITHUB_OUTPUT
+        fi
+  
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: "Create repositories if they don't exist"
+      shell: bash
+      id: create_repos
+      run: |
+        aws ecr create-repository --repository-name ${{ inputs.python_dependencies_repo }} || true
+
+    - name: Build and push django base image
+      id: build_django_base
+      if: steps.check_for_python_change.outputs.changed == 'true' || steps.check_images.outputs.python_dependencies_exists == 'false'
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        tags: ${{ format( '{0}/{1}:{2}', inputs.ecr_registry, inputs.python_dependencies_repo, inputs.docker_tag ) }}
+        file: "./docker/production/python_dependencies/Dockerfile"
+        context: "."
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  

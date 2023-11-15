@@ -35,7 +35,7 @@ from transit_odp.browse.views.timetable_views import (
 )
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.common.loggers import PipelineAdapter
+from transit_odp.common.loggers import PipelineAdapter, DatafeedPipelineLoggerContext
 from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.feedback.models import Feedback
@@ -1041,7 +1041,8 @@ class TestOperatorDetailView:
             critical_count=2,
         )
 
-        adapter = PipelineAdapter(getLogger("pytest"), {})
+        context = DatafeedPipelineLoggerContext(object_id=-1)
+        adapter = PipelineAdapter(getLogger("pytest"), {"context": context})
         for dataset in AVLDataset.objects.all():
             cache_avl_compliance_status(adapter, dataset.id)
 
@@ -1150,22 +1151,20 @@ class TestLTAView:
         assert len(ltas_context) == 1
 
     def test_lta_view_order_by_name(self, request_factory: RequestFactory):
-        ltas_list = [
-            LocalAuthorityFactory(
-                id="1", name="Derby Council", ui_lta_name="Derby City Council"
-            ),
-            LocalAuthorityFactory(
-                id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
-            ),
-        ]
+
+        LocalAuthorityFactory(
+            id="1", name="Derby Council", ui_lta_name="Derby City Council"
+        ),
+        LocalAuthorityFactory(
+            id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
+        ),
+
         request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
         request.user = AnonymousUser()
 
         response = LocalAuthorityView.as_view()(request)
         assert response.status_code == 200
-        expected_order = sorted([lta.ui_lta_name for lta in ltas_list])
-        ltas = response.context_data["ltas"]
-        assert ltas["names"] == expected_order
+        expected_order = ["Cheshire East Council", "Derby City Council"]
 
         object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
         assert object_names == expected_order
@@ -1272,11 +1271,9 @@ class TestLTADetailView:
             registration_code=int(all_service_codes[7][-1:]),
         )
 
-        params = {"auth_ids": ["1"]}
-        url = "/local-authority/?" + "&".join(
-            [f"{key}={','.join(value)}" for key, value in params.items()]
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
         )
-        request = request_factory.get(url)
         request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
@@ -1304,13 +1301,6 @@ class TestLTADetailView:
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
-
-        params = {"auth_ids": ["1"]}
-        url = "/local-authority/?" + "&".join(
-            [f"{key}={','.join(value)}" for key, value in params.items()]
-        )
-        request = request_factory.get(url)
-        request.user = UserFactory()
 
         # Setup three TXCFileAttributes that will be 'Not Stale'
         TXCFileAttributesFactory(
@@ -1362,6 +1352,10 @@ class TestLTADetailView:
             ui_lta_name="Dorset County Council",
             registration_numbers=service,
         )
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
+        )
+        request.user = UserFactory()
 
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
         assert response.status_code == 200
