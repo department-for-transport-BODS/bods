@@ -241,11 +241,9 @@ class FaresAPITests(APITestCase):
         )
         serializer = FaresDatasetSerializer(objs, many=True)
         expected = serializer.data
-        print("expected", expected)
         query_params = ""
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
         response = self.client.get(url, HTTP_HOST=self.hostname)
         actual = response.data["results"]
-        print("actual", actual)
 
         self.assertEqualIgnoringFields(actual, expected, ignore_fields)
