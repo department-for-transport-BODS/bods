@@ -27,6 +27,8 @@ class Service(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
 
+    service_type = models.CharField(max_length=255, default="standard")
+
     service_patterns = models.ManyToManyField(
         "transmodel.ServicePattern", related_name="services"
     )
