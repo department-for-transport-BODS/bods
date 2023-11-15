@@ -11,8 +11,7 @@ overview of all the data that resides in BODS currently.
 
 Note that the data catalogue only covers the data from primary data sources on BODS
 which is timetables data in TransxChange format, bus location data in SIRI-VM format
-and fares data in NeTEx format. Other non-primary data on BODS (e.g GTFS converted forms)
-are not represented on the data catalogue.
+and fares data in NeTEx format. Other non-primary data on BODS (e.g GTFS converted forms) are not represented on the data catalogue.
 
 The data catalogue zip contains 7 distinct CSVs:
 -   Overall data catalogue: this contains a high-level overview of all the static data on BODS: timetables and fares data.

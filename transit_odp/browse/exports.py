@@ -1,14 +1,19 @@
 import io
 import logging
+import textwrap
 import zipfile
-
 from collections import OrderedDict, namedtuple
-from requests import RequestException
 from typing import BinaryIO
+
+from requests import RequestException
 from waffle import flag_is_active
 
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
-from transit_odp.browse.constants import INTRO, INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE
+from transit_odp.browse.constants import (
+    GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP,
+    INTRO,
+    INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE,
+)
 from transit_odp.common.collections import Column
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.disruptions.csv.catalogue import get_disruptions_data_catalogue_csv
@@ -108,9 +113,14 @@ def create_guidance_file_string() -> str:
         )
         result += [
             row_template.format(
-                field_name=field_name, definition=definition.replace("</br>", "\n")
+                field_name=field_name,
+                definition=textwrap.dedent(
+                    definition.replace("</br>", "\n")
+                    .replace("<pre>", "")
+                    .replace("</pre>", "")
+                ).strip(),
             )
-            for field_name, definition in TIMETABLE_COLUMN_MAP.values()
+            for field_name, definition in GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP.values()
         ]
 
         fares = "\nFares data catalogue:"
