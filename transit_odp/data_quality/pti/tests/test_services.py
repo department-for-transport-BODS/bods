@@ -52,42 +52,43 @@ def test_start_date_provisional_invalid(no_of_services, expected):
     assert is_valid == expected
 
 
-# @pytest.mark.parametrize("no_of_services,expected", [(1, True)])
-# def test_start_date_provisional_valid(no_of_services, expected):
-#     service = """
-#     <Service>
-#         <ServiceCode>{}</ServiceCode>
-#         <Lines>
-#             <Line id="L1">
-#                 <LineName>1A</LineName>
-#             </Line>
-#             <Line id="L2">
-#                 <LineName>1B</LineName>
-#             </Line>
-#         </Lines>
-#         <OperatingPeriod>
-#             <StartDate>2004-01-01</StartDate>
-#             <EndDate>2005-06-13</EndDate>
-#         </OperatingPeriod>
-#     </Service>
-#     """
-#     service_code = "AB1234567:XYZ123"
-#     services = "\n".join(
-#         [service.format(service_code)]
-#     )
-#     xml = "<Services>{}</Services>".format(services)
+@pytest.mark.parametrize("no_of_services,expected", [(1, True)])
+def test_start_date_provisional_valid(no_of_services, expected):
+    service = """
+    <Service>
+        <ServiceCode>{}</ServiceCode>
+        <Lines>
+            <Line id="L1">
+                <LineName>1A</LineName>
+            </Line>
+            <Line id="L2">
+                <LineName>1B</LineName>
+            </Line>
+        </Lines>
+        <OperatingPeriod>
+            <StartDate>2004-01-01</StartDate>
+            <EndDate>2005-06-13</EndDate>
+        </OperatingPeriod>
+        <StandardService>
+            <Origin>Putteridge High School</Origin>
+        </StandardService>
+    </Service>
+    """
+    service_code = "PB0002032:467"
+    services = "\n".join([service.format(service_code)])
+    xml = "<Services>{}</Services>".format(services)
 
-#     OBSERVATION_ID = 17
-#     schema = Schema.from_path(PTI_PATH)
-#     observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
-#     schema = SchemaFactory(observations=observations)
+    OBSERVATION_ID = 17
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
 
-#     json_file = JSONFile(schema.json())
-#     pti = PTIValidator(json_file)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
 
-#     txc = TXCFile(xml)
-#     is_valid = pti.is_valid(txc)
-#     assert is_valid == expected
+    txc = TXCFile(xml)
+    is_valid = pti.is_valid(txc)
+    assert is_valid == expected
 
 
 @pytest.mark.parametrize(
