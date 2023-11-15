@@ -12,7 +12,7 @@ def update_type_column(apps, schema_editor):
             service_id=service_instance.id
         ).exists():
             # Update the 'type' column in the ServiceModel
-            service_instance.type = "flexible"
+            service_instance.service_type = "flexible"
             service_instance.save()
 
 
