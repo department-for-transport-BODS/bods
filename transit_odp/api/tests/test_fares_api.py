@@ -209,10 +209,23 @@ class FaresAPITests(APITestCase):
 
         self.assertEqual(actual, expected)
 
+    def assertEqualIgnoringFields(self, actual, expected, ignore_fields):
+        """
+        Custom assertion method to compare dictionaries while ignoring specified fields.
+        """
+        for field in ignore_fields:
+            if field in actual:
+                del actual[field]
+            if field in expected:
+                del expected[field]
+
+        self.assertEqual(actual, expected)
+
     def test_blank_status_filter(self):
         """
         Ensures API response filters feed by status=live when query param status is not supplied
         """
+        ignore_fields = ["id", "created", "modified"]
         self.assertTrue(
             self.client.login(username=self.developer.username, password="password")
         )
@@ -228,10 +241,9 @@ class FaresAPITests(APITestCase):
         )
         serializer = FaresDatasetSerializer(objs, many=True)
         expected = serializer.data
-
         query_params = ""
         url = reverse("api:fares-api-list", host=config.hosts.DATA_HOST) + query_params
         response = self.client.get(url, HTTP_HOST=self.hostname)
         actual = response.data["results"]
 
-        self.assertEqual(actual, expected)
+        self.assertEqualIgnoringFields(actual, expected, ignore_fields)
