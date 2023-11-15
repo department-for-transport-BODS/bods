@@ -75,9 +75,7 @@ def test_start_date_provisional_valid(no_of_services, expected):
     </Service>
     """
     service_code = "PB0002032:467"
-    services = "\n".join(
-        [service.format(service_code)]
-    )
+    services = "\n".join([service.format(service_code)])
     xml = "<Services>{}</Services>".format(services)
 
     OBSERVATION_ID = 17
