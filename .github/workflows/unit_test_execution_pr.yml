@@ -208,8 +208,25 @@ jobs:
         PTI_ENFORCED_DATE: 2021-08-02
         DQS_URL: __change_me__
 
-    steps:
+    services:
+      postgres:
+        image: mdillon/postgis:10
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: transit_odp
+          POSTGRES_USER: transit_odp
+          POSTGRES_PASSWORD: transit_odp
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
+      redis:
+        image: redis:3.2
+        ports:
+          - 6379:6379
+    
+    steps:
       - name: "Install git and github cli"
         id: install_git
         run: |
