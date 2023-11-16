@@ -1,0 +1,45 @@
+version: "3"
+services:
+  pytest:
+    image: ghcr.io/kpmg-uk/bods-dft-python-automation-framework:pr-90
+    working_dir: /app
+    depends_on:
+      - firefox_1
+      - firefox_2
+    entrypoint: /usr/local/bin/pytest
+    command: 02_Business_Tier/Tests -m "test_bods_login_functionality" --executionPhase="SmokeTest" --Docker="True" --pyAX="False"
+    environment:
+      SELENIUM_HOST: selenium-hub
+      PYTHONPATH: /app/01_Manager_Tier/Configs:/app/02_Business_Tier/PageObjects:/app/03_Utility_Tier
+    volumes:
+      - .:/app/04_Results_Tier
+  firefox_1:
+    image: selenium/node-firefox:4.15.0-20231110
+    shm_size: 2gb
+    restart: on-failure
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+  firefox_2:
+    image: selenium/node-firefox:4.15.0-20231110
+    shm_size: 2gb
+    restart: on-failure
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+  selenium-hub:
+    image: selenium/hub:4.15.0-20231110
+    restart: on-failure
+    container_name: selenium-hub
+    healthcheck:
+      test: curl -v --fail http://localhost:4444/ui
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"

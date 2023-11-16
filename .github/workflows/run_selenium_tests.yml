@@ -1,0 +1,41 @@
+on:
+  push:
+    branches:
+      - test
+      - feature/run-selenium-as-ci
+    paths:
+      - docker/production/python_dependencies/Dockerfile
+  workflow_dispatch:
+env:
+  REGISTRY: ghcr.io
+permissions:
+  contents: read
+  packages: read
+jobs:
+  selenium:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to GHCR
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Results Dir
+        run: mkdir results
+        shell: bash
+      - name: Run Compose
+        run: docker-compose up -d
+        shell: bash
+        working-directory: ./docker/selenium
+      - name: Wait
+        run: sleep 300
+        shell: bash
+      - name: Find what we get
+        run: find .
+        shell: bash
+      - name: Close docker
+        run: docker-compose down
+        shell: bash
