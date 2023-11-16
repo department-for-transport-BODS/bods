@@ -134,7 +134,7 @@ class DatasetSerializer(serializers.Serializer):
         # To overcome an issue where 0.999
         # is rounded to 1 which inturn returns
         # 100% instead of 99.9%
-        if 0.99 < value < 1:
+        if 0.999 < value < 1:
             value = int(value * 1000) / 1000.0
         return f"{value*100:.1f}%"
 
