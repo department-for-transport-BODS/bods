@@ -18,7 +18,7 @@ def percentage(text, arg=-1):
 
     # If value is 0.1 then 1% should be returned
     # If value is 99.8 then 99% should be returned
-    if int(arg) == 0 :
+    if int(arg) == 0:
         if 0 < percentage_value < 1:
             return "1%"
         elif 99 < percentage_value < 100:
