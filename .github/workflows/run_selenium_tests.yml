@@ -3,8 +3,6 @@ on:
     branches:
       - test
       - feature/run-selenium-as-ci
-    paths:
-      - docker/production/python_dependencies/Dockerfile
   workflow_dispatch:
 env:
   REGISTRY: ghcr.io
