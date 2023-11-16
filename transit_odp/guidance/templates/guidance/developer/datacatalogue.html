@@ -133,6 +133,9 @@
     <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Fares data catalogue:' %}{% endfilter %}</h4>
     {% include "../snippets/datacatalogue_table.html" with definitions_map=fares_data_column_map %}
 
+    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Disruptions data catalogue:' %}{% endfilter %}</h4>
+    {% include "../snippets/datacatalogue_table.html" with definitions_map=disruptions_column_map %}
+
     <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Organisations data catalogue:' %}{% endfilter %}</h4>
     {% include "../snippets/datacatalogue_table.html" with definitions_map=org_column_map %}
 

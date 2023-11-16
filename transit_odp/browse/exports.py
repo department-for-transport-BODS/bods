@@ -16,7 +16,10 @@ from transit_odp.browse.constants import (
 )
 from transit_odp.common.collections import Column
 from transit_odp.common.csv import CSVBuilder, CSVColumn
-from transit_odp.disruptions.csv.catalogue import get_disruptions_data_catalogue_csv
+from transit_odp.disruptions.csv.catalogue import (
+    DISRUPTIONS_COLUMN_MAP,
+    get_disruptions_data_catalogue_csv,
+)
 from transit_odp.fares_validator.csv import (
     FARES_DATA_COLUMN_MAP,
     get_fares_data_catalogue_csv,
@@ -128,6 +131,15 @@ def create_guidance_file_string() -> str:
         result += [
             row_template.format(field_name=field_name, definition=definition)
             for field_name, definition in FARES_DATA_COLUMN_MAP.values()
+        ]
+
+        disruptions = "\nDisruptions data catalogue:"
+        result.append(
+            header_template.format(header=disruptions, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in DISRUPTIONS_COLUMN_MAP.values()
         ]
 
         organisations = "\nOrganisations data catalogue:"
