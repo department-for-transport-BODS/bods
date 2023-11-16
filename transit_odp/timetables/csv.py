@@ -128,8 +128,8 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "'OTC variation not published' </br> and </br> 'XML:Operating Period "
             "End Date' is earlier than 'Date for complete 42 day look "
             "ahead'. </br></br>"
-            "3) Service hasn't been updated within a year: If not out of date due to "
-            "'42 day lookahead is incomplete' or 'OTC variation not published'"
+            "3) Service hasn't been updated within a year: </br> If not out of date "
+            "due to '42 day lookahead is incomplete' or 'OTC variation not published'"
             "</br> and </br> 'Date at which data is 1 year old' is earlier than "
             "today's date.",
         ),

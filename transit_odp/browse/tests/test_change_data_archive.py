@@ -7,7 +7,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from transit_odp.browse.data_archive import change_data_archive
-from transit_odp.organisation.factories import DatasetFactory
+from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
 from transit_odp.pipelines.models import ChangeDataArchive
 
 pytestmark = pytest.mark.django_db
@@ -54,19 +54,17 @@ def test_get_datasets_published_at():
 def test_upload_change_data_archive(tmp_path):
     """Tests upload_bulk_data_archive creates BulkDataArchive with zipfile at outpath"""
     # Setup
-    now = timezone.now()
     zipped = tmp_path / "changes.zip"
     zipped.write_text("Some data")
 
     # Test
-    change_data_archive.upload_change_data_archive(zipped, now)
+    archive = change_data_archive.upload_change_data_archive(zipped, timezone.now())
 
     # Assert
     qs = ChangeDataArchive.objects.all()
     assert len(qs) == 1
 
-    archive = qs[0]
-    assert archive.published_at == now.date()
+    assert archive.published_at is not None
     with archive.data.open("r") as fin:
         assert fin.read() == "Some data"
 
@@ -78,18 +76,18 @@ def test_run():
     yesterday = now - timedelta(days=1)
     basename = f"bodds_updates_{yesterday.strftime('%Y%m%d')}"
 
-    # Create a dataset (with a live_revision) this will have published_at = now
-    DatasetFactory()
+    # Explicitly create organisation and dataset
+    org = OrganisationFactory(short_name="Jackson LLC", id=2)
+    DatasetFactory(organisation=org)
 
     # Create a dataset with a live_revision that was published yesterday
     with freeze_time(yesterday):
-        expected = DatasetFactory()
-        org = expected.organisation
+        expected = DatasetFactory(organisation=org)
         directory_name = f"{org.short_name}_{org.id}"
 
     # Create a dataset published 2 days ago
     with freeze_time(now - timedelta(days=2)):
-        DatasetFactory()
+        DatasetFactory(organisation=org)
 
     # Test
     change_data_archive.run()

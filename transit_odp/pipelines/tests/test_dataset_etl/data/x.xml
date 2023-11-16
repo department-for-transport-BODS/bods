@@ -35,8 +35,13 @@ Created: Tom White, Kizoom, 15 April 2004,
 <Place>
 <NptgLocalityRef>E0039203</NptgLocalityRef>
 <Location>
+<Translation>
+<GridType>UKOS</GridType>
 <Easting>523500</Easting>
 <Northing>178970</Northing>
+<Longitude>-0.523731689</Longitude>
+<Latitude>53.424780895</Latitude>
+</Translation>
 </Location>
 </Place>
 <StopClassification>
@@ -73,8 +78,13 @@ Created: Tom White, Kizoom, 15 April 2004,
 <Place>
 <NptgLocalityRef>E0039203</NptgLocalityRef>
 <Location>
-<Easting>523400</Easting>
-<Northing>178800</Northing>
+    <Translation>
+        <GridType>UKOS</GridType>
+        <Easting>523400</Easting>
+        <Northing>178800</Northing>
+        <Longitude>-0.523731689</Longitude>
+        <Latitude>53.424780895</Latitude>
+        </Translation>
 </Location>
 </Place>
 <StopClassification>
@@ -111,8 +121,13 @@ Created: Tom White, Kizoom, 15 April 2004,
 <Place>
 <NptgLocalityRef>E0039203</NptgLocalityRef>
 <Location>
-<Easting>523400</Easting>
-<Northing>178600</Northing>
+    <Translation>
+        <GridType>UKOS</GridType>
+        <Easting>523400</Easting>
+        <Northing>178600</Northing>
+        <Longitude>-0.523731689</Longitude>
+        <Latitude>53.424780895</Latitude>
+        </Translation>
 </Location>
 </Place>
 <StopClassification>

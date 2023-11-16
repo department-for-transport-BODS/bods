@@ -8,6 +8,7 @@ import config
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP
 from transit_odp.browse.exports import OPERATOR_NOC_MAP
 from transit_odp.common.view_mixins import BODSBaseView
+from transit_odp.disruptions.csv.catalogue import DISRUPTIONS_COLUMN_MAP
 from transit_odp.fares_validator.csv import FARES_DATA_COLUMN_MAP
 from transit_odp.organisation.csv.organisation import FEATURE_FLAG_ORG_COLUMN_MAP
 from transit_odp.organisation.csv.overall import FEATURE_FLAG_OVERALL_COLUMN_MAP
@@ -158,6 +159,7 @@ class DeveloperReqView(BODSBaseView, SectionedTemplateView):
         context["org_column_map"] = FEATURE_FLAG_ORG_COLUMN_MAP
         context["location_definitions"] = AVL_COLUMN_MAP
         context["operator_noc_column_map"] = OPERATOR_NOC_MAP
+        context["disruptions_column_map"] = DISRUPTIONS_COLUMN_MAP
         return context
 
 
