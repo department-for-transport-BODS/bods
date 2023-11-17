@@ -24,14 +24,9 @@ def update_type_column(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("transmodel", "0005_add_booking_arrangements"),
+        ("transmodel", "0005_auto_20231117_1055"),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="service",
-            name="service_type",
-            field=models.CharField(default="standard", max_length=255),
-        ),
         migrations.RunPython(update_type_column),
     ]
