@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from waffle.testutils import override_flag
 from dateutil.parser import parse as parse_datetime_str
 from dateutil.tz import tzutc
 
@@ -41,7 +42,7 @@ SAMPLE_FILES = [
             ],
             "fares_data_catalogue": [
                 {
-                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample1.xml",
+                    "xml_file_name": str(FIXTURES.joinpath("sample1.xml")),
                     "valid_from": "2020-01-01",
                     "valid_to": "2022-12-31",
                     "national_operator_code": ["HCTY"],
@@ -116,7 +117,7 @@ SAMPLE_FILES = [
             ],
             "fares_data_catalogue": [
                 {
-                    "xml_file_name": "/app/transit_odp/fares/tests/fixtures/sample2.xml",
+                    "xml_file_name": str(FIXTURES.joinpath("sample2.xml")),
                     "valid_from": "2020-01-01",
                     "valid_to": "2022-12-31",
                     "national_operator_code": ["BLAC"],
@@ -237,6 +238,8 @@ EXPECTED_METADATA_ZIP = {
 
 
 @pytest.mark.parametrize("filename,expected", SAMPLE_FILES)
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_get_metadata_from_documents(filename, expected):
     source = str(FIXTURES.joinpath(filename))
     docs = get_documents_from_file(source)
@@ -245,6 +248,8 @@ def test_get_metadata_from_documents(filename, expected):
     assert expected == actual
 
 
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_netex_extractor(netexdocuments):
     extractor = NeTExDocumentsExtractor(netexdocuments)
     assert EXPECTED_METADATA_ZIP == extractor.to_dict()

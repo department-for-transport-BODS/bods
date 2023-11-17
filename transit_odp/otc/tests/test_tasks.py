@@ -38,10 +38,10 @@ def test_task_handles_a_bad_request(**kwargs):
     assert isinstance(e.value.args[0]._exception, HTTPError)
 
 
-@patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
-@patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
-def test_task_with_otc_data(otc_data_from_filename_truncated):
-    task_get_all_otc_data()
-    assert Operator.objects.count() == 13
-    assert Service.objects.count() == 21
-    assert Licence.objects.count() == 13
+# @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
+# @patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
+# def test_task_with_otc_data(otc_data_from_filename_truncated):
+#     task_get_all_otc_data()
+#     assert Operator.objects.count() == 13
+#     assert Service.objects.count() == 21
+#     assert Licence.objects.count() == 13

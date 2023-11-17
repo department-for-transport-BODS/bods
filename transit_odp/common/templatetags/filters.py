@@ -8,7 +8,22 @@ register = Library()
 
 @register.filter("percentage")
 def percentage(text, arg=-1):
-    return floatformat(text * 100.0, arg=arg) + "%"
+    try:
+        score = float(text)
+    except (TypeError, ValueError):
+        # Handle the case where the conversion to float fails (e.g., if value is not numeric)
+        return text
+
+    percentage_value = score * 100.0
+
+    # If value is 0.1 then 1% should be returned
+    # If value is 99.8 then 99% should be returned
+    if int(arg) == 0:
+        if 0 < percentage_value < 1:
+            return "1%"
+        elif 99 < percentage_value < 100:
+            return "99%"
+    return floatformat(percentage_value, arg=arg) + "%"
 
 
 @register.filter("lookup")
