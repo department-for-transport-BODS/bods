@@ -88,7 +88,7 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
 
-        #Extract BookingArrangements data
+        # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
         booking_arrangements = self.extract_booking_arrangements()
         logger.debug("Extracting booking_arrangements")
