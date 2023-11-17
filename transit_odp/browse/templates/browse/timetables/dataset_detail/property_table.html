@@ -59,10 +59,6 @@
         </tr>
     {% endif %}
     <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">{% trans 'National Operator Code (NOC)' %}</th>
-        <td class="govuk-table__cell" colspan="2">{{ object.nocs }}</td>
-    </tr>
-    <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
         <td class="govuk-table__cell dont-break-out">
             {{ object.published_at|localtime|date:"j M Y H:i" }}
