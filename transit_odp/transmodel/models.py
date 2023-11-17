@@ -178,7 +178,7 @@ class VehicleJourney(models.Model):
 
 
 class BookingArrangements(models.Model):
-    service_id = models.ForeignKey(
+    service = models.ForeignKey(
         Service, on_delete=models.CASCADE, related_name="booking_arrangements"
     )
 
@@ -192,17 +192,23 @@ class BookingArrangements(models.Model):
 
     class Meta:
         ordering = ("service_id", "last_updated")
-        # Add a CheckConstraint to ensure at least one of the columns has a value
         constraints = [
             models.CheckConstraint(
                 check=(
-                    Q(email__isnull=False, email__exact="")
-                    | Q(phone_number__isnull=False, phone_number__exact="")
-                    | Q(web_address__isnull=False, web_address__exact="")
+                    (models.Q(email__isnull=False) & ~models.Q(email=""))
+                    | (
+                        models.Q(phone_number__isnull=False)
+                        & ~models.Q(phone_number="")
+                    )
+                    | (models.Q(web_address__isnull=False) & ~models.Q(web_address=""))
                 ),
-                name="at_least_one_column_not_null_or_empty",
+                name="at_least_one_column_not_empty_or_null",
             )
         ]
+
+    def save(self, *args, **kwargs):
+        self.clean()  # validate before saving
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id}, service_id: {self.service_id}"

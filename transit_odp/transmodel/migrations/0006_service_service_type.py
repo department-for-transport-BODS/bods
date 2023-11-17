@@ -3,9 +3,22 @@
 from django.db import migrations, models
 
 
-def set_default_for_existing_rows(apps, schema_editor):
-    YourModel = apps.get_model("transmodel", "Service")
-    YourModel.objects.filter(service_type__isnull=True).update(service_type="standard")
+def update_type_column(apps, schema_editor):
+    # Get models for the tables you want to work with
+    Service = apps.get_model("transmodel", "Service")
+
+    # Perform your custom logic
+    for service_instance in Service.objects.all():
+        # Check if corresponding record exists in Service.service_patterns.through model
+        if not service_instance.service_patterns.through.objects.filter(
+            service_id=service_instance.id
+        ).exists():
+            # Update the 'type' column in the ServiceModel
+            service_instance.service_type = "flexible"
+            service_instance.save()
+        else:
+            service_instance.service_type = "standard"
+            service_instance.save()
 
 
 class Migration(migrations.Migration):
@@ -20,5 +33,5 @@ class Migration(migrations.Migration):
             name="service_type",
             field=models.CharField(default="standard", max_length=255),
         ),
-        migrations.RunPython(set_default_for_existing_rows),
+        migrations.RunPython(update_type_column),
     ]
