@@ -232,9 +232,6 @@ def df_to_booking_arrangements(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[BookingArrangements]:
     for record in df.reset_index().to_dict("records"):
-        print(
-            f"Debug: Record Values - Email: {record['email']}, Phone: {record['tel_national_number']}, Web Address: {record['web_address']}"
-        )
         service_code = record["service_code"]
         service = Service.objects.get(
             service_code=service_code, revision__id=revision.id

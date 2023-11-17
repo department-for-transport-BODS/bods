@@ -88,10 +88,10 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
 
-        # Extract FlexibleJourneyPattern
-        logger.debug("Extracting flexible_journey_patterns")
-        flexible_journey_patterns = self.extract_fleixible_journey_patterns()
-        logger.debug("Finished extracting flexible_journey_patterns")
+        #Extract BookingArrangements data
+        logger.debug("Extracting booking_arrangements")
+        booking_arrangements = self.extract_booking_arrangements()
+        logger.debug("Extracting booking_arrangements")
 
         creation_datetime = extract_timestamp(self.doc.get_creation_date_time())
         modification_datetime = extract_timestamp(self.doc.get_modification_date_time())
@@ -99,7 +99,6 @@ class TransXChangeExtractor:
         line_names = self.doc.get_all_line_names()
         line_count = len(line_names)
         timing_point_count = len(self.doc.get_principal_timing_points())
-        booking_arrangements = self.extract_booking_arrangements()
 
         # create empty DataFrames
         routes = pd.DataFrame(columns=["file_id", "route_hash"]).set_index(
@@ -119,7 +118,6 @@ class TransXChangeExtractor:
             stop_points=stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
-            flexible_journey_patterns=flexible_journey_patterns,
             jp_to_jps=jp_to_jps,
             jp_sections=jp_sections,
             timing_links=timing_links,
@@ -186,8 +184,6 @@ class TransXChangeExtractor:
             jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
             journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
-        print(f"journey_patterns>>>>>>>> {journey_patterns}")
-        print(f"jp_jps>>>>>>> {jp_to_jps}")
         return journey_patterns, jp_to_jps
 
     def extract_journey_pattern_sections(self):
@@ -205,22 +201,8 @@ class TransXChangeExtractor:
                 .drop_duplicates("jp_section_id")
                 .set_index(["file_id", "jp_section_id"])
             )
-        print(f"jp_sections >>>>>>>>> {jp_sections}")
-        print(f"timing_links >>>>>>>> {timing_links}")
 
         return jp_sections, timing_links
-
-    def extract_fleixible_journey_patterns(self):
-        services = self.doc.get_services()
-        flexible_journey_patterns = flexible_journey_patterns_to_dataframe(services)
-        if not flexible_journey_patterns.empty:
-            # Create a file_id column and include as part of the index
-            flexible_journey_patterns["file_id"] = self.file_id
-            flexible_journey_patterns.set_index(
-                ["file_id", "journey_pattern_id"], inplace=True
-            )
-        print(f"flexible journey pattern>>>>>> {flexible_journey_patterns}")
-        return flexible_journey_patterns
 
     def extract_booking_arrangements(self):
         services = self.doc.get_services()
