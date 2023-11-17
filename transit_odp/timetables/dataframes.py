@@ -111,7 +111,6 @@ def journey_patterns_to_dataframe(services):
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
-    # jp1, [js_1....]
     journey_patterns = pd.DataFrame(all_items)
     # Note - 'journey_pattern_id' is not necessarily unique across all
     # services so we make it unique by service_code
@@ -121,70 +120,6 @@ def journey_patterns_to_dataframe(services):
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
 
     return journey_patterns
-
-
-def flexible_journey_patterns_to_dataframe(services):
-    all_items = []
-    for service in services:
-        service_code = service.get_element(["ServiceCode"]).text
-        flexible_service = service.get_element_or_none(["FlexibleService"])
-        if flexible_service:
-            for pattern in flexible_service.get_elements(["FlexibleJourneyPattern"]):
-                flexible_zones = pattern.get_elements_or_none(["FlexibleZones"])
-                fixed_stop_points = pattern.get_elements_or_none(["FixedStopPoints"])
-                stop_points_in_sequence = pattern.get_elements_or_none(
-                    ["StopPointsInSequence"]
-                )
-                stop_point_refs = []
-
-                if flexible_zones:
-                    for flexible_zone in flexible_zones:
-                        stop_point_refs.extend(
-                            [
-                                flexible_stop.get_element(["StopPointRef"]).text
-                                for flexible_stop in flexible_zone.get_elements(
-                                    ["FlexibleStopUsage"]
-                                )
-                            ]
-                        )
-
-                if fixed_stop_points:
-                    for fixed_stop_point in fixed_stop_points:
-                        stop_point_refs.extend(
-                            [
-                                fixed_stop_point_stop.get_element(["StopPointRef"]).text
-                                for fixed_stop_point_stop in fixed_stop_point.get_elements(
-                                    ["FlexibleStopUsage"]
-                                )
-                            ]
-                        )
-
-                if stop_points_in_sequence:
-                    for sequence_point in stop_points_in_sequence:
-                        stop_point_refs.extend(
-                            [
-                                sequence_point_stop.get_element(["StopPointRef"]).text
-                                for sequence_point_stop in sequence_point.get_elements(
-                                    ["FlexibleStopUsage"]
-                                )
-                            ]
-                        )
-
-                    all_items.append(
-                        {
-                            "service_code": service_code,
-                            "journey_pattern_id": pattern["id"],
-                            "stop_point_ref": stop_point_refs,
-                        }
-                    )
-
-    flexible_journey_patterns = pd.DataFrame(all_items)
-    if not flexible_journey_patterns.empty:
-        flexible_journey_patterns["journey_pattern_id"] = flexible_journey_patterns[
-            "service_code"
-        ].str.cat(flexible_journey_patterns["journey_pattern_id"], sep="-")
-
-    return flexible_journey_patterns
 
 
 def journey_pattern_section_from_journey_pattern(df: pd.DataFrame):

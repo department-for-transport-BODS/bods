@@ -280,9 +280,6 @@ class TransXChangeZipExtractor:
             stop_count=len(
                 concat_and_dedupe((extract.stop_points for extract in extracts))
             ),
-            flexible_journey_patterns=concat_and_dedupe(
-                extract.flexible_journey_patterns for extract in extracts
-            ),
             booking_arrangements=concat_and_dedupe(
                 (extract.booking_arrangements for extract in extracts)
             ),
