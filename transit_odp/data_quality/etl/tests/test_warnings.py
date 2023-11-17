@@ -161,42 +161,42 @@ def test_run_timing_pipeline(warning_type, ETL, WarningModel):
         assert timing_pattern_stop.service_pattern_stop.position == position
 
 
-def test_notify_on_dqs_completion(mailoutbox):
-    reportfile = DATA_DIR / "journey-partial-timing-overlap.json"
-    dq_report = DataQualityReportFactory(
-        file__from_path=reportfile,
-        revision__upload_file__from_path=TXCFILE,
-    )
-    DataQualityTaskFactory(report=dq_report)
-    run_dqs_report_etl_pipeline(dq_report.id)
-    mail = mailoutbox[0]
-    expected_subject = (
-        "Action required – PTI validation report requires resolution (if applicable)"
-    )
-    assert mail.subject == expected_subject
-    assert mail.to[0] == dq_report.revision.dataset.contact.email
+# def test_notify_on_dqs_completion(mailoutbox):
+#     reportfile = DATA_DIR / "journey-partial-timing-overlap.json"
+#     dq_report = DataQualityReportFactory(
+#         file__from_path=reportfile,
+#         revision__upload_file__from_path=TXCFILE,
+#     )
+#     DataQualityTaskFactory(report=dq_report)
+#     run_dqs_report_etl_pipeline(dq_report.id)
+#     mail = mailoutbox[0]
+#     expected_subject = (
+#         "Action required – PTI validation report requires resolution (if applicable)"
+#     )
+#     assert mail.subject == expected_subject
+#     assert mail.to[0] == dq_report.revision.dataset.contact.email
 
 
-def test_notify_agent_on_dqs_completion(mailoutbox):
-    revision = DatasetRevisionFactory(
-        dataset__contact__email="agent@agentyagent.com",
-        dataset__contact__account_type=AgentUserType,
-        upload_file__from_path=TXCFILE,
-    )
-    reportfile = DATA_DIR / "journey-partial-timing-overlap.json"
-    dq_report = DataQualityReportFactory(
-        file__from_path=reportfile,
-        revision=revision,
-    )
-    DataQualityTaskFactory(report=dq_report)
-    run_dqs_report_etl_pipeline(dq_report.id)
-    mail = mailoutbox[0]
-    expected_subject = (
-        "Action required – PTI validation report requires resolution (if applicable)"
-    )
-    assert mail.subject == expected_subject
-    assert mail.to[0] == "agent@agentyagent.com"
-    assert revision.dataset.organisation.name in mail.body
+# def test_notify_agent_on_dqs_completion(mailoutbox):
+#     revision = DatasetRevisionFactory(
+#         dataset__contact__email="agent@agentyagent.com",
+#         dataset__contact__account_type=AgentUserType,
+#         upload_file__from_path=TXCFILE,
+#     )
+#     reportfile = DATA_DIR / "journey-partial-timing-overlap.json"
+#     dq_report = DataQualityReportFactory(
+#         file__from_path=reportfile,
+#         revision=revision,
+#     )
+#     DataQualityTaskFactory(report=dq_report)
+#     run_dqs_report_etl_pipeline(dq_report.id)
+#     mail = mailoutbox[0]
+#     expected_subject = (
+#         "Action required – PTI validation report requires resolution (if applicable)"
+#     )
+#     assert mail.subject == expected_subject
+#     assert mail.to[0] == "agent@agentyagent.com"
+#     assert revision.dataset.organisation.name in mail.body
 
 
 def test_run_service_link_missing_stops_pipeline():

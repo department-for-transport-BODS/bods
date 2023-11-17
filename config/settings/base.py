@@ -481,7 +481,8 @@ GOV_NOTIFY_API_KEY = env("GOV_NOTIFY_API_KEY")
 # Data Quality Service
 # ------------------------------------------------------------------------------
 DQS_URL = env("DQS_URL")
-DQS_WAIT_TIMEOUT = env("DQS_WAIT_TIMEOUT", cast=int, default=30)  # minutes
+# TODO: Return to 30 minutes once a proper treatment of data quality job tracking is dealt with
+DQS_WAIT_TIMEOUT = env("DQS_WAIT_TIMEOUT", cast=int, default=2160)  # minutes
 
 
 # ClamAV
