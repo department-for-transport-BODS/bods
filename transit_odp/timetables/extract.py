@@ -24,7 +24,6 @@ from transit_odp.timetables.dataframes import (
     provisional_stops_to_dataframe,
     services_to_dataframe,
     stop_point_refs_to_dataframe,
-    flexible_journey_patterns_to_dataframe,
     booking_arrangements_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
