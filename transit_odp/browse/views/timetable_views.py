@@ -45,6 +45,7 @@ from transit_odp.organisation.models import (
     Dataset,
     DatasetRevision,
     DatasetSubscription,
+    TXCFileAttributes,
 )
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.site_admin.models import ResourceRequestCounter
@@ -74,6 +75,44 @@ class DatasetDetailView(DetailView):
             .select_related("live_revision")
             .add_is_live_pti_compliant()
         )
+
+    def get_distinct_dataset_txc_attributes(self, revision_id):
+        distinct_attributes = {
+            "licence_number": [],
+            "national_operator_code": [],
+            "service_codes": [],
+        }
+        distinct_licence_numbers = (
+            TXCFileAttributes.objects.filter(revision_id=revision_id)
+            .values_list("licence_number", flat=True)
+            .distinct()
+        )
+
+        for licence_number in distinct_licence_numbers:
+            distinct_attributes["licence_number"].append(licence_number)
+            distinct_nocs = (
+                TXCFileAttributes.objects.filter(
+                    revision_id=revision_id, licence_number=licence_number
+                )
+                .values_list("national_operator_code", flat=True)
+                .distinct()
+            )
+
+            for noc in distinct_nocs:
+                distinct_attributes["national_operator_code"].append(noc)
+                distinct_service_codes = (
+                    TXCFileAttributes.objects.filter(
+                        revision_id=revision_id,
+                        licence_number=licence_number,
+                        national_operator_code=noc,
+                    )
+                    .values_list("service_code", flat=True)
+                    .distinct()
+                )
+
+                distinct_attributes["service_codes"].append(distinct_service_codes[0])
+
+        return distinct_attributes
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -116,6 +155,9 @@ class DatasetDetailView(DetailView):
             feed_api = f"{feed_api}?api_key={user.auth_token}"
 
         kwargs.update({"notification": is_subscribed, "feed_api": feed_api})
+
+        distinct_attributes = self.get_distinct_dataset_txc_attributes(live_revision.id)
+        kwargs["distinct_attributes"] = distinct_attributes
 
         return kwargs
 

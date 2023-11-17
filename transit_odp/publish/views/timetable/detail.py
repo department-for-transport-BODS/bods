@@ -6,7 +6,7 @@ from transit_odp.common.enums import FeedErrorSeverity
 from transit_odp.common.views import BaseDetailView
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType, FeedStatus
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Dataset, TXCFileAttributes
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
@@ -28,6 +28,44 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
+
+    def get_distinct_dataset_txc_attributes(self, live_revision_id):
+        distinct_attributes = {
+            "licence_number": [],
+            "national_operator_code": [],
+            "service_codes": [],
+        }
+        distinct_licence_numbers = (
+            TXCFileAttributes.objects.filter(revision_id=live_revision_id)
+            .values_list("licence_number", flat=True)
+            .distinct()
+        )
+
+        for licence_number in distinct_licence_numbers:
+            distinct_attributes["licence_number"].append(licence_number)
+            distinct_nocs = (
+                TXCFileAttributes.objects.filter(
+                    revision_id=live_revision_id, licence_number=licence_number
+                )
+                .values_list("national_operator_code", flat=True)
+                .distinct()
+            )
+
+            for noc in distinct_nocs:
+                distinct_attributes["national_operator_code"].append(noc)
+                distinct_service_codes = (
+                    TXCFileAttributes.objects.filter(
+                        revision_id=live_revision_id,
+                        licence_number=licence_number,
+                        national_operator_code=noc,
+                    )
+                    .values_list("service_code", flat=True)
+                    .distinct()
+                )
+
+                distinct_attributes["service_codes"].append(distinct_service_codes[0])
+
+        return distinct_attributes
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -61,5 +99,8 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
 
         kwargs["report_id"] = report.id if summary else None
         kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
+
+        distinct_attributes = self.get_distinct_dataset_txc_attributes(live_revision.id)
+        kwargs["distinct_attributes"] = distinct_attributes
 
         return kwargs

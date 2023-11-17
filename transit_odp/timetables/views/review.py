@@ -7,7 +7,7 @@ import config.hosts
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Dataset, TXCFileAttributes
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
@@ -100,9 +100,51 @@ class BaseTimetableReviewView(ReviewBaseView):
 class PublishRevisionView(BaseTimetableReviewView):
     template_name = "publish/revision_review/index.html"
 
+    def get_distinct_dataset_txc_attributes(self, revision_id):
+        distinct_attributes = {
+            "licence_number": [],
+            "national_operator_code": [],
+            "service_codes": [],
+        }
+        distinct_licence_numbers = (
+            TXCFileAttributes.objects.filter(revision_id=revision_id)
+            .values_list("licence_number", flat=True)
+            .distinct()
+        )
+
+        for licence_number in distinct_licence_numbers:
+            distinct_attributes["licence_number"].append(licence_number)
+            distinct_nocs = (
+                TXCFileAttributes.objects.filter(
+                    revision_id=revision_id, licence_number=licence_number
+                )
+                .values_list("national_operator_code", flat=True)
+                .distinct()
+            )
+
+            for noc in distinct_nocs:
+                distinct_attributes["national_operator_code"].append(noc)
+                distinct_service_codes = (
+                    TXCFileAttributes.objects.filter(
+                        revision_id=revision_id,
+                        licence_number=licence_number,
+                        national_operator_code=noc,
+                    )
+                    .values_list("service_code", flat=True)
+                    .distinct()
+                )
+
+                distinct_attributes["service_codes"].append(distinct_service_codes[0])
+
+        return distinct_attributes
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"is_update": False})
+        revision = self.object
+        dataset_txc_attributes = self.get_distinct_dataset_txc_attributes(revision.id)
+        context.update(
+            {"is_update": False, "dataset_txc_attributes": dataset_txc_attributes}
+        )
         return context
 
     def get_success_url(self):
