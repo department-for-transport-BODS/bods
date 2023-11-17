@@ -205,8 +205,8 @@ class TransXChangeExtractor:
                 .drop_duplicates("jp_section_id")
                 .set_index(["file_id", "jp_section_id"])
             )
-        print(f"jp_sections>>>>>>>> {jp_sections}")
-        print(f"timing_links>>>>>>>> {timing_links}")
+        print(f"jp_sections >>>>>>>>> {jp_sections}")
+        print(f"timing_links >>>>>>>> {timing_links}")
 
         return jp_sections, timing_links
     

@@ -236,7 +236,7 @@ def df_to_booking_arrangements(
         service = Service.objects.get(service_code=service_code, revision__id=revision.id)
 
         yield BookingArrangements(
-            service_id=service,
+            service=service,
             description=record["description"],
             email=record["email"],
             phone_number=record["tel_national_number"],
