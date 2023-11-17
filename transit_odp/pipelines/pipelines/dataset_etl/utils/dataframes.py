@@ -157,7 +157,7 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
         if pd.isnull(end_date):
             end_date = None
         line_names = record["line_names"]
-        service_type=record["service_type"]
+        service_type = record["service_type"]
         if pd.isnull(service_type):
             service_type = None
         yield Service(
@@ -227,13 +227,18 @@ def get_max_date_or_none(dates):
     dates = [date for date in dates if date is not None]
     return max(dates) if dates else None
 
+
 def df_to_booking_arrangements(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[BookingArrangements]:
-      for record in df.reset_index().to_dict("records"):
-        print(f"Debug: Record Values - Email: {record['email']}, Phone: {record['tel_national_number']}, Web Address: {record['web_address']}")
+    for record in df.reset_index().to_dict("records"):
+        print(
+            f"Debug: Record Values - Email: {record['email']}, Phone: {record['tel_national_number']}, Web Address: {record['web_address']}"
+        )
         service_code = record["service_code"]
-        service = Service.objects.get(service_code=service_code, revision__id=revision.id)
+        service = Service.objects.get(
+            service_code=service_code, revision__id=revision.id
+        )
 
         yield BookingArrangements(
             service=service,

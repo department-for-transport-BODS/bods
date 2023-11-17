@@ -29,7 +29,12 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
-from transit_odp.transmodel.models import Service, ServiceLink, ServicePattern, BookingArrangements
+from transit_odp.transmodel.models import (
+    Service,
+    ServiceLink,
+    ServicePattern,
+    BookingArrangements,
+)
 
 BATCH_SIZE = 2000
 logger = get_task_logger(__name__)
@@ -228,13 +233,14 @@ class TransXChangeDataLoader:
         adapter.info("Finished loading service patterns.")
         return service_patterns
 
-
     def load_booking_arrangements(self, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         booking_arrangements = self.transformed.booking_arrangements
         booking_arrangements.reset_index(inplace=True)
         adapter.info("Bulk creating booking arrangements")
-        booking_arrangements_objs = list(df_to_booking_arrangements(revision, booking_arrangements))
+        booking_arrangements_objs = list(
+            df_to_booking_arrangements(revision, booking_arrangements)
+        )
 
         created = BookingArrangements.objects.bulk_create(
             booking_arrangements_objs, batch_size=BATCH_SIZE

@@ -185,11 +185,11 @@ class TransXChangeExtractor:
             # Create association table between JourneyPattern and JourneyPatternSection
             jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
             journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
-        
+
         print(f"journey_patterns>>>>>>>> {journey_patterns}")
         print(f"jp_jps>>>>>>> {jp_to_jps}")
         return journey_patterns, jp_to_jps
-    
+
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)
         timing_links = journey_pattern_sections_to_dataframe(sections)
@@ -209,17 +209,18 @@ class TransXChangeExtractor:
         print(f"timing_links >>>>>>>> {timing_links}")
 
         return jp_sections, timing_links
-    
+
     def extract_fleixible_journey_patterns(self):
         services = self.doc.get_services()
         flexible_journey_patterns = flexible_journey_patterns_to_dataframe(services)
         if not flexible_journey_patterns.empty:
             # Create a file_id column and include as part of the index
             flexible_journey_patterns["file_id"] = self.file_id
-            flexible_journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
+            flexible_journey_patterns.set_index(
+                ["file_id", "journey_pattern_id"], inplace=True
+            )
         print(f"flexible journey pattern>>>>>> {flexible_journey_patterns}")
         return flexible_journey_patterns
-
 
     def extract_booking_arrangements(self):
         services = self.doc.get_services()
@@ -297,6 +298,10 @@ class TransXChangeZipExtractor:
             stop_count=len(
                 concat_and_dedupe((extract.stop_points for extract in extracts))
             ),
-            flexible_journey_patterns=concat_and_dedupe(extract.flexible_journey_patterns for extract in extracts),
-            booking_arrangements=concat_and_dedupe((extract.booking_arrangements for extract in extracts)),
+            flexible_journey_patterns=concat_and_dedupe(
+                extract.flexible_journey_patterns for extract in extracts
+            ),
+            booking_arrangements=concat_and_dedupe(
+                (extract.booking_arrangements for extract in extracts)
+            ),
         )

@@ -39,7 +39,7 @@ def services_to_dataframe(services):
 
         if flexible_service:
             service_type = "flexible"
-        
+
         items.append(
             {
                 "service_code": service_code,
@@ -47,10 +47,8 @@ def services_to_dataframe(services):
                 "end_date": end_datetime,
                 "line_names": [node.text for node in line_names],
                 "service_type": service_type,
-
             }
         )
-            
 
     columns = ["service_code", "start_date", "end_date", "line_names", "service_type"]
     return pd.DataFrame(items, columns=columns)
@@ -113,7 +111,7 @@ def journey_patterns_to_dataframe(services):
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
-    #jp1, [js_1....]
+    # jp1, [js_1....]
     journey_patterns = pd.DataFrame(all_items)
     # Note - 'journey_pattern_id' is not necessarily unique across all
     # services so we make it unique by service_code
@@ -121,7 +119,7 @@ def journey_patterns_to_dataframe(services):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
-        
+
     return journey_patterns
 
 
@@ -134,31 +132,44 @@ def flexible_journey_patterns_to_dataframe(services):
             for pattern in flexible_service.get_elements(["FlexibleJourneyPattern"]):
                 flexible_zones = pattern.get_elements_or_none(["FlexibleZones"])
                 fixed_stop_points = pattern.get_elements_or_none(["FixedStopPoints"])
-                stop_points_in_sequence = pattern.get_elements_or_none(["StopPointsInSequence"])
+                stop_points_in_sequence = pattern.get_elements_or_none(
+                    ["StopPointsInSequence"]
+                )
                 stop_point_refs = []
 
                 if flexible_zones:
                     for flexible_zone in flexible_zones:
-                        stop_point_refs.extend([
-                            flexible_stop.get_element(["StopPointRef"]).text
-                            for flexible_stop in flexible_zone.get_elements(["FlexibleStopUsage"])
-                        ])
-                
+                        stop_point_refs.extend(
+                            [
+                                flexible_stop.get_element(["StopPointRef"]).text
+                                for flexible_stop in flexible_zone.get_elements(
+                                    ["FlexibleStopUsage"]
+                                )
+                            ]
+                        )
+
                 if fixed_stop_points:
                     for fixed_stop_point in fixed_stop_points:
-                        stop_point_refs.extend([
-                            fixed_stop_point_stop.get_element(["StopPointRef"]).text
-                            for fixed_stop_point_stop in fixed_stop_point.get_elements(["FlexibleStopUsage"])
-                        ])
+                        stop_point_refs.extend(
+                            [
+                                fixed_stop_point_stop.get_element(["StopPointRef"]).text
+                                for fixed_stop_point_stop in fixed_stop_point.get_elements(
+                                    ["FlexibleStopUsage"]
+                                )
+                            ]
+                        )
 
                 if stop_points_in_sequence:
                     for sequence_point in stop_points_in_sequence:
-                        stop_point_refs.extend([
-                            sequence_point_stop.get_element(["StopPointRef"]).text
-                            for sequence_point_stop in sequence_point.get_elements(["FlexibleStopUsage"])
-                        ])
-            
-            
+                        stop_point_refs.extend(
+                            [
+                                sequence_point_stop.get_element(["StopPointRef"]).text
+                                for sequence_point_stop in sequence_point.get_elements(
+                                    ["FlexibleStopUsage"]
+                                )
+                            ]
+                        )
+
                     all_items.append(
                         {
                             "service_code": service_code,
@@ -172,7 +183,7 @@ def flexible_journey_patterns_to_dataframe(services):
         flexible_journey_patterns["journey_pattern_id"] = flexible_journey_patterns[
             "service_code"
         ].str.cat(flexible_journey_patterns["journey_pattern_id"], sep="-")
-        
+
     return flexible_journey_patterns
 
 
@@ -230,6 +241,7 @@ def journey_pattern_sections_to_dataframe(sections):
     timing_links = pd.DataFrame(all_links)
     return timing_links
 
+
 def booking_arrangements_to_dataframe(services):
     booking_arrangement_props = []
     for service in services:
@@ -237,33 +249,45 @@ def booking_arrangements_to_dataframe(services):
 
         if flexible_service:
             service_code = service.get_element(["ServiceCode"]).text
-            flexible_journey_patterns = flexible_service.get_elements(["FlexibleJourneyPattern"])
+            flexible_journey_patterns = flexible_service.get_elements(
+                ["FlexibleJourneyPattern"]
+            )
 
             for flexible_journey_pattern in flexible_journey_patterns:
-                booking_arrangements = flexible_journey_pattern.get_elements(["BookingArrangements"])
+                booking_arrangements = flexible_journey_pattern.get_elements(
+                    ["BookingArrangements"]
+                )
 
                 for booking_arrangement in booking_arrangements:
                     description = booking_arrangement.get_element(["Description"]).text
                     phone_element = booking_arrangement.get_element(["Phone"])
-                    tel_national_number = phone_element.get_element(["TelNationalNumber"]).text if phone_element else None
+                    tel_national_number = (
+                        phone_element.get_element(["TelNationalNumber"]).text
+                        if phone_element
+                        else None
+                    )
                     email = booking_arrangement.get_element(["Email"]).text
                     web_address = booking_arrangement.get_element(["WebAddress"]).text
 
-                    booking_arrangement_props.append({
-                        "service_code": service_code,
-                        "description": description,
-                        "tel_national_number": tel_national_number,
-                        "email": email,
-                        "web_address": web_address
-                    })
+                    booking_arrangement_props.append(
+                        {
+                            "service_code": service_code,
+                            "description": description,
+                            "tel_national_number": tel_national_number,
+                            "email": email,
+                            "web_address": web_address,
+                        }
+                    )
     booking_arrangements_df = pd.DataFrame(booking_arrangement_props)
 
     if not booking_arrangements_df.empty:
 
-        columns = ["service_code", "description", "tel_national_number", "email", "web_address"]
+        columns = [
+            "service_code",
+            "description",
+            "tel_national_number",
+            "email",
+            "web_address",
+        ]
         return pd.DataFrame(booking_arrangements_df, columns=columns)
     return booking_arrangements_df
-
-
-
-
