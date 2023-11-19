@@ -166,6 +166,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -173,6 +174,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -180,12 +182,13 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
-            list(extracted.services.columns), ["start_date", "end_date", "line_names"]
+            list(extracted.services.columns), ["start_date", "end_date", "line_names", "service_type"]
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 
@@ -289,6 +292,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -296,6 +300,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -303,12 +308,15 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index(["file_id", "service_code"])
+
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
-            list(extracted.services.columns), ["start_date", "end_date", "line_names"]
+            list(extracted.services.columns),
+            ["start_date", "end_date", "line_names", "service_type"],
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 
@@ -412,6 +420,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -419,6 +428,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -426,12 +436,14 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(transformed.services, services_expected))
         self.assertCountEqual(
-            list(transformed.services.columns), ["start_date", "end_date", "line_names"]
+            list(transformed.services.columns),
+            ["start_date", "end_date", "line_names", "service_type"],
         )
         self.assertEqual(transformed.services.index.names, ["file_id", "service_code"])
 
@@ -554,6 +566,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": pd.Timestamp("2018-10-09 00:00:00"),
                     "end_date": pd.Timestamp("2019-04-13 00:00:00"),
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -561,6 +574,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": pd.Timestamp("2018-10-09 00:00:00"),
                     "end_date": pd.Timestamp("2019-04-13 00:00:00"),
                     "line_names": ["2", "2a"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index("service_code")
@@ -572,7 +586,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         services = Service.objects.all()
         self.assertEqual(services.count(), 2)
         self.assertCountEqual(
-            list(actual.columns), ["id", "start_date", "end_date", "line_names"]
+            list(actual.columns),
+            ["id", "start_date", "end_date", "line_names", "service_type"],
         )
 
         expected = {

@@ -38,6 +38,7 @@ class TransXChangeTransformer:
         timing_links = self.extracted_data.timing_links.copy()
         stop_points = self.extracted_data.stop_points.copy()
         provisional_stops = self.extracted_data.provisional_stops.copy()
+        booking_arrangements = self.extracted_data.booking_arrangements.copy()
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -96,6 +97,7 @@ class TransXChangeTransformer:
             service_links=service_links,
             stop_points=stop_points,
             service_pattern_stops=service_pattern_stops,
+            booking_arrangements=booking_arrangements,
             # carry forward metadata
             schema_version=self.extracted_data.schema_version,
             creation_datetime=self.extracted_data.creation_datetime,

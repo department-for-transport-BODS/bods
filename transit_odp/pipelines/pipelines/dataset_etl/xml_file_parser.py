@@ -17,6 +17,7 @@ from transit_odp.timetables.dataframes import (
     provisional_stops_to_dataframe,
     services_to_dataframe,
     stop_point_refs_to_dataframe,
+    booking_arrangements_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -119,6 +120,11 @@ class XmlFileParser(ETLUtility):
         jp_sections, timing_links = self.extract_journey_pattern_sections(doc, file_id)
         logger.debug("Finished extracting journey_patterns_sections")
 
+        # Extract BookingArrangements data
+        logger.debug("Extracting booking_arrangements")
+        booking_arrangements = self.extract_booking_arrangements(doc)
+        logger.debug("Extracting booking_arrangements")
+
         creation_datetime = extract_timestamp(self.trans.get_creation_date_time())
         modification_datetime = extract_timestamp(
             self.trans.get_modification_date_time()
@@ -149,6 +155,7 @@ class XmlFileParser(ETLUtility):
             journey_patterns=journey_patterns,
             jp_to_jps=jp_to_jps,
             jp_sections=jp_sections,
+            booking_arrangements=booking_arrangements,
             timing_links=timing_links,
             routes=routes,
             route_to_route_links=route_to_route_links,
@@ -227,3 +234,7 @@ class XmlFileParser(ETLUtility):
         )
 
         return jp_sections, timing_links
+    
+    def extract_booking_arrangements(self, doc):
+        services = self.trans.get_services()
+        return booking_arrangements_to_dataframe(services)
