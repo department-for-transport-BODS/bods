@@ -89,5 +89,6 @@ $direction-map: (
 
 @include govuk-exports("app/overrides/spacing") {
   @include _app-generate-spacing-overrides("margin");
-  @include _govuk-generate-spacing-overrides("padding");
+  @include _govuk-generate-responsive-spacing-overrides("padding");
+  @include _govuk-generate-static-spacing-overrides("padding");
 }
