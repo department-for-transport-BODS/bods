@@ -188,7 +188,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
-            list(extracted.services.columns), ["start_date", "end_date", "line_names", "service_type"]
+            list(extracted.services.columns),
+            ["start_date", "end_date", "line_names", "service_type"],
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 

@@ -234,7 +234,7 @@ class XmlFileParser(ETLUtility):
         )
 
         return jp_sections, timing_links
-    
+
     def extract_booking_arrangements(self, doc):
         services = self.trans.get_services()
         return booking_arrangements_to_dataframe(services)
