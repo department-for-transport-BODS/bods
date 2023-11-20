@@ -179,7 +179,6 @@ $RECYCLE.BIN/
 .ropeproject
 .tox/
 .venv
-.vscode
 .vscode/*
 .yarn-integrity
 /site

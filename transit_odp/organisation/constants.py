@@ -74,14 +74,14 @@ DATASET_TYPE_NAMESPACE_MAP = {
     DatasetType.TIMETABLE: "",
     DatasetType.AVL: "avl",
     DatasetType.FARES: "fares",
-    DatasetType.DISRUPTIONS: "disruptions"
+    DatasetType.DISRUPTIONS: "disruptions",
 }
 
 DATASET_TYPE_PRETTY_MAP = {
     DatasetType.TIMETABLE: "Timetables",
     DatasetType.AVL: "Automatic Vehicle Locations",
     DatasetType.FARES: "Fares",
-    DatasetType.DISRUPTIONS: "Disruptions"
+    DatasetType.DISRUPTIONS: "Disruptions",
 }
 
 PSV_LICENCE_ERROR_HINT_MESSAGE = (

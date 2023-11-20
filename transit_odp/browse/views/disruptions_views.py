@@ -7,6 +7,7 @@ from collections import ChainMap
 from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
+from transit_odp.organisation.constants import DatasetType
 
 import logging
 import requests
@@ -22,7 +23,6 @@ from django.views.generic.list import ListView
 from django.core.paginator import Paginator
 from datetime import datetime
 
-from transit_odp.organisation.constants import DatasetType
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,6 @@ def _get_disruptions_organisation_data(url: str, headers: object):
 class DisruptionsDataView(ListView):
     template_name = "browse/disruptions/disruptions_data.html"
     paginate_by = 10
-    # context_object_name = 'api_data'
     content = None
 
     def get_queryset(self):

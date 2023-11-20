@@ -15,7 +15,6 @@ const httpGetAsync = (theUrl, callback) => {
   request.send();
 };
 
-
 const getLineStringBounds = (coordinates) => {
   return coordinates.reduce(function (bounds, coord) {
     return bounds.extend(coord);
@@ -31,7 +30,7 @@ const initOrgMap = (apiRoot, orgId) => {
     "pk.eyJ1IjoiaGFsYmVydHJhbSIsImEiOiJjaXFiNXVnazIwMDA0aTJuaGxlaTU1M2ZtIn0.85dXvyj6V2LbBFvXfpQyYA";
   var map = new mapboxgl.Map({
     container: "map",
-    style: "mapbox://styles/mapbox/light-v9",
+    style: "mapbox://styles/mapbox/streets-v12",
     center: [-1.1743, 52.3555],
     zoom: 5,
     maxzoom: 12,
@@ -70,19 +69,17 @@ const initOrgMap = (apiRoot, orgId) => {
     httpGetAsync(servicePatternUrl, function (responseText) {
       var geojson = JSON.parse(responseText);
 
-      var geojson1 = {'type': 'FeatureCollection', 'count': 2, 'features': [{'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [-2.384390653, 53.752502031]}, 'properties': {'atco_code': '2500IMG2098', 'common_name': 'Acorn'}}, {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [-2.385923639, 53.752640912]}, 'properties': {'atco_code': '2500DCL457', 'common_name': 'Acorn'}}]}
+      var servicesGeoJSON = {};
+      var stopsGeoJSON = {};
 
-      var servicesGeoJSON = {}
-      var stopsGeoJSON = {}
-      
-      if(geojson) {
-        servicesGeoJSON = geojson.services
-        stopsGeoJSON = geojson.stops
+      if (geojson) {
+        servicesGeoJSON = geojson.services;
+        stopsGeoJSON = geojson.stops;
       }
 
-      map.addSource("organisation-services", { 
-        type: "geojson", 
-        data: servicesGeoJSON 
+      map.addSource("organisation-services", {
+        type: "geojson",
+        data: servicesGeoJSON,
       });
 
       map.addSource("organisation-stops", {
@@ -187,9 +184,6 @@ const initOrgMap = (apiRoot, orgId) => {
           padding: 20,
         });
       }
-
-      // After initially fitting the map, on pan fetch new data at location
-      // map.on('moveend', onMoveEndHandler)
     });
 
     map.on("mouseenter", "organisation-stops", (e) => {
