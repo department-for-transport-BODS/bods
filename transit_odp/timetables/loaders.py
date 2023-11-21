@@ -59,7 +59,7 @@ class TransXChangeDataLoader:
         adapter.info("Finished loading service patterns.")
 
         adapter.info("Loading booking arrangements.")
-        self.load_booking_arrangements(revision)
+        self.load_booking_arrangements(services, revision)
         adapter.info("Finished loading booking arrangements.")
 
         adapter.info("Producing ETLReport.")
@@ -233,16 +233,25 @@ class TransXChangeDataLoader:
         adapter.info("Finished loading service patterns.")
         return service_patterns
 
-    def load_booking_arrangements(self, revision):
+    def load_booking_arrangements(self, services, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         booking_arrangements = self.transformed.booking_arrangements
+        booking_arrangements_reset = booking_arrangements.reset_index()
+        services_reset = services.reset_index()
+
+        merged_df = booking_arrangements_reset.merge(
+            services_reset[["service_code", "id"]], on=["service_code"], how="left"
+        )
+        merged_df.set_index(["service_code", "id"], inplace=True)
+
         adapter.info("Bulk creating booking arrangements")
+
         booking_arrangements_objs = list(
-            df_to_booking_arrangements(revision, booking_arrangements)
+            df_to_booking_arrangements(revision, merged_df)
         )
 
         BookingArrangements.objects.bulk_create(
             booking_arrangements_objs, batch_size=BATCH_SIZE
         )
 
-        return booking_arrangements
+        return merged_df

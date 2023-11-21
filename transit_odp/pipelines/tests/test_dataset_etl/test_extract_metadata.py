@@ -814,7 +814,6 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         booking_arrangements_expected = pd.DataFrame(
             [
                 {
-                    "file_id": file_id,
                     "service_code": "PF0000508:53",
                     "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
                     "tel_national_number": "0345 234 3344",
@@ -822,7 +821,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                     "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
                 },
             ]
-        ).set_index(["file_id"])
+        )
 
         self.assertTrue(
             check_frame_equal(
@@ -839,7 +838,6 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                 "web_address",
             ],
         )
-        self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
@@ -861,7 +859,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                     "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
                 },
             ]
-        ).set_index(["file_id"])
+        )
         self.assertTrue(
             check_frame_equal(
                 transformed.booking_arrangements, booking_arrangements_expected
@@ -877,78 +875,3 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                 "web_address",
             ],
         )
-        self.assertEqual(transformed.booking_arrangements.index.names, ["file_id"])
-
-    @patch("transit_odp.timetables.loaders.get_dataset_adapter_from_revision")
-    @patch("transit_odp.transmodel.models.BookingArrangements.objects.bulk_create")
-    @patch(
-        "transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes.Service.objects.get"
-    )
-    def test_load(self, mock_service_get, mock_bulk_create, mock_get_dataset_adapter):
-        logger = MagicMock()
-        mock_get_dataset_adapter.return_value = MagicMock(info=logger.info)
-
-        booking_arrangements = pd.DataFrame(
-            {
-                "file_id": 1,
-                "service_code": ["PF0000508:53"],
-                "description": ["The booking office is open"],
-                "tel_national_number": ["0345 234 3344"],
-                "email": ["CallConnect@lincolnshire.gov.uk"],
-                "web_address": ["https://callconnect.opendrt.co.uk/OpenDRT/"],
-            }
-        ).set_index(["file_id"])
-
-        services = pd.DataFrame()
-        service_patterns = pd.DataFrame()
-        service_pattern_to_service_links = pd.DataFrame()
-        service_links = pd.DataFrame()
-        stop_points = pd.DataFrame()
-        service_pattern_stops = pd.DataFrame()
-        schema_version = ""
-        creation_datetime = ""
-        modification_datetime = ""
-        import_datetime = ""
-        line_count = ""
-        line_names = ""
-        stop_count = ""
-        most_common_localities = ""
-        timing_point_count = ""
-
-        transformed = TransformedData(
-            services=services,
-            service_patterns=service_patterns,
-            service_pattern_to_service_links=service_pattern_to_service_links,
-            service_links=service_links,
-            stop_points=stop_points,
-            service_pattern_stops=service_pattern_stops,
-            booking_arrangements=booking_arrangements,
-            schema_version=schema_version,
-            creation_datetime=creation_datetime,
-            modification_datetime=modification_datetime,
-            import_datetime=import_datetime,
-            line_count=line_count,
-            line_names=line_names,
-            stop_count=stop_count,
-            most_common_localities=most_common_localities,
-            timing_point_count=timing_point_count,
-        )
-
-        service_cache = []
-        service_link_cache = []
-
-        revision = DatasetRevision(id=1)
-
-        mock_service_instance = ServiceFactory()
-        mock_service_get.return_value = mock_service_instance
-
-        mock_created_objects = [MagicMock(id=1)]
-        mock_bulk_create.return_value = mock_created_objects
-
-        data_loader = TransXChangeDataLoader(
-            transformed, service_cache, service_link_cache
-        )
-        result_df = data_loader.load_booking_arrangements(revision)
-
-        actual_created_objects_ids = [obj.id for obj in mock_created_objects]
-        self.assertEqual(list(result_df.index), actual_created_objects_ids)

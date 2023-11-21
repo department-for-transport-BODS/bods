@@ -158,8 +158,6 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
             end_date = None
         line_names = record["line_names"]
         service_type = record["service_type"]
-        if pd.isnull(service_type):
-            service_type = None
         yield Service(
             revision=revision,
             service_code=record["service_code"],
@@ -232,10 +230,8 @@ def df_to_booking_arrangements(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[BookingArrangements]:
     for record in df.reset_index().to_dict("records"):
-        service_code = record["service_code"]
-        service = Service.objects.get(
-            service_code=service_code, revision__id=revision.id
-        )
+        service_id = record["id"]
+        service = Service.objects.get(id=service_id, revision__id=revision.id)
 
         yield BookingArrangements(
             service=service,
