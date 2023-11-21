@@ -205,7 +205,10 @@ class TransXChangeExtractor:
 
     def extract_booking_arrangements(self):
         services = self.doc.get_services()
-        return booking_arrangements_to_dataframe(services)
+        df = booking_arrangements_to_dataframe(services)
+        df["file_id"] = self.file_id
+        df.set_index(["file_id"], inplace=True)
+        return df
 
 
 class TransXChangeZipExtractor:

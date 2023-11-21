@@ -236,17 +236,13 @@ class TransXChangeDataLoader:
     def load_booking_arrangements(self, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         booking_arrangements = self.transformed.booking_arrangements
-        booking_arrangements.reset_index(inplace=True)
         adapter.info("Bulk creating booking arrangements")
         booking_arrangements_objs = list(
             df_to_booking_arrangements(revision, booking_arrangements)
         )
 
-        created = BookingArrangements.objects.bulk_create(
+        BookingArrangements.objects.bulk_create(
             booking_arrangements_objs, batch_size=BATCH_SIZE
         )
-
-        booking_arrangements["id"] = pd.Series((obj.id for obj in created))
-        booking_arrangements.set_index(["id"], inplace=True)
 
         return booking_arrangements

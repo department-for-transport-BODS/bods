@@ -122,7 +122,7 @@ class XmlFileParser(ETLUtility):
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
-        booking_arrangements = self.extract_booking_arrangements(doc)
+        booking_arrangements = self.extract_booking_arrangements(doc, file_id)
         logger.debug("Extracting booking_arrangements")
 
         creation_datetime = extract_timestamp(self.trans.get_creation_date_time())
@@ -235,6 +235,9 @@ class XmlFileParser(ETLUtility):
 
         return jp_sections, timing_links
 
-    def extract_booking_arrangements(self, doc):
+    def extract_booking_arrangements(self, doc, file_id: int):
         services = self.trans.get_services()
-        return booking_arrangements_to_dataframe(services)
+        df = booking_arrangements_to_dataframe(services)
+        df["file_id"] = file_id
+        df.set_index(["file_id"], inplace=True)
+        return df
