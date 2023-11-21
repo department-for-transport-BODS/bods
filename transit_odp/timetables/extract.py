@@ -90,7 +90,7 @@ class TransXChangeExtractor:
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
         booking_arrangements = self.extract_booking_arrangements()
-        logger.debug("Extracting booking_arrangements")
+        logger.debug("Finished extracting booking_arrangements")
 
         creation_datetime = extract_timestamp(self.doc.get_creation_date_time())
         modification_datetime = extract_timestamp(self.doc.get_modification_date_time())

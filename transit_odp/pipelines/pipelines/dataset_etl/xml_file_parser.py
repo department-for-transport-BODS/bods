@@ -123,7 +123,7 @@ class XmlFileParser(ETLUtility):
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
         booking_arrangements = self.extract_booking_arrangements(doc, file_id)
-        logger.debug("Extracting booking_arrangements")
+        logger.debug("Finished extracting booking_arrangements")
 
         creation_datetime = extract_timestamp(self.trans.get_creation_date_time())
         modification_datetime = extract_timestamp(
