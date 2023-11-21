@@ -10,6 +10,8 @@ from ddt import data, ddt, unpack
 from django.contrib.gis.geos import Point
 from django.core.files import File
 from django.test import TestCase
+from unittest.mock import patch, MagicMock
+
 
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
@@ -17,17 +19,21 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
+    DatasetRevision,
 )
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
 from transit_odp.pipelines.pipelines.dataset_etl.transform import Transform
+from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.timetables.extract import TransXChangeExtractor
-from transit_odp.transmodel.models import Service, ServiceLink, ServicePatternStop
+from transit_odp.transmodel.models import Service, ServiceLink, ServicePatternStop, BookingArrangements
 from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
+from transit_odp.timetables.loaders import TransXChangeDataLoader
+from transit_odp.transmodel.factories import ServiceFactory
 
 TZ = tz.gettz("Europe/London")
 EMPTY_TIMESTAMP = None
@@ -87,16 +93,16 @@ class ExtractBaseTestCase(TestCase):
                 xml_stoppointref, "x:StopPointRef"
             )
             common_name = xml_toolkit.get_child_text(xml_stoppointref, "x:CommonName")
-
-            stoppoint = StopPoint(
-                naptan_code=stoppoint_naptan,
-                atco_code=stoppoint_naptan,
-                common_name=common_name,
-                location=Point(0, 0),
-                locality=self.get_locality(locality_name),
-                admin_area=self.admin,
-            )
-            stoppoint.save()
+            if locality_name:
+                stoppoint = StopPoint(
+                    naptan_code=stoppoint_naptan,
+                    atco_code=stoppoint_naptan,
+                    common_name=common_name,
+                    location=Point(0, 0),
+                    locality=self.get_locality(locality_name),
+                    admin_area=self.admin,
+                )
+                stoppoint.save()
 
     # Get or create a locality by name
     def get_locality(self, name: str):
@@ -789,3 +795,141 @@ class ExtractUtilitiesTestCase(TestCase):
 
         # Assert
         self.assertTrue(check_frame_equal(actual, expected))
+
+@ddt
+class ETLBookingArrangements(ExtractBaseTestCase):
+    """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
+
+    test_file = "data/test_extract_booking_arrangements.xml"
+
+    def test_extract(self):
+        #setup
+        file_id = hash(self.file_obj.file)
+
+        # test
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # assert
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {   "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index(["file_id"])
+
+        self.assertTrue(check_frame_equal(extracted.booking_arrangements, booking_arrangements_expected))
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            ["service_code",
+            "description",
+            "tel_national_number",
+            "email",
+            "web_address",
+        ],
+        )
+        self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
+
+    def test_transform(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        # assert services
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {   "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index(["file_id"])
+        self.assertTrue(check_frame_equal(transformed.booking_arrangements, booking_arrangements_expected))
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            ["service_code",
+            "description",
+            "tel_national_number",
+            "email",
+            "web_address",
+        ],
+        )
+        self.assertEqual(transformed.booking_arrangements.index.names, ["file_id"])
+
+    @patch("transit_odp.timetables.loaders.get_dataset_adapter_from_revision")
+    @patch("transit_odp.transmodel.models.BookingArrangements.objects.bulk_create")
+    @patch("transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes.Service.objects.get")
+    def test_load(self, mock_service_get, mock_bulk_create, mock_get_dataset_adapter):
+        logger = MagicMock()
+        mock_get_dataset_adapter.return_value = MagicMock(info=logger.info)
+
+        booking_arrangements = pd.DataFrame({
+            "file_id": 1,
+            "service_code": ["PF0000508:53"],
+            "description": ["The booking office is open"],
+            "tel_national_number": ["0345 234 3344"],
+            "email": ["CallConnect@lincolnshire.gov.uk"],
+            "web_address": ["https://callconnect.opendrt.co.uk/OpenDRT/"],
+        }).set_index(["file_id"])
+
+        services = pd.DataFrame()
+        service_patterns = pd.DataFrame()
+        service_pattern_to_service_links = pd.DataFrame()
+        service_links = pd.DataFrame()
+        stop_points = pd.DataFrame()
+        service_pattern_stops = pd.DataFrame()
+        schema_version = ""
+        creation_datetime = ""
+        modification_datetime = ""
+        import_datetime = ""
+        line_count = ""
+        line_names = ""
+        stop_count = ""
+        most_common_localities = ""
+        timing_point_count = ""
+
+        transformed = TransformedData(
+            services=services,
+            service_patterns=service_patterns,
+            service_pattern_to_service_links=service_pattern_to_service_links,
+            service_links=service_links,
+            stop_points=stop_points,
+            service_pattern_stops=service_pattern_stops,
+            booking_arrangements=booking_arrangements,
+            schema_version=schema_version,
+            creation_datetime=creation_datetime,
+            modification_datetime=modification_datetime,
+            import_datetime=import_datetime,
+            line_count=line_count,
+            line_names=line_names,
+            stop_count=stop_count,
+            most_common_localities=most_common_localities,
+            timing_point_count=timing_point_count,
+        )
+
+        service_cache = []
+        service_link_cache = []
+
+        revision = DatasetRevision(id=1)
+
+        mock_service_instance = ServiceFactory()
+        mock_service_get.return_value = mock_service_instance
+
+        mock_created_objects = [MagicMock(id=1)]
+        mock_bulk_create.return_value = mock_created_objects
+
+        data_loader = TransXChangeDataLoader(transformed, service_cache, service_link_cache)
+        result_df = data_loader.load_booking_arrangements(revision)
+
+        actual_created_objects_ids = [obj.id for obj in mock_created_objects]
+        self.assertEqual(list(result_df.index), actual_created_objects_ids)
