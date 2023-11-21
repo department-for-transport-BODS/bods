@@ -87,6 +87,7 @@ class DisruptionsDataView(ListView):
         if self.content is None:
             return []
 
+        search = self.request.GET.get("q", "").strip()
         ordering = self.request.GET.get("ordering", "-modified")
 
         if ordering not in ["-modified", "name", "-name"]:
@@ -96,8 +97,10 @@ class DisruptionsDataView(ListView):
 
         orgs_to_show = list(
             filter(
-                lambda d: d["stats"]["lastUpdated"]
-                or d["stats"]["totalDisruptionsCount"],
+                lambda d: (
+                    d["stats"]["lastUpdated"] or d["stats"]["totalDisruptionsCount"]
+                )
+                and (not search or search.lower() in d["name"].lower()),
                 self.content,
             )
         )

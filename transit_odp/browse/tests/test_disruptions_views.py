@@ -180,6 +180,19 @@ class TestDisruptionsDataView:
         assert len(response.context_data["object_list"]) == 2
         assert response.context_data["object_list"][0]["name"] == "TEST2"
 
+    @patch(
+        "transit_odp.browse.views.disruptions_views._get_disruptions_organisation_data"
+    )
+    def test_display_with_search_query(self, mrequests, client_factory):
+        mrequests.return_value = (self.org_data, 200)
+        client = client_factory(host=self.host)
+        response = client.get(self.url, data={"q": "TEST2"})
+
+        assert response.status_code == 200
+        assert response.context_data["view"].template_name == self.template_path
+        assert len(response.context_data["object_list"]) == 1
+        assert response.context_data["object_list"][0]["name"] == "TEST2"
+
 
 class TestDisruptionOrganisationDetailView:
     host = DATA_HOST
