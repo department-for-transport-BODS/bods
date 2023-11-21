@@ -78,10 +78,8 @@ class DatasetDetailView(DetailView):
 
     def get_distinct_dataset_txc_attributes(self, revision_id):
         distinct_attributes = {
-            "licence_number": [],
-            "national_operator_code": [],
-            "service_codes": [],
         }
+
         distinct_licence_numbers = (
             TXCFileAttributes.objects.filter(revision_id=revision_id)
             .values_list("licence_number", flat=True)
@@ -89,7 +87,7 @@ class DatasetDetailView(DetailView):
         )
 
         for licence_number in distinct_licence_numbers:
-            distinct_attributes["licence_number"].append(licence_number)
+            
             distinct_nocs = (
                 TXCFileAttributes.objects.filter(
                     revision_id=revision_id, licence_number=licence_number
@@ -98,19 +96,36 @@ class DatasetDetailView(DetailView):
                 .distinct()
             )
 
+            license_number_nocs = {}
+        
             for noc in distinct_nocs:
-                distinct_attributes["national_operator_code"].append(noc)
-                distinct_service_codes = (
+        
+                distinct_line_names = (
                     TXCFileAttributes.objects.filter(
                         revision_id=revision_id,
                         licence_number=licence_number,
                         national_operator_code=noc,
                     )
-                    .values_list("service_code", flat=True)
+                    .values_list("line_names", flat=True)
                     .distinct()
                 )
+                noc_line_service_codes = {}
 
-                distinct_attributes["service_codes"].append(distinct_service_codes[0])
+                for line_name in distinct_line_names:
+                    distinct_service_codes = (
+                        TXCFileAttributes.objects.filter(
+                            revision_id=revision_id,
+                            licence_number=licence_number,
+                            national_operator_code=noc,
+                            line_names=line_name
+                        )
+                        .values_list("service_code", flat=True)
+                        .distinct()
+                    )
+                    noc_line_service_codes[line_name[0]] = ', '.join(map(str, distinct_service_codes))
+                license_number_nocs[noc] = noc_line_service_codes
+        
+            distinct_attributes[licence_number] = license_number_nocs
 
         return distinct_attributes
 
