@@ -796,6 +796,7 @@ class ExtractUtilitiesTestCase(TestCase):
         # Assert
         self.assertTrue(check_frame_equal(actual, expected))
 
+
 @ddt
 class ETLBookingArrangements(ExtractBaseTestCase):
     """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
@@ -803,7 +804,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
     test_file = "data/test_extract_booking_arrangements.xml"
 
     def test_extract(self):
-        #setup
+        # setup
         file_id = hash(self.file_obj.file)
 
         # test
@@ -812,7 +813,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         # assert
         booking_arrangements_expected = pd.DataFrame(
             [
-                {   "file_id": file_id,
+                {
+                    "file_id": file_id,
                     "service_code": "PF0000508:53",
                     "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
                     "tel_national_number": "0345 234 3344",
@@ -822,15 +824,20 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             ]
         ).set_index(["file_id"])
 
-        self.assertTrue(check_frame_equal(extracted.booking_arrangements, booking_arrangements_expected))
+        self.assertTrue(
+            check_frame_equal(
+                extracted.booking_arrangements, booking_arrangements_expected
+            )
+        )
         self.assertCountEqual(
             list(extracted.booking_arrangements.columns),
-            ["service_code",
-            "description",
-            "tel_national_number",
-            "email",
-            "web_address",
-        ],
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
         )
         self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
 
@@ -845,7 +852,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         # assert services
         booking_arrangements_expected = pd.DataFrame(
             [
-                {   "file_id": file_id,
+                {
+                    "file_id": file_id,
                     "service_code": "PF0000508:53",
                     "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
                     "tel_national_number": "0345 234 3344",
@@ -854,33 +862,42 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                 },
             ]
         ).set_index(["file_id"])
-        self.assertTrue(check_frame_equal(transformed.booking_arrangements, booking_arrangements_expected))
+        self.assertTrue(
+            check_frame_equal(
+                transformed.booking_arrangements, booking_arrangements_expected
+            )
+        )
         self.assertCountEqual(
             list(extracted.booking_arrangements.columns),
-            ["service_code",
-            "description",
-            "tel_national_number",
-            "email",
-            "web_address",
-        ],
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
         )
         self.assertEqual(transformed.booking_arrangements.index.names, ["file_id"])
 
     @patch("transit_odp.timetables.loaders.get_dataset_adapter_from_revision")
     @patch("transit_odp.transmodel.models.BookingArrangements.objects.bulk_create")
-    @patch("transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes.Service.objects.get")
+    @patch(
+        "transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes.Service.objects.get"
+    )
     def test_load(self, mock_service_get, mock_bulk_create, mock_get_dataset_adapter):
         logger = MagicMock()
         mock_get_dataset_adapter.return_value = MagicMock(info=logger.info)
 
-        booking_arrangements = pd.DataFrame({
-            "file_id": 1,
-            "service_code": ["PF0000508:53"],
-            "description": ["The booking office is open"],
-            "tel_national_number": ["0345 234 3344"],
-            "email": ["CallConnect@lincolnshire.gov.uk"],
-            "web_address": ["https://callconnect.opendrt.co.uk/OpenDRT/"],
-        }).set_index(["file_id"])
+        booking_arrangements = pd.DataFrame(
+            {
+                "file_id": 1,
+                "service_code": ["PF0000508:53"],
+                "description": ["The booking office is open"],
+                "tel_national_number": ["0345 234 3344"],
+                "email": ["CallConnect@lincolnshire.gov.uk"],
+                "web_address": ["https://callconnect.opendrt.co.uk/OpenDRT/"],
+            }
+        ).set_index(["file_id"])
 
         services = pd.DataFrame()
         service_patterns = pd.DataFrame()
@@ -928,7 +945,9 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         mock_created_objects = [MagicMock(id=1)]
         mock_bulk_create.return_value = mock_created_objects
 
-        data_loader = TransXChangeDataLoader(transformed, service_cache, service_link_cache)
+        data_loader = TransXChangeDataLoader(
+            transformed, service_cache, service_link_cache
+        )
         result_df = data_loader.load_booking_arrangements(revision)
 
         actual_created_objects_ids = [obj.id for obj in mock_created_objects]
