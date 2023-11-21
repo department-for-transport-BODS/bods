@@ -236,22 +236,23 @@ class TransXChangeDataLoader:
     def load_booking_arrangements(self, services, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         booking_arrangements = self.transformed.booking_arrangements
-        booking_arrangements_reset = booking_arrangements.reset_index()
-        services_reset = services.reset_index()
+        if not booking_arrangements.empty:
+            booking_arrangements_reset = booking_arrangements.reset_index()
+            services_reset = services.reset_index()
 
-        merged_df = booking_arrangements_reset.merge(
-            services_reset[["service_code", "id"]], on=["service_code"], how="left"
-        )
-        merged_df.set_index(["service_code", "id"], inplace=True)
+            merged_df = booking_arrangements_reset.merge(
+                services_reset[["service_code", "id"]], on=["service_code"], how="left"
+            )
+            merged_df.set_index(["service_code", "id"], inplace=True)
 
-        adapter.info("Bulk creating booking arrangements")
+            adapter.info("Bulk creating booking arrangements")
 
-        booking_arrangements_objs = list(
-            df_to_booking_arrangements(revision, merged_df)
-        )
+            booking_arrangements_objs = list(
+                df_to_booking_arrangements(revision, merged_df)
+            )
 
-        BookingArrangements.objects.bulk_create(
-            booking_arrangements_objs, batch_size=BATCH_SIZE
-        )
+            BookingArrangements.objects.bulk_create(
+                booking_arrangements_objs, batch_size=BATCH_SIZE
+            )
 
-        return merged_df
+            return merged_df
