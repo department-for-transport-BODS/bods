@@ -3,7 +3,7 @@
         Review Service Numbers
     </h2>
     <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-        {% for licence_number, nocs_list in distinct_attributes.items %}
+        {% for licence_number, nocs_dict in distinct_attributes.items %}
             <div class="govuk-accordion__section">
                 <div class="govuk-accordion__section-header">
                     <h2 class="govuk-accordion__section-heading">
@@ -12,19 +12,19 @@
                         </span>
                     </h2>
                 </div>
-                {% for noc, line_names_list in nocs_list.items %}
+                {% for noc, line_names_dict in nocs_dict.items %}
                     <div id="sub-accordion-content-{{ forloop.parentloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.parentloop.counter }}">
-                        <div class="govuk-accordion__section govuk-!-padding-left-9">
+                        <div class="govuk-accordion__section govuk-!-padding-left-7">
                             <div class="govuk-accordion__section-header">
                                 <h2 class="govuk-accordion__section-heading">
                                     <span class="govuk-accordion__section-button" id="sub-accordion-heading-{{ forloop.counter }}">
                                         {{ noc }}
                                     </span>
                                 </h2>
-                            </div>
+                            </div>  
                             <div id="sub-accordion-content-{{ forloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.counter }}">
-                                {% for line_name, service_codes in line_names_list.items %}
-                                    <p class="govuk-body govuk-!-margin-left-9 govuk-!-padding-bottom-3 border-bottom-custom"><a href="javascript:void(0)" class="govuk-link" title="Service Code {{ line_name }}">{{ line_name }} - {{service_codes}}</a></p>
+                                {% for line_name, service_codes in line_names_dict.items %}
+                                    <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom"><a href="javascript:void(0)" class="govuk-link" title="Service Code {{ line_name }}">{{ line_name }} - {{ service_codes|join:", "}}</a></p>
                                 {% endfor %}
                             </div>
                         </div>

@@ -77,52 +77,18 @@ class DatasetDetailView(DetailView):
         )
 
     def get_distinct_dataset_txc_attributes(self, revision_id):
-        distinct_attributes = {}
-        distinct_licence_numbers = (
-            TXCFileAttributes.objects.filter(revision_id=revision_id)
-            .values_list("licence_number", flat=True)
-            .distinct()
-        )
-        
-        for licence_number in distinct_licence_numbers:   
-            distinct_nocs = (
-                TXCFileAttributes.objects.filter(
-                    revision_id=revision_id, licence_number=licence_number
-                )
-                .values_list("national_operator_code", flat=True)
-                .distinct()
-            )
-            license_number_nocs = {}
-        
-            for noc in distinct_nocs:
-                distinct_line_names = (
-                    TXCFileAttributes.objects.filter(
-                        revision_id=revision_id,
-                        licence_number=licence_number,
-                        national_operator_code=noc,
-                    )
-                    .values_list("line_names", flat=True)
-                    .distinct()
-                )
-                noc_line_service_codes = {}
+        txc_attributes = {}
+        txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
 
-                for line_name in distinct_line_names:
-                    distinct_service_codes = (
-                        TXCFileAttributes.objects.filter(
-                            revision_id=revision_id,
-                            licence_number=licence_number,
-                            national_operator_code=noc,
-                            line_names=line_name
-                        )
-                        .values_list("service_code", flat=True)
-                        .distinct()
-                    )
-                    noc_line_service_codes[line_name[0]] = ', '.join(map(str, distinct_service_codes))
-                license_number_nocs[noc] = noc_line_service_codes
-        
-            distinct_attributes[licence_number] = license_number_nocs
+        for file_attribute in txc_file_attributes:
+            noc_dict = txc_attributes.setdefault(
+                file_attribute.licence_number, {}
+            ).setdefault(file_attribute.national_operator_code, {})
+            line_names_dict = noc_dict.setdefault(file_attribute.line_names[0], set())
 
-        return distinct_attributes
+            line_names_dict.add(file_attribute.service_code)
+
+        return txc_attributes
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -165,9 +131,9 @@ class DatasetDetailView(DetailView):
             feed_api = f"{feed_api}?api_key={user.auth_token}"
 
         kwargs.update({"notification": is_subscribed, "feed_api": feed_api})
-
-        distinct_attributes = self.get_distinct_dataset_txc_attributes(live_revision.id)
-        kwargs["distinct_attributes"] = distinct_attributes
+        kwargs["distinct_attributes"] = self.get_distinct_dataset_txc_attributes(
+            live_revision.id
+        )
 
         return kwargs
 

@@ -7,7 +7,7 @@ import config.hosts
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType
-from transit_odp.organisation.models import Dataset, TXCFileAttributes
+from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
@@ -17,6 +17,7 @@ from transit_odp.timetables.views.constants import (
     ERROR_CODE_LOOKUP,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
+from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
 
 
 class BaseTimetableReviewView(ReviewBaseView):
@@ -100,62 +101,14 @@ class BaseTimetableReviewView(ReviewBaseView):
 class PublishRevisionView(BaseTimetableReviewView):
     template_name = "publish/revision_review/index.html"
 
-    def get_distinct_dataset_txc_attributes(self, revision_id):
-        
-        distinct_attributes = {}
-
-        distinct_licence_numbers = (
-            TXCFileAttributes.objects.filter(revision_id=revision_id)
-            .values_list("licence_number", flat=True)
-            .distinct()
-        )
-
-        for licence_number in distinct_licence_numbers:
-            distinct_nocs = (
-                TXCFileAttributes.objects.filter(
-                    revision_id=revision_id, licence_number=licence_number
-                )
-                .values_list("national_operator_code", flat=True)
-                .distinct()
-            )
-            license_number_nocs = {}
-
-            for noc in distinct_nocs:
-                distinct_line_names = (
-                    TXCFileAttributes.objects.filter(
-                        revision_id=revision_id,
-                        licence_number=licence_number,
-                        national_operator_code=noc,
-                    )
-                    .values_list("line_names", flat=True)
-                    .distinct()
-                )
-                noc_line_service_codes = {}
-
-                for line_name in distinct_line_names:
-                    distinct_service_codes = (
-                        TXCFileAttributes.objects.filter(
-                            revision_id=revision_id,
-                            licence_number=licence_number,
-                            national_operator_code=noc,
-                            line_names=line_name
-                        )
-                        .values_list("service_code", flat=True)
-                        .distinct()
-                    )
-                    noc_line_service_codes[line_name[0]] = ', '.join(map(str, distinct_service_codes))
-                license_number_nocs[noc] = noc_line_service_codes
-        
-            distinct_attributes[licence_number] = license_number_nocs
-
-        return distinct_attributes
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         revision = self.object
-        dataset_txc_attributes = self.get_distinct_dataset_txc_attributes(revision.id)
         context.update(
-            {"is_update": False, "distinct_attributes": dataset_txc_attributes}
+            {
+                "is_update": False,
+                "distinct_attributes": get_distinct_dataset_txc_attributes(revision.id),
+            }
         )
         return context
 
