@@ -4,7 +4,6 @@ from transit_odp.browse.views.disruptions_views import (
     DisruptionsDataView,
     DownloadDisruptionsDataArchiveView,
     DownloadDisruptionsView,
-    DisruptionsDataView,
 )
 
 urlpatterns = [

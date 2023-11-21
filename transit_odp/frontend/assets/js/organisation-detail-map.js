@@ -95,7 +95,7 @@ const initOrgMap = (apiRoot, orgId) => {
         type: "circle",
         source: "organisation-stops",
         paint: {
-          "circle-color": "#49A39A",
+          "circle-color": "#2E8CD2",
           "circle-radius": 5,
         },
       });
@@ -110,7 +110,7 @@ const initOrgMap = (apiRoot, orgId) => {
           "line-cap": "round",
         },
         paint: {
-          "line-color": "#49A39A",
+          "line-color": "#2E8CD2",
           "line-width": 2,
         },
       });
@@ -121,15 +121,6 @@ const initOrgMap = (apiRoot, orgId) => {
         type: "line",
         source: "organisation-services",
         layout: {},
-        paint: {
-          "line-color": "#34746e",
-          "line-width": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            4.5,
-            0,
-          ],
-        },
       });
 
       // When the user moves their mouse over the state-fill layer, we'll update the

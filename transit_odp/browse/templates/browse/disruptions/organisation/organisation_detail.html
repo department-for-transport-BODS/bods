@@ -5,7 +5,7 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-    {% trans name %}
+    {% trans 'Organisation Detail' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
@@ -13,7 +13,7 @@
     {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
     <li class="govuk-breadcrumbs__list-item">
         <a class="govuk-breadcrumbs__link" href="{% url 'disruptions-data' host hosts.data %}">
-            Disruptions data
+            Disruption data
         </a>
     </li>
     {% with name=object.name|truncatechars:19 %}
@@ -30,7 +30,7 @@
             {% include "browse/disruptions/organisation/success_content.html" %}   
             {% endif %}
         </div>
-        {% include "browse/snippets/download_secondary_links.html" %}   
+        {% include "browse/disruptions/organisation/related_links.html" %}
     </div>
 {% endblock %}
 
