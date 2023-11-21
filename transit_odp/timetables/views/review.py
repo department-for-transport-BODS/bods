@@ -119,7 +119,7 @@ class PublishRevisionView(BaseTimetableReviewView):
                 .distinct()
             )
             license_number_nocs = {}
-            
+
             for noc in distinct_nocs:
                 distinct_line_names = (
                     TXCFileAttributes.objects.filter(
@@ -155,7 +155,7 @@ class PublishRevisionView(BaseTimetableReviewView):
         revision = self.object
         dataset_txc_attributes = self.get_distinct_dataset_txc_attributes(revision.id)
         context.update(
-            {"is_update": False, "dataset_txc_attributes": dataset_txc_attributes}
+            {"is_update": False, "distinct_attributes": dataset_txc_attributes}
         )
         return context
 
