@@ -11,7 +11,7 @@
                 </div>
                 <div id="sub-accordion-content-{{ loop.index }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ loop.index }}">
                     {% for noc in dataset_txc_attributes.national_operator_code %}
-                        <div class="govuk-accordion__section">
+                        <div class="govuk-accordion__section govuk-!-padding-left-9">
                             <div class="govuk-accordion__section-header">
                                 <h2 class="govuk-accordion__section-heading">
                                     <span class="govuk-accordion__section-button" id="sub-accordion-heading-{{ loop.parentloop.index }}-{{ loop.index }}">
@@ -21,7 +21,7 @@
                             </div>
                             <div id="sub-accordion-content-{{ loop.parentloop.index }}-{{ loop.index }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ loop.parentloop.index }}-{{ loop.index }}">
                                 {% for service_code in dataset_txc_attributes.service_codes %}
-                                    <p class="govuk-body">{{ forloop.counter }} - {{ service_code }}</p>
+                                    <p class="govuk-body govuk-!-padding-left-9"><a href="javascript:void(0)" class="govuk-link" title="Service Code {{ forloop.counter }} - {{ service_codes }}">{{ forloop.counter }} - {{ service_code }}</a></p>
                                 {% endfor %}
                             </div>
                         </div>
