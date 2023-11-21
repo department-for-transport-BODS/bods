@@ -238,6 +238,4 @@ class XmlFileParser(ETLUtility):
     def extract_booking_arrangements(self, doc, file_id: int):
         services = self.trans.get_services()
         df = booking_arrangements_to_dataframe(services)
-        df["file_id"] = file_id
-        df.set_index(["file_id"], inplace=True)
         return df
