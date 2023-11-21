@@ -206,6 +206,8 @@ class TransXChangeExtractor:
     def extract_booking_arrangements(self):
         services = self.doc.get_services()
         df = booking_arrangements_to_dataframe(services)
+        df["file_id"] = self.file_id
+        df.set_index(["file_id"], inplace=True)
         return df
 
 
@@ -280,7 +282,7 @@ class TransXChangeZipExtractor:
             stop_count=len(
                 concat_and_dedupe((extract.stop_points for extract in extracts))
             ),
-            booking_arrangements=concat_and_dedupe(
+            booking_arrangements=pd.concat(
                 (extract.booking_arrangements for extract in extracts)
             ),
         )

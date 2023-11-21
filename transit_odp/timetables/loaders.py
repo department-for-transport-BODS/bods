@@ -241,7 +241,9 @@ class TransXChangeDataLoader:
             services_reset = services.reset_index()
 
             merged_df = booking_arrangements_reset.merge(
-                services_reset[["service_code", "id"]], on=["service_code"], how="left"
+                services_reset[["file_id", "service_code", "id"]],
+                on=["file_id", "service_code"],
+                how="left",
             )
             merged_df.set_index(["service_code", "id"], inplace=True)
 

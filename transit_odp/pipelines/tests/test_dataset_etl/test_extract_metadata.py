@@ -804,6 +804,9 @@ class ETLBookingArrangements(ExtractBaseTestCase):
     test_file = "data/test_extract_booking_arrangements.xml"
 
     def test_extract(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
@@ -811,6 +814,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         booking_arrangements_expected = pd.DataFrame(
             [
                 {
+                    "file_id": file_id,
                     "service_code": "PF0000508:53",
                     "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
                     "tel_national_number": "0345 234 3344",
@@ -818,10 +822,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                     "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
                 },
             ]
-        )
-
-        print(f"the test case is >>>>>> {extracted.booking_arrangements}")
-        print(f"the test case value 2 >>>>>> {booking_arrangements_expected}")
+        ).set_index("file_id")
 
         self.assertTrue(
             check_frame_equal(
@@ -838,6 +839,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                 "web_address",
             ],
         )
+        self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
@@ -851,6 +853,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         booking_arrangements_expected = pd.DataFrame(
             [
                 {
+                    "file_id": file_id,
                     "service_code": "PF0000508:53",
                     "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
                     "tel_national_number": "0345 234 3344",
@@ -858,7 +861,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                     "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
                 },
             ]
-        )
+        ).set_index("file_id")
         self.assertTrue(
             check_frame_equal(
                 transformed.booking_arrangements, booking_arrangements_expected
