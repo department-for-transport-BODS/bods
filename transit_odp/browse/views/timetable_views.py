@@ -77,17 +77,14 @@ class DatasetDetailView(DetailView):
         )
 
     def get_distinct_dataset_txc_attributes(self, revision_id):
-        distinct_attributes = {
-        }
-
+        distinct_attributes = {}
         distinct_licence_numbers = (
             TXCFileAttributes.objects.filter(revision_id=revision_id)
             .values_list("licence_number", flat=True)
             .distinct()
         )
-
-        for licence_number in distinct_licence_numbers:
-            
+        
+        for licence_number in distinct_licence_numbers:   
             distinct_nocs = (
                 TXCFileAttributes.objects.filter(
                     revision_id=revision_id, licence_number=licence_number
@@ -95,11 +92,9 @@ class DatasetDetailView(DetailView):
                 .values_list("national_operator_code", flat=True)
                 .distinct()
             )
-
             license_number_nocs = {}
         
             for noc in distinct_nocs:
-        
                 distinct_line_names = (
                     TXCFileAttributes.objects.filter(
                         revision_id=revision_id,
