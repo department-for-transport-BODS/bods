@@ -2,7 +2,7 @@ from _elementtree import ParseError
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.http import JsonResponse
-from config import settings
+from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
@@ -23,11 +23,6 @@ from transit_odp.fares.models import FaresMetadata
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import ServicePattern
-
-from django.views import View
-from django.http import JsonResponse
-from django.conf import settings
-from rest_framework.views import APIView
 
 
 class DatasetRevisionViewSet(viewsets.ReadOnlyModelViewSet):

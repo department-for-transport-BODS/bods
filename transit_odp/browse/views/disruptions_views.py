@@ -1,26 +1,24 @@
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django_hosts import reverse
-import config.hosts
-from collections import ChainMap
+from django.core.paginator import Paginator
+from django.views.generic.list import ListView
+from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
 from transit_odp.organisation.constants import DatasetType
+from transit_odp.browse.views.base_views import (
+    BaseTemplateView,
+)
 
+import config.hosts
 import logging
 import requests
 from requests import RequestException
 from rest_framework import status
-from django.conf import settings
-from django.utils.translation import gettext_lazy as _
-from transit_odp.browse.views.base_views import (
-    BaseTemplateView,
-)
-from django.core.paginator import Paginator
-from django.views.generic.list import ListView
-from django.core.paginator import Paginator
 from datetime import datetime
 
 
