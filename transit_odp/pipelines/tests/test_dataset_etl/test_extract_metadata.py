@@ -30,7 +30,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result impor
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.timetables.extract import TransXChangeExtractor
-from transit_odp.transmodel.models import Service, ServiceLink, ServicePatternStop, BookingArrangements
+from transit_odp.transmodel.models import Service, ServiceLink, ServicePatternStop
 from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 from transit_odp.timetables.loaders import TransXChangeDataLoader
 from transit_odp.transmodel.factories import ServiceFactory
