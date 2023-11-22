@@ -1,0 +1,31 @@
+{% extends 'browse/base.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Browse Disruption Data' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+  {% breadcrumb 'Disruption data' %}
+{% endblock %}
+
+{% block full_width_content %}
+  <form>
+    {% with title="Disruption data" description="Search for specific LTA" placeholder="Search by LTA" %}
+      {% include "browse/snippets/search_banner.html" %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row govuk-!-margin-top-4">
+        {% include "browse/snippets/search_list.html" with items=api_data ordering=ordering hide_filters_box=True %}
+    </div>
+  </form>
+{% endblock %}
