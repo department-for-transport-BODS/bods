@@ -18,6 +18,9 @@ router.register(r"revision", views.DatasetRevisionViewSet, "revision")
 router.register(r"stop_point", views.StopViewSet, "stop")
 router.register(r"service_pattern", views.ServicePatternViewSet, "service_pattern")
 router.register(r"fare_stops", views.FareStopsViewSet, "fare_stops")
+router.register(
+    r"organisation_map_data", views.DisruptionsInOrganisationView, "organisation_stops"
+)
 
 urlpatterns = [
     url("", include(router.urls)),
