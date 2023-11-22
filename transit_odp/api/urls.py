@@ -32,7 +32,7 @@ router_v2.register(r"avlfeeds", viewset=v2.DatafeedViewSet, basename="avlfeeds")
 schema_view = get_swagger_view(title="Timetables Data API")
 avl_views = get_swagger_view(title="Bus Location Data API")
 fares_views = get_swagger_view(title="Fares Data API")
-disruptions_views = get_swagger_view(title="Disruptions Data API")
+disruptions_views = get_swagger_view(title="Disruption Data API")
 
 urlpatterns = [
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),

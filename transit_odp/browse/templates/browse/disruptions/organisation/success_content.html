@@ -5,7 +5,7 @@
 {% include 'browse/disruptions/banner.html' %}
 {% endif %}
 <div class="govuk-!-margin-bottom-2">
-    <span class="govuk-body">{% trans 'Overview of the available disruption data' %}</span>
+    <span class="govuk-body">{% trans 'Overview of the available active disruption data' %}</span>
 </div>
 {% include 'publish/snippets/dataset_map.html' %}
 <div class="govuk-grid-row govuk-!-margin-top-6">
@@ -19,7 +19,7 @@
     </div>
     <div class="govuk-grid-column-one-third flex-container flex-direction-column">
         <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.totalDisruptionsCount }}</span>
-        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Total disruptions'%}</span>
+        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Active disruptions'%}</span>
     </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
