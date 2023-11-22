@@ -19,8 +19,8 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
-    DatasetRevision,
 )
+from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
 from transit_odp.pipelines.pipelines.dataset_etl.transform import Transform
@@ -30,10 +30,15 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result impor
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.timetables.extract import TransXChangeExtractor
-from transit_odp.transmodel.models import Service, ServiceLink, ServicePatternStop
-from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 from transit_odp.timetables.loaders import TransXChangeDataLoader
 from transit_odp.transmodel.factories import ServiceFactory
+from transit_odp.transmodel.models import (
+    BookingArrangements,
+    Service,
+    ServiceLink,
+    ServicePatternStop,
+)
+from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 
 TZ = tz.gettz("Europe/London")
 EMPTY_TIMESTAMP = None
@@ -877,3 +882,132 @@ class ETLBookingArrangements(ExtractBaseTestCase):
                 "web_address",
             ],
         )
+
+    def test_load(self):
+
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        # test
+        result: ETLReport = self.feed_parser.load(transformed)
+
+        booking_arrangements = BookingArrangements.objects.all()
+        service = Service.objects.get(service_code="PF0000508:53")
+        service_id = None
+        if service:
+            service_id = service.id
+
+        self.assertEqual(2, result.line_count)
+        self.assertEqual(1, booking_arrangements.count())
+
+        for booking in booking_arrangements:
+            self.assertEqual(booking.service_id, service_id)
+
+    @patch("transit_odp.timetables.loaders.get_dataset_adapter_from_revision")
+    @patch("transit_odp.transmodel.models.BookingArrangements.objects.bulk_create")
+    @patch(
+        "transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes.Service.objects.get"
+    )
+    def test_load_for_same_services_multiple_files(
+        self, mock_service_get, mock_bulk_create, mock_get_dataset_adapter
+    ):
+        logger = MagicMock()
+        mock_get_dataset_adapter.return_value = MagicMock(info=logger.info)
+
+        services = pd.DataFrame(
+            [
+                {
+                    "file_id": 112,
+                    "service_code": "PF0000508:53",
+                    "start_date": datetime(2018, 10, 9, tzinfo=TZ),
+                    "end_date": EMPTY_TIMESTAMP,
+                    "line_names": ["1"],
+                    "service_type": "flexible",
+                    "id": 1,
+                },
+                {
+                    "file_id": 113,
+                    "service_code": "PF0000508:53",
+                    "start_date": datetime(2018, 10, 9, tzinfo=TZ),
+                    "end_date": EMPTY_TIMESTAMP,
+                    "line_names": ["1"],
+                    "service_type": "flexible",
+                    "id": 2,
+                },
+            ]
+        ).set_index(["file_id", "service_code"])
+
+        booking_arrangements = pd.DataFrame(
+            [
+                {
+                    "file_id": 112,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT",
+                },
+                {
+                    "file_id": 113,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT",
+                },
+            ]
+        )
+
+        service_patterns = pd.DataFrame()
+        service_pattern_to_service_links = pd.DataFrame()
+        service_links = pd.DataFrame()
+        stop_points = pd.DataFrame()
+        service_pattern_stops = pd.DataFrame()
+        schema_version = ""
+        creation_datetime = ""
+        modification_datetime = ""
+        import_datetime = ""
+        line_count = ""
+        line_names = ""
+        stop_count = ""
+        most_common_localities = ""
+        timing_point_count = ""
+
+        transformed = TransformedData(
+            services=services,
+            service_patterns=service_patterns,
+            service_pattern_to_service_links=service_pattern_to_service_links,
+            service_links=service_links,
+            stop_points=stop_points,
+            service_pattern_stops=service_pattern_stops,
+            booking_arrangements=booking_arrangements,
+            schema_version=schema_version,
+            creation_datetime=creation_datetime,
+            modification_datetime=modification_datetime,
+            import_datetime=import_datetime,
+            line_count=line_count,
+            line_names=line_names,
+            stop_count=stop_count,
+            most_common_localities=most_common_localities,
+            timing_point_count=timing_point_count,
+        )
+
+        service_cache = []
+        service_link_cache = []
+
+        revision = DatasetRevision(id=1)
+
+        mock_service_get.side_effect = [ServiceFactory(), ServiceFactory()]
+
+        mock_bulk_create.return_value = [MagicMock(id=1), MagicMock(id=2)]
+
+        data_loader = TransXChangeDataLoader(
+            transformed, service_cache, service_link_cache
+        )
+        result_df = data_loader.load_booking_arrangements(services, revision)
+
+        booking_arrangements = BookingArrangements.objects.all()
+
+        self.assertEqual(2, result_df.shape[0])
+
+        self.assertListEqual([1, 2], result_df.index.get_level_values("id").tolist())
