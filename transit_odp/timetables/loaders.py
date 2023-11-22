@@ -10,6 +10,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_service_links,
     df_to_service_patterns,
     df_to_services,
+    df_to_booking_arrangements,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -28,7 +29,12 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
-from transit_odp.transmodel.models import Service, ServiceLink, ServicePattern
+from transit_odp.transmodel.models import (
+    Service,
+    ServiceLink,
+    ServicePattern,
+    BookingArrangements,
+)
 
 BATCH_SIZE = 2000
 logger = get_task_logger(__name__)
@@ -51,6 +57,10 @@ class TransXChangeDataLoader:
         adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
         adapter.info("Finished loading service patterns.")
+
+        adapter.info("Loading booking arrangements.")
+        self.load_booking_arrangements(services, revision)
+        adapter.info("Finished loading booking arrangements.")
 
         adapter.info("Producing ETLReport.")
         report = self.produce_report(revision, start_time)
@@ -222,3 +232,29 @@ class TransXChangeDataLoader:
 
         adapter.info("Finished loading service patterns.")
         return service_patterns
+
+    def load_booking_arrangements(self, services, revision):
+        adapter = get_dataset_adapter_from_revision(logger, revision=revision)
+        booking_arrangements = self.transformed.booking_arrangements
+        if not booking_arrangements.empty:
+            booking_arrangements_reset = booking_arrangements.reset_index()
+            services_reset = services.reset_index()
+
+            merged_df = booking_arrangements_reset.merge(
+                services_reset[["file_id", "service_code", "id"]],
+                on=["file_id", "service_code"],
+                how="left",
+            )
+            merged_df.set_index(["service_code", "id"], inplace=True)
+
+            adapter.info("Bulk creating booking arrangements")
+
+            booking_arrangements_objs = list(
+                df_to_booking_arrangements(revision, merged_df)
+            )
+
+            BookingArrangements.objects.bulk_create(
+                booking_arrangements_objs, batch_size=BATCH_SIZE
+            )
+
+            return merged_df
