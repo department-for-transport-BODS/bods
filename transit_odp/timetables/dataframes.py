@@ -195,14 +195,23 @@ def booking_arrangements_to_dataframe(services):
 
                 for booking_arrangement in booking_arrangements:
                     description = booking_arrangement.get_element(["Description"]).text
-                    phone_element = booking_arrangement.get_element(["Phone"])
+                    phone_element = booking_arrangement.get_element_or_none(["Phone"])
                     tel_national_number = (
                         phone_element.get_element(["TelNationalNumber"]).text
                         if phone_element
                         else None
                     )
-                    email = booking_arrangement.get_element(["Email"]).text
-                    web_address = booking_arrangement.get_element(["WebAddress"]).text
+                    email_element = booking_arrangement.get_element_or_none(["Email"])
+                    email = None
+                    if email_element:
+                        email = email_element.text
+
+                    web_address_element = booking_arrangement.get_element_or_none(
+                        ["WebAddress"]
+                    )
+                    web_address = None
+                    if web_address_element:
+                        web_address = web_address_element.text
 
                     booking_arrangement_props.append(
                         {

@@ -231,10 +231,9 @@ def df_to_booking_arrangements(
 ) -> Iterator[BookingArrangements]:
     for record in df.reset_index().to_dict("records"):
         service_id = record["id"]
-        service = Service.objects.get(id=service_id, revision__id=revision.id)
 
         yield BookingArrangements(
-            service=service,
+            service_id=service_id,
             description=record["description"],
             email=record["email"],
             phone_number=record["tel_national_number"],
