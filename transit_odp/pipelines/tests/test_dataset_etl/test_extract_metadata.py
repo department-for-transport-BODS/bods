@@ -1011,3 +1011,126 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         self.assertEqual(2, result_df.shape[0])
 
         self.assertListEqual([1, 2], result_df.index.get_level_values("id").tolist())
+
+
+@ddt
+class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
+    """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
+
+    test_file = "data/test_extract_booking_arrangements_with_minimum_elements.xml"
+
+    def test_extract(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+
+        # test
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # assert
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index("file_id")
+
+        self.assertTrue(
+            check_frame_equal(
+                extracted.booking_arrangements, booking_arrangements_expected
+            )
+        )
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
+        )
+        self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
+
+    def test_transform(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        # assert services
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index("file_id")
+
+        self.assertTrue(
+            check_frame_equal(
+                transformed.booking_arrangements, booking_arrangements_expected
+            )
+        )
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
+        )
+
+    def test_load(self):
+
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        # test
+        result: ETLReport = self.feed_parser.load(transformed)
+
+        booking_arrangements = BookingArrangements.objects.all()
+        service = Service.objects.get(service_code="PF0000508:53")
+        service_id = None
+        if service:
+            service_id = service.id
+
+        self.assertEqual(2, result.line_count)
+        self.assertEqual(3, booking_arrangements.count())
+
+        for booking in booking_arrangements:
+            self.assertEqual(booking.service_id, service_id)
