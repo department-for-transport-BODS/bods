@@ -45,6 +45,7 @@ from transit_odp.organisation.models import (
     Dataset,
     DatasetRevision,
     DatasetSubscription,
+    TXCFileAttributes,
 )
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.site_admin.models import ResourceRequestCounter
@@ -74,6 +75,20 @@ class DatasetDetailView(DetailView):
             .select_related("live_revision")
             .add_is_live_pti_compliant()
         )
+
+    def get_distinct_dataset_txc_attributes(self, revision_id):
+        txc_attributes = {}
+        txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
+
+        for file_attribute in txc_file_attributes:
+            noc_dict = txc_attributes.setdefault(
+                file_attribute.licence_number, {}
+            ).setdefault(file_attribute.national_operator_code, {})
+            line_names_dict = noc_dict.setdefault(file_attribute.line_names[0], set())
+
+            line_names_dict.add(file_attribute.service_code)
+
+        return txc_attributes
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -116,6 +131,9 @@ class DatasetDetailView(DetailView):
             feed_api = f"{feed_api}?api_key={user.auth_token}"
 
         kwargs.update({"notification": is_subscribed, "feed_api": feed_api})
+        kwargs["distinct_attributes"] = self.get_distinct_dataset_txc_attributes(
+            live_revision.id
+        )
 
         return kwargs
 
