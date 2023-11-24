@@ -1,6 +1,62 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "December 2023 (1.32.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            Functionality to enable flexible services to be published.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the way we measure the 12 month timeliness check and the way this impacts services that require attention.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the naming convention used in the Timetable Data catalogue service completeness report.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the naming convention used in the Operator completeness report.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A simplification to the way dataset pages are displayed.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A bug fix to the way the RAG status and score shows for Data Quality Service reports.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the way the Data Quality Service monitoring is displayed to the user.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix for line names published in a TxC file within the LTA completeness report.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Various fixes to grammar across the site.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "November 2023 (1.31.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
