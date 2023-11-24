@@ -135,3 +135,7 @@ fieldset {
 .hidden-overflow {
   overflow: hidden;
 }
+
+.border-bottom-custom {
+  border-bottom: $govuk-accordion-bottom-border-width solid $govuk-border-colour;
+}

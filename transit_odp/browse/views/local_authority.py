@@ -189,7 +189,8 @@ class LocalAuthorityView(BaseListView):
         names = []
         name_set = set()
 
-        for lta in all_ltas_current_page:
+        all_ltas = self.get_queryset()
+        for lta in all_ltas:
             cleaned_name = lta.ui_lta_name_trimmed.replace("\xa0", " ")
             if cleaned_name not in name_set:
                 names.append(cleaned_name)

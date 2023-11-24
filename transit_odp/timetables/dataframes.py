@@ -21,6 +21,7 @@ def services_to_dataframe(services):
         service_code = service.get_element("ServiceCode").text
         start_date = service.get_element(["OperatingPeriod", "StartDate"]).text
         end_date = service.get_element_or_none(["OperatingPeriod", "EndDate"])
+        flexible_service = service.get_element_or_none(["FlexibleService"])
         if end_date:
             end_date = end_date.text
         line_names = service.get_elements(["Lines", "Line", "LineName"])
@@ -34,6 +35,10 @@ def services_to_dataframe(services):
         end_datetime = (
             end_datetime.replace(hour=23, minute=59) if end_datetime else None
         )
+        service_type = "standard"
+
+        if flexible_service:
+            service_type = "flexible"
 
         items.append(
             {
@@ -41,10 +46,11 @@ def services_to_dataframe(services):
                 "start_date": start_datetime,
                 "end_date": end_datetime,
                 "line_names": [node.text for node in line_names],
+                "service_type": service_type,
             }
         )
 
-    columns = ["service_code", "start_date", "end_date", "line_names"]
+    columns = ["service_code", "start_date", "end_date", "line_names", "service_type"]
     return pd.DataFrame(items, columns=columns)
 
 
@@ -105,7 +111,6 @@ def journey_patterns_to_dataframe(services):
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
-
     journey_patterns = pd.DataFrame(all_items)
     # Note - 'journey_pattern_id' is not necessarily unique across all
     # services so we make it unique by service_code
@@ -113,6 +118,7 @@ def journey_patterns_to_dataframe(services):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
+
     return journey_patterns
 
 
@@ -169,3 +175,63 @@ def journey_pattern_sections_to_dataframe(sections):
                 )
     timing_links = pd.DataFrame(all_links)
     return timing_links
+
+
+def booking_arrangements_to_dataframe(services):
+    booking_arrangement_props = []
+    for service in services:
+        flexible_service = service.get_element_or_none(["FlexibleService"])
+
+        if flexible_service:
+            service_code = service.get_element(["ServiceCode"]).text
+            flexible_journey_patterns = flexible_service.get_elements(
+                ["FlexibleJourneyPattern"]
+            )
+
+            for flexible_journey_pattern in flexible_journey_patterns:
+                booking_arrangements = flexible_journey_pattern.get_elements(
+                    ["BookingArrangements"]
+                )
+
+                for booking_arrangement in booking_arrangements:
+                    description = booking_arrangement.get_element(["Description"]).text
+                    phone_element = booking_arrangement.get_element_or_none(["Phone"])
+                    tel_national_number = (
+                        phone_element.get_element(["TelNationalNumber"]).text
+                        if phone_element
+                        else None
+                    )
+                    email_element = booking_arrangement.get_element_or_none(["Email"])
+                    email = None
+                    if email_element:
+                        email = email_element.text
+
+                    web_address_element = booking_arrangement.get_element_or_none(
+                        ["WebAddress"]
+                    )
+                    web_address = None
+                    if web_address_element:
+                        web_address = web_address_element.text
+
+                    booking_arrangement_props.append(
+                        {
+                            "service_code": service_code,
+                            "description": description,
+                            "tel_national_number": tel_national_number,
+                            "email": email,
+                            "web_address": web_address,
+                        }
+                    )
+    booking_arrangements_df = pd.DataFrame(booking_arrangement_props)
+
+    if not booking_arrangements_df.empty:
+
+        columns = [
+            "service_code",
+            "description",
+            "tel_national_number",
+            "email",
+            "web_address",
+        ]
+        return pd.DataFrame(booking_arrangements_df, columns=columns)
+    return booking_arrangements_df
