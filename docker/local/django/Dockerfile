@@ -2,12 +2,14 @@ ARG BASE_IMAGE=python:3.10-slim
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.7.0
+    POETRY_VERSION=1.7.1
 
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
 RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
+# Install system packages
+# Existing binutils causes a dependency conflict, correct version will be installed when GDAL gets intalled
 RUN apt-get update && apt-get install -y \
             libgdal-dev \
             g++ \
@@ -41,7 +43,7 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./
 
 RUN python --version \
-    && npm install -g yarn@latest \
+    && npm install yarn\
     && yarn set version stable && yarn install \
     && pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
