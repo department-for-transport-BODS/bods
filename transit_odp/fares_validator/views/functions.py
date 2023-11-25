@@ -22,7 +22,7 @@ from ..constants import (
     TYPE_OF_TARIFF_REF_STRING,
 )
 from .response import XMLViolationDetail
-from .validation_messages import *
+import validation_messages as msg
 
 
 def _extract_text(elements, default=None):
@@ -90,7 +90,7 @@ def get_tariff_time_intervals(element):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_time_intervals,
-                MESSAGE_OBSERVATION_TARIFF_TIME_INTERVALS_MISSING,
+                msg.MESSAGE_OBSERVATION_TARIFF_TIME_INTERVALS_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -117,7 +117,7 @@ def get_individual_tariff_time_interval(element):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_time_interval,
-                    MESSAGE_OBSERVATION_TARIFF_TIME_INTERVAL_MISSING,
+                    msg.MESSAGE_OBSERVATION_TARIFF_TIME_INTERVAL_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -144,7 +144,7 @@ def get_tariff_time_interval_name(element):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_name,
-                    MESSAGE_OBSERVATION_TARIFF_NAME_MISSING,
+                    msg.MESSAGE_OBSERVATION_TARIFF_NAME_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -183,7 +183,7 @@ def get_fare_structure_time_intervals(element):
     if not time_intervals:
         sourceline = element.sourceline
         response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING
+            "violation", sourceline, msg.MESSAGE_OBSERVATION_TIME_INTERVALS_MISSING
         )
         response = response_details.__list__()
         return response
@@ -193,7 +193,9 @@ def get_fare_structure_time_intervals(element):
         if not time_interval_ref:
             sourceline = element.sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING
+                "violation",
+                sourceline,
+                msg.MESSAGE_OBSERVATION_TIME_INTERVAL_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -210,7 +212,7 @@ def get_generic_parameter_assignment_properties(element):
         response_details = XMLViolationDetail(
             "violation",
             sourceline_generic_parameter,
-            MESSAGE_OBSERVATION_GENERIC_PARAMETER,
+            msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER,
         )
         response = response_details.__list__()
         return response
@@ -220,7 +222,9 @@ def get_generic_parameter_assignment_properties(element):
     if not limitations:
         sourceline = generic_parameter_assignment[0].sourceline
         response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION
+            "violation",
+            sourceline,
+            msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION,
         )
         response = response_details.__list__()
         return response
@@ -230,7 +234,7 @@ def get_generic_parameter_assignment_properties(element):
         if not round_trip:
             sourceline = limitation.sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_ROUND_TRIP_MISSING
+                "violation", sourceline, msg.MESSAGE_OBSERVATION_ROUND_TRIP_MISSING
             )
             response = response_details.__list__()
             return response
@@ -239,7 +243,7 @@ def get_generic_parameter_assignment_properties(element):
         if not trip_type:
             sourceline = round_trip[0].sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_TRIP_TYPE_MISSING
+                "violation", sourceline, msg.MESSAGE_OBSERVATION_TRIP_TYPE_MISSING
             )
             response = response_details.__list__()
             return response
@@ -331,7 +335,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_type_of_frame_ref,
-                    MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -342,7 +346,7 @@ def is_fare_zones_present_in_fare_frame(context, fare_zones, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_zone,
-                    MESSAGE_OBSERVATION_FARE_ZONE_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_ZONE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -373,7 +377,7 @@ def is_name_present_in_fare_frame(context, fare_zones, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_type_of_frame_ref,
-                    MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -387,7 +391,7 @@ def is_name_present_in_fare_frame(context, fare_zones, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline_zone,
-                        MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING,
+                        msg.MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -418,7 +422,7 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_type_of_frame_ref,
-                    MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -432,7 +436,7 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline_zone,
-                        MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING,
+                        msg.MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -443,7 +447,7 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline_schedule_stop_points,
-                        MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING,
+                        msg.MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -462,7 +466,7 @@ def get_scheduled_point_ref_text(stop_point):
         response_details = XMLViolationDetail(
             "violation",
             sourceline_stop_point,
-            MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_TEXT_MISSING,
+            msg.MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_TEXT_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -482,7 +486,7 @@ def check_value_of_type_of_frame_ref(context, composite_frames, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -496,7 +500,7 @@ def check_value_of_type_of_frame_ref(context, composite_frames, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                msg.MESSAGE_TYPE_OF_FRAME_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -508,7 +512,7 @@ def check_value_of_type_of_frame_ref(context, composite_frames, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_composite_frame,
-                MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
+                msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_TYPE_OF_FRAME_REF_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -526,7 +530,7 @@ def is_service_frame_present(context, service_frame, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 service_frame[0].sourceline,
-                MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING,
+                msg.MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -537,7 +541,7 @@ def is_service_frame_present(context, service_frame, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                msg.MESSAGE_TYPE_OF_FRAME_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -546,7 +550,7 @@ def is_service_frame_present(context, service_frame, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_frame_ref,
-                MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING,
+                msg.MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -568,7 +572,7 @@ def is_lines_present_in_service_frame(context, service_frame, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_line,
-                    MESSAGE_OBSERVATION_LINE_MISSING,
+                    msg.MESSAGE_OBSERVATION_LINE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -579,7 +583,7 @@ def is_lines_present_in_service_frame(context, service_frame, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_line,
-                    MESSAGE_OBSERVATION_NAME_MISSING,
+                    msg.MESSAGE_OBSERVATION_NAME_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -597,7 +601,7 @@ def check_lines_public_code_present(context, lines, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline_line,
-            MESSAGE_OBSERVATION_PUBLICCODE_MISSING,
+            msg.MESSAGE_OBSERVATION_PUBLICCODE_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -615,7 +619,7 @@ def check_lines_operator_ref_present(context, lines, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline_line,
-            MESSAGE_OBSERVATION_OPERATORREF_MISSING,
+            msg.MESSAGE_OBSERVATION_OPERATORREF_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -637,7 +641,7 @@ def is_schedule_stop_points(context, service_frame, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_stop_point,
-                    MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_MISSING,
+                    msg.MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -649,7 +653,7 @@ def is_schedule_stop_points(context, service_frame, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_STOP_POINT_ATTR_ID_MISSING,
+                        msg.MESSAGE_STOP_POINT_ATTR_ID_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -658,7 +662,7 @@ def is_schedule_stop_points(context, service_frame, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline_stop_point,
-                        MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_FORMAT,
+                        msg.MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_FORMAT,
                     )
                     response = response_details.__list__()
                     return response
@@ -669,7 +673,7 @@ def is_schedule_stop_points(context, service_frame, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline_stop_point,
-                        MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING,
+                        msg.MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -689,7 +693,7 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -707,7 +711,7 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                        msg.MESSAGE_TYPE_OF_FRAME_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -719,7 +723,7 @@ def check_type_of_frame_ref_ref(context, composite_frames, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_fare_frame,
-                MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
+                msg.MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -757,7 +761,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
+                        msg.MESSAGE_TYPE_OF_FARE_STRUCTURE_ELEMENT_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -775,7 +779,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
                     response_details = XMLViolationDetail(
                         "violation",
                         sourceline,
-                        MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING,
+                        msg.MESSAGE_TYPE_OF_ACCESS_RIGHT_REF_MISSING,
                     )
                     response = response_details.__list__()
                     return response
@@ -810,7 +814,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+                msg.MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
             )
             response = response_details.__list__()
             return response
@@ -818,7 +822,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+            msg.MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
         )
         response = response_details.__list__()
         return response
@@ -833,7 +837,7 @@ def all_fare_structure_element_checks(context, fare_structure_elements, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
+            msg.MESSAGE_OBSERVATION_FARE_STRUCTURE_COMBINATIONS,
         )
         response = response_details.__list__()
         return response
@@ -848,7 +852,7 @@ def check_fare_structure_element(context, fare_structure_elements, *args):
     sourceline = fare_structure_elements[0].sourceline
     if not all_fare_structure_elements:
         response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT
+            "violation", sourceline, msg.MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT
         )
         response = response_details.__list__()
         return response
@@ -860,7 +864,7 @@ def check_type_of_fare_structure_element_ref(context, fare_structure_element, *a
     sourceline = element.sourceline
     if not type_of_fare_structure_element_ref:
         response_details = XMLViolationDetail(
-            "violation", sourceline, MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF
+            "violation", sourceline, msg.MESSAGE_OBSERVATION_FARE_STRUCTURE_ELEMENT_REF
         )
         response = response_details.__list__()
         return response
@@ -906,7 +910,7 @@ def check_type_of_tariff_ref_values(context, elements, *args):
         if not is_type_of_tariff_ref:
             sourceline = element.sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_REF_MISSING
+                "violation", sourceline, msg.MESSAGE_OBSERVATION_TARIFF_REF_MISSING
             )
             response = response_details.__list__()
             return response
@@ -917,14 +921,14 @@ def check_type_of_tariff_ref_values(context, elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline,
-                MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING,
+                msg.MESSAGE_OBSERVATION_TYPE_OF_TARIFF_REF_MISSING,
             )
             response = response_details.__list__()
             return response
         if type_of_tariff_ref_ref not in TYPE_OF_TARIFF_REF_STRING:
             sourceline = is_type_of_tariff_ref[0].sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
+                "violation", sourceline, msg.MESSAGE_OBSERVATION_INCORRECT_TARIFF_REF
             )
             response = response_details.__list__()
             return response
@@ -953,7 +957,9 @@ def check_tariff_operator_ref(context, elements, *args):
         if not (operator_ref or multi_operator_ref):
             sourceline = element.sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING
+                "violation",
+                sourceline,
+                msg.MESSAGE_OBSERVATION_TARIFF_OPERATOR_REF_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -969,7 +975,7 @@ def check_tariff_operator_ref(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_groups_of_operators,
-                    MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS,
+                    msg.MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS,
                 )
                 response = response_details.__list__()
                 return response
@@ -996,7 +1002,9 @@ def check_tariff_basis(context, elements, *args):
         if not tariff_basis:
             sourceline = element.sourceline
             response_details = XMLViolationDetail(
-                "violation", sourceline, MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING
+                "violation",
+                sourceline,
+                msg.MESSAGE_OBSERVATION_TARIFF_TARIFF_BASIS_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1026,7 +1034,7 @@ def check_tariff_validity_conditions(context, elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 validity_conditions_sourceline,
-                MESSAGE_OBSERVATION_TARIFF_VALIDITY_CONDITIONS_MISSING,
+                msg.MESSAGE_OBSERVATION_TARIFF_VALIDITY_CONDITIONS_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1037,7 +1045,7 @@ def check_tariff_validity_conditions(context, elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 valid_between_sourceline,
-                MESSAGE_OBSERVATION_TARIFF_VALID_BETWEEN_MISSING,
+                msg.MESSAGE_OBSERVATION_TARIFF_VALID_BETWEEN_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1048,7 +1056,7 @@ def check_tariff_validity_conditions(context, elements, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 from_date_sourceline,
-                MESSAGE_OBSERVATION_TARIFF_FROM_DATE_MISSING,
+                msg.MESSAGE_OBSERVATION_TARIFF_FROM_DATE_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1067,7 +1075,7 @@ def check_resource_frame_type_of_frame_ref_present(context, composite_frames, *a
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -1089,7 +1097,7 @@ def check_resource_frame_type_of_frame_ref_present(context, composite_frames, *a
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_resource_frame,
-                    MESSAGE_OBSERVATION_RESOURCE_FRAME_TYPE_OF_FRAME_REF_ELEMENT_MISSING,
+                    msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_TYPE_OF_FRAME_REF_ELEMENT_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1101,7 +1109,7 @@ def check_resource_frame_type_of_frame_ref_present(context, composite_frames, *a
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline,
-                    MESSAGE_TYPE_OF_FRAME_REF_MISSING,
+                    msg.MESSAGE_TYPE_OF_FRAME_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1110,7 +1118,7 @@ def check_resource_frame_type_of_frame_ref_present(context, composite_frames, *a
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_type_of_frame_ref,
-                    MESSAGE_OBSERVATION_RESOURCE_FRAME_TYPE_OF_FARE_FRAME_REF_INCORRECT,
+                    msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_TYPE_OF_FARE_FRAME_REF_INCORRECT,
                 )
                 response = response_details.__list__()
                 return response
@@ -1139,7 +1147,7 @@ def check_fare_frame_type_of_frame_ref_present_fare_product(
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_fare_frame,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_ELEMENT_FARE_PRODUCT_MISSING,
+                msg.MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_ELEMENT_FARE_PRODUCT_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1153,7 +1161,7 @@ def check_fare_frame_type_of_frame_ref_present_fare_product(
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_type_of_frame_ref,
-                MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_FARE_PRODUCT_INCORRECT,
+                msg.MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_FARE_PRODUCT_INCORRECT,
             )
             response = response_details.__list__()
             return response
@@ -1180,7 +1188,7 @@ def check_fare_frame_type_of_frame_ref_present_fare_price(context, fare_frames, 
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_fare_frame,
-                MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_ELEMENT_MISSING,
+                msg.MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_ELEMENT_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -1194,7 +1202,7 @@ def check_fare_frame_type_of_frame_ref_present_fare_price(context, fare_frames, 
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_type_of_frame_ref,
-                MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_INCORRECT,
+                msg.MESSAGE_OBSERVATION_TYPE_OF_FARE_FRAME_REF_INCORRECT,
             )
             response = response_details.__list__()
             return response
@@ -1224,7 +1232,7 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_frame,
-                    MESSAGE_OBSERVATION_FARE_TABLES_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_TABLES_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1235,7 +1243,7 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_tables,
-                    MESSAGE_OBSERVATION_FARE_TABLE_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_TABLE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1246,7 +1254,7 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_table,
-                    MESSAGE_OBSERVATION_PRICES_FOR_MISSING,
+                    msg.MESSAGE_OBSERVATION_PRICES_FOR_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1275,7 +1283,9 @@ def check_preassigned_fare_products(context, fare_frames, *args):
             if not fare_products:
                 sourceline = fare_frame.sourceline
                 response_details = XMLViolationDetail(
-                    "violation", sourceline, MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING
+                    "violation",
+                    sourceline,
+                    msg.MESSAGE_OBSERVATION_FARE_PRODUCTS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1288,7 +1298,7 @@ def check_preassigned_fare_products(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_product,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1299,7 +1309,7 @@ def check_preassigned_fare_products(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_NAME_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_NAME_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1332,7 +1342,7 @@ def check_preassigned_fare_products_type_ref(context, preassigned_fare_products,
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    MESSAGE_OBSERVATION_PREASSIGNED_TYPE_OF_FARE_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_TYPE_OF_FARE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1367,7 +1377,7 @@ def check_preassigned_fare_products_charging_type(
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_CHARGING_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_CHARGING_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1400,7 +1410,7 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_frame,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENTS_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENTS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1411,7 +1421,7 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_validable_element,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENT_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENT_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1424,7 +1434,7 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1437,7 +1447,7 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure_ref,
-                    MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_REF_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1468,7 +1478,7 @@ def check_access_right_elements(context, preassigned_fare_products, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1483,7 +1493,7 @@ def check_access_right_elements(context, preassigned_fare_products, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_validable_element_ref,
-                    MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_VALIDABLE_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_VALIDABLE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1514,7 +1524,7 @@ def check_product_type(context, preassigned_fare_products, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_frame,
-                    MESSAGE_OBSERVATION_PREASSIGNED_PRODUCT_TYPE_MISSING,
+                    msg.MESSAGE_OBSERVATION_PREASSIGNED_PRODUCT_TYPE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1545,7 +1555,7 @@ def check_sales_offer_package(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_frame,
-                    MESSAGE_OBSERVATION_SALES_OFFER_PACKAGES_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_PACKAGES_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1558,7 +1568,7 @@ def check_sales_offer_package(context, fare_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_sales_offer_packages,
-                    MESSAGE_OBSERVATION_SALES_OFFER_PACKAGE_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_PACKAGE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1590,7 +1600,7 @@ def check_dist_assignments(context, sales_offer_packages, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_sales_offer_package,
-                    MESSAGE_OBSERVATION_SALES_OFFER_ASSIGNMENTS_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_ASSIGNMENTS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1605,7 +1615,7 @@ def check_dist_assignments(context, sales_offer_packages, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_distribution_assignments,
-                    MESSAGE_OBSERVATION_SALES_OFFER_ASSIGNMENT_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_ASSIGNMENT_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1620,7 +1630,7 @@ def check_dist_assignments(context, sales_offer_packages, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_distribution_assignment,
-                    MESSAGE_OBSERVATION_SALES_OFFER_DIST_CHANNEL_TYPE_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_DIST_CHANNEL_TYPE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1651,7 +1661,7 @@ def check_payment_methods(context, distribution_assignments, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_distribution_assignment,
-                    MESSAGE_OBSERVATION_SALES_OFFER_PAYMENT_METHODS_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_PAYMENT_METHODS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1684,7 +1694,7 @@ def check_sale_offer_package_elements(context, sales_offer_packages, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_sales_offer_package,
-                    MESSAGE_OBSERVATION_SALES_OFFER_ELEMENTS_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_ELEMENTS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1697,7 +1707,7 @@ def check_sale_offer_package_elements(context, sales_offer_packages, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_sales_package_elements,
-                    MESSAGE_OBSERVATION_SALES_OFFER_ELEMENT_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_ELEMENT_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1710,7 +1720,7 @@ def check_sale_offer_package_elements(context, sales_offer_packages, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_sales_offer_element,
-                    MESSAGE_OBSERVATION_SALES_OFFER_TRAVEL_DOC_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_TRAVEL_DOC_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1745,7 +1755,7 @@ def check_fare_product_ref(context, sales_offer_package_elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_sales_offer_package_element,
-                    MESSAGE_OBSERVATION_SALES_OFFER_FARE_PROD_REF_MISSING,
+                    msg.MESSAGE_OBSERVATION_SALES_OFFER_FARE_PROD_REF_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1780,7 +1790,7 @@ def check_generic_parameters_for_access(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_generic_parameter,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER,
                 )
                 response = response_details.__list__()
                 return response
@@ -1793,7 +1803,7 @@ def check_generic_parameters_for_access(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_access_right_assignment,
-                    MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
+                    msg.MESSAGE_OBSERVATION_ACCESS_RIGHT_ASSIGNMENT,
                 )
                 response = response_details.__list__()
                 return response
@@ -1832,7 +1842,7 @@ def check_validity_grouping_type_for_access(
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_generic_parameter,
-                MESSAGE_OBSERVATION_VALIDITY_GROUPING_PARAMETER,
+                msg.MESSAGE_OBSERVATION_VALIDITY_GROUPING_PARAMETER,
             )
             response = response_details.__list__()
             return response
@@ -1866,7 +1876,7 @@ def check_validity_parameter_for_access(context, generic_parameter_assignments, 
             response_details = XMLViolationDetail(
                 "violation",
                 sourceline_generic_parameter,
-                MESSAGE_OBSERVATION_VALIDITY_PARAMETER,
+                msg.MESSAGE_OBSERVATION_VALIDITY_PARAMETER,
             )
             response = response_details.__list__()
             return response
@@ -1903,7 +1913,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_generic_parameter,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER,
                 )
                 response = response_details.__list__()
                 return response
@@ -1915,7 +1925,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_limitations,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATION,
                 )
                 response = response_details.__list__()
                 return response
@@ -1926,7 +1936,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_user_profile,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATIONS_USER,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER_LIMITATIONS_USER,
                 )
                 response = response_details.__list__()
                 return response
@@ -1939,7 +1949,7 @@ def check_generic_parameters_for_eligibility(context, elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER_ELIGIBILITY_PROPS_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1976,7 +1986,7 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure_element,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -1989,7 +1999,7 @@ def check_frequency_of_use(context, fare_structure_elements, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_use_type,
-                    MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING,
+                    msg.MESSAGE_OBSERVATION_GENERIC_PARAMETER_FREQUENCY_TYPE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -2007,7 +2017,7 @@ def check_composite_frame_valid_between(context, composite_frames, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -2019,7 +2029,7 @@ def check_composite_frame_valid_between(context, composite_frames, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 source_line_valid_between,
-                MESSAGE_OBSERVATION_COMPOSITE_FRAME_VALID_BETWEEN_MISSING,
+                msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_VALID_BETWEEN_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -2030,7 +2040,7 @@ def check_composite_frame_valid_between(context, composite_frames, *args):
             response_details = XMLViolationDetail(
                 "violation",
                 source_line_from_date,
-                MESSAGE_OBSERVATION_COMPOSITE_FRAME_FROM_DATE,
+                msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_FROM_DATE,
             )
             response = response_details.__list__()
             return response
@@ -2048,7 +2058,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -2065,7 +2075,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
                 response_details = XMLViolationDetail(
                     "violation",
                     source_line_resource_frame,
-                    MESSAGE_OBSERVATION_RESOURCE_FRAME_MISSING,
+                    msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -2073,7 +2083,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
             response_details = XMLViolationDetail(
                 "violation",
                 source_line_organisations,
-                MESSAGE_OBSERVATION_RESOURCE_FRAME_ORG_MISSING,
+                msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_ORG_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -2084,7 +2094,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
             response_details = XMLViolationDetail(
                 "violation",
                 source_line_operators,
-                MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_MISSING,
+                msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_MISSING,
             )
             response = response_details.__list__()
             return response
@@ -2096,7 +2106,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_operator,
-                    MESSAGE_OPERATORS_ID_MISSING,
+                    msg.MESSAGE_OPERATORS_ID_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -2106,7 +2116,9 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
             ):
                 sourceline_operator = operator.sourceline
                 response_details = XMLViolationDetail(
-                    "violation", sourceline_operator, MESSAGE_OBSERVATION_OPERATOR_ID
+                    "violation",
+                    sourceline_operator,
+                    msg.MESSAGE_OBSERVATION_OPERATOR_ID,
                 )
                 response = response_details.__list__()
                 return response
@@ -2117,7 +2129,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
                 response_details = XMLViolationDetail(
                     "violation",
                     source_line_public_code,
-                    MESSAGE_OBSERVATION_RESOURCE_FRAME_PUBLIC_CODE_MISSING,
+                    msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_PUBLIC_CODE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
@@ -2127,7 +2139,7 @@ def check_resource_frame_organisation_elements(context, composite_frames, *args)
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_public_code,
-                    MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH,
+                    msg.MESSAGE_OBSERVATION_PUBLIC_CODE_LENGTH,
                 )
                 response = response_details.__list__()
                 return response
@@ -2145,7 +2157,7 @@ def check_resource_frame_operator_name(context, composite_frames, *args):
         response_details = XMLViolationDetail(
             "violation",
             sourceline,
-            MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
         )
         response = response_details.__list__()
         return response
@@ -2160,7 +2172,7 @@ def check_resource_frame_operator_name(context, composite_frames, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     source_line_name,
-                    MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_NAME_MISSING,
+                    msg.MESSAGE_OBSERVATION_RESOURCE_FRAME_OPERATOR_NAME_MISSING,
                 )
                 response = response_details.__list__()
                 return response
