@@ -97,7 +97,207 @@ safety = "~=2.3.5"
 watchdog = "~=3.0.0"
 werkzeug = "~=3.0.1"
 debugpy = "1.8.0"
+ruff = "^0.1.6"
+djlint = "^1.34.0"
+bandit = "^1.7.5"
+
 
 [build-system]
 requires = ["poetry-core>=1.8.1"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.bandit]
+skips = ["B101", "B601", "B113", "B602", "B404", "B311"]
+exclude_dirs = [
+    ".git",
+    ".mypy_cache",
+    ".pants.d",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "public",
+    "static",
+    ".vscode",
+    ".idea",
+    ".github",
+    "assets",
+    "js",
+    "lib",
+]
+
+### (optional) plugin settings "some test plugins require configuration data
+### that may be given here, per-plugin. All bandit test plugins have a built in
+### set of sensible defaults and these will be used if no configuration is
+### provided. It is not necessary to provide settings for every (or any) plugin
+### if the defaults are acceptable.
+[tool.bandit.any_other_function_with_shell_equals_true]
+no_shell = [
+    "os.execl",
+    "os.execle",
+    "os.execlp",
+    "os.execlpe",
+    "os.execv",
+    "os.execve",
+    "os.execvp",
+    "os.execvpe",
+    "os.spawnl",
+    "os.spawnle",
+    "os.spawnlp",
+    "os.spawnlpe",
+    "os.spawnv",
+    "os.spawnve",
+    "os.spawnvp",
+    "os.spawnvpe",
+    "os.startfile",
+]
+
+shell = [
+    "os.system",
+    "os.popen",
+    "os.popen2",
+    "os.popen3",
+    "os.popen4",
+    "popen2.popen2",
+    "popen2.popen3",
+    "popen2.popen4",
+    "popen2.Popen3",
+    "popen2.Popen4",
+    "commands.getoutput",
+    "commands.getstatusoutput",
+]
+
+subprocess = [
+    "subprocess.Popen",
+    "subprocess.call",
+    "subprocess.check_call",
+    "subprocess.check_output",
+]
+
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+]
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # complexity
+    "B904", # B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling,
+    "B006", # B006 Do not use mutable data structures for argument defaults
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "I",
+    "N",
+    "Q",
+    "S",
+    "T",
+    "W",
+    "ANN",
+    "ARG",
+    "BLE",
+    "COM",
+    "DJ",
+    "DTZ",
+    "EM",
+    "ERA",
+    "EXE",
+    "FBT",
+    "ICN",
+    "INP",
+    "ISC",
+    "NPY",
+    "PD",
+    "PGH",
+    "PIE",
+    "PL",
+    "PT",
+    "PTH",
+    "PYI",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "SLF",
+    "TCH",
+    "TID",
+    "TRY",
+    "UP",
+    "YTT",
+]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py39"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.isort]
+known-third-party = ["fastapi", "pydantic", "starlette"]
+
+[tool.djlint]
+blank_line_after_tag = "endblock"
+blank_line_before_tag = "load,extends,macro,block"
+profile = "django"
+close_void_tags = true
+exclude = ".venv,.vscode,.idea,node_modules"
+extension = "html"
+format_attribute_template_tags = true
+indent_size = 2
+indent = 2
+line_break_after_multiline_tag = true
+max_attribute_length = 120
+max_line_length = 120
+use_gitignore = true
+ignore = "T003,H023,H006,H029"
+format_js = false
+preserve_blank_lines = false
