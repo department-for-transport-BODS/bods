@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 
+from django.conf import settings
 from django.contrib.staticfiles.management.commands.runserver import (
     Command as RunServerCommand,
 )
@@ -26,4 +27,12 @@ class Command(RunServerCommand):
                 target=subprocess.run, args=(command,), kwargs=kwargs
             )
             webpack_thread.start()
+
+        if settings.DEBUG:
+            if os.environ.get("RUN_MAIN") or os.environ.get("WERKZEUG_RUN_MAIN"):
+                import debugpy
+
+                debugpy.listen(("0.0.0.0", 3000))
+                print("Debugger started at port 3000")
+
         super(Command, self).run(**options)

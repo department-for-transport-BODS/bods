@@ -1,4 +1,4 @@
-FROM mdillon/postgis:10
+FROM postgis/postgis:13-3.4-alpine
 
 COPY ./docker/production/postgres/maintenance /usr/local/bin/maintenance
 RUN chmod +x /usr/local/bin/maintenance/*

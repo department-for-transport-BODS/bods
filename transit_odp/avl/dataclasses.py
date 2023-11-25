@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from transit_odp.avl.enums import AVLFeedStatus, ValidationTaskResultStatus
 
@@ -12,7 +12,7 @@ class ValidationTaskResult(BaseModel):
     password: Optional[str] = None
     status: ValidationTaskResultStatus = ValidationTaskResultStatus.DEPLOYING.value
     created: datetime
-    version: Optional[str]
+    version: Optional[str] = None
 
 
 class Feed(BaseModel):
@@ -24,6 +24,4 @@ class Feed(BaseModel):
     status: AVLFeedStatus = AVLFeedStatus.DEPLOYING.value
     created: Optional[datetime] = None
     modified: Optional[datetime] = None
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
