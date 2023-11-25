@@ -43,6 +43,9 @@
   },
   "scripts": {
     "start": "webpack --config webpack/dev.js",
-    "build": "webpack --config webpack/prod.js"
+    "build": "webpack --config webpack/prod.js",
+    "clean": "ruff check ./transit_odp --fix && djlint ./transit_odp --reformat --configuration pyproject.toml",
+    "test:bandit": "bandit --config pyproject.toml -r .",
+    "test:safety": "safety check -r pyproject.toml"
   }
 }
