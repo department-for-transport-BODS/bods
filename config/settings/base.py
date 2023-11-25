@@ -241,6 +241,7 @@ MIDDLEWARE = [
     "django_hosts.middleware.HostsResponseMiddleware",
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
     "waffle.middleware.WaffleMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
 ]
 

@@ -6,9 +6,10 @@ from typing import Generator, List
 
 import requests
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils import timezone
-from pydantic import Field, validator
-from pydantic.main import BaseModel, ValidationError
+from pydantic import Field, field_validator
+from pydantic.main import BaseModel
 from requests import HTTPError, RequestException, Timeout
 from tenacity import retry, wait_exponential
 from tenacity.retry import retry_if_exception_type
@@ -41,7 +42,8 @@ class APIResponse(BaseModel):
     bus_search_lta: List[LocalAuthority] = Field(alias="busSearch", default=[])
     page: Page = Page()
 
-    @validator("timestamp", pre=True)
+    @field_validator("timestamp", mode="before")
+    @classmethod
     def parse_timestamp(cls, v):
         if v:
             return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
