@@ -21,8 +21,8 @@ from ..constants import (
     TYPE_OF_FRAME_REF_SUBSTRING,
     TYPE_OF_TARIFF_REF_STRING,
 )
-from .response import XMLViolationDetail
 from . import validation_messages as msg
+from .response import XMLViolationDetail
 
 
 def _extract_text(elements, default=None):
