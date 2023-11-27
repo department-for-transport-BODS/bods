@@ -25,7 +25,7 @@
                             </div>
                             <div id="sub-accordion-content-{{ forloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.counter }}">
                                 {% for line_name, service_codes in line_names_dict.items %}
-                                    <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom"><a href="javascript:void(0)" class="govuk-link" title="Service Code {{ line_name }}">{{ line_name }} - {{service_codes|join:", "}}</a></p>
+                                    <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">{{ line_name }} - {{service_codes|join:", "}}</p>
                                 {% endfor %}
                             </div>
                         </div>
