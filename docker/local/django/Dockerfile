@@ -43,7 +43,7 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./requirements.txt ./
 
 RUN python --version \
-    && npm install yarn\
+    && npm install -g yarn@latest \
     && yarn set version stable && yarn install \
     && pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \

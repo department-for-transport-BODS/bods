@@ -22,7 +22,7 @@ from ..constants import (
     TYPE_OF_TARIFF_REF_STRING,
 )
 from .response import XMLViolationDetail
-import validation_messages as msg
+from . import validation_messages as msg
 
 
 def _extract_text(elements, default=None):
