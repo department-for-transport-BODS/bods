@@ -65,7 +65,6 @@ tenacity = "~=8.2.3"
 whitenoise = "~=6.6.0"
 setuptools="~=69.0.2"
 
-
 [tool.poetry.dev-dependencies]
 black = "^23.11.0"
 coverage = "~=7.3.2"
