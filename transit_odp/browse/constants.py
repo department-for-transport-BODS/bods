@@ -312,3 +312,5 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
     }
 )
+
+LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE = "Licence number not supplied"
