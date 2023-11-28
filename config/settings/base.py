@@ -4,6 +4,7 @@ Base settings to build other settings data upon.
 
 # flake8: noqa
 
+import logging
 import os
 
 import environ
@@ -647,3 +648,9 @@ if LOG_LEVEL:
             },
         },
     }
+
+if env("GDAL_LIBRARY_PATH", default=None):
+    GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
+
+if env("GEOS_LIBRARY_PATH", default=None):
+    GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
