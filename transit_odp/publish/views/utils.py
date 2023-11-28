@@ -22,7 +22,9 @@ def get_distinct_dataset_txc_attributes(revision_id):
 
     for file_attribute in txc_file_attributes:
         licence_number = (
-            file_attribute.licence_number.strip() or LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
+            file_attribute.licence_number
+            and file_attribute.licence_number.strip()
+            or LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
         )
         noc_dict = txc_attributes.setdefault(licence_number, {}).setdefault(
             file_attribute.national_operator_code, {}
