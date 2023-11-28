@@ -84,9 +84,9 @@ class DatasetDetailView(DetailView):
             noc_dict = txc_attributes.setdefault(
                 file_attribute.licence_number, {}
             ).setdefault(file_attribute.national_operator_code, {})
-            line_names_dict = noc_dict.setdefault(file_attribute.line_names[0], set())
-
-            line_names_dict.add(file_attribute.service_code)
+            for line_name in file_attribute.line_names:
+                line_names_dict = noc_dict.setdefault(line_name, set())
+                line_names_dict.add(file_attribute.service_code)
 
         return txc_attributes
 
