@@ -7,9 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
-# Install system packages
 RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
-# Existing binutils causes a dependency conflict, correct version will be installed when GDAL gets intalled
 RUN apt-get update && apt-get install -y \
             libgdal-dev \
             g++ \
@@ -40,7 +38,7 @@ RUN apt-get update && apt-get install -y \
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./requirements.txt ./
+COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./
 
 RUN python --version \
     && npm install -g yarn@latest \

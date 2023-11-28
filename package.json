@@ -2,11 +2,11 @@
   "name": "bods-frontend",
   "version": "0.1.0",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "~5.15.0",
+    "@fortawesome/fontawesome-free": "~5.15.4",
     "govuk-frontend": "~4.7.0",
-    "jquery": "~3.5.0",
-    "mapbox-gl": "~1.13.0",
-    "normalize.css": "~8.0.0",
+    "jquery": "~3.7.1",
+    "mapbox-gl": "~1.13.3",
+    "normalize.css": "~8.0.1",
     "process": "^0.11.10",
     "stream": "^0.0.2",
     "swagger-ui": "^5.10.3"
@@ -29,6 +29,7 @@
     "jasmine-core": "^5.1.1",
     "karma": "^6.4.2",
     "mini-css-extract-plugin": "^2.7.6",
+    "npm-run-all": "^4.1.5",
     "punycode": "^2.3.1",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
@@ -43,6 +44,13 @@
   "scripts": {
     "start": "webpack --config webpack/dev.js",
     "build": "webpack --config webpack/prod.js",
+    "dev:static": "webpack --config webpack/dev.js",
+    "dev:migrate": "python manage.py migrate",
+    "dev:django": "python manage.py runserver 0.0.0.0:8001",
+    "dev:celery-beat": "celery -A transit_odp.taskapp beat -l INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler",
+    "dev:celery-flower": "celery --app=transit_odp.taskapp --broker=\"redis://redis:6379/0\" flower --basic_auth=\"admin:admin\"",
+    "dev:celery-worker": "watchmedo auto-restart --directory=./transit_odp --pattern=\"*.py\" --recursive -- celery -A transit_odp.taskapp worker -l INFO",
+    "serve": "run-p --print-label \"dev:*\"",
     "clean": "ruff check ./transit_odp --fix && djlint ./transit_odp --reformat --configuration pyproject.toml",
     "test:bandit": "bandit --config pyproject.toml -r .",
     "test:safety": "safety check -r pyproject.toml"
