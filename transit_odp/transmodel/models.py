@@ -8,6 +8,10 @@ from transit_odp.transmodel.managers import (
     ServicePatternStopManager,
 )
 
+from django.utils.translation import gettext_lazy as _
+from django.db.models import Q
+from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
+
 
 class Service(models.Model):
     revision = models.ForeignKey(
@@ -22,6 +26,8 @@ class Service(models.Model):
 
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
+
+    service_type = models.CharField(max_length=255, default="standard")
 
     service_patterns = models.ManyToManyField(
         "transmodel.ServicePattern", related_name="services"
@@ -169,3 +175,40 @@ class VehicleJourney(models.Model):
 
     def __str__(self):
         return f"{self.id}, timing_pattern: {self.id}, {self.start_time:%H:%M:%S}"
+
+
+class BookingArrangements(models.Model):
+    service = models.ForeignKey(
+        Service, on_delete=models.CASCADE, related_name="booking_arrangements"
+    )
+
+    description = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(_("email address"), null=True, blank=True)
+    phone_number = models.CharField(max_length=16, null=True, blank=True)
+    web_address = models.URLField(null=True, blank=True)
+
+    created = CreationDateTimeField(_("created"))
+    last_updated = ModificationDateTimeField(_("last_updated"))
+
+    class Meta:
+        ordering = ("service_id", "last_updated")
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    (models.Q(email__isnull=False) & ~models.Q(email=""))
+                    | (
+                        models.Q(phone_number__isnull=False)
+                        & ~models.Q(phone_number="")
+                    )
+                    | (models.Q(web_address__isnull=False) & ~models.Q(web_address=""))
+                ),
+                name="at_least_one_column_not_empty_or_null",
+            )
+        ]
+
+    def save(self, *args, **kwargs):
+        self.clean()  # validate before saving
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.id}, service_id: {self.service_id}"

@@ -16,6 +16,7 @@ from transit_odp.transmodel.models import (
     ServiceLink,
     ServicePattern,
     StopPoint,
+    BookingArrangements,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -156,6 +157,7 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
         if pd.isnull(end_date):
             end_date = None
         line_names = record["line_names"]
+        service_type = record["service_type"]
         yield Service(
             revision=revision,
             service_code=record["service_code"],
@@ -163,6 +165,7 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
             end_date=end_date,
             name=line_names[0],
             other_names=line_names[1:],
+            service_type=service_type,
         )
 
 
@@ -221,3 +224,18 @@ def get_min_date_or_none(dates):
 def get_max_date_or_none(dates):
     dates = [date for date in dates if date is not None]
     return max(dates) if dates else None
+
+
+def df_to_booking_arrangements(
+    revision: DatasetRevision, df: pd.DataFrame
+) -> Iterator[BookingArrangements]:
+    for record in df.reset_index().to_dict("records"):
+        service_id = record["id"]
+
+        yield BookingArrangements(
+            service_id=service_id,
+            description=record["description"],
+            email=record["email"],
+            phone_number=record["tel_national_number"],
+            web_address=record["web_address"],
+        )

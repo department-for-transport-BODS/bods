@@ -34,7 +34,7 @@ from transit_odp.avl.tests.utils import (
     get_partially_compliant_revision,
     get_undergoing_validation_revision,
 )
-from transit_odp.common.loggers import PipelineAdapter
+from transit_odp.common.loggers import DatafeedPipelineLoggerContext, PipelineAdapter
 from transit_odp.organisation.constants import EXPIRED, INACTIVE, LIVE, SUCCESS
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
@@ -680,7 +680,9 @@ def test_needs_attention_count():
         get_feed_down_revision()
     expected += feed_down
 
-    adapter = PipelineAdapter(getLogger("pytest"), {})
+    context = DatafeedPipelineLoggerContext(object_id=-1)
+    adapter = PipelineAdapter(getLogger("pytest"), {"context": context})
+
     for dataset in AVLDataset.objects.all():
         cache_avl_compliance_status(adapter, dataset.id)
 

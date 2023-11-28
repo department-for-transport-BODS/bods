@@ -5,3 +5,4 @@ DUPLICATE_COMMENT_ERROR_MESSAGE = (
 )
 
 INTERACTIONS_DEFINITION = "consumermetricsoperatorbreakdown.txt"
+LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE = "Licence number not supplied"

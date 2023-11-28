@@ -1,0 +1,94 @@
+on:
+  push:
+    branches:
+    - 'dev'
+  workflow_dispatch:
+
+env:
+  ECR_PYTHON_DEPENDENCIES_REPO: python_dependencies
+  REGION: eu-west-2 
+
+jobs:
+  configure_dependencies_container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout HEAD of working branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Check for change"
+        id: check_for_change
+        run: |
+          changed=false
+          if git diff --exit-code HEAD^..HEAD docker/production/python_dependencies/Dockerfile; then
+            true
+          else
+            changed=true
+          fi
+          if git diff --exit-code -I '^version =' HEAD^..HEAD pyproject.toml; then
+            true
+          else
+            changed=true
+          fi
+          if git diff --exit-code -I '^version =' HEAD^..HEAD poetry.lock; then
+            true
+          else
+            changed=true
+          fi
+          echo "changed=${changed}"
+          echo "changed=${changed}" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS credentials
+        id: login_aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Login to Amazon ECR
+        id: login_ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+
+      - name: Get region with underscores
+        id: get_region_underscores
+        run: |
+          REGION_DASHES=${{ env.REGION }}
+          REGION_UNDERSCORES="${REGION_DASHES//-/_}"
+          echo "REGION_UNDERSCORES=${REGION_UNDERSCORES}" >> $GITHUB_OUTPUT
+
+      - name: "Check if images with required tag exist in Amazon ECR"
+        id: check_image_existence
+        run: |
+          echo "Checking for existence of ${{ steps.login_ecr.outputs.registry }}/${{ env.ECR_PYTHON_DEPENDENCIES_REPO }}:dev"
+          if docker manifest inspect ${{ steps.login_ecr.outputs.registry }}/${{ env.ECR_PYTHON_DEPENDENCIES_REPO }}:dev >/dev/null; then
+              echo "Found ${{ steps.login_ecr.outputs.registry }}/${{ env.ECR_PYTHON_DEPENDENCIES_REPO }}:dev"
+              echo "python_dependencies_dev_exists=true" >> $GITHUB_OUTPUT
+          else
+              echo "python_dependencies_dev_exists=false" >> $GITHUB_OUTPUT
+          fi
+          cat $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        if: steps.check_for_change.outputs.changed == 'true' || steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false'          
+        uses: docker/setup-buildx-action@v3
+    
+      - name: "Create repository if it doesn't exist"
+        if: steps.check_for_change.outputs.changed == 'true' || steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false' 
+        id: create_repos
+        run: |
+          aws ecr create-repository --repository-name ${{ env.ECR_PYTHON_DEPENDENCIES_REPO  }} || true
+
+      - name: Build and push Python Dependencies image
+        id: build_dependencies_image
+        if: steps.check_for_change.outputs.changed == 'true' || steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false' 
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ format( '{0}/{1}:dev', steps.login_ecr.outputs.registry, env.ECR_PYTHON_DEPENDENCIES_REPO ) }}
+          file: "./docker/production/python_dependencies/Dockerfile"
+          context: "."
+

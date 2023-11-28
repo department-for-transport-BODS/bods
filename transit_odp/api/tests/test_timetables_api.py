@@ -19,6 +19,8 @@ pytestmark = pytest.mark.django_db
         (1, "100.0%", "green"),
         (0.33, "33.0%", "red"),
         (0.90005, "90.0%", "red"),
+        (0.9999, "99.9%", "amber"),
+        (0.005, "0.5%", "red"),
     ),
 )
 def test_dq_rag(client_factory, user_factory, score, percent, rag):
