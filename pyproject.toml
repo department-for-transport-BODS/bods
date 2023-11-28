@@ -68,8 +68,7 @@ tenacity = "~=8.2.3"
 whitenoise = "~=6.6.0"
 setuptools="~=69.0.2"
 gdal = "^3.8.0"
-ruff = "^0.1.6"
-flake8 = "^6.1.0"
+
 
 [tool.poetry.dev-dependencies]
 black = "~=22.1.0"
