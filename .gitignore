@@ -258,3 +258,6 @@ venv/
 wheels/
 yarn-debug.log*
 yarn-error.log*
+.yarn/
+.ruff_cache/
+.yarnrc.yml
