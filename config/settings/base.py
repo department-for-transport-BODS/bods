@@ -3,8 +3,6 @@ Base settings to build other settings data upon.
 """
 
 # flake8: noqa
-
-import logging
 import os
 
 import environ
