@@ -59,7 +59,7 @@
                         <select class="govuk-select"
                             id="ordering"
                             name="ordering"
-                            aria-label="Order by"
+                            aria-label="Sort by"
                             onchange="this.form.submit()">
                             <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>{% trans 'Recently updated' %}</option>
                             <option value="name" {% if ordering == "name" %}selected{% endif %}>{% trans 'Data set name A-Z' %}</option>
