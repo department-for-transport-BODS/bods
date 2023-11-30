@@ -21,10 +21,7 @@ SECRET_KEY = env(
     default="X61BMLHfhL8X8lPce9YuOVZ5N0YPfLqwFGcKJQPdZaOmBQ3MOvQQ6T3yLNvR0vCC",
 )
 # Set DD_TRACE_ENABLED to False for local environment
-DD_TRACE_ENABLED = env(
-    "DD_TRACE_ENABLED",
-    default=False,
-)
+DD_TRACE_ENABLED = env.bool("DD_TRACE_ENABLED", default=False)
 
 # URLS
 # ------------------------------------------------------------------------------

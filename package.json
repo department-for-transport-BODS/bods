@@ -47,12 +47,11 @@
     "dev:static": "webpack --config webpack/dev.js",
     "dev:migrate": "python manage.py migrate",
     "dev:django": "python manage.py runserver 0.0.0.0:8001",
-    "dev:celery-beat": "celery -A transit_odp.taskapp beat -l INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler",
-    "dev:celery-flower": "celery --app=transit_odp.taskapp --broker=\"redis://redis:6379/0\" flower --basic_auth=\"admin:admin\"",
-    "dev:celery-worker": "watchmedo auto-restart --directory=./transit_odp --pattern=\"*.py\" --recursive -- celery -A transit_odp.taskapp worker -l INFO",
-    "serve": "run-p --print-label \"dev:*\"",
-    "clean": "ruff check ./transit_odp --fix && djlint ./transit_odp --reformat --configuration pyproject.toml",
-    "test:bandit": "bandit --config pyproject.toml -r .",
-    "test:safety": "safety check -r pyproject.toml"
+    "dev:beat": "celery -A transit_odp.taskapp beat -l INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler",
+    "dev:flower": "celery --app=transit_odp.taskapp --broker=\"redis://localhost:6379/0\" flower --basic_auth=\"admin:admin\"",
+    "dev:worker": "watchmedo auto-restart --directory=./transit_odp --pattern=\"*.py\" --recursive -- celery -A transit_odp.taskapp worker -l INFO",
+    "dev:redis": "redis-server",
+    "dev:mailhog":"mailhog",
+    "serve": "run-p --print-label \"dev:*\""
   }
 }
