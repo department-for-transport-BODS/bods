@@ -140,14 +140,24 @@ class LocalAuthorityView(BaseListView):
         context["q"] = self.request.GET.get("q", "")
         context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
-        ids_list = {}
+
+        names = []
+        name_set = set()
+        ui_lta_wise_ltas = {}
+
+        all_ltas = self.get_model_objects().all()
+        for lta in all_ltas:
+            ui_lta_wise_ltas.setdefault(lta.ui_lta_name_trimmed, []).append(lta)
+            cleaned_name = lta.ui_lta_name_trimmed.replace("\xa0", " ")
+            if cleaned_name not in name_set:
+                names.append(cleaned_name)
+                name_set.add(cleaned_name)
+
+        ltas = {"names": names}
+        context["ltas"] = ltas
 
         for lta in all_ltas_current_page:
-            lta_list = (
-                self.model.objects.annotate(ui_lta_name_trimmed=Trim("ui_lta_name"))
-                .filter(ui_lta_name_trimmed=lta.ui_lta_name_trimmed)
-                .all()
-            )
+            lta_list = ui_lta_wise_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
 
             otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_list)
@@ -179,31 +189,22 @@ class LocalAuthorityView(BaseListView):
                 context["services_require_attention_percentage"],
             )
 
-        names = []
-        name_set = set()
-
-        all_ltas = self.get_queryset()
-        for lta in all_ltas:
-            cleaned_name = lta.ui_lta_name_trimmed.replace("\xa0", " ")
-            if cleaned_name not in name_set:
-                names.append(cleaned_name)
-                name_set.add(cleaned_name)
-
-        ltas = {"names": names}
-        context["ltas"] = ltas
         return context
 
     def get_queryset(self):
+        qs = self.get_model_objects().order_by(*self.get_ordering())  
+        return qs.distinct("ui_lta_name_trimmed")
+    
+    def get_model_objects(self):
         qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
             ui_lta_name_trimmed=Trim("ui_lta_name")
         )
-
+        
         search_term = self.request.GET.get("q", "").strip()
         if search_term:
             qs = qs.filter(ui_lta_name_trimmed__icontains=search_term)
-
-        qs = qs.order_by(*self.get_ordering())
-        return qs.distinct("ui_lta_name_trimmed")
+        
+        return qs
 
     def get_ordering(self):
         ordering = self.request.GET.get("ordering", "ui_lta_name_trimmed")
