@@ -3,10 +3,12 @@ from ddtrace import patch_all
 
 import os
 import sys
+import environ
 
 patch_all()
+env = environ.Env()
 
-if os.environ.get("DD_PROFILING_ENABLED") == "true":
+if env.bool("DD_PROFILING_ENABLED", False):
     import ddtrace.profiling.auto
 
 
