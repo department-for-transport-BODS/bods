@@ -71,7 +71,7 @@ gdal = "^3.8.0"
 
 
 [tool.poetry.dev-dependencies]
-black = "~=22.1.0"
+black = "^23.11.0"
 coverage = "~=7.3.2"
 ddt = "~=1.7.0"
 django-debug-toolbar = "~=4.2.0"
@@ -94,7 +94,6 @@ pytest-sugar = "~=0.9.7"
 pytest-xdist = "~=3.5.0"
 pyyaml = "~=6.0.1"
 requests-mock = "~=1.11.0"
-safety = "~=2.3.5"
 watchdog = "~=3.0.0"
 werkzeug = "~=3.0.1"
 debugpy = "1.8.0"
