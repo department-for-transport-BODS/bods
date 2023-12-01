@@ -1169,6 +1169,65 @@ class TestLTAView:
         object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
         assert object_names == expected_order
 
+    def test_lta_view_pagination(self, request_factory: RequestFactory):
+
+        LocalAuthorityFactory(
+            id="1", name="Derby Council", ui_lta_name="Derby City Council"
+        ),
+        LocalAuthorityFactory(
+            id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
+        ),
+        LocalAuthorityFactory(
+            id="3", name="Aberdeen Council", ui_lta_name="Aberdeen City Council"
+        ),
+        LocalAuthorityFactory(
+            id="4", name="Bedford Council", ui_lta_name="Bedford Borough Council"
+        ),
+        LocalAuthorityFactory(
+            id="5", name="Blackpool Council", ui_lta_name="Blackpool Council"
+        ),
+        LocalAuthorityFactory(
+            id="6", name="Bournemouth Council", ui_lta_name="Bournemouth, Christchurch and Poole Council"
+        ),
+        LocalAuthorityFactory(
+            id="7", name="Poole Council", ui_lta_name="Bournemouth, Christchurch and Poole Council"
+        ),
+        LocalAuthorityFactory(
+            id="8", name="Brighton Council", ui_lta_name="Brighton and Hove City Council"
+        ),
+        LocalAuthorityFactory(
+            id="9", name="Hove City Council", ui_lta_name="Brighton and Hove City Council"
+        ),
+        LocalAuthorityFactory(
+            id="10", name="Central Bedfordshire Council", ui_lta_name="Central Bedfordshire Council"
+        ),
+        LocalAuthorityFactory(
+            id="11", name="Cheshire East Council", ui_lta_name="Cheshire East Council"
+        ),
+        LocalAuthorityFactory(
+            id="12", name="Dorset Council", ui_lta_name="Dorset Council"
+        ),
+        LocalAuthorityFactory(
+            id="13", name="Cumbria County Council", ui_lta_name="Cumbria County Council"
+        ),
+        LocalAuthorityFactory(
+            id="14", name="Bournem Council", ui_lta_name="Bournemouth Council"
+        ),
+
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
+        request.user = AnonymousUser()
+
+        response = LocalAuthorityView.as_view()(request)
+        assert response.status_code == 200
+        assert len(response.context_data['object_list']) == 10
+
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed&page=2")
+        request.user = AnonymousUser()
+        response = LocalAuthorityView.as_view()(request)
+
+        assert response.status_code == 200
+        assert len(response.context_data['object_list']) == 1
+
 
 class TestLTADetailView:
     def test_local_authority_detail_view_timetable_stats_not_compliant(
