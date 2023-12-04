@@ -3,6 +3,6 @@
 set -o errexit
 set -o nounset
 
-# Auto-restart worker on changes to Python code using watchdog
+# Auto-restart worker on changes to Python code using hupper
 # see https://www.distributedpython.com/2019/04/23/celery-reload/
-watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A transit_odp.taskapp worker -l INFO
+hupper -m celery -A transit_odp.taskapp worker --pool solo -l INFO
