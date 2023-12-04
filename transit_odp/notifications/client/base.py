@@ -6,7 +6,7 @@ from typing import Optional
 from django.conf import settings
 from django.utils import timezone
 from django_hosts.resolvers import reverse
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 import config.hosts
 from transit_odp.avl.enums import AVL_FEED_DOWN
@@ -31,7 +31,7 @@ class NotificationBase:
     def _send_mail(self, template: str, email: str, subject: str, **kwargs):
         raise NotImplementedError
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_changed_notification(
         self,
         dataset_id: int,
@@ -56,7 +56,7 @@ class NotificationBase:
             link=feed_detail_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_developer_data_endpoint_changed_notification(
         self,
         dataset_id: int,
@@ -81,7 +81,7 @@ class NotificationBase:
             updated_time=last_update_date,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_data_endpoint_changed_notification(
         self,
         dataset_id: int,
@@ -108,7 +108,7 @@ class NotificationBase:
             link=feed_detail_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_unreachable_notification(
         self,
         dataset_id: int,
@@ -141,7 +141,7 @@ class NotificationBase:
             data_set_url=remote_url,
         )
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_reachable_notification(
         self,
         dataset_id: int,
@@ -164,7 +164,7 @@ class NotificationBase:
             feed_short_description=short_description,
         )
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_unreachable_expiring_notification(
         self,
         dataset_id: int,
@@ -194,7 +194,7 @@ class NotificationBase:
         )
 
     # This notification email has been removed
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_deleted_deleter_notification(
         self, dataset_id: int, dataset_name: str, contact_email: str
     ):
@@ -213,7 +213,7 @@ class NotificationBase:
         )
 
     # This notification email has been removed
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_deleted_updater_notification(
         self,
         dataset_id: int,
@@ -240,7 +240,7 @@ class NotificationBase:
             last_update_date=last_update_date,
         )
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_deactivated_notification(
         self,
         dataset_id: int,
@@ -274,7 +274,7 @@ class NotificationBase:
             expiry_time=expires_on,
         )
 
-    @validate_arguments
+    @validate_call
     def send_developer_data_endpoint_expired_notification(
         self,
         dataset_id: int,
@@ -307,7 +307,7 @@ class NotificationBase:
             expiry_time=expires_on,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_data_endpoint_deactivated_notification(
         self,
         dataset_id: int,
@@ -343,7 +343,7 @@ class NotificationBase:
             expiry_time=expires_on,
         )
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_publish_notification(
         self,
         dataset_id: int,
@@ -381,7 +381,7 @@ class NotificationBase:
             pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_data_endpoint_publish_notification(
         self,
         dataset_id: int,
@@ -421,7 +421,7 @@ class NotificationBase:
             pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
-    @validate_arguments
+    @validate_call
     def send_data_endpoint_validation_error_notification(
         self,
         dataset_id: int,
@@ -461,7 +461,7 @@ class NotificationBase:
             with_pti_violations=with_pti_violations,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_data_endpoint_validation_error_notification(
         self,
         dataset_id: int,
@@ -504,7 +504,7 @@ class NotificationBase:
             with_pti_violations=with_pti_violations,
         )
 
-    @validate_arguments
+    @validate_call
     def send_feedback_notification(
         self,
         dataset_id: int,
@@ -533,7 +533,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_arguments
+    @validate_call
     def send_dataset_feedback_consumer_copy(
         self,
         dataset_id: int,
@@ -562,7 +562,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_feedback_consumer_copy(
         self,
         contact_email: str,
@@ -587,7 +587,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_feedback_notification(
         self,
         contact_email: str,
@@ -619,7 +619,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_arguments
+    @validate_call
     def send_invite_accepted_notification(
         self, inviter_email: str, invitee_email: str, organisation_name: str
     ):
@@ -637,21 +637,21 @@ class NotificationBase:
             name=invitee_email,
         )
 
-    @validate_arguments
+    @validate_call
     def send_password_reset_notification(self, contact_email: str, reset_link: str):
         template = "PASSWORD_RESET"
         subject = "Change your password on the Bus Open Data Service"
         logger.debug(f"sending password reset to {contact_email}")
         self._send_mail(template, contact_email, subject=subject, reset_link=reset_link)
 
-    @validate_arguments
+    @validate_call
     def send_password_change_notification(self, contact_email: str):
         template = "PASSWORD_CHANGED"
         subject = "You have changed your password on the Bus Open Data Service"
         logger.debug(f"sending password changed to {contact_email}")
         self._send_mail(template, contact_email, subject=subject)
 
-    @validate_arguments
+    @validate_call
     def send_invitation_notification(
         self, contact_email: str, organisation_name: str, invite_url: str
     ):
@@ -666,7 +666,7 @@ class NotificationBase:
             signup_link=invite_url,
         )
 
-    @validate_arguments
+    @validate_call
     def send_verify_email_address_notification(
         self, contact_email: str, verify_link: str
     ):
@@ -682,7 +682,7 @@ class NotificationBase:
             verify_link=verify_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_feed_down_publisher_notification(
         self,
         dataset_name: str,
@@ -712,7 +712,7 @@ class NotificationBase:
             settings_link=account_settings_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_feed_subscriber_notification(
         self,
         dataset_id: int,
@@ -745,7 +745,7 @@ class NotificationBase:
             updated_time=last_updated,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_report_requires_resolution(
         self,
         dataset_id: int,
@@ -777,7 +777,7 @@ class NotificationBase:
             guidance=guidance,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_flagged_with_compliance_issue(
         self,
         dataset_id: int,
@@ -812,7 +812,7 @@ class NotificationBase:
             guidance=guidance,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_flagged_with_major_issue(
         self,
         dataset_id: int,
@@ -845,7 +845,7 @@ class NotificationBase:
             guidance=guidance,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_schema_check_fail(
         self,
         feed_name: str,
@@ -879,7 +879,7 @@ class NotificationBase:
             link=feed_detail_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_avl_compliance_status_changed(
         self,
         feed_id: int,
@@ -914,7 +914,7 @@ class NotificationBase:
             settings_link=settings_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_invite_accepted_notification(
         self, operator_name: str, agent_email: str
     ):
@@ -931,7 +931,7 @@ class NotificationBase:
             template, agent_email, subject=subject, organisation=operator_name
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_invite_existing_account_notification(
         self, operator_name: str, agent_email: str
     ):
@@ -953,7 +953,7 @@ class NotificationBase:
             agent_invite_link=agent_invite_link,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_invite_no_account_notification(
         self, contact_email: str, organisation_name: str, invite_url: str
     ):
@@ -974,7 +974,7 @@ class NotificationBase:
             signup_link=invite_url,
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_invite_rejected_notification(
         self,
         operator_name: str,
@@ -994,7 +994,7 @@ class NotificationBase:
             template, agent_email, subject=subject, organisation=operator_name
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_leaves_organisation_notification(
         self,
         operator_name: str,
@@ -1011,7 +1011,7 @@ class NotificationBase:
             template, agent_email, subject=subject, organisation=operator_name
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_noc_changed_notification(
         self,
         operator_name: str,
@@ -1028,7 +1028,7 @@ class NotificationBase:
             template, agent_email, subject=subject, organisation=operator_name
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_operator_removes_agent_notification(
         self, operator_name: str, agent_email: str
     ):
@@ -1043,7 +1043,7 @@ class NotificationBase:
             template, agent_email, subject=subject, organisation=operator_name
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_agent_accepted_invite_notification(
         self, agent_organisation: str, agent_inviter: str
     ):
@@ -1060,7 +1060,7 @@ class NotificationBase:
             agent_organisation=agent_organisation,
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_agent_leaves_notification(
         self,
         agent_organisation: str,
@@ -1079,7 +1079,7 @@ class NotificationBase:
             agent_organisation=agent_organisation,
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_agent_rejected_invite_notification(
         self,
         agent_organisation: str,
@@ -1098,7 +1098,7 @@ class NotificationBase:
             agent_organisation=agent_organisation,
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_agent_removed_notification(
         self,
         agent_organisation: str,
@@ -1117,7 +1117,7 @@ class NotificationBase:
             agent_organisation=agent_organisation,
         )
 
-    @validate_arguments
+    @validate_call
     def send_operator_noc_changed_notification(self, contact: str):
         template = "OPERATOR_NOC_CHANGED"
         subject = "Your organisation’s National Operator Code (NOC) has been amended"
@@ -1131,7 +1131,7 @@ class NotificationBase:
             subject=subject,
         )
 
-    @validate_arguments
+    @validate_call
     def send_reports_are_available_notification(
         self,
         dataset_id: int,
@@ -1171,7 +1171,7 @@ class NotificationBase:
             pti_enforced=settings.PTI_ENFORCED_DATE.date() < timezone.localdate(),
         )
 
-    @validate_arguments
+    @validate_call
     def send_agent_reports_are_available_notification(
         self,
         dataset_id: int,
@@ -1213,7 +1213,7 @@ class NotificationBase:
             pti_enforced=settings.PTI_ENFORCED_DATE.date() < timezone.localdate(),
         )
 
-    @validate_arguments
+    @validate_call
     def send_custom_email(
         self,
         template: str,
