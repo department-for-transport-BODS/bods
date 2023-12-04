@@ -645,7 +645,7 @@ if LOG_LEVEL:
                 "level": LOG_LEVEL,
             },
             "django.db.backends": {
-                "level": "DEBUG",
+                "level": LOG_LEVEL,
                 "handlers": ["console"],
             },
         },
