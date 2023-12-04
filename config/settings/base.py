@@ -644,8 +644,13 @@ if LOG_LEVEL:
                 "handlers": ["console"],
                 "level": LOG_LEVEL,
             },
+            "django.db.backends": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+            },
         },
     }
+
 
 if env("GDAL_LIBRARY_PATH", default=None):
     GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
