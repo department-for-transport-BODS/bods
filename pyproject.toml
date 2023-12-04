@@ -94,10 +94,9 @@ pytest-sugar = "~=0.9.7"
 pytest-xdist = "~=3.5.0"
 pyyaml = "~=6.0.1"
 requests-mock = "~=1.11.0"
-watchdog = "~=3.0.0"
 werkzeug = "~=3.0.1"
 debugpy = "1.8.0"
-
+hupper = "^1.12"
 
 [build-system]
 requires = ["poetry-core>=1.8.1"]

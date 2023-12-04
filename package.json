@@ -49,7 +49,7 @@
     "dev:django": "python -m debugpy --listen 0.0.0.0:5566 manage.py runserver 0.0.0.0:8001",
     "dev:beat": "celery -A transit_odp.taskapp beat -l INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler",
     "dev:flower": "celery --app=transit_odp.taskapp --broker=\"redis://localhost:6379/0\" flower --basic_auth=\"admin:admin\"",
-    "dev:worker": "watchmedo auto-restart --directory=./transit_odp --pattern=\"*.py\" --recursive -- celery -A transit_odp.taskapp worker -l INFO",
+    "dev:worker": "hupper -m celery -A transit_odp.taskapp worker --pool solo -l INFO",
     "dev:redis": "redis-server",
     "dev:mailhog":"mailhog",
     "serve": "run-p --print-label \"dev:*\""
