@@ -13,9 +13,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 
-argh = "~=0.30.4"
 argon2-cffi = "~=23.1.0"
-attrs = "~=23.1.0"
 celery = "~=5.3.6"
 clamd = "~=1.0.2"
 crispy-forms-govuk = {url = "https://github.com/brahmaduttau/django-crispy-forms-govuk/archive/refs/heads/main.zip"}

@@ -26,23 +26,6 @@ files = [
 ]
 
 [[package]]
-name = "argh"
-version = "0.30.4"
-description = "An unobtrusive argparse wrapper with natural syntax"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "argh-0.30.4-py3-none-any.whl", hash = "sha256:f38842b38a2a451b58ff7515bc370764f074ce56f613ddda71001a8b971d199a"},
-    {file = "argh-0.30.4.tar.gz", hash = "sha256:9fca8e69c4dad4f8d2a7bdfbdd80b0754462b53510a03e1b5cf2b43a87e6e960"},
-]
-
-[package.extras]
-completion = ["argcomplete (>=2.0)"]
-docs = ["readthedocs-sphinx-search (==0.2.0)", "sphinx (>=6.1)", "sphinx-pyproject (==0.1.0)", "sphinx_rtd_theme (>=1.2.0)"]
-linters = ["pre-commit (>=3.4.0)"]
-test = ["pytest (>=7.4)", "pytest-cov (>=4.1)", "tox (>=4.11.3)"]
-
-[[package]]
 name = "argon2-cffi"
 version = "23.1.0"
 description = "Argon2 for Python"
@@ -3822,4 +3805,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0ae88cff093fb36f967d5c800d06adc7bc74d7a3b0f6dedbb43ffb83a6ef25fb"
+content-hash = "0910f1c48b6f377714db72629aace946c5682bcb72222fdabb98000f138c3ce3"
