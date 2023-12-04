@@ -97,6 +97,7 @@ requests-mock = "~=1.11.0"
 werkzeug = "~=3.0.1"
 debugpy = "1.8.0"
 hupper = "^1.12"
+docutils = "^0.20.1"
 
 [build-system]
 requires = ["poetry-core>=1.8.1"]

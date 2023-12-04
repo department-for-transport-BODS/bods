@@ -1362,6 +1362,17 @@ files = [
 ]
 
 [[package]]
+name = "docutils"
+version = "0.20.1"
+description = "Docutils -- Python Documentation Utilities"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "docutils-0.20.1-py3-none-any.whl", hash = "sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6"},
+    {file = "docutils-0.20.1.tar.gz", hash = "sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"},
+]
+
+[[package]]
 name = "envier"
 version = "0.4.0"
 description = "Python application configuration via the environment"
@@ -3811,4 +3822,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "34572928b63aa9bb5bf12d2a976e6776bec30be5c95fd9200a744d2bebcd6b89"
+content-hash = "0ae88cff093fb36f967d5c800d06adc7bc74d7a3b0f6dedbb43ffb83a6ef25fb"
