@@ -28,7 +28,7 @@ class TableCell(layout.Div):
         )
 
         if self.css_id is not None:
-            self.css_id = Template(str(self.css_id)).render(context)
+            self.css_id = Template(str(self.css_id)).render(context=context)
 
         # put original form back in context just in case its required for
         # some other reason
