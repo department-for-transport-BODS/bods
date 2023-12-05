@@ -438,7 +438,7 @@ def add_requires_attention_column(
         (df["scope_status"] == "In Scope")
         & (df["seasonal_status"] != "Out of Season")
         & (
-            (df["staleness_status"] != "Not Stale")
+            (df["staleness_status"] != "Up to date")
             | (
                 (df["published_status"] == "Unpublished")
                 & (df["otc_status"] == "Registered")
