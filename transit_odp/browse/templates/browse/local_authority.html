@@ -90,16 +90,12 @@
                     </select>
                 </div>
 
-                {% regroup object_list by item.ui_lta_name.item.id as grouped_object_list %}
-
                 <div class="search-result__list">
-                    {% for group_object in grouped_object_list %}
-                        {% for value in group_object.list|unique_by_property:'ui_lta_name' %}
-                            {% if not forloop.first %}
-                                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                            {% endif %}
-                            {% include 'browse/snippets/results/local_authority.html' with item=value host=host hosts_data=hosts.data auth_ids=auth_ids %}
-                        {% endfor %}
+                    {% for item in object_list %}
+                        {% if not forloop.first %}
+                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                        {% endif %}
+                        {% include 'browse/snippets/results/local_authority.html' with item=item host=host hosts_data=hosts.data%}
                     {% empty %}
                         <div>
                             <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
