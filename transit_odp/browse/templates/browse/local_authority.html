@@ -70,28 +70,24 @@
 
                 <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0">
 
-                <div class="sort_container">
-                    <div class="govuk-form-group">
-                        <div class="select-wrapper">
-                            <span class="govuk-body govuk-!-padding-right-2">Sort by</span>
-                            <select class="nav-select"
-                                id="ordering"
-                                name="ordering"
-                                aria-label="Order by"
-                                onchange="this.form.submit()">
-                                <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
-                                    {% filter force_escape %}
-                                        {% trans 'Name A-Z' %}
-                                    {% endfilter %}
-                                </option>
-                                <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
-                                    {% filter force_escape %}
-                                        {% trans 'Name Z-A' %}
-                                    {% endfilter %}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="ordering">Sort by</label>
+                    <select class="govuk-select"
+                        id="ordering"
+                        name="ordering"
+                        aria-label="Sort by"
+                        onchange="this.form.submit()">
+                        <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
+                            {% filter force_escape %}
+                                {% trans 'Name A-Z' %}
+                            {% endfilter %}
+                        </option>
+                        <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
+                            {% filter force_escape %}
+                                {% trans 'Name Z-A' %}
+                            {% endfilter %}
+                        </option>
+                    </select>
                 </div>
 
                 <div class="search-result__list">
