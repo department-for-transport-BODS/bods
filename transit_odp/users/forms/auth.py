@@ -9,8 +9,8 @@ from allauth.account.utils import (
 )
 from allauth.utils import build_absolute_uri
 from crispy_forms.layout import HTML, ButtonHolder, Layout
-from crispy_forms_govuk.forms import GOVUKFormMixin
-from crispy_forms_govuk.layout import ButtonSubmit, CheckboxField, LinkButton
+from transit_odp.frontend.forms import GOVUKFormMixin
+from transit_odp.frontend.layout import ButtonSubmit, CheckboxField, LinkButton
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction

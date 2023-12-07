@@ -1,0 +1,10 @@
+{% load crispy_forms_field %}
+
+{% if inputs %}
+  <div class="button-holder">
+      {% for input in inputs %}
+          {# Render using button template since govuk buttons have finite widths #}
+          {% include "govuk/layout/basebutton.html" %}
+      {% endfor %}
+  </div>
+{% endif %}

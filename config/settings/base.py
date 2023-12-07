@@ -128,7 +128,6 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "django_hosts",
     "crispy_forms",
-    "crispy_forms_govuk",
     "allauth",
     "allauth.account",
     "invitations",
