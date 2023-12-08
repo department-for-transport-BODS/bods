@@ -1,5 +1,5 @@
 from crispy_forms.layout import HTML, ButtonHolder, Layout
-from transit_odp.frontend.forms import GOVUKModelForm
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError

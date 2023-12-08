@@ -1,7 +1,7 @@
 from crispy_forms.layout import HTML, ButtonHolder, Div, Layout
-from transit_odp.frontend.forms import GOVUKModelForm
-from transit_odp.frontend.layout import LinkButton
-from transit_odp.frontend.layout.fields import Field
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
+from transit_odp.crispy_forms_govuk.layout import LinkButton
+from transit_odp.crispy_forms_govuk.layout.fields import Field
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator

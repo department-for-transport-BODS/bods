@@ -1,7 +1,7 @@
 from crispy_forms.helper import Layout
 from crispy_forms.layout import HTML
-from transit_odp.frontend.forms import GOVUKModelForm
-from transit_odp.frontend.layout import ButtonSubmit
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
+from transit_odp.crispy_forms_govuk.layout import ButtonSubmit
 from django import forms
 from django.utils.translation import gettext as _
 

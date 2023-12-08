@@ -1,6 +1,6 @@
 from crispy_forms.layout import ButtonHolder, Layout
-from transit_odp.frontend.forms import GOVUKForm
-from transit_odp.frontend.layout.buttons import ButtonSubmit, LinkButton
+from transit_odp.crispy_forms_govuk.forms import GOVUKForm
+from transit_odp.crispy_forms_govuk.layout.buttons import ButtonSubmit, LinkButton
 from django.utils.translation import gettext_lazy as _
 
 GOV_BUTTON_SECONDARY_CLASS = "govuk-button govuk-button--secondary"

@@ -1,6 +1,6 @@
 from crispy_forms.layout import HTML, ButtonHolder, Layout
-from transit_odp.frontend.forms import GOVUKModelForm
-from transit_odp.frontend.layout import (
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
+from transit_odp.crispy_forms_govuk.layout import (
     ButtonSubmit,
     CheckboxField,
     LegendSize,
