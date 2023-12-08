@@ -93,11 +93,26 @@ class Service(models.Model):
         return cls(**kwargs)
 
 
+# class UILta(models.Model):
+
+#     name = models.TextField(blank=False, null=False, unique=True)
+
+#     def __str__(self) -> str:
+#         return self.name
+    
+#     class Meta:
+#         db_table = 'ui_lta'
+#         verbose_name_plural = 'UI LTA'
+
+
 class LocalAuthority(models.Model):
     name = models.TextField(blank=True, null=False, unique=True)
     registration_numbers = models.ManyToManyField(Service, related_name="registration")
     ui_lta_name = models.CharField(blank=True, max_length=255, null=True)
     atco_code = models.IntegerField(blank=True, null=True)
+    # ui_lta = models.ForeignKey(
+    #     UILta, related_name="localauthority_ui_lta_records", on_delete=models.CASCADE, default=None, null=True
+    # )
 
     @classmethod
     def from_registry_lta(cls, registry_lta: RegistryLocalAuthority):
@@ -107,6 +122,9 @@ class LocalAuthority(models.Model):
                 Service(**service) for service in registry_lta.registration_numbers
             ],
         )
+    
+    # def ui_lta_name(self):
+    #     return self.ui_lta_id.name
 
     objects = LocalAuthorityManager()
 
@@ -124,3 +142,4 @@ class InactiveService(models.Model):
     )
     registration_status = models.CharField(max_length=20, blank=True, null=False)
     effective_date = models.DateField(null=True)
+

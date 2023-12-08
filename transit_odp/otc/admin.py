@@ -1,8 +1,18 @@
 from django.contrib import admin
 from django import forms
 
+#from transit_odp.otc.models import Service, LocalAuthority, UILta
 from transit_odp.otc.models import Service, LocalAuthority
 
+from django.db import models
+
+# @admin.register(UILta)
+# class UILtaAdmin(admin.ModelAdmin):
+#     model = UILta
+    
+#     # formfield_overrides = {
+#     #     models.TextField: {'widget': forms.TextInput(attrs={'style': 'width: 200px;'})},
+#     # }
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
@@ -85,9 +95,20 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 class LocalAuthoritiesForm(forms.ModelForm):
+    # ui_lta_name = forms.CharField(label='UILta Name', required=False)
+
     class Meta:
         model = LocalAuthority
         fields = ["name", "ui_lta_name", "atco_code"]
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     instance = kwargs.get('instance')
+    #     if instance:
+    #         self.fields['ui_lta_name'].initial = instance.ui_lta_name()
+
+    # def clean_ui_lta_name(self):
+    #     return self.instance.ui_lta_name() if self.instance else ''
 
 
 @admin.register(LocalAuthority)
