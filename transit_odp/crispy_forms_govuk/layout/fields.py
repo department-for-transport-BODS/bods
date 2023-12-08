@@ -15,7 +15,7 @@ import enum
 from crispy_forms import layout as crispy_forms_layout
 from crispy_forms.bootstrap import Accordion, AccordionGroup
 from crispy_forms.utils import TEMPLATE_PACK
-from transit_odp.frontend.layout.buttons import render_template
+from transit_odp.crispy_forms_govuk.layout.buttons import render_template
 
 __all__ = [
     "CheckboxField",

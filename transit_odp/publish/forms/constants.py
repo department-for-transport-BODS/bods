@@ -1,5 +1,5 @@
 from crispy_forms.layout import HTML
-from transit_odp.frontend.layout import ButtonSubmit, LinkButton
+from transit_odp.crispy_forms_govuk.layout import ButtonSubmit, LinkButton
 from django.utils.translation import gettext_lazy as _
 
 NEXT_BUTTON = ButtonSubmit("submit", "submit", content=_("Next step"))

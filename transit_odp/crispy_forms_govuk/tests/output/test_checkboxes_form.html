@@ -1,0 +1,55 @@
+<form method="post" novalidate>
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset" aria-describedby="id_waste-hint">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">
+          Which types of waste do you transport?
+        </h1>
+      </legend>
+      <span id="id_waste-hint" class="govuk-hint">
+        Choose at least one option.
+      </span>
+      <div class="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input
+            class="govuk-checkboxes__input"
+            id="id_waste_1"
+            name="waste"
+            type="checkbox"
+            value="carcasses"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="id_waste_1">
+            Waste from animal carcasses
+          </label>
+        </div>
+        <div class="govuk-checkboxes__item">
+          <input
+            class="govuk-checkboxes__input"
+            id="id_waste_2"
+            name="waste"
+            type="checkbox"
+            value="mines"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="id_waste_2">
+            Waste from mines or quarries
+          </label>
+        </div>
+        <div class="govuk-checkboxes__item">
+          <input
+            class="govuk-checkboxes__input"
+            id="id_waste_3"
+            name="waste"
+            type="checkbox"
+            value="farm"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="id_waste_3">
+            Farm or agricultural waste
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <button class="govuk-button" type="submit" data-module="govuk-button">
+    Submit
+  </button>
+</form>
