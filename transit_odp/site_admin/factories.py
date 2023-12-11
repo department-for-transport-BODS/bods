@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import factory
 from dateutil.relativedelta import relativedelta
-from factory import DjangoModelFactory, Sequence, SubFactory, post_generation
+from factory import  Sequence, SubFactory, post_generation
 from faker import Faker
 
 from transit_odp.site_admin.models import (
@@ -12,7 +12,7 @@ from transit_odp.site_admin.models import (
     ResourceRequestCounter,
 )
 from transit_odp.users.factories import UserFactory
-
+from factory.django import DjangoModelFactory
 fake = Faker()
 
 

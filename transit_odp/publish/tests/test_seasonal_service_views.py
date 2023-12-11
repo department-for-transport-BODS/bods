@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from django.utils.timezone import pytz
+import pytz
 from django_hosts import reverse
 from freezegun import freeze_time
 

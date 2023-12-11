@@ -1,5 +1,5 @@
 import pytest
-from pydantic.main import ValidationError
+
 
 from transit_odp.otc.dataclasses import Registration
 

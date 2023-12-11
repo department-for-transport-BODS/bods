@@ -8,9 +8,9 @@ from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop
+from factory.django import DjangoModelFactory
 
-
-class ServicePatternFactory(factory.DjangoModelFactory):
+class ServicePatternFactory(DjangoModelFactory):
     class Meta:
         model = ServicePattern
 
@@ -62,7 +62,7 @@ class ServicePatternFactory(factory.DjangoModelFactory):
                 self.localities.add(locality)
 
 
-class ServiceFactory(factory.DjangoModelFactory):
+class ServiceFactory(DjangoModelFactory):
     class Meta:
         model = Service
 
@@ -84,7 +84,7 @@ class ServiceFactory(factory.DjangoModelFactory):
                 self.service_patterns.add(service_pattern)
 
 
-class ServicePatternStopFactory(factory.DjangoModelFactory):
+class ServicePatternStopFactory(DjangoModelFactory):
     """Factory for ServicePatternStop through model"""
 
     class Meta:
