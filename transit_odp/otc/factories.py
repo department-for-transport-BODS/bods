@@ -16,6 +16,7 @@ from transit_odp.otc.models import Licence as LicenceModel, UILta
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
+from factory.django import DjangoModelFactory
 
 TODAY = datetime.date.today()
 NOW = timezone.now()
@@ -153,17 +154,17 @@ class LocalAuthorityFactory(factory.django.DjangoModelFactory):
                 self.registration_numbers.add(reg_num)
 
 
-class LicenceModelFactory(factory.DjangoModelFactory, LicenceFactory):
+class LicenceModelFactory(DjangoModelFactory, LicenceFactory):
     class Meta:
         model = LicenceModel
 
 
-class OperatorModelFactory(factory.DjangoModelFactory, OperatorFactory):
+class OperatorModelFactory(DjangoModelFactory, OperatorFactory):
     class Meta:
         model = OperatorModel
 
 
-class ServiceModelFactory(factory.DjangoModelFactory, ServiceFactory):
+class ServiceModelFactory(DjangoModelFactory, ServiceFactory):
     class Meta:
         model = ServiceModel
 
