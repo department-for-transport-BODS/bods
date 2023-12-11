@@ -1,4 +1,5 @@
-from django.utils import timezone
+from datetime import timezone,datetime
+
 
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.notifications import get_notifications
@@ -94,7 +95,7 @@ def send_avl_compliance_status_changed(datafeed: AVLDataset, old_status: str):
     key contact.
     """
     revision = datafeed.live_revision
-    now = timezone.now()
+    now = datetime.now(tz=timezone.utc)
     users = datafeed.organisation.users.select_related("settings")
     for user in users:
         if user.settings.daily_compliance_check_alert:
