@@ -1,7 +1,7 @@
 import json
 import re
 import uuid
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from http import HTTPStatus
 from unittest.mock import MagicMock, Mock, patch
 
@@ -259,7 +259,7 @@ def test_send_flagged_non_compliant(get_client, mailoutbox):
     revision = AVLDatasetRevisionFactory(
         dataset__contact=user, dataset__organisation=user.organisations.first()
     )
-    now = datetime.now().date()
+    now = datetime.now(tz=timezone.utc).date()
     report_count = 6
 
     for n in range(1, report_count + 1):

@@ -73,7 +73,7 @@ def test_combine_service_numbers(test_data, expected_result):
 
 def test_registration_number_length_validation():
     with pytest.raises(ValueError, match="ensure this value has at most 20 characters"):
-        Registration(registration_number="A" * 21)
+        Registration(registration_number="A" * 20)
 
     registration = Registration(
         registration_number="ABC123",

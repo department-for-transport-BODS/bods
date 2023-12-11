@@ -160,7 +160,7 @@ class TestDatasetRevision:
         )
 
     def test_publish_revision(self):
-        now = timezone.now()
+        now = datetime.now(tz=timezone.utc)
         user = UserFactory(account_type=AccountType.org_admin.value)
         revision = DatasetRevisionFactory(
             is_published=False, status=FeedStatus.success.value
