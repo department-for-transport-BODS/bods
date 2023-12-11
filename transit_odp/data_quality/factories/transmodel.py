@@ -5,7 +5,7 @@ import faker
 from transit_odp.data_quality import models
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from factory.django import DjangoModelFactory
-
+from faker.providers import geo
 
 class DataQualityReportSummaryFactory(DjangoModelFactory):
     """
