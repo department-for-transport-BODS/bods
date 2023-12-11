@@ -20,7 +20,11 @@ class AdminArea(models.Model):
     traveline_region_id = models.CharField(max_length=255)
     atco_code = models.CharField(max_length=255, unique=True)
     ui_lta = models.ForeignKey(
-        'otc.UILta', related_name="naptan_ui_lta_records", on_delete=models.CASCADE, default=None, null=True
+        "otc.UILta",
+        related_name="naptan_ui_lta_records",
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
     )
 
     objects = AdminAreaManager()

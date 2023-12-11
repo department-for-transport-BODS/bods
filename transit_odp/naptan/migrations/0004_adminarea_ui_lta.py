@@ -7,14 +7,20 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('otc', '0011_auto_20231208_1609'),
-        ('naptan', '0003_add_stop_areas_to_stoppoint'),
+        ("otc", "0011_auto_20231208_1609"),
+        ("naptan", "0003_add_stop_areas_to_stoppoint"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adminarea',
-            name='ui_lta',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='naptan_ui_lta_records', to='otc.uilta'),
+            model_name="adminarea",
+            name="ui_lta",
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="naptan_ui_lta_records",
+                to="otc.uilta",
+            ),
         ),
     ]

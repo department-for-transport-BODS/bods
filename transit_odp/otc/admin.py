@@ -5,15 +5,17 @@ from transit_odp.otc.models import Service, LocalAuthority, UILta
 
 from django.db import models
 
+
 @admin.register(UILta)
 class UILtaAdmin(admin.ModelAdmin):
     model = UILta
-    list_display = ['id', 'name']
-    ordering = ['id']
-    
+    list_display = ["id", "name"]
+    ordering = ["id"]
+
     formfield_overrides = {
-        models.TextField: {'widget': forms.TextInput(attrs={'style': 'width: 200px;'})},
+        models.TextField: {"widget": forms.TextInput(attrs={"style": "width: 200px;"})},
     }
+
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
@@ -98,9 +100,9 @@ class ServiceAdmin(admin.ModelAdmin):
 class LocalAuthoritiesForm(forms.ModelForm):
     ui_lta_name = forms.ModelChoiceField(
         queryset=UILta.objects.all(),
-        label='UI LTA Name',
+        label="UI LTA Name",
         required=False,
-        empty_label='Select UI LTA Name'
+        empty_label="Select UI LTA Name",
     )
 
     class Meta:
@@ -109,17 +111,17 @@ class LocalAuthoritiesForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        instance = kwargs.get('instance')
+        instance = kwargs.get("instance")
         if instance and instance.ui_lta:
-            self.fields['ui_lta_name'].initial = instance.ui_lta
+            self.fields["ui_lta_name"].initial = instance.ui_lta
 
     def clean_ui_lta_name(self):
-        ui_lta_instance = self.cleaned_data.get('ui_lta_name')
+        ui_lta_instance = self.cleaned_data.get("ui_lta_name")
         return ui_lta_instance.id if ui_lta_instance else None
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        ui_lta_id = self.cleaned_data.get('ui_lta_name')
+        ui_lta_id = self.cleaned_data.get("ui_lta_name")
         instance.ui_lta_id = ui_lta_id
         if commit:
             instance.save()
