@@ -89,7 +89,7 @@ def transform_stops(stops: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     # Create missing
     missing_stops = fetch_stops - fetched
-    created = bulk_create_stoppoints(stops.loc[missing_stops])
+    created = bulk_create_stoppoints(stops.loc[list(missing_stops)])
 
     # Create StopPoints and return id to ito_id
     id_map = create_id_map(chain(qs, created))
@@ -115,7 +115,7 @@ def transform_lines(report: DataQualityReport, lines: pd.DataFrame) -> pd.DataFr
 
     # Create missing
     missing = fetch - fetched
-    created = bulk_create_services(lines.loc[missing])
+    created = bulk_create_services(lines.loc[list(missing)])
 
     # Create ServiceLinks and return id to ito_id
     ito_id_to_id = create_id_map(chain(qs, created))
@@ -159,7 +159,7 @@ def transform_service_patterns(
 
     # Create missing
     missing = fetch - fetched
-    created = bulk_create_service_patterns(service_patterns.loc[missing])
+    created = bulk_create_service_patterns(service_patterns.loc[list(missing)])
 
     # Create ServiceLinks and return id to ito_id
     id_map = create_id_map(chain(qs, created))
@@ -223,11 +223,11 @@ def transform_service_pattern_stops(
     missing = fetch - fetched
 
     # missing above is expressed in 'ito_ids', convert to known SP ids
-    missing_sp_ids = service_patterns.loc[missing, "id"]
+    missing_sp_ids = service_patterns.loc[list(missing), "id"]
 
     # note we are doing a 'partial' select on the first level of the multiindex
     created = bulk_create_service_pattern_stops(
-        service_pattern_stops.loc[missing_sp_ids]
+        service_pattern_stops.loc[list(missing_sp_ids)]
     )
 
     # Create map of SPS DB ids
@@ -304,11 +304,11 @@ def transform_service_pattern_service_links(
     missing = fetch - fetched
 
     # missing above is expressed in 'ito_ids', convert to known SP ids
-    missing_sp_ids = service_patterns.loc[missing, "id"]
+    missing_sp_ids = service_patterns.loc[list(missing), "id"]
 
     # note we are doing a 'partial' select on the first level of the multiindex
     created = bulk_create_service_pattern_service_links(
-        service_pattern_service_links.loc[missing_sp_ids]
+        service_pattern_service_links.loc[list(missing_sp_ids)]
     )
 
     # Create map of SPS DB ids
@@ -360,7 +360,7 @@ def transform_service_links(
 
     # Create missing
     missing = fetch - fetched
-    created = bulk_create_service_links(service_links.loc[missing])
+    created = bulk_create_service_links(service_links.loc[list(missing)])
 
     # Create id to ito_id map
     ito_id_to_id = create_id_map(chain(qs, created))
@@ -397,7 +397,7 @@ def transform_timing_patterns(
 
     # Create missing
     missing = fetch - fetched
-    created = bulk_create_timing_patterns(timing_patterns.loc[missing])
+    created = bulk_create_timing_patterns(timing_patterns.loc[list(missing)])
 
     # Create ServiceLinks and return id to ito_id
     id_map = create_id_map(chain(qs, created))
@@ -475,11 +475,11 @@ def transform_timing_pattern_stops(
     missing = fetch - fetched
 
     # missing above is expressed in 'ito_ids', convert to known SP ids
-    missing_tp_ids = timing_patterns.loc[missing, "id"]
+    missing_tp_ids = timing_patterns.loc[list(missing), "id"]
 
     if not missing_tp_ids.empty:
         # note we are doing a 'partial' select on the first level of the multiindex
-        tps = timing_pattern_stops.loc[missing_tp_ids]
+        tps = timing_pattern_stops.loc[list(missing_tp_ids)]
 
         # convert 'arrival_time_secs' and 'departure_time_secs' into durations.
         tps["arrival"] = tps["arrival_time_secs"].apply(
@@ -547,7 +547,7 @@ def transform_vehicle_journeys(
 
     # Create missing
     missing = fetch - fetched
-    created = bulk_create_vehicle_journeys(vehicle_journeys.loc[missing])
+    created = bulk_create_vehicle_journeys(vehicle_journeys.loc[list(missing)])
 
     # Create ServiceLinks and return id to ito_id
     id_map = create_id_map(chain(qs, created))
