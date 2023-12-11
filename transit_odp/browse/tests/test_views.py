@@ -61,6 +61,7 @@ from transit_odp.otc.factories import (
     OperatorFactory,
     OperatorModelFactory,
     ServiceModelFactory,
+    UILtaFactory,
 )
 from transit_odp.pipelines.factories import (
     BulkDataArchiveFactory,
@@ -97,10 +98,13 @@ def get_lta_complaint_data_queryset():
                 effective_date=datetime.date(year=2020, month=1, day=1),
             )
         )
+
+    ui_lta = UILtaFactory(name="Dorset County Council")
+
     local_authority = LocalAuthorityFactory(
         id="1",
         name="Dorset Council",
-        ui_lta_name="Dorset County Council",
+        ui_lta=ui_lta,
         registration_numbers=service,
     )
 
@@ -210,8 +214,12 @@ def get_lta_list_data():
         },
     ]
 
+    ui_ltas = {}
     for id, lta in enumerate(test_ltas, start=1):
-        LocalAuthorityFactory(id=id, name=lta["name"], ui_lta_name=lta["ui_lta_name"]),
+        lta_name = lta["ui_lta_name"]
+        if lta_name not in ui_ltas:
+            ui_ltas[lta_name] = UILtaFactory(name=lta_name)
+        LocalAuthorityFactory(id=id, name=lta["name"], ui_lta=ui_ltas[lta_name]),
 
 
 class TestFeedDetailsView:
@@ -1263,11 +1271,13 @@ class TestLTAView:
                 variation_number=0,
             )
         ]
+
+        ui_lta = UILtaFactory(id="1", name="first_ui_lta")
+
         LocalAuthorityFactory(
             id="1",
             name="first_LTA",
-            ui_lta_name="First LTA",
-            registration_numbers=service,
+            ui_lta=ui_lta
         )
 
         request = request_factory.get("/local-authority/")
@@ -1286,11 +1296,13 @@ class TestLTAView:
         assert len(ltas_context) == 1
 
     def test_lta_view_order_by_name(self, request_factory: RequestFactory):
+        ui_lta_1 = UILtaFactory(id="1", name="Derby City Council")
+        ui_lta_2 = UILtaFactory(id="2", name="Cheshire East Council")
         LocalAuthorityFactory(
-            id="1", name="Derby Council", ui_lta_name="Derby City Council"
+            id="1", name="Derby Council", ui_lta=ui_lta_1
         ),
         LocalAuthorityFactory(
-            id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
+            id="2", name="Cheshire Council", ui_lta=ui_lta_2
         ),
 
         request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
@@ -1300,7 +1312,7 @@ class TestLTAView:
         assert response.status_code == 200
         expected_order = ["Cheshire East Council", "Derby City Council"]
 
-        object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
+        object_names = [obj.ui_lta_name() for obj in response.context_data["object_list"]]
         assert object_names == expected_order
 
     def test_lta_view_pagination(self, request_factory: RequestFactory):
@@ -1373,7 +1385,7 @@ class TestLTADetailView:
         )
         # One out of season seasonal service reduces in scope services to 8
         assert context["total_in_scope_in_season_services"] == 8
-        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
+        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%test_local_authority_detail_view_timetable_stats_compliant
         assert context["services_require_attention_percentage"] == 75
 
     def test_local_authority_detail_view_timetable_stats_compliant(
@@ -1434,10 +1446,12 @@ class TestLTADetailView:
                 registration_number=code.replace(":", "/"),
                 effective_date=datetime.date(year=2020, month=1, day=1),
             )
+        
+        ui_lta = UILtaFactory(name="Dorset County Council",)
         local_authority = LocalAuthorityFactory(
             id="1",
             name="Dorset Council",
-            ui_lta_name="Dorset County Council",
+            ui_lta=ui_lta,
             registration_numbers=service,
         )
         request = request_factory.get(

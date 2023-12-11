@@ -196,8 +196,8 @@ class LocalAuthorityView(BaseListView):
         return qs.distinct("ui_lta_name_trimmed")
 
     def get_model_objects(self):
-        qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
-            ui_lta_name_trimmed=Trim("ui_lta_name")
+        qs = self.model.objects.filter(ui_lta__name__isnull=False).annotate(
+            ui_lta_name_trimmed=Trim("ui_lta__name")
         )
 
         search_term = self.request.GET.get("q", "").strip()
