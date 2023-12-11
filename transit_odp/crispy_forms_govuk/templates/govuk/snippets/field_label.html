@@ -1,0 +1,14 @@
+{% if field.label %}
+    {% if field.name == page_heading_field %}
+        {# This follows the recommended Question Page pattern#}
+      <h1 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--xl" for="{{ field.id_for_label }}">
+            {{ field.label|safe }}
+        </label>
+      </h1>
+    {% else %}
+      <label class="govuk-label" for="{{ field.id_for_label }}">
+          {{ field.label|safe }}
+      </label>
+    {% endif %}
+{% endif %}

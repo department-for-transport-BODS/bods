@@ -128,7 +128,6 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "django_hosts",
     "crispy_forms",
-    "crispy_forms_govuk",
     "allauth",
     "allauth.account",
     "invitations",
@@ -169,6 +168,7 @@ LOCAL_APPS = [
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
     "transit_odp.disruptions.apps.DisruptionsConfig",
+    "transit_odp.crispy_forms_govuk.apps.CrispyFormsGovukConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

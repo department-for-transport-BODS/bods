@@ -1,4 +1,4 @@
-from crispy_forms_govuk.forms import GOVUKModelForm
+from transit_odp.frontend.forms import GOVUKModelForm
 from django import forms
 from django.contrib import auth
 from django.core.exceptions import ValidationError
