@@ -102,14 +102,14 @@ class AggregatedDailyReports:
 
     def get_summary_report(self):
         """Produces DataFrame used for avl_to_timetable_match_summary.csv."""
-        df = self._aggregate_summary_reports()
+        df:pd.DataFrame = self._aggregate_summary_reports()
 
         df = pd.concat([df, pd.DataFrame([{
                 "SIRI field": "Completely matched ALL elements with "
                 "timetable data (excluding BlockRef)",
                 "successful_match_with_txc": self.total_vehicles_completely_matching,
                 "%match": f"{self.all_fields_matching_vehicles_score}%",
-            }])], ignore_index=True  
+            }])], ignore_index=True
         )
 
         df = df.rename(
