@@ -131,6 +131,7 @@ class Registration(BaseModel):
 
     @validator("service_number", pre=True)
     def combine_service_numbers(cls, v, values):
+        values = hasattr(values, "data") and values.data or values
         other_service_number = values.get("other_service_number", "")
         if not other_service_number:
             return v
