@@ -64,6 +64,7 @@ stories = "~=5.1.0"
 tenacity = "~=8.2.3"
 whitenoise = "~=6.6.0"
 setuptools="~=69.0.2"
+beautifulsoup4 = "^4.12.2"
 
 
 [tool.poetry.dev-dependencies]
