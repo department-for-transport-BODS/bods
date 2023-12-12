@@ -1,7 +1,8 @@
 from datetime import timedelta
 from typing import Dict, Optional
 
-from django.db.models import Subquery
+from django.db.models import Subquery, Count
+
 from django.db.models.functions import Trim
 from django.http import HttpResponse
 from django.views import View
@@ -139,58 +140,14 @@ class LocalAuthorityView(BaseListView):
         context["q"] = self.request.GET.get("q", "")
         context["ordering"] = self.request.GET.get("ordering", "ui_lta_name_trimmed")
         all_ltas_current_page = context["object_list"]
-        ids_list = {}
-
-        for lta in all_ltas_current_page:
-            if lta.ui_lta_name_trimmed not in ids_list:
-                ids_list[lta.ui_lta_name_trimmed] = [lta.id]
-            else:
-                ids_list[lta.ui_lta_name_trimmed].append(lta.id)
-
-        for lta_id_list in ids_list.values():
-            for lta in all_ltas_current_page:
-                if lta.id in lta_id_list:
-                    setattr(lta, "auth_ids", lta_id_list)
-
-                    lta_list = [x for x in all_ltas_current_page if x.id in lta_id_list]
-                    otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(
-                        lta_list
-                    )
-                    if otc_qs:
-                        context["total_in_scope_in_season_services"] = otc_qs
-                    else:
-                        context["total_in_scope_in_season_services"] = 0
-                    requires_attention_data_qs = get_requires_attention_data_lta(
-                        lta_list
-                    )
-                    if requires_attention_data_qs:
-                        context[
-                            "total_services_requiring_attention"
-                        ] = requires_attention_data_qs
-                    else:
-                        context["total_services_requiring_attention"] = 0
-
-                    try:
-                        context["services_require_attention_percentage"] = round(
-                            100
-                            * (
-                                context["total_services_requiring_attention"]
-                                / context["total_in_scope_in_season_services"]
-                            )
-                        )
-                    except ZeroDivisionError:
-                        context["services_require_attention_percentage"] = 0
-                    setattr(
-                        lta,
-                        "services_require_attention_percentage",
-                        context["services_require_attention_percentage"],
-                    )
 
         names = []
         name_set = set()
+        lta_list_per_ui_ltas = {}
 
-        all_ltas = self.get_queryset()
+        all_ltas = self.get_model_objects().all()
         for lta in all_ltas:
+            lta_list_per_ui_ltas.setdefault(lta.ui_lta_name_trimmed, []).append(lta)
             cleaned_name = lta.ui_lta_name_trimmed.replace("\xa0", " ")
             if cleaned_name not in name_set:
                 names.append(cleaned_name)
@@ -198,9 +155,47 @@ class LocalAuthorityView(BaseListView):
 
         ltas = {"names": names}
         context["ltas"] = ltas
+
+        for lta in all_ltas_current_page:
+            lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
+            setattr(lta, "auth_ids", [x.id for x in lta_list])
+
+            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_list)
+            if otc_qs:
+                context["total_in_scope_in_season_services"] = otc_qs
+            else:
+                context["total_in_scope_in_season_services"] = 0
+            requires_attention_data_qs = get_requires_attention_data_lta(lta_list)
+            if requires_attention_data_qs:
+                context[
+                    "total_services_requiring_attention"
+                ] = requires_attention_data_qs
+            else:
+                context["total_services_requiring_attention"] = 0
+
+            try:
+                context["services_require_attention_percentage"] = round(
+                    100
+                    * (
+                        context["total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["services_require_attention_percentage"] = 0
+            setattr(
+                lta,
+                "services_require_attention_percentage",
+                context["services_require_attention_percentage"],
+            )
+
         return context
 
     def get_queryset(self):
+        qs = self.get_model_objects().order_by(*self.get_ordering())
+        return qs.distinct("ui_lta_name_trimmed")
+
+    def get_model_objects(self):
         qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
             ui_lta_name_trimmed=Trim("ui_lta_name")
         )
@@ -209,7 +204,6 @@ class LocalAuthorityView(BaseListView):
         if search_term:
             qs = qs.filter(ui_lta_name_trimmed__icontains=search_term)
 
-        qs = qs.order_by(*self.get_ordering())
         return qs
 
     def get_ordering(self):
@@ -290,9 +284,11 @@ class LocalAuthorityExportView(View):
             lta_objs.append(LocalAuthority.objects.get(id=combined_authority_id))
 
         updated_ui_lta_name = lta_objs[0].ui_lta_name.replace(",", " ").strip()
+
         csv_filename = (
             f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
         )
+
         csv_export = LTACSV(lta_objs)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
