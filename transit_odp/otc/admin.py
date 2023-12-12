@@ -107,7 +107,7 @@ class LocalAuthoritiesForm(forms.ModelForm):
 
     class Meta:
         model = LocalAuthority
-        fields = ["name", "ui_lta_name", "atco_code"]
+        fields = ["name", "ui_lta_name"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -131,7 +131,7 @@ class LocalAuthoritiesForm(forms.ModelForm):
 @admin.register(LocalAuthority)
 class LocalAuthorityAdmin(admin.ModelAdmin):
     list_per_page = 50
-    list_display = ("name", "ui_lta_name", "atco_code")
+    list_display = ("name", "ui_lta_name")
     search_fields = ("name", "ui_lta_name")
     list_filter = ("name",)
     ordering = ("name",)
