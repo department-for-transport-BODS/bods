@@ -1,7 +1,5 @@
 from datetime import date, datetime
-import logging
 from typing import Optional, OrderedDict
-from venv import logger
 
 from django.utils.timezone import make_aware
 from pydantic import ConfigDict, Field, field_validator
@@ -133,8 +131,7 @@ class Registration(BaseModel):
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @field_validator("service_number", mode="before")
     def combine_service_numbers(cls, v, values):
-        logging.info(values)
-        logging.info(type(values))
+        values = hasattr(values, "data") and values.data or values
         other_service_number = values.get("other_service_number", "")
         if not other_service_number:
             return v
