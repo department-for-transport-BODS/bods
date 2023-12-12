@@ -3,7 +3,7 @@ import os
 
 import pytest
 from crispy_forms.helper import FormHelper
-from tests.utils import get_rendered_template, render_attempted_output
+from .utils import get_rendered_template, render_attempted_output
 
 
 @pytest.fixture(scope="session")

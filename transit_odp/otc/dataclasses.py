@@ -132,7 +132,7 @@ class Registration(BaseModel):
     # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @field_validator("service_number", mode="before")
-    def combine_service_numbers(cls, v, values:dict):
+    def combine_service_numbers(cls, v, values):
         logging.info(values)
         logging.info(type(values))
         other_service_number = values.get("other_service_number", "")
