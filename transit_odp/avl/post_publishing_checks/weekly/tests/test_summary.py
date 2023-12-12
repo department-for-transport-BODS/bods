@@ -583,16 +583,16 @@ def test_ppc_summary(
     assert df.iloc[0]["TXC match field"] == "NationalOperatorCode"
     assert df.iloc[0]["Total vehicleActivities analysed"] == 235
     assert df.iloc[0]["Total count of SIRI fields populated"] == 215
-    assert df.iloc[0]["%populated"] == str(215 * 100 // 235) + "%"
+    assert df.iloc[0]["%populated"] == str(float(215 * 100 // 235)) + "%"
     assert df.iloc[0]["Successful match with TXC"] == 20
-    assert df.iloc[0]["%match"] == str(20 * 100 // 235) + "%"
+    assert df.iloc[0]["%match"] == str(float(20 * 100 // 235)) + "%"
     assert df.iloc[0]["Notes"] == "dummy_1"
 
     # All fields complete matching row 2 daily reports aggregated
     # 2 x 50 = 100 for analysed vehicles
     # 2 x 25 = 50 for all fields matching vehicles
     assert df.iloc[1]["Successful match with TXC"] == 20
-    assert df.iloc[1]["%match"] == "8%"
+    assert df.iloc[1]["%match"] == str(float(8)) + "%"
 
 
 @patch("json.load")
@@ -797,10 +797,10 @@ def test_ppc_summary_no_data(
     assert df.iloc[0]["TXC match field"] == "NationalOperatorCode"
     assert df.iloc[0]["Total vehicleActivities analysed"] == 0
     assert df.iloc[0]["Total count of SIRI fields populated"] == 0
-    assert df.iloc[0]["%populated"] == "0%"
+    assert df.iloc[0]["%populated"] == str(float(0)) + "%"
     assert df.iloc[0]["Successful match with TXC"] == 0
-    assert df.iloc[0]["%match"] == "0%"
+    assert df.iloc[0]["%match"] == str(float(0)) + "%"
     assert df.iloc[0]["Notes"] == "dummy_1"
 
     assert df.iloc[1]["Successful match with TXC"] == 0
-    assert df.iloc[1]["%match"] == "0%"
+    assert df.iloc[1]["%match"] == str(float(0)) + "%"
