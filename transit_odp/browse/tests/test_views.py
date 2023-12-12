@@ -1379,7 +1379,7 @@ class TestLTADetailView:
         )
         # One out of season seasonal service reduces in scope services to 8
         assert context["total_in_scope_in_season_services"] == 8
-        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%test_local_authority_detail_view_timetable_stats_compliant
+        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert context["services_require_attention_percentage"] == 75
 
     def test_local_authority_detail_view_timetable_stats_compliant(
