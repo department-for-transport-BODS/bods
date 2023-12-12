@@ -9,15 +9,16 @@ defaults:
 
 env:  
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
-  ENVIRONMENT_NAME: test
+  ENVIRONMENT_NAME: uat
 
 jobs:
 
   hotfix_deployment:
+    if: github.ref_name == 'main'
     name: 'hotfix_deployment'
     runs-on: ubuntu-latest
     environment:
-      name: test
+      name: uat
     
     steps:
     - name: Checkout
