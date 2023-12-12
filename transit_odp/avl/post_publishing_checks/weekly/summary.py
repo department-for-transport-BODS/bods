@@ -102,9 +102,9 @@ class AggregatedDailyReports:
 
     def get_summary_report(self):
         """Produces DataFrame used for avl_to_timetable_match_summary.csv."""
-        df = self._aggregate_summary_reports()
+        df:pd.DataFrame = self._aggregate_summary_reports()
 
-        df = df.append(
+        df = df._append(
             {
                 "SIRI field": "Completely matched ALL elements with "
                 "timetable data (excluding BlockRef)",
@@ -173,32 +173,32 @@ class PostPublishingChecksSummaryData:
             report = DailyReport(**json.load(report.file.open("rb")))
 
             df = pd.DataFrame(report.summary)
-            summary.ppc_summary_report = summary.ppc_summary_report.append(
+            summary.ppc_summary_report = summary.ppc_summary_report._append(
                 df, ignore_index=True
             )
 
             df = pd.DataFrame(report.all_siri_analysed)
-            summary.siri_message_analysed = summary.siri_message_analysed.append(
+            summary.siri_message_analysed = summary.siri_message_analysed._append(
                 df, ignore_index=True
             )
 
             df = pd.DataFrame(report.uncounted_vehicles)
             summary.uncounted_vehicle_activities = (
-                summary.uncounted_vehicle_activities.append(df, ignore_index=True)
+                summary.uncounted_vehicle_activities._append(df, ignore_index=True)
             )
 
             df = pd.DataFrame(report.direction_ref)
-            summary.direction_ref = summary.direction_ref.append(df, ignore_index=True)
+            summary.direction_ref = summary.direction_ref._append(df, ignore_index=True)
 
             df = pd.DataFrame(report.destination_ref)
-            summary.destination_ref = summary.destination_ref.append(
+            summary.destination_ref = summary.destination_ref._append(
                 df, ignore_index=True
             )
 
             df = pd.DataFrame(report.origin_ref)
-            summary.origin_ref = summary.origin_ref.append(df, ignore_index=True)
+            summary.origin_ref = summary.origin_ref._append(df, ignore_index=True)
 
             df = pd.DataFrame(report.block_ref)
-            summary.block_ref = summary.block_ref.append(df, ignore_index=True)
+            summary.block_ref = summary.block_ref._append(df, ignore_index=True)
 
         return summary
