@@ -108,7 +108,6 @@ class UILta(models.Model):
 class LocalAuthority(models.Model):
     name = models.TextField(blank=True, null=False, unique=True)
     registration_numbers = models.ManyToManyField(Service, related_name="registration")
-    atco_code = models.IntegerField(blank=True, null=True)
     ui_lta = models.ForeignKey(
         UILta,
         related_name="localauthority_ui_lta_records",
