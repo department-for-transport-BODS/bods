@@ -104,15 +104,14 @@ class AggregatedDailyReports:
         """Produces DataFrame used for avl_to_timetable_match_summary.csv."""
         df = self._aggregate_summary_reports()
 
-        df = df.append(
-            {
+        df = pd.concat([df, pd.DataFrame([{
                 "SIRI field": "Completely matched ALL elements with "
                 "timetable data (excluding BlockRef)",
                 "successful_match_with_txc": self.total_vehicles_completely_matching,
                 "%match": f"{self.all_fields_matching_vehicles_score}%",
-            },
-            ignore_index=True,
+            }])], ignore_index=True  
         )
+
         df = df.rename(
             columns={
                 "total_activities_analysed": "Total vehicleActivities analysed",
@@ -173,32 +172,24 @@ class PostPublishingChecksSummaryData:
             report = DailyReport(**json.load(report.file.open("rb")))
 
             df = pd.DataFrame(report.summary)
-            summary.ppc_summary_report = summary.ppc_summary_report.append(
-                df, ignore_index=True
-            )
+            summary.ppc_summary_report = pd.concat([summary.ppc_summary_report, df], ignore_index=True)
 
             df = pd.DataFrame(report.all_siri_analysed)
-            summary.siri_message_analysed = summary.siri_message_analysed.append(
-                df, ignore_index=True
-            )
+            summary.siri_message_analysed = pd.concat([summary.siri_message_analysed, df], ignore_index=True)
 
             df = pd.DataFrame(report.uncounted_vehicles)
-            summary.uncounted_vehicle_activities = (
-                summary.uncounted_vehicle_activities.append(df, ignore_index=True)
-            )
+            summary.uncounted_vehicle_activities = pd.concat([summary.uncounted_vehicle_activities, df], ignore_index=True)
 
             df = pd.DataFrame(report.direction_ref)
-            summary.direction_ref = summary.direction_ref.append(df, ignore_index=True)
+            summary.direction_ref = pd.concat([summary.direction_ref, df], ignore_index=True)
 
             df = pd.DataFrame(report.destination_ref)
-            summary.destination_ref = summary.destination_ref.append(
-                df, ignore_index=True
-            )
+            summary.destination_ref = pd.concat([summary.destination_ref, df], ignore_index=True)
 
             df = pd.DataFrame(report.origin_ref)
-            summary.origin_ref = summary.origin_ref.append(df, ignore_index=True)
+            summary.origin_ref = pd.concat([summary.origin_ref, df], ignore_index=True)
 
             df = pd.DataFrame(report.block_ref)
-            summary.block_ref = summary.block_ref.append(df, ignore_index=True)
+            summary.block_ref = pd.concat([summary.block_ref, df], ignore_index=True)
 
         return summary
