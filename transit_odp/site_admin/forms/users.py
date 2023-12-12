@@ -1,4 +1,3 @@
-from transit_odp.frontend.forms import GOVUKModelForm
 from django import forms
 from django.contrib import auth
 from django.core.exceptions import ValidationError
@@ -9,6 +8,7 @@ from invitations.utils import get_invitation_model
 from transit_odp.organisation.constants import ORG_PENDING_INVITE
 from transit_odp.site_admin.forms.base import CheckboxFilterForm
 from transit_odp.users.constants import AgentUserType, DeveloperType
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
 
 User = auth.get_user_model()
 Invitation = get_invitation_model()
