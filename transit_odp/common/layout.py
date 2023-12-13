@@ -23,9 +23,7 @@ class TableCell(layout.Div):
         original_form = context.get("form", None)
         context["form"] = form
 
-        fields = self.get_rendered_fields(
-            form, context, template_pack, **kwargs
-        )
+        fields = self.get_rendered_fields(form, context, template_pack, **kwargs)
 
         if self.css_id is not None:
             self.css_id = Template(str(self.css_id)).render(context=context)

@@ -17,6 +17,7 @@ from transit_odp.pipelines.models import (
 )
 from factory.django import DjangoModelFactory
 
+
 class RemoteDatasetHealthCheckCountFactory(DjangoModelFactory):
     class Meta:
         model = RemoteDatasetHealthCheckCount

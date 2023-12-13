@@ -4,7 +4,10 @@ from string import ascii_uppercase
 from crispy_forms.layout import Layout
 from transit_odp.crispy_forms_govuk.forms import GOVUKForm
 from transit_odp.crispy_forms_govuk.layout import ButtonSubmit
-from transit_odp.crispy_forms_govuk.layout.fields import CheckboxMultipleField, LegendSize
+from transit_odp.crispy_forms_govuk.layout.fields import (
+    CheckboxMultipleField,
+    LegendSize,
+)
 from django import forms
 from django.contrib import auth
 from django.forms import CheckboxSelectMultiple
