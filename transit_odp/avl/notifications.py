@@ -1,4 +1,4 @@
-from datetime import timezone,datetime
+from datetime import timezone, datetime
 
 
 from transit_odp.avl.proxies import AVLDataset

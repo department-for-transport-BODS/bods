@@ -5,7 +5,7 @@ import faker
 from transit_odp.data_quality import models
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from factory.django import DjangoModelFactory
-from faker.providers import geo
+
 
 class DataQualityReportSummaryFactory(DjangoModelFactory):
     """
@@ -60,8 +60,8 @@ class StopPointFactory(DjangoModelFactory):
 
     @factory.lazy_attribute
     def geometry(self):
-        fake=faker.Faker()
-        geometry=fake.local_latlng(country_code="GB", coords_only=True)
+        fake = faker.Faker()
+        geometry = fake.local_latlng(country_code="GB", coords_only=True)
         return Point(x=float(geometry[1]), y=float(geometry[0]), srid=4326)
 
     class Meta:

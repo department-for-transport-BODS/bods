@@ -129,15 +129,16 @@ def add_service_pattern_to_service_pattern_stops(df, service_patterns):
 
     def _inner():
         for record in df.to_dict("records"):
-            service_pattern_id = service_patterns.xs(
-                record["service_pattern_id"], level="service_pattern_id"
-            ).iloc[0]["id"]
-            yield ServicePatternStop(
-                service_pattern_id=service_pattern_id,
-                sequence_number=record["order"],
-                naptan_stop_id=record["naptan_id"],
-                atco_code=record["stop_atco"],
-            )
+            if "service_pattern_id" in record:
+                service_pattern_id = service_patterns.xs(
+                    record["service_pattern_id"], level="service_pattern_id"
+                ).iloc[0]["id"]
+                yield ServicePatternStop(
+                    service_pattern_id=service_pattern_id,
+                    sequence_number=record["order"],
+                    naptan_stop_id=record["naptan_id"],
+                    atco_code=record["stop_atco"],
+                )
 
     stops = list(_inner())
     if stops:

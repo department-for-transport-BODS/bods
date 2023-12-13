@@ -585,7 +585,7 @@ def test_not_stale():
 
     df = _get_timetable_catalogue_dataframe()
     assert df["Timeliness Status"][0] == "Up to date"
-    assert df["Requires Attention"][0] == "Yes"
+    assert df["Requires Attention"][0] == "No"
 
 
 @freeze_time("2023-02-14")

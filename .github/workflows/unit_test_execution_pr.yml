@@ -1,21 +1,30 @@
 on:
   pull_request:
       types: [ opened, synchronize, reopened ]
-      branches: 
+      branches:
         - dev
+        - main
 
 env:
   ECR_PYTHON_DEPENDENCIES_REPO: python_dependencies
-  REGION: eu-west-2 
+  REGION: eu-west-2
 
 jobs:
   configure_dependencies_container:
     runs-on: ubuntu-latest
+    if: |
+      (
+        github.base_ref == 'main' &&
+        startsWith( github.head_ref, 'hotfix' )
+      ) ||
+      github.base_ref == 'dev'
     steps:
       - name: getref
         run: |
           echo ${{ github.head_ref || github.ref_name }}
           echo ${{ format('github.ref = {0}', github.ref) }}
+          echo ${{ format('github.head_ref = {0}', github.head_ref) }}
+          echo ${{ format('github.base_ref = {0}', github.base_ref) }}
           echo ${{ format('github.event.pull_request.head.ref = {0}', github.event.pull_request.head.ref) }}
 
       - name: Checkout HEAD of working branch
@@ -126,19 +135,27 @@ jobs:
             steps.check_image_existence.outputs.python_dependencies_branch_exists == 'false' &&
             (
               steps.check_for_pr_change.outputs.changed == 'true' ||
-              steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false'
+              github.base_ref == 'main' ||
+              (
+                steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false' &&
+                github.base_ref == 'dev'
+              )
             )
           ) ||
-          steps.check_for_head_change.outputs.changed =='true'            
+          steps.check_for_head_change.outputs.changed =='true'
         uses: docker/setup-buildx-action@v3
-    
+
       - name: "Create repository if it doesn't exist"
         if: |
           (
             steps.check_image_existence.outputs.python_dependencies_branch_exists == 'false' &&
             (
               steps.check_for_pr_change.outputs.changed == 'true' ||
-              steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false'
+              github.base_ref == 'main' ||
+              (
+                steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false' &&
+                github.base_ref == 'dev'
+              )
             )
           )  ||
           steps.check_for_head_change.outputs.changed =='true'
@@ -153,7 +170,11 @@ jobs:
             steps.check_image_existence.outputs.python_dependencies_branch_exists == 'false' &&
             (
               steps.check_for_pr_change.outputs.changed == 'true' ||
-              steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false'
+              github.base_ref == 'main' ||
+              (
+                steps.check_image_existence.outputs.python_dependencies_dev_exists == 'false' &&
+                github.base_ref == 'dev'
+              )
             )
           )  ||
           steps.check_for_head_change.outputs.changed =='true'
@@ -167,11 +188,17 @@ jobs:
     outputs:
       docker_username: ${{ steps.login_ecr.outputs[format('docker_username_{0}_dkr_ecr_{1}_amazonaws_com', steps.login_aws.outputs.aws-account-id, steps.get_region_underscores.outputs.REGION_UNDERSCORES)] }}
       docker_password: ${{ steps.login_ecr.outputs[format('docker_password_{0}_dkr_ecr_{1}_amazonaws_com', steps.login_aws.outputs.aws-account-id, steps.get_region_underscores.outputs.REGION_UNDERSCORES)] }}
-      python_dependencies_image: ${{ format( '{0}/{1}:{2}', steps.login_ecr.outputs.registry, env.ECR_PYTHON_DEPENDENCIES_REPO, ( steps.check_for_pr_change.outputs.changed == 'false' && steps.check_for_head_change.outputs.changed == 'false' && steps.check_image_existence.outputs.python_dependencies_dev_exists == 'true') && 'dev' || steps.sanitise_branch_name.outputs.branch ) }}
+      python_dependencies_image: ${{ format( '{0}/{1}:{2}', steps.login_ecr.outputs.registry, env.ECR_PYTHON_DEPENDENCIES_REPO, ( steps.check_for_pr_change.outputs.changed == 'false' && steps.check_for_head_change.outputs.changed == 'false' && steps.check_image_existence.outputs.python_dependencies_dev_exists == 'true' && github.base_ref == 'dev') && 'dev' || steps.sanitise_branch_name.outputs.branch ) }}
 
 
 
   run_unit_tests:
+    if: |
+      (
+        github.base_ref == 'main' &&
+        startsWith( github.head_ref, 'hotfix' )
+      ) ||
+      github.base_ref == 'dev'
     needs: configure_dependencies_container
     runs-on: ubuntu-latest
     container:
@@ -225,13 +252,13 @@ jobs:
         image: redis:3.2
         ports:
           - 6379:6379
-    
+
     steps:
       - name: "Install git and github cli"
         id: install_git
         run: |
-          apk update
-          apk add git
+          apt update
+          apt install git
 
       - name: Checkout
         uses: actions/checkout@v4
