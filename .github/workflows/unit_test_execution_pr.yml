@@ -258,7 +258,7 @@ jobs:
         id: install_git
         run: |
           apt update
-          apt install git
+          apt install -y git
 
       - name: Checkout
         uses: actions/checkout@v4
