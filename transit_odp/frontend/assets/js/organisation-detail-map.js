@@ -1,3 +1,5 @@
+import questionMark from '../images/disruptions-map/question-mark.png'
+
 const mapboxgl = require("mapbox-gl");
 
 const httpGetAsync = (theUrl, callback) => {
@@ -59,13 +61,6 @@ const initOrgMap = (apiRoot, orgId) => {
   var hoveredStateId = null;
 
   // Fetch ServicePattern GeoJSON
-  map.on("load", function () {
-    // Create a popup, but don't add it to the map yet.
-    var stopsPopup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-    });
-
     httpGetAsync(servicePatternUrl, function (responseText) {
       var geojson = JSON.parse(responseText);
 
@@ -76,6 +71,11 @@ const initOrgMap = (apiRoot, orgId) => {
         servicesGeoJSON = geojson.services;
         stopsGeoJSON = geojson.stops;
       }
+
+      map.loadImage(questionMark, (error, image) => {
+        if (error) throw error;
+        map.addImage('question-mark', image);
+      });
 
       map.addSource("organisation-services", {
         type: "geojson",
@@ -92,12 +92,12 @@ const initOrgMap = (apiRoot, orgId) => {
       // Add point markers
       map.addLayer({
         id: "organisation-stops",
-        type: "circle",
+        type: "symbol",
         source: "organisation-stops",
-        paint: {
-          "circle-color": "#2E8CD2",
-          "circle-radius": 5,
-        },
+        layout: {
+          'icon-image': 'question-mark',
+          'icon-size': 0.25
+        }
       });
 
       // Add line markers
@@ -177,31 +177,39 @@ const initOrgMap = (apiRoot, orgId) => {
       }
     });
 
-    map.on("mouseenter", "organisation-stops", (e) => {
-      // Change the cursor style as a UI indicator.
-      map.getCanvas().style.cursor = "pointer";
-
-      var display_str =
-        "Atco: " +
-        e.features[0].properties.atco_code +
-        ", Name: " +
-        e.features[0].properties.common_name;
-
-      // Populate the popup and set its coordinates
-      // based on the feature found.
-      stopsPopup.setLngLat(e.lngLat).setHTML(display_str).addTo(map);
-    });
-
-    map.on("mouseleave", "organisation-stops", function () {
-      map.getCanvas().style.cursor = "";
-      stopsPopup.remove();
-    });
-
+    map.on("load", function () {
     // Create a popup, but don't add it to the map yet.
     var popup = new mapboxgl.Popup({
       closeButton: false,
-      closeOnClick: false,
+      closeOnClick: true,
+      closeOnMove: true,
     });
+
+    const createStopsPopUp = (e) => {
+      var disruption_reason = `Extreme Weather Conditions`;
+      var name = e.features[0].properties.common_name;
+      var disruption_dates = `10/01/2023 0900 - 12/01/2023 1700`;
+      var atco_code = `Atco code: ${e.features[0].properties.atco_code}`;
+      var popup_content = `<h3>${disruption_reason}</h3><h3>${name}</h3><div><p>${disruption_dates}</p><p>${atco_code}</p></div>`
+
+      popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
+    }
+
+    // map.on("mouseenter", "organisation-stops", (e) => {
+    //   // Change the cursor style as a UI indicator.
+    //   map.getCanvas().style.cursor = "pointer";
+    //
+    //   createStopsPopUp(e)
+    // });
+
+     map.on("click", "organisation-stops", (e) => {
+      createStopsPopUp(e)
+    });
+
+    // map.on("mouseleave", "organisation-stops", function () {
+    //   map.getCanvas().style.cursor = "";
+    //   popup.remove();
+    // });
 
     map.on("mouseenter", "organisation-services", function (e) {
       // Change the cursor style as a UI indicator.
