@@ -3,6 +3,7 @@ import factory
 from transit_odp.feedback.models import Feedback
 from factory.django import DjangoModelFactory
 
+
 class FeedbackFactory(DjangoModelFactory):
     class Meta:
         model = Feedback

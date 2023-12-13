@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 
 import requests
 from django.conf import settings
-from requests.exceptions import RequestException,ConnectionError
+from requests.exceptions import RequestException, ConnectionError
 
 from transit_odp.avl.client.interface import ICAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult

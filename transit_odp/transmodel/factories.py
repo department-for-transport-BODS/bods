@@ -10,6 +10,7 @@ from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop
 from factory.django import DjangoModelFactory
 
+
 class ServicePatternFactory(DjangoModelFactory):
     class Meta:
         model = ServicePattern

@@ -5,6 +5,8 @@ import faker
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
 
 from factory.django import DjangoModelFactory
+
+
 class DistrictFactory(DjangoModelFactory):
     class Meta:
         model = District
@@ -48,6 +50,6 @@ class StopPointFactory(DjangoModelFactory):
 
     @factory.lazy_attribute
     def location(self):
-        fake=faker.Faker()
-        location=fake.local_latlng(country_code="GB", coords_only=True)
+        fake = faker.Faker()
+        location = fake.local_latlng(country_code="GB", coords_only=True)
         return Point(x=float(location[1]), y=float(location[0]), srid=4326)
