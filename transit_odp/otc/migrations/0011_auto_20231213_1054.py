@@ -7,29 +7,43 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('otc', '0010_inactiveservice'),
+        ("otc", "0010_inactiveservice"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='localauthority',
-            name='ui_lta_name',
+            model_name="localauthority",
+            name="ui_lta_name",
         ),
         migrations.CreateModel(
-            name='UILta',
+            name="UILta",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(unique=True)),
             ],
             options={
-                'verbose_name_plural': 'UI LTA',
-                'db_table': 'ui_lta',
-                'unique_together': {('id', 'name')},
+                "verbose_name_plural": "UI LTA",
+                "db_table": "ui_lta",
+                "unique_together": {("id", "name")},
             },
         ),
         migrations.AddField(
-            model_name='localauthority',
-            name='ui_lta',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='localauthority_ui_lta_records', to='otc.uilta'),
+            model_name="localauthority",
+            name="ui_lta",
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="localauthority_ui_lta_records",
+                to="otc.uilta",
+            ),
         ),
     ]

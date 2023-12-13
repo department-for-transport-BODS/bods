@@ -105,12 +105,17 @@ class UILta(models.Model):
     class Meta:
         db_table = "ui_lta"
         verbose_name_plural = "UI LTA"
-        unique_together = ('id', 'name')
+        unique_together = ("id", "name")
 
     def delete(self, using=None, keep_parents=False):
         # Check if the model instance is referenced by any other models
-        if self.localauthority_ui_lta_records.exists() or self.naptan_ui_lta_records.exists():
-            raise ProtectedError("Cannot delete because this instance is referenced by other models.", [])
+        if (
+            self.localauthority_ui_lta_records.exists()
+            or self.naptan_ui_lta_records.exists()
+        ):
+            raise ProtectedError(
+                "Cannot delete because this instance is referenced by other models.", []
+            )
 
         # If not referenced, proceed with the deletion
         super().delete(using=using, keep_parents=keep_parents)
