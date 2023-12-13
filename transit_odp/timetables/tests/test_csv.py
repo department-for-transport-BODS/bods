@@ -151,7 +151,7 @@ def test_service_in_bods_and_otc():
             == date_OTC_variation_published
         )
         assert (
-            row["Date for complete 42 day look ahead"]
+            row["Date for complete 42 day look ahead"].to_pydatetime().date()
             == date_complete_42_day_look_ahead
         )
         assert row["XML:Filename"] == txc_file_attributes.filename

@@ -43,7 +43,7 @@ class RegistrationFactory(factory.Factory):
         model = Registration
 
     variation_number = factory.fuzzy.FuzzyInteger(low=1, high=100)
-    service_number = factory.Sequence(lambda n: n)
+    service_number = factory.Sequence(lambda n: str(n))
     current_traffic_area = factory.fuzzy.FuzzyChoice(TrafficAreas.values)
     licence_number = factory.Sequence(lambda n: f"PD0000{n:03}")
     discs_in_possession = factory.fuzzy.FuzzyInteger(low=100, high=400)
@@ -108,7 +108,7 @@ class ServiceFactory(factory.Factory):
         lambda obj: f"{obj.licence.number}/{obj.registration_code}"
     )
     variation_number = factory.fuzzy.FuzzyInteger(low=1, high=100)
-    service_number = factory.Sequence(lambda n: n)
+    service_number = factory.Sequence(lambda n: str(n))
     current_traffic_area = "B"
     operator = factory.SubFactory(OperatorFactory)
     start_point = factory.Faker("street_name")
