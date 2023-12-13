@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
             npm \
             binutils \
             libgeos-dev \
-    && pip3 install --upgrade pip setuptools wheel cython
+            && pip3 install --upgrade pip setuptools wheel cython
 
 
 # Update C env vars so compiler can find gdal
@@ -65,7 +65,7 @@ COPY ./docker/production/django/entrypoint \
      ./docker/local/django/celery/worker/start-celeryworker \
      ./docker/local/django/celery/beat/start-celerybeat \
      ./docker/local/django/celery/flower/start-celeryflower \
-      /
+     /
 
 RUN chown django:django /entrypoint /start /start-migrate /start-collectstatic /start-celeryworker /start-celerybeat /start-celeryflower
 
