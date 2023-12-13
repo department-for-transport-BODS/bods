@@ -1,5 +1,5 @@
 ---
-name: "Code formatter Checkinf (All Branches)"
+name: "Code Formatter Checking (All Branches)"
 
 on:
   push:
