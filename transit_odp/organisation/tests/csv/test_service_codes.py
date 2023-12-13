@@ -294,7 +294,7 @@ def test_csv_output():
         modification_datetime=datetime.datetime(2023, 2, 24),
     )
     # staleness_otc = False, staleness_42_day_look_ahead = False,
-    # staleness_12_months_old = False => Not Stale
+    # staleness_12_months_old = False => Up to Date
     ServiceModelFactory(
         licence=otc_lic,
         registration_number=service_codes[8],
@@ -631,7 +631,7 @@ def test_seasonal_status_csv_output():
     bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
     otc_lic = LicenceModelFactory(number=licence_number)
 
-    # Not Stale
+    # Up to Date
     dataset0 = DatasetFactory(organisation=org)
     txc_file_0 = TXCFileAttributesFactory(
         revision=dataset0.live_revision,
