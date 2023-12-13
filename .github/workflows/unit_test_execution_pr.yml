@@ -1,3 +1,5 @@
+---
+name: Run Unit Test
 on:
   pull_request:
       types: [ opened, synchronize, reopened ]

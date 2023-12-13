@@ -1,3 +1,6 @@
+---
+name: "Linters"
+
 on:
   push:
     branches:
@@ -18,7 +21,7 @@ jobs:
   all_features:
     name: 'all_features'
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -30,4 +33,3 @@ jobs:
         src: "."
         version: "22.3.0"
 
-    
