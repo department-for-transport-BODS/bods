@@ -76,8 +76,9 @@ class ServicePatternFactory(DjangoModelFactory):
     @factory.lazy_attribute
     def geometry(self):
         fake=faker.Faker()
-        geometry=fake.local_latlng(country_code="GB", coords_only=True)
-        return LineString(x=float(geometry[1]), y=float(geometry[0]), srid=4326)
+        geometry_start = fake.local_latlng(country_code="GB", coords_only=True)
+        geometry_end = fake.local_latlng(country_code="GB", coords_only=True)
+        return LineString(Point(x=float(geometry_start[1]), y=float(geometry_start[0]), srid=4326), Point(x=float(geometry_end[1]), y=float(geometry_end[0]), srid=4326), srid=4326)
 
     class Meta:
         model = models.ServicePattern
