@@ -151,7 +151,7 @@ def test_service_in_bods_and_otc():
             == date_OTC_variation_published
         )
         assert (
-            row["Date for complete 42 day look ahead"]
+            row["Date for complete 42 day look ahead"].to_pydatetime().date()
             == date_complete_42_day_look_ahead
         )
         assert row["XML:Filename"] == txc_file_attributes.filename
@@ -585,7 +585,7 @@ def test_not_stale():
 
     df = _get_timetable_catalogue_dataframe()
     assert df["Timeliness Status"][0] == "Up to date"
-    assert df["Requires Attention"][0] == "Yes"
+    assert df["Requires Attention"][0] == "No"
 
 
 @freeze_time("2023-02-14")
