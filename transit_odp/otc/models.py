@@ -125,6 +125,7 @@ class LocalAuthority(models.Model):
             ],
         )
 
+    @property
     def ui_lta_name(self):
         if self.ui_lta_id is not None:
             try:
