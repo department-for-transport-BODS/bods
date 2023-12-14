@@ -6,7 +6,7 @@ from typing import Optional
 from django.conf import settings
 from django.utils import timezone
 from django_hosts.resolvers import reverse
-from pydantic import validate_call
+from pydantic import ConfigDict, validate_call
 
 import config.hosts
 from transit_odp.avl.enums import AVL_FEED_DOWN
@@ -56,7 +56,7 @@ class NotificationBase:
             link=feed_detail_link,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_developer_data_endpoint_changed_notification(
         self,
         dataset_id: int,
@@ -213,7 +213,7 @@ class NotificationBase:
         )
 
     # This notification email has been removed
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_data_endpoint_deleted_updater_notification(
         self,
         dataset_id: int,
@@ -240,7 +240,7 @@ class NotificationBase:
             last_update_date=last_update_date,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_data_endpoint_deactivated_notification(
         self,
         dataset_id: int,
@@ -274,7 +274,7 @@ class NotificationBase:
             expiry_time=expires_on,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_developer_data_endpoint_expired_notification(
         self,
         dataset_id: int,
@@ -307,7 +307,7 @@ class NotificationBase:
             expiry_time=expires_on,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_agent_data_endpoint_deactivated_notification(
         self,
         dataset_id: int,
@@ -343,7 +343,7 @@ class NotificationBase:
             expiry_time=expires_on,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_data_endpoint_publish_notification(
         self,
         dataset_id: int,
@@ -381,7 +381,7 @@ class NotificationBase:
             pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_agent_data_endpoint_publish_notification(
         self,
         dataset_id: int,
@@ -421,7 +421,7 @@ class NotificationBase:
             pti_enforced_date=settings.PTI_ENFORCED_DATE,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_data_endpoint_validation_error_notification(
         self,
         dataset_id: int,
@@ -461,7 +461,7 @@ class NotificationBase:
             with_pti_violations=with_pti_violations,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_agent_data_endpoint_validation_error_notification(
         self,
         dataset_id: int,
@@ -533,7 +533,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_dataset_feedback_consumer_copy(
         self,
         dataset_id: int,
@@ -562,7 +562,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_operator_feedback_consumer_copy(
         self,
         contact_email: str,
@@ -587,7 +587,7 @@ class NotificationBase:
             feedback=feedback,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_operator_feedback_notification(
         self,
         contact_email: str,
@@ -712,7 +712,7 @@ class NotificationBase:
             settings_link=account_settings_link,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_avl_feed_subscriber_notification(
         self,
         dataset_id: int,
@@ -745,7 +745,7 @@ class NotificationBase:
             updated_time=last_updated,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_avl_report_requires_resolution(
         self,
         dataset_id: int,
@@ -777,7 +777,7 @@ class NotificationBase:
             guidance=guidance,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_avl_flagged_with_compliance_issue(
         self,
         dataset_id: int,
@@ -812,7 +812,7 @@ class NotificationBase:
             guidance=guidance,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_avl_flagged_with_major_issue(
         self,
         dataset_id: int,
@@ -845,7 +845,7 @@ class NotificationBase:
             guidance=guidance,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_avl_schema_check_fail(
         self,
         feed_name: str,
@@ -879,7 +879,7 @@ class NotificationBase:
             link=feed_detail_link,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_avl_compliance_status_changed(
         self,
         feed_id: int,
@@ -1131,7 +1131,7 @@ class NotificationBase:
             subject=subject,
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_reports_are_available_notification(
         self,
         dataset_id: int,
@@ -1171,7 +1171,7 @@ class NotificationBase:
             pti_enforced=settings.PTI_ENFORCED_DATE.date() < timezone.localdate(),
         )
 
-    @validate_call
+    @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
     def send_agent_reports_are_available_notification(
         self,
         dataset_id: int,
