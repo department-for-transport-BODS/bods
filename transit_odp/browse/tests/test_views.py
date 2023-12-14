@@ -1305,7 +1305,7 @@ class TestLTAView:
         expected_order = ["Cheshire East Council", "Derby City Council"]
 
         object_names = [
-            obj.ui_lta_name() for obj in response.context_data["object_list"]
+            obj.ui_lta_name for obj in response.context_data["object_list"]
         ]
         assert object_names == expected_order
 
