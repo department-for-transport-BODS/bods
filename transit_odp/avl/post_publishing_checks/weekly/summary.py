@@ -47,7 +47,9 @@ class AggregatedDailyReports:
                 // self.total_vehicles_analysed
             )
         except ZeroDivisionError:
-            logger.warn("No vehicles analysed. Setting all fields matching score to 0")
+            logger.warning(
+                "No vehicles analysed. Setting all fields matching score to 0"
+            )
             return 0
 
     def _remove_percentage_sign(self) -> None:
