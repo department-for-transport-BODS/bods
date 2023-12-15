@@ -1016,7 +1016,7 @@ class TestOperatorDetailView:
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
 
-        # Setup two TXCFileAttributes that will be 'Not Stale'
+        # Setup two TXCFileAttributes that will be 'Up to Date'
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
             service_code=all_service_codes[0],
@@ -1116,7 +1116,7 @@ class TestOperatorDetailView:
         request = request_factory.get("/operators/")
         request.user = UserFactory()
 
-        # Setup three TXCFileAttributes that will be 'Not Stale'
+        # Setup three TXCFileAttributes that will be 'Up to Date'
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
             service_code=all_service_codes[0],
@@ -1146,7 +1146,7 @@ class TestOperatorDetailView:
             end=two_months,
             registration_code=int(all_service_codes[3][-1:]),
         )
-        # Create In Season Seasonal Service for live, not stale service
+        # Create In Season Seasonal Service for live, up to date service
         SeasonalServiceFactory(
             licence=bods_licence,
             start=timezone.now().date(),
@@ -1168,7 +1168,7 @@ class TestOperatorDetailView:
         assert context["view"].template_name == "browse/operators/operator_detail.html"
         # One out of season seasonal service reduces in scope services to 3
         assert context["total_in_scope_in_season_services"] == 3
-        # 3 services not stale, including one in season. 0/3 requiring attention = 0%
+        # 3 services up to date, including one in season. 0/3 requiring attention = 0%
         assert context["services_require_attention_percentage"] == 0
 
     def test_operator_detail_view_avl_stats(self, request_factory: RequestFactory):
@@ -1396,7 +1396,7 @@ class TestLTADetailView:
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
 
-        # Setup three TXCFileAttributes that will be 'Not Stale'
+        # Setup three TXCFileAttributes that will be 'Up to Date'
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
             service_code=all_service_codes[0],
