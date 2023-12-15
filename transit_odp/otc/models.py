@@ -17,6 +17,8 @@ from transit_odp.otc.managers import (
     ServiceManager,
 )
 
+from django.db.models.deletion import ProtectedError
+
 
 class Licence(models.Model):
     granted_date = models.DateField(null=True)
@@ -93,11 +95,42 @@ class Service(models.Model):
         return cls(**kwargs)
 
 
+class UILta(models.Model):
+
+    name = models.TextField(blank=False, null=False, unique=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        db_table = "ui_lta"
+        verbose_name_plural = "UI LTA"
+        unique_together = ("id", "name")
+
+    def delete(self, using=None, keep_parents=False):
+        # Check if the model instance is referenced by any other models
+        if (
+            self.localauthority_ui_lta_records.exists()
+            or self.naptan_ui_lta_records.exists()
+        ):
+            raise ProtectedError(
+                "Cannot delete because this instance is referenced by other models.", []
+            )
+
+        # If not referenced, proceed with the deletion
+        super().delete(using=using, keep_parents=keep_parents)
+
+
 class LocalAuthority(models.Model):
     name = models.TextField(blank=True, null=False, unique=True)
     registration_numbers = models.ManyToManyField(Service, related_name="registration")
-    ui_lta_name = models.CharField(blank=True, max_length=255, null=True)
-    atco_code = models.IntegerField(blank=True, null=True)
+    ui_lta = models.ForeignKey(
+        UILta,
+        related_name="localauthority_ui_lta_records",
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
+    )
 
     @classmethod
     def from_registry_lta(cls, registry_lta: RegistryLocalAuthority):
@@ -107,6 +140,16 @@ class LocalAuthority(models.Model):
                 Service(**service) for service in registry_lta.registration_numbers
             ],
         )
+
+    def ui_lta_name(self):
+        if self.ui_lta_id is not None:
+            try:
+                ui_lta_instance = UILta.objects.get(id=self.ui_lta_id)
+                return ui_lta_instance.name
+            except UILta.DoesNotExist:
+                return ""  # Or any default value you prefer when the related UILta instance doesn't exist
+        else:
+            return ""
 
     objects = LocalAuthorityManager()
 

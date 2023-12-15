@@ -40,3 +40,10 @@ lint:
 
 lint-fix:
 	docker exec -it bods-django-1 black --config .black.toml .
+
+local-db-backup:
+	docker exec -t bods-postgres-1 pg_dump -U transit_odp -d transit_odp > db_backup.sql
+
+local-db-restore:
+	docker exec -i bods-postgres-1 psql -U transit_odp -d transit_odp < db_backup.sql
+	rm -rf db_backup.sql

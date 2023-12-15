@@ -123,7 +123,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
     if a service is Stale and returns all Stale live services.
 
     Staleness logic:
-        Staleness Status - Not Stale:
+        Staleness Status - Up to Date:
             Default status for service codes published to BODS
         Staleness Status - Stale - OTC Variation:
             Staleness Status - Stale - OTC Variation

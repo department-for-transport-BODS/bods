@@ -196,8 +196,8 @@ class LocalAuthorityView(BaseListView):
         return qs.distinct("ui_lta_name_trimmed")
 
     def get_model_objects(self):
-        qs = self.model.objects.filter(ui_lta_name__isnull=False).annotate(
-            ui_lta_name_trimmed=Trim("ui_lta_name")
+        qs = self.model.objects.filter(ui_lta__name__isnull=False).annotate(
+            ui_lta_name_trimmed=Trim("ui_lta__name")
         )
 
         search_term = self.request.GET.get("q", "").strip()
@@ -283,7 +283,7 @@ class LocalAuthorityExportView(View):
         for combined_authority_id in combined_authority_ids:
             lta_objs.append(LocalAuthority.objects.get(id=combined_authority_id))
 
-        updated_ui_lta_name = lta_objs[0].ui_lta_name.replace(",", " ").strip()
+        updated_ui_lta_name = lta_objs[0].ui_lta_name().replace(",", " ").strip()
 
         csv_filename = (
             f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
