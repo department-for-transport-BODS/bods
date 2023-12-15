@@ -258,3 +258,4 @@ venv/
 wheels/
 yarn-debug.log*
 yarn-error.log*
+db_backup.sql
