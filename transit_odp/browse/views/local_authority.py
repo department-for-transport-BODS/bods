@@ -283,7 +283,7 @@ class LocalAuthorityExportView(View):
         for combined_authority_id in combined_authority_ids:
             lta_objs.append(LocalAuthority.objects.get(id=combined_authority_id))
 
-        updated_ui_lta_name = lta_objs[0].ui_lta_name.replace(",", " ").strip()
+        updated_ui_lta_name = lta_objs[0].ui_lta_name().replace(",", " ").strip()
 
         csv_filename = (
             f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
