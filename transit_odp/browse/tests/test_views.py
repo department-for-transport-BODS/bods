@@ -1304,9 +1304,7 @@ class TestLTAView:
         assert response.status_code == 200
         expected_order = ["Cheshire East Council", "Derby City Council"]
 
-        object_names = [
-            obj.ui_lta_name for obj in response.context_data["object_list"]
-        ]
+        object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
         assert object_names == expected_order
 
     def test_lta_view_pagination(self, request_factory: RequestFactory):

@@ -25,7 +25,7 @@ class AdminArea(models.Model):
         on_delete=models.CASCADE,
         default=None,
         null=True,
-        blank=True
+        blank=True,
     )
 
     objects = AdminAreaManager()

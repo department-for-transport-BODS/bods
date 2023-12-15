@@ -7,14 +7,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('otc', '0012_remove_localauthority_atco_code'),
-        ('naptan', '0004_adminarea_ui_lta'),
+        ("otc", "0012_remove_localauthority_atco_code"),
+        ("naptan", "0004_adminarea_ui_lta"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='adminarea',
-            name='ui_lta',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='naptan_ui_lta_records', to='otc.uilta'),
+            model_name="adminarea",
+            name="ui_lta",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="naptan_ui_lta_records",
+                to="otc.uilta",
+            ),
         ),
     ]
