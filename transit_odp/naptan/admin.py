@@ -24,8 +24,9 @@ class LocalityAdmin(admin.ModelAdmin):
 class AdminAreaAdmin(admin.ModelAdmin):
     list_per_page = 30
     search_fields = ["atco_code"]
-    list_display = ("id", "name", "traveline_region_id", "atco_code")
+    list_display = ("id", "name", "traveline_region_id", "atco_code", "ui_lta")
     list_display_links = ("id", "name")
+    readonly_fields = ("name", "traveline_region_id", "atco_code")
 
     def has_delete_permission(self, request, instance=None):
         return False
@@ -34,7 +35,7 @@ class AdminAreaAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, instance=None):
-        return False
+        return True
 
 
 @admin.register(StopPoint)
