@@ -766,6 +766,7 @@ class TestDataDownloadCatalogueView:
             "operator_noc_data_catalogue.csv",
             "organisation.csv",
             "data_catalogue_guidance.txt",
+            "disruptions_data_catalogue.csv"
         ]
 
         with zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))) as zf:
