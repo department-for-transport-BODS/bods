@@ -51,8 +51,8 @@
     "dev:flower": "celery --app=transit_odp.taskapp --broker=\"redis://localhost:6379/0\" flower --basic_auth=\"admin:admin\"",
     "dev:worker": "hupper -m celery -A transit_odp.taskapp worker --pool threads -l INFO",
     "dev:redis": "redis-server",
-    "dev:mailhog":"mailhog",
-    "test":"pytest -vv --junitxml=junit_report.xml || [ $? = 1 ]",
+    "dev:mailhog": "mailhog",
+    "test": "pytest -vv --junitxml=junit_report.xml || [ $? = 1 ]",
     "serve": "run-p --print-label \"dev:*\""
   }
 }

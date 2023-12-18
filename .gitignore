@@ -258,6 +258,7 @@ venv/
 wheels/
 yarn-debug.log*
 yarn-error.log*
+db_backup.sql
 .yarn/
 .ruff_cache/
 .yarnrc.yml

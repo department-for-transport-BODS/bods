@@ -8,6 +8,8 @@ ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
 RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
+# Install system packages
+# Existing binutils causes a dependency conflict, correct version will be installed when GDAL gets intalled
 RUN apt-get update && apt-get install -y \
             libgdal-dev \
             g++ \
