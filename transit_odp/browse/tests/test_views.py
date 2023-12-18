@@ -766,7 +766,7 @@ class TestDataDownloadCatalogueView:
             "operator_noc_data_catalogue.csv",
             "organisation.csv",
             "data_catalogue_guidance.txt",
-            "disruptions_data_catalogue.csv"
+            "disruptions_data_catalogue.csv",
         ]
 
         with zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))) as zf:
@@ -1311,7 +1311,6 @@ class TestLTAView:
         assert object_names == expected_order
 
     def test_lta_view_pagination(self, request_factory: RequestFactory):
-
         get_lta_list_data()
 
         request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")

@@ -6,6 +6,7 @@ from transit_odp.data_quality import models
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from factory.django import DjangoModelFactory
 
+
 class DataQualityReportSummaryFactory(DjangoModelFactory):
     """
     report: use absolute import path due to circular import

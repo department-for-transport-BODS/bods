@@ -43,6 +43,7 @@ class DateDiv(Div):
     Override Div class so error bar is added to container if
     errors are detected in its fields
     """
+
     def render(self, form, context, **kwargs):
         show_error = False
         for field in self.fields:

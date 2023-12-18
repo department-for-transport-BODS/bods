@@ -414,7 +414,11 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     staleness_12_months = (
         (staleness_otc == False)
         & (staleness_42_day_look_ahead == False)
-        & (pd.to_datetime(df["last_modified_date"]).values.astype('datetime64') + np.timedelta64(365, "D") <= today)
+        & (
+            pd.to_datetime(df["last_modified_date"]).values.astype("datetime64")
+            + np.timedelta64(365, "D")
+            <= today
+        )
     )
 
     df["staleness_status"] = np.select(
