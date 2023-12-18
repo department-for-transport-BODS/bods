@@ -4,6 +4,7 @@ from typing import Optional, OrderedDict
 from django.utils.timezone import make_aware
 from pydantic import ConfigDict, Field, field_validator, validator
 from pydantic.main import BaseModel
+import pydantic_core
 
 
 class Registration(BaseModel):
