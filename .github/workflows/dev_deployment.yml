@@ -2,6 +2,7 @@ on:
   push:
     branches:
     - 'dev'
+    - 'debugger'
     paths:
     - version.txt
   workflow_dispatch:
