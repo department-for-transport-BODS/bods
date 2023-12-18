@@ -33,7 +33,7 @@ def transform_service_pattern_stops(
             .apply(create_stop_sequence)
         )
         .reset_index()
-        .set_index(["file_id", "service_pattern_id", "order"], verify_integrity=True)
+        .set_index(["file_id"], append=True, verify_integrity=True)
     )
 
     # Merge with stops to have sequence of naptan_id, geometry, etc.
