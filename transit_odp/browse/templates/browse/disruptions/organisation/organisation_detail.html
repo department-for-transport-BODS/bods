@@ -9,13 +9,9 @@
 {% endblock %}
 
 {% block breadcrumb.content %}
-    {{ block.super }}   
+    {{ block.super }}
     {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
-    <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'disruptions-data' host hosts.data %}">
-            Disruption data
-        </a>
-    </li>
+    {% breadcrumb_url 'Disruption data' 'disruptions-data' host hosts.data %}
     {% with name=object.name|truncatechars:19 %}
         {% breadcrumb name %}
     {% endwith %}
@@ -27,7 +23,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             {% if not error %}
-            {% include "browse/disruptions/organisation/success_content.html" %}   
+            {% include "browse/disruptions/organisation/success_content.html" %}
             {% endif %}
         </div>
         {% include "browse/disruptions/organisation/related_links.html" %}

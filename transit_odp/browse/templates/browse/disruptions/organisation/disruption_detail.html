@@ -1,0 +1,142 @@
+{% extends 'browse/base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+  {% trans 'Disruption Detail' %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
+{% block backlink %}
+  {% url 'org-detail' pk=object.id host host.name as backlink_url %}
+  {% include 'snippets/backlink.html' with url=backlink_url %}
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl dont-break-out">
+    {% trans 'Disruption detail - Stops' %}
+  </h1>
+  {% include 'publish/snippets/dataset_map.html' %}
+  <h3 class="govuk-heading-l">{% trans 'Title of the disruption' %}</h3>
+    <p class="govuk-body">
+    <img class="govuk-!-margin-right-1" width="20" height="20" src="{% static 'frontend/images/calendar-icon.png' %}"
+         alt="{% trans 'Calendar icon' %}">
+      10/01/2023 0900 - 12/01/2023 1700</p>
+
+  <p class="govuk-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eleifend leo quis nisi eleifend
+    cursus. Phasellus nec enim id diam sagittis ullamcorper at a metus</p>
+  <div>
+    <table class="govuk-table consumer-property-table">
+      <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Associated Link' %}</th>
+        <td class="govuk-table__cell" colspan="2"><a class="govuk-link"
+                                                     href="https://www.flooding.com">www.flooding.com</a></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="govuk-heading-l">{% trans 'Consequences' %}</h3>
+  <div class="govuk-accordion govuk-!-width-two-thirds" data-module="govuk-accordion" id="accordion-default">
+    <div class="govuk-accordion__section">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+                <span class="govuk-accordion__section-button" id="accordion-default-heading-{{ forloop.counter }}">
+                    Consequence 1 - Bus - Stops
+                </span>
+        </h2>
+      </div>
+      <div id="sub-accordion-content-{{ forloop.parentloop.counter }}" class="govuk-accordion__section-content"
+           aria-labelledby="sub-accordion-heading-{{ forloop.parentloop.counter }}">
+        <div class="govuk-accordion__section govuk-!-padding-left-7">
+          <div class="govuk-accordion__section-header">
+            <table class="govuk-table consumer-property-table">
+              <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Consequence Type' %}</th>
+                <td class="govuk-table__cell" colspan="2">Stops</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Mode of transport' %}</th>
+                <td class="govuk-table__cell" colspan="2">Bus</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Stops affected' %}</th>
+                <td class="govuk-table__cell" colspan="2">Ballance Street NW-bound 0180BAC30483, Hamilton Road S-bound
+                  0180BAC30491, Stanton Wick Turn E-bound 0180BAC31110
+                </td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Advice to display' %}</th>
+                <td class="govuk-table__cell" colspan="2">Don't travel</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Remove from journey planner' %}</th>
+                <td class="govuk-table__cell" colspan="2">Yes</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Disruption delay' %}</th>
+                <td class="govuk-table__cell" colspan="2">60 mins</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-accordion__section">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+                <span class="govuk-accordion__section-button" id="accordion-default-heading-{{ forloop.counter }}">
+                    Consequence 1 - Bus - Services - 1, 3, 5, 7
+                </span>
+        </h2>
+      </div>
+      <div id="sub-accordion-content-{{ forloop.parentloop.counter }}" class="govuk-accordion__section-content"
+           aria-labelledby="sub-accordion-heading-{{ forloop.parentloop.counter }}">
+        <div class="govuk-accordion__section govuk-!-padding-left-7">
+          <div class="govuk-accordion__section-header">
+            <table class="govuk-table consumer-property-table">
+              <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Consequence Type' %}</th>
+                <td class="govuk-table__cell" colspan="2">Services</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Mode of transport' %}</th>
+                <td class="govuk-table__cell" colspan="2">Bus</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Services(s)' %}</th>
+                <td class="govuk-table__cell" colspan="2">2 - Cribbs Causeway - Whitmore Avenue (First Bristol Limited),
+                  2a - Cribbs Causeway - Whitmore Avenue (First Bristol Limited), 3 - Cribbs Causeway - Union Street
+                  (First Bristol Limited), 3X - Bristol - Aztec West (Stagecoach), 4 - Cribbs Causeway - Union Street
+                  (First Bristol Limited), U1 - Transport Hub - Rupert Street (First Bristol Limited), Y6 - Bristol Bus
+                  Station - Wickwar Road (First Bristol Limited)
+                </td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Advice to display' %}</th>
+                <td class="govuk-table__cell" colspan="2">Don't travel</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Remove from journey planner' %}</th>
+                <td class="govuk-table__cell" colspan="2">Yes</td>
+              </tr>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{% trans 'Disruption delay' %}</th>
+                <td class="govuk-table__cell" colspan="2">N/A</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

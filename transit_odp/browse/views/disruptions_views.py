@@ -6,7 +6,6 @@ from django.views.generic.list import ListView
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
 from transit_odp.organisation.constants import DatasetType
@@ -178,4 +177,31 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
             context["object"] = content
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         context["org_id"] = str(kwargs["pk"])
+        return context
+
+
+class DisruptionDetailView(BaseTemplateView):
+    template_name = "browse/disruptions/organisation/disruption_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['pk1'])}"
+
+        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content = None
+        content, _ = _get_disruptions_organisation_data(url, headers)
+        if content is None:
+            context["error"] = "true"
+        else:
+            print(content)
+            content["stats"]["lastUpdated"] = (
+                datetime.strptime(
+                    content["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                )
+                if content["stats"]["lastUpdated"]
+                else ""
+            )
+            context["object"] = content
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        context["org_id"] = str(kwargs["pk1"])
         return context
