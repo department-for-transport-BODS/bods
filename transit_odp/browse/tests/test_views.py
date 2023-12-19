@@ -61,6 +61,7 @@ from transit_odp.otc.factories import (
     OperatorFactory,
     OperatorModelFactory,
     ServiceModelFactory,
+    UILtaFactory,
 )
 from transit_odp.pipelines.factories import (
     BulkDataArchiveFactory,
@@ -77,6 +78,148 @@ from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
 
 pytestmark = pytest.mark.django_db
+
+
+def get_lta_complaint_data_queryset():
+    org = OrganisationFactory()
+    total_services = 9
+    licence_number = "PD5000229"
+    service = []
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org)
+
+    otc_lic = LicenceModelFactory(number=licence_number)
+    for code in all_service_codes:
+        service.append(
+            ServiceModelFactory(
+                licence=otc_lic,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+            )
+        )
+
+    ui_lta = UILtaFactory(name="Dorset County Council")
+
+    local_authority = LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=service,
+    )
+
+    today = timezone.now().date()
+    month = timezone.now().date() + datetime.timedelta(weeks=4)
+    two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+    # Setup two TXCFileAttributes that will be 'Not Stale'
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        licence_number=otc_lic.number,
+        service_code=all_service_codes[0],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        modification_datetime=timezone.now(),
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        licence_number=otc_lic.number,
+        service_code=all_service_codes[1],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=75),
+        modification_datetime=timezone.now() - datetime.timedelta(days=50),
+    )
+
+    # Setup a draft TXCFileAttributes
+    dataset2 = DraftDatasetFactory(organisation=org)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(),
+        licence_number=otc_lic.number,
+        service_code=all_service_codes[2],
+    )
+
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+    # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        licence_number=otc_lic.number,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        licence_number=otc_lic.number,
+        service_code=all_service_codes[4],
+        operating_period_end_date=datetime.date.today() - datetime.timedelta(weeks=105),
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        licence_number=otc_lic.number,
+        service_code=all_service_codes[5],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+    )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[6][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[7][-1:]),
+    )
+
+    return local_authority
+
+
+def get_lta_list_data():
+    test_ltas = [
+        {"name": "Derby Council", "ui_lta_name": "Derby City Council"},
+        {"name": "Cheshire Council", "ui_lta_name": "Cheshire East Council"},
+        {"name": "Aberdeen Council", "ui_lta_name": "Aberdeen City Council"},
+        {"name": "Bedford Council", "ui_lta_name": "Bedford Borough Council"},
+        {"name": "Blackpool Council", "ui_lta_name": "Blackpool Council"},
+        {
+            "name": "Bournemouth Council",
+            "ui_lta_name": "Bournemouth, Christchurch and Poole Council",
+        },
+        {
+            "name": "Brighton Council",
+            "ui_lta_name": "Brighton and Hove City Council",
+        },
+        {
+            "name": "Hove City Council",
+            "ui_lta_name": "Brighton and Hove City Council",
+        },
+        {
+            "name": "Central Bedfordshire Council",
+            "ui_lta_name": "Central Bedfordshire Council",
+        },
+        {"name": "Cheshire East Council", "ui_lta_name": "Cheshire East Council"},
+        {"name": "Dorset Council", "ui_lta_name": "Dorset Council"},
+        {"name": "Cumbria County Council", "ui_lta_name": "Cumbria County Council"},
+        {"name": "Bournem Council", "ui_lta_name": "Bournemouth Council"},
+        {
+            "name": "Poole Council",
+            "ui_lta_name": "Bournemouth, Christchurch and Poole Council",
+        },
+    ]
+
+    ui_ltas = {}
+    for id, lta in enumerate(test_ltas, start=1):
+        lta_name = lta["ui_lta_name"]
+        if lta_name not in ui_ltas:
+            ui_ltas[lta_name] = UILtaFactory(name=lta_name)
+        LocalAuthorityFactory(id=id, name=lta["name"], ui_lta=ui_ltas[lta_name]),
 
 
 class TestFeedDetailsView:
@@ -1128,12 +1271,10 @@ class TestLTAView:
                 variation_number=0,
             )
         ]
-        LocalAuthorityFactory(
-            id="1",
-            name="first_LTA",
-            ui_lta_name="First LTA",
-            registration_numbers=service,
-        )
+
+        ui_lta = UILtaFactory(id="1", name="first_ui_lta")
+
+        LocalAuthorityFactory(id="1", name="first_LTA", ui_lta=ui_lta)
 
         request = request_factory.get("/local-authority/")
         request.user = AnonymousUser()
@@ -1151,13 +1292,10 @@ class TestLTAView:
         assert len(ltas_context) == 1
 
     def test_lta_view_order_by_name(self, request_factory: RequestFactory):
-
-        LocalAuthorityFactory(
-            id="1", name="Derby Council", ui_lta_name="Derby City Council"
-        ),
-        LocalAuthorityFactory(
-            id="2", name="Cheshire Council", ui_lta_name="Cheshire East Council"
-        ),
+        ui_lta_1 = UILtaFactory(id="1", name="Derby City Council")
+        ui_lta_2 = UILtaFactory(id="2", name="Cheshire East Council")
+        LocalAuthorityFactory(id="1", name="Derby Council", ui_lta=ui_lta_1),
+        LocalAuthorityFactory(id="2", name="Cheshire Council", ui_lta=ui_lta_2),
 
         request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
         request.user = AnonymousUser()
@@ -1166,117 +1304,73 @@ class TestLTAView:
         assert response.status_code == 200
         expected_order = ["Cheshire East Council", "Derby City Council"]
 
-        object_names = [obj.ui_lta_name for obj in response.context_data["object_list"]]
+        object_names = [
+            obj.ui_lta_name() for obj in response.context_data["object_list"]
+        ]
         assert object_names == expected_order
+
+    def test_lta_view_pagination(self, request_factory: RequestFactory):
+
+        get_lta_list_data()
+
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
+        request.user = AnonymousUser()
+
+        response = LocalAuthorityView.as_view()(request)
+        assert response.status_code == 200
+        assert len(response.context_data["object_list"]) == 10
+
+        request = request_factory.get(
+            "/local-authority/?ordering=ui_lta_name_trimmed&page=2"
+        )
+        request.user = AnonymousUser()
+        response = LocalAuthorityView.as_view()(request)
+
+        assert response.status_code == 200
+        assert len(response.context_data["object_list"]) == 1
+
+    def test_lta_view_complaint(self, request_factory: RequestFactory):
+        get_lta_complaint_data_queryset()
+
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
+        request.user = AnonymousUser()
+        response = LocalAuthorityView.as_view()(request)
+
+        assert response.status_code == 200
+
+        context = response.context_data
+        # One out of season seasonal service reduces in scope services to 8
+        assert context["total_in_scope_in_season_services"] == 8
+        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
+        assert context["services_require_attention_percentage"] == 75
+
+    def test_lta_view_auth_ids(self, request_factory: RequestFactory):
+        get_lta_list_data()
+
+        request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")
+        request.user = AnonymousUser()
+
+        response = LocalAuthorityView.as_view()(request)
+        assert response.status_code == 200
+        assert len(response.context_data["object_list"]) == 10
+
+        for lta in response.context_data["object_list"]:
+            if lta.ui_lta_name_trimmed == "Bournemouth, Christchurch and Poole Council":
+                assert len(lta.auth_ids) == 2
 
 
 class TestLTADetailView:
     def test_local_authority_detail_view_timetable_stats_not_compliant(
         self, request_factory: RequestFactory
     ):
-        org = OrganisationFactory()
-        total_services = 9
-        licence_number = "PD5000229"
-        service = []
-        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
-        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
-        dataset1 = DatasetFactory(organisation=org)
-
-        otc_lic = LicenceModelFactory(number=licence_number)
-        for code in all_service_codes:
-            service.append(
-                ServiceModelFactory(
-                    licence=otc_lic,
-                    registration_number=code.replace(":", "/"),
-                    effective_date=datetime.date(year=2020, month=1, day=1),
-                )
-            )
-        local_authority = LocalAuthorityFactory(
-            id="1",
-            name="Dorset Council",
-            ui_lta_name="Dorset County Council",
-            registration_numbers=service,
-        )
-        today = timezone.now().date()
-        month = timezone.now().date() + datetime.timedelta(weeks=4)
-        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
-
-        # Setup two TXCFileAttributes that will be 'Up to Date'
-        TXCFileAttributesFactory(
-            revision=dataset1.live_revision,
-            licence_number=otc_lic.number,
-            service_code=all_service_codes[0],
-            operating_period_end_date=datetime.date.today()
-            + datetime.timedelta(days=50),
-            modification_datetime=timezone.now(),
-        )
-
-        TXCFileAttributesFactory(
-            revision=dataset1.live_revision,
-            licence_number=otc_lic.number,
-            service_code=all_service_codes[1],
-            operating_period_end_date=datetime.date.today()
-            + datetime.timedelta(days=75),
-            modification_datetime=timezone.now() - datetime.timedelta(days=50),
-        )
-
-        # Setup a draft TXCFileAttributes
-        dataset2 = DraftDatasetFactory(organisation=org)
-        TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(),
-            licence_number=otc_lic.number,
-            service_code=all_service_codes[2],
-        )
-
-        live_revision = DatasetRevisionFactory(dataset=dataset2)
-        # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
-        TXCFileAttributesFactory(
-            revision=live_revision,
-            licence_number=otc_lic.number,
-            service_code=all_service_codes[3],
-            operating_period_end_date=None,
-            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
-        )
-
-        # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
-        TXCFileAttributesFactory(
-            revision=live_revision,
-            licence_number=otc_lic.number,
-            service_code=all_service_codes[4],
-            operating_period_end_date=datetime.date.today()
-            - datetime.timedelta(weeks=105),
-            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
-        )
-
-        # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
-        TXCFileAttributesFactory(
-            revision=live_revision,
-            licence_number=otc_lic.number,
-            service_code=all_service_codes[5],
-            operating_period_end_date=datetime.date.today()
-            + datetime.timedelta(days=50),
-        )
-
-        # Create Seasonal Services - one in season, one out of season
-        SeasonalServiceFactory(
-            licence=bods_licence,
-            start=today,
-            end=month,
-            registration_code=int(all_service_codes[6][-1:]),
-        )
-        SeasonalServiceFactory(
-            licence=bods_licence,
-            start=month,
-            end=two_months,
-            registration_code=int(all_service_codes[7][-1:]),
-        )
+        local_authority = get_lta_complaint_data_queryset()
 
         request = request_factory.get(
             f"/local-authority/?auth_ids={local_authority.id}"
         )
         request.user = UserFactory()
-
         response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
+
         assert response.status_code == 200
         context = response.context_data
         assert (
@@ -1346,10 +1440,14 @@ class TestLTADetailView:
                 registration_number=code.replace(":", "/"),
                 effective_date=datetime.date(year=2020, month=1, day=1),
             )
+
+        ui_lta = UILtaFactory(
+            name="Dorset County Council",
+        )
         local_authority = LocalAuthorityFactory(
             id="1",
             name="Dorset Council",
-            ui_lta_name="Dorset County Council",
+            ui_lta=ui_lta,
             registration_numbers=service,
         )
         request = request_factory.get(
