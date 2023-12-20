@@ -2,9 +2,8 @@ from datetime import date, datetime
 from typing import Optional, OrderedDict
 
 from django.utils.timezone import make_aware
-from pydantic import ConfigDict, Field, field_validator, validator
+from pydantic import ConfigDict, Field, field_validator
 from pydantic.main import BaseModel
-import pydantic_core
 
 
 class Registration(BaseModel):
@@ -127,17 +126,19 @@ class Registration(BaseModel):
             raise ValueError(f"Invalid registration status: {v}")
         return v
 
-    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
-    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `
+    # field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators
+    # for more information.
 
-    @validator("service_number", pre=True)
+    @field_validator("service_number", mode="before")
     def combine_service_numbers(cls, v, values):
         values = hasattr(values, "data") and values.data or values
         other_service_number = values.get("other_service_number", "")
         if not other_service_number:
             return v
 
-        # Function to split a string at different delimiters and return a list of numbers
+        # Function to split a string at different delimiters and return a list ofnumbers
         def split_at_delimiters(s):
             delimiters = [",", " ", "-", "|"]
             numbers = []
