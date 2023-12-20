@@ -40,6 +40,8 @@ from transit_odp.users.views.auth import (
 
 from allauth.core import context
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.test import override_settings
 
 pytestmark = pytest.mark.django_db
 
@@ -87,6 +89,7 @@ class TestViewsAuthBase:
         # simulate anonymous user
         request.user = AnonymousUser()
         request.host = self.host
+        request.site = Site.objects.get(id=settings.ROOT_SITE_ID)
 
         # add session and message middleware
         request = add_session_middleware(request)
@@ -256,6 +259,7 @@ class TestSignupView(TestViewsAuthBase):
             == "Ensure this value has at most 400 characters (it has 401)."
         )
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_new_user_has_same_entries_as_invitation(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(
@@ -284,6 +288,7 @@ class TestSignupView(TestViewsAuthBase):
         assert fished_out_user.account_type == invite.account_type
         assert fished_out_user.organisation == invite.organisation
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_new_agent_signs_up(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(
@@ -314,6 +319,7 @@ class TestSignupView(TestViewsAuthBase):
         assert fished_out_user.agent_organisation == "agent_organisation"
         assert fished_out_user.settings.opt_in_user_research is True
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_key_contact_is_added_when_signs_up(self, request_factory: RequestFactory):
         # Set up
         request, invite = self.setup_request(
@@ -330,6 +336,7 @@ class TestSignupView(TestViewsAuthBase):
         assert response.status_code == 302
         assert organisation.key_contact.email == invite.email
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_organisation_is_active_when_signs_up(
         self, request_factory: RequestFactory
     ):
@@ -361,6 +368,7 @@ class TestSignupView(TestViewsAuthBase):
         ),
         ids=["Org Admin", "Org Staff"],
     )
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_key_contact_is_none_when_non_key_contact_signs_up(
         self, request_factory: RequestFactory, account_type, is_key_contact
     ):
@@ -378,7 +386,7 @@ class TestSignupView(TestViewsAuthBase):
 
         assert response.status_code == 302
         assert organisation.key_contact is None
-
+    
     def test_developer_sign_up_form(self, request_factory):
         self.host = config.hosts.DATA_HOST
         request, invite = self.setup_request(
@@ -393,6 +401,7 @@ class TestSignupView(TestViewsAuthBase):
         assert response.status_code == 302
         self.host = config.hosts.PUBLISH_HOST
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_second_user_accepts_first(self, request_factory: RequestFactory):
         """
         This test simulates the conditions needed for this bug.
@@ -449,6 +458,7 @@ class TestSignupView(TestViewsAuthBase):
 
         # Test
         request.META['HTTP_HOST'] = self.http_host
+        request.site = Site.objects.get(id=settings.ROOT_SITE_ID)
         with context.request_context(request):
             response = SignupView.as_view()(request)
         org_from_database = Organisation.objects.get(id=org.id)
@@ -596,7 +606,6 @@ class TestLoginView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = LoginView.as_view()(request)
 
@@ -787,7 +796,9 @@ class TestPasswordResetFromKeyView(TestViewsAuthBase):
         # host=config.hosts.DATA_HOST)
 
 
+
 class TestNotifications(TestViewsAuthBase):
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_inviter_notification(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(
@@ -813,6 +824,7 @@ class TestNotifications(TestViewsAuthBase):
 
         assert mailoutbox[-1].subject == "Your team member has accepted your invitation"
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_new_agent_accepted_notifications(self, mailoutbox, request_factory):
         """Tests both agent and organisation receive an email notification"""
         org = OrganisationFactory.create()
@@ -847,6 +859,7 @@ class TestNotifications(TestViewsAuthBase):
             f"{org.name}"
         )
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_muted_inviter_doesnt_trigger_notification(
         self, mailoutbox, request_factory
     ):
