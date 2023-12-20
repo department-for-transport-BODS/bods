@@ -16,6 +16,7 @@ from transit_odp.users.factories import (
 )
 from transit_odp.users.models import AgentUserInvite, Invitation
 from transit_odp.users.views.invitations import AcceptInvite
+from django.conf import settings
 
 pytestmark = pytest.mark.django_db
 
@@ -67,7 +68,7 @@ class TestAcceptInvite:
         request.site = mocked_site
 
         request.host = host
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = f"{settings.PUBLISH_SUBDOMAIN}.{settings.PARENT_HOST}"
 
         invitation = InvitationFactory.create(accepted=True)
 
@@ -110,7 +111,7 @@ class TestAcceptInvite:
         request.site = mocked_site
 
         request.host = host
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = f"{settings.PUBLISH_SUBDOMAIN}.{settings.PARENT_HOST}"
 
         invitation = InvitationFactory.create(
             accepted=False,
