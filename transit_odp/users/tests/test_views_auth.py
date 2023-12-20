@@ -39,13 +39,14 @@ from transit_odp.users.views.auth import (
 )
 
 from allauth.core import context
-from django.contrib.sites.models import Site
+from django.conf import settings
 
 pytestmark = pytest.mark.django_db
 
 
 class TestViewsAuthBase:
     host = config.hosts.PUBLISH_HOST
+    http_host = f"{settings.PUBLISH_SUBDOMAIN}.{settings.PARENT_HOST}"
 
     def setup_request(self, request_factory, invite_kwargs):
         url = reverse("account_signup", host=self.host)
@@ -132,7 +133,7 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
 
@@ -170,7 +171,7 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             SignupView.as_view()(request)
             assert adapter.stash_contains_invitation_started(request)
@@ -274,7 +275,7 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             SignupView.as_view()(request)
         fished_out_user = User.objects.get(email=user_email)
@@ -300,7 +301,7 @@ class TestSignupView(TestViewsAuthBase):
                 "organisation": org,
             },
         )
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             SignupView.as_view()(request)
         fished_out_user = User.objects.get(email=user_email)
@@ -321,7 +322,7 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
@@ -342,7 +343,7 @@ class TestSignupView(TestViewsAuthBase):
         invite.organisation.save()
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
@@ -370,7 +371,7 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
@@ -384,7 +385,7 @@ class TestSignupView(TestViewsAuthBase):
             request_factory, {"account_type": AccountType.developer.value}
         )
 
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
         User.objects.get(email=invite.email)
@@ -447,7 +448,7 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, this_guys_invite.email)
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
         org_from_database = Organisation.objects.get(id=org.id)
@@ -476,7 +477,7 @@ class TestSignupView(TestViewsAuthBase):
 
         # add session middleware
         request = add_session_middleware(request)
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
             assert isinstance(response.context_data["form"], DeveloperSignupForm)
@@ -512,7 +513,7 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = SignupView.as_view()(request)
 
@@ -537,7 +538,7 @@ class TestInviteOnlySignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = InviteOnlySignupView.as_view()(request)
 
@@ -595,7 +596,7 @@ class TestLoginView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             response = LoginView.as_view()(request)
 
@@ -806,7 +807,7 @@ class TestNotifications(TestViewsAuthBase):
         )
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             SignupView.as_view()(request)
 
@@ -832,7 +833,7 @@ class TestNotifications(TestViewsAuthBase):
         )
 
         # Test
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             SignupView.as_view()(request)
 
@@ -863,7 +864,7 @@ class TestNotifications(TestViewsAuthBase):
                 "organisation": org,
             },
         )
-        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        request.META['HTTP_HOST'] = self.http_host
         with context.request_context(request):
             SignupView.as_view()(request)
 
