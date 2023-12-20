@@ -151,7 +151,6 @@ def transform_timing_warning(
 
     if warning_type == "timing_fast_link" or warning_type == "timing_slow_link":
         related_service_links_field = "service_link"
-        related_service_links_field = "service_link"
     else:
         related_service_links_field = "entities"
 

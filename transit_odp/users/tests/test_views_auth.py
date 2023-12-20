@@ -38,6 +38,9 @@ from transit_odp.users.views.auth import (
     SignupView,
 )
 
+from allauth.core import context
+from django.contrib.sites.models import Site
+
 pytestmark = pytest.mark.django_db
 
 
@@ -129,7 +132,9 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
 
         # Assert
         assert response.status_code == 200
@@ -165,15 +170,17 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        SignupView.as_view()(request)
-        assert adapter.stash_contains_invitation_started(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            SignupView.as_view()(request)
+            assert adapter.stash_contains_invitation_started(request)
 
-        # Make second GET request
-        SignupView.as_view()(request)
+            # Make second GET request
+            SignupView.as_view()(request)
 
-        # Assert
-        assert not adapter.stash_contains_invitation_started(request)
-        assert not adapter.stash_contains_account_verified_email(request)
+            # Assert
+            assert not adapter.stash_contains_invitation_started(request)
+            assert not adapter.stash_contains_account_verified_email(request)
 
     def test_user_settings_set_when_signs_up(self, client_factory):
         client = client_factory(host=config.hosts.DATA_HOST)
@@ -267,7 +274,9 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            SignupView.as_view()(request)
         fished_out_user = User.objects.get(email=user_email)
 
         assert fished_out_user.email == invite.email
@@ -291,8 +300,9 @@ class TestSignupView(TestViewsAuthBase):
                 "organisation": org,
             },
         )
-
-        SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            SignupView.as_view()(request)
         fished_out_user = User.objects.get(email=user_email)
         fished_out_agent_invitation = AgentUserInvite.objects.get(invitation=invite)
 
@@ -311,7 +321,9 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
 
         assert response.status_code == 302
@@ -330,7 +342,9 @@ class TestSignupView(TestViewsAuthBase):
         invite.organisation.save()
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
 
         assert response.status_code == 302
@@ -356,7 +370,9 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
 
         assert response.status_code == 302
@@ -368,7 +384,9 @@ class TestSignupView(TestViewsAuthBase):
             request_factory, {"account_type": AccountType.developer.value}
         )
 
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         User.objects.get(email=invite.email)
 
         assert response.status_code == 302
@@ -429,7 +447,9 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, this_guys_invite.email)
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         org_from_database = Organisation.objects.get(id=org.id)
 
         assert response.status_code == 302
@@ -456,9 +476,10 @@ class TestSignupView(TestViewsAuthBase):
 
         # add session middleware
         request = add_session_middleware(request)
-
-        response = SignupView.as_view()(request)
-        assert isinstance(response.context_data["form"], DeveloperSignupForm)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
+            assert isinstance(response.context_data["form"], DeveloperSignupForm)
 
     @pytest.mark.parametrize(
         ("account_type", "email", "form"),
@@ -491,7 +512,9 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
 
         assert isinstance(response.context_data["form"], form)
 
@@ -514,7 +537,9 @@ class TestInviteOnlySignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = InviteOnlySignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = InviteOnlySignupView.as_view()(request)
 
         # Assert
         assert response.status_code == 200
@@ -570,7 +595,9 @@ class TestLoginView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = LoginView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            response = LoginView.as_view()(request)
 
         # Assert
         assert response.status_code == 200
@@ -779,7 +806,9 @@ class TestNotifications(TestViewsAuthBase):
         )
 
         # Test
-        SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            SignupView.as_view()(request)
 
         assert mailoutbox[-1].subject == "Your team member has accepted your invitation"
 
@@ -803,7 +832,9 @@ class TestNotifications(TestViewsAuthBase):
         )
 
         # Test
-        SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            SignupView.as_view()(request)
 
         assert len(mailoutbox) == 2
         mailoutbox.sort(key=lambda mail: mail.subject)
@@ -832,6 +863,8 @@ class TestNotifications(TestViewsAuthBase):
                 "organisation": org,
             },
         )
-        SignupView.as_view()(request)
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
+        with context.request_context(request):
+            SignupView.as_view()(request)
 
         assert not mailoutbox

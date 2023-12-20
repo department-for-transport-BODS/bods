@@ -67,6 +67,7 @@ class TestAcceptInvite:
         request.site = mocked_site
 
         request.host = host
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
 
         invitation = InvitationFactory.create(accepted=True)
 
@@ -109,6 +110,7 @@ class TestAcceptInvite:
         request.site = mocked_site
 
         request.host = host
+        request.META['HTTP_HOST'] = config.hosts.PUBLISH_HOST + ".localhost"
 
         invitation = InvitationFactory.create(
             accepted=False,
