@@ -109,23 +109,9 @@ class DisruptionsInOrganisationView(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def list(self, request):
-        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{request.GET.get('pk', None)}/impacted/stops"
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{request.GET.get('pk', None)}/disruptions"
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = []
         content, _ = _get_disruptions_organisation_data(url, headers)
 
-        servicesGeoJson = {
-            "type": "FeatureCollection",
-            "count": len(content),
-            "features": content["services"],
-        }
-
-        stopsGeoJson = {
-            "type": "FeatureCollection",
-            "count": len(content),
-            "features": content["stops"],
-        }
-
-        geoJson = {"stops": stopsGeoJson, "services": servicesGeoJson}
-
-        return JsonResponse(geoJson)
+        return JsonResponse(content, safe=False)
