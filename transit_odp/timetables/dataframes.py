@@ -51,7 +51,10 @@ def services_to_dataframe(services):
         )
 
     columns = ["service_code", "start_date", "end_date", "line_names", "service_type"]
-    return pd.DataFrame(items, columns=columns)
+    service_df = pd.DataFrame(items, columns=columns)
+    for datetime_column_name in ["start_date", "end_date"]:
+        service_df[datetime_column_name].fillna(pd.to_datetime('NaT'), inplace =True)
+    return service_df
 
 
 def stop_point_refs_to_dataframe(stop_point_refs):
