@@ -53,7 +53,7 @@ def services_to_dataframe(services):
     columns = ["service_code", "start_date", "end_date", "line_names", "service_type"]
     service_df = pd.DataFrame(items, columns=columns)
     for datetime_column_name in ["start_date", "end_date"]:
-        service_df[datetime_column_name].fillna(pd.to_datetime('NaT'), inplace =True)
+        service_df[datetime_column_name].fillna(pd.to_datetime("NaT"), inplace=True)
     return service_df
 
 
@@ -126,7 +126,6 @@ def journey_patterns_to_dataframe(services):
 
 
 def journey_pattern_section_from_journey_pattern(df: pd.DataFrame):
-
     dataframes = []
     # The journey_patterns DataFrame has a multiindex
     for (file_id, journey_pattern_id), row in df.iterrows():
@@ -228,7 +227,6 @@ def booking_arrangements_to_dataframe(services):
     booking_arrangements_df = pd.DataFrame(booking_arrangement_props)
 
     if not booking_arrangements_df.empty:
-
         columns = [
             "service_code",
             "description",
