@@ -239,7 +239,7 @@ jobs:
 
     services:
       postgres:
-        image: mdillon/postgis:10
+        image: postgis/postgis:13-3.4
         env:
           POSTGRES_HOST: postgres
           POSTGRES_PORT: 5432
