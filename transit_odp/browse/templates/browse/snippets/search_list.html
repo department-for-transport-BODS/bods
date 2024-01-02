@@ -30,28 +30,24 @@
   {% endif %}
   <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break">
 
-    <div class="sort_container">
-      <div class="govuk-form-group">
-        <div class="select-wrapper">
-          <span class="govuk-body govuk-!-padding-right-2">Sort by</span>
-          <select class="nav-select"
-                  id="ordering"
-                  name="ordering"
-                  aria-label="Order by"
-                  onchange="this.form.submit()">
-            <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>{% trans 'Last updated' %}</option>
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="ordering">Sort by</label>
+        <select class="govuk-select"
+            id="ordering"
+            name="ordering"
+            aria-label="Sort by"
+            onchange="this.form.submit()">
+            <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>{% trans 'Recently updated' %}</option>
             <option value="name" {% if ordering == "name" %}selected{% endif %}>{% trans 'Data set name A-Z' %}</option>
             <option value="-name" {% if ordering == "-name" %}selected{% endif %}>{% trans 'Data set name Z-A' %}</option>
-          </select>
-        </div>
-      </div>
+        </select>
     </div>
 
-  <div class="search-result__list">
-    {% for item in items %}
-      {% if not forloop.first %}
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-      {% endif %}
+    <div class="search-result__list">
+        {% for item in items %}
+            {% if not forloop.first %}
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            {% endif %}
 
       {% if item.dataset_type == 1 %}
         {% include 'browse/snippets/results/timetables.html' %}
@@ -63,18 +59,18 @@
         {% include 'browse/snippets/results/disruptions.html' %}
       {% endif %}
 
-    {% empty %}
-      <div>
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
-        <h4 class="govuk-heading-s">{% trans 'Having trouble finding what you want?' %}</h4>
-        <ul class="govuk-list govuk-list--bullet">
-          <li>{% trans 'Check your spelling and try again' %}</li>
-        </ul>
-      </div>
-    {% endfor %}
-  </div>
-  {% if paginator.count > 0 %}
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-    {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
-  {% endif %}
+        {% empty %}
+            <div>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+                <h4 class="govuk-heading-s">{% trans 'Having trouble finding what you want?' %}</h4>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>{% trans 'Check your spelling and try again' %}</li>
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    {% if paginator.count > 0 %}
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
+    {% endif %}
 </div>
