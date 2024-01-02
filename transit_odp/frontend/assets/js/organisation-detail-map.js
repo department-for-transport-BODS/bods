@@ -360,7 +360,7 @@ const initOrgMap = (apiRoot, orgId) => {
       const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
       const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
       const bearing = `Bearing: ${e.features[0].properties.bearing}`
-      const popup_content = `<h3>${disruptionReason}</h3><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p></div>`
+      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p></div>`
 
       popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
     }
@@ -370,7 +370,7 @@ const initOrgMap = (apiRoot, orgId) => {
       const name = e.features[0].properties.lineDisplayName;
       const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
       const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
-      const popup_content = `<h3>${disruptionReason}</h3><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p></div>`
+      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p></div>`
 
       popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
     }
