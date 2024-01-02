@@ -700,12 +700,19 @@ def _populate_nan_with_zeros(df: DataFrame):
             "num_of_pass_products_count",
             "num_of_trip_products_count",
             "compliant_fares_count",
+            "number_of_revisions_count",
         ]
     else:
         fares_columns = ["published_fares_count", "total_fare_products"]
     # we don't need to fill 'number' in OTC_LICENCE_FIELDS
     otc_columns = OTC_LICENCE_FIELDS[1:] + OTC_SERVICES_FIELDS
-    services_columns = ["services_registered_in_bods_count", "exempted_services_count"]
+    services_columns = [
+        "services_registered_in_bods_count",
+        "exempted_services_count",
+        "unregistered_service_count",
+        "number_of_services_valid_operating_date",
+        "published_services_with_future_start_date",
+    ]
 
     fillna_columns = otc_columns + pti_columns + fares_columns + services_columns
     df[fillna_columns] = df[fillna_columns].fillna(0)

@@ -12,7 +12,7 @@ from transit_odp.otc.constants import (
     TrafficAreas,
 )
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
-from transit_odp.otc.models import Licence as LicenceModel
+from transit_odp.otc.models import Licence as LicenceModel, UILta
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
@@ -128,11 +128,19 @@ class ServiceFactory(factory.Factory):
     last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
 
 
+class UILtaFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = UILta
+
+    name = factory.Faker("name")
+
+
 class LocalAuthorityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = LocalAuthority
 
     name = factory.Faker("name")
+    ui_lta = factory.SubFactory(UILtaFactory)
 
     @factory.post_generation
     def registration_numbers(self, create, extracted, **kwargs):
