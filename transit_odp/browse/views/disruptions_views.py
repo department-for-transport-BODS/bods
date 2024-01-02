@@ -166,7 +166,6 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
         if content is None:
             context["error"] = "true"
         else:
-            print(content)
             content["stats"]["lastUpdated"] = (
                 datetime.strptime(
                     content["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"

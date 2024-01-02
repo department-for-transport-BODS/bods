@@ -1,6 +1,80 @@
+import cross from '../images/disruptions-map/cross.png'
+import diversion from '../images/disruptions-map/diversion.png'
+import engineering from '../images/disruptions-map/engineering.png'
+import event from '../images/disruptions-map/event.png'
+import industrialAction from '../images/disruptions-map/industrial-action.png'
 import questionMark from '../images/disruptions-map/question-mark.png'
+import roadworks from '../images/disruptions-map/roadworks.png'
+import traffic from '../images/disruptions-map/traffic.png'
+import weather from '../images/disruptions-map/weather.png'
 
 const mapboxgl = require("mapbox-gl");
+
+const iconDisruptions = [
+  "cross-icon-disruptions",
+  "diversion-icon-disruptions",
+  "engineering-icon-disruptions",
+  "event-icon-disruptions",
+  "industrial-action-icon-disruptions",
+  "question-mark-icon-disruptions",
+  "roadworks-icon-disruptions",
+  "traffic-icon-disruptions",
+  "weather-icon-disruptions",
+]
+
+const images = [
+  {url: cross, id: 'cross'},
+  {url: diversion, id: 'diversion'},
+  {url: engineering, id: 'engineering'},
+  {url: event, id: 'event'},
+  {url: industrialAction, id: 'industrial-action'},
+  {url: questionMark, id: 'question-mark'},
+  {url: roadworks, id: 'roadworks'},
+  {url: traffic, id: 'traffic'},
+  {url: weather, id: 'weather'},
+]
+
+const disruptionReasonByIcon = {
+  crossIcon: ["operatorCeasedTrading"],
+  diversionIcon: ["routeDiversion"],
+  engineeringIcon: ["emergencyEngineeringWork", "escalatorFailure", "liftFailure", "repairWork", "securityAlert", "signalFailure", "signalProblem", "vandalism"],
+  eventIcon: ["specialEvent"],
+  industrialActionIcon: ["industrialAction"],
+  questionMarkIcon: ["unknown"],
+  roadworksIcon: ["constructionWork, maintenanceWork", "roadClosed", "roadworks"],
+  trafficIcon: ["accident", "breakdown", "congestion", "incident", "overcrowded"],
+  weatherIcon: ["flooding", "fog", "heavyRain", "heavySnowFall", "highTemperatures", "ice"]
+}
+
+const disruptionReasonText = {
+  accident: "Accident",
+  securityAlert: "Security alert",
+  congestion: "Congestion",
+  roadClosed: "Road closed",
+  incident: "Incident",
+  routeDiversion: "Route diversion",
+  unknown: "Unknown",
+  vandalism: "Vandalism",
+  overcrowded: "Overcrowded",
+  operatorCeasedTrading: "Operator ceased trading",
+  roadworks: "Roadworks",
+  specialEvent: "Special event",
+  industrialAction: "Industrial action",
+  signalProblem: "Signal problem",
+  signalFailure: "Signal failure",
+  repairWork: "Repair work",
+  constructionWork: "Construction work",
+  maintenanceWork: "Maintenance work",
+  emergencyEngineeringWork: "Emergency engineering work",
+  escalatorFailure: "Escalator failure",
+  liftFailure: "Lift failure",
+  fog: "Fog",
+  heavySnowFall: "Heavy snowfall",
+  heavyRain: "Heavy rain",
+  ice: "Ice",
+  highTemperatures: "High temperatures",
+  flooding: "Flooding",
+}
 
 const httpGetAsync = (theUrl, callback) => {
   const request = new XMLHttpRequest();
@@ -17,20 +91,14 @@ const httpGetAsync = (theUrl, callback) => {
   request.send();
 };
 
-const getLineStringBounds = (coordinates) => {
-  return coordinates.reduce(function (bounds, coord) {
-    return bounds.extend(coord);
-  }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-};
-
 const initOrgMap = (apiRoot, orgId) => {
-  var servicePatternUrl =
+  const servicePatternUrl =
     apiRoot + "organisation_map_data/?pk=" + orgId.toString();
 
   // Initialise Map
   mapboxgl.accessToken =
     "pk.eyJ1IjoiaGFsYmVydHJhbSIsImEiOiJjaXFiNXVnazIwMDA0aTJuaGxlaTU1M2ZtIn0.85dXvyj6V2LbBFvXfpQyYA";
-  var map = new mapboxgl.Map({
+  const map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v12",
     center: [-1.1743, 52.3555],
@@ -39,7 +107,7 @@ const initOrgMap = (apiRoot, orgId) => {
   });
 
   // Add zoom and rotation controls to the map.
-  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
+  map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
 
   // Prevent focus on map when tabbing through page
   // canvas
@@ -47,8 +115,8 @@ const initOrgMap = (apiRoot, orgId) => {
   // logo
   let logoArray = map["_controls"].find((o) => o.hasOwnProperty("_updateLogo"))[
     "_container"
-  ]["children"];
-  for (var i = 0; i < logoArray.length; i++) {
+    ]["children"];
+  for (let i = 0; i < logoArray.length; i++) {
     logoArray[i].setAttribute("tabindex", -1);
   }
   // zoom buttons
@@ -58,176 +126,277 @@ const initOrgMap = (apiRoot, orgId) => {
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
-  var hoveredStateId = null;
+  const formatDisruptions = (disruptions) => {
+    return disruptions.flatMap((disruption) => {
+        if (disruption.services && disruption.services.length > 0) {
+          const serviceDisruptions = disruption.services.map((service) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                service.coordinates.longitude ?? -1.5439765,
+                service.coordinates.latitude ?? 53.7949385,
+              ],
+            },
+            properties: {
+              consequenceType: "services",
+              disruptionReason: disruption.disruptionReason,
+              lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
+              operatorName: service.operatorName,
+              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+              disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+              disruptionNoEndDateTime: service.disruptionNoEndDateTime
+            }
+          }))
+          return serviceDisruptions
+        }
 
-  // Fetch ServicePattern GeoJSON
-    httpGetAsync(servicePatternUrl, function (responseText) {
-      var geojson = JSON.parse(responseText);
+        if (disruption.stops && disruption.stops.length > 0) {
+          const stopsDisruptions = disruption.stops.map((stop) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                stop.coordinates.longitude,
+                stop.coordinates.latitude,
+              ],
+            },
+            properties: {
+              consequenceType: "stops",
+              disruptionReason: disruption.disruptionReason,
+              atcoCode: stop.atcoCode,
+              commonName: stop.commonName,
+              bearing: stop.bearing,
+              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+              disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+              disruptionNoEndDateTime: stop.disruptionNoEndDateTime
+            }
+          }))
+          return stopsDisruptions
+        }
+        return [...serviceDisruptions, ...stopsDisruptions]
+    }).filter(val => val !== undefined)
+  }
 
-      var servicesGeoJSON = {};
-      var stopsGeoJSON = {};
+  httpGetAsync(servicePatternUrl, function (responseText) {
+    const disruptions = JSON.parse(responseText);
 
-      if (geojson) {
-        servicesGeoJSON = geojson.services;
-        stopsGeoJSON = geojson.stops;
-      }
+    const formattedDisruptions = formatDisruptions(disruptions)
 
-      map.loadImage(questionMark, (error, image) => {
-        if (error) throw error;
-        map.addImage('question-mark', image);
+    const bounds = new mapboxgl.LngLatBounds();
+
+    formattedDisruptions.forEach((feature) => {
+      bounds.extend(feature.geometry.coordinates);
+    });
+
+    map.fitBounds(bounds, {padding: 20});
+
+    Promise.all(images.map(img => new Promise((resolve, reject) => {
+        map.loadImage(img.url, (error, image) => {
+          map.addImage(img.id, image)
+          resolve();
+        })
+      }))
+    ).then(() => {
+      map.addSource('cross-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.crossIcon.includes(disruption.properties.disruptionReason))
+        }
+
       });
 
-      map.addSource("organisation-services", {
-        type: "geojson",
-        data: servicesGeoJSON,
-      });
-
-      map.addSource("organisation-stops", {
-        type: "geojson",
-        data: stopsGeoJSON,
-      });
-
-      map.getSource("organisation-stops");
-
-      // Add point markers
       map.addLayer({
-        id: "organisation-stops",
+        id: "cross-icon-disruptions",
         type: "symbol",
-        source: "organisation-stops",
+        source: "cross-icon-disruptions",
+        layout: {
+          'icon-image': 'cross',
+          'icon-size': 0.25
+        }
+      });
+
+      map.addSource('diversion-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.diversionIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "diversion-icon-disruptions",
+        type: "symbol",
+        source: "diversion-icon-disruptions",
+        layout: {
+          'icon-image': 'diversion',
+          'icon-size': 0.25
+        }
+      });
+
+      map.addSource('engineering-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.engineeringIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "engineering-icon-disruptions",
+        type: "symbol",
+        source: "engineering-icon-disruptions",
+        layout: {
+          'icon-image': 'engineering',
+          'icon-size': 0.25
+        }
+      });
+
+      map.addSource('event-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.eventIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "event-icon-disruptions",
+        type: "symbol",
+        source: "event-icon-disruptions",
+        layout: {
+          'icon-image': 'event',
+          'icon-size': 0.25
+        }
+      });
+
+      map.addSource('industrial-action-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.industrialActionIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "industrial-action-icon-disruptions",
+        type: "symbol",
+        source: "industrial-action-icon-disruptions",
+        layout: {
+          'icon-image': 'industrial-action',
+          'icon-size': 0.25
+        }
+      });
+
+      map.addSource('question-mark-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.questionMarkIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "question-mark-icon-disruptions",
+        type: "symbol",
+        source: "question-mark-icon-disruptions",
         layout: {
           'icon-image': 'question-mark',
           'icon-size': 0.25
         }
       });
 
-      // Add line markers
+      map.addSource("traffic-icon-disruptions", {
+        type: "geojson",
+        data: {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.trafficIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
       map.addLayer({
-        id: "organisation-services",
-        type: "line",
-        source: "organisation-services",
+        id: "traffic-icon-disruptions",
+        type: "symbol",
+        source: "traffic-icon-disruptions",
         layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": "#2E8CD2",
-          "line-width": 2,
-        },
+          'icon-image': 'traffic',
+          'icon-size': 0.25
+        }
       });
 
-      // Add hover effect
+      map.addSource('weather-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.weatherIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
       map.addLayer({
-        id: "organisation-services-hover",
-        type: "line",
-        source: "organisation-services",
-        layout: {},
-      });
-
-      // When the user moves their mouse over the state-fill layer, we'll update the
-      // feature state for the feature under the mouse.
-      map.on("mousemove", "organisation-services", function (e) {
-        if (e.features.length > 0) {
-          if (hoveredStateId) {
-            map.setFeatureState(
-              { source: "organisation-services", id: hoveredStateId },
-              { hover: false }
-            );
-          }
-          hoveredStateId = e.features[0].properties.service_line_id;
-          map.setFeatureState(
-            { source: "organisation-services", id: hoveredStateId },
-            { hover: true }
-          );
+        id: "weather-icon-disruptions",
+        type: "symbol",
+        source: "weather-icon-disruptions",
+        layout: {
+          'icon-image': 'weather',
+          'icon-size': 0.25
         }
       });
+    })
+  });
 
-      // When the mouse leaves the state-fill layer, update the feature state of the
-      // previously hovered feature.
-      map.on("mouseleave", "organisation-services", function () {
-        if (hoveredStateId) {
-          map.setFeatureState(
-            { source: "organisation-services", id: hoveredStateId },
-            { hover: false }
-          );
-        }
-        hoveredStateId = null;
-      });
 
-      // Fit map to features
-      var bounds = new mapboxgl.LngLatBounds();
 
-      // loop over LineString features and calculate bounds
-      servicesGeoJSON.features.forEach(function (feature) {
-        if (feature.geometry && feature.geometry.coordinates) {
-          bounds.extend(getLineStringBounds(feature.geometry.coordinates));
-        }
-      });
-
-      // Fit map to features
-      stopsGeoJSON.features.forEach(function (feature) {
-        if (feature.geometry && feature.geometry.coordinates) {
-          bounds.extend(feature.geometry.coordinates);
-        }
-      });
-
-      if (!bounds.isEmpty()) {
-        map.fitBounds(bounds, {
-          padding: 20,
-        });
-      }
-    });
-
-    map.on("load", function () {
-    // Create a popup, but don't add it to the map yet.
-    var popup = new mapboxgl.Popup({
+  map.on("load", function () {
+    const popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: true,
       closeOnMove: true,
     });
 
     const createStopsPopUp = (e) => {
-      var disruption_reason = `Extreme Weather Conditions`;
-      var name = e.features[0].properties.common_name;
-      var disruption_dates = `10/01/2023 0900 - 12/01/2023 1700`;
-      var atco_code = `Atco code: ${e.features[0].properties.atco_code}`;
-      var popup_content = `<h3>${disruption_reason}</h3><h3>${name}</h3><div><p>${disruption_dates}</p><p>${atco_code}</p></div>`
+      const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
+      const name = e.features[0].properties.commonName;
+      const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
+      const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
+      const bearing = `Bearing: ${e.features[0].properties.bearing}`
+      const popup_content = `<h3>${disruptionReason}</h3><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p></div>`
 
       popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
     }
 
-    // map.on("mouseenter", "organisation-stops", (e) => {
-    //   // Change the cursor style as a UI indicator.
-    //   map.getCanvas().style.cursor = "pointer";
-    //
-    //   createStopsPopUp(e)
-    // });
+    const createServicesPopUp = (e) => {
+      const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
+      const name = e.features[0].properties.lineDisplayName;
+      const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
+      const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
+      const popup_content = `<h3>${disruptionReason}</h3><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p></div>`
 
-     map.on("click", "organisation-stops", (e) => {
-      createStopsPopUp(e)
-    });
+      popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
+    }
 
-    // map.on("mouseleave", "organisation-stops", function () {
-    //   map.getCanvas().style.cursor = "";
-    //   popup.remove();
-    // });
+    iconDisruptions.forEach((icon) => {
+      map.on("mousemove", icon, () => {
+        map.getCanvas().style.cursor = "pointer";
+      })
 
-    map.on("mouseenter", "organisation-services", function (e) {
-      // Change the cursor style as a UI indicator.
-      map.getCanvas().style.cursor = "pointer";
+      map.on("mouseleave", icon, () => {
+        map.getCanvas().style.cursor = "";
+      })
 
-      var description =
-        "Service number: " + e.features[0].properties.service_line_name;
+      map.on("click", icon, (e) => {
+        if(e.features[0].properties.consequenceType === "stops"){
+          createStopsPopUp(e)
+          return;
+        }
+        if(e.features[0].properties.consequenceType === "services"){
+          createServicesPopUp(e)
+          return;
+        } else return;
+      });
+    })
+  })
 
-      // Populate the popup and set its coordinates
-      // based on the feature found.
-      popup.setLngLat(e.lngLat).setHTML(description).addTo(map);
-    });
-
-    map.on("mouseleave", "organisation-services", function () {
-      map.getCanvas().style.cursor = "";
-      popup.remove();
-    });
-  });
 };
 
-export { initOrgMap };
+export {initOrgMap};
