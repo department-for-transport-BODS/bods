@@ -4,10 +4,7 @@
 {% if object.stats.networkWideConsequencesCount %}
 {% include 'browse/disruptions/banner.html' %}
 {% endif %}
-<div class="govuk-!-margin-bottom-2">
-    <span class="govuk-body">{% trans 'Overview of the available active disruption data' %}</span>
-</div>
-{% include 'publish/snippets/dataset_map.html' %}
+{% include 'publish/snippets/disruptions_map.html' %}
 <div class="govuk-grid-row govuk-!-margin-top-6">
     <div class="govuk-grid-column-one-third flex-container flex-direction-column">
         <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.stopsAffected }}</span>
@@ -32,13 +29,42 @@
         <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Network wide disruptions'%}</span>
     </div>
 </div>
-<div class="govuk-grid-row govuk-!-margin-bottom-3 flex-container flex-direction-column">
-    <span class="govuk-body govuk-!-font-weight-bold govuk-!-padding-left-3">{% trans 'Most common reasons for disruption:' %}</span>
-    {% with object.stats.disruptionReasonCount|top_three_reasons as reasons %}
-    <ul>
-        {% for reason in reasons %}
-        <li><span class="govuk-body" >{{ reason }}</span></li>
-        {% endfor %}
-    </ul>
-    {% endwith %}
+<div>
+  <table class="govuk-table consumer-property-table">
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'LTA name' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{ object.name }}</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'SIRI SX version' %}</th>
+        <td class="govuk-table__cell" colspan="2">{% trans 'Version 1.1' %}</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Data catalogue' %}</th>
+        <td class="govuk-table__cell" colspan="2">
+          <a class="govuk-link"
+             target="_blank" rel="noopener" rel="noreferrer"
+             href="{% url 'download-disruptions' %}"
+          >
+            {% trans 'Link to catalogue' %}
+          </a>
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
+        <td class="govuk-table__cell" colspan="2">
+          <div class="flex-between">
+            {% if object.stats.lastUpdated %}
+              <span>
+                {{ object.stats.lastUpdated|date:"d/m/Y" }}{% trans ' by owner' %}
+              </span>
+            {% else %}
+              <span>-</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

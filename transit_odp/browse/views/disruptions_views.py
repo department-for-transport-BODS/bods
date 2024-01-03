@@ -167,6 +167,13 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
         if content is None:
             context["error"] = "true"
         else:
+            content["stats"]["lastUpdated"] = (
+                datetime.strptime(
+                    content["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                )
+                if content["stats"]["lastUpdated"]
+                else ""
+            )
             context["object"] = content
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         context["org_id"] = str(kwargs["pk"])
