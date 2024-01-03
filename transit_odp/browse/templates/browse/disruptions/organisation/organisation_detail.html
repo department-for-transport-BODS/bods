@@ -21,12 +21,11 @@
     {# Page Heading Section #}
     {% include 'browse/disruptions/page_heading.html' %}
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column">
             {% if not error %}
             {% include "browse/disruptions/organisation/success_content.html" %}
             {% endif %}
         </div>
-        {% include "browse/disruptions/organisation/related_links.html" %}
     </div>
 {% endblock %}
 
