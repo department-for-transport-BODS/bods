@@ -2,9 +2,10 @@ import factory
 
 from transit_odp.changelog.constants import ConsumerIssue, PendingStatus
 from transit_odp.changelog.models import KnownIssues
+from factory.django import DjangoModelFactory
 
 
-class KnownIssueFactory(factory.django.DjangoModelFactory):
+class KnownIssueFactory(DjangoModelFactory):
     class Meta:
         model = KnownIssues
 

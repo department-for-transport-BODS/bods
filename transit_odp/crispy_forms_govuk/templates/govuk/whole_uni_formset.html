@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_utils %}
+
+{% if formset_tag %}
+  <form {{ flat_attrs|safe }}
+          method="{{ formset_method }}"
+          {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}
+          novalidate
+  >
+{% endif %}
+
+{% if formset_method|lower == 'post' and not disable_csrf %}
+    {% csrf_token %}
+{% endif %}
+
+<div>
+    {{ formset.management_form|crispy }}
+</div>
+
+{% if formset_show_errors %}
+    {% include errors_formset_template|default:"govuk/errors_formset.html" %}
+{% endif %}
+
+
+{% if form_title %}
+  <h1 class="govuk-heading-xl">{{ form_title }}</h1>
+{% endif %}
+
+{% include display_formset_template|default:"govuk/display_formset.html" %}
+
+{% include inputs_template|default:"govuk/inputs.html" %}
+
+{# TODO - not always supposed to be here - add to 'inputs'#}
+{% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+{% endif %}
+
+{% if formset_tag %}</form>{% endif %}

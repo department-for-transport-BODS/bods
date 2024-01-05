@@ -1,6 +1,7 @@
+import logging
 import pytest
-from pydantic.main import ValidationError
 
+from django.forms.models import model_to_dict
 from transit_odp.otc.dataclasses import Registration
 
 test_data_sets = [
@@ -60,10 +61,8 @@ expected_results = [
 )
 def test_combine_service_numbers(test_data, expected_result):
     service_number = test_data["serviceNumber"]
-    other_service_number = test_data["otherServiceNumber"]
 
     registration = Registration(**test_data)
-
     combined_result = registration.combine_service_numbers(
         v=service_number, values=registration.__dict__
     )
@@ -72,8 +71,15 @@ def test_combine_service_numbers(test_data, expected_result):
 
 
 def test_registration_number_length_validation():
-    with pytest.raises(ValueError, match="ensure this value has at most 20 characters"):
-        Registration(registration_number="A" * 21)
+    with pytest.raises(
+        ValueError, match=r".* String should have at most 20 characters .*"
+    ):
+        Registration(
+            registration_number="A" * 21,
+            variation_number=1,
+            operator_id=1,
+            address="Main St",
+        )
 
     registration = Registration(
         registration_number="ABC123",

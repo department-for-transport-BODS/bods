@@ -1,68 +1,71 @@
 from datetime import date, datetime
-from typing import Optional, List, OrderedDict
+from typing import Optional, OrderedDict
 
 from django.utils.timezone import make_aware
-from pydantic import Field, validator
+from pydantic import ConfigDict, Field, field_validator
 from pydantic.main import BaseModel
 
 
 class Registration(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     registration_number: str = Field(alias="registrationNumber", max_length=20)
     variation_number: int = Field(alias="variationNumber")
-    other_service_number: Optional[str] = Field(alias="otherServiceNumber")
-    service_number: Optional[str] = Field(alias="serviceNumber", max_length=1000)
-    current_traffic_area: Optional[str] = Field(alias="trafficAreaId", max_length=1)
-    licence_number: Optional[str] = Field(alias="licenceNumber")
-    discs_in_possession: Optional[int] = Field(alias="discsInPossession")
-    authdiscs: Optional[int] = Field(alias="authDiscs")
-    licence_granted_date: Optional[date] = Field(alias="grantedDate")
-    licence_expiry_date: Optional[date] = Field(alias="expiryDate")
-    description: Optional[str] = Field(alias="licenceType", max_length=25)
+    other_service_number: Optional[str] = Field(None, alias="otherServiceNumber")
+    service_number: Optional[str] = Field(None, alias="serviceNumber", max_length=1000)
+    current_traffic_area: Optional[str] = Field(
+        None, alias="trafficAreaId", max_length=1
+    )
+    licence_number: Optional[str] = Field(None, alias="licenceNumber")
+    discs_in_possession: Optional[int] = Field(None, alias="discsInPossession")
+    authdiscs: Optional[int] = Field(None, alias="authDiscs")
+    licence_granted_date: Optional[date] = Field(None, alias="grantedDate")
+    licence_expiry_date: Optional[date] = Field(None, alias="expiryDate")
+    description: Optional[str] = Field(None, alias="licenceType", max_length=25)
     operator_id: int = Field(alias="operatorId")
-    operator_name: Optional[str] = Field(alias="operatorName")
-    trading_name: Optional[str] = Field(alias="tradingName")
+    operator_name: Optional[str] = Field(None, alias="operatorName")
+    trading_name: Optional[str] = Field(None, alias="tradingName")
     address: str = Field(alias="contactAddress1")
-    start_point: Optional[str] = Field(alias="startPoint")
-    finish_point: Optional[str] = Field(alias="finishPoint")
-    via: Optional[str] = Field(alias="via")
-    effective_date: Optional[date] = Field(alias="effectiveDate")
-    received_date: Optional[date] = Field(alias="receivedDate")
-    end_date: Optional[date] = Field(alias="endDate")
-    service_type_other_details: Optional[str] = Field(alias="otherDetails")
-    licence_status: Optional[str] = Field(alias="licenceStatus")
+    start_point: Optional[str] = Field(None, alias="startPoint")
+    finish_point: Optional[str] = Field(None, alias="finishPoint")
+    via: Optional[str] = Field(None, alias="via")
+    effective_date: Optional[date] = Field(None, alias="effectiveDate")
+    received_date: Optional[date] = Field(None, alias="receivedDate")
+    end_date: Optional[date] = Field(None, alias="endDate")
+    service_type_other_details: Optional[str] = Field(None, alias="otherDetails")
+    licence_status: Optional[str] = Field(None, alias="licenceStatus")
     registration_status: Optional[str] = Field(
-        alias="registrationStatus", max_length=20
+        None, alias="registrationStatus", max_length=20
     )
-    public_text: Optional[str] = Field(alias="publicationText")
+    public_text: Optional[str] = Field(None, alias="publicationText")
     service_type_description: Optional[str] = Field(
-        alias="busServiceTypeDescription", max_length=1000
+        None, alias="busServiceTypeDescription", max_length=1000
     )
-    short_notice: Optional[bool] = Field(alias="isShortNotice")
-    subsidies_description: Optional[str] = Field(alias="subsidised", max_length=7)
-    subsidies_details: Optional[str] = Field(alias="subsidyDetail")
-    auth_description: Optional[str] = Field(alias="localAuthorities")
-    tao_covered_by_area: Optional[str] = Field(alias="taoCoveredByArea")
-    registration_code: Optional[int] = Field(alias="registrationCode")
-    last_modified: Optional[datetime] = Field(alias="lastModifiedOn")
-    local_authorities: Optional[str] = Field(alias="localAuthorities")
+    short_notice: Optional[bool] = Field(None, alias="isShortNotice")
+    subsidies_description: Optional[str] = Field(None, alias="subsidised", max_length=7)
+    subsidies_details: Optional[str] = Field(None, alias="subsidyDetail")
+    auth_description: Optional[str] = Field(None, alias="localAuthorities")
+    tao_covered_by_area: Optional[str] = Field(None, alias="taoCoveredByArea")
+    registration_code: Optional[int] = Field(None, alias="registrationCode")
+    last_modified: Optional[datetime] = Field(None, alias="lastModifiedOn")
+    local_authorities: Optional[str] = Field(None, alias="localAuthorities")
 
-    @validator(
+    @field_validator(
         "licence_granted_date",
         "licence_expiry_date",
         "effective_date",
         "received_date",
         "end_date",
-        pre=True,
+        mode="before",
     )
+    @classmethod
     def parse_date(cls, v):
         if v:
             return datetime.strptime(v, "%d/%m/%Y").date()
         return
 
-    @validator("last_modified", pre=True)
+    @field_validator("last_modified", mode="before")
+    @classmethod
     def parse_datetime(cls, v):
         if v:
             last_modified = datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
@@ -70,7 +73,7 @@ class Registration(BaseModel):
             return last_modified
         return
 
-    @validator(
+    @field_validator(
         "variation_number",
         "discs_in_possession",
         "authdiscs",
@@ -78,14 +81,15 @@ class Registration(BaseModel):
         "end_date",
         "short_notice",
         "registration_code",
-        pre=True,
+        mode="before",
     )
+    @classmethod
     def empty_to_none(cls, v):
         if v == "":
             return
         return v
 
-    @validator(
+    @field_validator(
         "subsidies_description",
         "subsidies_details",
         "public_text",
@@ -98,14 +102,16 @@ class Registration(BaseModel):
         "description",
         "registration_status",
         "service_type_description",
-        pre=True,
+        mode="before",
     )
+    @classmethod
     def none_to_str(cls, v):
         if v is None:
             return ""
         return v
 
-    @validator("registration_number", "licence_number")
+    @field_validator("registration_number", "licence_number")
+    @classmethod
     def validate_not_empty(cls, v):
         # Note all strings are empty by default, these are the only ones that
         # cannot be optional
@@ -113,19 +119,26 @@ class Registration(BaseModel):
             raise ValueError(f"{v} is an empty value but it is required")
         return v
 
-    @validator("registration_status")
+    @field_validator("registration_status")
+    @classmethod
     def validate_registration_status(cls, v):
         if v is not None and v not in ALLOWED_REGISTRATION_STATUSES:
             raise ValueError(f"Invalid registration status: {v}")
         return v
 
-    @validator("service_number", pre=True)
-    def combine_service_numbers(cls, v, values):
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `
+    # field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators
+    # for more information.
 
+    @field_validator("service_number", mode="before")
+    def combine_service_numbers(cls, v, values):
+        values = hasattr(values, "data") and values.data or values
         other_service_number = values.get("other_service_number", "")
         if not other_service_number:
             return v
-        # Function to split a string at different delimiters and return a list of numbers
+
+        # Function to split a string at different delimiters and return a list ofnumbers
         def split_at_delimiters(s):
             delimiters = [",", " ", "-", "|"]
             numbers = []
@@ -154,18 +167,15 @@ class Registration(BaseModel):
 
 
 class Licence(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     number: str = Field(alias="licence_number")
-    status: Optional[str] = Field(alias="licence_status")
-    granted_date: Optional[date] = Field(alias="licence_granted_date")
-    expiry_date: Optional[date] = Field(alias="licence_expiry_date")
+    status: Optional[str] = Field(None, alias="licence_status")
+    granted_date: Optional[date] = Field(None, alias="licence_granted_date")
+    expiry_date: Optional[date] = Field(None, alias="licence_expiry_date")
 
-    @validator(
-        "status",
-        pre=True,
-    )
+    @field_validator("status", mode="before")
+    @classmethod
     def none_to_str(cls, v):
         if v is None:
             return ""
@@ -173,17 +183,14 @@ class Licence(BaseModel):
 
 
 class Operator(BaseModel):
-    discs_in_possession: Optional[int]
-    authdiscs: Optional[int]
+    discs_in_possession: Optional[int] = None
+    authdiscs: Optional[int] = None
     operator_id: int
-    operator_name: Optional[str]
-    address: Optional[str]
+    operator_name: Optional[str] = None
+    address: Optional[str] = None
 
-    @validator(
-        "operator_name",
-        "address",
-        pre=True,
-    )
+    @field_validator("operator_name", "address", mode="before")
+    @classmethod
     def none_to_str(cls, v):
         if v is None:
             return ""
@@ -193,28 +200,28 @@ class Operator(BaseModel):
 class Service(BaseModel):
     registration_number: str
     variation_number: int
-    service_number: Optional[str]
-    current_traffic_area: Optional[str]
+    service_number: Optional[str] = None
+    current_traffic_area: Optional[str] = None
     operator: Operator
-    start_point: Optional[str]
-    finish_point: Optional[str]
-    via: Optional[str]
-    effective_date: Optional[date]
-    received_date: Optional[date]
-    end_date: Optional[date]
-    service_type_other_details: Optional[str]
-    registration_code: Optional[int]
-    description: Optional[str]
-    registration_status: Optional[str]
-    public_text: Optional[str]
-    service_type_description: Optional[str]
-    short_notice: Optional[bool]
-    subsidies_description: Optional[str]
-    subsidies_details: Optional[str]
-    last_modified: Optional[datetime]
+    start_point: Optional[str] = None
+    finish_point: Optional[str] = None
+    via: Optional[str] = None
+    effective_date: Optional[date] = None
+    received_date: Optional[date] = None
+    end_date: Optional[date] = None
+    service_type_other_details: Optional[str] = None
+    registration_code: Optional[int] = None
+    description: Optional[str] = None
+    registration_status: Optional[str] = None
+    public_text: Optional[str] = None
+    service_type_description: Optional[str] = None
+    short_notice: Optional[bool] = None
+    subsidies_description: Optional[str] = None
+    subsidies_details: Optional[str] = None
+    last_modified: Optional[datetime] = None
     licence: Licence
 
-    @validator(
+    @field_validator(
         "subsidies_description",
         "subsidies_details",
         "public_text",
@@ -227,8 +234,9 @@ class Service(BaseModel):
         "description",
         "registration_status",
         "service_type_description",
-        pre=True,
+        mode="before",
     )
+    @classmethod
     def none_to_str(cls, v):
         if v is None:
             return ""
@@ -236,13 +244,13 @@ class Service(BaseModel):
 
 
 class LocalAuthority(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     registration_number: str = Field(alias="registrationNumber")
-    local_authorities: Optional[str] = Field(alias="localAuthorities")
+    local_authorities: Optional[str] = Field(None, alias="localAuthorities")
 
-    @validator("local_authorities", pre=True)
+    @field_validator("local_authorities", mode="before")
+    @classmethod
     def none_to_str(cls, v):
         if v is None:
             return ""

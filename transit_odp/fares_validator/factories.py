@@ -8,11 +8,12 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
     DatasetRevisionFactory,
 )
+from factory.django import DjangoModelFactory
 
 FAKER = faker.Faker()
 
 
-class FaresValidationResultFactory(factory.django.DjangoModelFactory):
+class FaresValidationResultFactory(DjangoModelFactory):
     class Meta:
         model = FaresValidationResult
 

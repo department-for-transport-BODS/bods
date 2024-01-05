@@ -5,6 +5,7 @@ import faker
 
 from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.organisation.factories import DatasetMetadataFactory
+from factory.django import DjangoModelFactory
 
 FAKER = faker.Faker()
 
@@ -34,7 +35,7 @@ class FaresMetadataFactory(DatasetMetadataFactory):
                 self.stops.add(stop)
 
 
-class DataCatalogueMetaDataFactory(factory.django.DjangoModelFactory):
+class DataCatalogueMetaDataFactory(DjangoModelFactory):
     class Meta:
         model = DataCatalogueMetaData
 

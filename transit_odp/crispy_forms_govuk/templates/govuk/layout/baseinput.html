@@ -1,0 +1,11 @@
+<input
+  type="{{ input.input_type }}"
+  {#  name="{% if input.name|wordcount > 1 %}{{ input.name|slugify }}{% else %}{{ input.name }}{% endif %}"#}
+  {% if input.name %}name="{{ input.name }}"{% endif %}
+  {% if input.value %}value="{{ input.value }}"{% endif %}
+  {% if input.id %}id="{{ input.id }}"{% endif %}
+  {% if input.input_type != "hidden" %}
+    class="govuk-input {{ input.field_classes }} {% if input.errors %} govuk-input--error{% endif %}"
+  {% endif %}
+  {{ input.flat_attrs|safe }}
+/>
