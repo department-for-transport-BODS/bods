@@ -40,7 +40,7 @@ from transit_odp.data_quality.models.warnings import (
 )
 
 
-class TimingPatternTimingWarningBaseFactory(factory.DjangoModelFactory):
+class TimingPatternTimingWarningBaseFactory(DjangoModelFactory):
     class Meta:
         model = TimingPatternTimingWarningBase
         exclude = ("common_service_pattern",)
@@ -148,7 +148,7 @@ class SlowLinkWarningFactory(TimingPatternTimingWarningBaseFactory):
     )
 
 
-class ServiceLinkMissingStopWarningFactory(factory.DjangoModelFactory):
+class ServiceLinkMissingStopWarningFactory(DjangoModelFactory):
     class Meta:
         model = ServiceLinkMissingStopWarning
 

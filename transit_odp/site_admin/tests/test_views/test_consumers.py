@@ -159,7 +159,6 @@ class TestConsumerListView:
         assert len(table.rows) == num_developers
 
     def test_email_filter(self, client_factory, user_factory):
-
         client = client_factory(host=self.host)
         user = user_factory(account_type=AccountType.site_admin.value)
         for letter in "abc" + "xyz" + "123" + "ABC":

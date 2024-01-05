@@ -47,7 +47,9 @@ class AggregatedDailyReports:
                 // self.total_vehicles_analysed
             )
         except ZeroDivisionError:
-            logger.warn("No vehicles analysed. Setting all fields matching score to 0")
+            logger.warning(
+                "No vehicles analysed. Setting all fields matching score to 0"
+            )
             return 0
 
     def _remove_percentage_sign(self) -> None:
@@ -86,33 +88,40 @@ class AggregatedDailyReports:
             ),
             notes=pd.NamedAgg(column="Notes", aggfunc="first"),
         )
-
         agg_df["%match"] = (
-            agg_df["successful_match_with_txc"]
+            agg_df["successful_match_with_txc"].astype(float)
             * 100
-            // agg_df["total_activities_analysed"]
-        ).fillna("0").astype(str) + "%"
+            // agg_df["total_activities_analysed"].astype(float)
+        ).fillna(0).astype(str) + "%"
         agg_df["%populated"] = (
-            agg_df["total_count_siri_fields"]
+            agg_df["total_count_siri_fields"].astype(float)
             * 100
-            // agg_df["total_activities_analysed"]
-        ).fillna("0").astype(str) + "%"
+            // agg_df["total_activities_analysed"].astype(float)
+        ).fillna(0).astype(str) + "%"
 
         return agg_df
 
     def get_summary_report(self):
         """Produces DataFrame used for avl_to_timetable_match_summary.csv."""
-        df = self._aggregate_summary_reports()
-
-        df = df.append(
-            {
-                "SIRI field": "Completely matched ALL elements with "
-                "timetable data (excluding BlockRef)",
-                "successful_match_with_txc": self.total_vehicles_completely_matching,
-                "%match": f"{self.all_fields_matching_vehicles_score}%",
-            },
+        df: pd.DataFrame = self._aggregate_summary_reports()
+        total_match = self.total_vehicles_completely_matching
+        df = pd.concat(
+            [
+                df,
+                pd.DataFrame(
+                    [
+                        {
+                            "SIRI field": "Completely matched ALL elements with "
+                            "timetable data (excluding BlockRef)",
+                            "successful_match_with_txc": total_match,
+                            "%match": f"{self.all_fields_matching_vehicles_score}%",
+                        }
+                    ]
+                ),
+            ],
             ignore_index=True,
         )
+
         df = df.rename(
             columns={
                 "total_activities_analysed": "Total vehicleActivities analysed",
@@ -173,32 +182,34 @@ class PostPublishingChecksSummaryData:
             report = DailyReport(**json.load(report.file.open("rb")))
 
             df = pd.DataFrame(report.summary)
-            summary.ppc_summary_report = summary.ppc_summary_report.append(
-                df, ignore_index=True
+            summary.ppc_summary_report = pd.concat(
+                [summary.ppc_summary_report, df], ignore_index=True
             )
 
             df = pd.DataFrame(report.all_siri_analysed)
-            summary.siri_message_analysed = summary.siri_message_analysed.append(
-                df, ignore_index=True
+            summary.siri_message_analysed = pd.concat(
+                [summary.siri_message_analysed, df], ignore_index=True
             )
 
             df = pd.DataFrame(report.uncounted_vehicles)
-            summary.uncounted_vehicle_activities = (
-                summary.uncounted_vehicle_activities.append(df, ignore_index=True)
+            summary.uncounted_vehicle_activities = pd.concat(
+                [summary.uncounted_vehicle_activities, df], ignore_index=True
             )
 
             df = pd.DataFrame(report.direction_ref)
-            summary.direction_ref = summary.direction_ref.append(df, ignore_index=True)
+            summary.direction_ref = pd.concat(
+                [summary.direction_ref, df], ignore_index=True
+            )
 
             df = pd.DataFrame(report.destination_ref)
-            summary.destination_ref = summary.destination_ref.append(
-                df, ignore_index=True
+            summary.destination_ref = pd.concat(
+                [summary.destination_ref, df], ignore_index=True
             )
 
             df = pd.DataFrame(report.origin_ref)
-            summary.origin_ref = summary.origin_ref.append(df, ignore_index=True)
+            summary.origin_ref = pd.concat([summary.origin_ref, df], ignore_index=True)
 
             df = pd.DataFrame(report.block_ref)
-            summary.block_ref = summary.block_ref.append(df, ignore_index=True)
+            summary.block_ref = pd.concat([summary.block_ref, df], ignore_index=True)
 
         return summary
