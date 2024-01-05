@@ -1311,7 +1311,6 @@ class TestLTAView:
         assert object_names == expected_order
 
     def test_lta_view_pagination(self, request_factory: RequestFactory):
-
         get_lta_list_data()
 
         request = request_factory.get("/local-authority/?ordering=ui_lta_name_trimmed")

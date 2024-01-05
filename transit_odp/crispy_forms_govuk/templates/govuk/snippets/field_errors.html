@@ -1,0 +1,7 @@
+{% if form_show_errors %}
+  {% for error in field.errors %}
+    <span id="{{ forloop.counter }}_{{ field.auto_id }}-error" class="govuk-error-message">
+          {{ error }}
+        </span>
+  {% endfor %}
+{% endif %}

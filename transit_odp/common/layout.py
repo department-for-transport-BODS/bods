@@ -13,7 +13,7 @@ class TableCell(layout.Div):
     tag: str = None
     template = "common/forms/table_cell.html"
 
-    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
+    def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):
         # replace form in context with form being render so templated
         # attributes use correct form
         # i.e. when rendering the
@@ -23,12 +23,10 @@ class TableCell(layout.Div):
         original_form = context.get("form", None)
         context["form"] = form
 
-        fields = self.get_rendered_fields(
-            form, form_style, context, template_pack, **kwargs
-        )
+        fields = self.get_rendered_fields(form, context, template_pack, **kwargs)
 
         if self.css_id is not None:
-            self.css_id = Template(str(self.css_id)).render(context)
+            self.css_id = Template(str(self.css_id)).render(context=context)
 
         # put original form back in context just in case its required for
         # some other reason
@@ -59,7 +57,7 @@ class Formset(LayoutObject):
         if template:
             self.template = template
 
-    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
+    def render(self, form, context, template_pack=TEMPLATE_PACK):
         formset = context[self.formset_name_in_context]
         return render_to_string(self.template, {"formset": formset})
 
@@ -72,6 +70,6 @@ class InlineFormset(LayoutObject):
         self.template = kwargs.pop("template", self.template)
         super().__init__(**kwargs)
 
-    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
+    def render(self, form, context, template_pack=TEMPLATE_PACK):
         formset = getattr(form, self.field)
         return render_to_string(self.template, {"formset": formset})

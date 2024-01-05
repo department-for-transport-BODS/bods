@@ -1,7 +1,6 @@
-from django.conf.urls import url
 from django.contrib import admin
 from django.http import FileResponse, HttpResponseForbidden
-from django.urls import reverse
+from django.urls import re_path, reverse
 from django.utils.html import format_html
 
 from transit_odp.pipelines.models import SchemaDefinition
@@ -21,7 +20,7 @@ class SchemaDefinitionAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
+            re_path(
                 r"^download-file/(?P<pk>\d+)$",
                 self.download_file,
                 name="pipelines_schema_download-file",

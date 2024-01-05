@@ -1,0 +1,23 @@
+<form method="post" novalidate>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="id_more_detail">
+      Can you provide more detail?
+    </label>
+    <span id="id_more_detail-hint" class="govuk-hint">
+      Do not include personal or financial information, like your National
+      Insurance number or credit card details.
+    </span>
+    <textarea
+      class="govuk-textarea"
+      id="id_more_detail"
+      name="more_detail"
+      rows="5"
+      cols="40"
+      required
+      aria-describedby="id_more_detail-hint"
+    ></textarea>
+  </div>
+  <button class="govuk-button" type="submit" data-module="govuk-button">
+    Submit
+  </button>
+</form>
