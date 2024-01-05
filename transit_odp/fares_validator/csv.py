@@ -137,9 +137,11 @@ def _get_fares_data_catalogue_dataframe() -> pd.DataFrame:
 
     if multioperator_df.empty:
         raise EmptyDataFrame()
-    
-    merged = pd.merge(fares_df, multioperator_df, left_index=True, right_index=True, how="outer")
-    
+
+    merged = pd.merge(
+        fares_df, multioperator_df, left_index=True, right_index=True, how="outer"
+    )
+
     rename_map = {
         old_name: column_tuple.field_name
         for old_name, column_tuple in FARES_DATA_COLUMN_MAP.items()
