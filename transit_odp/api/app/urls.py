@@ -23,6 +23,11 @@ router.register(
     views.DisruptionsInOrganisationView,
     "organisation_map_data",
 )
+router.register(
+    r"disruption_detail_map_data",
+    views.DisruptionDetailView,
+    "disruption_detail_map_data",
+)
 
 urlpatterns = [
     url("", include(router.urls)),

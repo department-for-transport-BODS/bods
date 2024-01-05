@@ -35,7 +35,7 @@ urlpatterns = [
                     name="disruptions-data",
                 ),
                 path(
-                    "<uuid:pk>/",
+                    "<uuid:orgId>/",
                     include(
                         [
                             path(
@@ -43,13 +43,13 @@ urlpatterns = [
                                 view=DisruptionOrganisationDetailView.as_view(),
                                 name="org-detail",
                             ),
+                            path(
+                                "disruption-detail/<uuid:disruptionId>/",
+                                view=DisruptionDetailView.as_view(),
+                                name="disruption-detail",
+                            ),
                         ]
                     ),
-                ),
-                path(
-                    "<uuid:pk1>/disruption-detail/",
-                    view=DisruptionDetailView.as_view(),
-                    name="disruption-detail",
                 ),
             ]
         ),

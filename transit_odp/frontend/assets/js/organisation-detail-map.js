@@ -76,7 +76,7 @@ const disruptionReasonText = {
   flooding: "Flooding",
 }
 
-const httpGetAsync = (theUrl, callback) => {
+const httpGetAsync = (url, callback) => {
   const request = new XMLHttpRequest();
 
   if (!request) {
@@ -87,13 +87,13 @@ const httpGetAsync = (theUrl, callback) => {
     if (request.readyState === 4 && request.status === 200)
       callback(request.responseText);
   };
-  request.open("GET", theUrl, true); // true for asynchronous
+  request.open("GET", url, true); // true for asynchronous
   request.send();
 };
 
-const initOrgMap = (apiRoot, orgId) => {
-  const servicePatternUrl =
-    apiRoot + "organisation_map_data/?pk=" + orgId.toString();
+const initOrgMap = (apiRoot, orgId, disruptionId) => {
+
+  const url = disruptionId ? apiRoot + "disruption_detail_map_data/?orgId=" + orgId.toString() + "&disruptionId=" + disruptionId.toString() : apiRoot + "organisation_map_data/?orgId=" + orgId.toString();
 
   // Initialise Map
   mapboxgl.accessToken =
@@ -126,7 +126,7 @@ const initOrgMap = (apiRoot, orgId) => {
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
-  const formatDisruptions = (disruptions) => {
+  const formatOrganisationDetailPageDisruptions = (disruptions) => {
     return disruptions.flatMap((disruption) => {
         if (disruption.services && disruption.services.length > 0) {
           const serviceDisruptions = disruption.services.map((service) => ({
@@ -141,6 +141,7 @@ const initOrgMap = (apiRoot, orgId) => {
             properties: {
               consequenceType: "services",
               disruptionReason: disruption.disruptionReason,
+              disruptionId: disruption.disruptionId,
               lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
               operatorName: service.operatorName,
               disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
@@ -164,6 +165,7 @@ const initOrgMap = (apiRoot, orgId) => {
             properties: {
               consequenceType: "stops",
               disruptionReason: disruption.disruptionReason,
+              disruptionId: disruption.disruptionId,
               atcoCode: stop.atcoCode,
               commonName: stop.commonName,
               bearing: stop.bearing,
@@ -178,10 +180,29 @@ const initOrgMap = (apiRoot, orgId) => {
     }).filter(val => val !== undefined)
   }
 
-  httpGetAsync(servicePatternUrl, function (responseText) {
+  const formatDisruptionDetailPageDisruption = (disruption) => {
+    const consequences = disruption.consequences.map((consequence) => {
+      if (consequence.consequenceType === "Stops"){
+        return consequence.stops.map((stop) => ({
+          commonName: stop.commonName,
+          longitude: stop.longitude,
+          latitude: stop.latitue
+        }))
+    } if(consequence.consequenceType === "Services"){
+        return consequence.services.map((service) => ({
+          lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
+          operatorName: service.operatorName,
+          longitude: service.longitude,
+          latitude: service.latitude
+        }))
+      }
+    })
+  }
+
+  httpGetAsync(url, function (responseText) {
     const disruptions = JSON.parse(responseText);
 
-    const formattedDisruptions = formatDisruptions(disruptions)
+    const formattedDisruptions = disruptionId ? formatDisruptionDetailPageDisruption(disruptions) : formatOrganisationDetailPageDisruptions(disruptions)
 
     const bounds = new mapboxgl.LngLatBounds();
 
@@ -359,7 +380,8 @@ const initOrgMap = (apiRoot, orgId) => {
       const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
       const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
       const bearing = `Bearing: ${e.features[0].properties.bearing}`
-      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p></div>`
+      const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
+      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p><a href=${disruptionLink}>See more</a></div>`
 
       popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
     }
@@ -369,7 +391,8 @@ const initOrgMap = (apiRoot, orgId) => {
       const name = e.features[0].properties.lineDisplayName;
       const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
       const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
-      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p></div>`
+      const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
+      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p><a href=${disruptionLink}>See more</a></div>`
 
       popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
     }

@@ -158,7 +158,9 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['pk'])}"
+        url = (
+            f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}"
+        )
 
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = None
@@ -175,7 +177,7 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
             )
             context["object"] = content
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        context["org_id"] = str(kwargs["pk"])
+        context["org_id"] = str(kwargs["orgId"])
         return context
 
 
@@ -184,7 +186,9 @@ class DisruptionDetailView(BaseTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['pk1'])}"
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}/disruptions/{str(kwargs['disruptionId'])}"
+
+        print(url)
 
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = None
@@ -192,15 +196,35 @@ class DisruptionDetailView(BaseTemplateView):
         if content is None:
             context["error"] = "true"
         else:
-            print(content)
-            content["stats"]["lastUpdated"] = (
-                datetime.strptime(
-                    content["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
-                )
-                if content["stats"]["lastUpdated"]
-                else ""
-            )
+            type_of_consequence_dict = {
+                "networkWide": "Network wide",
+                "stops": "Stops",
+                "services": "Services",
+                "operatorWide": "Operator wide",
+            }
+            vehicle_mode_dict = {
+                "bus": "Bus",
+                "tram": "Tram",
+                "ferryService": "Ferry service",
+                "rail": "Train",
+            }
+            consequences = content["consequences"]
+            formatted_consequences = [
+                {
+                    **consequence,
+                    "consequenceType": type_of_consequence_dict[
+                        consequence["consequenceType"]
+                    ],
+                    "vehicleMode": vehicle_mode_dict[consequence["vehicleMode"]]
+                    if consequence["vehicleMode"] in vehicle_mode_dict
+                    else consequence["vehicleMode"],
+                }
+                for consequence in consequences
+            ]
+
+            content["consequences"] = formatted_consequences
             context["object"] = content
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        context["org_id"] = str(kwargs["pk1"])
+        context["org_id"] = str(kwargs["orgId"])
+        context["disruption_id"] = str(kwargs["disruptionId"])
         return context
