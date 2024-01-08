@@ -33,7 +33,7 @@
     "punycode": "^2.3.1",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
-    "source-map-loader": "^4.0.1",
+    "source-map-loader": "^4.0.2",
     "style-loader": "^3.3.3",
     "webpack": "^5.89.0",
     "webpack-bundle-analyzer": "^4.10.1",
