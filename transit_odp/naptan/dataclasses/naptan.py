@@ -9,7 +9,7 @@ transformer = Transformer.from_crs(BNG, WGS84)
 
 
 class Translation(BaseModel):
-    grid_type: Optional[str]
+    grid_type: Optional[str] = None
     easting: int
     northing: int
     longitude: float
@@ -48,9 +48,9 @@ class Translation(BaseModel):
 
 
 class Location(BaseModel):
-    grid_type: Optional[str]
-    easting: Optional[int]
-    northing: Optional[int]
+    grid_type: Optional[str] = None
+    easting: Optional[int] = None
+    northing: Optional[int] = None
     translation: Translation
 
     @classmethod
@@ -96,9 +96,9 @@ class Place(BaseModel):
 
 class Descriptor(BaseModel):
     common_name: str
-    short_common_name: Optional[str]
-    street: Optional[str]
-    indicator: Optional[str]
+    short_common_name: Optional[str] = None
+    street: Optional[str] = None
+    indicator: Optional[str] = None
 
     @classmethod
     def from_xml(cls, xml):
@@ -120,7 +120,7 @@ class Descriptor(BaseModel):
 
 class StopPoint(BaseModel):
     atco_code: str
-    naptan_code: Optional[str]
+    naptan_code: Optional[str] = None
     administrative_area_ref: str
     descriptor: Descriptor
     place: Place

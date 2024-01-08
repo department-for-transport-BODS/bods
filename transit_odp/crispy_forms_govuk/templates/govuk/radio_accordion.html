@@ -1,0 +1,44 @@
+{% load static %}
+
+<div id="{{ accordion.css_id }}"
+     class="govuk-form-group {% if has_errors %} govuk-form-group--error {% endif %}"
+     data-module="app-radio-accordion">
+
+  <fieldset
+    class="govuk-fieldset"
+    aria-describedby="{% if hint %}{{ accordion.css_id }}-hint{% endif %}">
+
+    {# Render legend #}
+    {% if legend_text %}
+      <legend class="govuk-fieldset__legend {{ legend_classes }}">
+      {%  if use_legend_as_heading %}
+        <h1 class="govuk-heading-xl">{{ legend_text }}</h1>
+      {% else %}
+        {{ legend_text }}
+      {% endif %}
+      </legend>
+    {% endif %}
+
+    {# Render hint #}
+    {% if hint %}
+      <span id="{{ accordion.css_id }}-hint" class="govuk-hint">
+        {{ hint }}
+      </span>
+    {% endif %}
+
+    {# Render errors #}
+    {% if errors %}
+      {% for error in errors %}
+        <span id="{{ accordion.css_id }}-error_{{ forloop.counter }}" class="govuk-error-message">
+          {{ error }}
+        </span>
+      {% endfor %}
+    {% endif %}
+
+    {# Render revealing content #}
+    <div id="{{ accordion.css_id }}-content" class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+      {{ content|safe }}
+    </div>
+
+  </fieldset>
+</div>

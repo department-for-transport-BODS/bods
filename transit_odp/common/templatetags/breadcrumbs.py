@@ -117,7 +117,7 @@ class UrlBreadcrumbNode(Node):
             title = title.strip("'").strip('"')
             title = smart_str(title)
 
-        url = self.url_node.render(context)
+        url = self.url_node.render(context=context)
         return create_crumb(title, url)
 
 

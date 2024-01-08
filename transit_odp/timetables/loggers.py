@@ -2,18 +2,18 @@ from transit_odp.common.loggers import LoggerContext
 
 
 class TaskLoggerContext(LoggerContext):
-    component_name = "TransXChange"
-    class_name = "Task"
+    component_name: str = "TransXChange"
+    class_name: str = "Task"
 
 
 class RevisionLoggerContext(TaskLoggerContext):
-    class_name = "DatasetRevision"
+    class_name: str = "DatasetRevision"
 
 
 class DQSLoggerContext(LoggerContext):
-    component_name = "DQS"
-    class_name = "DataQualityReport"
+    component_name: str = "DQS"
+    class_name: str = "DataQualityReport"
 
 
 class DQSTaskLogger(DQSLoggerContext):
-    class_name = "DataQualityTask"
+    class_name: str = "DataQualityTask"

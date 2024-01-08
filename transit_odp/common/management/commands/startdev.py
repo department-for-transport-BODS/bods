@@ -26,4 +26,5 @@ class Command(RunServerCommand):
                 target=subprocess.run, args=(command,), kwargs=kwargs
             )
             webpack_thread.start()
+
         super(Command, self).run(**options)

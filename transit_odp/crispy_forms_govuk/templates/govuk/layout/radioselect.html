@@ -1,0 +1,24 @@
+{% load crispy_forms_filters %}
+{% load l10n %}
+
+{# This is the input template which is rendered within the field.html template  #}
+
+<div class="govuk-radios {% if inline %} govuk-radios--inline {% endif %}">
+  {% for choice in field.field.choices %}
+    <div class="govuk-radios__item">
+      <input class="govuk-radios__input"
+             id="id_{{ field.id_for_label }}_{{ forloop.counter }}"
+             name="{{ field.html_name }}"
+             type="radio"
+             value="{{ choice.0|unlocalize }}"
+        {% if choice.0|stringformat:"s" == field.value|default_if_none:""|stringformat:"s" %}
+             checked="checked"
+        {% endif %}
+        {{ field.field.widget.attrs|flatatt }}
+      >
+      <label class="govuk-label govuk-radios__label" for="id_{{ field.id_for_label }}_{{ forloop.counter }}">
+        {{ choice.1|unlocalize }}
+      </label>
+    </div>
+  {% endfor %}
+</div>

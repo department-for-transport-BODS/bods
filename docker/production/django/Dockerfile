@@ -1,71 +1,51 @@
-ARG BASE_IMAGE=python:3.9-alpine3.16
+ARG BASE_IMAGE=python:3.10-slim
 
 # Step 1 - Build frontend assets
-FROM node:19-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-COPY ./package.json ./package-lock.json ./
+COPY ./package.json ./yarn.lock ./
 COPY ./transit_odp/frontend/assets ./transit_odp/frontend/assets
 COPY ./webpack ./webpack
 
-RUN apk add \
-        build-base \
-        pkgconfig \
-        autoconf \
-        automake \
-        libtool \
-        nasm \
-        libffi-dev \
-        libxml2-dev \
-        libxslt-dev \
-        jpeg-dev \
-        zlib-dev \
-        libpng-dev \
-        freetype-dev \
-    && npm install \
-    && npm run build
-
+RUN yarn install && yarn build
 
 # Step 2 - Copy frontend assets and build Django image
 FROM ${BASE_IMAGE}
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1 \
+    POETRY_VERSION=1.7.1
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
-# Install system packages
-RUN ln -s /usr/bin/python3 /usr/bin/python \
-    && apk update \
-    && apk add \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.16/main \
-            --repository http://dl-cdn.alpinelinux.org/alpine/v3.16/community \
-            --no-cache \
-            gdal-dev \
-            gdal \
-            proj-util \
-            proj-dev \
-            pkgconfig \
+RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
+RUN apt-get update && apt-get install -y \
+            libgdal-dev \
+            g++ \
+            proj-bin \
+            pkg-config \
             autoconf \
             automake \
             libtool \
             nasm \
-            build-base \
+            build-essential \
             libffi-dev \
             libxml2-dev \
             libxslt-dev \
             libpng-dev \
-            freetype-dev \
-            jpeg-dev \
-            zlib-dev \
-            postgresql-dev \
-            poppler \
-            nodejs \
-            npm \
+            libfreetype-dev \
+            libjpeg-dev \
+            zlib1g-dev \
+            postgresql \
+            libpoppler-dev \
             binutils \
-            geos-dev \
-    && pip3 install --upgrade pip \
-    && pip3 install 'cython<3'
+            libgeos-dev \
+            && pip3 install --upgrade \
+            pip \
+            setuptools \
+            wheel \
+            cython
 
 
 # Install python packages
@@ -74,15 +54,15 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
 COPY --from=0 /app/transit_odp/frontend/static /app/transit_odp/frontend/static
 
 COPY ./pyproject.toml ./poetry.lock ./
-RUN python --version \
-    && pip install poetry==1.2.2 \
+RUN pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
-    && poetry run python -m pip install 'pyproj<3' --no-build-isolation \
     && poetry install --no-dev
 
 # Create non-privileged user
-RUN addgroup django \
-    && adduser -G django -D django
+RUN <<EOF
+addgroup django
+adduser --shell /bin/bash --ingroup django django
+EOF
 
 # Copy all the entry shell scripts to root and prepare them for use
 COPY --chown=django:django \
@@ -107,6 +87,7 @@ RUN sed -i 's/\r//' /entrypoint \
 # Ensure WORKDIR is owned by django user
 RUN chown -R django:django /app
 COPY --chown=django:django . /app
+COPY --from=0 /app/transit_odp/frontend/static /app/transit_odp/frontend/static
 
 USER django
 
