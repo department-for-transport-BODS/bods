@@ -6,6 +6,7 @@ from transit_odp.naptan.managers import (
     AdminAreaManager,
     LocalityManager,
     StopPointManager,
+    FlexibleZoneManager
 )
 
 
@@ -86,8 +87,26 @@ class StopPoint(models.Model):
         models.CharField(max_length=255),
         default=list,
     )
+    stop_type = models.CharField(max_length=255)
+    bus_stop_type = models.CharField(max_length=255, null=True, blank=True)
 
     objects = StopPointManager()
+
+    def __repr__(self):
+        return nice_repr(self)
+
+
+class FlexibleZone(models.Model):
+    class Meta:
+        ordering = ("naptan_stoppoint", "sequence_number")
+
+    naptan_stoppoint = models.ForeignKey(
+        StopPoint, related_name="stops", on_delete=models.CASCADE
+    )
+    sequence_number = models.IntegerField()
+    location = models.PointField()
+    
+    objects = FlexibleZoneManager()
 
     def __repr__(self):
         return nice_repr(self)

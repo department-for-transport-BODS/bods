@@ -37,3 +37,7 @@ class StopPointQuerySet(models.QuerySet):
 class LocalityQuerySet(models.QuerySet):
     def add_district_name(self):
         return self.annotate(district_name=F("district__name"))
+
+
+class FlexibleZoneQuerySet(models.QuerySet):
+    pass
