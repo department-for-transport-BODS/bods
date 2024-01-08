@@ -115,16 +115,3 @@ class DisruptionsInOrganisationView(viewsets.ViewSet):
         content, _ = _get_disruptions_organisation_data(url, headers)
 
         return JsonResponse(content, safe=False)
-
-
-class DisruptionDetailView(viewsets.ViewSet):
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    def list(self, request):
-        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{request.GET.get('orgId', None)}/disruptions/{request.GET.get('disruptionId', None)}"
-        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
-        content = []
-        content, _ = _get_disruptions_organisation_data(url, headers)
-        print(content)
-
-        return JsonResponse(content, safe=False)
