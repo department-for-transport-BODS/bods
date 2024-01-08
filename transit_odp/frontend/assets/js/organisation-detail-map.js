@@ -93,7 +93,7 @@ const httpGetAsync = (theUrl, callback) => {
 
 const initOrgMap = (apiRoot, orgId) => {
   const servicePatternUrl =
-    apiRoot + "organisation_map_data/?pk=" + orgId.toString();
+    apiRoot + "organisation_map_data/?orgId=" + orgId.toString();
 
   // Initialise Map
   mapboxgl.accessToken =

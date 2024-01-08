@@ -6,7 +6,6 @@ from django.views.generic.list import ListView
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
 from transit_odp.organisation.constants import DatasetType
@@ -159,7 +158,9 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['pk'])}"
+        url = (
+            f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}"
+        )
 
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = None
@@ -176,5 +177,54 @@ class DisruptionOrganisationDetailView(BaseTemplateView):
             )
             context["object"] = content
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        context["org_id"] = str(kwargs["pk"])
+        context["org_id"] = str(kwargs["orgId"])
+        return context
+
+
+class DisruptionDetailView(BaseTemplateView):
+    template_name = "browse/disruptions/organisation/disruption_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}/disruptions/{str(kwargs['disruptionId'])}"
+
+        print(url)
+
+        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content = None
+        content, _ = _get_disruptions_organisation_data(url, headers)
+        if content is None:
+            context["error"] = "true"
+        else:
+            type_of_consequence_dict = {
+                "networkWide": "Network wide",
+                "stops": "Stops",
+                "services": "Services",
+                "operatorWide": "Operator wide",
+            }
+            vehicle_mode_dict = {
+                "bus": "Bus",
+                "tram": "Tram",
+                "ferryService": "Ferry service",
+                "rail": "Train",
+            }
+            consequences = content["consequences"]
+            formatted_consequences = [
+                {
+                    **consequence,
+                    "consequenceType": type_of_consequence_dict[
+                        consequence["consequenceType"]
+                    ],
+                    "vehicleMode": vehicle_mode_dict[consequence["vehicleMode"]]
+                    if consequence["vehicleMode"] in vehicle_mode_dict
+                    else consequence["vehicleMode"],
+                }
+                for consequence in consequences
+            ]
+
+            content["consequences"] = formatted_consequences
+            context["object"] = content
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        context["org_id"] = str(kwargs["orgId"])
+        context["disruption_id"] = str(kwargs["disruptionId"])
         return context

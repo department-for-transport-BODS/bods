@@ -34,7 +34,7 @@ urlpatterns = [
                     name="disruptions-data",
                 ),
                 path(
-                    "<uuid:pk>/",
+                    "<uuid:orgId>/",
                     include(
                         [
                             path(
