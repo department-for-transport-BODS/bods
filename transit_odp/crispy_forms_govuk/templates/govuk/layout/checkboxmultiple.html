@@ -1,0 +1,24 @@
+{% load l10n %}
+{% load crispy_forms_field %}
+
+<div class="govuk-checkboxes">
+  {% for choice in field.field.choices %}
+    <div class="govuk-checkboxes__item">
+      <input type="checkbox"
+             class="govuk-checkboxes__input"
+        {% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %}
+             checked="checked"{% endif %}
+             name="{{ field.html_name }}"
+             id="id_{{ field.html_name }}_{{ forloop.counter }}"
+             value="{{ choice.0|unlocalize }}"
+        {% if choice.0 in field.field.widget.disabled_choices %} disabled {% endif %}
+      >
+      <label for="id_{{ field.html_name }}_{{ forloop.counter }}"
+             class="govuk-label govuk-checkboxes__label"
+        {% if flat_attrs %}{{ flat_attrs|safe }}{% endif %}
+      >
+        {{ choice.1|unlocalize }}
+      </label>
+    </div>
+  {% endfor %}
+</div>

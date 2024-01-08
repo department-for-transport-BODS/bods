@@ -1,10 +1,9 @@
-from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.db import models
 from django.http import FileResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import re_path, reverse
 from django.utils.html import format_html
 
 from transit_odp.avl.admin.forms import (
@@ -61,7 +60,7 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
+            re_path(
                 r"^download-avl-validation-report/(?P<pk>\d+)$",
                 self.download_validation_report,
                 name="avl-validation-report",
@@ -137,7 +136,7 @@ class AVLSchemaValidationReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
+            re_path(
                 r"^download-avl-schema-report/(?P<pk>\d+)$",
                 self.download_schema_report,
                 name="avl-schema-report",
@@ -244,7 +243,7 @@ class PostPublishingCheckReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
+            re_path(
                 r"^download-ppc-report/(?P<pk>\d+)$",
                 self.download_ppc_report,
                 name="post-publishing-check-report",

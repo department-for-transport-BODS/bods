@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 
 import requests
 from django.conf import settings
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, ConnectionError
 
 from transit_odp.avl.client.interface import ICAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
@@ -48,6 +48,9 @@ class CAVLService(ICAVLService):
         try:
             response = requests.delete(api_url, timeout=30)
             response.raise_for_status()
+        except ConnectionError:
+            logger.exception(f"[CAVL] Couldn't delete feed <id={feed_id}>")
+            return False
         except RequestException:
             if response is not None and response.status_code == HTTPStatus.NOT_FOUND:
                 logger.error(
