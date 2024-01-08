@@ -9,7 +9,7 @@
     "normalize.css": "~8.0.1",
     "process": "^0.11.10",
     "stream": "^0.0.2",
-    "swagger-ui": "^5.10.3"
+    "swagger-ui": "^5.11.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
