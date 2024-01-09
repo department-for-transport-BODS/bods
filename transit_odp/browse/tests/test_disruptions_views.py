@@ -198,7 +198,7 @@ class TestDisruptionOrganisationDetailView:
     host = DATA_HOST
     url = reverse(
         "org-detail",
-        kwargs={"pk": uuid.UUID("5a6e9348-9bd7-46d8-b939-a394876b2ea5")},
+        kwargs = ({"orgId": uuid.UUID("5a6e9348-9bd7-46d8-b939-a394876b2ea5")},)
         host=host,
     )
     template_path = "browse/disruptions/organisation/organisation_detail.html"

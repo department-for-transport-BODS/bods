@@ -125,6 +125,43 @@ class DisruptionDetailView(viewsets.ViewSet):
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = []
         content, _ = _get_disruptions_organisation_data(url, headers)
-        print(content)
 
-        return JsonResponse(content, safe=False)
+        consequence_coordinates = []
+
+        for consequence in content["consequences"]:
+            if consequence["consequenceType"] == "services":
+                for service in consequence["services"]:
+                    if (
+                        service["coordinates"]["latitude"]
+                        and service["coordinates"]["longitude"] is not None
+                    ):
+                        consequence_coordinates.append(service["coordinates"])
+
+            if consequence["consequenceType"] == "stops":
+                for stop in consequence["stops"]:
+                    if stop["latitude"] and stop["longitude"] is not None:
+                        consequence_coordinates.append(
+                            {
+                                "latitude": stop["latitude"],
+                                "longitude": stop["longitude"],
+                            }
+                        )
+
+        map_data = []
+
+        for coordinate in consequence_coordinates:
+            map_data.append(
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            coordinate["longitude"],
+                            coordinate["latitude"],
+                        ],
+                    },
+                    "properties": {"disruptionReason": content["disruptionReason"]},
+                }
+            )
+
+        return JsonResponse(map_data, safe=False)
