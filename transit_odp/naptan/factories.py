@@ -2,7 +2,13 @@ import factory
 from django.contrib.gis.geos import Point
 import faker
 
-from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
+from transit_odp.naptan.models import (
+    AdminArea,
+    District,
+    Locality,
+    StopPoint,
+    FlexibleZone,
+)
 
 from factory.django import DjangoModelFactory
 
@@ -47,6 +53,20 @@ class StopPointFactory(DjangoModelFactory):
     locality = factory.SubFactory(LocalityFactory)
     admin_area = factory.SubFactory(AdminAreaFactory)
     stop_areas = ["area1"]
+
+    @factory.lazy_attribute
+    def location(self):
+        fake = faker.Faker()
+        location = fake.local_latlng(country_code="GB", coords_only=True)
+        return Point(x=float(location[1]), y=float(location[0]), srid=4326)
+
+
+class FlexibleZoneFactory(DjangoModelFactory):
+    class Meta:
+        model = FlexibleZone
+
+    sequence_number = factory.Sequence(lambda n: n)
+    naptan_stoppoint = factory.SubFactory(StopPointFactory)
 
     @factory.lazy_attribute
     def location(self):

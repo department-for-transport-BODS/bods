@@ -4,7 +4,7 @@ from transit_odp.naptan.querysets import (
     AdminAreaQuerySet,
     LocalityQuerySet,
     StopPointQuerySet,
-    FlexibleZoneQuerySet
+    FlexibleZoneQuerySet,
 )
 
 
