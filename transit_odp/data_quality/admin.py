@@ -1,8 +1,7 @@
-from django.conf.urls import url
 from django.contrib import admin
 from django.db.models import F
 from django.http import FileResponse, HttpResponseForbidden
-from django.urls import reverse
+from django.urls import re_path, reverse
 from django.utils.html import format_html
 
 from transit_odp.data_quality.models import DataQualityReport, StopPoint
@@ -27,7 +26,7 @@ class DataQualityReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            url(
+            re_path(
                 r"^download-file/(?P<pk>\d+)$",
                 self.download_file,
                 name="data_quality_report_download-file",

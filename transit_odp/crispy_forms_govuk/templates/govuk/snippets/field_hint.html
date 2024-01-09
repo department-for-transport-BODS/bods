@@ -1,0 +1,5 @@
+{% if field.help_text %}
+  <span id="{{ field.auto_id }}-hint" class="govuk-hint {{ extra_hint_classes|default_if_none:'' }}">
+        {{ field.help_text|safe }}
+  </span>
+{% endif %}

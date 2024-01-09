@@ -1,0 +1,28 @@
+{% load i18n %}
+
+{% if form_tag %}
+  <form {{ flat_attrs|safe }}
+          method="{{ form_method }}"
+          {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}
+          novalidate
+  >
+{% endif %}
+
+{% if form_method|lower == 'post' and not disable_csrf %}
+    {% csrf_token %}
+{% endif %}
+
+{% if form_show_errors %}
+    {% include errors_template|default:"govuk/errors.html" %}
+{% endif %}
+
+{% include display_form_template|default:"govuk/display_form.html" %}
+
+{% include inputs_template|default:"govuk/inputs.html" %}
+
+{# TODO - not always supposed to be here #}
+{% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+{% endif %}
+
+{% if form_tag %}</form>{% endif %}

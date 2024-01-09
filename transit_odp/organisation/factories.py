@@ -34,12 +34,12 @@ from transit_odp.users.constants import DeveloperType, OrgAdminType
 FAKER = faker.Faker()
 
 
-class OrganisationFactory(factory.django.DjangoModelFactory):
+class OrganisationFactory(DjangoModelFactory):
     class Meta:
         model = Organisation
 
     short_name = factory.Faker("company")
-    name = factory.Sequence(lambda n: factory.Faker("company").generate() + f" {n}")
+    name = factory.Sequence(lambda n: faker.Faker().company() + f" {n}")
     key_contact = None
     is_active = True
     licence_required = None
@@ -88,7 +88,7 @@ class OrganisationFactory(factory.django.DjangoModelFactory):
                 LicenceFactory(organisation=obj, number=li)
 
 
-class OperatorCodeFactory(factory.django.DjangoModelFactory):
+class OperatorCodeFactory(DjangoModelFactory):
     class Meta:
         model = OperatorCode
 
@@ -104,7 +104,7 @@ class LicenceFactory(DjangoModelFactory):
     organisation = factory.SubFactory(OrganisationFactory)
 
 
-class DatasetFactory(factory.django.DjangoModelFactory):
+class DatasetFactory(DjangoModelFactory):
     class Meta:
         model = Dataset
 
@@ -144,13 +144,13 @@ class DraftDatasetFactory(DatasetFactory):
         exclude = ("revision",)
 
 
-class DatasetRevisionFactory(factory.django.DjangoModelFactory):
+class DatasetRevisionFactory(DjangoModelFactory):
     class Meta:
         model = DatasetRevision
 
     # live_revision is automatically by a post-save signal
     dataset = factory.SubFactory(DatasetFactory, live_revision=None)
-    name = factory.Sequence(lambda n: factory.Faker("sentence").generate() + f" {n}")
+    name = factory.Sequence(lambda n: faker.Faker().sentence() + f" {n}")
     description = factory.Faker("paragraph")
     short_description = factory.Faker("pystr", min_chars=1, max_chars=30)
     comment = factory.Faker("paragraph")
@@ -224,7 +224,7 @@ class FaresDatasetRevisionFactory(DatasetRevisionFactory):
     first_service_start = None
 
 
-class DatasetSubscriptionFactory(factory.django.DjangoModelFactory):
+class DatasetSubscriptionFactory(DjangoModelFactory):
     class Meta:
         model = DatasetSubscription
 
@@ -234,7 +234,7 @@ class DatasetSubscriptionFactory(factory.django.DjangoModelFactory):
     dataset = factory.SubFactory(DatasetFactory)
 
 
-class DatasetMetadataFactory(factory.django.DjangoModelFactory):
+class DatasetMetadataFactory(DjangoModelFactory):
     class Meta:
         model = DatasetMetadata
 
@@ -242,7 +242,7 @@ class DatasetMetadataFactory(factory.django.DjangoModelFactory):
     schema_version = "0.0"
 
 
-class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
+class TXCFileAttributesFactory(DjangoModelFactory):
     class Meta:
         model = TXCFileAttributes
 
@@ -265,7 +265,7 @@ class TXCFileAttributesFactory(factory.django.DjangoModelFactory):
     hash = factory.Sequence(lambda n: f"hash{n}")
 
 
-class ConsumerFeedbackFactory(factory.django.DjangoModelFactory):
+class ConsumerFeedbackFactory(DjangoModelFactory):
     class Meta:
         model = ConsumerFeedback
 
@@ -278,7 +278,7 @@ class ConsumerFeedbackFactory(factory.django.DjangoModelFactory):
     organisation = factory.SubFactory(OrganisationFactory)
 
 
-class ServiceCodeExemptionFactory(factory.django.DjangoModelFactory):
+class ServiceCodeExemptionFactory(DjangoModelFactory):
     class Meta:
         model = ServiceCodeExemption
 
@@ -290,7 +290,7 @@ class ServiceCodeExemptionFactory(factory.django.DjangoModelFactory):
     )
 
 
-class AVLComplianceCacheFactory(factory.django.DjangoModelFactory):
+class AVLComplianceCacheFactory(DjangoModelFactory):
     class Meta:
         model = AVLComplianceCache
 
@@ -298,7 +298,7 @@ class AVLComplianceCacheFactory(factory.django.DjangoModelFactory):
     status = UNDERGOING
 
 
-class SeasonalServiceFactory(factory.django.DjangoModelFactory):
+class SeasonalServiceFactory(DjangoModelFactory):
     class Meta:
         model = SeasonalService
 

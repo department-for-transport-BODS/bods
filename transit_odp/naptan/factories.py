@@ -1,17 +1,20 @@
 import factory
 from django.contrib.gis.geos import Point
+import faker
 
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
 
+from factory.django import DjangoModelFactory
 
-class DistrictFactory(factory.DjangoModelFactory):
+
+class DistrictFactory(DjangoModelFactory):
     class Meta:
         model = District
 
     name = factory.Faker("street_name")
 
 
-class AdminAreaFactory(factory.DjangoModelFactory):
+class AdminAreaFactory(DjangoModelFactory):
     class Meta:
         model = AdminArea
 
@@ -20,7 +23,7 @@ class AdminAreaFactory(factory.DjangoModelFactory):
     traveline_region_id = factory.Faker("pystr", min_chars=12, max_chars=12)
 
 
-class LocalityFactory(factory.DjangoModelFactory):
+class LocalityFactory(DjangoModelFactory):
     class Meta:
         model = Locality
 
@@ -32,7 +35,7 @@ class LocalityFactory(factory.DjangoModelFactory):
     northing = 0
 
 
-class StopPointFactory(factory.DjangoModelFactory):
+class StopPointFactory(DjangoModelFactory):
     class Meta:
         model = StopPoint
 
@@ -47,7 +50,6 @@ class StopPointFactory(factory.DjangoModelFactory):
 
     @factory.lazy_attribute
     def location(self):
-        location = factory.Faker(
-            "local_latlng", country_code="GB", coords_only=True
-        ).generate({})
+        fake = faker.Faker()
+        location = fake.local_latlng(country_code="GB", coords_only=True)
         return Point(x=float(location[1]), y=float(location[0]), srid=4326)

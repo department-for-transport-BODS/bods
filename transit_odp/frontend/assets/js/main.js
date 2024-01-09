@@ -16,6 +16,7 @@ import { initDatasetListLoaders } from "./feed-list-progress";
 import { initFaresDetailMap } from "./fares-detail-map";
 import { initHelpModals } from "./help-modal";
 import { initMap } from "./feed-detail-map";
+import { initOrgMap } from "./organisation-detail-map";
 import { initTimeoutWarning } from "./timeout-warning";
 import { initWarningDetailMap } from "./data-quality-detail-map";
 import { refresh } from "./dqs-review-panel";
@@ -49,6 +50,7 @@ export {
   initDatasetListLoaders,
   initFaresDetailMap,
   initMap,
+  initOrgMap,
   initWarningDetailMap,
   refresh,
   FormSet,

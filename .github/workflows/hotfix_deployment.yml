@@ -9,6 +9,7 @@ defaults:
 
 env:  
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
+  ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
   ENVIRONMENT_NAME: uat
 
 jobs:
@@ -74,8 +75,9 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        ECR_BASE_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }} 
       run: |
-        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile .
+        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_BASE_REPOSITORY:${{ steps.set-version-number.outputs.version }} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
     - name: Logout of Amazon ECR
@@ -146,19 +148,19 @@ jobs:
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Run pg migration 
-      uses: "./.github/workflows/templates/run_pg_migration_task"
-      with:
-        subnets: ${{ secrets.SUBNETS }}
-        security_groups: ${{ secrets.SECURITY_GROUPS }}
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        
     - name: Check for service stability 
       uses: oryanmoshe/ecs-wait-action@v1.3
       with:
         ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
         ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
         verbose: true
+        
+    - name: Run pg migration 
+      uses: "./.github/workflows/templates/run_pg_migration_task"
+      with:
+        subnets: ${{ secrets.SUBNETS }}
+        security_groups: ${{ secrets.SECURITY_GROUPS }}
+        environment: ${{ env.ENVIRONMENT_NAME }}
 
     - name: Invoke Lambda Function
       shell: bash

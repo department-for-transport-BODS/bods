@@ -797,7 +797,6 @@ def test_lta_csv_output():
     assert csv_output["row7"][25] == f'"{service_numbers[7]}"'  # OTC Service Number
 
     # Row 8
-    print(csv_output["row8"])
     assert csv_output["row8"][0] == '"PD0000099:8"'  # XML:Service Code
     assert csv_output["row8"][1] == '"line1 line2"'  # XML:Line Name
     assert csv_output["row8"][2] == '"No"'  # Requires Attention

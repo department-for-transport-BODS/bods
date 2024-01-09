@@ -1,11 +1,13 @@
 import factory
 from django.contrib.gis.geos import LineString, Point
+import faker
 
 from transit_odp.data_quality import models
 from transit_odp.organisation.factories import DatasetRevisionFactory
+from factory.django import DjangoModelFactory
 
 
-class DataQualityReportSummaryFactory(factory.DjangoModelFactory):
+class DataQualityReportSummaryFactory(DjangoModelFactory):
     """
     report: use absolute import path due to circular import
     see https://factoryboy.readthedocs.io/en/latest/reference.html#circular-imports
@@ -20,7 +22,7 @@ class DataQualityReportSummaryFactory(factory.DjangoModelFactory):
         model = models.DataQualityReportSummary
 
 
-class DataQualityReportFactory(factory.DjangoModelFactory):
+class DataQualityReportFactory(DjangoModelFactory):
     """
     summary: use this report as the report on the related summary
              subfactory on DataQualityReportSummaryFactory is skipped,
@@ -39,7 +41,7 @@ class DataQualityReportFactory(factory.DjangoModelFactory):
         model = models.DataQualityReport
 
 
-class ServiceFactory(factory.DjangoModelFactory):
+class ServiceFactory(DjangoModelFactory):
     # TODO: investigate -- threw error when trying to load TimingPatternStop
     # report = factory.SubFactory(DataQualityReportFactory)
     ito_id = factory.Sequence(lambda n: f"{n}")  # unique ito id
@@ -49,7 +51,7 @@ class ServiceFactory(factory.DjangoModelFactory):
         model = models.Service
 
 
-class StopPointFactory(factory.DjangoModelFactory):
+class StopPointFactory(DjangoModelFactory):
     ito_id = factory.Sequence(lambda n: f"{n}")  # unique ito id
     atco_code = factory.Sequence(lambda n: n)  # unique atco code
     name = factory.Faker("street_name")
@@ -58,26 +60,29 @@ class StopPointFactory(factory.DjangoModelFactory):
 
     @factory.lazy_attribute
     def geometry(self):
-        geometry = factory.Faker(
-            "local_latlng", country_code="GB", coords_only=True
-        ).generate({})
+        fake = faker.Faker()
+        geometry = fake.local_latlng(country_code="GB", coords_only=True)
         return Point(x=float(geometry[1]), y=float(geometry[0]), srid=4326)
 
     class Meta:
         model = models.StopPoint
 
 
-class ServicePatternFactory(factory.DjangoModelFactory):
+class ServicePatternFactory(DjangoModelFactory):
     ito_id = factory.Sequence(lambda n: f"{n}")  # unique ito id
     name = ""
     service = factory.SubFactory(ServiceFactory)
 
     @factory.lazy_attribute
     def geometry(self):
-        y, x = factory.Faker(
-            "local_latlng", country_code="GB", coords_only=True
-        ).generate({})
-        return LineString(x=float(x), y=float(y), srid=4326)
+        fake = faker.Faker()
+        geometry_start = fake.local_latlng(country_code="GB", coords_only=True)
+        geometry_end = fake.local_latlng(country_code="GB", coords_only=True)
+        return LineString(
+            Point(x=float(geometry_start[1]), y=float(geometry_start[0]), srid=4326),
+            Point(x=float(geometry_end[1]), y=float(geometry_end[0]), srid=4326),
+            srid=4326,
+        )
 
     class Meta:
         model = models.ServicePattern
@@ -89,7 +94,7 @@ class ServicePatternFactory(factory.DjangoModelFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
-class ServiceLinkFactory(factory.DjangoModelFactory):
+class ServiceLinkFactory(DjangoModelFactory):
     ito_id = factory.Sequence(lambda n: f"{n}")  # unique ito id
     from_stop = factory.SubFactory(StopPointFactory)
     to_stop = factory.SubFactory(StopPointFactory)
@@ -98,7 +103,7 @@ class ServiceLinkFactory(factory.DjangoModelFactory):
         model = models.ServiceLink
 
 
-class ServicePatternServiceLinkFactory(factory.DjangoModelFactory):
+class ServicePatternServiceLinkFactory(DjangoModelFactory):
     service_pattern = factory.SubFactory(ServicePatternFactory)
     service_link = factory.SubFactory(ServiceLinkFactory)
     position = factory.Sequence(lambda n: str(n))
@@ -107,7 +112,7 @@ class ServicePatternServiceLinkFactory(factory.DjangoModelFactory):
         model = models.ServicePatternServiceLink
 
 
-class ServicePatternStopFactory(factory.DjangoModelFactory):
+class ServicePatternStopFactory(DjangoModelFactory):
     service_pattern = factory.SubFactory(ServicePatternFactory)
     stop = factory.SubFactory(StopPointFactory)
     position = factory.Sequence(lambda n: n)
@@ -116,7 +121,7 @@ class ServicePatternStopFactory(factory.DjangoModelFactory):
         model = models.ServicePatternStop
 
 
-class TimingPatternFactory(factory.DjangoModelFactory):
+class TimingPatternFactory(DjangoModelFactory):
     ito_id = factory.Sequence(lambda n: f"{n}")  # unique ito id
     service_pattern = factory.SubFactory(ServicePatternFactory)
     # create 5 vehicle_journeys related to this timing pattern
@@ -128,7 +133,7 @@ class TimingPatternFactory(factory.DjangoModelFactory):
         model = models.TimingPattern
 
 
-class TimingPatternStopFactory(factory.DjangoModelFactory):
+class TimingPatternStopFactory(DjangoModelFactory):
     class Meta:
         model = models.TimingPatternStop
         exclude = ("common_service_pattern",)
@@ -158,7 +163,7 @@ class TimingPatternStopFactory(factory.DjangoModelFactory):
         )
 
 
-class VehicleJourneyFactory(factory.DjangoModelFactory):
+class VehicleJourneyFactory(DjangoModelFactory):
     class Meta:
         model = models.VehicleJourney
 

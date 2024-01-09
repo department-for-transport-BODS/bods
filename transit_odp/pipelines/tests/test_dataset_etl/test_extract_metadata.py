@@ -213,7 +213,11 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
             )
         )
         stop_points_expected.index.name = "atco_code"
-        self.assertTrue(check_frame_equal(extracted.stop_points, stop_points_expected))
+
+        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df2 = stop_points_expected.sort_values("atco_code").reset_index()
+
+        self.assertTrue(check_frame_equal(df1, df2))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertCountEqual(list(extracted.stop_points.columns), [])
@@ -341,7 +345,11 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
             )
         )
         stop_points_expected.index.name = "atco_code"
-        self.assertTrue(check_frame_equal(extracted.stop_points, stop_points_expected))
+
+        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df2 = stop_points_expected.sort_values("atco_code").reset_index()
+
+        self.assertTrue(check_frame_equal(df1, df2))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertCountEqual(list(extracted.stop_points.columns), [])

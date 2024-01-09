@@ -1,0 +1,14 @@
+<button
+  type="{{ input.input_type }}"
+  {% if input.name is not None %}name="{{ input.name }}"{% endif %}
+  {% if input.value is not None %}value="{{ input.value }}"{% endif %}
+  {% if input.input_type != "hidden" %}
+    class="{{ input.field_classes }}"
+    {% if input.id %}id="{{ input.id }}"{% endif %}
+    data-module="govuk-button"
+  {% endif %}
+  {% if input.onclick is not None %}onclick="{{ input.onclick }}"{% endif %}
+  {{ input.flat_attrs|safe }}
+>
+  {{ input.content|safe }}
+</button>
