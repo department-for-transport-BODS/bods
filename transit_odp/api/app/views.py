@@ -126,42 +126,55 @@ class DisruptionDetailView(viewsets.ViewSet):
         content = []
         content, _ = _get_disruptions_organisation_data(url, headers)
 
-        consequence_coordinates = []
+        consequence_coordinates = _get_coordinates_from_disruption(
+            content["consequences"]
+        )
 
-        for consequence in content["consequences"]:
-            if consequence["consequenceType"] == "services":
-                for service in consequence["services"]:
-                    if (
-                        service["coordinates"]["latitude"]
-                        and service["coordinates"]["longitude"] is not None
-                    ):
-                        consequence_coordinates.append(service["coordinates"])
-
-            if consequence["consequenceType"] == "stops":
-                for stop in consequence["stops"]:
-                    if stop["latitude"] and stop["longitude"] is not None:
-                        consequence_coordinates.append(
-                            {
-                                "latitude": stop["latitude"],
-                                "longitude": stop["longitude"],
-                            }
-                        )
-
-        map_data = []
-
-        for coordinate in consequence_coordinates:
-            map_data.append(
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            coordinate["longitude"],
-                            coordinate["latitude"],
-                        ],
-                    },
-                    "properties": {"disruptionReason": content["disruptionReason"]},
-                }
-            )
+        map_data = _format_data_for_map(
+            consequence_coordinates, content["disruptionReason"]
+        )
 
         return JsonResponse(map_data, safe=False)
+
+
+def _get_coordinates_from_disruption(disruption_consequences: object):
+    consequence_coordinates = []
+    for consequence in disruption_consequences:
+        if consequence["consequenceType"] == "services":
+            for service in consequence["services"]:
+                if (
+                    service["coordinates"]["latitude"]
+                    and service["coordinates"]["longitude"] is not None
+                ):
+                    consequence_coordinates.append(service["coordinates"])
+
+        if consequence["consequenceType"] == "stops":
+            for stop in consequence["stops"]:
+                if stop["latitude"] and stop["longitude"] is not None:
+                    consequence_coordinates.append(
+                        {
+                            "latitude": stop["latitude"],
+                            "longitude": stop["longitude"],
+                        }
+                    )
+        return consequence_coordinates
+
+
+def _format_data_for_map(consequence_coordinates: list, disruption_reason: str):
+    map_data = []
+
+    for coordinate in consequence_coordinates:
+        map_data.append(
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        coordinate["longitude"],
+                        coordinate["latitude"],
+                    ],
+                },
+                "properties": {"disruptionReason": disruption_reason},
+            }
+        )
+    return map_data
