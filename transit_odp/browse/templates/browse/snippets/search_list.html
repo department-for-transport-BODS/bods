@@ -3,29 +3,47 @@
 {% load static %}
 
 <div>
-    <div class="search-list__heading">
-        {% if paginator.count > 0 %}
-            <span class="govuk-body">
-                {{ paginator.count }} {% trans 'results' %}
-            </span>
-        {% else %}
-            <h3 class="govuk-heading-m">
-                {% trans 'Sorry, no results found' %}
-                {% if q %}{% blocktrans %} for {{ q }}{% endblocktrans %}{% endif %}
-            </h3>
-        {% endif %}
-    </div>
+  <div class="search-list__heading">
+      {% if paginator.count > 0 %}
+        <span class="govuk-body">
+        {{ paginator.count }} {% trans 'results' %}
+        </span>
+      {% else %}
+        <h3 class="govuk-heading-m">
+        {% trans 'Sorry, no results found' %}
+        {% if q %}{% blocktrans %} for {{ q }}{% endblocktrans %}{% endif %}
+        </h3>
+      {% endif %}
+  </div>
+  {% if show_search_terms_only == True %}
     <div class="govuk-body-s govuk-grid-row search-pillbox">
-        {% for key, value in query_params.items %}
-            <a href="{% query_chop key %}">
-                <div class="pill-item">
-                    <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}">
-                    <span class="pill-item__label">{{ value }}</span>
-                </div>
-            </a>
-        {% endfor %}
+      {% if q %}
+        <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+            {% trans 'Containing' as tmsg %}{{tmsg | force_escape}}
+        </span>
+        <a href="?ordering={{ ordering }}">
+            <div class="pill-item">
+                <img class="pill-item__image"
+                    src="{% static 'frontend/images/icon-cross.png' %}"
+                    alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
+                <span class="pill-item__label">{{ q }}</span>
+            </div>
+        </a>
+      {% endif %}
     </div>
-    <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break">
+  {% else %}
+    <div class="govuk-body-s govuk-grid-row search-pillbox">
+      {% for key, value in query_params.items %}
+        <a href="{% query_chop key %}">
+          <div class="pill-item">
+            <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}">
+            <span class="pill-item__label">{{ value }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break">
 
     <div class="govuk-form-group">
         <label class="govuk-label" for="ordering">Sort by</label>
@@ -46,13 +64,15 @@
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
             {% endif %}
 
-            {% if item.dataset_type == 1 %}
-                {% include 'browse/snippets/results/timetables.html' %}
-            {% elif item.dataset_type == 2 %}
-                {% include 'browse/snippets/results/avl.html' %}
-            {% elif item.dataset_type == 3 %}
-                {% include 'browse/snippets/results/fares.html' %}
-            {% endif %}
+      {% if item.dataset_type == 1 %}
+        {% include 'browse/snippets/results/timetables.html' %}
+      {% elif item.dataset_type == 2 %}
+        {% include 'browse/snippets/results/avl.html' %}
+      {% elif item.dataset_type == 3 %}
+        {% include 'browse/snippets/results/fares.html' %}
+      {% elif item.dataset_type == 4 %}
+        {% include 'browse/snippets/results/disruptions.html' %}
+      {% endif %}
 
         {% empty %}
             <div>
