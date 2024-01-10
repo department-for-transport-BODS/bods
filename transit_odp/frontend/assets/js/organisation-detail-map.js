@@ -126,55 +126,60 @@ const initOrgMap = (apiRoot, orgId) => {
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
-  const formatDisruptions = (disruptions) => {
+ const formatDisruptions = (disruptions) => {
     return disruptions.flatMap((disruption) => {
-        if (disruption.services && disruption.services.length > 0) {
-          const serviceDisruptions = disruption.services.map((service) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                service.coordinates.longitude,
-                service.coordinates.latitude,
-              ],
-            },
-            properties: {
-              consequenceType: "services",
-              disruptionReason: disruption.disruptionReason,
-              lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
-              operatorName: service.operatorName,
-              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
-              disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
-              disruptionNoEndDateTime: service.disruptionNoEndDateTime
-            }
-          }))
-          return serviceDisruptions
-        }
+      if (disruption.services && disruption.services.length > 0) {
+        const serviceDisruptions = disruption.services.map((service) => {
+          if(service.coordinates.longitude && service.coordinates.latitude) {
+            return {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [
+                  service.coordinates.longitude,
+                  service.coordinates.latitude,
+                ],
+              },
+              properties: {
+                consequenceType: "services",
+                disruptionReason: disruption.disruptionReason,
+                disruptionId: disruption.disruptionId,
+                lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
+                operatorName: service.operatorName,
+                disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+                disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+                disruptionNoEndDateTime: service.disruptionNoEndDateTime
+              }
+            }}
+        })
+        return serviceDisruptions
+      }
 
-        if (disruption.stops && disruption.stops.length > 0) {
-          const stopsDisruptions = disruption.stops.map((stop) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                stop.coordinates.longitude,
-                stop.coordinates.latitude,
-              ],
-            },
-            properties: {
-              consequenceType: "stops",
-              disruptionReason: disruption.disruptionReason,
-              atcoCode: stop.atcoCode,
-              commonName: stop.commonName,
-              bearing: stop.bearing,
-              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
-              disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
-              disruptionNoEndDateTime: stop.disruptionNoEndDateTime
-            }
-          }))
-          return stopsDisruptions
-        }
-        return [...serviceDisruptions, ...stopsDisruptions]
+      if (disruption.stops && disruption.stops.length > 0) {
+        const stopsDisruptions = disruption.stops.map((stop) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [
+              stop.coordinates.longitude,
+              stop.coordinates.latitude,
+            ],
+          },
+          properties: {
+            consequenceType: "stops",
+            disruptionReason: disruption.disruptionReason,
+            disruptionId: disruption.disruptionId,
+            atcoCode: stop.atcoCode,
+            commonName: stop.commonName,
+            bearing: stop.bearing,
+            disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+            disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+            disruptionNoEndDateTime: stop.disruptionNoEndDateTime
+          }
+        }))
+        return stopsDisruptions
+      }
+      return [...serviceDisruptions, ...stopsDisruptions]
     }).filter(val => val !== undefined)
   }
 
