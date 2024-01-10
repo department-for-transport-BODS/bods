@@ -41,7 +41,7 @@ const disruptionReasonByIcon = {
   eventIcon: ["specialEvent"],
   industrialActionIcon: ["industrialAction"],
   questionMarkIcon: ["unknown"],
-  roadworksIcon: ["constructionWork, maintenanceWork", "roadClosed", "roadworks"],
+  roadworksIcon: ["constructionWork", "maintenanceWork", "roadClosed", "roadworks"],
   trafficIcon: ["accident", "breakdown", "congestion", "incident", "overcrowded"],
   weatherIcon: ["flooding", "fog", "heavyRain", "heavySnowFall", "highTemperatures", "ice"]
 }
@@ -134,8 +134,8 @@ const initOrgMap = (apiRoot, orgId) => {
             geometry: {
               type: "Point",
               coordinates: [
-                service.coordinates.longitude ?? -1.5439765,
-                service.coordinates.latitude ?? 53.7949385,
+                service.coordinates.longitude,
+                service.coordinates.latitude,
               ],
             },
             properties: {
@@ -204,7 +204,6 @@ const initOrgMap = (apiRoot, orgId) => {
           "type": "FeatureCollection",
           "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.crossIcon.includes(disruption.properties.disruptionReason))
         }
-
       });
 
       map.addLayer({
@@ -307,6 +306,26 @@ const initOrgMap = (apiRoot, orgId) => {
         }
       });
 
+      map.addSource('roadworks-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.roadworksIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      console.log(formattedDisruptions.filter((disruption) => disruptionReasonByIcon.roadworksIcon.includes(disruption.properties.disruptionReason)))
+
+      map.addLayer({
+        id: "roadworks-icon-disruptions",
+        type: "symbol",
+        source: "roadworks-icon-disruptions",
+        layout: {
+          'icon-image': 'roadworks',
+          'icon-size': 0.25
+        }
+      });
+
       map.addSource("traffic-icon-disruptions", {
         type: "geojson",
         data: {
@@ -344,8 +363,6 @@ const initOrgMap = (apiRoot, orgId) => {
       });
     })
   });
-
-
 
   map.on("load", function () {
     const popup = new mapboxgl.Popup({
