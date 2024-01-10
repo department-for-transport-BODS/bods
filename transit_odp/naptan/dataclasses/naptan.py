@@ -35,8 +35,6 @@ class FlexibleLocation(BaseModel):
 
 
 class FlexibleZone(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
 
     location: list[FlexibleLocation]
 
@@ -54,8 +52,6 @@ class FlexibleZone(BaseModel):
 
 
 class Bus(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
 
     bus_stop_type: str
     flexible_zone: Optional[FlexibleZone]
