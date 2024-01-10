@@ -171,7 +171,7 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
             disruptionId: disruption.disruptionId,
             atcoCode: stop.atcoCode,
             commonName: stop.commonName,
-            bearing: stop.bearing,
+            bearing: stop.bearing ?? "N/A",
             disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
             disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
             disruptionNoEndDateTime: stop.disruptionNoEndDateTime
@@ -195,7 +195,7 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
     const bounds = new mapboxgl.LngLatBounds();
 
     formattedDisruptions.forEach((feature) => {
-        bounds.extend(feature.geometry.coordinates);
+      bounds.extend(feature.geometry.coordinates);
     });
 
     map.fitBounds(bounds, {padding: 20});
@@ -378,49 +378,54 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
       closeOnMove: true,
     });
 
-    const createStopsPopUp = (e) => {
-      const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
-      const name = e.features[0].properties.commonName;
-      const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
-      const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
-      const bearing = `Bearing: ${e.features[0].properties.bearing}`
-      const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
-      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p><a href=${disruptionLink}>See more</a></div>`
+    if(!disruptionId) {
+      const createStopsPopUp = (e) => {
+        const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
+        const name = e.features[0].properties.commonName;
+        const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
+        const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
+        const bearing = `Bearing: ${e.features[0].properties.bearing}`
+        const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
+        const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p><a href=${disruptionLink}>See more</a></div>`
 
-      popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
-    }
+        popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
+      }
 
-    const createServicesPopUp = (e) => {
-      const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
-      const name = e.features[0].properties.lineDisplayName;
-      const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
-      const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
-      const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
-      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p><a href=${disruptionLink}>See more</a></div>`
+      const createServicesPopUp = (e) => {
+        const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
+        const name = e.features[0].properties.lineDisplayName;
+        const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
+        const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
+        const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
+        const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p><a href=${disruptionLink}>See more</a></div>`
 
-      popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
-    }
+        popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
+      }
 
-    iconDisruptions.forEach((icon) => {
-      map.on("mousemove", icon, () => {
-        map.getCanvas().style.cursor = "pointer";
+
+      iconDisruptions.forEach((icon) => {
+
+        map.on("mousemove", icon, () => {
+          map.getCanvas().style.cursor = "pointer";
+        })
+
+
+        map.on("mouseleave", icon, () => {
+          map.getCanvas().style.cursor = "";
+        })
+
+        map.on("click", icon, (e) => {
+          if (e.features[0].properties.consequenceType === "stops") {
+            createStopsPopUp(e)
+            return;
+          }
+          if (e.features[0].properties.consequenceType === "services") {
+            createServicesPopUp(e)
+            return;
+          } else return;
+        });
       })
-
-      map.on("mouseleave", icon, () => {
-        map.getCanvas().style.cursor = "";
-      })
-
-      map.on("click", icon, (e) => {
-        if(e.features[0].properties.consequenceType === "stops"){
-          createStopsPopUp(e)
-          return;
-        }
-        if(e.features[0].properties.consequenceType === "services"){
-          createServicesPopUp(e)
-          return;
-        } else return;
-      });
-    })
+    }
   })
 
 };
