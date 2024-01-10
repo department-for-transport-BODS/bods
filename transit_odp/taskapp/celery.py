@@ -173,15 +173,15 @@ class CeleryAppConfig(AppConfig):
                 "schedule": 60.0,
             },
             "task_avl_validation_all_feeds": {
-                "task" : AVL_TASKS + "task_run_avl_validations",
+                "task": AVL_TASKS + "task_run_avl_validations",
                 "schedule": crontab(minute=0, hour=18),
             },
             "celery.backend_cleanup": {
-                "task" : "celery.backend_cleanup",
+                "task": "celery.backend_cleanup",
                 "schedule": crontab(minute=0, hour=0),
             },
             "daily_post_publishing_checks_report_rt": {
-                "task" : AVL_TASKS + "task_daily_post_publishing_checks_all_feeds",
+                "task": AVL_TASKS + "task_daily_post_publishing_checks_all_feeds",
                 "schedule": crontab(minute=0, hour=18),
-            }
+            },
         }
