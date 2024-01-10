@@ -2084,12 +2084,12 @@ files = [
 
 [[package]]
 name = "mocket"
-version = "3.12.0"
+version = "3.12.2"
 description = "Socket Mock Framework - for all kinds of socket animals, web-clients included - with gevent/asyncio/SSL support"
 optional = false
 python-versions = ">=3.5"
 files = [
-    {file = "mocket-3.12.0.tar.gz", hash = "sha256:6ebbc15b04d64f617fbac54146bef0cfd2f491cb785f515d765e26bb92d410d0"},
+    {file = "mocket-3.12.2.tar.gz", hash = "sha256:04df52e7f9a4bbe1d3d6f825ca86e01d93d6b18d32bdb7d07e931150aae72504"},
 ]
 
 [package.dependencies]
@@ -3803,4 +3803,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "735ed4e7cee23b1690fac5e0a3898bc90315693c12d46450f7d874bbf34ae9db"
+content-hash = "700854bff15ba3bec9736084fb9d91cd6715589e3f89d100bdf0e3b173766a9d"
