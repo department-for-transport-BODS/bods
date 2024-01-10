@@ -4,7 +4,7 @@ import factory
 import pytest
 from django_hosts import reverse
 from freezegun import freeze_time
-from waffle import flag_is_active
+from waffle.testutils import override_flag
 
 from config.hosts import PUBLISH_HOST
 from transit_odp.avl.factories import PostPublishingCheckReportFactory
@@ -33,10 +33,12 @@ from transit_odp.users.constants import OrgAdminType
 from transit_odp.users.factories import InvitationFactory, OrgAdminFactory
 
 pytestmark = pytest.mark.django_db
-is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+is_fares_validator_active = True
 
 
 @freeze_time("25-12-2021")
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_df_organisations():
     """
     GIVEN: An Organisation has published various datasets that have services
@@ -44,7 +46,6 @@ def test_df_organisations():
     WHEN: We generate the organisation_data_catalogue.csv
     THEN: The data in the csv should reflect this
     """
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     registered_service_count = 3
     unregistered_service_count = 2
     valid_operating_service_count = 3
@@ -213,6 +214,8 @@ def test_df_organisations():
         assert row["Number of Fare Products"] == no_of_fares_products
 
 
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_df_organisations_overall_matching_score_archived_report_url():
     registered_service_count = 3
     unregistered_service_count = 2
@@ -398,27 +401,27 @@ def test_df_organisations_overall_matching_score_archived_report_url():
     # Test for when matching score is greater than or equal to
     # 0% for different organisations,
     # therefore there should be a matching report URL for each org.
-    if is_fares_validator_active:
-        assert row["% Operator overall AVL to Timetables matching score"] == 50.0
-        assert row["Archived matching reports URL"] == reverse(
-            "ppc-archive",
-            args=(organisation.id,),
-            host=PUBLISH_HOST,
-        )
 
-        assert row2["% Operator overall AVL to Timetables matching score"] == 100.0
-        assert row2["Archived matching reports URL"] == reverse(
-            "ppc-archive",
-            args=(organisation2.id,),
-            host=PUBLISH_HOST,
-        )
+    assert row["% Operator overall AVL to Timetables matching score"] == 50.0
+    assert row["Archived matching reports URL"] == reverse(
+        "ppc-archive",
+        args=(organisation.id,),
+        host=PUBLISH_HOST,
+    )
 
-        assert row3["% Operator overall AVL to Timetables matching score"] == 0.0
-        assert row3["Archived matching reports URL"] == reverse(
-            "ppc-archive",
-            args=(organisation3.id,),
-            host=PUBLISH_HOST,
-        )
+    assert row2["% Operator overall AVL to Timetables matching score"] == 100.0
+    assert row2["Archived matching reports URL"] == reverse(
+        "ppc-archive",
+        args=(organisation2.id,),
+        host=PUBLISH_HOST,
+    )
+
+    assert row3["% Operator overall AVL to Timetables matching score"] == 0.0
+    assert row3["Archived matching reports URL"] == reverse(
+        "ppc-archive",
+        args=(organisation3.id,),
+        host=PUBLISH_HOST,
+    )
 
 
 @pytest.mark.skip
@@ -457,6 +460,8 @@ def test_attempt_performance_test():
             FaresMetadataFactory(revision=fares_revision)
 
 
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_df_non_otc_data():
     """
     GIVEN: An organisation doesnt have an licence in OTC
@@ -614,7 +619,4 @@ def test_number_of_organisations():
     )
 
     df = _get_organisation_catalogue_dataframe()
-    if not is_fares_validator_active:
-        assert len(df) == 5
-    else:
-        assert len(df) == 6
+    assert len(df) == 6

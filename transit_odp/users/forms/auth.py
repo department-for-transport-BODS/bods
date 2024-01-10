@@ -9,8 +9,12 @@ from allauth.account.utils import (
 )
 from allauth.utils import build_absolute_uri
 from crispy_forms.layout import HTML, ButtonHolder, Layout
-from crispy_forms_govuk.forms import GOVUKFormMixin
-from crispy_forms_govuk.layout import ButtonSubmit, CheckboxField, LinkButton
+from transit_odp.crispy_forms_govuk.forms import GOVUKFormMixin
+from transit_odp.crispy_forms_govuk.layout import (
+    ButtonSubmit,
+    CheckboxField,
+    LinkButton,
+)
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -486,7 +490,6 @@ class ResetPasswordForm(GOVUKFormMixin, allauth.account.forms.ResetPasswordForm)
         token_generator = kwargs.get("token_generator", default_token_generator)
 
         for user in self.users:
-
             temp_key = token_generator.make_token(user)
             path = reverse(
                 "account_reset_password_from_key",

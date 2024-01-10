@@ -60,11 +60,13 @@ class DatasetType(int, ChoiceEnum):
     TIMETABLE = 1
     AVL = 2
     FARES = 3
+    DISRUPTIONS = 4
 
 
 TimetableType = DatasetType.TIMETABLE.value
 AVLType = DatasetType.AVL.value
 FaresType = DatasetType.FARES.value
+DisruptionsType = DatasetType.DISRUPTIONS.value
 
 NO_ACTIVITY = "No vehicle activity"
 
@@ -72,12 +74,14 @@ DATASET_TYPE_NAMESPACE_MAP = {
     DatasetType.TIMETABLE: "",
     DatasetType.AVL: "avl",
     DatasetType.FARES: "fares",
+    DatasetType.DISRUPTIONS: "disruptions",
 }
 
 DATASET_TYPE_PRETTY_MAP = {
     DatasetType.TIMETABLE: "Timetables",
     DatasetType.AVL: "Automatic Vehicle Locations",
     DatasetType.FARES: "Fares",
+    DatasetType.DISRUPTIONS: "Disruptions",
 }
 
 PSV_LICENCE_ERROR_HINT_MESSAGE = (

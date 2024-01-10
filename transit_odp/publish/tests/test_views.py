@@ -1,4 +1,5 @@
 import csv
+from pathlib import Path
 import io
 import math
 import zipfile
@@ -59,7 +60,14 @@ from transit_odp.users.factories import (
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
 
-ETL_TEST_DATA_DIR = "transit_odp/pipelines/tests/test_dataset_etl/data/"
+filename = "ea_20-1A-A-y08-1.xml"
+ETL_TEST_DATA_DIR = (
+    Path(__file__).parent.parent.parent
+    / "pipelines"
+    / "tests"
+    / "test_dataset_etl"
+    / "data"
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -425,7 +433,7 @@ class UpdateFeedViewTest(TestCase):
         )
 
         # Create a Feed
-        file_path = f"{ETL_TEST_DATA_DIR}ea_20-1A-A-y08-1.xml"
+        file_path = f"{ETL_TEST_DATA_DIR}/{filename}"
         self.dataset = DatasetFactory.create(
             organisation=self.user.organisation,
             live_revision__upload_file__from_path=file_path,
@@ -541,7 +549,7 @@ class UpdateFeedViewTest(TestCase):
         self.go_to_step(FeedUpdateWizard.UPLOAD_STEP)
 
         # Test
-        with open(f"{ETL_TEST_DATA_DIR}invalid_extension.txt", "r") as fp:
+        with open(f"{ETL_TEST_DATA_DIR}/invalid_extension.txt", "r") as fp:
             response = self.client.post(
                 self.WIZARD_URL,
                 {
@@ -579,7 +587,7 @@ class UpdateFeedViewTest(TestCase):
 
         # Test
         # Re-uploading the same file, this should be irrelevant
-        with open(f"{ETL_TEST_DATA_DIR}ea_20-1A-A-y08-1.xml", "r") as fp:
+        with open(f"{ETL_TEST_DATA_DIR}/ea_20-1A-A-y08-1.xml", "r") as fp:
             response = self.client.post(
                 self.WIZARD_URL,
                 {
@@ -1043,7 +1051,7 @@ class TestPublishView:
             modification_datetime=time_now - timedelta(weeks=100),
         )
 
-        # Set up a TXCFileAttributes that will be 'Stale - End Date Passed'
+        # Set up a TXCFileAttributes that will be 'Stale - 42 day look ahead'
         TXCFileAttributesFactory(
             revision=live_revision,
             service_code=all_service_codes[4],
@@ -2027,7 +2035,7 @@ def test_require_attention_stale_end_date(publish_client):
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
 
-    # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
     TXCFileAttributesFactory(
         revision=live_revision,
         service_code=all_service_codes[3],
@@ -2153,7 +2161,7 @@ def test_require_attention_all_variations(publish_client):
         modification_datetime=now() - timedelta(weeks=100),
     )
 
-    # Setup a TXCFileAttributes that will be 'Stale - End Date Passed'
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
     TXCFileAttributesFactory(
         revision=live_revision,
         service_code=all_service_codes[4],

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory
 from django.utils import timezone
@@ -67,6 +68,9 @@ class TestAcceptInvite:
         request.site = mocked_site
 
         request.host = host
+        request.META[
+            "HTTP_HOST"
+        ] = f"{settings.PUBLISH_SUBDOMAIN}.{settings.PARENT_HOST}"
 
         invitation = InvitationFactory.create(accepted=True)
 
@@ -109,6 +113,9 @@ class TestAcceptInvite:
         request.site = mocked_site
 
         request.host = host
+        request.META[
+            "HTTP_HOST"
+        ] = f"{settings.PUBLISH_SUBDOMAIN}.{settings.PARENT_HOST}"
 
         invitation = InvitationFactory.create(
             accepted=False,
@@ -240,7 +247,6 @@ class TestSendInvite:
         )
 
     def test_existing_user_error(self, client_factory):
-
         client = client_factory(host=self.host)
         admin = UserFactory.create(account_type=AccountType.org_admin.value)
         our_hero = UserFactory.create(account_type=AccountType.org_admin.value)

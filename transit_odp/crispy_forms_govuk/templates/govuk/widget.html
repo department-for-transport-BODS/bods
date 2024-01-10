@@ -1,0 +1,11 @@
+{% load crispy_forms_field %}
+{% load crispy_forms_govuk_tags %}
+
+{% if field.help_text %}
+    {# Add aria-describedby to widget's attrs if help_text is provided #}
+    {% concat_str field.auto_id "-hint" as hint_id %}
+  <!--debug:{{ hint_id }}-->
+    {% crispy_field field "aria-describedby" hint_id %}
+{% else %}
+    {% crispy_field field %}
+{% endif %}

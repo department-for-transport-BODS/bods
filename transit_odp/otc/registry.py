@@ -124,7 +124,7 @@ class Registry:
                     registration.registration_status
                     in RegistrationStatusEnum.to_delete()
                 ):
-                    self.update_to_delete_variations(registration)
+                    self.update(registration)
 
         for registration_number in look_up_again:
             older_variations = self.get_latest_variations_by_id(registration_number)
@@ -209,7 +209,8 @@ class Registry:
 
     def update_to_delete_variations(self, variation: Registration) -> None:
         if variation.effective_date:
-            self.update(variation)
+            if variation.effective_date > date.today():
+                self.update(variation)
 
     def update(self, registration: Registration) -> None:
         """

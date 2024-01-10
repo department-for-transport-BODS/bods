@@ -60,7 +60,7 @@ class OrganisationTable(GovUkTable):
                 "class": "govuk-checkboxes__input",
                 "id": "select-all",
             },
-            "td": {"class": "govuk-checkboxes--small"},
+            "td": {"class": "govuk-checkboxes--small govuk-!-padding-0"},
             "th": {"class": "govuk-table__header govuk-checkboxes--small"},
         },
     )

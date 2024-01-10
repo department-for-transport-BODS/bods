@@ -31,6 +31,8 @@
                 {% include 'publish/revision_review/loading.html' %}
             {% elif object.error_code == "SCHEMA_ERROR"%}
                 {% include 'publish/revision_review/schema_error.html' %}
+            {% elif object.error_code == "POST_SCHEMA_ERROR" %}
+                {% include 'publish/revision_review/post_schema_error.html' %}
             {% elif pti_deadline_passed and has_pti_observations %}
                 {% include 'publish/revision_review/pti_hard_fail.html' %}
             {% elif error %}

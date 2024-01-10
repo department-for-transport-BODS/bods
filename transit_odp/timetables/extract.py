@@ -24,6 +24,7 @@ from transit_odp.timetables.dataframes import (
     provisional_stops_to_dataframe,
     services_to_dataframe,
     stop_point_refs_to_dataframe,
+    booking_arrangements_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -86,6 +87,11 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
 
+        # Extract BookingArrangements data
+        logger.debug("Extracting booking_arrangements")
+        booking_arrangements = self.extract_booking_arrangements()
+        logger.debug("Finished extracting booking_arrangements")
+
         creation_datetime = extract_timestamp(self.doc.get_creation_date_time())
         modification_datetime = extract_timestamp(self.doc.get_modification_date_time())
 
@@ -125,6 +131,7 @@ class TransXChangeExtractor:
             line_names=line_names,
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,
+            booking_arrangements=booking_arrangements,
         )
 
     def construct_geometry(self, point: Point):
@@ -166,31 +173,42 @@ class TransXChangeExtractor:
     def extract_journey_patterns(self):
         services = self.doc.get_services()
         journey_patterns = journey_patterns_to_dataframe(services)
+        jp_to_jps = pd.DataFrame()
+        if not journey_patterns.empty:
+            # Create a file_id column and include as part of the index
+            journey_patterns["file_id"] = self.file_id
+            journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
 
-        # Create a file_id column and include as part of the index
-        journey_patterns["file_id"] = self.file_id
-        journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
-
-        # Create association table between JourneyPattern and JourneyPatternSection
-        jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
-        journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
+            # Create association table between JourneyPattern and JourneyPatternSection
+            jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
+            journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
         return journey_patterns, jp_to_jps
 
     def extract_journey_pattern_sections(self):
-        sections = self.doc.get_journey_pattern_sections()
+        sections = self.doc.get_journey_pattern_sections(allow_none=True)
         timing_links = journey_pattern_sections_to_dataframe(sections)
-        timing_links["file_id"] = self.file_id
-        timing_links.set_index(["file_id", "jp_timing_link_id"], inplace=True)
 
-        # Aggregate jp_sections
-        jp_sections = (
-            timing_links.reset_index()[["file_id", "jp_section_id"]]
-            .drop_duplicates("jp_section_id")
-            .set_index(["file_id", "jp_section_id"])
-        )
+        jp_sections = pd.DataFrame()
+        if not timing_links.empty:
+            timing_links["file_id"] = self.file_id
+            timing_links.set_index(["file_id", "jp_timing_link_id"], inplace=True)
+
+            # Aggregate jp_sections
+            jp_sections = (
+                timing_links.reset_index()[["file_id", "jp_section_id"]]
+                .drop_duplicates("jp_section_id")
+                .set_index(["file_id", "jp_section_id"])
+            )
 
         return jp_sections, timing_links
+
+    def extract_booking_arrangements(self):
+        services = self.doc.get_services()
+        df = booking_arrangements_to_dataframe(services)
+        df["file_id"] = self.file_id
+        df.set_index(["file_id"], inplace=True)
+        return df
 
 
 class TransXChangeZipExtractor:
@@ -263,5 +281,8 @@ class TransXChangeZipExtractor:
             timing_point_count=sum(e.timing_point_count for e in extracts),
             stop_count=len(
                 concat_and_dedupe((extract.stop_points for extract in extracts))
+            ),
+            booking_arrangements=pd.concat(
+                (extract.booking_arrangements for extract in extracts)
             ),
         )

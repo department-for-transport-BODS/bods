@@ -55,13 +55,13 @@ class Identifier(BaseModel):
         vehicle_ref: The VehicleRef value.
     """
 
-    item_identifier: Optional[str]
-    line_ref: Optional[str]
+    item_identifier: Optional[str] = None
+    line_ref: Optional[str] = None
     name: str
-    operator_ref: Optional[str]
-    recorded_at_time: Optional[datetime]
-    vehicle_journey_ref: Optional[str]
-    vehicle_ref: Optional[str]
+    operator_ref: Optional[str] = None
+    recorded_at_time: Optional[datetime] = None
+    vehicle_journey_ref: Optional[str] = None
+    vehicle_ref: Optional[str] = None
 
 
 class Error(BaseModel):

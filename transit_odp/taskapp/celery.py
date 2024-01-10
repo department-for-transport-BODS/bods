@@ -1,16 +1,16 @@
 import os
 from typing import Final
 from ddtrace import patch_all
-
-patch_all()
-
 from celery import Celery
 from celery.schedules import crontab
 from django.apps import AppConfig, apps
 from django.conf import settings
+import environ
 
+patch_all()
+env = environ.Env()
 
-if os.environ.get("DD_PROFILING_ENABLED") == "true":
+if env.bool("DD_PROFILING_ENABLED", False):
     import ddtrace.profiling.auto
 
 if not settings.configured:

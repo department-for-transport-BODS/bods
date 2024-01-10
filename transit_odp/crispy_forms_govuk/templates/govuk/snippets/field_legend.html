@@ -1,0 +1,12 @@
+{% if field.label %}
+{# The default is to use the xl class, legend_classes can be set using a custom LayoutObject to wrap the field #}
+  <legend class="govuk-fieldset__legend {% if legend_classes %}{{ legend_classes }}{% else %} govuk-fieldset__legend--xl{% endif %}">
+      {# This follows the recommended Question Page pattern#}
+    {% if field.name == page_heading_field %}<h1 class="govuk-fieldset__heading">{% endif %}
+      {{ field.label|safe }}
+      {% if field.name == page_heading_field %}</h1>{% endif %}
+  </legend>
+{% endif %}
+
+<!--DEBUG: page_heading_field={{ page_heading_field }}-->
+<!--DEBUG:  field.name={{ field.name }}-->

@@ -1,0 +1,51 @@
+{%  load crispy_forms_field %}
+
+{% if form.errors or form.non_field_errors %}
+  <div class="govuk-error-summary"
+       aria-labelledby="error-summary-title"
+       role="alert"
+       tabindex="-1"
+       data-module="govuk-error-summary">
+
+    {% if form_error_title %}
+      <h2 class="govuk-error-summary__title" id="error-summary-title">
+        {{ form_error_title }}
+      </h2>
+    {% endif %}
+
+    <div class="govuk-error-summary__body">
+      <ul class="govuk-list govuk-error-summary__list">
+
+        {# Non-field Errors #}
+
+        {# Note these are errors relate to the form as a whole #}
+        {% for error in form.non_field_errors %}
+          <li class="govuk-error-message">
+            {{ error }}
+          </li>
+        {% endfor %}
+
+        {# Error Summary #}
+
+{#        {% for field in form %}#}
+{#          {% for error in field.errors %}#}
+{#            <li>#}
+{#              <a href="#{{ field.auto_id }}"> {{ error }}</a>#}
+{#            </li>#}
+{#          {% endfor %}#}
+{#        {% endfor %}#}
+
+        {% for field in form %}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <li>
+                <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}"> {{ error }}</a>
+              </li>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+      </ul>
+    </div>
+  </div>
+{% endif %}

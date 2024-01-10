@@ -1,14 +1,14 @@
 Hello,
 
-The following data set has failed to upload on the Bus Open Data Service due to validation errors{% if dataset_type == 1 %} supplied in the Validation report{% endif %}.
+The following data set has failed to upload on the Bus Open Data Service due to validation errors{% if dataset_type == 1 %} supplied in the validation report{% endif %}.
 
 Operator: {{ organisation }}
-Data set: {{ feed_name }}
-Data set ID: {{ feed_id }}
+Data set/ feed: {{ feed_name }}
+Data set/ feed ID: {{ feed_id }}
 Short Description: {{ feed_short_description }}
 Published: {{ published_time }}
 Comments: {{ comments }}
-Link to data set: {{ link }}
+Link to data set/ feed: {{ link }}
 {% if dataset_type == 1 %}
 The validation report is available here: {{ report_link }}
 {% endif %}

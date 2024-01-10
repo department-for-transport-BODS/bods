@@ -62,7 +62,8 @@ class ServicePatternAPITests(APITestCase):
             self.client.login(username=self.developer.username, password="password")
         )
         #  Get expected data
-        objs = ServicePattern.objects.all().add_service_name()
+        objs = ServicePattern.objects.all().order_by("id").add_service_name()
+
         serializer = ServicePatternSerializer(objs, many=True)
         expected = serializer.data
 

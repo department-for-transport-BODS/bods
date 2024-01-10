@@ -23,7 +23,9 @@ def create_stop_sequence(df: pd.DataFrame):
     return stops_atcos
 
 
-def transform_service_pattern_stops(service_pattern_to_service_links, stop_points):
+def transform_service_pattern_stops(
+    service_pattern_to_service_links: pd.DataFrame, stop_points
+):
     service_pattern_stops = (
         (
             service_pattern_to_service_links.reset_index()
@@ -31,7 +33,7 @@ def transform_service_pattern_stops(service_pattern_to_service_links, stop_point
             .apply(create_stop_sequence)
         )
         .reset_index()
-        .set_index("file_id", "service_pattern_id", "order", verify_integrity=True)
+        .set_index(["file_id"], append=True, verify_integrity=True)
     )
 
     # Merge with stops to have sequence of naptan_id, geometry, etc.
@@ -174,6 +176,9 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
         .drop_duplicates(["file_id", "route_hash"])
         .set_index(["file_id", "route_hash"])
     )
+
+    if routes.empty:
+        return pd.DataFrame()
 
     return routes
 

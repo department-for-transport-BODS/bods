@@ -1,0 +1,7 @@
+{% if form_show_errors %}
+  {% include "govuk/errors.html" %}
+{% endif %}
+
+{% for field in form %}
+  {% include field_template|default:"govuk/field.html" %}
+{% endfor %}
