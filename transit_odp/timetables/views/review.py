@@ -17,6 +17,7 @@ from transit_odp.timetables.views.constants import (
     ERROR_CODE_LOOKUP,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
+from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
 
 
 class BaseTimetableReviewView(ReviewBaseView):
@@ -102,7 +103,13 @@ class PublishRevisionView(BaseTimetableReviewView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"is_update": False})
+        revision = self.object
+        context.update(
+            {
+                "is_update": False,
+                "distinct_attributes": get_distinct_dataset_txc_attributes(revision.id),
+            }
+        )
         return context
 
     def get_success_url(self):

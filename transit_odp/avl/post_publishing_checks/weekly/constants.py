@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 DailyReportItem = list[dict[str, Any]]
 
@@ -19,9 +19,7 @@ class DailyReport(BaseModel):
     destination_ref: DailyReportItem = Field(default=[], alias="DestinationRef")
     origin_ref: DailyReportItem = Field(default=[], alias="OriginRef")
     block_ref: DailyReportItem = Field(default=[], alias="BlockRef")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class WeeklyPPCSummaryFiles(str, Enum):
@@ -46,7 +44,7 @@ Bus Open Data Service AVL to Timetables data matching
 ________________________________________
 
 AVL to Timetable data matching
-The AVL to Timetable matching zip contains a series of CSVs which would gives a machine-readable results of the sampled AVL and Timetable data that resides in BODS currently.
+The AVL to Timetable matching zip contains a series of CSVs which give machine-readable results of the sampled AVL and Timetable data that currently reside in BODS.
 
 Note that the matching report only covers the data from primary data sources on BODS which is timetables data in TransXChange format, bus location data in SIRI-VM format.
 Fares data in NeTEX are not included in the AVL to Timetable matching report.

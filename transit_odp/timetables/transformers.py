@@ -38,6 +38,7 @@ class TransXChangeTransformer:
         timing_links = self.extracted_data.timing_links.copy()
         stop_points = self.extracted_data.stop_points.copy()
         provisional_stops = self.extracted_data.provisional_stops.copy()
+        booking_arrangements = self.extracted_data.booking_arrangements.copy()
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -46,30 +47,48 @@ class TransXChangeTransformer:
         most_common_localities = get_most_common_localities(stop_points)
 
         # Create missing route information
-        route_links = create_route_links(timing_links, stop_points)
-        create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
-        route_to_route_links = create_route_to_route_links(
-            journey_patterns, jp_to_jps, timing_links
-        )
+        route_links = pd.DataFrame()
+        if not timing_links.empty:
+            route_links = create_route_links(timing_links, stop_points)
+
+        if (
+            not journey_patterns.empty
+            and not jp_to_jps.empty
+            and not timing_links.empty
+        ):
+            create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
+
+        route_to_route_links = pd.DataFrame()
+        if not journey_patterns.empty:
+            route_to_route_links = create_route_to_route_links(
+                journey_patterns, jp_to_jps, timing_links
+            )
 
         line_names = transform_line_names(self.extracted_data.line_names)
 
         # Transform route information into service patterns
-        service_links = transform_service_links(route_links)
-        service_patterns = transform_service_patterns(journey_patterns)
-        service_pattern_to_service_links = (
-            transform_service_pattern_to_service_links(  # noqa: E501
-                service_patterns, route_to_route_links, route_links
-            )
-        )
+        service_links = pd.DataFrame()
+        if not route_links.empty:
+            service_links = transform_service_links(route_links)
 
-        # aggregate stop_sequence and geometry
-        service_pattern_stops = transform_service_pattern_stops(
-            service_pattern_to_service_links, stop_points
-        )
-        service_patterns = transform_stop_sequence(
-            service_pattern_stops, service_patterns
-        )
+        service_patterns = pd.DataFrame()
+        service_pattern_to_service_links = pd.DataFrame()
+        service_pattern_stops = pd.DataFrame()
+        if not journey_patterns.empty:
+            service_patterns = transform_service_patterns(journey_patterns)
+            service_pattern_to_service_links = (
+                transform_service_pattern_to_service_links(  # noqa: E501
+                    service_patterns, route_to_route_links, route_links
+                )
+            )
+
+            # aggregate stop_sequence and geometry
+            service_pattern_stops = transform_service_pattern_stops(
+                service_pattern_to_service_links, stop_points
+            )
+            service_patterns = transform_stop_sequence(
+                service_pattern_stops, service_patterns
+            )
 
         return TransformedData(
             services=services,
@@ -78,6 +97,7 @@ class TransXChangeTransformer:
             service_links=service_links,
             stop_points=stop_points,
             service_pattern_stops=service_pattern_stops,
+            booking_arrangements=booking_arrangements,
             # carry forward metadata
             schema_version=self.extracted_data.schema_version,
             creation_datetime=self.extracted_data.creation_datetime,

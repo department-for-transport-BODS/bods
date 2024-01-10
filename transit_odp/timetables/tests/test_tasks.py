@@ -20,6 +20,7 @@ from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.tasks import (
     task_dataset_download,
+    task_post_schema_check,
     task_pti_validation,
     task_scan_timetables,
     task_timetable_file_check,
@@ -197,6 +198,34 @@ def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
 
     task.refresh_from_db()
     assert task.error_code == task.SCHEMA_ERROR
+
+
+def test_run_task_post_schema_check_exception(mocker, tmp_path):
+    """
+    Given a zip file with an xml containing PII,
+    a POST_SCHEMA_ERROR PipelineException is raised.
+    """
+
+    file1 = tmp_path / "file1.xml"
+    testzip = tmp_path / "test_pii.zip"
+    create_text_file(
+        file1,
+        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml">',
+    )
+    create_zip_file(testzip, [file1])
+    with open(testzip, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="test_pii.zip"))
+
+    zip_validator = TASK_MODULE + ".PostSchemaValidator"
+    mocker.patch(
+        zip_validator,
+        side_effect=Exception("Exception thrown"),
+    )
+    with pytest.raises(PipelineException):
+        task_post_schema_check(task.revision.id, task.id)
+
+    task.refresh_from_db()
+    assert task.error_code == task.POST_SCHEMA_ERROR
 
 
 def test_antivirus_scan_exception(mocker, tmp_path):

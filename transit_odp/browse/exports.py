@@ -1,15 +1,25 @@
 import io
 import logging
+import textwrap
 import zipfile
 from collections import OrderedDict, namedtuple
 from typing import BinaryIO
 
+from requests import RequestException
 from waffle import flag_is_active
 
 from transit_odp.avl.csv.catalogue import AVL_COLUMN_MAP, get_avl_data_catalogue_csv
-from transit_odp.browse.constants import INTRO, INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE
+from transit_odp.browse.constants import (
+    GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP,
+    INTRO,
+    INTRO_WITH_FARES_FEATURE_FLAG_ACTIVE,
+)
 from transit_odp.common.collections import Column
 from transit_odp.common.csv import CSVBuilder, CSVColumn
+from transit_odp.disruptions.csv.catalogue import (
+    DISRUPTIONS_COLUMN_MAP,
+    get_disruptions_data_catalogue_csv,
+)
 from transit_odp.fares_validator.csv import (
     FARES_DATA_COLUMN_MAP,
     get_fares_data_catalogue_csv,
@@ -41,6 +51,7 @@ LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
 OTC_EMPTY_WARNING = "OTC Licence is not populated."
 FARES_FILENAME = "fares_data_catalogue.csv"
+DISRUPTIONS_FILENAME = "disruptions_data_catalogue.csv"
 
 OPERATOR_NOC_MAP = OrderedDict(
     {
@@ -105,9 +116,14 @@ def create_guidance_file_string() -> str:
         )
         result += [
             row_template.format(
-                field_name=field_name, definition=definition.replace("</br>", "\n")
+                field_name=field_name,
+                definition=textwrap.dedent(
+                    definition.replace("</br>", "\n")
+                    .replace("<pre>", "")
+                    .replace("</pre>", "")
+                ).strip(),
             )
-            for field_name, definition in TIMETABLE_COLUMN_MAP.values()
+            for field_name, definition in GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP.values()
         ]
 
         fares = "\nFares data catalogue:"
@@ -115,6 +131,15 @@ def create_guidance_file_string() -> str:
         result += [
             row_template.format(field_name=field_name, definition=definition)
             for field_name, definition in FARES_DATA_COLUMN_MAP.values()
+        ]
+
+        disruptions = "\nDisruptions data catalogue:"
+        result.append(
+            header_template.format(header=disruptions, field_header=field_header)
+        )
+        result += [
+            row_template.format(field_name=field_name, definition=definition)
+            for field_name, definition in DISRUPTIONS_COLUMN_MAP.values()
         ]
 
         organisations = "\nOrganisations data catalogue:"
@@ -217,6 +242,11 @@ def create_data_catalogue_file() -> BinaryIO:
         try:
             zin.writestr(LOCATION_FILENAME, get_avl_data_catalogue_csv())
         except EmptyDataFrame:
+            pass
+
+        try:
+            zin.writestr(DISRUPTIONS_FILENAME, get_disruptions_data_catalogue_csv())
+        except RequestException:
             pass
 
         if is_fares_validator_active:

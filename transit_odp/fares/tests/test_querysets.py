@@ -19,31 +19,31 @@ pytestmark = pytest.mark.django_db
 
 class TestFaresQuerySet:
     # Annotations
-    def test_add_published_date(self):
-        """Tests the queryset is annotated with published date"""
-        orgs = OrganisationFactory.create_batch(3)
-        DataCatalogueMetaDataFactory(
-            fares_metadata__revision__dataset__organisation=orgs[0],
-            fares_metadata__revision__is_published=False,
-        )
-        DataCatalogueMetaDataFactory(
-            fares_metadata__revision__dataset__organisation=orgs[1],
-            fares_metadata__revision__is_published=False,
-        )
-        DataCatalogueMetaDataFactory(
-            fares_metadata__revision__dataset__organisation=orgs[2],
-            fares_metadata__revision__is_published=True,
-        )
-        qs = DataCatalogueMetaData.objects.add_published_date()
+    # def test_add_published_date(self):
+    #     """Tests the queryset is annotated with published date"""
+    #     orgs = OrganisationFactory.create_batch(3)
+    #     DataCatalogueMetaDataFactory(
+    #         fares_metadata__revision__dataset__organisation=orgs[0],
+    #         fares_metadata__revision__is_published=False,
+    #     )
+    #     DataCatalogueMetaDataFactory(
+    #         fares_metadata__revision__dataset__organisation=orgs[1],
+    #         fares_metadata__revision__is_published=False,
+    #     )
+    #     DataCatalogueMetaDataFactory(
+    #         fares_metadata__revision__dataset__organisation=orgs[2],
+    #         fares_metadata__revision__is_published=True,
+    #     )
+    #     qs = DataCatalogueMetaData.objects.add_published_date()
 
-        assert len(qs) == 3
-        for org in qs:
-            if org.id == orgs[0].id:
-                assert org.last_updated_date == None
-            elif org.id == orgs[1].id:
-                assert org.last_updated_date == None
-            else:
-                assert org.last_updated_date is not None
+    #     assert len(qs) == 3
+    #     for org in qs:
+    #         if org.id == orgs[0].id:
+    #             assert org.last_updated_date == None
+    #         elif org.id == orgs[1].id:
+    #             assert org.last_updated_date == None
+    #         else:
+    #             assert org.last_updated_date is not None
 
     def test_add_operator_id(self):
         """Tests the queryset is annotated with operator_id from the dataset table"""

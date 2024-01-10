@@ -10,6 +10,8 @@ from ddt import data, ddt, unpack
 from django.contrib.gis.geos import Point
 from django.core.files import File
 from django.test import TestCase
+from unittest.mock import patch, MagicMock
+
 
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
@@ -18,15 +20,24 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
 )
+from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
 from transit_odp.pipelines.pipelines.dataset_etl.transform import Transform
+from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.timetables.extract import TransXChangeExtractor
-from transit_odp.transmodel.models import Service, ServiceLink, ServicePatternStop
+from transit_odp.timetables.loaders import TransXChangeDataLoader
+from transit_odp.transmodel.factories import ServiceFactory
+from transit_odp.transmodel.models import (
+    BookingArrangements,
+    Service,
+    ServiceLink,
+    ServicePatternStop,
+)
 from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 
 TZ = tz.gettz("Europe/London")
@@ -87,16 +98,16 @@ class ExtractBaseTestCase(TestCase):
                 xml_stoppointref, "x:StopPointRef"
             )
             common_name = xml_toolkit.get_child_text(xml_stoppointref, "x:CommonName")
-
-            stoppoint = StopPoint(
-                naptan_code=stoppoint_naptan,
-                atco_code=stoppoint_naptan,
-                common_name=common_name,
-                location=Point(0, 0),
-                locality=self.get_locality(locality_name),
-                admin_area=self.admin,
-            )
-            stoppoint.save()
+            if locality_name:
+                stoppoint = StopPoint(
+                    naptan_code=stoppoint_naptan,
+                    atco_code=stoppoint_naptan,
+                    common_name=common_name,
+                    location=Point(0, 0),
+                    locality=self.get_locality(locality_name),
+                    admin_area=self.admin,
+                )
+                stoppoint.save()
 
     # Get or create a locality by name
     def get_locality(self, name: str):
@@ -166,6 +177,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -173,6 +185,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -180,12 +193,14 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
-            list(extracted.services.columns), ["start_date", "end_date", "line_names"]
+            list(extracted.services.columns),
+            ["start_date", "end_date", "line_names", "service_type"],
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 
@@ -198,7 +213,11 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
             )
         )
         stop_points_expected.index.name = "atco_code"
-        self.assertTrue(check_frame_equal(extracted.stop_points, stop_points_expected))
+
+        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df2 = stop_points_expected.sort_values("atco_code").reset_index()
+
+        self.assertTrue(check_frame_equal(df1, df2))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertCountEqual(list(extracted.stop_points.columns), [])
@@ -289,6 +308,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -296,6 +316,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -303,12 +324,15 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index(["file_id", "service_code"])
+
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
-            list(extracted.services.columns), ["start_date", "end_date", "line_names"]
+            list(extracted.services.columns),
+            ["start_date", "end_date", "line_names", "service_type"],
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 
@@ -321,7 +345,11 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
             )
         )
         stop_points_expected.index.name = "atco_code"
-        self.assertTrue(check_frame_equal(extracted.stop_points, stop_points_expected))
+
+        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df2 = stop_points_expected.sort_values("atco_code").reset_index()
+
+        self.assertTrue(check_frame_equal(df1, df2))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertEqual(extracted.stop_points.shape, (11, 0))
         self.assertCountEqual(list(extracted.stop_points.columns), [])
@@ -412,6 +440,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -419,6 +448,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -426,12 +456,14 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": datetime(2018, 10, 9, tzinfo=TZ),
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(transformed.services, services_expected))
         self.assertCountEqual(
-            list(transformed.services.columns), ["start_date", "end_date", "line_names"]
+            list(transformed.services.columns),
+            ["start_date", "end_date", "line_names", "service_type"],
         )
         self.assertEqual(transformed.services.index.names, ["file_id", "service_code"])
 
@@ -554,6 +586,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": pd.Timestamp("2018-10-09 00:00:00"),
                     "end_date": pd.Timestamp("2019-04-13 00:00:00"),
                     "line_names": ["1"],
+                    "service_type": "standard",
                 },
                 {
                     "file_id": file_id,
@@ -561,6 +594,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "start_date": pd.Timestamp("2018-10-09 00:00:00"),
                     "end_date": pd.Timestamp("2019-04-13 00:00:00"),
                     "line_names": ["2", "2a"],
+                    "service_type": "standard",
                 },
             ]
         ).set_index("service_code")
@@ -572,7 +606,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         services = Service.objects.all()
         self.assertEqual(services.count(), 2)
         self.assertCountEqual(
-            list(actual.columns), ["id", "start_date", "end_date", "line_names"]
+            list(actual.columns),
+            ["id", "start_date", "end_date", "line_names", "service_type"],
         )
 
         expected = {
@@ -773,3 +808,337 @@ class ExtractUtilitiesTestCase(TestCase):
 
         # Assert
         self.assertTrue(check_frame_equal(actual, expected))
+
+
+@ddt
+class ETLBookingArrangements(ExtractBaseTestCase):
+    """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
+
+    test_file = "data/test_extract_booking_arrangements.xml"
+
+    def test_extract(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+
+        # test
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # assert
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index("file_id")
+
+        self.assertTrue(
+            check_frame_equal(
+                extracted.booking_arrangements, booking_arrangements_expected
+            )
+        )
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
+        )
+        self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
+
+    def test_transform(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        # assert services
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index("file_id")
+        self.assertTrue(
+            check_frame_equal(
+                transformed.booking_arrangements, booking_arrangements_expected
+            )
+        )
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
+        )
+
+    def test_load(self):
+
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        # test
+        result: ETLReport = self.feed_parser.load(transformed)
+
+        booking_arrangements = BookingArrangements.objects.all()
+        service = Service.objects.get(service_code="PF0000508:53")
+        service_id = None
+        if service:
+            service_id = service.id
+
+        self.assertEqual(2, result.line_count)
+        self.assertEqual(1, booking_arrangements.count())
+
+        for booking in booking_arrangements:
+            self.assertEqual(booking.service_id, service_id)
+
+    @patch("transit_odp.timetables.loaders.get_dataset_adapter_from_revision")
+    @patch("transit_odp.transmodel.models.BookingArrangements.objects.bulk_create")
+    @patch(
+        "transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes.Service.objects.get"
+    )
+    def test_load_for_same_services_multiple_files(
+        self, mock_service_get, mock_bulk_create, mock_get_dataset_adapter
+    ):
+        logger = MagicMock()
+        mock_get_dataset_adapter.return_value = MagicMock(info=logger.info)
+
+        services = pd.DataFrame(
+            [
+                {
+                    "file_id": 112,
+                    "service_code": "PF0000508:53",
+                    "start_date": datetime(2018, 10, 9, tzinfo=TZ),
+                    "end_date": EMPTY_TIMESTAMP,
+                    "line_names": ["1"],
+                    "service_type": "flexible",
+                    "id": 1,
+                },
+                {
+                    "file_id": 113,
+                    "service_code": "PF0000508:53",
+                    "start_date": datetime(2018, 10, 9, tzinfo=TZ),
+                    "end_date": EMPTY_TIMESTAMP,
+                    "line_names": ["1"],
+                    "service_type": "flexible",
+                    "id": 2,
+                },
+            ]
+        ).set_index(["file_id", "service_code"])
+
+        booking_arrangements = pd.DataFrame(
+            [
+                {
+                    "file_id": 112,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT",
+                },
+                {
+                    "file_id": 113,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open",
+                    "tel_national_number": "0345 234 3344",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT",
+                },
+            ]
+        )
+
+        service_patterns = pd.DataFrame()
+        service_pattern_to_service_links = pd.DataFrame()
+        service_links = pd.DataFrame()
+        stop_points = pd.DataFrame()
+        service_pattern_stops = pd.DataFrame()
+        schema_version = ""
+        creation_datetime = ""
+        modification_datetime = ""
+        import_datetime = ""
+        line_count = ""
+        line_names = ""
+        stop_count = ""
+        most_common_localities = ""
+        timing_point_count = ""
+
+        transformed = TransformedData(
+            services=services,
+            service_patterns=service_patterns,
+            service_pattern_to_service_links=service_pattern_to_service_links,
+            service_links=service_links,
+            stop_points=stop_points,
+            service_pattern_stops=service_pattern_stops,
+            booking_arrangements=booking_arrangements,
+            schema_version=schema_version,
+            creation_datetime=creation_datetime,
+            modification_datetime=modification_datetime,
+            import_datetime=import_datetime,
+            line_count=line_count,
+            line_names=line_names,
+            stop_count=stop_count,
+            most_common_localities=most_common_localities,
+            timing_point_count=timing_point_count,
+        )
+
+        service_cache = []
+        service_link_cache = []
+
+        revision = DatasetRevision(id=1)
+
+        mock_service_get.side_effect = [ServiceFactory(), ServiceFactory()]
+
+        mock_bulk_create.return_value = [MagicMock(id=1), MagicMock(id=2)]
+
+        data_loader = TransXChangeDataLoader(
+            transformed, service_cache, service_link_cache
+        )
+        result_df = data_loader.load_booking_arrangements(services, revision)
+
+        booking_arrangements = BookingArrangements.objects.all()
+
+        self.assertEqual(2, result_df.shape[0])
+
+        self.assertListEqual([1, 2], result_df.index.get_level_values("id").tolist())
+
+
+@ddt
+class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
+    """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
+
+    test_file = "data/test_extract_booking_arrangements_with_minimum_elements.xml"
+
+    def test_extract(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+
+        # test
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # assert
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index("file_id")
+
+        self.assertTrue(
+            check_frame_equal(
+                extracted.booking_arrangements, booking_arrangements_expected
+            )
+        )
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
+        )
+        self.assertEqual(extracted.booking_arrangements.index.names, ["file_id"])
+
+    def test_transform(self):
+        # setup
+        file_id = hash(self.file_obj.file)
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        # assert services
+        booking_arrangements_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "tel_national_number": "0345 234 3344",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "email": "CallConnect@lincolnshire.gov.uk",
+                },
+                {
+                    "file_id": file_id,
+                    "service_code": "PF0000508:53",
+                    "description": "The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm",
+                    "web_address": "https://callconnect.opendrt.co.uk/OpenDRT/",
+                },
+            ]
+        ).set_index("file_id")
+
+        self.assertTrue(
+            check_frame_equal(
+                transformed.booking_arrangements, booking_arrangements_expected
+            )
+        )
+        self.assertCountEqual(
+            list(extracted.booking_arrangements.columns),
+            [
+                "service_code",
+                "description",
+                "tel_national_number",
+                "email",
+                "web_address",
+            ],
+        )
+
+    def test_load(self):
+
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        # test
+        result: ETLReport = self.feed_parser.load(transformed)
+
+        booking_arrangements = BookingArrangements.objects.all()
+        service = Service.objects.get(service_code="PF0000508:53")
+        service_id = None
+        if service:
+            service_id = service.id
+
+        self.assertEqual(2, result.line_count)
+        self.assertEqual(3, booking_arrangements.count())
+
+        for booking in booking_arrangements:
+            self.assertEqual(booking.service_id, service_id)

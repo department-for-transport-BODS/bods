@@ -3,14 +3,14 @@ from typing import Any, Sequence
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from factory import (
-    DjangoModelFactory,
     Faker,
     LazyAttributeSequence,
     SubFactory,
     lazy_attribute,
     post_generation,
 )
-
+from factory.django import DjangoModelFactory
+import faker
 from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.users.constants import (
     AgentUserType,
@@ -49,14 +49,13 @@ class UserFactory(DjangoModelFactory):
     def password(self, create: bool, extracted: Sequence[Any], **kwargs):
         password = extracted
         if password is None:
-            password = Faker(
-                "password",
+            password = faker.Faker().password(
                 length=42,
                 special_chars=True,
                 digits=True,
                 upper_case=True,
                 lower_case=True,
-            ).generate(extra_kwargs={})
+            )
         self.set_password(password)
 
     @post_generation

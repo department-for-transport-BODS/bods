@@ -9,6 +9,7 @@ from transit_odp.timetables.views import (
     TimetableUploadModify,
     UpdateRevisionPublishView,
 )
+from transit_odp.timetables.views.post_schema import ReviewPostSchemaCSVView
 from transit_odp.timetables.views.pti import PublishedViolationsCSVFileView
 
 urlpatterns = [
@@ -81,6 +82,11 @@ urlpatterns = [
                                 "pti-csv",
                                 view=ReviewViolationsCSVFileView.as_view(),
                                 name="review-pti-csv",
+                            ),
+                            path(
+                                "post-schema-csv",
+                                view=ReviewPostSchemaCSVView.as_view(),
+                                name="review-post-schema-csv",
                             ),
                         ]
                     ),

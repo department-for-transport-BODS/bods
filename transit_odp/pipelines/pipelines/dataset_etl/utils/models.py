@@ -14,6 +14,7 @@ class ExtractedData(object):
     jp_to_jps: pd.DataFrame
     jp_sections: pd.DataFrame
     timing_links: pd.DataFrame
+    booking_arrangements: pd.DataFrame
 
     routes: pd.DataFrame
     route_to_route_links: pd.DataFrame
@@ -37,6 +38,7 @@ class TransformedData(object):
     service_links: pd.DataFrame
     stop_points: pd.DataFrame
     service_pattern_stops: pd.DataFrame
+    booking_arrangements: pd.DataFrame
 
     schema_version: str
     creation_datetime: datetime

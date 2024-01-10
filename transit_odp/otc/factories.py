@@ -12,10 +12,11 @@ from transit_odp.otc.constants import (
     TrafficAreas,
 )
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
-from transit_odp.otc.models import Licence as LicenceModel
+from transit_odp.otc.models import Licence as LicenceModel, UILta
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
+from factory.django import DjangoModelFactory
 
 TODAY = datetime.date.today()
 NOW = timezone.now()
@@ -42,7 +43,7 @@ class RegistrationFactory(factory.Factory):
         model = Registration
 
     variation_number = factory.fuzzy.FuzzyInteger(low=1, high=100)
-    service_number = factory.Sequence(lambda n: n)
+    service_number = factory.Sequence(lambda n: str(n))
     current_traffic_area = factory.fuzzy.FuzzyChoice(TrafficAreas.values)
     licence_number = factory.Sequence(lambda n: f"PD0000{n:03}")
     discs_in_possession = factory.fuzzy.FuzzyInteger(low=100, high=400)
@@ -107,7 +108,7 @@ class ServiceFactory(factory.Factory):
         lambda obj: f"{obj.licence.number}/{obj.registration_code}"
     )
     variation_number = factory.fuzzy.FuzzyInteger(low=1, high=100)
-    service_number = factory.Sequence(lambda n: n)
+    service_number = factory.Sequence(lambda n: str(n))
     current_traffic_area = "B"
     operator = factory.SubFactory(OperatorFactory)
     start_point = factory.Faker("street_name")
@@ -128,11 +129,19 @@ class ServiceFactory(factory.Factory):
     last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
 
 
+class UILtaFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = UILta
+
+    name = factory.Faker("name")
+
+
 class LocalAuthorityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = LocalAuthority
 
     name = factory.Faker("name")
+    ui_lta = factory.SubFactory(UILtaFactory)
 
     @factory.post_generation
     def registration_numbers(self, create, extracted, **kwargs):
@@ -145,17 +154,17 @@ class LocalAuthorityFactory(factory.django.DjangoModelFactory):
                 self.registration_numbers.add(reg_num)
 
 
-class LicenceModelFactory(factory.DjangoModelFactory, LicenceFactory):
+class LicenceModelFactory(DjangoModelFactory, LicenceFactory):
     class Meta:
         model = LicenceModel
 
 
-class OperatorModelFactory(factory.DjangoModelFactory, OperatorFactory):
+class OperatorModelFactory(DjangoModelFactory, OperatorFactory):
     class Meta:
         model = OperatorModel
 
 
-class ServiceModelFactory(factory.DjangoModelFactory, ServiceFactory):
+class ServiceModelFactory(DjangoModelFactory, ServiceFactory):
     class Meta:
         model = ServiceModel
 

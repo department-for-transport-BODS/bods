@@ -88,7 +88,7 @@ def test_get_netex_version(netexdocument):
 
 def test_get_xml_file_name(netexdocument):
     actual = netexdocument.get_xml_file_name()
-    expected = "/app/transit_odp/fares/tests/fixtures/sample1.xml"
+    expected = str(FIXTURES.joinpath("sample1.xml"))
     assert expected == actual
 
 
