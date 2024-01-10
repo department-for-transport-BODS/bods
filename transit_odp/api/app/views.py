@@ -181,4 +181,5 @@ def _format_data_for_map(consequence_coordinates: list, disruption_reason: str):
                 "properties": {"disruptionReason": disruption_reason},
             }
         )
+
     return map_data

@@ -184,13 +184,13 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
   }
 
   httpGetAsync(url, function (responseText) {
-    const disruptions = JSON.parse(responseText);
+    const response = JSON.parse(responseText);
 
-    if(!disruptions) {
+    if(!response) {
       return;
     }
 
-    const formattedDisruptions = disruptionId ? disruptions : formatOrganisationDetailPageDisruptions(disruptions)
+    const formattedDisruptions = disruptionId ? response : formatOrganisationDetailPageDisruptions(response)
 
     const bounds = new mapboxgl.LngLatBounds();
 
@@ -401,7 +401,6 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
 
         popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
       }
-
 
       iconDisruptions.forEach((icon) => {
 
