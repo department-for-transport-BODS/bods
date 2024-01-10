@@ -41,7 +41,7 @@ const disruptionReasonByIcon = {
   eventIcon: ["specialEvent"],
   industrialActionIcon: ["industrialAction"],
   questionMarkIcon: ["unknown"],
-  roadworksIcon: ["constructionWork, maintenanceWork", "roadClosed", "roadworks"],
+  roadworksIcon: ["constructionWork", "maintenanceWork", "roadClosed", "roadworks"],
   trafficIcon: ["accident", "breakdown", "congestion", "incident", "overcrowded"],
   weatherIcon: ["flooding", "fog", "heavyRain", "heavySnowFall", "highTemperatures", "ice"]
 }
@@ -128,53 +128,58 @@ const initOrgMap = (apiRoot, orgId) => {
 
   const formatDisruptions = (disruptions) => {
     return disruptions.flatMap((disruption) => {
-        if (disruption.services && disruption.services.length > 0) {
-          const serviceDisruptions = disruption.services.map((service) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                service.coordinates.longitude ?? -1.5439765,
-                service.coordinates.latitude ?? 53.7949385,
-              ],
-            },
-            properties: {
-              consequenceType: "services",
-              disruptionReason: disruption.disruptionReason,
-              lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
-              operatorName: service.operatorName,
-              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
-              disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
-              disruptionNoEndDateTime: service.disruptionNoEndDateTime
-            }
-          }))
-          return serviceDisruptions
-        }
+      if (disruption.services && disruption.services.length > 0) {
+        const serviceDisruptions = disruption.services.map((service) => {
+          if(service.coordinates.longitude && service.coordinates.latitude) {
+            return {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [
+                  service.coordinates.longitude,
+                  service.coordinates.latitude,
+                ],
+              },
+              properties: {
+                consequenceType: "services",
+                disruptionReason: disruption.disruptionReason,
+                disruptionId: disruption.disruptionId,
+                lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
+                operatorName: service.operatorName,
+                disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+                disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+                disruptionNoEndDateTime: service.disruptionNoEndDateTime
+              }
+            }}
+        })
+        return serviceDisruptions
+      }
 
-        if (disruption.stops && disruption.stops.length > 0) {
-          const stopsDisruptions = disruption.stops.map((stop) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                stop.coordinates.longitude,
-                stop.coordinates.latitude,
-              ],
-            },
-            properties: {
-              consequenceType: "stops",
-              disruptionReason: disruption.disruptionReason,
-              atcoCode: stop.atcoCode,
-              commonName: stop.commonName,
-              bearing: stop.bearing,
-              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
-              disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
-              disruptionNoEndDateTime: stop.disruptionNoEndDateTime
-            }
-          }))
-          return stopsDisruptions
-        }
-        return [...serviceDisruptions, ...stopsDisruptions]
+      if (disruption.stops && disruption.stops.length > 0) {
+        const stopsDisruptions = disruption.stops.map((stop) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [
+              stop.coordinates.longitude,
+              stop.coordinates.latitude,
+            ],
+          },
+          properties: {
+            consequenceType: "stops",
+            disruptionReason: disruption.disruptionReason,
+            disruptionId: disruption.disruptionId,
+            atcoCode: stop.atcoCode,
+            commonName: stop.commonName,
+            bearing: stop.bearing,
+            disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+            disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+            disruptionNoEndDateTime: stop.disruptionNoEndDateTime
+          }
+        }))
+        return stopsDisruptions
+      }
+      return [...serviceDisruptions, ...stopsDisruptions]
     }).filter(val => val !== undefined)
   }
 
@@ -204,7 +209,6 @@ const initOrgMap = (apiRoot, orgId) => {
           "type": "FeatureCollection",
           "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.crossIcon.includes(disruption.properties.disruptionReason))
         }
-
       });
 
       map.addLayer({
@@ -307,6 +311,24 @@ const initOrgMap = (apiRoot, orgId) => {
         }
       });
 
+      map.addSource('roadworks-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.roadworksIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "roadworks-icon-disruptions",
+        type: "symbol",
+        source: "roadworks-icon-disruptions",
+        layout: {
+          'icon-image': 'roadworks',
+          'icon-size': 0.25
+        }
+      });
+
       map.addSource("traffic-icon-disruptions", {
         type: "geojson",
         data: {
@@ -344,8 +366,6 @@ const initOrgMap = (apiRoot, orgId) => {
       });
     })
   });
-
-
 
   map.on("load", function () {
     const popup = new mapboxgl.Popup({
