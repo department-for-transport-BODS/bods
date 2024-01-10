@@ -319,8 +319,6 @@ const initOrgMap = (apiRoot, orgId) => {
         }
       });
 
-      console.log(formattedDisruptions.filter((disruption) => disruptionReasonByIcon.roadworksIcon.includes(disruption.properties.disruptionReason)))
-
       map.addLayer({
         id: "roadworks-icon-disruptions",
         type: "symbol",
