@@ -130,6 +130,9 @@ class DisruptionDetailView(viewsets.ViewSet):
             content["consequences"]
         )
 
+        if len(consequence_coordinates) == 0:
+            return JsonResponse(None, safe=False)
+
         map_data = _format_data_for_map(
             consequence_coordinates, content["disruptionReason"]
         )
@@ -137,7 +140,7 @@ class DisruptionDetailView(viewsets.ViewSet):
         return JsonResponse(map_data, safe=False)
 
 
-def _get_coordinates_from_disruption(disruption_consequences: object):
+def _get_coordinates_from_disruption(disruption_consequences: list):
     consequence_coordinates = []
     for consequence in disruption_consequences:
         if consequence["consequenceType"] == "services":
@@ -157,7 +160,8 @@ def _get_coordinates_from_disruption(disruption_consequences: object):
                             "longitude": stop["longitude"],
                         }
                     )
-        return consequence_coordinates
+
+    return consequence_coordinates
 
 
 def _format_data_for_map(consequence_coordinates: list, disruption_reason: str):

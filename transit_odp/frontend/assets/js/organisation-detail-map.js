@@ -186,12 +186,16 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
   httpGetAsync(url, function (responseText) {
     const disruptions = JSON.parse(responseText);
 
+    if(!disruptions) {
+      return;
+    }
+
     const formattedDisruptions = disruptionId ? disruptions : formatOrganisationDetailPageDisruptions(disruptions)
 
     const bounds = new mapboxgl.LngLatBounds();
 
     formattedDisruptions.forEach((feature) => {
-      bounds.extend(feature.geometry.coordinates);
+        bounds.extend(feature.geometry.coordinates);
     });
 
     map.fitBounds(bounds, {padding: 20});
