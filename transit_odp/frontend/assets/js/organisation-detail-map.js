@@ -367,8 +367,6 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
     })
   });
 
-
-
   map.on("load", function () {
     const popup = new mapboxgl.Popup({
       closeButton: false,

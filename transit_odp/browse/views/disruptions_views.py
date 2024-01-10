@@ -150,6 +150,8 @@ class DisruptionsDataView(ListView):
         keywords = self.request.GET.get("q", "").strip()
         context["q"] = keywords
         context["ordering"] = self.request.GET.get("ordering", "-modified")
+        context["org_names"] = {"names": [org["name"] for org in qs_data]}
+
         return context
 
 
