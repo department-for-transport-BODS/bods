@@ -126,7 +126,7 @@ const initOrgMap = (apiRoot, orgId) => {
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
- const formatDisruptions = (disruptions) => {
+  const formatDisruptions = (disruptions) => {
     return disruptions.flatMap((disruption) => {
       if (disruption.services && disruption.services.length > 0) {
         const serviceDisruptions = disruption.services.map((service) => {
