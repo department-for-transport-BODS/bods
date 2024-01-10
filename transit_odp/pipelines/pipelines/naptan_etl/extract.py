@@ -102,6 +102,9 @@ def extract_stops(xml_file_path):
                 "latitude": point.place.location.translation.latitude,
                 "longitude": point.place.location.translation.longitude,
                 "stop_areas": point.stop_areas,
+                "stop_type": point.stop_classification.stop_type,
+                "bus_stop_type": point.stop_classification.on_street.bus.bus_stop_type,
+                "flexible_location": point.stop_classification.on_street.bus.flexible_zone,
             }
 
     df = pd.DataFrame(
@@ -117,10 +120,12 @@ def extract_stops(xml_file_path):
             "latitude",
             "longitude",
             "stop_areas",
+            "stop_type",
+            "bus_stop_type",
+            "flexible_location",
         ],
     )
     logger.info(f"A total of {len(df)} NaPTAN stops extracted.")
-
     duplicated = df["atco_code"].duplicated(keep="first")
     duplicates = df[duplicated]
     if not duplicates.empty:

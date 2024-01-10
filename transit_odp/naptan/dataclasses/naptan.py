@@ -8,12 +8,12 @@ WGS84 = CRS("EPSG:4326")
 transformer = Transformer.from_crs(BNG, WGS84)
 
 
-class FlexibleLocation:
+class FlexibleLocation(BaseModel):
     grid_type: str
     easting: int
     northing: int
-    longitude: float
     latitude: float
+    longitude: float
 
     @classmethod
     def from_xml(cls, location):
@@ -25,7 +25,6 @@ class FlexibleLocation:
         easting = location.findtext("./x:Easting", namespaces=ns)
         northing = location.findtext("./x:Northing", namespaces=ns)
         latitude, longitude = transformer.transform(float(easting), float(northing))
-
         return cls(
             easting=easting,
             northing=northing,
@@ -35,7 +34,10 @@ class FlexibleLocation:
         )
 
 
-class FlexibleZone:
+class FlexibleZone(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
     location: list[FlexibleLocation]
 
     @classmethod
@@ -44,12 +46,17 @@ class FlexibleZone:
         Create a Translation object from lxml naptan:Translation.
         """
         ns = {"x": xml.nsmap.get(None)}
-        location = (FlexibleLocation.from_xml(xml.find("./x:Location", namespaces=ns)),)
-
+        location = [
+            FlexibleLocation.from_xml(element)
+            for element in xml.findall(".//x:Location", namespaces=ns)
+        ]
         return cls(location=location)
 
 
 class Bus(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
     bus_stop_type: str
     flexible_zone: Optional[FlexibleZone]
 
@@ -60,8 +67,10 @@ class Bus(BaseModel):
         """
         ns = {"x": xml.nsmap.get(None)}
         bus_stop_type = xml.findtext("./x:BusStopType", namespaces=ns)
-        flexible_zone = FlexibleZone.from_xml(
-            xml.find("./x:FlexibleZone", namespaces=ns)
+        flexible_zone = (
+            FlexibleZone.from_xml(xml.find("./x:FlexibleZone", namespaces=ns))
+            if xml.find("./x:FlexibleZone", namespaces=ns)
+            else None
         )
         return cls(bus_stop_type=bus_stop_type, flexible_zone=flexible_zone)
 
@@ -90,7 +99,7 @@ class StopClassification(BaseModel):
         """
         ns = {"x": xml.nsmap.get(None)}
         stop_type = xml.findtext("./x:StopType", namespaces=ns)
-        on_street = (OnStreet.from_xml(xml.find("./x:OnStreet", namespaces=ns)),)
+        on_street = OnStreet.from_xml(xml.find("./x:OnStreet", namespaces=ns))
         return cls(stop_type=stop_type, on_street=on_street)
 
 
