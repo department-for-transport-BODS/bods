@@ -41,7 +41,7 @@ const disruptionReasonByIcon = {
   eventIcon: ["specialEvent"],
   industrialActionIcon: ["industrialAction"],
   questionMarkIcon: ["unknown"],
-  roadworksIcon: ["constructionWork, maintenanceWork", "roadClosed", "roadworks"],
+  roadworksIcon: ["constructionWork", "maintenanceWork", "roadClosed", "roadworks"],
   trafficIcon: ["accident", "breakdown", "congestion", "incident", "overcrowded"],
   weatherIcon: ["flooding", "fog", "heavyRain", "heavySnowFall", "highTemperatures", "ice"]
 }
@@ -307,6 +307,24 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
         source: "question-mark-icon-disruptions",
         layout: {
           'icon-image': 'question-mark',
+          'icon-size': 0.25
+        }
+      });
+
+      map.addSource('roadworks-icon-disruptions', {
+        'type': 'geojson',
+        'data': {
+          "type": "FeatureCollection",
+          "features": formattedDisruptions.filter((disruption) => disruptionReasonByIcon.roadworksIcon.includes(disruption.properties.disruptionReason))
+        }
+      });
+
+      map.addLayer({
+        id: "roadworks-icon-disruptions",
+        type: "symbol",
+        source: "roadworks-icon-disruptions",
+        layout: {
+          'icon-image': 'roadworks',
           'icon-size': 0.25
         }
       });
