@@ -15,7 +15,22 @@
         </h3>
       {% endif %}
   </div>
-  {% if hide_filters_box == True %}
+  {% if show_search_terms_only == True %}
+    <div class="govuk-body-s govuk-grid-row search-pillbox">
+      {% if q %}
+        <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+            {% trans 'Containing' as tmsg %}{{tmsg | force_escape}}
+        </span>
+        <a href="?ordering={{ ordering }}">
+            <div class="pill-item">
+                <img class="pill-item__image"
+                    src="{% static 'frontend/images/icon-cross.png' %}"
+                    alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
+                <span class="pill-item__label">{{ q }}</span>
+            </div>
+        </a>
+      {% endif %}
+    </div>
   {% else %}
     <div class="govuk-body-s govuk-grid-row search-pillbox">
       {% for key, value in query_params.items %}
