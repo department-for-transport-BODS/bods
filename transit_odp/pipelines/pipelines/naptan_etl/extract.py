@@ -91,6 +91,13 @@ def extract_stops(xml_file_path):
         stop_point_path = "//naptan:StopPoints/naptan:StopPoint"
         for stop in tree.iterfind(stop_point_path, namespaces=namespace):
             point = StopPoint.from_xml(stop)
+            bus_stop_type, flexible_zone = None, None
+            if (
+                point.stop_classification.on_street
+                and point.stop_classification.on_street.bus
+            ):
+                bus_stop_type = point.stop_classification.on_street.bus.bus_stop_type
+                flexible_zone = point.stop_classification.on_street.bus.flexible_zone
             yield {
                 "atco_code": point.atco_code,
                 "naptan_code": point.naptan_code,
@@ -103,8 +110,8 @@ def extract_stops(xml_file_path):
                 "longitude": point.place.location.translation.longitude,
                 "stop_areas": point.stop_areas,
                 "stop_type": point.stop_classification.stop_type,
-                "bus_stop_type": point.stop_classification.on_street.bus.bus_stop_type,
-                "flexible_location": point.stop_classification.on_street.bus.flexible_zone,
+                "bus_stop_type": bus_stop_type,
+                "flexible_location": flexible_zone,
             }
 
     df = pd.DataFrame(

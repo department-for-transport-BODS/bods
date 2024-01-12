@@ -2,7 +2,7 @@ from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import Point
 
 from transit_odp.common.loggers import LoaderAdapter
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint
+from transit_odp.naptan.models import AdminArea, Locality, StopPoint, FlexibleZone
 
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
@@ -21,15 +21,36 @@ def load_new_stops(new_stops):
                 street=row.street,
                 locality_id=row.locality_id,
                 admin_area_id=row.admin_area_id,
-                location=Point(
-                    x=float(row.longitude), y=float(row.latitude), srid=4326
-                ),
+                location=Point(x=float(longitude), y=float(latitude), srid=4326),
                 stop_areas=row.stop_areas,
+                stop_type=row.stop_type,
+                bus_stop_type=row.bus_stop_type,
             )
         )
-
     StopPoint.objects.bulk_create(stops_list, batch_size=5000)
     logger.info("Finished loading new StopPoints.")
+
+
+def load_flexible_zone(flexible_stops):
+    logger.info("[load_flexible_zone]: Started")
+    for row in flexible_stops.itertuples():
+        flexible_sequence_number = 0
+        for flexible_location in row.flexible_location.location:
+            flexible_sequence_number += 1
+            FlexibleZone.objects.update_or_create(
+                sequence_number=flexible_sequence_number,
+                naptan_stoppoint_id=row.obj.id,
+                defaults={
+                    "sequence_number": flexible_sequence_number,
+                    "naptan_stoppoint_id": row.obj.id,
+                    "location": Point(
+                        x=float(flexible_location.translation.longitude),
+                        y=float(flexible_location.translation.latitude),
+                        srid=4326,
+                    ),
+                },
+            )
+    logger.info("[load_flexible_zone]: Finished")
 
 
 def load_existing_stops(existing_stops):
@@ -45,6 +66,8 @@ def load_existing_stops(existing_stops):
         obj.admin_area_id = int(row.admin_area_id)
         obj.location = Point(x=float(row.longitude), y=float(row.latitude), srid=4326)
         obj.stop_areas = row.stop_areas
+        obj.stop_type = row.stop_type
+        obj.bus_stop_type = row.bus_stop_type
 
     StopPoint.objects.bulk_update(
         existing_stops["obj"],
@@ -58,6 +81,8 @@ def load_existing_stops(existing_stops):
             "admin_area_id",
             "location",
             "stop_areas",
+            "stop_type",
+            "bus_stop_type",
         ),
         batch_size=5000,
     )
