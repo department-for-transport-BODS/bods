@@ -190,8 +190,6 @@ class DisruptionDetailView(BaseTemplateView):
         context = super().get_context_data(**kwargs)
         url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}/disruptions/{str(kwargs['disruptionId'])}"
 
-        print(url)
-
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = None
         content, _ = _get_disruptions_organisation_data(url, headers)
