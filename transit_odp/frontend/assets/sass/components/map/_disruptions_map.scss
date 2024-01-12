@@ -15,6 +15,14 @@
     margin-top: -15px;
   }
 
+  .mapboxgl-popup-content a:link {
+    color: #1d70b8;
+  }
+
+  .mapboxgl-popup-content a:visited {
+    color: #4c2c92;
+  }
+
   .mapboxgl-popup-content h3 {
     background: #005EA5;
     color: #fff;
