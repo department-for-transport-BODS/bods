@@ -66,3 +66,42 @@ def test_stop_with_multiple_stop_areas_xml(multiple_stop_areas_stop):
     """
     point = StopPoint.from_xml(multiple_stop_areas_stop)
     assert sorted(point.stop_areas) == ["036G00006160", "036G00006161"]
+
+
+def test_flexible_stop_from_xml(flexible_stops):
+    """
+    GIVEN an lxml naptan:StopPoint with flexible zone bus type
+    WHEN I call `from_xml`
+    THEN a StopPoint and Flexible Zone is created with a translation containing lat/long and
+    easting/northing.
+    """
+    point = StopPoint.from_xml(flexible_stops)
+    assert point.atco_code == "030058840001"
+    assert point.naptan_code == "brkpwdg"
+    assert point.descriptor.common_name == "Englefield flexi area"
+    assert point.descriptor.short_common_name is None
+    assert point.descriptor.street == "The Street"
+    assert point.descriptor.indicator == "DRT"
+    assert point.place.nptg_locality_ref == "E0053838"
+    assert point.place.location.grid_type is None
+    assert point.place.location.easting is None
+    assert point.place.location.northing is None
+    assert pytest.approx(point.place.location.translation.longitude, 0.001) == -1.099
+    assert pytest.approx(point.place.location.translation.latitude, 0.001) == 51.44
+    assert point.place.location.translation.grid_type == "UKOS"
+    assert point.place.location.translation.easting == 462732
+    assert point.place.location.translation.northing == 172119
+    assert point.administrative_area_ref == "064"
+    assert point.stop_classification.stop_type == "BCT"
+    assert point.stop_classification.on_street.bus.bus_stop_type == "FLX"
+    assert len(point.stop_classification.on_street.bus.flexible_zone.location) == 3
+    assert (
+        point.stop_classification.on_street.bus.flexible_zone.location[0].easting
+        == 462732
+    )
+    assert (
+        point.stop_classification.on_street.bus.flexible_zone.location[0].northing
+        == 172119
+    )
+    assert pytest.approx(point.place.location.translation.longitude, 0.001) == -1.099
+    assert pytest.approx(point.place.location.translation.latitude, 0.001) == 51.44

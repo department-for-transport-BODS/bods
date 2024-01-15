@@ -29,3 +29,11 @@ def multiple_stop_areas_stop():
     with ukos_stop_path.open("r") as f:
         stop = etree.parse(f)
         yield stop.getroot()
+
+
+@pytest.fixture()
+def flexible_stops():
+    flexible_stop_path = _DATA / "flexible_stop.xml"
+    with flexible_stop_path.open("r") as f:
+        stop = etree.parse(f)
+        yield stop.getroot()
