@@ -26,6 +26,8 @@ def test_north_east_stop_from_xml(ukos_stop):
     assert point.place.location.translation.easting == 359396
     assert point.place.location.translation.northing == 172388
     assert point.administrative_area_ref == "009"
+    assert point.stop_classification.stop_type == "BCT"
+    assert point.stop_classification.on_street.bus.bus_stop_type == "MKD"
 
 
 def test_wgs_stop_from_xml(wgs_stop):
@@ -52,6 +54,8 @@ def test_wgs_stop_from_xml(wgs_stop):
     assert point.place.location.translation.easting == 482276
     assert point.place.location.translation.northing == 179455
     assert point.administrative_area_ref == "065"
+    assert point.stop_classification.stop_type == "BCT"
+    assert point.stop_classification.on_street.bus.bus_stop_type == "MKD"
 
 
 def test_stop_with_multiple_stop_areas_xml(multiple_stop_areas_stop):

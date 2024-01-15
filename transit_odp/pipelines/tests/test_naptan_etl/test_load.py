@@ -37,6 +37,8 @@ class TestNaptanLoad(TestCase):
                     "latitude": "51.4843326109",
                     "longitude": "-2.51701423067",
                     "stop_areas": ["stop1"],
+                    "stop_type": "BCT",
+                    "bus_stop_type": "CUS"
                 },
             ]
         ).set_index("atco_code")
@@ -60,6 +62,8 @@ class TestNaptanLoad(TestCase):
             created_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),
         )
+        self.assertEqual(created_stop.stop_type, "BCT")
+        self.assertEqual(created_stop.bus_stop_type, "CUS")
 
     def test_update_existing_stops(self):
         # Setup
@@ -86,6 +90,8 @@ class TestNaptanLoad(TestCase):
                     "longitude": "-2.51701423067",
                     "stop_areas": ["stop1"],
                     "obj": stop,
+                    "stop_type": "BCT",
+                    "bus_stop_type": "CUS"
                 },
             ]
         ).set_index("atco_code")
@@ -109,6 +115,8 @@ class TestNaptanLoad(TestCase):
             updated_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),
         )
+        self.assertEqual(updated_stop.stop_type, "BCT")
+        self.assertEqual(updated_stop.bus_stop_type, "CUS")
 
     def test_load_new_admin_areas(self):
         # Setup
