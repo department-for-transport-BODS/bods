@@ -17,18 +17,16 @@ from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
-    load_flexible_zone
+    load_flexible_zone,
 )
 
 from transit_odp.naptan.dataclasses import StopPoint as StopPointDataClass
 
 
 class TestNaptanLoad(TestCase):
-    
     @pytest.fixture(autouse=True)
     def _get_flexible_zone(self, flexible_stops):
         self._flexible_zone = flexible_stops
-
 
     def test_load_new_stops(self):
         # Setup
@@ -48,7 +46,7 @@ class TestNaptanLoad(TestCase):
                     "longitude": "-2.51701423067",
                     "stop_areas": ["stop1"],
                     "stop_type": "BCT",
-                    "bus_stop_type": "CUS"
+                    "bus_stop_type": "CUS",
                 },
             ]
         ).set_index("atco_code")
@@ -101,7 +99,7 @@ class TestNaptanLoad(TestCase):
                     "stop_areas": ["stop1"],
                     "obj": stop,
                     "stop_type": "BCT",
-                    "bus_stop_type": "CUS"
+                    "bus_stop_type": "CUS",
                 },
             ]
         ).set_index("atco_code")
@@ -255,7 +253,6 @@ class TestNaptanLoad(TestCase):
         self.assertEqual(updated_locality.admin_area_id, 9)
         # self.assertEqual(updated_locality.district_id, 10)
 
-
     def test_load_flexible_zone(self):
         # Setup
         flexible_stops = StopPointDataClass.from_xml(self._flexible_zone)
@@ -284,15 +281,20 @@ class TestNaptanLoad(TestCase):
                     "obj": stop,
                     "stop_type": "BCT",
                     "bus_stop_type": "CUS",
-                    "flexible_location": flexible_stops.stop_classification.on_street.bus.flexible_zone
+                    "flexible_location": flexible_stops.stop_classification.on_street.bus.flexible_zone,
                 },
             ]
         ).set_index("atco_code")
-    
+
         load_flexible_zone(existing_stops)
-        
+
         created_flexible_stops = FlexibleZone.objects.all()
 
-        self.assertEqual(len(created_flexible_stops), len(flexible_stops.stop_classification.on_street.bus.flexible_zone.location))
+        self.assertEqual(
+            len(created_flexible_stops),
+            len(
+                flexible_stops.stop_classification.on_street.bus.flexible_zone.location
+            ),
+        )
         self.assertEqual(created_flexible_stops[0].sequence_number, 1)
         self.assertEqual(created_flexible_stops[1].sequence_number, 2)
