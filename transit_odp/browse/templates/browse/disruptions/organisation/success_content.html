@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% if object.stats.networkWideConsequencesCount %}
+{% if object.stats.networkWideConsequencesCount or object.stats.operatorWideConsequencesCount %}
 {% include 'browse/disruptions/banner.html' %}
 {% endif %}
 {% include 'publish/snippets/disruptions_map.html' %}

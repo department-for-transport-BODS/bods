@@ -4,6 +4,7 @@ from transit_odp.browse.views.disruptions_views import (
     DisruptionsDataView,
     DownloadDisruptionsDataArchiveView,
     DownloadDisruptionsView,
+    DisruptionDetailView,
 )
 
 urlpatterns = [
@@ -41,6 +42,11 @@ urlpatterns = [
                                 "",
                                 view=DisruptionOrganisationDetailView.as_view(),
                                 name="org-detail",
+                            ),
+                            path(
+                                "disruption-detail/<uuid:disruptionId>/",
+                                view=DisruptionDetailView.as_view(),
+                                name="disruption-detail",
                             ),
                         ]
                     ),
