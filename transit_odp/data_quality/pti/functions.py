@@ -14,6 +14,8 @@ from transit_odp.data_quality.pti.constants import (
     SCOTTISH_BANK_HOLIDAYS,
 )
 
+from transit_odp.naptan.models import StopPoint
+
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
 
 ElementsOrStr = Union[List[etree.Element], List[str], str]
@@ -365,3 +367,45 @@ def check_flexible_service_timing_status(context, flexiblejourneypatterns):
         for timing_status_value in timing_status_value_list
     )
     return result
+
+
+def check_flexible_service_stop_point_ref(context, flexiblejourneypatterns):
+    atco_codes_list = []
+    flexiblejourneypattern = flexiblejourneypatterns[0]
+    ns = {"x": flexiblejourneypattern.nsmap.get(None)}
+    stop_points_in_seq_list = flexiblejourneypattern.xpath(
+        "x:StopPointsInSequence", namespaces=ns
+    )
+    stop_points_in_flexzone_list = flexiblejourneypattern.xpath(
+        "x:FlexibleZones", namespaces=ns
+    )
+    atco_codes_list = get_stop_point_ref_list(stop_points_in_seq_list, ns)
+    atco_codes_list = list(
+        set(atco_codes_list + get_stop_point_ref_list(stop_points_in_flexzone_list, ns))
+    )
+
+    total_complient = StopPoint.objects.filter(
+        atco_code__in=atco_codes_list, bus_stop_type="FLX", stop_type="BCT"
+    ).count()
+
+    if total_complient != len(atco_codes_list):
+        return False
+
+    return True
+
+
+def get_stop_point_ref_list(stop_points, ns):
+    stop_point_ref_list = []
+    for flex_stop_point in stop_points:
+        flexible_stop_usage_list = flex_stop_point.xpath(
+            "x:FlexibleStopUsage", namespaces=ns
+        )
+        if len(flexible_stop_usage_list) > 0:
+            for flexible_stop_usage in flexible_stop_usage_list:
+                stop_point_ref_list.append(
+                    _extract_text(
+                        flexible_stop_usage.xpath("x:StopPointRef", namespaces=ns), ""
+                    )
+                )
+
+    return stop_point_ref_list

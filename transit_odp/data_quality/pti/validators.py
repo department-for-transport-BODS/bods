@@ -16,6 +16,7 @@ from transit_odp.data_quality.pti.constants import FLEXIBLE_SERVICE, STANDARD_SE
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
+    check_flexible_service_stop_point_ref,
     check_flexible_service_timing_status,
     contains_date,
     has_flexible_or_standard_service,
@@ -475,6 +476,9 @@ class PTIValidator:
         self.register_function("contains_date", contains_date)
         self.register_function(
             "check_flexible_service_timing_status", check_flexible_service_timing_status
+        )
+        self.register_function(
+            "check_flexible_service_stop_point_ref", check_flexible_service_stop_point_ref
         )
 
         self.register_function("date", cast_to_date)

@@ -10,6 +10,7 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
     check_flexible_service_timing_status,
+    check_flexible_service_stop_point_ref,
     check_service_group_validations,
     contains_date,
     has_flexible_or_standard_service,
@@ -20,6 +21,11 @@ from transit_odp.data_quality.pti.functions import (
     today,
 )
 from transit_odp.data_quality.pti.tests.constants import TXC_END, TXC_START
+from transit_odp.naptan.factories import (
+    AdminAreaFactory,
+    LocalityFactory,
+    StopPointFactory,
+)
 
 
 @pytest.mark.parametrize(
@@ -613,4 +619,105 @@ def test_check_flexible_service_timing_status(values, expected):
         "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern", namespaces=NAMESPACE
     )
     actual = check_flexible_service_timing_status("", elements)
+    assert actual == expected
+
+
+def load_flexible_stops_data():
+    admin_area = AdminAreaFactory(id=9, atco_code="123")
+    locality = LocalityFactory(gazetteer_id="E0035604")
+    stop_points = [{"atco_code": "270002700155", "common_name": "TestName1", "bus_stop_type": "FLX"},{"atco_code": "270002700156", "common_name": "TestName2", "bus_stop_type": "FLX"},{"atco_code": "270002700157", "common_name": "TestName2", "bus_stop_type": "CUS"}]
+    for stop_point in stop_points:
+        StopPointFactory(
+            admin_area=admin_area,
+            locality=locality,
+            atco_code=stop_point['atco_code'],
+            common_name=stop_point['common_name'],
+            stop_areas=[],
+            stop_type="BCT",
+            bus_stop_type=stop_point['bus_stop_type'],
+        )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        (["270002700155", "270002700156"], True),
+        (["270002700156", "270002700157"], False),
+        (["270002700157", "270002700158"], False),
+        (["270002700156", "270002700158"], False),
+    ],
+)
+def test_check_flexible_service_stop_points_in_sequence_stop_type(values, expected):
+    load_flexible_stops_data()
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    timing_status = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <FlexibleService>
+                    <FlexibleJourneyPattern id="jp_1">
+                        <StopPointsInSequence>
+                            <FlexibleStopUsage>
+                                <StopPointRef>{0}</StopPointRef>
+                            </FlexibleStopUsage>
+                            <FlexibleStopUsage>
+                                <StopPointRef>{1}</StopPointRef>
+                            </FlexibleStopUsage>
+                        </StopPointsInSequence>
+                    </FlexibleJourneyPattern>
+                </FlexibleService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    string_xml = timing_status.format(*values)
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath(
+        "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern", namespaces=NAMESPACE
+    )
+    actual = check_flexible_service_stop_point_ref("", elements)
+    assert actual == expected
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        (["270002700155", "270002700156"], True),
+        (["270002700156", "270002700157"], False),
+        (["270002700157", "270002700158"], False),
+        (["270002700156", "270002700158"], False),
+    ],
+)
+def test_check_flexible_service_stop_point_flexible_zone_stop_type(values, expected):
+    load_flexible_stops_data()
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    timing_status = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <Services>
+            <Service>
+                <FlexibleService>
+                    <FlexibleJourneyPattern id="jp_1">
+                        <Direction>outbound</Direction>
+					    <FlexibleZones>	
+                            <FlexibleStopUsage>
+                                <StopPointRef>{0}</StopPointRef>
+                            </FlexibleStopUsage>
+                            <FlexibleStopUsage>
+                                <StopPointRef>{1}</StopPointRef>
+                            </FlexibleStopUsage>
+                        </FlexibleZones>
+                    </FlexibleJourneyPattern>
+                </FlexibleService>
+            </Service>
+        </Services>
+    </TransXChange>
+    """
+    string_xml = timing_status.format(*values)
+    doc = etree.fromstring(string_xml)
+    elements = doc.xpath(
+        "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern", namespaces=NAMESPACE
+    )
+    actual = check_flexible_service_stop_point_ref("", elements)
     assert actual == expected
