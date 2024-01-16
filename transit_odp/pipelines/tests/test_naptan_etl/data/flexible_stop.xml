@@ -1,50 +1,52 @@
-<StopPoint xmlns="http://www.naptan.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2017-05-08T00:00:00" ModificationDateTime="2017-05-10T14:08:00" Modification="new" RevisionNumber="2" Status="active">
-    <AtcoCode>030058840001</AtcoCode>
-    <NaptanCode>brkpwdg</NaptanCode>
-    <Descriptor>
+<StopPoint xmlns="http://www.naptan.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  CreationDateTime="2017-05-08T00:00:00" ModificationDateTime="2017-05-10T14:08:00"
+  Modification="new" RevisionNumber="2" Status="active">
+  <AtcoCode>030058840001</AtcoCode>
+  <NaptanCode>brkpwdg</NaptanCode>
+  <Descriptor>
     <CommonName xml:lang="en">Englefield flexi area</CommonName>
     <Landmark xml:lang="en">Point within flexi route operating area</Landmark>
     <Street xml:lang="en">The Street</Street>
     <Indicator xml:lang="en">DRT</Indicator>
-    </Descriptor>
-    <Place>
+  </Descriptor>
+  <Place>
     <NptgLocalityRef>E0053838</NptgLocalityRef>
     <LocalityCentre>false</LocalityCentre>
     <Location>
-        <Translation>
+      <Translation>
         <GridType>UKOS</GridType>
         <Easting>462732</Easting>
         <Northing>172119</Northing>
         <Longitude>-1.09875</Longitude>
         <Latitude>51.4446</Latitude>
-        </Translation>
+      </Translation>
     </Location>
-    </Place>
-    <StopClassification>
+  </Place>
+  <StopClassification>
     <StopType>BCT</StopType>
     <OnStreet>
-        <Bus>
+      <Bus>
         <BusStopType>FLX</BusStopType>
         <TimingStatus>OTH</TimingStatus>
         <FlexibleZone>
-            <Location>
-                <GridType>UKOS</GridType>
-                <Easting>462732</Easting>
-                <Northing>172119</Northing>
-            </Location>
-            <Location>
-                <GridType>UKOS</GridType>
-                <Easting>462636</Easting>
-                <Northing>172042</Northing>
-            </Location>
-            <Location>
-                <GridType>UKOS</GridType>
-                <Easting>463162</Easting>
-                <Northing>172379</Northing>
-            </Location>
+          <Location>
+            <GridType>UKOS</GridType>
+            <Easting>462732</Easting>
+            <Northing>172119</Northing>
+          </Location>
+          <Location>
+            <GridType>UKOS</GridType>
+            <Easting>462636</Easting>
+            <Northing>172042</Northing>
+          </Location>
+          <Location>
+            <GridType>UKOS</GridType>
+            <Easting>463162</Easting>
+            <Northing>172379</Northing>
+          </Location>
         </FlexibleZone>
-        </Bus>
+      </Bus>
     </OnStreet>
-    </StopClassification>
-    <AdministrativeAreaRef>064</AdministrativeAreaRef>
+  </StopClassification>
+  <AdministrativeAreaRef>064</AdministrativeAreaRef>
 </StopPoint>
