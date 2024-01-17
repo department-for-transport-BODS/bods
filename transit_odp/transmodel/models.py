@@ -212,3 +212,81 @@ class BookingArrangements(models.Model):
 
     def __str__(self):
         return f"{self.id}, service_id: {self.service_id}"
+
+
+class OperatingProfile(models.Model):
+    MONDAY = "Monday"
+    TUESDAY = "Tuesday"
+    WEDNESDAY = "Wednesday"
+    THURSDAY = "Thursday"
+    FRIDAY = "Friday"
+    SATURDAY = "Saturday"
+    SUNDAY = "Sunday"
+
+    DAY_CHOICES = [
+        (MONDAY, "Monday"),
+        (TUESDAY, "Tuesday"),
+        (WEDNESDAY, "Wednesday"),
+        (THURSDAY, "Thursday"),
+        (FRIDAY, "Friday"),
+        (SATURDAY, "Saturday"),
+        (SUNDAY, "Sunday"),
+    ]
+
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney, on_delete=models.CASCADE, related_name="operating_profiles"
+    )
+
+    day_of_week = models.CharField(max_length=20, choices=DAY_CHOICES)
+
+
+class NonOperatingDatesExceptions(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="non_operating_dates_exceptions",
+    )
+
+    non_operating_date = models.DateField(null=True, blank=True)
+
+
+class OperatingDatesExceptions(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="operating_dates_exceptions",
+    )
+
+    operating_date = models.DateField(null=True, blank=True)
+
+
+class ServicedOrganisations(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney, on_delete=models.CASCADE, related_name="serviced_organisations"
+    )
+
+    name = models.CharField(max_length=255, null=True, blank=True)
+
+
+class ServicedOrganisationWorkingDays(models.Model):
+    serviced_organisation = models.ForeignKey(
+        ServicedOrganisations,
+        on_delete=models.CASCADE,
+        related_name="serviced_organisations_working_days",
+    )
+
+    start_date = models.DateField(null=True, blank=True)
+
+    end_date = models.DateField(null=True, blank=True)
+
+
+class FlexibleServiceOperationPeriod(models.Model):
+    serviced_organisation = models.ForeignKey(
+        ServicedOrganisations,
+        on_delete=models.CASCADE,
+        related_name="serviced_organisations_working_days",
+    )
+
+    start_date = models.DateField(null=True, blank=True)
+
+    end_date = models.DateField(null=True, blank=True)
