@@ -2,7 +2,7 @@ from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import Point
 
 from transit_odp.common.loggers import LoaderAdapter
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint, FlexibleZone
+from transit_odp.naptan.models import AdminArea, FlexibleZone, Locality, StopPoint
 
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
@@ -21,7 +21,9 @@ def load_new_stops(new_stops):
                 street=row.street,
                 locality_id=row.locality_id,
                 admin_area_id=row.admin_area_id,
-                location=Point(x=float(longitude), y=float(latitude), srid=4326),
+                location=Point(
+                    x=float(row.longitude), y=float(row.latitude), srid=4326
+                ),
                 stop_areas=row.stop_areas,
                 stop_type=row.stop_type,
                 bus_stop_type=row.bus_stop_type,

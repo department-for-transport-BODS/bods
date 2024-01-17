@@ -21,8 +21,8 @@ class Translation(BaseModel):
         Create a Translation object from lxml naptan:Translation.
         """
         ns = {"x": xml.nsmap.get(None)}
-        easting = xml.findtext("./x:Easting", namespaces=ns)
-        northing = xml.findtext("./x:Northing", namespaces=ns)
+        easting = xml.findtext("./x:Easting", namespaces=ns).strip()
+        northing = xml.findtext("./x:Northing", namespaces=ns).strip()
         latitude, longitude = transformer.transform(float(easting), float(northing))
         return cls(
             grid_type=xml.findtext("./x:GridType", namespaces=ns),
@@ -127,14 +127,10 @@ class FlexibleZone(BaseModel):
         Create a Translation object from lxml naptan:Translation.
         """
         ns = {"x": xml.nsmap.get(None)}
-        location = (
-            [
-                Location.from_xml(element)
-                for element in xml.findall(".//x:Location", namespaces=ns)
-            ]
-            if xml.findall(".//x:Location", namespaces=ns)
-            else None
-        )
+        locations_xml = xml.findall(".//x:Location", namespaces=ns)
+        location = []
+        if locations_xml is not None:
+            location = [Location.from_xml(element) for element in locations_xml]
         return cls(location=location)
 
 
@@ -149,11 +145,10 @@ class Bus(BaseModel):
         """
         ns = {"x": xml.nsmap.get(None)}
         bus_stop_type = xml.findtext("./x:BusStopType", namespaces=ns)
-        flexible_zone = (
-            FlexibleZone.from_xml(xml.find("./x:FlexibleZone", namespaces=ns))
-            if xml.find("./x:FlexibleZone", namespaces=ns)
-            else None
-        )
+        flexible_zone_xml = xml.find("./x:FlexibleZone", namespaces=ns)
+        flexible_zone = None
+        if flexible_zone_xml is not None:
+            flexible_zone = FlexibleZone.from_xml(flexible_zone_xml)
         return cls(bus_stop_type=bus_stop_type, flexible_zone=flexible_zone)
 
 
@@ -166,11 +161,10 @@ class OnStreet(BaseModel):
         Create a Translation object from lxml naptan:Translation.
         """
         ns = {"x": xml.nsmap.get(None)}
-        bus = (
-            Bus.from_xml(xml.find("./x:Bus", namespaces=ns))
-            if xml.find("./x:Bus", namespaces=ns)
-            else None
-        )
+        bus_xml = xml.find("./x:Bus", namespaces=ns)
+        bus = None
+        if bus_xml is not None:
+            bus = Bus.from_xml(bus_xml)
         return cls(bus=bus)
 
 
@@ -185,11 +179,10 @@ class StopClassification(BaseModel):
         """
         ns = {"x": xml.nsmap.get(None)}
         stop_type = xml.findtext("./x:StopType", namespaces=ns)
-        on_street = (
-            OnStreet.from_xml(xml.find("./x:OnStreet", namespaces=ns))
-            if xml.find("./x:OnStreet", namespaces=ns)
-            else None
-        )
+        on_street_xml = xml.find("./x:OnStreet", namespaces=ns)
+        on_street = None
+        if on_street_xml is not None:
+            on_street = OnStreet.from_xml(on_street_xml)
         return cls(stop_type=stop_type, on_street=on_street)
 
 
