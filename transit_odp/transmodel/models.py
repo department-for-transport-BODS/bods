@@ -93,6 +93,10 @@ class ServicePatternStop(models.Model):
     # Store the atco_code explicitly in case the naptan_stop fails to lookup.
     atco_code = models.CharField(max_length=255)
 
+    txc_common_name = models.CharField(max_length=255, null=True, blank=True)
+    departure_time = models.TimeField(null=True, default=None)
+    is_timing_point = models.BooleanField(default=False)
+
     objects = ServicePatternStopManager()
 
     class Meta:
@@ -172,6 +176,9 @@ class ServiceLink(models.Model):
 class VehicleJourney(models.Model):
     timing_pattern = models.ForeignKey(TimingPattern, on_delete=models.CASCADE)
     start_time = models.TimeField()
+    line_ref = models.CharField(max_length=255, null=True, blank=True)
+    journey_code = models.CharField(max_length=255, null=True, blank=True)
+    direction = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.id}, timing_pattern: {self.id}, {self.start_time:%H:%M:%S}"
