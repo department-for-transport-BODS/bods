@@ -180,7 +180,7 @@ class CeleryAppConfig(AppConfig):
                 "task": "celery.backend_cleanup",
                 "schedule": crontab(minute=0, hour=0),
             },
-            "daily_post_publishing_checks_report_rt": {
+            "daily_post_publishing_checks_all_feeds": {
                 "task": AVL_TASKS + "task_daily_post_publishing_checks_all_feeds",
                 "schedule": crontab(minute=0, hour=18),
             },
