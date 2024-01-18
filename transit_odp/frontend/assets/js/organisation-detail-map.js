@@ -76,7 +76,7 @@ const disruptionReasonText = {
   flooding: "Flooding",
 }
 
-const httpGetAsync = (theUrl, callback) => {
+const httpGetAsync = (url, callback) => {
   const request = new XMLHttpRequest();
 
   if (!request) {
@@ -87,13 +87,13 @@ const httpGetAsync = (theUrl, callback) => {
     if (request.readyState === 4 && request.status === 200)
       callback(request.responseText);
   };
-  request.open("GET", theUrl, true); // true for asynchronous
+  request.open("GET", url, true); // true for asynchronous
   request.send();
 };
 
-const initOrgMap = (apiRoot, orgId) => {
-  const servicePatternUrl =
-    apiRoot + "organisation_map_data/?orgId=" + orgId.toString();
+const initOrgMap = (apiRoot, orgId, disruptionId) => {
+
+  const url = disruptionId ? apiRoot + "disruption_detail_map_data/?orgId=" + orgId.toString() + "&disruptionId=" + disruptionId.toString() : apiRoot + "organisation_map_data/?orgId=" + orgId.toString();
 
   // Initialise Map
   mapboxgl.accessToken =
@@ -126,7 +126,7 @@ const initOrgMap = (apiRoot, orgId) => {
   zoomObject["_zoomInButton"].setAttribute("tabindex", -1);
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
-  const formatDisruptions = (disruptions) => {
+  const formatOrganisationDetailPageDisruptions = (disruptions) => {
     return disruptions.flatMap((disruption) => {
       if (disruption.services && disruption.services.length > 0) {
         const serviceDisruptions = disruption.services.map((service) => {
@@ -171,7 +171,7 @@ const initOrgMap = (apiRoot, orgId) => {
             disruptionId: disruption.disruptionId,
             atcoCode: stop.atcoCode,
             commonName: stop.commonName,
-            bearing: stop.bearing,
+            bearing: stop.bearing ?? "N/A",
             disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
             disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
             disruptionNoEndDateTime: stop.disruptionNoEndDateTime
@@ -183,10 +183,14 @@ const initOrgMap = (apiRoot, orgId) => {
     }).filter(val => val !== undefined)
   }
 
-  httpGetAsync(servicePatternUrl, function (responseText) {
-    const disruptions = JSON.parse(responseText);
+  httpGetAsync(url, function (responseText) {
+    const response = JSON.parse(responseText);
 
-    const formattedDisruptions = formatDisruptions(disruptions)
+    if(!response) {
+      return;
+    }
+
+    const formattedDisruptions = disruptionId ? response : formatOrganisationDetailPageDisruptions(response)
 
     const bounds = new mapboxgl.LngLatBounds();
 
@@ -374,49 +378,55 @@ const initOrgMap = (apiRoot, orgId) => {
       closeOnMove: true,
     });
 
-    const createStopsPopUp = (e) => {
-      const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
-      const name = e.features[0].properties.commonName;
-      const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
-      const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
-      const bearing = `Bearing: ${e.features[0].properties.bearing}`
-      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p></div>`
+    if(!disruptionId) {
+      const createStopsPopUp = (e) => {
+        const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
+        const name = e.features[0].properties.commonName;
+        const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
+        const atcoCode = `Atco code: ${e.features[0].properties.atcoCode}`;
+        const bearing = `Bearing: ${e.features[0].properties.bearing}`
+        const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
+        const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${atcoCode}</p><p>${bearing}</p><a href=${disruptionLink}>See more</a></div>`
 
-      popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
-    }
+        popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
+      }
 
-    const createServicesPopUp = (e) => {
-      const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
-      const name = e.features[0].properties.lineDisplayName;
-      const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
-      const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
-      const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p></div>`
+      const createServicesPopUp = (e) => {
+        const disruptionReason = disruptionReasonText[e.features[0].properties.disruptionReason];
+        const name = e.features[0].properties.lineDisplayName;
+        const disruptionDates = `${e.features[0].properties.disruptionStartDateTime} - ${e.features[0].properties.disruptionEndDateTime}`;
+        const operatorName = `Operator: ${e.features[0].properties.operatorName}`;
+        const disruptionLink = `disruption-detail/${e.features[0].properties.disruptionId}`
+        const popup_content = `<h2>${disruptionReason}</h2><h3>${name}</h3><div><p>${disruptionDates}</p><p>${operatorName}</p><a href=${disruptionLink}>See more</a></div>`
 
-      popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
-    }
+        popup.setLngLat(e.lngLat).setHTML(popup_content).addTo(map);
+      }
 
-    iconDisruptions.forEach((icon) => {
-      map.on("mousemove", icon, () => {
-        map.getCanvas().style.cursor = "pointer";
+      iconDisruptions.forEach((icon) => {
+
+        map.on("mousemove", icon, () => {
+          map.getCanvas().style.cursor = "pointer";
+        })
+
+
+        map.on("mouseleave", icon, () => {
+          map.getCanvas().style.cursor = "";
+        })
+
+        map.on("click", icon, (e) => {
+          if (e.features[0].properties.consequenceType === "stops") {
+            createStopsPopUp(e)
+            return;
+          }
+          if (e.features[0].properties.consequenceType === "services") {
+            createServicesPopUp(e)
+            return;
+          } else return;
+        });
       })
-
-      map.on("mouseleave", icon, () => {
-        map.getCanvas().style.cursor = "";
-      })
-
-      map.on("click", icon, (e) => {
-        if(e.features[0].properties.consequenceType === "stops"){
-          createStopsPopUp(e)
-          return;
-        }
-        if(e.features[0].properties.consequenceType === "services"){
-          createServicesPopUp(e)
-          return;
-        } else return;
-      });
-    })
+    }
   })
 
 };
 
-export {initOrgMap};
+export { initOrgMap };

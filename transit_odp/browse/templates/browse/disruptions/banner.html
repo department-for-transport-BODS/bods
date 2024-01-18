@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<div class="govuk-notification-banner" role="region"
+<div class="govuk-notification-banner govuk-!-width-two-thirds" role="region"
       aria-labelledby="govuk-notification-banner-title"
       data-module="govuk-notification-banner">
   <div class="govuk-notification-banner__header">
@@ -10,7 +10,15 @@
   </div>
   <div class="govuk-notification-banner__content">
     <p class="govuk-body govuk-!-font-weight-bold">
-      There is a network wide disruption affecting several services
+      {% if object.stats.networkWideConsequencesCount and not object.stats.operatorWideConsequencesCount %}
+        There is a network wide disruption affecting several services
+      {% endif %}
+      {% if object.stats.operatorWideConsequencesCount and not object.stats.networkWideConsequencesCount %}
+        There is an operator wide disruption affecting several services
+      {% endif %}
+      {% if object.stats.operatorWideConsequencesCount and object.stats.networkWideConsequencesCount %}
+        There is a network wide and operator wide disruption affecting several services
+      {% endif %}
     </p>
   </div>
 </div>
