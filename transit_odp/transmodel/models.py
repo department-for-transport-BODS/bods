@@ -260,6 +260,18 @@ class OperatingDatesExceptions(models.Model):
     operating_date = models.DateField(null=True, blank=True)
 
 
+class FlexibleServiceOperationPeriod(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="flexible_service_operation_period",
+    )
+
+    start_date = models.DateField(null=True, blank=True)
+
+    end_date = models.DateField(null=True, blank=True)
+
+
 class ServicedOrganisations(models.Model):
     vehicle_journey = models.ForeignKey(
         VehicleJourney, on_delete=models.CASCADE, related_name="serviced_organisations"
@@ -269,18 +281,6 @@ class ServicedOrganisations(models.Model):
 
 
 class ServicedOrganisationWorkingDays(models.Model):
-    serviced_organisation = models.ForeignKey(
-        ServicedOrganisations,
-        on_delete=models.CASCADE,
-        related_name="serviced_organisations_working_days",
-    )
-
-    start_date = models.DateField(null=True, blank=True)
-
-    end_date = models.DateField(null=True, blank=True)
-
-
-class FlexibleServiceOperationPeriod(models.Model):
     serviced_organisation = models.ForeignKey(
         ServicedOrganisations,
         on_delete=models.CASCADE,
