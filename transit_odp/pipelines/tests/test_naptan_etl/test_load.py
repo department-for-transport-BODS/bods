@@ -17,7 +17,7 @@ from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
-    load_flexible_zone,
+    load_new_flexible_zone,
 )
 
 from transit_odp.naptan.dataclasses import StopPoint as StopPointDataClass
@@ -281,12 +281,12 @@ class TestNaptanLoad(TestCase):
                     "obj": stop,
                     "stop_type": "BCT",
                     "bus_stop_type": "CUS",
-                    "flexible_location": flexible_stops.stop_classification.on_street.bus.flexible_zone,
+                    "flexible_zones": flexible_stops.stop_classification.on_street.bus.flexible_zones,
                 },
             ]
         ).set_index("atco_code")
 
-        load_flexible_zone(existing_stops)
+        load_new_flexible_zone(existing_stops)
 
         created_flexible_stops = FlexibleZone.objects.all()
 

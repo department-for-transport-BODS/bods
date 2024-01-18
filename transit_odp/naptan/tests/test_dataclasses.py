@@ -94,13 +94,13 @@ def test_flexible_stop_from_xml(flexible_stops):
     assert point.administrative_area_ref == "064"
     assert point.stop_classification.stop_type == "BCT"
     assert point.stop_classification.on_street.bus.bus_stop_type == "FLX"
-    assert len(point.stop_classification.on_street.bus.flexible_zone.location) == 3
+    assert len(point.stop_classification.on_street.bus.flexible_zones.location) == 3
     assert (
-        point.stop_classification.on_street.bus.flexible_zone.location[0].easting
+        point.stop_classification.on_street.bus.flexible_zones.location[0].easting
         == 462732
     )
     assert (
-        point.stop_classification.on_street.bus.flexible_zone.location[0].northing
+        point.stop_classification.on_street.bus.flexible_zones.location[0].northing
         == 172119
     )
     assert pytest.approx(point.place.location.translation.longitude, 0.001) == -1.099

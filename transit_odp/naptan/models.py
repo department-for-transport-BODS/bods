@@ -101,7 +101,7 @@ class FlexibleZone(models.Model):
         ordering = ("naptan_stoppoint", "sequence_number")
 
     naptan_stoppoint = models.ForeignKey(
-        StopPoint, related_name="stops", on_delete=models.CASCADE
+        StopPoint, related_name="flexible_zones", on_delete=models.CASCADE
     )
     sequence_number = models.IntegerField()
     location = models.PointField()

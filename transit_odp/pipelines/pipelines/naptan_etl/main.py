@@ -12,12 +12,13 @@ from transit_odp.pipelines.pipelines.naptan_etl.extract import (
 )
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
+    load_existing_flexible_zone,
     load_existing_localities,
     load_existing_stops,
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
-    load_flexible_zone,
+    load_new_flexible_zone,
 )
 from transit_odp.pipelines.pipelines.naptan_etl.transform import (
     drop_stops_with_invalid_admin_areas,
@@ -77,17 +78,17 @@ def run():
     load_new_stops(new_stops)
     load_existing_stops(existing_stops)
 
-    new_flexible_stop_points = new_stops[~new_stops["flexible_location"].isna()]
+    new_flexible_stop_points = new_stops[~new_stops["flexible_zones"].isna()]
     existing_flexible_stop_point = existing_stops[
-        ~existing_stops["flexible_location"].isna()
+        ~existing_stops["flexible_zones"].isna()
     ]
 
     stops_from_db = extract_stops_from_db()
     new_flexible_stops = get_existing_data(
         new_flexible_stop_points, stops_from_db, merge_on_field="atco_code"
     )
-    all_flexible_stops = pd.concat([new_flexible_stops, existing_flexible_stop_point])
-    load_flexible_zone(all_flexible_stops)
+    load_new_flexible_zone(new_flexible_stops)
+    load_existing_flexible_zone(existing_flexible_stop_point)
 
     cleanup()
     logger.info("[run] finished")

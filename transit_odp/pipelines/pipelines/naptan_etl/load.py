@@ -33,26 +33,62 @@ def load_new_stops(new_stops):
     logger.info("Finished loading new StopPoints.")
 
 
-def load_flexible_zone(flexible_stops):
-    logger.info("[load_flexible_zone]: Started")
-    for row in flexible_stops.itertuples():
-        flexible_sequence_number = 0
-        for flexible_location in row.flexible_location.location:
-            flexible_sequence_number += 1
-            FlexibleZone.objects.update_or_create(
-                sequence_number=flexible_sequence_number,
-                naptan_stoppoint_id=row.obj.id,
-                defaults={
-                    "sequence_number": flexible_sequence_number,
-                    "naptan_stoppoint_id": row.obj.id,
-                    "location": Point(
-                        x=float(flexible_location.translation.longitude),
-                        y=float(flexible_location.translation.latitude),
+def create_flexible_zones(flexible_zones, id):
+    if flexible_zones is not None:
+        flexible_zone_list = []
+        for sequence_number, flexible_zone in enumerate(flexible_zones.location):
+            flexible_zone_list.append(
+                FlexibleZone(
+                    sequence_number=sequence_number,
+                    naptan_stoppoint_id=id,
+                    location=Point(
+                        x=float(flexible_zone.translation.longitude),
+                        y=float(flexible_zone.translation.latitude),
                         srid=4326,
                     ),
+                )
+            )
+        FlexibleZone.objects.bulk_create(flexible_zone_list, batch_size=5000)
+
+
+def create_update_delete_flexible_zones(flexible_zones, id):
+    if flexible_zones is not None:
+        location_points_added = []
+        for sequence, flexible_zone in enumerate(flexible_zones.location):
+            location_point = Point(
+                x=float(flexible_zone.translation.longitude),
+                y=float(flexible_zone.translation.latitude),
+                srid=4326,
+            )
+            FlexibleZone.objects.update_or_create(
+                location=location_point,
+                naptan_stoppoint_id= id,
+                defaults={
+                    "sequence_number": sequence + 1,
+                    "naptan_stoppoint_id": id,
+                    "location": location_point,
                 },
             )
-    logger.info("[load_flexible_zone]: Finished")
+
+            location_points_added.append(location_point)
+
+        FlexibleZone.objects.filter(naptan_stoppoint_id=id).exclude(
+            location__in=location_points_added
+        ).delete()
+
+
+def load_new_flexible_zone(stop_points):
+    logger.info("[load_flexible_zone_new]: Started")
+    for stop_point in stop_points.itertuples():
+        create_flexible_zones(stop_point.flexible_zones, stop_point.obj.id)
+    logger.info("[load_flexible_zone_new]: Finished")
+
+
+def load_existing_flexible_zone(stop_points):
+    logger.info("[load_flexible_zone_update]: Started")
+    for stop_point in stop_points.itertuples():
+        create_update_delete_flexible_zones(stop_point.flexible_zones, stop_point.obj.id)
+    logger.info("[load_flexible_zone_update]: Finished")
 
 
 def load_existing_stops(existing_stops):
