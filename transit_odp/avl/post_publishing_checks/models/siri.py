@@ -35,8 +35,8 @@ class VehicleLocation(BaseModel):
     @classmethod
     def from_lxml_element(cls, element: _Element) -> "VehicleLocation":
         return cls(
-            longitude=element.findtext("x:Longitude", namespaces=_NSMAP),
-            latitude=element.findtext("x:Latitude", namespaces=_NSMAP),
+            longitude=element.findtext("x:Longitude", namespaces=_NSMAP).strip(),
+            latitude=element.findtext("x:Latitude", namespaces=_NSMAP).strip(),
         )
 
 

@@ -4,6 +4,7 @@ from transit_odp.naptan.querysets import (
     AdminAreaQuerySet,
     LocalityQuerySet,
     StopPointQuerySet,
+    FlexibleZoneQuerySet,
 )
 
 
@@ -16,4 +17,8 @@ class StopPointManager(models.Manager.from_queryset(StopPointQuerySet)):
 
 
 class LocalityManager(models.Manager.from_queryset(LocalityQuerySet)):
+    pass
+
+
+class FlexibleZoneManager(models.Manager.from_queryset(FlexibleZoneQuerySet)):
     pass
