@@ -625,16 +625,32 @@ def test_check_flexible_service_timing_status(values, expected):
 def load_flexible_stops_data():
     admin_area = AdminAreaFactory(id=9, atco_code="123")
     locality = LocalityFactory(gazetteer_id="E0035604")
-    stop_points = [{"atco_code": "270002700155", "common_name": "TestName1", "bus_stop_type": "FLX"},{"atco_code": "270002700156", "common_name": "TestName2", "bus_stop_type": "FLX"},{"atco_code": "270002700157", "common_name": "TestName2", "bus_stop_type": "CUS"}]
+    stop_points = [
+        {
+            "atco_code": "270002700155",
+            "common_name": "TestName1",
+            "bus_stop_type": "FLX",
+        },
+        {
+            "atco_code": "270002700156",
+            "common_name": "TestName2",
+            "bus_stop_type": "FLX",
+        },
+        {
+            "atco_code": "270002700157",
+            "common_name": "TestName2",
+            "bus_stop_type": "CUS",
+        },
+    ]
     for stop_point in stop_points:
         StopPointFactory(
             admin_area=admin_area,
             locality=locality,
-            atco_code=stop_point['atco_code'],
-            common_name=stop_point['common_name'],
+            atco_code=stop_point["atco_code"],
+            common_name=stop_point["common_name"],
             stop_areas=[],
             stop_type="BCT",
-            bus_stop_type=stop_point['bus_stop_type'],
+            bus_stop_type=stop_point["bus_stop_type"],
         )
 
 

@@ -478,7 +478,8 @@ class PTIValidator:
             "check_flexible_service_timing_status", check_flexible_service_timing_status
         )
         self.register_function(
-            "check_flexible_service_stop_point_ref", check_flexible_service_stop_point_ref
+            "check_flexible_service_stop_point_ref",
+            check_flexible_service_stop_point_ref,
         )
 
         self.register_function("date", cast_to_date)

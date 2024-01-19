@@ -380,14 +380,18 @@ def check_flexible_service_stop_point_ref(context, flexiblejourneypatterns):
         "x:FlexibleZones", namespaces=ns
     )
     atco_codes_list = list(
-        set(get_stop_point_ref_list(stop_points_in_seq_list, ns) + get_stop_point_ref_list(stop_points_in_flexzone_list, ns))
+        set(
+            get_stop_point_ref_list(stop_points_in_seq_list, ns)
+            + get_stop_point_ref_list(stop_points_in_flexzone_list, ns)
+        )
     )
 
     total_compliant = StopPoint.objects.filter(
         atco_code__in=atco_codes_list, bus_stop_type="FLX", stop_type="BCT"
     ).count()
 
-    return (total_compliant == len(atco_codes_list))
+    return total_compliant == len(atco_codes_list)
+
 
 def get_stop_point_ref_list(stop_points, ns):
     stop_point_ref_list = []
