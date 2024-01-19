@@ -680,6 +680,19 @@
           "test": "count(x:FlexibleServiceTimes) > 0"
         }
       ]
+    },
+    {
+      "details": "StopPointRef specified in FlexibleStopUsage must only be BCT-FLX.",
+      "category": "Flexible Service",
+      "service_type": "FlexibleService",
+      "reference": "10",
+      "number": 125,
+      "context": "//x:Service/x:FlexibleService/x:FlexibleJourneyPattern",
+      "rules": [
+        {
+          "test": "check_flexible_service_stop_point_ref(.)"
+        }
+      ]
     }
   ]
 }
