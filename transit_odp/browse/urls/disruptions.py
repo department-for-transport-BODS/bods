@@ -1,7 +1,10 @@
 from django.urls import include, path
 from transit_odp.browse.views.disruptions_views import (
+    DisruptionOrganisationDetailView,
+    DisruptionsDataView,
     DownloadDisruptionsDataArchiveView,
     DownloadDisruptionsView,
+    DisruptionDetailView,
 )
 
 urlpatterns = [
@@ -21,5 +24,34 @@ urlpatterns = [
                 ),
             ]
         ),
-    )
+    ),
+    path(
+        "organisations/",
+        include(
+            [
+                path(
+                    "",
+                    view=DisruptionsDataView.as_view(),
+                    name="disruptions-data",
+                ),
+                path(
+                    "<uuid:orgId>/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=DisruptionOrganisationDetailView.as_view(),
+                                name="org-detail",
+                            ),
+                            path(
+                                "disruption-detail/<uuid:disruptionId>/",
+                                view=DisruptionDetailView.as_view(),
+                                name="disruption-detail",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
 ]
