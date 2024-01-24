@@ -25,7 +25,7 @@ from transit_odp.pipelines.pipelines.naptan_etl.load import (
 class TestNaptanLoad(TestCase):
     @pytest.fixture(autouse=True)
     def _get_flexible_zone(self, flexible_stops):
-        self._flexible_zone = flexible_stops
+        self._flexible_zones = flexible_stops
 
     def test_load_new_stops(self):
         # Setup
@@ -254,7 +254,7 @@ class TestNaptanLoad(TestCase):
 
     def test_load_flexible_zone(self):
         # Setup
-        flexible_stops = StopPointDataClass.from_xml(self._flexible_zone)
+        flexible_stops = StopPointDataClass.from_xml(self._flexible_zones)
         admin_area = AdminAreaFactory(id=9, atco_code="123")
         locality = LocalityFactory(gazetteer_id="E0035604")
         stop = StopPointFactory(
@@ -292,9 +292,7 @@ class TestNaptanLoad(TestCase):
 
         self.assertEqual(
             len(created_flexible_stops),
-            len(
-                flexible_stops.stop_classification.on_street.bus.flexible_zone.location
-            ),
+            len(flexible_stops.stop_classification.on_street.bus.flexible_zones),
         )
         self.assertEqual(created_flexible_stops[0].sequence_number, 1)
         self.assertEqual(created_flexible_stops[1].sequence_number, 2)
