@@ -57,12 +57,12 @@ def create_update_delete_flexible_zones(flexible_zones, id):
 
 
 def load_flexible_zones(stop_points):
-    logger.info("[load_flexible_zone_update]: Started")
+    logger.info("[load_flexible_zone]: Started")
     for stop_point in stop_points.itertuples():
         create_update_delete_flexible_zones(
             stop_point.flexible_zones, stop_point.obj.id
         )
-    logger.info("[load_flexible_zone_update]: Finished")
+    logger.info("[load_flexible_zone]: Finished")
 
 
 def load_existing_stops(existing_stops):
