@@ -8,6 +8,7 @@ from transit_odp.naptan.managers import (
     StopPointManager,
     FlexibleZoneManager,
 )
+from django.db.models import UniqueConstraint
 
 
 class AdminArea(models.Model):
@@ -99,7 +100,12 @@ class StopPoint(models.Model):
 class FlexibleZone(models.Model):
     class Meta:
         ordering = ("naptan_stoppoint", "sequence_number")
-
+        constraints = [
+            UniqueConstraint(
+                fields=["naptan_stoppoint", "sequence_number"],
+                name="unique_flexible_zone",
+            ),
+        ]
     naptan_stoppoint = models.ForeignKey(
         StopPoint, related_name="flexible_zones", on_delete=models.CASCADE
     )
