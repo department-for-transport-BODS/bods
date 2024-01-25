@@ -112,7 +112,10 @@ class Registry:
 
         for registration in registrations:
             if registration.registration_status in RegistrationStatusEnum.to_change():
-                look_up_again.add(registration.registration_number)
+                if registration.variation_number != 0:
+                    look_up_again.add(registration.registration_number)
+                else:
+                    self.update(registration)
             else:
                 if (
                     registration.registration_status
@@ -134,6 +137,11 @@ class Registry:
                     == RegistrationStatusEnum.REGISTERED.value
                 ):
                     self.update_registered_variations(variation)
+                elif (
+                    variation.registration_status in RegistrationStatusEnum.to_delete()
+                ):
+                    self.update(variation)
+
         return regs_to_update_lta
 
     def filter_by_status(self, *args) -> List[Service]:

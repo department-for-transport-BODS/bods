@@ -124,7 +124,10 @@ class Loader:
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()
 
-                for (db_item, kwargs,) in (
+                for (
+                    db_item,
+                    kwargs,
+                ) in (
                     (db_service.licence, updated_service_kwargs.pop("licence")),
                     (db_service.operator, updated_service_kwargs.pop("operator")),
                     (db_service, updated_service_kwargs),
@@ -147,12 +150,25 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
-    def load_inactive_services(self, variation):
-        InactiveService.objects.create(
-            registration_number=variation.registration_number,
-            registration_status=variation.registration_status,
-            effective_date=variation.effective_date,
+    def load_inactive_services(self):
+        to_delete_services = []
+        new_inactive_service_objects = []
+
+        for service in self.inactive_services:
+            to_delete_services.append(service.registration_number)
+            new_inactive_service_objects.append(
+                InactiveService(
+                    registration_number=service.registration_number,
+                    registration_status=service.registration_status,
+                    effective_date=service.effective_date,
+                )
+            )
+
+        count, _ = Service.objects.filter(
+            registration_number__in=to_delete_services
+        ).delete()
         )
+        logger.info(f"{count} Services marked inactive")
 
     def delete_bad_data(self):
         to_delete_services = self.to_delete_service
@@ -215,6 +231,7 @@ class Loader:
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
+            self.load_inactive_services()
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
@@ -289,6 +306,15 @@ class Loader:
     @cached_property
     def registered_service(self):
         return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)
+
+    @cached_property
+    def inactive_services(self):
+        return [
+            service
+            for service in self.registry.services
+            if service.registration_status in RegistrationStatusEnum.to_change()
+            and service.variation_number == 0
+        ]
 
     @cached_property
     def to_delete_service(self):
