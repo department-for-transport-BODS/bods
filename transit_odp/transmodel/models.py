@@ -252,12 +252,21 @@ class FlexibleServiceOperationPeriod(models.Model):
     end_date = models.DateField(null=True, blank=True)
 
 
-class ServicedOrganisations(models.Model):
-    vehicle_journey = models.ForeignKey(
-        VehicleJourney, on_delete=models.CASCADE, related_name="serviced_organisations"
+class ServicedOrganisationVehicleJourney(models.Model):
+    serviced_organisation = models.ForeignKey(
+        "ServicedOrganisations", on_delete=models.CASCADE
     )
+    vehicle_journey = models.ForeignKey(VehicleJourney, on_delete=models.CASCADE)
+    operating_on_working_days = models.BooleanField(default=False)
 
+
+class ServicedOrganisations(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
+    vehicle_journeys = models.ManyToManyField(
+        VehicleJourney,
+        through=ServicedOrganisationVehicleJourney,
+        related_name="serviced_organisations",
+    )
 
 
 class ServicedOrganisationWorkingDays(models.Model):
@@ -266,7 +275,5 @@ class ServicedOrganisationWorkingDays(models.Model):
         on_delete=models.CASCADE,
         related_name="serviced_organisations_working_days",
     )
-
     start_date = models.DateField(null=True, blank=True)
-
     end_date = models.DateField(null=True, blank=True)
