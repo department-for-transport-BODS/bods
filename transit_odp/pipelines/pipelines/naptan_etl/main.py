@@ -6,6 +6,8 @@ from transit_odp.pipelines.pipelines.naptan_etl.extract import (
     extract_admin_areas,
     extract_localities,
     extract_stops,
+    get_latest_naptan_xml,
+    get_latest_nptg,
 )
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
@@ -35,11 +37,9 @@ logger = LoaderAdapter("NaPTANLoader", logger)
 def run():
     logger.info("Running NaPTAN loading pipeline.")
 
-    # naptan_file_path = get_latest_naptan_xml()
-    # nptg_file_path = get_latest_nptg()
-    # naptan_file_path="/Users/in-brahmaduttau/projects/bods/NaPTAN.xml"
-    naptan_file_path = "/Users/in-brahmaduttau/projects/bods/naptan_small.xml"
-    nptg_file_path = "/Users/in-brahmaduttau/projects/bods/NPTG.xml"
+    naptan_file_path = get_latest_naptan_xml()
+    nptg_file_path = get_latest_nptg()
+
     stops_naptan = extract_stops(naptan_file_path)
 
     admin_areas_naptan = extract_admin_areas(nptg_file_path)
