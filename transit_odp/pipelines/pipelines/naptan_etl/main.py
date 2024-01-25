@@ -1,4 +1,3 @@
-import pandas as pd
 from celery.utils.log import get_task_logger
 
 from transit_odp.common.loggers import LoaderAdapter
@@ -7,15 +6,14 @@ from transit_odp.pipelines.pipelines.naptan_etl.extract import (
     extract_admin_areas,
     extract_localities,
     extract_stops,
-    get_latest_naptan_xml,
-    get_latest_nptg,
 )
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
+    load_existing_flexible_zones,
     load_existing_localities,
     load_existing_stops,
-    load_flexible_zones,
     load_new_admin_areas,
+    load_new_flexible_zones,
     load_new_localities,
     load_new_stops,
 )
@@ -37,9 +35,11 @@ logger = LoaderAdapter("NaPTANLoader", logger)
 def run():
     logger.info("Running NaPTAN loading pipeline.")
 
-    naptan_file_path = get_latest_naptan_xml()
-    nptg_file_path = get_latest_nptg()
-
+    # naptan_file_path = get_latest_naptan_xml()
+    # nptg_file_path = get_latest_nptg()
+    # naptan_file_path="/Users/in-brahmaduttau/projects/bods/NaPTAN.xml"
+    naptan_file_path = "/Users/in-brahmaduttau/projects/bods/naptan_small.xml"
+    nptg_file_path = "/Users/in-brahmaduttau/projects/bods/NPTG.xml"
     stops_naptan = extract_stops(naptan_file_path)
 
     admin_areas_naptan = extract_admin_areas(nptg_file_path)
@@ -78,14 +78,14 @@ def run():
     load_existing_stops(existing_stops)
 
     new_flexible_stop_points = new_stops[~new_stops["flexible_zones"].isna()]
-    existing_flexible_stops = existing_stops[~existing_stops["flexible_zones"].isna()]
-
-    stops_from_db = extract_stops_from_db()
     new_flexible_stops = get_existing_data(
         new_flexible_stop_points, stops_from_db, merge_on_field="atco_code"
     )
-    all_flexible_stops = pd.concat([new_flexible_stops, existing_flexible_stops])
-    load_flexible_zones(all_flexible_stops)
+    load_new_flexible_zones(new_flexible_stops)
+
+    existing_flexible_stops = existing_stops[~existing_stops["flexible_zones"].isna()]
+
+    load_existing_flexible_zones(existing_flexible_stops)
 
     cleanup()
     logger.info("[run] finished")
