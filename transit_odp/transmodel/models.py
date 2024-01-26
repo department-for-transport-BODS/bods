@@ -108,15 +108,6 @@ class ServicePatternStop(models.Model):
         )
 
 
-class TimingPattern(models.Model):
-    service_pattern = models.ForeignKey(
-        ServicePattern, on_delete=models.CASCADE, related_name="timing_patterns"
-    )
-
-    def __str__(self):
-        return f"{self.id}, service_pattern: {self.service_pattern.id}"
-
-
 class ServiceLink(models.Model):
     # Retain the from/to atco codes in case the naptan_stops disappear in a
     # future naptan import.
@@ -147,7 +138,6 @@ class ServiceLink(models.Model):
 
 
 class VehicleJourney(models.Model):
-    timing_pattern = models.ForeignKey(TimingPattern, on_delete=models.CASCADE)
     start_time = models.TimeField()
     line_ref = models.CharField(max_length=255, null=True, blank=True)
     journey_code = models.CharField(max_length=255, null=True, blank=True)
