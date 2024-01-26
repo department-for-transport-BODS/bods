@@ -70,7 +70,7 @@ def get_existing_data(naptan_data, db_data, merge_on_field):
     return existing_data
 
 
-def extract_flixible_zones_from_db():
+def extract_flexible_zones_from_db():
     def inner():
         for zone in FlexibleZone.objects.all():
             yield {
@@ -86,7 +86,7 @@ def extract_flixible_zones_from_db():
     return df
 
 
-def extract_flixible_zones_from_df(stop_points):
+def extract_flexible_zones_from_df(stop_points):
     def inner():
         for stop_point in stop_points.itertuples():
             if stop_point.flexible_zones is not None:

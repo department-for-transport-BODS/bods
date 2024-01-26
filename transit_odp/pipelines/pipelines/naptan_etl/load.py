@@ -4,8 +4,8 @@ from django.contrib.gis.geos import Point
 from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.models import AdminArea, FlexibleZone, Locality, StopPoint
 from transit_odp.pipelines.pipelines.naptan_etl.transform import (
-    extract_flixible_zones_from_db,
-    extract_flixible_zones_from_df,
+    extract_flexible_zones_from_db,
+    extract_flexible_zones_from_df,
     get_flexible_zones_in_both,
     get_flexible_zones_in_db_only,
     get_flexible_zones_in_xml_only,
@@ -234,8 +234,8 @@ def delete_existing_flexible_zones(flexible_zones):
 def load_existing_flexible_zones(existing_flexible_stops):
     logger.info("[load_flexible_zone]: Started")
 
-    flexible_zones_from_db = extract_flixible_zones_from_db()
-    flexible_zones_from_df = extract_flixible_zones_from_df(existing_flexible_stops)
+    flexible_zones_from_db = extract_flexible_zones_from_db()
+    flexible_zones_from_df = extract_flexible_zones_from_df(existing_flexible_stops)
 
     new_flexible_zones_in_xml = get_flexible_zones_in_xml_only(
         flexible_zones_from_db, flexible_zones_from_df
