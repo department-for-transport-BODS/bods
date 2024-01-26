@@ -101,6 +101,7 @@ def journey_patterns_to_dataframe(services):
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
         standard_service = service.get_element_or_none(["StandardService"])
+        flexible_service = service.get_element_or_none(["FlexibleService"])
 
         if standard_service:
             for pattern in standard_service.get_elements(["JourneyPattern"]):
@@ -114,6 +115,20 @@ def journey_patterns_to_dataframe(services):
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
+
+        if flexible_service:
+            for pattern in flexible_service.get_elements(["flexible_service"]):
+                direction = pattern.get_element_or_none(["Direction"])
+                all_items.append(
+                    {
+                        "service_code": service_code,
+                        "journey_pattern_id": pattern["id"],
+                        "direction": direction.text if direction is not None else "",
+                        "jp_section_refs": [],
+                    }
+                )
+
+
     journey_patterns = pd.DataFrame(all_items)
     # Note - 'journey_pattern_id' is not necessarily unique across all
     # services so we make it unique by service_code
@@ -178,6 +193,42 @@ def journey_pattern_sections_to_dataframe(sections):
     timing_links = pd.DataFrame(all_links)
     return timing_links
 
+
+def vehicle_journeys_to_dataframe(standard_vehicle_journeys, flexible_vechicle_journeys):
+    all_vechicle_journeys = []
+    if standard_vehicle_journeys is not None:
+        for vehicle_journey in standard_vehicle_journeys:
+            departure_time = vehicle_journey.get_element(["DepartureTime"]).text
+            journey_pattern_ref = vehicle_journey.get_element(["JourneyPatternRef"]).text
+            line_ref = vehicle_journey.get_element(["LineRef"]).text
+            journey_code = vehicle_journey.get_element(["Operational", "TicketMachine", "JourneyCode"]).text
+            vehicle_journey_code = vehicle_journey.get_element(["VehicleJourneyCode"]).text
+            service_ref = vehicle_journey.get_element(["ServiceRef"]).text
+
+            all_vechicle_journeys.append({
+                "departure_time": departure_time,
+                "journey_pattern_ref": "-".join([service_ref,journey_pattern_ref]),
+                "line_ref": line_ref,
+                "journey_code": journey_code,
+                "vehicle_journey_code": vehicle_journey_code
+            })
+            
+    if flexible_vechicle_journeys is not None:
+        for vehicle_journey in flexible_vechicle_journeys:
+            line_ref = vehicle_journey.get_element(["LineRef"]).text
+            journey_pattern_ref = vehicle_journey.get_element(["JourneyPatternRef"]).text
+            vehicle_journey_code = vehicle_journey.get_element(["VehicleJourneyCode"]).text
+            service_ref = vehicle_journey.get_element(["ServiceRef"]).text
+
+            all_vechicle_journeys.append({
+                "departure_time": None,
+                "journey_pattern_ref": "-".join([service_ref,journey_pattern_ref]),
+                "line_ref": line_ref,
+                "journey_code": None,
+                "vehicle_journey_code": vehicle_journey_code
+            })
+            
+    return pd.DataFrame(all_vechicle_journeys)
 
 def booking_arrangements_to_dataframe(services):
     booking_arrangement_props = []

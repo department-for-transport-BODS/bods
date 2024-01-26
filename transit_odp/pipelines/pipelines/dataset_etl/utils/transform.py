@@ -187,7 +187,7 @@ def create_hash(s: pd.Series):
     """Hash together values in pd.Series"""
     return hash(tuple(s))
 
-
+    
 def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links):
     """
     Merge timing_links with jp_to_jps to get timing links for each journey
@@ -242,6 +242,12 @@ def transform_line_names(line_name_list):
     if line_name_list:
         line_names = ",".join(key for key in line_name_list)
         return line_names
+
+
+def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
+    df_merged = pd.merge(vehicle_journeys, journey_patterns, left_on=["file_id", "journey_pattern_ref"],right_index=True, how="left", suffixes=('_vj', '_jp'), indicator=True)
+
+    return df_merged
 
 
 def transform_service_patterns(journey_patterns):

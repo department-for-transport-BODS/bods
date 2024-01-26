@@ -25,6 +25,7 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     stop_point_refs_to_dataframe,
     booking_arrangements_to_dataframe,
+    vehicle_journeys_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -87,6 +88,11 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
 
+         # Extract VehicleJourneys
+        logger.debug("Extracting vehicle_journeys")
+        vehicle_journeys = self.extract_vehicle_journeys()
+        logger.debug("Finished extracting vehicle_journeys")        
+
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
         booking_arrangements = self.extract_booking_arrangements()
@@ -132,6 +138,7 @@ class TransXChangeExtractor:
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,
             booking_arrangements=booking_arrangements,
+            vehicle_journeys=vehicle_journeys,
         )
 
     def construct_geometry(self, point: Point):
@@ -184,6 +191,20 @@ class TransXChangeExtractor:
             journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
         return journey_patterns, jp_to_jps
+    
+    
+    def extract_vehicle_journeys(self):
+        standard_vehicle_journeys = self.doc.get_all_vehicle_journeys("VehicleJourney",allow_none=True)
+        flexible_vehicle_journeys = self.doc.get_all_vehicle_journeys("FlexibleVehicleJourney",allow_none=True)
+
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(standard_vehicle_journeys,flexible_vehicle_journeys)
+
+        if not df_vehicle_journeys.empty:
+            df_vehicle_journeys["file_id"] = self.file_id
+            df_vehicle_journeys.set_index(["file_id"], inplace=True)
+
+        return df_vehicle_journeys
+
 
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)
