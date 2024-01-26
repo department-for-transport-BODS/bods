@@ -292,7 +292,7 @@ class TestNaptanLoad(TestCase):
 
         self.assertEqual(
             len(created_flexible_stops),
-            len(flexible_stops.stop_classification.on_street.bus.flexible_zones),
+            len(flexible_zones.location),
         )
         self.assertEqual(created_flexible_stops[0].sequence_number, 1)
         self.assertEqual(created_flexible_stops[1].sequence_number, 2)
