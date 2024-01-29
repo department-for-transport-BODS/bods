@@ -138,7 +138,7 @@ class ServiceLink(models.Model):
 
 
 class VehicleJourney(models.Model):
-    start_time = models.TimeField()
+    start_time = models.TimeField(null=True)
     line_ref = models.CharField(max_length=255, null=True, blank=True)
     journey_code = models.CharField(max_length=255, null=True, blank=True)
     direction = models.CharField(max_length=255, null=True, blank=True)
