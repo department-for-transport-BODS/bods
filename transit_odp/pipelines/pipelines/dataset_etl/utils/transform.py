@@ -187,7 +187,7 @@ def create_hash(s: pd.Series):
     """Hash together values in pd.Series"""
     return hash(tuple(s))
 
-    
+
 def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links):
     """
     Merge timing_links with jp_to_jps to get timing links for each journey
@@ -245,7 +245,15 @@ def transform_line_names(line_name_list):
 
 
 def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
-    df_merged = pd.merge(vehicle_journeys, journey_patterns, left_on=["file_id", "journey_pattern_ref"],right_index=True, how="left", suffixes=('_vj', '_jp'), indicator=True)
+    df_merged = pd.merge(
+        vehicle_journeys,
+        journey_patterns,
+        left_on=["file_id", "journey_pattern_ref"],
+        right_index=True,
+        how="left",
+        suffixes=("_vj", "_jp"),
+        indicator=True,
+    )
 
     return df_merged
 
@@ -258,6 +266,9 @@ def transform_service_patterns(journey_patterns):
         .drop("journey_pattern_id", axis=1)
     )
 
+    # Route hash at the time of this comment was null for
+    # flexible services
+    service_patterns.dropna(subset=["route_hash"], inplace=True)
     # Create an id column for service_patterns. Note using the route_hash
     # won't result in the prettiest id
     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(

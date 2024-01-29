@@ -136,14 +136,14 @@ class TransXChangeDataLoader:
 
         return services
 
-
     def load_vehicle_journeys(self):
         vehicle_journeys = self.transformed.vehicle_journeys
         vehicle_journeys.reset_index(inplace=True)
-        vehicle_journeys_objs = list(df_to_vehicle_journeys( vehicle_journeys))
-        created = VehicleJourney.objects.bulk_create(vehicle_journeys_objs, batch_size=BATCH_SIZE)
+        vehicle_journeys_objs = list(df_to_vehicle_journeys(vehicle_journeys))
+        created = VehicleJourney.objects.bulk_create(
+            vehicle_journeys_objs, batch_size=BATCH_SIZE
+        )
         vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
-
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""

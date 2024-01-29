@@ -88,10 +88,10 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
 
-         # Extract VehicleJourneys
+        # Extract VehicleJourneys
         logger.debug("Extracting vehicle_journeys")
         vehicle_journeys = self.extract_vehicle_journeys()
-        logger.debug("Finished extracting vehicle_journeys")        
+        logger.debug("Finished extracting vehicle_journeys")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
@@ -191,20 +191,24 @@ class TransXChangeExtractor:
             journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
         return journey_patterns, jp_to_jps
-    
-    
-    def extract_vehicle_journeys(self):
-        standard_vehicle_journeys = self.doc.get_all_vehicle_journeys("VehicleJourney",allow_none=True)
-        flexible_vehicle_journeys = self.doc.get_all_vehicle_journeys("FlexibleVehicleJourney",allow_none=True)
 
-        df_vehicle_journeys = vehicle_journeys_to_dataframe(standard_vehicle_journeys,flexible_vehicle_journeys)
+    def extract_vehicle_journeys(self):
+        standard_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "VehicleJourney", allow_none=True
+        )
+        flexible_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "FlexibleVehicleJourney", allow_none=True
+        )
+
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(
+            standard_vehicle_journeys, flexible_vehicle_journeys
+        )
 
         if not df_vehicle_journeys.empty:
             df_vehicle_journeys["file_id"] = self.file_id
             df_vehicle_journeys.set_index(["file_id"], inplace=True)
 
         return df_vehicle_journeys
-
 
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)

@@ -262,7 +262,7 @@ class TransXChangeDocument:
             return self._root.get_elements_or_none(xpath)
 
         return self._root.get_elements(xpath)
-    
+
     def get_all_vehicle_journeys(self, vj_type, allow_none=False):
         """Get all the VehicleJourney elements in the TransXChangeDocument.
 
