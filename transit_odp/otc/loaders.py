@@ -167,6 +167,8 @@ class Loader:
         count, _ = Service.objects.filter(
             registration_number__in=to_delete_services
         ).delete()
+        InactiveService.objects.bulk_create(
+            new_inactive_service_objects, ignore_conflicts=True
         )
         logger.info(f"{count} Services marked inactive")
 
