@@ -166,9 +166,9 @@ class Loader:
             )
         }
 
-        service_to_delete = services + [
+        service_to_delete = services + {
             service.registration_number for service in self.inactive_services
-        ]
+        }
 
         count, _ = Service.objects.filter(
             registration_number__in=service_to_delete
