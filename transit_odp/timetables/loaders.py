@@ -11,6 +11,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_service_patterns,
     df_to_services,
     df_to_booking_arrangements,
+    df_to_vehicle_journeys,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -34,6 +35,7 @@ from transit_odp.transmodel.models import (
     ServiceLink,
     ServicePattern,
     BookingArrangements,
+    VehicleJourney,
 )
 
 BATCH_SIZE = 2000
@@ -53,6 +55,10 @@ class TransXChangeDataLoader:
         adapter.info("Loading services.")
         services = self.load_services(revision)
         adapter.info("Finished loading services.")
+
+        adapter.info("Loading vehicle journeys.")
+        vehicle_journeys = self.load_vehicle_journeys()
+        adapter.info("Finished vehicle journeys.")
 
         adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
@@ -129,6 +135,15 @@ class TransXChangeDataLoader:
         self.service_cache.update({service.id: service for service in created})
 
         return services
+
+    def load_vehicle_journeys(self):
+        vehicle_journeys = self.transformed.vehicle_journeys
+        vehicle_journeys.reset_index(inplace=True)
+        vehicle_journeys_objs = list(df_to_vehicle_journeys(vehicle_journeys))
+        created = VehicleJourney.objects.bulk_create(
+            vehicle_journeys_objs, batch_size=BATCH_SIZE
+        )
+        vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""
