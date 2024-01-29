@@ -224,7 +224,6 @@ class Loader:
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
-            self.load_inactive_services()
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
