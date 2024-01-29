@@ -1,7 +1,13 @@
 import pandas as pd
 from celery.utils.log import get_task_logger
 
-from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
+from transit_odp.naptan.models import (
+    AdminArea,
+    District,
+    FlexibleZone,
+    Locality,
+    StopPoint,
+)
 
 logger = get_task_logger(__name__)
 
@@ -64,6 +70,73 @@ def get_existing_data(naptan_data, db_data, merge_on_field):
     return existing_data
 
 
+def extract_flexible_zones_from_db():
+    def inner():
+        for zone in FlexibleZone.objects.all():
+            yield {
+                "sequence_number": zone.sequence_number,
+                "naptan_stoppoint_id": zone.naptan_stoppoint_id,
+                "zone_db": zone,
+            }
+
+    df = pd.DataFrame(
+        inner(),
+        columns=["sequence_number", "naptan_stoppoint_id", "zone_db"],
+    ).set_index(["sequence_number", "naptan_stoppoint_id"])
+    return df
+
+
+def extract_flexible_zones_from_df(stop_points):
+    def inner():
+        for stop_point in stop_points.itertuples():
+            if stop_point.flexible_zones is not None:
+                for sequence, flexible_zone in enumerate(
+                    stop_point.flexible_zones.location
+                ):
+                    yield {
+                        "sequence_number": sequence + 1,
+                        "naptan_stoppoint_id": stop_point.obj.id,
+                        "zone_df": flexible_zone,
+                    }
+
+    df = pd.DataFrame(
+        inner(),
+        columns=["sequence_number", "naptan_stoppoint_id", "zone_df"],
+    ).set_index(["sequence_number", "naptan_stoppoint_id"])
+    return df
+
+
+def get_flexible_zones_in_xml_only(flexible_zones_from_db, flexible_zones_from_df):
+    merged = flexible_zones_from_df.merge(
+        flexible_zones_from_db,
+        how="outer",
+        indicator=True,
+        on=["sequence_number", "naptan_stoppoint_id"],
+    )
+    return merged[merged["_merge"] == "left_only"]
+
+
+def get_flexible_zones_in_both(flexible_zones_from_db, flexible_zones_from_df):
+    existing_data = pd.merge(
+        flexible_zones_from_db,
+        flexible_zones_from_df,
+        how="inner",
+        indicator=True,
+        on=["sequence_number", "naptan_stoppoint_id"],
+    )
+    return existing_data
+
+
+def get_flexible_zones_in_db_only(flexible_zones_from_db, flexible_zones_from_df):
+    merged = flexible_zones_from_db.merge(
+        flexible_zones_from_df,
+        how="outer",
+        indicator=True,
+        on=["sequence_number", "naptan_stoppoint_id"],
+    )
+    return merged[merged["_merge"] == "left_only"]
+
+
 def drop_stops_with_invalid_admin_areas(
     stops: pd.DataFrame, admin_areas: pd.DataFrame
 ) -> pd.DataFrame:
@@ -83,7 +156,6 @@ def drop_stops_with_invalid_admin_areas(
 def drop_stops_with_invalid_localities(
     stops: pd.DataFrame, localities: pd.DataFrame
 ) -> pd.DataFrame:
-
     bad_stops = stops[~stops.locality_id.isin(localities.index)]
     bad_count = len(bad_stops)
     if bad_count:

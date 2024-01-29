@@ -1,12 +1,13 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import UniqueConstraint
 
 from transit_odp.common.utils.repr import nice_repr
 from transit_odp.naptan.managers import (
     AdminAreaManager,
+    FlexibleZoneManager,
     LocalityManager,
     StopPointManager,
-    FlexibleZoneManager,
 )
 
 
@@ -99,9 +100,15 @@ class StopPoint(models.Model):
 class FlexibleZone(models.Model):
     class Meta:
         ordering = ("naptan_stoppoint", "sequence_number")
+        constraints = [
+            UniqueConstraint(
+                fields=["naptan_stoppoint", "sequence_number"],
+                name="unique_flexible_zone",
+            ),
+        ]
 
     naptan_stoppoint = models.ForeignKey(
-        StopPoint, related_name="stops", on_delete=models.CASCADE
+        StopPoint, related_name="flexible_zones", on_delete=models.CASCADE
     )
     sequence_number = models.IntegerField()
     location = models.PointField()
