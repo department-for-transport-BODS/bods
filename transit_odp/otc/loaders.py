@@ -150,27 +150,12 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
-    def load_inactive_services(self):
-        to_delete_services = []
-        new_inactive_service_objects = []
-
-        for service in self.inactive_services:
-            to_delete_services.append(service.registration_number)
-            new_inactive_service_objects.append(
-                InactiveService(
-                    registration_number=service.registration_number,
-                    registration_status=service.registration_status,
-                    effective_date=service.effective_date,
-                )
-            )
-
-        count, _ = Service.objects.filter(
-            registration_number__in=to_delete_services
-        ).delete()
-        InactiveService.objects.bulk_create(
-            new_inactive_service_objects, ignore_conflicts=True
+    def load_inactive_services(self, variation):
+        InactiveService.objects.create(
+            registration_number=variation.registration_number,
+            registration_status=variation.registration_status,
+            effective_date=variation.effective_date,
         )
-        logger.info(f"{count} Services marked inactive")
 
     def delete_bad_data(self):
         to_delete_services = self.to_delete_service
@@ -181,8 +166,14 @@ class Loader:
             )
         }
 
-        count, _ = Service.objects.filter(registration_number__in=services).delete()
-        logger.info(f"{count} Services removed")
+        service_to_delete = services + [
+            service.registration_number for service in self.inactive_services
+        ]
+
+        count, _ = Service.objects.filter(
+            registration_number__in=service_to_delete
+        ).delete()
+        logger.info(f"{count} Services removed because of effective date in past")
 
         count, _ = Licence.objects.filter(services=None).delete()
         logger.info(f"{count} Licences removed")
