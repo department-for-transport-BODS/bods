@@ -108,15 +108,6 @@ class ServicePatternStop(models.Model):
         )
 
 
-class TimingPattern(models.Model):
-    service_pattern = models.ForeignKey(
-        ServicePattern, on_delete=models.CASCADE, related_name="timing_patterns"
-    )
-
-    def __str__(self):
-        return f"{self.id}, service_pattern: {self.service_pattern.id}"
-
-
 class ServiceLink(models.Model):
     # Retain the from/to atco codes in case the naptan_stops disappear in a
     # future naptan import.
@@ -147,7 +138,6 @@ class ServiceLink(models.Model):
 
 
 class VehicleJourney(models.Model):
-    timing_pattern = models.ForeignKey(TimingPattern, on_delete=models.CASCADE)
     start_time = models.TimeField()
     line_ref = models.CharField(max_length=255, null=True, blank=True)
     journey_code = models.CharField(max_length=255, null=True, blank=True)
@@ -252,12 +242,21 @@ class FlexibleServiceOperationPeriod(models.Model):
     end_date = models.DateField(null=True, blank=True)
 
 
-class ServicedOrganisations(models.Model):
-    vehicle_journey = models.ForeignKey(
-        VehicleJourney, on_delete=models.CASCADE, related_name="serviced_organisations"
+class ServicedOrganisationVehicleJourney(models.Model):
+    serviced_organisation = models.ForeignKey(
+        "ServicedOrganisations", on_delete=models.CASCADE
     )
+    vehicle_journey = models.ForeignKey(VehicleJourney, on_delete=models.CASCADE)
+    operating_on_working_days = models.BooleanField(default=False)
 
+
+class ServicedOrganisations(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
+    vehicle_journeys = models.ManyToManyField(
+        VehicleJourney,
+        through=ServicedOrganisationVehicleJourney,
+        related_name="serviced_organisations",
+    )
 
 
 class ServicedOrganisationWorkingDays(models.Model):
@@ -266,7 +265,5 @@ class ServicedOrganisationWorkingDays(models.Model):
         on_delete=models.CASCADE,
         related_name="serviced_organisations_working_days",
     )
-
     start_date = models.DateField(null=True, blank=True)
-
     end_date = models.DateField(null=True, blank=True)
