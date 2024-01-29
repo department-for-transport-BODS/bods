@@ -51,12 +51,9 @@ class TestFlexibleZoneQuerySet:
         district = DistrictFactory()
         locality = LocalityFactory(admin_area=admin_area, district=district)
         naptan_stoppoint = StopPointFactory(locality=locality, admin_area=admin_area)
-        flexible_zone = FlexibleZoneFactory(
-            naptan_stoppoint=naptan_stoppoint, sequence_number=1
-        )
-        flexible_zone = FlexibleZoneFactory(
-            naptan_stoppoint=naptan_stoppoint, sequence_number=2
-        )
+        FlexibleZoneFactory(naptan_stoppoint=naptan_stoppoint, sequence_number=1)
+        FlexibleZoneFactory(naptan_stoppoint=naptan_stoppoint, sequence_number=2)
+
         qs = FlexibleZone.objects.all()
         assert qs[0].sequence_number == 1
         assert qs[1].sequence_number == 2
