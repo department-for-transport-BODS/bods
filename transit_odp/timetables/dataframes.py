@@ -216,7 +216,7 @@ def vehicle_journeys_to_dataframe(
             journey_code = ""
             if journey_code_element:
                 journey_code = journey_code_element.text
-                
+
             vehicle_journey_code = vehicle_journey.get_element(
                 ["VehicleJourneyCode"]
             ).text
