@@ -232,13 +232,31 @@ class LineMetadataDetailView(DetailView):
                         operating_period_start_date <= today
                         and today <= operating_period_end_date
                     ):
-                        valid_file_names.append({"filename": file_name[0], "start_date": operating_period_start_date, "end_date": operating_period_end_date})
+                        valid_file_names.append(
+                            {
+                                "filename": file_name[0],
+                                "start_date": operating_period_start_date,
+                                "end_date": operating_period_end_date,
+                            }
+                        )
                 elif operating_period_start_date:
                     if operating_period_start_date <= today:
-                        valid_file_names.append({"filename": file_name[0], "start_date": operating_period_start_date, "end_date": None})
+                        valid_file_names.append(
+                            {
+                                "filename": file_name[0],
+                                "start_date": operating_period_start_date,
+                                "end_date": None,
+                            }
+                        )
                 elif operating_period_end_date:
                     if today <= operating_period_end_date:
-                        valid_file_names.append({"filename": file_name[0], "start_date": None, "end_date": operating_period_end_date})
+                        valid_file_names.append(
+                            {
+                                "filename": file_name[0],
+                                "start_date": None,
+                                "end_date": operating_period_end_date,
+                            }
+                        )
 
         return valid_file_names
 
