@@ -310,4 +310,7 @@ class TransXChangeZipExtractor:
             booking_arrangements=pd.concat(
                 (extract.booking_arrangements for extract in extracts)
             ),
+            vehicle_journeys=pd.concat(
+                (extract.vehicle_journeys for extract in extracts)
+            ),
         )

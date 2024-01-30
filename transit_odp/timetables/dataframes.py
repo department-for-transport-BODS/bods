@@ -203,13 +203,20 @@ def vehicle_journeys_to_dataframe(
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
             departure_time = vehicle_journey.get_element(["DepartureTime"]).text
-            journey_pattern_ref = vehicle_journey.get_element(
+            journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
-            ).text
+            )
+            journey_pattern_ref = ""
+            if journey_pattern_ref_element:
+                journey_pattern_ref = journey_pattern_ref_element.text
             line_ref = vehicle_journey.get_element(["LineRef"]).text
-            journey_code = vehicle_journey.get_element(
+            journey_code_element = vehicle_journey.get_element_or_none(
                 ["Operational", "TicketMachine", "JourneyCode"]
-            ).text
+            )
+            journey_code = ""
+            if journey_code_element:
+                journey_code = journey_code_element.text
+                
             vehicle_journey_code = vehicle_journey.get_element(
                 ["VehicleJourneyCode"]
             ).text
