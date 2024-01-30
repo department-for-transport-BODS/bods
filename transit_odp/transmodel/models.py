@@ -245,9 +245,13 @@ class FlexibleServiceOperationPeriod(models.Model):
 
 class ServicedOrganisationVehicleJourney(models.Model):
     serviced_organisation = models.ForeignKey(
-        "ServicedOrganisations", on_delete=models.CASCADE
+        "ServicedOrganisations",
+        on_delete=models.CASCADE,
+        related_name="serviced_organisations",
     )
-    vehicle_journey = models.ForeignKey(VehicleJourney, on_delete=models.CASCADE)
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney, on_delete=models.CASCADE, related_name="vehicle_journeys"
+    )
     operating_on_working_days = models.BooleanField(default=False)
 
 
