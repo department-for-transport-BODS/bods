@@ -108,42 +108,6 @@ class ServicePatternStop(models.Model):
         )
 
 
-class TimingPattern(models.Model):
-    service_pattern = models.ForeignKey(
-        ServicePattern, on_delete=models.CASCADE, related_name="timing_patterns"
-    )
-
-    def __str__(self):
-        return f"{self.id}, service_pattern: {self.service_pattern.id}"
-
-
-class TimingPatternStop(models.Model):
-    timing_pattern = models.ForeignKey(
-        TimingPattern, on_delete=models.CASCADE, related_name="timing_pattern_stops"
-    )
-    service_pattern_stop = models.ForeignKey(
-        ServicePatternStop, on_delete=models.CASCADE, related_name="timings"
-    )
-    arrival = models.DurationField(
-        help_text=(
-            "The duration of time from the Vehicle Journey start time "
-            "to reach service_pattern_stop"
-        )
-    )
-    departure = models.DurationField(
-        help_text=(
-            "The duration of time from the Vehicle Journey start "
-            "time to depart service_pattern_stop"
-        )
-    )
-    pickup_allowed = models.BooleanField(default=True)
-    setdown_allowed = models.BooleanField(default=True)
-    timing_point = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.id}, {self.timing_pattern.id}, {self.service_pattern_stop.id}"
-
-
 class ServiceLink(models.Model):
     # Retain the from/to atco codes in case the naptan_stops disappear in a
     # future naptan import.
@@ -174,8 +138,7 @@ class ServiceLink(models.Model):
 
 
 class VehicleJourney(models.Model):
-    timing_pattern = models.ForeignKey(TimingPattern, on_delete=models.CASCADE)
-    start_time = models.TimeField()
+    start_time = models.TimeField(null=True)
     line_ref = models.CharField(max_length=255, null=True, blank=True)
     journey_code = models.CharField(max_length=255, null=True, blank=True)
     direction = models.CharField(max_length=255, null=True, blank=True)
@@ -219,3 +182,92 @@ class BookingArrangements(models.Model):
 
     def __str__(self):
         return f"{self.id}, service_id: {self.service_id}"
+
+
+class OperatingProfile(models.Model):
+    MONDAY = "Monday"
+    TUESDAY = "Tuesday"
+    WEDNESDAY = "Wednesday"
+    THURSDAY = "Thursday"
+    FRIDAY = "Friday"
+    SATURDAY = "Saturday"
+    SUNDAY = "Sunday"
+
+    DAY_CHOICES = [
+        (MONDAY, "Monday"),
+        (TUESDAY, "Tuesday"),
+        (WEDNESDAY, "Wednesday"),
+        (THURSDAY, "Thursday"),
+        (FRIDAY, "Friday"),
+        (SATURDAY, "Saturday"),
+        (SUNDAY, "Sunday"),
+    ]
+
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney, on_delete=models.CASCADE, related_name="operating_profiles"
+    )
+
+    day_of_week = models.CharField(max_length=20, choices=DAY_CHOICES)
+
+
+class NonOperatingDatesExceptions(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="non_operating_dates_exceptions",
+    )
+
+    non_operating_date = models.DateField(null=True, blank=True)
+
+
+class OperatingDatesExceptions(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="operating_dates_exceptions",
+    )
+
+    operating_date = models.DateField(null=True, blank=True)
+
+
+class FlexibleServiceOperationPeriod(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="flexible_service_operation_period",
+    )
+
+    start_date = models.DateField(null=True, blank=True)
+
+    end_date = models.DateField(null=True, blank=True)
+
+
+class ServicedOrganisationVehicleJourney(models.Model):
+    serviced_organisation = models.ForeignKey(
+        "ServicedOrganisations",
+        on_delete=models.CASCADE,
+        related_name="serviced_organisations",
+    )
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney, on_delete=models.CASCADE, related_name="vehicle_journeys"
+    )
+    operating_on_working_days = models.BooleanField(default=False)
+
+
+class ServicedOrganisations(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    vehicle_journeys = models.ManyToManyField(
+        VehicleJourney,
+        through=ServicedOrganisationVehicleJourney,
+        related_name="serviced_organisations",
+    )
+
+
+class ServicedOrganisationWorkingDays(models.Model):
+    serviced_organisation = models.ForeignKey(
+        ServicedOrganisations,
+        on_delete=models.CASCADE,
+        related_name="serviced_organisations_working_days",
+    )
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
