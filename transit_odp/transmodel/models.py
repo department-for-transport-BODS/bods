@@ -144,7 +144,8 @@ class VehicleJourney(models.Model):
     direction = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.id}, timing_pattern: {self.id}, {self.start_time:%H:%M:%S}"
+        start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
+        return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
 class BookingArrangements(models.Model):

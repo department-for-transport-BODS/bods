@@ -980,6 +980,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         stop_count = ""
         most_common_localities = ""
         timing_point_count = ""
+        vehicle_journeys = pd.DataFrame()
 
         transformed = TransformedData(
             services=services,
@@ -998,6 +999,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             stop_count=stop_count,
             most_common_localities=most_common_localities,
             timing_point_count=timing_point_count,
+            vehicle_journeys=vehicle_journeys,
         )
 
         service_cache = []

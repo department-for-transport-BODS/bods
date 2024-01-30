@@ -251,8 +251,6 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         left_on=["file_id", "journey_pattern_ref"],
         right_index=True,
         how="left",
-        suffixes=("_vj", "_jp"),
-        indicator=True,
     )
     return df_merged
 

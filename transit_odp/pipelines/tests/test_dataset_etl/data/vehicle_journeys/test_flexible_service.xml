@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  TRANSXCHANGE EXAMPLE: Flexible service Tim Rivett, Tim Rivett Consulting, 29 March 2023(C) Crown Copyright  2023Based on the service Lincolnshire County Council CallConnect service for Market RasenSingle operating period and vehicle journey-->
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd" xml:lang="en" CreationDateTime="2023-03-27T10:21:00-05:00" ModificationDateTime="2023-03-27T10:21:00-05:00" Modification="new" RevisionNumber="0" FileName="Simple_Test_CallConnectMarketRasenFlexible v2.xml" SchemaVersion="2.4" RegistrationDocument="false">
+  <StopPoints>
+    <StopPoint CreationDateTime="2005-10-04T00:00:00" ModificationDateTime="2014-10-31T08:51:59" Modification="revise" RevisionNumber="6" Status="active">
+      <AtcoCode>270002700155</AtcoCode>
+      <Descriptor>
+        <CommonName>Demand Responsive Area</CommonName>
+        <Landmark>Demand Responsive Area</Landmark>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0017407</NptgLocalityRef>
+        <LocalityCentre>true</LocalityCentre>
+        <Location>
+          <Translation>
+            <GridType>UKOS</GridType>
+            <Easting>498195</Easting>
+            <Northing>393013</Northing>
+            <Longitude>-0.523731689</Longitude>
+            <Latitude>53.424780895</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>BCT</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>FLX</BusStopType>
+            <TimingStatus>TIP</TimingStatus>
+            <FlexibleZone RevisionNumber="0">
+              <Location>
+                <Translation>
+                  <GridType>UKOS</GridType>
+                  <Easting>498049</Easting>
+                  <Northing>393065</Northing>
+                  <Longitude>-0.525911878</Longitude>
+                  <Latitude>53.425275270</Latitude>
+                </Translation>
+              </Location>
+              <Location>
+                <Translation>
+                  <GridType>UKOS</GridType>
+                  <Easting>498335</Easting>
+                  <Northing>393065</Northing>
+                  <Longitude>-0.521609390</Longitude>
+                  <Latitude>53.425222093</Latitude>
+                </Translation>
+              </Location>
+              <Location>
+                <Translation>
+                  <GridType>UKOS</GridType>
+                  <Easting>498335</Easting>
+                  <Northing>392880</Northing>
+                  <Longitude>-0.521667060</Longitude>
+                  <Latitude>53.423559771</Latitude>
+                </Translation>
+              </Location>
+              <Location>
+                <Translation>
+                  <GridType>UKOS</GridType>
+                  <Easting>498049</Easting>
+                  <Northing>392880</Northing>
+                  <Longitude>-0.525969380</Longitude>
+                  <Latitude>53.423612944</Latitude>
+                </Translation>
+              </Location>
+            </FlexibleZone>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>089</AdministrativeAreaRef>
+    </StopPoint>
+  </StopPoints>
+  <Operators>
+    <Operator id="CALC">
+      <NationalOperatorCode>CALC</NationalOperatorCode>
+      <OperatorCode>CALC</OperatorCode>
+      <OperatorShortName>CallConnect</OperatorShortName>
+      <OperatorNameOnLicence>CallConnect</OperatorNameOnLicence>
+      <LicenceNumber/>
+      <LicenceClassification>standardNational</LicenceClassification>
+      <EnquiryTelephoneNumber>
+        <TelNationalNumber>0345 234 3344</TelNationalNumber>
+      </EnquiryTelephoneNumber>
+      <ContactTelephoneNumber>
+        <TelNationalNumber>0345 234 3344</TelNationalNumber>
+      </ContactTelephoneNumber>
+      <OperatorAddresses>
+        <CorrespondenceAddress>
+          <apd:Line>LWitham Park House</apd:Line>
+          <apd:Line>Waterside South</apd:Line>
+          <apd:Line>Lincoln</apd:Line>
+          <apd:PostCode>LN1 7JN</apd:PostCode>
+        </CorrespondenceAddress>
+        <MiscellaneousAddress>
+          <apd:Line>Lincolnshire County Council</apd:Line>
+          <apd:Line>County Offices</apd:Line>
+          <apd:Line>Newland</apd:Line>
+          <apd:Line>Lincoln</apd:Line>
+          <apd:PostCode>LN1 1YL</apd:PostCode>
+        </MiscellaneousAddress>
+      </OperatorAddresses>
+      <EmailAddress>CallConnect@lincolnshire.gov.uk</EmailAddress>
+    </Operator>
+  </Operators>
+  <Services>
+    <Service>
+      <ServiceCode>UZ000CALC:53M</ServiceCode>
+      <Lines>
+        <Line id="CALC:UZ000CALC:53M:53M">
+          <LineName>53M</LineName>
+        </Line>
+      </Lines>
+      <OperatingPeriod>
+        <StartDate>2022-01-01</StartDate>
+      </OperatingPeriod>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday/>
+            <Tuesday/>
+            <Wednesday/>
+            <Thursday/>
+            <Friday/>
+            <Saturday/>
+          </DaysOfWeek>
+        </RegularDayType>
+        <BankHolidayOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <LateSummerBankHolidayNotScotland/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <ServiceClassification>
+        <Flexible/>
+      </ServiceClassification>
+      <RegisteredOperatorRef>CALC</RegisteredOperatorRef>
+      <PublicUse>true</PublicUse>
+      <Description>Flexible on demand service for Market Rasen Area</Description>
+      <SchematicMap>CallConnect-Market-Rasen.jpg</SchematicMap>
+      <FlexibleService>
+        <Origin>Market Rasen</Origin>
+        <Destination>Market Rasen</Destination>
+        <FlexibleJourneyPattern id="jp_1">
+          <Direction>inbound</Direction>
+          <StopPointsInSequence>
+            <FlexibleStopUsage>
+              <!--- Atterby -->
+              <StopPointRef>270002700155</StopPointRef>
+            </FlexibleStopUsage>
+          </StopPointsInSequence>
+          <BookingArrangements>
+            <Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
+            <Phone>
+              <TelNationalNumber>0345 234 3344</TelNationalNumber>
+            </Phone>
+            <Email>CallConnect@lincolnshire.gov.uk</Email>
+            <WebAddress>https://callconnect.opendrt.co.uk/OpenDRT/</WebAddress>
+            <AllBookingsTaken>true</AllBookingsTaken>
+          </BookingArrangements>
+        </FlexibleJourneyPattern>
+      </FlexibleService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <!--  ===VJ1 ================================================ -->
+    <FlexibleVehicleJourney>
+      <DestinationDisplay>Flexible</DestinationDisplay>
+      <Direction>inbound</Direction>
+      <Description>Monday to Friday service around Market Rasen</Description>
+      <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+      <ServiceRef>UZ000CALC:53M</ServiceRef>
+      <LineRef>CALC:UZ000CALC:53M:53M</LineRef>
+      <JourneyPatternRef>jp_1</JourneyPatternRef>
+      <FlexibleServiceTimes>
+        <ServicePeriod>
+          <StartTime>07:00:00</StartTime>
+          <EndTime>19:00:00</EndTime>
+        </ServicePeriod>
+      </FlexibleServiceTimes>
+    </FlexibleVehicleJourney>
+  </VehicleJourneys>
+  <SupportingDocuments>
+    <SupportingDocument>
+      <DocumentUri>https://lincsbus.info/callconnect/more-information/</DocumentUri>
+    </SupportingDocument>
+  </SupportingDocuments>
+</TransXChange>
