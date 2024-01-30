@@ -1,4 +1,3 @@
-
 {% extends "page.html" %}
 
 {% load static %}
@@ -13,17 +12,9 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+    {% include 'publish/dataset_detail/breadcrumb.html' %}
     <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'search' host hosts.data %}?status=live">
-            Timetables Data
-        </a>
-    </li>
-    {% with name=object.name|truncatechars:19 %}
-        {% breadcrumb_url name 'feed-detail' pk=pk host hosts.data %}
-    {% endwith %}
-    <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ line_name }}">
+        <a class="govuk-breadcrumbs__link" href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}">
             {{ line_name }}
         </a>
     </li>
@@ -32,21 +23,21 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">
+            <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out">
                 {{ line_name }}
             </h1>
             <p class="govuk-body app-!-mb-sm-0">
                 {% blocktrans %}
-                    Overview of the available bus open data
+                    Preview your service data status and make changes
                 {% endblocktrans %}
             </p>
+        </div>
+    </div>
 
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-            <!--
-                MAP
-            -->
-
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
             <table class="govuk-table dataset-property-table">
                 <tbody class="govuk-table__body">
                     <tr class="govuk-table__row">
@@ -117,10 +108,8 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback" %}
+        <div class="govuk-grid-column-one-third">
+            {% include 'publish/dataset_detail/related_links.html' %}
         </div>
     </div>
 {% endblock %}
