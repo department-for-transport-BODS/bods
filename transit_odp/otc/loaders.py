@@ -159,20 +159,14 @@ class Loader:
 
     def delete_bad_data(self):
         to_delete_services = self.to_delete_service
-        services = {
+        services = set([
             service.registration_number
             for service in self.registry.get_services_with_past_effective_date(
                 to_delete_services
             )
-        }
+        ] + [service.registration_number for service in self.inactive_services])
 
-        service_to_delete = services + {
-            service.registration_number for service in self.inactive_services
-        }
-
-        count, _ = Service.objects.filter(
-            registration_number__in=service_to_delete
-        ).delete()
+        count, _ = Service.objects.filter(registration_number__in=services).delete()
         logger.info(f"{count} Services removed because of effective date in past")
 
         count, _ = Licence.objects.filter(services=None).delete()
