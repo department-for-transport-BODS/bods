@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0042_added_national_operator_code_field"),
     ]

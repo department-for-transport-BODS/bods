@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0057_add_unique_together_contraint"),
         ("avl", "0020_add_avl_proxy"),

@@ -24,7 +24,6 @@ now = timezone.now()
 
 @freeze_time(now)
 def test_successfully_creates_dummy_dataset():
-
     organisation = OrganisationFactory()
     contact = OrgAdminFactory(organisations=(organisation,))
     organisation.key_contact = contact

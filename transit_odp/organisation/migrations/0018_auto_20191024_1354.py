@@ -18,7 +18,6 @@ def fill_org_short_name(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0017_organisation_short_name")]
 
     operations = [

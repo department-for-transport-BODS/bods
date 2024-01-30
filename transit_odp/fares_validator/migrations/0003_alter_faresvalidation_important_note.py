@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fares_validator", "0002_auto_20221130_1650"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("site_admin", "0009_added_operational_metrics_export_model"),
     ]

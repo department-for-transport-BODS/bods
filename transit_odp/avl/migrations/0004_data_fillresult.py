@@ -21,7 +21,6 @@ def fill_validation_result(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("avl", "0003_cavlvalidationtaskresult_result"),
     ]

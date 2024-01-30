@@ -6,7 +6,6 @@ import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0058_auto_20230113_1621"),
         ("data_quality", "0057_auto_20210930_1524"),

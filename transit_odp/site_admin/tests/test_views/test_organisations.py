@@ -488,7 +488,6 @@ class TestOrganisationDetailView:
 
 
 class TestOrganisationEditView:
-
     default_management_form_data = {
         "nocs-TOTAL_FORMS": ["1"],
         "nocs-INITIAL_FORMS": ["1"],

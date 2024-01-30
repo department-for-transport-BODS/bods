@@ -83,7 +83,6 @@ def drop_stops_with_invalid_admin_areas(
 def drop_stops_with_invalid_localities(
     stops: pd.DataFrame, localities: pd.DataFrame
 ) -> pd.DataFrame:
-
     bad_stops = stops[~stops.locality_id.isin(localities.index)]
     bad_count = len(bad_stops)
     if bad_count:

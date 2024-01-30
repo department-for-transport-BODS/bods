@@ -25,7 +25,6 @@ from transit_odp.pipelines.tests.test_dataset_etl.helpers import (
 
 
 class MissingNaptansTestCase(TestCase):
-
     # Tests that when all naptan stops are missing, the feed goes to error.
     # But if just one naptan stop is present, the feed is allowed to go live with
     # minor errors.

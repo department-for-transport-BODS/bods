@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0057_add_unique_together_contraint"),
         ("avl", "0022_auto_20221031_0930"),

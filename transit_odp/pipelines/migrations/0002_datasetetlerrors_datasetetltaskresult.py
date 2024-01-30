@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("django_celery_results", "0004_auto_20190516_0412"),
         ("organisation", "0006_auto_20191003_1254"),

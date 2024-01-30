@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0051_added_schema_violation_model"),
     ]

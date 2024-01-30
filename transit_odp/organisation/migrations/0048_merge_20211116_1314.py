@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0047_add_is_dummy_to_dataset"),
         ("organisation", "0047_add_stuck_revision_proxy"),

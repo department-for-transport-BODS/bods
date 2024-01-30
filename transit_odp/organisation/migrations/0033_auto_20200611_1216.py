@@ -6,7 +6,6 @@ import transit_odp.organisation.constants
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0032_dataset_avl_feed_last_checked"),
     ]

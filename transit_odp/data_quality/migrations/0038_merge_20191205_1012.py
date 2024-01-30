@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0037_merge_20191204_1900"),
         ("data_quality", "0037_servicepattern_service_links"),

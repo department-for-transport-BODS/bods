@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0011_stoppoint_ito_id"),
     ]

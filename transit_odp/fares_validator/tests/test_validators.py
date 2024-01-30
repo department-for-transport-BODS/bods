@@ -21,7 +21,6 @@ FARES_SCHEMA = Path(__file__).parent.parent / "schema" / "fares_schema.json"
     ],
 )
 def test_fares_validators_is_valid(test_pass, expected):
-
     if test_pass:
         filepath = DATA_DIR / "fares_test_xml_pass.xml"
     else:
@@ -55,7 +54,6 @@ def test_fares_validators_is_valid(test_pass, expected):
     ],
 )
 def test_fares_validators_violations(test_pass, expected):
-
     if test_pass:
         filepath = DATA_DIR / "fares_test_xml_pass.xml"
     else:

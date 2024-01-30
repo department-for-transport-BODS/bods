@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0015_remove_usersettings_notify_on_expiring_dataset"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0036_remove_servicepattern_service_links"),
     ]

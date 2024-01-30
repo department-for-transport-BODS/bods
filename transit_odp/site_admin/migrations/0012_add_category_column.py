@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("site_admin", "0011_rename_op_metrics_archive"),
     ]

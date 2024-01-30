@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0035_remove_datasetrevision_is_capability_request"),
         ("users", "0012_auto_20200811_1349"),

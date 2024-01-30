@@ -10,7 +10,6 @@ import transit_odp.publish.validators
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [("django_celery_results", "0004_auto_20190516_0412")]

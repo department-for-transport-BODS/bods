@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("data_quality", "0043_schemanottxc24warning"),
         ("data_quality", "0044_auto_20210125_1552"),

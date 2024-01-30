@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0028_journeyduplicatewarning_duplicate"),
     ]

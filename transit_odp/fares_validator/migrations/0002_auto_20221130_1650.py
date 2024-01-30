@@ -6,7 +6,6 @@ import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0057_add_unique_together_contraint"),
         ("fares_validator", "0001_initial"),

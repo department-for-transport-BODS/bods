@@ -6,7 +6,6 @@ from transit_odp.changelog.constants import KnownIssueCategory, KnownIssueStatus
 
 
 class KnownIssues(TimeStampedModel):
-
     description = models.TextField(_("Description"), null=False, blank=False)
     category = models.CharField(
         _("Category"),

@@ -139,7 +139,6 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         return None
 
     def get_context_data(self, form, **kwargs):
-
         kwargs = super().get_context_data(form=form, **kwargs)
         kwargs.update(
             {

@@ -46,7 +46,6 @@ def test_is_too_large(file_size, limit, expected, tmp_path):
 
 
 def test_file_too_large_exception(tmp_path):
-
     """Test file too large exception is correctly thrown."""
 
     file1 = tmp_path / "file.xml"

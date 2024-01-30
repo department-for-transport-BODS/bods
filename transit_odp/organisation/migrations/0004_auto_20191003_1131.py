@@ -8,7 +8,6 @@ import transit_odp.common.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0003_auto_20191002_1339")]
 
     operations = [

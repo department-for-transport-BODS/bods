@@ -315,7 +315,6 @@ def test_operating_period_end_date(start_date, end_date_in_days, expected):
     ],
 )
 def test_line_id_format(filename, expected):
-
     OBSERVATION_ID = 24
     schema = Schema.from_path(PTI_PATH)
     observations = [o for o in schema.observations if o.number == OBSERVATION_ID]

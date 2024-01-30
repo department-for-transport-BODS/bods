@@ -40,7 +40,6 @@ def migrate_stops_to_timings(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0016_auto_20191120_1551"),
     ]

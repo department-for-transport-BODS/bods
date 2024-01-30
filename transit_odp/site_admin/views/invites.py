@@ -83,7 +83,6 @@ class ResendOrgUserInviteView(SiteAdminViewMixin, UpdateView):
         )
 
     def get_object(self, queryset=None):
-
         if queryset is None:
             queryset = self.get_queryset()
 

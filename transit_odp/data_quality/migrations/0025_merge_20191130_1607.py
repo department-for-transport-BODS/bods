@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0024_merge_20191129_1824"),
         ("data_quality", "0022_stopmissingnaptanwarning"),

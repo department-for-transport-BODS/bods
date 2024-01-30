@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0036_stopincorrecttypewarning_service_patterns"),
         ("data_quality", "0036_timingfirstwarning"),

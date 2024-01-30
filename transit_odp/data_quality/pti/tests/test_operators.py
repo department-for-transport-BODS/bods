@@ -15,7 +15,6 @@ pytestmark = pytest.mark.django_db
     "operators,expected", [(["1", "2"], False), (["1"], True), ([], False)]
 )
 def test_count_operators(operators, expected):
-
     xml = """<Operators>{0}</Operators>"""
 
     operator = """
@@ -142,7 +141,6 @@ def test_count_registration_groups(no_of_registrations, expected):
     "garages,expected", [(["1", "2"], False), (["1"], True), ([], False)]
 )
 def test_correct_number_of_garage_codes(garages, expected):
-
     xml = """<Garages>
                 <Garage>
                     {}

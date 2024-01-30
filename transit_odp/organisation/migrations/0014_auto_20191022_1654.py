@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0013_remove_organisation_noc")]
 
     operations = [

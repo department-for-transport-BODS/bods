@@ -23,7 +23,6 @@ def fill_short_desciption(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0035_remove_datasetrevision_is_capability_request"),
     ]

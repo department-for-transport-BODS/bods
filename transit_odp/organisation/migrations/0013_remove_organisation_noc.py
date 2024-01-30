@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0012_auto_20191022_1521")]
 
     operations = [migrations.RemoveField(model_name="organisation", name="noc")]

@@ -5,7 +5,6 @@ import transit_odp.organisation.constants
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0022_alter_datasetetltaskresult_error_code"),
     ]

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0042_added_national_operator_code_field"),
         ("data_quality", "0054_relax_stop_point_unique_constraint"),

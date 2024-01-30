@@ -6,7 +6,6 @@ import transit_odp.common.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0017_auto_20201009_0927"),
     ]

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("transmodel", "0003_vehiclejourney"),
         ("data_quality", "0001_initial"),

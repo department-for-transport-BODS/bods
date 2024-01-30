@@ -191,7 +191,6 @@ def transform_timing_backwards_warning(
     # Load warnings
     def inner():
         for warning in warnings.itertuples():
-
             service_link_index = warning.indexes[0]
 
             from_stop = TimingPatternStop.objects.add_position().get(
@@ -497,7 +496,6 @@ def transform_journey_duplicate_warning(
     # Create warnings and associate with missing StopPoint
     def inner():
         for warning in warnings.itertuples():
-
             yield warning_class(
                 report=report,
                 vehicle_journey_id=warning.vehicle_journey_id,

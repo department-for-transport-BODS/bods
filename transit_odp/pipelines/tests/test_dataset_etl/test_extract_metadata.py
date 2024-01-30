@@ -892,7 +892,6 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
 
@@ -1124,7 +1123,6 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
 

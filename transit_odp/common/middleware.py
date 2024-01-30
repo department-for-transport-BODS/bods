@@ -15,7 +15,6 @@ class DefaultHostMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-
         from django.conf import settings
 
         current_default = settings.DEFAULT_HOST

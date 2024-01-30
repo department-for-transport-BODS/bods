@@ -27,7 +27,6 @@ def bytes_are_zip_file(content: bytes):
 
 
 def get_filetype_from_response(response) -> Optional[str]:
-
     content_type = response.headers.get("Content-Type", "")
     if "zip" in content_type or bytes_are_zip_file(response.content):
         return "zip"

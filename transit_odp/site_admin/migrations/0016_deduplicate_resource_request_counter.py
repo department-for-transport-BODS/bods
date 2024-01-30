@@ -64,7 +64,6 @@ def rollback_duplicate_entries(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("site_admin", "0015_add_indexes_to_datetimes"),
     ]

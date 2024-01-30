@@ -183,7 +183,6 @@ class GOVUKFormMixin(HelperMixin):
 
     @classmethod
     def set_widget_class(cls, widget, css_class: Union[str, List[str]]):
-
         if css_class is None:
             return
 

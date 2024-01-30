@@ -96,7 +96,6 @@ class Service(models.Model):
 
 
 class UILta(models.Model):
-
     name = models.TextField(blank=False, null=False, unique=True)
 
     def __str__(self) -> str:

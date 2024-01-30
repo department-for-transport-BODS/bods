@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("organisation", "0039_added_txc_attributes_model"),
         ("organisation", "0040_added_modification_field"),

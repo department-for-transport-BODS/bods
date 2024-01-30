@@ -11,7 +11,6 @@ def delete_expire_dataset_tasks(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0036_datasetrevision_short_description"),
     ]

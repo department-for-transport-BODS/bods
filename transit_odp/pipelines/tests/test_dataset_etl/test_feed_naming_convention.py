@@ -100,7 +100,6 @@ def setup_feed_parser(test_file, feed_name="tmpname", org_name="org"):
     ids=["single line", "multiple lines"],
 )
 def test_end_to_end(naptan_data_matching_xml, test_file, expected):
-
     feed_parser = setup_feed_parser(test_file)
     feed_parser.index_feed()
     assert feed_parser.revision.name == expected
@@ -130,7 +129,6 @@ def test_equal_districts_give_same_name(execution_number, equal_districts):
 def test_end_to_end_with_blank_districts(
     blank_district_naptan_data_matching_xml, test_file, expected
 ):
-
     feed_parser = setup_feed_parser(test_file)
     feed_parser.index_feed()
     assert feed_parser.revision.name == expected
@@ -145,7 +143,6 @@ def test_end_to_end_with_blank_districts(
     ids=["first clash", "second clash"],
 )
 def test_single_line_name_clashes(transactional_db, clashing_name, expected):
-
     feed_parser = setup_feed_parser("test.xml")
 
     DatasetRevisionFactory(
@@ -169,7 +166,6 @@ def test_single_line_name_clashes(transactional_db, clashing_name, expected):
     ids=["first clash", "second clash"],
 )
 def test_multiple_line_name_clashes(transactional_db, clashing_name, expected):
-
     feed_parser = setup_feed_parser("2lines.zip")
     DatasetRevisionFactory(
         dataset__organisation=feed_parser.revision.dataset.organisation,

@@ -6,7 +6,6 @@ import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("transmodel", "0004_auto_20191112_1151"),
     ]

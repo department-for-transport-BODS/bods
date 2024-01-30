@@ -117,7 +117,6 @@ class TestTaskPublishRevision:
 
 
 class TestTaskNaptanETL:
-
     mut = "transit_odp.pipelines.tasks"
 
     def test_task_run_naptan_etl(self, mocker):

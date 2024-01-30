@@ -36,7 +36,6 @@ def create_user_settings(sender, instance=None, created=False, **kwargs):
 
 @receiver(user_accepted)
 def notify_on_accepted_invite(invite: Invitation, user: User, **kwargs):
-
     inviter = invite.inviter
     assert (
         inviter.account_type == AccountType.site_admin.value

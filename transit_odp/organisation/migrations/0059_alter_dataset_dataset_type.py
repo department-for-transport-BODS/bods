@@ -5,7 +5,6 @@ import transit_odp.organisation.constants
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0058_auto_20230113_1621"),
     ]

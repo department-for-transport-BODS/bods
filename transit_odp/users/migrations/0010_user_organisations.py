@@ -15,7 +15,6 @@ def populate_organisations_for_users(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0034_datasetmetadata"),
         ("users", "0009_auto_20200528_1302"),

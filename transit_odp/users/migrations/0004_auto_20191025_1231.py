@@ -21,7 +21,6 @@ def populate_mute_all_dataset_notifications(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("users", "0003_usersettings")]
 
     operations = [migrations.RunPython(populate_mute_all_dataset_notifications)]

@@ -26,7 +26,6 @@ def create_naptan_stops(
         stop_points: Dict[str, StopPoint],
         filepath: str,
     ):
-
         file_obj = File(filepath, name=os.path.basename(filepath))
         doc = parser.parse_document(file_obj)
 
@@ -82,7 +81,6 @@ def create_naptan_localities(
     default_admin_area: AdminArea,
     default_district: District,
 ):
-
     """
     Create naptan localities contained in the given file, attaching them to the
     default_admin_area.
@@ -90,7 +88,6 @@ def create_naptan_localities(
     """
 
     def _process_file(localities: Set[str], filepath: str):
-
         file_obj = File(filepath, name=os.path.basename(filepath))
         doc = parser.parse_document(file_obj)
 

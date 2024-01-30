@@ -98,7 +98,6 @@ class DatasetAdmin(admin.ModelAdmin):
 
 @admin.register(DatasetRevision)
 class DatasetRevisionAdmin(admin.ModelAdmin):
-
     actions = ["publish_revisions"]
     ordering = ("id", "name")
     search_fields = ["dataset__id", "id", "name"]

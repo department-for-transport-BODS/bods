@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0046_added_licence_model"),
         ("avl", "0015_added_scoring_fields"),

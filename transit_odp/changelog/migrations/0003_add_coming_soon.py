@@ -9,7 +9,6 @@ def add_coming_soon(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("changelog", "0002_high_level_roadmap"),
     ]

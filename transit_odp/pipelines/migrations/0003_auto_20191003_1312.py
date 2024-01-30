@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("pipelines", "0002_datasetetlerrors_datasetetltaskresult")]
 
     operations = [

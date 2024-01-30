@@ -101,7 +101,6 @@ def transform_stops(stops: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 
 def transform_lines(report: DataQualityReport, lines: pd.DataFrame) -> pd.DataFrame:
-
     if len(lines) == 0:
         # Pandas doesn't play well where the is no data
         return lines
@@ -330,7 +329,6 @@ def transform_service_pattern_service_links(
 def transform_service_links(
     service_links: gpd.GeoDataFrame, stops: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
-
     if len(service_links) == 0:
         # Pandas doesn't play well where the is no data
         return service_links
@@ -375,7 +373,6 @@ def transform_timing_patterns(
     service_patterns: gpd.GeoDataFrame,
     timing_patterns: pd.DataFrame,
 ):
-
     if len(timing_patterns) == 0:
         # Pandas doesn't play well where the is no data
         return timing_patterns
@@ -412,7 +409,6 @@ def transform_timing_pattern_stops(
     timing_patterns: pd.DataFrame,
     service_pattern_stops: pd.DataFrame,
 ) -> pd.DataFrame:
-
     if len(timing_patterns) == 0:
         # Pandas doesn't play well where the is no data
         return

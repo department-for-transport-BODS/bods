@@ -58,7 +58,6 @@ def get_lxml_element(string_xml):
 def test_is_time_intervals_present_in_tarrifs(
     product_type_valid, time_intervals_present, type_of_frame_ref_present, expected
 ):
-
     time_intervals = """
       <timeIntervals>
       <TimeInterval version="1.0" id="op:Tariff@Sheffield_CityBus_1_Day@1-day">
@@ -167,7 +166,6 @@ def test_is_time_intervals_present_in_tarrifs(
 def test_is_individual_time_interval_present_in_tariffs(
     product_type_valid, time_interval_present, type_of_frame_ref_present, expected
 ):
-
     time_interval = """
       <TimeInterval version="1.0" id="op:Tariff@Sheffield_CityBus_1_Day@1-day">
         <Name>1 day</Name>
@@ -280,7 +278,6 @@ def test_is_time_interval_name_present_in_tariffs(
     type_of_frame_ref_present,
     expected,
 ):
-
     time_interval = """
       <TimeInterval version="1.0" id="op:Tariff@Sheffield_CityBus_1_Day@1-day">
         <Name>1 day</Name>

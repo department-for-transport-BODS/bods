@@ -164,7 +164,6 @@ class TestDatasetRevisionFactory:
 
 class TestAVLDatasetRevisionFactory:
     def test_creates_avl_dataset(self):
-
         # Test
         revision = AVLDatasetRevisionFactory()
 

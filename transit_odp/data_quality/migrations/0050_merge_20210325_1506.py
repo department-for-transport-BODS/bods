@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0049_pti_related_name_added"),
         ("data_quality", "0049_pti_add_reference_field"),

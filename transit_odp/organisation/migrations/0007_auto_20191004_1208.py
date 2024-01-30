@@ -26,7 +26,6 @@ def delete_duplicates(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0006_auto_20191003_1254")]
 
     operations = [

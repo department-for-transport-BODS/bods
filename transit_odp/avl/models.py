@@ -26,7 +26,6 @@ limit_to_query = Q(dataset__dataset_type=AVLType) & Q(dataset__live_revision_id=
 
 
 class AVLValidationReport(models.Model):
-
     revision = models.ForeignKey(
         DatasetRevision,
         on_delete=models.CASCADE,
@@ -185,7 +184,6 @@ class CAVLDataArchive(models.Model):
         ordering = ("-created",)
 
     def __repr__(self):
-
         return (
             f"{self.__class__.__name__}(created={self.created!r}, "
             f"last_updated={self.last_updated!r}, data={self.data.name!r}, "

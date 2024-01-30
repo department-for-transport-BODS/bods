@@ -49,7 +49,6 @@ def rollback_expired_to_inactive(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0049_added_origin_destination_to_file"),
         ("pipelines", "0020_added_traveline_region_field"),

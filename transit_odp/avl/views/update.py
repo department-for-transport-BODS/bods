@@ -74,7 +74,6 @@ class AVLUpdateWizard(FeedUpdateWizard):
         return "avl/feed_form.html"
 
     def get_context_data(self, form, **kwargs):
-
         kwargs = super().get_context_data(form=form, **kwargs)
         kwargs.update(
             {

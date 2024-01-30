@@ -27,7 +27,6 @@ def rollback_consumer_stats(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0053_add_consumer_stats_to_organisations"),
     ]

@@ -6,7 +6,6 @@ import transit_odp.common.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("avl", "0007_auto_20200915_1244"),
     ]

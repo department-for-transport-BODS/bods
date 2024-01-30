@@ -12,7 +12,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
 
 @attr.s(auto_attribs=True)
 class ETLReport(object):
-
     schema_version: str = attr.ib(default="")
 
     creation_datetime: Optional[datetime.datetime] = attr.ib(default=None)

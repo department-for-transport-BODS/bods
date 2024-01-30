@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0046_added_licence_model"),
         ("avl", "0013_added_positive_int_constraint_and_unique_constraint"),

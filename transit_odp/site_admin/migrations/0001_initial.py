@@ -21,7 +21,6 @@ def populate_key_contact_on_org_with_user(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0007_invitation_is_key_contact"),
         ("organisation", "0024_organisation_key_contact"),

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0020_auto_20191202_2253"),
         ("data_quality", "0030_auto_20191202_1756"),

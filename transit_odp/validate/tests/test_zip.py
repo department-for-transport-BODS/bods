@@ -71,7 +71,6 @@ def test_has_data(file_ext, expected, tmp_path):
 
 
 def test_validate_has_no_data(tmp_path):
-
     zip_filename = tmp_path / "testfile.zip"
     create_zip_file(zip_filename, [])
 

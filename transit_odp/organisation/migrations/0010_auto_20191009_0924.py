@@ -26,7 +26,6 @@ def fill_published_at(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0009_datasetrevision_published_at")]
 
     operations = [

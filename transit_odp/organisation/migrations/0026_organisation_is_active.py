@@ -19,7 +19,6 @@ def fill_is_active(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0025_merge_20200203_1611"),
     ]

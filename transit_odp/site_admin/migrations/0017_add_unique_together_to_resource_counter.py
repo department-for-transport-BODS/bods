@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("site_admin", "0016_deduplicate_resource_request_counter"),
     ]

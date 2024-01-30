@@ -58,7 +58,6 @@ def extract_model(data: Dict) -> ExtractedModel:
 
     model = {}
     for key, config in MODEL_CONFIG.items():
-
         # Get DataFrame config
         frame_builder = load_geojson if config["geojson"] else pd.DataFrame
         columns = config["columns"]
@@ -99,7 +98,6 @@ def extract_warnings(report: DataQualityReport, data: Dict) -> ExtractedWarnings
 
     warnings = {}
     for key, config in WARNING_CONFIG.items():
-
         warning_data = report_warnings.get(key)
 
         if not warning_data:

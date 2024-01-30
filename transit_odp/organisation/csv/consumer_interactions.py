@@ -294,7 +294,6 @@ def get_all_consumer_interactions_df() -> pd.DataFrame:
 
 
 def get_all_monthly_breakdown_stats() -> pd.DataFrame:
-
     df = get_all_consumer_interactions_df()
 
     df = df.groupby(

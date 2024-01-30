@@ -11,7 +11,6 @@ from transit_odp.publish.validators import validate_file_extension
 
 
 class DatasetPayloadMixin(models.Model):
-
     STATUS_CHOICES = STATUS_CHOICES
 
     # TODO - if expiring and expired was removed, then status is really just

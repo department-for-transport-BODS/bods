@@ -79,7 +79,6 @@ class TestPublisherCSV:
         ],
     )
     def test_active_publisher_to_string(self, is_active, user_status, user_type):
-
         invitation = InvitationFactory(account_type=user_type)
         if is_active is not None:
             user = UserFactory(
@@ -123,7 +122,6 @@ class TestDatasetPublishingCSV:
         ],
     )
     def test_active_publisher_to_string(self, factory, dataset_type, user_type):
-
         user = UserFactory(account_type=user_type)
         if dataset_type is not None:
             revision = factory(published_by=user, dataset__dataset_type=dataset_type)
@@ -421,7 +419,6 @@ class TestAPIRequestCSV:
         return rows
 
     def test_no_api_requests_to_string(self):
-
         rows = self.get_csv_rows()
         headers, *_ = rows
         assert len(rows) == 1

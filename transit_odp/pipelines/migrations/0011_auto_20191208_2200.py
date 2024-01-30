@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0010_data_migration_fill_task_id"),
     ]

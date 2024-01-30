@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0038_datasetrevision_num_of_timing_points"),
         ("data_quality", "0050_merge_20210325_1506"),

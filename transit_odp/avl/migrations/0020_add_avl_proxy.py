@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisation", "0050_convert_expired_to_inactive"),
         ("avl", "0019_add_sirivm_tfl_data_archive_choice"),

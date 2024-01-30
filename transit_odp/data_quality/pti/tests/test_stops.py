@@ -25,7 +25,6 @@ pytestmark = pytest.mark.django_db
     ],
 )
 def test_non_naptan_stop_points(filename, expected):
-
     OBSERVATION_ID = 28
     schema = Schema.from_path(PTI_PATH)
     observations = [o for o in schema.observations if o.number == OBSERVATION_ID]

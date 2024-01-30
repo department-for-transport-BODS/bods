@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("organisation", "0011_operatorcode")]
 
     operations = [

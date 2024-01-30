@@ -19,7 +19,6 @@ def fill_task_id(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0009_auto_20191208_2055"),
     ]

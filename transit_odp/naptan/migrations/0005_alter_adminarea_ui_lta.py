@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("otc", "0012_remove_localauthority_atco_code"),
         ("naptan", "0004_adminarea_ui_lta"),

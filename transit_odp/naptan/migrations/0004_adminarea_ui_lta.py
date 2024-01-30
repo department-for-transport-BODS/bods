@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("otc", "0011_auto_20231213_1054"),
         ("naptan", "0003_add_stop_areas_to_stoppoint"),

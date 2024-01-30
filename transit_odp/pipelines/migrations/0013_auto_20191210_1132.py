@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pipelines", "0012_auto_20191209_2304"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data_quality", "0043_schemanottxc24warning_squashed_0044_auto_20210125_1552"),
     ]
