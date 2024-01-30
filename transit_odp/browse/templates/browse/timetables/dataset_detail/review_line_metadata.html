@@ -1,0 +1,126 @@
+
+{% extends "page.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block title_tag %}
+    {% filter force_escape %}
+        {{ line_name }}
+    {% endfilter %}
+{% endblock %}
+
+{% block breadcrumb.content %}
+    {{ block.super }}
+    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+    <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="{% url 'search' host hosts.data %}?status=live">
+            Timetables Data
+        </a>
+    </li>
+    {% with name=object.name|truncatechars:19 %}
+        {% breadcrumb_url name 'feed-detail' pk=pk host hosts.data %}
+    {% endwith %}
+    <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ line_name }}">
+            {{ line_name }}
+        </a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                {{ line_name }}
+            </h1>
+            <p class="govuk-body app-!-mb-sm-0">
+                {% blocktrans %}
+                    Overview of the available bus open data
+                {% endblocktrans %}
+            </p>
+
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+            <!--
+                MAP
+            -->
+
+            <table class="govuk-table dataset-property-table">
+                <tbody class="govuk-table__body">
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">{% trans 'Type of service' %}</th>
+                        <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number(s)' %}</th>
+                        <td class="govuk-table__cell dont-break-out" colspan="2">
+                            {% for service_code in service_codes %}
+                                <div class="stacked">
+                                    {{ service_code }}
+                                </div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">{% trans 'Current valid file(s)' %}</th>
+                        <td class="govuk-table__cell dont-break-out" colspan="2">
+                            {% if current_valid_files %}
+                                {% for file_details in current_valid_files %}
+                                    <div class="stacked">
+                                        {{file_details.start_date|default:'N/A'}} - {{file_details.end_date|default:'N/A'}} {{file_details.filename}}
+                                    </div>
+                                    {% if not forloop.last %}
+                                        <br>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                {% trans 'N/A' %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if service_type == "Flexible" or service_type == "Flexible/Standard" %}
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">{% trans 'Booking arrangements' %}</th>
+                            <td class="govuk-table__cell dont-break-out" colspan="2">
+                                {% if booking_arrangements %}
+                                    {{ booking_arrangements }}
+                                {% else %}
+                                    {% trans 'N/A' %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">{% trans 'Booking methods' %}</th>
+                            <td class="govuk-table__cell dont-break-out" colspan="2">
+                                <div class="stacked">
+                                    {% if not booking_methods %}
+                                        {% trans 'No currently valid files available in this dataset for this service' %}
+                                    {% else %}
+                                        {% if booking_methods.1 %}
+                                            Phone - {{ booking_methods.1 }}
+                                        {% endif %}
+                                        <br>
+                                        {% if booking_methods.2 %}
+                                            Email - {{ booking_methods.0 }}
+                                        {% endif %}
+                                        <br>
+                                        {% if booking_methods.0 %}
+                                            URL - {{ booking_methods.2 }}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback" %}
+        </div>
+    </div>
+{% endblock %}

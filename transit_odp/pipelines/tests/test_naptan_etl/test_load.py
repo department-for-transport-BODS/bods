@@ -13,9 +13,9 @@ from transit_odp.naptan.factories import (
 from transit_odp.naptan.models import AdminArea, FlexibleZone, Locality, StopPoint
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
-    load_existing_flexible_zones,
     load_existing_localities,
     load_existing_stops,
+    load_flexible_zones,
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
@@ -286,7 +286,7 @@ class TestNaptanLoad(TestCase):
             ]
         ).set_index("atco_code")
 
-        load_existing_flexible_zones(existing_stops)
+        load_flexible_zones(existing_stops)
 
         created_flexible_stops = FlexibleZone.objects.all()
 
