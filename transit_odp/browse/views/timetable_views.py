@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import Max
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -17,7 +16,6 @@ from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
 
 import config.hosts
-from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
@@ -52,8 +50,8 @@ from transit_odp.organisation.models import (
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
-from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
+from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -108,7 +106,6 @@ class DatasetDetailView(DetailView):
         summary = getattr(report, "summary", None)
         user = self.request.user
 
-        kwargs["pk"] = dataset.id
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         kwargs["admin_areas"] = self.object.admin_area_names
         # Once all the reports are generated we should probably use the queryset
@@ -144,234 +141,6 @@ class DatasetDetailView(DetailView):
         kwargs["distinct_attributes"] = self.get_distinct_dataset_txc_attributes(
             live_revision.id
         )
-
-        return kwargs
-
-
-class LineMetadataDetailView(DetailView):
-    template_name = "browse/timetables/dataset_detail/review_line_metadata.html"
-    model = Dataset
-
-    def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .get_active_org()
-            .get_dataset_type(dataset_type=TimetableType)
-            .get_published()
-            .get_viewable_statuses()
-            .add_admin_area_names()
-            .add_live_data()
-            .add_nocs()
-            .select_related("live_revision")
-            .add_is_live_pti_compliant()
-        )
-
-    def get_service_codes_dict(self, revision_id, line):
-        service_codes_list = []
-        txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
-
-        for file_attribute in txc_file_attributes:
-            for line_name in file_attribute.line_names:
-                if line_name == line:
-                    service_codes_list.append(file_attribute.service_code)
-
-        return set(service_codes_list)
-
-    def get_service_type(self, revision_id, service_codes, line_name):
-        all_service_types_list = []
-        for service_code in service_codes:
-            service_types_qs = (
-                Service.objects.filter(
-                    revision=revision_id,
-                    service_code=service_code,
-                    name=line_name,
-                )
-                .values_list("service_type", flat=True)
-                .distinct()
-            )
-            for service_type in service_types_qs:
-                all_service_types_list.append(service_type)
-
-        if all(service_type == "standard" for service_type in all_service_types_list):
-            return "Standard"
-        elif all(service_type == "flexible" for service_type in all_service_types_list):
-            return "Flexible"
-        return "Flexible/Standard"
-
-    def get_current_files(self, revision_id, service_codes, line_name):
-        valid_file_names = []
-        today = datetime.now().date()
-
-        for service_code in service_codes:
-            highest_revision_number = TXCFileAttributes.objects.filter(
-                revision=revision_id,
-                service_code=service_code,
-                line_names__contains=[line_name],
-            ).aggregate(highest_revision_number=Max("revision_number"))[
-                "highest_revision_number"
-            ]
-
-            file_name_qs = TXCFileAttributes.objects.filter(
-                revision=revision_id,
-                service_code=service_code,
-                line_names__contains=[line_name],
-                revision_number=highest_revision_number,
-            ).values_list(
-                "filename",
-                "operating_period_start_date",
-                "operating_period_end_date",
-            )
-
-            for file_name in file_name_qs:
-                operating_period_start_date = file_name[1]
-                operating_period_end_date = file_name[2]
-
-                if operating_period_start_date and operating_period_end_date:
-                    if (
-                        operating_period_start_date <= today
-                        and today <= operating_period_end_date
-                    ):
-                        valid_file_names.append(
-                            {
-                                "filename": file_name[0],
-                                "start_date": operating_period_start_date,
-                                "end_date": operating_period_end_date,
-                            }
-                        )
-                elif operating_period_start_date:
-                    if operating_period_start_date <= today:
-                        valid_file_names.append(
-                            {
-                                "filename": file_name[0],
-                                "start_date": operating_period_start_date,
-                                "end_date": None,
-                            }
-                        )
-                elif operating_period_end_date:
-                    if today <= operating_period_end_date:
-                        valid_file_names.append(
-                            {
-                                "filename": file_name[0],
-                                "start_date": None,
-                                "end_date": operating_period_end_date,
-                            }
-                        )
-
-        return valid_file_names
-
-    def get_most_recent_modification_datetime(
-        self, revision_id, service_codes, line_name
-    ):
-        return TXCFileAttributes.objects.filter(
-            revision_id=revision_id,
-            service_code__in=service_codes,
-            line_names__contains=[line_name],
-        ).aggregate(max_modification_datetime=Max("modification_datetime"))[
-            "max_modification_datetime"
-        ]
-
-    def get_lastest_operating_period_start_date(
-        self, revision_id, service_codes, line_name, recent_modification_datetime
-    ):
-        return TXCFileAttributes.objects.filter(
-            revision_id=revision_id,
-            service_code__in=service_codes,
-            line_names__contains=[line_name],
-            modification_datetime=recent_modification_datetime,
-        ).aggregate(max_start_date=Max("operating_period_start_date"))["max_start_date"]
-
-    def get_single_booking_arrangements_file(self, revision_id):
-        try:
-            service_ids = Service.objects.filter(revision=revision_id).values_list(
-                "id", flat=True
-            )
-        except Service.DoesNotExist:
-            return None
-        return (
-            BookingArrangements.objects.filter(service_id__in=service_ids)
-            .values_list("description", "email", "phone_number", "web_address")
-            .distinct()
-        )
-
-    def get_valid_files(self, revision_id, valid_files, service_codes, line_name):
-        if len(valid_files) == 1:
-            return self.get_single_booking_arrangements_file(revision_id)
-        elif len(valid_files) > 1:
-            booking_arrangements_qs = None
-            for service_code in service_codes:
-                most_recent_modification_datetime = (
-                    self.get_most_recent_modification_datetime(
-                        revision_id, service_codes, line_name
-                    )
-                )
-                booking_arrangements_qs = TXCFileAttributes.objects.filter(
-                    revision_id=revision_id,
-                    service_code=service_code,
-                    line_names__contains=[line_name],
-                    modification_datetime=most_recent_modification_datetime,
-                )
-
-                if len(booking_arrangements_qs) == 1:
-                    return self.get_single_booking_arrangements_file(
-                        booking_arrangements_qs.revision_id
-                    )
-
-                lastest_operating_period_start = (
-                    self.get_lastest_operating_period_start_date(
-                        revision_id,
-                        service_codes,
-                        line_name,
-                        most_recent_modification_datetime,
-                    )
-                )
-                booking_arrangements_qs = booking_arrangements_qs.filter(
-                    operating_period_start_date=lastest_operating_period_start
-                )
-
-                if len(booking_arrangements_qs) == 1:
-                    return self.get_single_booking_arrangements_file(
-                        booking_arrangements_qs.revision_id
-                    )
-
-                booking_arrangements_qs = booking_arrangements_qs.order_by(
-                    "-filename"
-                ).first()
-
-                return self.get_single_booking_arrangements_file(
-                    booking_arrangements_qs.revision_id
-                )
-
-    def get_context_data(self, **kwargs):
-        line = self.request.GET.get("line")
-        kwargs = super().get_context_data(**kwargs)
-
-        dataset = self.object
-        live_revision = dataset.live_revision
-        kwargs["pk"] = dataset.id
-
-        kwargs["line_name"] = line
-        kwargs["service_codes"] = self.get_service_codes_dict(live_revision.id, line)
-        kwargs["service_type"] = self.get_service_type(
-            live_revision.id, kwargs["service_codes"], kwargs["line_name"]
-        )
-        kwargs["current_valid_files"] = self.get_current_files(
-            live_revision.id, kwargs["service_codes"], kwargs["line_name"]
-        )
-
-        if (
-            kwargs["service_type"] == "Flexible"
-            or kwargs["service_type"] == "Flexible/Standard"
-        ):
-            booking_arrangements_info = self.get_valid_files(
-                live_revision.id,
-                kwargs["current_valid_files"],
-                kwargs["service_codes"],
-                kwargs["line_name"],
-            )
-            if booking_arrangements_info:
-                kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
-                kwargs["booking_methods"] = booking_arrangements_info[0][1:]
 
         return kwargs
 

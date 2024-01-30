@@ -15,7 +15,6 @@ from transit_odp.browse.views.timetable_views import (
     DownloadCompliantBulkDataArchiveView,
     DownloadRegionalGTFSFileView,
     DownloadTimetablesView,
-    LineMetadataDetailView,
     SearchView,
     UserFeedbackSuccessView,
     UserFeedbackView,
@@ -30,11 +29,6 @@ DATASET_PATHS: Final = [
                     "",
                     view=DatasetDetailView.as_view(),
                     name="feed-detail",
-                ),
-                path(
-                    "detail/",
-                    view=LineMetadataDetailView.as_view(),
-                    name="feed-line-detail",
                 ),
                 path(
                     "subscription/",
