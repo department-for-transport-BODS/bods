@@ -18,6 +18,7 @@ from transit_odp.transmodel.models import (
     StopPoint,
     BookingArrangements,
     VehicleJourney,
+    ServicedOrganisations,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -178,6 +179,16 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             line_ref=record["line_ref"],
             direction=record["direction"],
         )
+
+
+def df_to_serviced_organisations(df: pd.DataFrame) -> Iterator[ServicedOrganisations]:
+    seen_names = set()
+    for record in df.to_dict("records"):
+        name = record["name"]
+
+        if name not in seen_names:
+            seen_names.add(name)
+            yield ServicedOrganisations(name=name)
 
 
 def df_to_service_links(df: pd.DataFrame) -> Iterator[ServiceLink]:

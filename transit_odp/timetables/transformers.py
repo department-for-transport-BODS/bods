@@ -15,6 +15,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_routes,
     get_most_common_localities,
     merge_vehicle_journeys_with_jp,
+    merge_serviced_organisations_with_operating_profile,
     sync_localities_and_adminareas,
     transform_line_names,
     transform_service_links,
@@ -41,6 +42,8 @@ class TransXChangeTransformer:
         provisional_stops = self.extracted_data.provisional_stops.copy()
         booking_arrangements = self.extracted_data.booking_arrangements.copy()
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
+        serviced_organisations = self.extracted_data.serviced_organisations.copy()
+        operating_profiles = self.extracted_data.operating_profiles.copy()
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -51,6 +54,14 @@ class TransXChangeTransformer:
         df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
             vehicle_journeys, journey_patterns
         )
+
+        df_merged_serviced_organisations = pd.DataFrame()
+        if not serviced_organisations.empty and not operating_profiles.empty:
+            df_merged_serviced_organisations = (
+                merge_serviced_organisations_with_operating_profile(
+                    serviced_organisations, operating_profiles
+                )
+            )
 
         # Create missing route information
         route_links = pd.DataFrame()
@@ -115,6 +126,7 @@ class TransXChangeTransformer:
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
+            serviced_organisations=df_merged_serviced_organisations,
         )
 
     def sync_stop_points(self, stop_points, provisional_stops):

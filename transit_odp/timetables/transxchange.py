@@ -277,6 +277,37 @@ class TransXChangeDocument:
 
         return self._root.get_elements(xpath)
 
+    def get_all_operating_profiles(self, op_type, allow_none=False):
+        """Get all the VehicleJourney elements in the TransXChangeDocument.
+
+        Returns:
+            List[TransXChangeElement]: A list of TransXChangeElement
+            VehicleJourney elements.
+        """
+        if op_type == "VehicleJourneys":
+            xpath = ["VehicleJourneys", "VehicleJourney", "OperatingProfile"]
+        elif op_type == "Services":
+            xpath = ["Services", "Service", "OperatingProfile"]
+
+        if allow_none:
+            return self._root.get_elements_or_none(xpath)
+
+        return self._root.get_elements(xpath)
+
+    def get_all_serviced_organisations(self, allow_none=False):
+        """Get all the ServicedOrganisations elements in the TransXChangeDocument.
+
+        Returns:
+            List[TransXChangeElement]: A list of TransXChangeElement
+            ServicedOrganisations elements.
+        """
+        xpath = ["ServicedOrganisations", "ServicedOrganisation"]
+
+        if allow_none:
+            return self._root.get_elements_or_none(xpath)
+
+        return self._root.get_elements(xpath)
+
     def get_operators(self):
         xpath = ["Operators", "Operator"]
         return self.find_anywhere(xpath)

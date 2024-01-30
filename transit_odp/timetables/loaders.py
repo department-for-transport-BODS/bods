@@ -12,6 +12,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_services,
     df_to_booking_arrangements,
     df_to_vehicle_journeys,
+    df_to_serviced_organisations,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -36,6 +37,7 @@ from transit_odp.transmodel.models import (
     ServicePattern,
     BookingArrangements,
     VehicleJourney,
+    ServicedOrganisations,
 )
 
 BATCH_SIZE = 2000
@@ -58,6 +60,10 @@ class TransXChangeDataLoader:
 
         adapter.info("Loading vehicle journeys.")
         vehicle_journeys = self.load_vehicle_journeys()
+        adapter.info("Finished vehicle journeys.")
+
+        adapter.info("Loading vehicle journeys.")
+        self.load_serviced_organisation()
         adapter.info("Finished vehicle journeys.")
 
         adapter.info("Loading service patterns.")
@@ -144,6 +150,27 @@ class TransXChangeDataLoader:
             vehicle_journeys_objs, batch_size=BATCH_SIZE
         )
         vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
+
+    def load_serviced_organisation(self):
+        serviced_organisations = self.transformed.serviced_organisations
+        serviced_organisations.reset_index(inplace=True)
+        existing_serviced_orgs = ServicedOrganisations.objects.values_list(
+            "name", flat=True
+        )
+        serviced_org_candidate_objs = list(
+            df_to_serviced_organisations(serviced_organisations)
+        )
+
+        serviced_organisations_objs = [
+            org
+            for org in serviced_org_candidate_objs
+            if org.name not in existing_serviced_orgs
+        ]
+
+        created = ServicedOrganisations.objects.bulk_create(
+            serviced_organisations_objs, batch_size=BATCH_SIZE
+        )
+        serviced_organisations["id"] = pd.Series((obj.id for obj in created))
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""

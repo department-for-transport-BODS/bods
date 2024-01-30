@@ -254,7 +254,18 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         suffixes=("_vj", "_jp"),
         indicator=True,
     )
+    return df_merged
 
+
+def merge_serviced_organisations_with_operating_profile(
+    serviced_organisations, operating_profiles
+):
+    serviced_organisations.reset_index()
+    operating_profiles.reset_index()
+
+    df_merged = pd.merge(
+        serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
+    )
     return df_merged
 
 
