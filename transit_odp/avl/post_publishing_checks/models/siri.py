@@ -35,13 +35,13 @@ class VehicleLocation(BaseModel):
     @classmethod
     def from_lxml_element(cls, element: _Element) -> "VehicleLocation":
         return cls(
-            longitude=element.findtext("x:Longitude", namespaces=_NSMAP),
-            latitude=element.findtext("x:Latitude", namespaces=_NSMAP),
+            longitude=element.findtext("x:Longitude", namespaces=_NSMAP).strip(),
+            latitude=element.findtext("x:Latitude", namespaces=_NSMAP).strip(),
         )
 
 
 class VehicleJourney(BaseModel):
-    driver_ref: Optional[str]
+    driver_ref: Optional[str] = None
 
     @classmethod
     def from_lxml_element(cls, element: _Element) -> "VehicleJourney":
@@ -51,7 +51,7 @@ class VehicleJourney(BaseModel):
 
 
 class Extensions(BaseModel):
-    vehicle_journey: Optional[VehicleJourney]
+    vehicle_journey: Optional[VehicleJourney] = None
 
     @classmethod
     def from_lxml_element(cls, element: _Element) -> "Extensions":
@@ -65,26 +65,26 @@ class Extensions(BaseModel):
 
 
 class MonitoredVehicleJourney(BaseModel):
-    bearing: Optional[float]
-    block_ref: Optional[str]
-    block_ref_linenum: Optional[int]
-    framed_vehicle_journey_ref: Optional[FramedVehicleJourneyRef]
-    vehicle_journey_ref: Optional[str]
-    destination_name: Optional[str]
-    destination_ref: Optional[str]
-    destination_ref_linenum: Optional[int]
-    origin_name: Optional[str]
-    origin_ref: Optional[str]
-    origin_ref_linenum: Optional[int]
-    origin_aimed_departure_time: Optional[datetime]
-    direction_ref: Optional[str]
-    direction_ref_linenum: Optional[int]
-    published_line_name: Optional[str]
-    line_ref: Optional[str]
-    vehicle_location: Optional[VehicleLocation]
+    bearing: Optional[float] = None
+    block_ref: Optional[str] = None
+    block_ref_linenum: Optional[int] = None
+    framed_vehicle_journey_ref: Optional[FramedVehicleJourneyRef] = None
+    vehicle_journey_ref: Optional[str] = None
+    destination_name: Optional[str] = None
+    destination_ref: Optional[str] = None
+    destination_ref_linenum: Optional[int] = None
+    origin_name: Optional[str] = None
+    origin_ref: Optional[str] = None
+    origin_ref_linenum: Optional[int] = None
+    origin_aimed_departure_time: Optional[datetime] = None
+    direction_ref: Optional[str] = None
+    direction_ref_linenum: Optional[int] = None
+    published_line_name: Optional[str] = None
+    line_ref: Optional[str] = None
+    vehicle_location: Optional[VehicleLocation] = None
     operator_ref: str
     vehicle_ref: str
-    extensions: Optional[Extensions]
+    extensions: Optional[Extensions] = None
 
     @staticmethod
     def get_value_and_line_number(
@@ -97,7 +97,6 @@ class MonitoredVehicleJourney(BaseModel):
 
     @classmethod
     def from_lxml_element(cls, element: _Element) -> "MonitoredVehicleJourney":
-
         block_ref, block_ref_linenum = cls.get_value_and_line_number(
             element, "x:BlockRef"
         )
@@ -160,7 +159,7 @@ class MonitoredVehicleJourney(BaseModel):
 
 class VehicleActivity(BaseModel):
     recorded_at_time: datetime
-    item_identifier: Optional[str]
+    item_identifier: Optional[str] = None
     valid_until_time: datetime
     monitored_vehicle_journey: MonitoredVehicleJourney
 

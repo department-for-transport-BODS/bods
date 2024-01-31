@@ -1,6 +1,8 @@
 from _elementtree import ParseError
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.http import JsonResponse
+from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
@@ -14,6 +16,9 @@ from transit_odp.api.app.serializers import (
     StopPointSerializer,
 )
 from transit_odp.api.pagination import GeoJsonPagination
+from transit_odp.browse.views.disruptions_views import (
+    _get_disruptions_organisation_data,
+)
 from transit_odp.fares.models import FaresMetadata
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.models import DatasetRevision
@@ -98,3 +103,83 @@ class FareStopsViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         revision_id = self.request.GET.get("revision", "")
         return FaresMetadata.objects.get(revision_id=revision_id).stops.all()
+
+
+class DisruptionsInOrganisationView(viewsets.ViewSet):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def list(self, request):
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{request.GET.get('orgId', None)}/disruptions"
+        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content = []
+        content, _ = _get_disruptions_organisation_data(url, headers)
+
+        return JsonResponse(content, safe=False)
+
+
+class DisruptionDetailView(viewsets.ViewSet):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def list(self, request):
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{request.GET.get('orgId', None)}/disruptions/{request.GET.get('disruptionId', None)}"
+        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content = []
+        content, _ = _get_disruptions_organisation_data(url, headers)
+
+        consequence_coordinates = _get_coordinates_from_disruption(
+            content["consequences"]
+        )
+
+        if len(consequence_coordinates) == 0:
+            return JsonResponse(None, safe=False)
+
+        map_data = _format_data_for_map(
+            consequence_coordinates, content["disruptionReason"]
+        )
+
+        return JsonResponse(map_data, safe=False)
+
+
+def _get_coordinates_from_disruption(disruption_consequences: list):
+    consequence_coordinates = []
+    for consequence in disruption_consequences:
+        if consequence["consequenceType"] == "services":
+            for service in consequence["services"]:
+                if (
+                    service["coordinates"]["latitude"]
+                    and service["coordinates"]["longitude"] is not None
+                ):
+                    consequence_coordinates.append(service["coordinates"])
+
+        if consequence["consequenceType"] == "stops":
+            for stop in consequence["stops"]:
+                if stop["latitude"] and stop["longitude"] is not None:
+                    consequence_coordinates.append(
+                        {
+                            "latitude": stop["latitude"],
+                            "longitude": stop["longitude"],
+                        }
+                    )
+
+    return consequence_coordinates
+
+
+def _format_data_for_map(consequence_coordinates: list, disruption_reason: str):
+    map_data = []
+
+    for coordinate in consequence_coordinates:
+        map_data.append(
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        coordinate["longitude"],
+                        coordinate["latitude"],
+                    ],
+                },
+                "properties": {"disruptionReason": disruption_reason},
+            }
+        )
+
+    return map_data

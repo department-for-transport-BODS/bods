@@ -1,9 +1,11 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import UniqueConstraint
 
 from transit_odp.common.utils.repr import nice_repr
 from transit_odp.naptan.managers import (
     AdminAreaManager,
+    FlexibleZoneManager,
     LocalityManager,
     StopPointManager,
 )
@@ -86,8 +88,32 @@ class StopPoint(models.Model):
         models.CharField(max_length=255),
         default=list,
     )
+    stop_type = models.CharField(max_length=255, null=True, blank=True)
+    bus_stop_type = models.CharField(max_length=255, null=True, blank=True)
 
     objects = StopPointManager()
+
+    def __repr__(self):
+        return nice_repr(self)
+
+
+class FlexibleZone(models.Model):
+    class Meta:
+        ordering = ("naptan_stoppoint", "sequence_number")
+        constraints = [
+            UniqueConstraint(
+                fields=["naptan_stoppoint", "sequence_number"],
+                name="unique_flexible_zone",
+            ),
+        ]
+
+    naptan_stoppoint = models.ForeignKey(
+        StopPoint, related_name="flexible_zones", on_delete=models.CASCADE
+    )
+    sequence_number = models.IntegerField()
+    location = models.PointField()
+
+    objects = FlexibleZoneManager()
 
     def __repr__(self):
         return nice_repr(self)

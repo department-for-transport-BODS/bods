@@ -2,7 +2,14 @@ from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import Point
 
 from transit_odp.common.loggers import LoaderAdapter
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint
+from transit_odp.naptan.models import AdminArea, FlexibleZone, Locality, StopPoint
+from transit_odp.pipelines.pipelines.naptan_etl.transform import (
+    extract_flexible_zones_from_db,
+    extract_flexible_zones_from_df,
+    get_flexible_zones_in_both,
+    get_flexible_zones_in_db_only,
+    get_flexible_zones_in_xml_only,
+)
 
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
@@ -25,9 +32,10 @@ def load_new_stops(new_stops):
                     x=float(row.longitude), y=float(row.latitude), srid=4326
                 ),
                 stop_areas=row.stop_areas,
+                stop_type=row.stop_type,
+                bus_stop_type=row.bus_stop_type,
             )
         )
-
     StopPoint.objects.bulk_create(stops_list, batch_size=5000)
     logger.info("Finished loading new StopPoints.")
 
@@ -45,6 +53,8 @@ def load_existing_stops(existing_stops):
         obj.admin_area_id = int(row.admin_area_id)
         obj.location = Point(x=float(row.longitude), y=float(row.latitude), srid=4326)
         obj.stop_areas = row.stop_areas
+        obj.stop_type = row.stop_type
+        obj.bus_stop_type = row.bus_stop_type
 
     StopPoint.objects.bulk_update(
         existing_stops["obj"],
@@ -58,6 +68,8 @@ def load_existing_stops(existing_stops):
             "admin_area_id",
             "location",
             "stop_areas",
+            "stop_type",
+            "bus_stop_type",
         ),
         batch_size=5000,
     )
@@ -138,3 +150,80 @@ def load_existing_localities(existing_localities):
         batch_size=5000,
     )
     logger.info("[load_existing_localities]: Finished")
+
+
+def create_flexible_zones(flexible_zones):
+    logger.info("[load_flexible_zone]: Creating new Flexible Zone")
+    flexible_zones_list = []
+    for index, flexible_zone in flexible_zones.iterrows():
+        flexible_zones_list.append(
+            FlexibleZone(
+                sequence_number=index[0],
+                naptan_stoppoint_id=index[1],
+                location=Point(
+                    x=float(flexible_zone["zone_df"].translation.longitude),
+                    y=float(flexible_zone["zone_df"].translation.latitude),
+                    srid=4326,
+                ),
+            ),
+        )
+    FlexibleZone.objects.bulk_create(flexible_zones_list, batch_size=5000)
+    logger.info("[load_flexible_zone]: Finished Creating new Flexible Zone.")
+
+
+def update_flexible_zones(flexible_zones):
+    logger.info("[load_existing_localities]: Started")
+    flexible_zones_list = []
+    for index, flexible_zone in flexible_zones.iterrows():
+        flexible_zones_list.append(
+            FlexibleZone(
+                sequence_number=index[0],
+                naptan_stoppoint_id=index[1],
+                location=Point(
+                    x=float(flexible_zone["zone_df"].translation.longitude),
+                    y=float(flexible_zone["zone_df"].translation.latitude),
+                    srid=4326,
+                ),
+                id=flexible_zone["zone_db"].id,
+            )
+        )
+    FlexibleZone.objects.bulk_update(
+        flexible_zones_list,
+        ("sequence_number", "naptan_stoppoint_id", "location"),
+        batch_size=5000,
+    )
+    logger.info("[load_existing_localities]: Finished")
+
+
+def delete_flexible_zones(flexible_zones):
+    logger.info("[load_flexible_zone]: Deleting Flexible Zones")
+    flexible_zones_list = [
+        flexible_zone["zone_db"].id
+        for _index, flexible_zone in flexible_zones.iterrows()
+    ]
+    FlexibleZone.objects.filter(id__in=flexible_zones_list).delete()
+    logger.info("[load_flexible_zone]: Finished Deleting Flexible Zones")
+
+
+def load_flexible_zones(all_flexible_stops):
+    logger.info("[load_flexible_zone]: Started")
+
+    flexible_zones_from_db = extract_flexible_zones_from_db()
+    flexible_zones_from_df = extract_flexible_zones_from_df(all_flexible_stops)
+
+    flexible_zones_to_create = get_flexible_zones_in_xml_only(
+        flexible_zones_from_db, flexible_zones_from_df
+    )
+    create_flexible_zones(flexible_zones_to_create)
+
+    flexible_zones_update = get_flexible_zones_in_both(
+        flexible_zones_from_db, flexible_zones_from_df
+    )
+    update_flexible_zones(flexible_zones_update)
+
+    flexible_zones_to_delete = get_flexible_zones_in_db_only(
+        flexible_zones_from_db, flexible_zones_from_df
+    )
+    delete_flexible_zones(flexible_zones_to_delete)
+
+    logger.info("[load_flexible_zone]: Finished")

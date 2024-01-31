@@ -1,18 +1,21 @@
 import pandas as pd
+import pytest
 from django.contrib.gis.geos import Point
 from django.test import TestCase
 
+from transit_odp.naptan.dataclasses import StopPoint as StopPointDataClass
 from transit_odp.naptan.factories import (
     AdminAreaFactory,
     DistrictFactory,
     LocalityFactory,
     StopPointFactory,
 )
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint
+from transit_odp.naptan.models import AdminArea, FlexibleZone, Locality, StopPoint
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
     load_existing_localities,
     load_existing_stops,
+    load_flexible_zones,
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
@@ -20,6 +23,10 @@ from transit_odp.pipelines.pipelines.naptan_etl.load import (
 
 
 class TestNaptanLoad(TestCase):
+    @pytest.fixture(autouse=True)
+    def _get_flexible_zone(self, flexible_stops):
+        self._flexible_zones = flexible_stops
+
     def test_load_new_stops(self):
         # Setup
         AdminAreaFactory(id=9, atco_code="123")
@@ -37,6 +44,8 @@ class TestNaptanLoad(TestCase):
                     "latitude": "51.4843326109",
                     "longitude": "-2.51701423067",
                     "stop_areas": ["stop1"],
+                    "stop_type": "BCT",
+                    "bus_stop_type": "CUS",
                 },
             ]
         ).set_index("atco_code")
@@ -60,6 +69,8 @@ class TestNaptanLoad(TestCase):
             created_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),
         )
+        self.assertEqual(created_stop.stop_type, "BCT")
+        self.assertEqual(created_stop.bus_stop_type, "CUS")
 
     def test_update_existing_stops(self):
         # Setup
@@ -86,6 +97,8 @@ class TestNaptanLoad(TestCase):
                     "longitude": "-2.51701423067",
                     "stop_areas": ["stop1"],
                     "obj": stop,
+                    "stop_type": "BCT",
+                    "bus_stop_type": "CUS",
                 },
             ]
         ).set_index("atco_code")
@@ -109,6 +122,8 @@ class TestNaptanLoad(TestCase):
             updated_stop.location,
             Point(x=float("-2.51701423067"), y=float("51.4843326109"), srid=4326),
         )
+        self.assertEqual(updated_stop.stop_type, "BCT")
+        self.assertEqual(updated_stop.bus_stop_type, "CUS")
 
     def test_load_new_admin_areas(self):
         # Setup
@@ -236,3 +251,48 @@ class TestNaptanLoad(TestCase):
         self.assertEqual(updated_locality.northing, 34567)
         self.assertEqual(updated_locality.admin_area_id, 9)
         # self.assertEqual(updated_locality.district_id, 10)
+
+    def test_load_flexible_zone(self):
+        # Setup
+        flexible_stops = StopPointDataClass.from_xml(self._flexible_zones)
+        admin_area = AdminAreaFactory(id=9, atco_code="123")
+        locality = LocalityFactory(gazetteer_id="E0035604")
+        stop = StopPointFactory(
+            admin_area=admin_area,
+            locality=locality,
+            atco_code="010000001",
+            common_name="TestName1",
+            stop_areas=[],
+        )
+        flexible_zones = flexible_stops.stop_classification.on_street.bus.flexible_zones
+        existing_stops = pd.DataFrame(
+            [
+                {
+                    "atco_code": "010000001",
+                    "naptan_code": "bstpgit",
+                    "common_name": "Cassell Road",
+                    "indicator": "SW-bound",
+                    "street": "Downend Road",
+                    "locality_id": "E0035604",
+                    "admin_area_id": 9,
+                    "latitude": "51.4843326109",
+                    "longitude": "-2.51701423067",
+                    "stop_areas": ["stop1"],
+                    "obj": stop,
+                    "stop_type": "BCT",
+                    "bus_stop_type": "CUS",
+                    "flexible_zones": flexible_zones,
+                },
+            ]
+        ).set_index("atco_code")
+
+        load_flexible_zones(existing_stops)
+
+        created_flexible_stops = FlexibleZone.objects.all()
+
+        self.assertEqual(
+            len(created_flexible_stops),
+            len(flexible_zones.location),
+        )
+        self.assertEqual(created_flexible_stops[0].sequence_number, 1)
+        self.assertEqual(created_flexible_stops[1].sequence_number, 2)

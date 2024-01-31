@@ -3,7 +3,6 @@ Base settings to build other settings data upon.
 """
 
 # flake8: noqa
-
 import os
 
 import environ
@@ -45,8 +44,7 @@ ROOT_SITE_ID = (
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
+# USE_L10N = True #The USE_L10N setting is deprecated. Starting with Django 5.0, localized formatting of data will always be enabled.
 USE_TZ = True
 
 
@@ -130,7 +128,6 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "django_hosts",
     "crispy_forms",
-    "crispy_forms_govuk",
     "allauth",
     "allauth.account",
     "invitations",
@@ -171,6 +168,7 @@ LOCAL_APPS = [
     "transit_odp.xmltoolkit.apps.XmlToolkitConfig",
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
     "transit_odp.disruptions.apps.DisruptionsConfig",
+    "transit_odp.crispy_forms_govuk.apps.CrispyFormsGovukConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -241,6 +239,7 @@ MIDDLEWARE = [
     "django_hosts.middleware.HostsResponseMiddleware",
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
     "waffle.middleware.WaffleMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
 ]
 
@@ -644,5 +643,16 @@ if LOG_LEVEL:
                 "handlers": ["console"],
                 "level": LOG_LEVEL,
             },
+            "django.db.backends": {
+                "level": LOG_LEVEL,
+                "handlers": ["console"],
+            },
         },
     }
+
+
+if env("GDAL_LIBRARY_PATH", default=None):
+    GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
+
+if env("GEOS_LIBRARY_PATH", default=None):
+    GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")

@@ -46,10 +46,10 @@ def test_task_backfill_metrics_archive():
     When running `task_backfill_metrics_archive`.
     Then 5 MetricArchives will be created, one for each month not including June.
     """
-    first_date = datetime(2021, 1, 1, tzinfo=pytz.utc)
+    first_date = timezone.datetime(2021, 1, 1)
     APIRequestFactory.create_batch(5, created=first_date)
 
-    last_date = datetime(2021, 6, 1, tzinfo=pytz.utc)
+    last_date = timezone.datetime(2021, 6, 1)
     APIRequestFactory.create_batch(5, created=last_date)
 
     task_backfill_metrics_archive()

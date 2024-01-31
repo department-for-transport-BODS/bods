@@ -58,7 +58,7 @@ class WeeklyReport:
             granularity=PPCReportType.WEEKLY,
         )
         if not created:
-            logger.warn(
+            logger.warning(
                 f"Weekly report already exists for week {self.start_date} for "
                 f"feed {feed_id}. It's going to be overriden."
             )
@@ -106,6 +106,6 @@ class WeeklyReport:
             response[row.dataset_id].append(row)
 
         if not response:
-            logger.warn("No daily reports found to summarise!")
+            logger.warning("No daily reports found to summarise!")
 
         return response

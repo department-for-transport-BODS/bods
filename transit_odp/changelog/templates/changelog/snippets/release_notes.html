@@ -1,6 +1,54 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "January 2024 (1.33.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            A variety of bug fixes improving the way pagination and 'sort by' and checkboxes are displayed.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A bug fix to standardise the number of local transport authorities that appear on each page.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the way flexible services data are validated, to ensure stops for flexible zones
+            are set up as FLX stops within the NaPTAN data set.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A series of upgrades to the packages that are used by BODS to add resilience and apply security updates.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Addition of Disruptions data to Browse Bus Open Data Page.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Overview pages for organisations (LTAs) to show a map of their active disruptions, along with key statistics
+            about the data.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Detail pages for each disruption to provide additional information to the user.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "December 2023 (1.32.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

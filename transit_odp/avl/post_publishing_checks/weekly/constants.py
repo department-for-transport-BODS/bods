@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 DailyReportItem = list[dict[str, Any]]
 
@@ -19,9 +19,7 @@ class DailyReport(BaseModel):
     destination_ref: DailyReportItem = Field(default=[], alias="DestinationRef")
     origin_ref: DailyReportItem = Field(default=[], alias="OriginRef")
     block_ref: DailyReportItem = Field(default=[], alias="BlockRef")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class WeeklyPPCSummaryFiles(str, Enum):

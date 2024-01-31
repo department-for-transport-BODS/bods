@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import pytz
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 from transit_odp.timetables.transxchange import TransXChangeDocument
 
@@ -18,8 +18,8 @@ class Line(BaseModel):
 
 class Service(BaseModel):
     service_code: str
-    operating_period_start_date: Optional[date]
-    operating_period_end_date: Optional[date]
+    operating_period_start_date: Optional[date] = None
+    operating_period_end_date: Optional[date] = None
     public_use: bool = True
     lines: List[Line]
     origin: str
@@ -92,7 +92,8 @@ class Header(BaseModel):
     modification_datetime: datetime
     filename: str
 
-    @validator("creation_datetime", "modification_datetime")
+    @field_validator("creation_datetime", "modification_datetime")
+    @classmethod
     def timezone_validate(cls, dt):
         """
         If datetime does not have a timezone make it UTC.

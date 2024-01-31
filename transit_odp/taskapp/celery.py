@@ -1,16 +1,16 @@
 import os
 from typing import Final
 from ddtrace import patch_all
-
-patch_all()
-
 from celery import Celery
 from celery.schedules import crontab
 from django.apps import AppConfig, apps
 from django.conf import settings
+import environ
 
+patch_all()
+env = environ.Env()
 
-if os.environ.get("DD_PROFILING_ENABLED") == "true":
+if env.bool("DD_PROFILING_ENABLED", False):
     import ddtrace.profiling.auto
 
 if not settings.configured:
@@ -74,13 +74,13 @@ class CeleryAppConfig(AppConfig):
             # excluded newly expired datasets
             "create_bulk_data_archive": {
                 "task": BROWSE_TASKS + "task_create_bulk_data_archive",
-                "schedule": crontab(minute=0, hour=6),
+                "schedule": crontab(minute=30, hour=0),
             },
             # scheduled 1 hour after task_set_expired_feeds to ensure archive
             # excluded newly expired datasets
             "create_change_data_archive": {
                 "task": BROWSE_TASKS + "task_create_change_data_archive",
-                "schedule": crontab(minute=0, hour=6),
+                "schedule": crontab(minute=30, hour=0),
             },
             # scheduled at 1am and this task should be the first that runs
             # before other tasks
@@ -162,7 +162,7 @@ class CeleryAppConfig(AppConfig):
             },
             "task_seasonal_service_updated_dates": {
                 "task": ADMIN_TASKS + "task_seasonal_service_updated_dates",
-                "schedule": crontab(hour=23),
+                "schedule": crontab(minute=30, hour=23),
             },
             "task_update_fares_validation_existing_dataset": {
                 "task": FARES_TASKS + "task_update_fares_validation_existing_dataset",
@@ -171,5 +171,17 @@ class CeleryAppConfig(AppConfig):
             "create_disruptions_zip": {
                 "task": DISRUPTIONS_TASKS + "task_create_sirisx_zipfile",
                 "schedule": 60.0,
+            },
+            "task_avl_validation_all_feeds": {
+                "task": AVL_TASKS + "task_run_avl_validations",
+                "schedule": crontab(minute=0, hour=18),
+            },
+            "celery.backend_cleanup": {
+                "task": "celery.backend_cleanup",
+                "schedule": crontab(minute=0, hour=0),
+            },
+            "daily_post_publishing_checks_all_feeds": {
+                "task": AVL_TASKS + "task_daily_post_publishing_checks_all_feeds",
+                "schedule": crontab(minute=0, hour=18),
             },
         }

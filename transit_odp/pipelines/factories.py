@@ -15,16 +15,17 @@ from transit_odp.pipelines.models import (
     SchemaDefinition,
     TaskResult,
 )
+from factory.django import DjangoModelFactory
 
 
-class RemoteDatasetHealthCheckCountFactory(factory.django.DjangoModelFactory):
+class RemoteDatasetHealthCheckCountFactory(DjangoModelFactory):
     class Meta:
         model = RemoteDatasetHealthCheckCount
 
     revision = factory.SubFactory(DatasetRevisionFactory)
 
 
-class DatasetETLErrorFactory(factory.django.DjangoModelFactory):
+class DatasetETLErrorFactory(DjangoModelFactory):
     class Meta:
         model = DatasetETLError
 
@@ -34,7 +35,7 @@ class DatasetETLErrorFactory(factory.django.DjangoModelFactory):
     description = factory.Faker("paragraph")
 
 
-class DatasetETLTaskResultFactory(factory.django.DjangoModelFactory):
+class DatasetETLTaskResultFactory(DjangoModelFactory):
     class Meta:
         model = DatasetETLTaskResult
 
@@ -43,7 +44,7 @@ class DatasetETLTaskResultFactory(factory.django.DjangoModelFactory):
     progress = 0
 
 
-class BulkDataArchiveFactory(factory.django.DjangoModelFactory):
+class BulkDataArchiveFactory(DjangoModelFactory):
     class Meta:
         model = BulkDataArchive
 
@@ -54,7 +55,7 @@ class BulkDataArchiveFactory(factory.django.DjangoModelFactory):
     dataset_type = TimetableType
 
 
-class ChangeDataArchiveFactory(factory.django.DjangoModelFactory):
+class ChangeDataArchiveFactory(DjangoModelFactory):
     class Meta:
         model = ChangeDataArchive
 
@@ -62,7 +63,7 @@ class ChangeDataArchiveFactory(factory.django.DjangoModelFactory):
     data = factory.django.FileField(filename="change_archive.zip")
 
 
-class TaskResultFactory(factory.django.DjangoModelFactory):
+class TaskResultFactory(DjangoModelFactory):
     class Meta:
         model = TaskResult
 
@@ -78,7 +79,7 @@ class DataQualityTaskFactory(TaskResultFactory):
     task_id = factory.Faker("uuid4")
 
 
-class SchemaDefinitionFactory(factory.django.DjangoModelFactory):
+class SchemaDefinitionFactory(DjangoModelFactory):
     class Meta:
         model = SchemaDefinition
 

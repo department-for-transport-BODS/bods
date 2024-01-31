@@ -208,9 +208,9 @@ def test_task_run_fares_etl_flag_active(mocker, netexdocuments):
     ).all()[0] == {"tariff_basis": ["zoneToZone"]}
     assert task.revision.metadata.faresmetadata.datacatalogue.values(
         "national_operator_code"
-    ).all()[1] == {"national_operator_code": ["HCTY"]}
+    ).all()[0] == {"national_operator_code": ["HCTY"]}
     assert task.revision.metadata.faresmetadata.datacatalogue.values("line_name").all()[
-        1
+        0
     ] == {"line_name": ["16"]}
     assert list(task.revision.metadata.faresmetadata.stops.all()) == list(
         StopPoint.objects.all()

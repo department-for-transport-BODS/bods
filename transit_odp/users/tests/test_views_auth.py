@@ -3,10 +3,12 @@ from allauth.account.adapter import get_adapter
 from allauth.account.forms import EmailAwarePasswordResetTokenGenerator
 from allauth.account.models import EmailAddress, EmailConfirmation
 from allauth.account.utils import user_pk_to_url_str
+from allauth.core import context
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory
+from django.contrib.sites.models import Site
+from django.test import RequestFactory, override_settings
 from django.urls import set_urlconf
 from django.utils.timezone import now
 from django_hosts.resolvers import get_host, reverse, reverse_host
@@ -43,6 +45,7 @@ pytestmark = pytest.mark.django_db
 
 class TestViewsAuthBase:
     host = config.hosts.PUBLISH_HOST
+    http_host = f"{settings.PUBLISH_SUBDOMAIN}.{settings.PARENT_HOST}"
 
     def setup_request(self, request_factory, invite_kwargs):
         url = reverse("account_signup", host=self.host)
@@ -83,6 +86,7 @@ class TestViewsAuthBase:
         # simulate anonymous user
         request.user = AnonymousUser()
         request.host = self.host
+        request.site = Site.objects.get(id=settings.ROOT_SITE_ID)
 
         # add session and message middleware
         request = add_session_middleware(request)
@@ -129,7 +133,9 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
 
         # Assert
         assert response.status_code == 200
@@ -165,15 +171,17 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        SignupView.as_view()(request)
-        assert adapter.stash_contains_invitation_started(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            SignupView.as_view()(request)
+            assert adapter.stash_contains_invitation_started(request)
 
-        # Make second GET request
-        SignupView.as_view()(request)
+            # Make second GET request
+            SignupView.as_view()(request)
 
-        # Assert
-        assert not adapter.stash_contains_invitation_started(request)
-        assert not adapter.stash_contains_account_verified_email(request)
+            # Assert
+            assert not adapter.stash_contains_invitation_started(request)
+            assert not adapter.stash_contains_account_verified_email(request)
 
     def test_user_settings_set_when_signs_up(self, client_factory):
         client = client_factory(host=config.hosts.DATA_HOST)
@@ -248,6 +256,7 @@ class TestSignupView(TestViewsAuthBase):
             == "Ensure this value has at most 400 characters (it has 401)."
         )
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_new_user_has_same_entries_as_invitation(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(
@@ -267,13 +276,16 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            SignupView.as_view()(request)
         fished_out_user = User.objects.get(email=user_email)
 
         assert fished_out_user.email == invite.email
         assert fished_out_user.account_type == invite.account_type
         assert fished_out_user.organisation == invite.organisation
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_new_agent_signs_up(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(
@@ -291,8 +303,9 @@ class TestSignupView(TestViewsAuthBase):
                 "organisation": org,
             },
         )
-
-        SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            SignupView.as_view()(request)
         fished_out_user = User.objects.get(email=user_email)
         fished_out_agent_invitation = AgentUserInvite.objects.get(invitation=invite)
 
@@ -303,6 +316,7 @@ class TestSignupView(TestViewsAuthBase):
         assert fished_out_user.agent_organisation == "agent_organisation"
         assert fished_out_user.settings.opt_in_user_research is True
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_key_contact_is_added_when_signs_up(self, request_factory: RequestFactory):
         # Set up
         request, invite = self.setup_request(
@@ -311,12 +325,15 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
 
         assert response.status_code == 302
         assert organisation.key_contact.email == invite.email
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_organisation_is_active_when_signs_up(
         self, request_factory: RequestFactory
     ):
@@ -330,7 +347,9 @@ class TestSignupView(TestViewsAuthBase):
         invite.organisation.save()
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
 
         assert response.status_code == 302
@@ -346,6 +365,7 @@ class TestSignupView(TestViewsAuthBase):
         ),
         ids=["Org Admin", "Org Staff"],
     )
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_key_contact_is_none_when_non_key_contact_signs_up(
         self, request_factory: RequestFactory, account_type, is_key_contact
     ):
@@ -356,7 +376,9 @@ class TestSignupView(TestViewsAuthBase):
         )
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         organisation = Organisation.objects.get(id=invite.organisation.id)
 
         assert response.status_code == 302
@@ -368,12 +390,15 @@ class TestSignupView(TestViewsAuthBase):
             request_factory, {"account_type": AccountType.developer.value}
         )
 
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         User.objects.get(email=invite.email)
 
         assert response.status_code == 302
         self.host = config.hosts.PUBLISH_HOST
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_second_user_accepts_first(self, request_factory: RequestFactory):
         """
         This test simulates the conditions needed for this bug.
@@ -429,7 +454,10 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, this_guys_invite.email)
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        request.site = Site.objects.get(id=settings.ROOT_SITE_ID)
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
         org_from_database = Organisation.objects.get(id=org.id)
 
         assert response.status_code == 302
@@ -456,9 +484,10 @@ class TestSignupView(TestViewsAuthBase):
 
         # add session middleware
         request = add_session_middleware(request)
-
-        response = SignupView.as_view()(request)
-        assert isinstance(response.context_data["form"], DeveloperSignupForm)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
+            assert isinstance(response.context_data["form"], DeveloperSignupForm)
 
     @pytest.mark.parametrize(
         ("account_type", "email", "form"),
@@ -491,7 +520,9 @@ class TestSignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = SignupView.as_view()(request)
 
         assert isinstance(response.context_data["form"], form)
 
@@ -514,7 +545,9 @@ class TestInviteOnlySignupView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = InviteOnlySignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            response = InviteOnlySignupView.as_view()(request)
 
         # Assert
         assert response.status_code == 200
@@ -570,7 +603,8 @@ class TestLoginView(TestViewsAuthBase):
         adapter.stash_verified_email(request, email)
 
         # Test
-        response = LoginView.as_view()(request)
+        with context.request_context(request):
+            response = LoginView.as_view()(request)
 
         # Assert
         assert response.status_code == 200
@@ -760,6 +794,7 @@ class TestPasswordResetFromKeyView(TestViewsAuthBase):
 
 
 class TestNotifications(TestViewsAuthBase):
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_inviter_notification(self, mailoutbox, request_factory):
         org = OrganisationFactory.create()
         admin = UserFactory.create(
@@ -779,10 +814,13 @@ class TestNotifications(TestViewsAuthBase):
         )
 
         # Test
-        SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            SignupView.as_view()(request)
 
         assert mailoutbox[-1].subject == "Your team member has accepted your invitation"
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_new_agent_accepted_notifications(self, mailoutbox, request_factory):
         """Tests both agent and organisation receive an email notification"""
         org = OrganisationFactory.create()
@@ -803,7 +841,9 @@ class TestNotifications(TestViewsAuthBase):
         )
 
         # Test
-        SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            SignupView.as_view()(request)
 
         assert len(mailoutbox) == 2
         mailoutbox.sort(key=lambda mail: mail.subject)
@@ -815,6 +855,7 @@ class TestNotifications(TestViewsAuthBase):
             f"{org.name}"
         )
 
+    @override_settings(LOGIN_REDIRECT_URL="/accounts/profile/")
     def test_muted_inviter_doesnt_trigger_notification(
         self, mailoutbox, request_factory
     ):
@@ -832,6 +873,8 @@ class TestNotifications(TestViewsAuthBase):
                 "organisation": org,
             },
         )
-        SignupView.as_view()(request)
+        request.META["HTTP_HOST"] = self.http_host
+        with context.request_context(request):
+            SignupView.as_view()(request)
 
         assert not mailoutbox
