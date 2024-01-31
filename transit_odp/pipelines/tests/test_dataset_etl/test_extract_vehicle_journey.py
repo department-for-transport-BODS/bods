@@ -10,9 +10,12 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.transmodel.models import VehicleJourney
 
+from waffle.testutils import override_flag
+
 TZ = tz.gettz("Europe/London")
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_standard_service.xml"
 
@@ -110,6 +113,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
             self.assertIn(journey.journey_code, ["3681", "3682"])
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_flexible_service.xml"
 
@@ -189,6 +193,7 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             self.assertEqual(journey.journey_code, None)
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_flexible_and_standard_service.xml"
 

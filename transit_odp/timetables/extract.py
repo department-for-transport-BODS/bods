@@ -5,6 +5,7 @@ import pandas as pd
 from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
+from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -66,6 +67,10 @@ class TransXChangeExtractor:
         'route_section_hash' to form 'route_hash'.
         """
         logger.debug("Extracting data")
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
+
         schema_version = self.doc.get_transxchange_version()
 
         # Extract Services
@@ -90,10 +95,12 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
 
-        # Extract VehicleJourneys
-        logger.debug("Extracting vehicle_journeys")
-        vehicle_journeys = self.extract_vehicle_journeys()
-        logger.debug("Finished extracting vehicle_journeys")
+        vehicle_journeys = pd.DataFrame()
+        if is_timetable_visualiser_active:
+            # Extract VehicleJourneys
+            logger.debug("Extracting vehicle_journeys")
+            vehicle_journeys = self.extract_vehicle_journeys()
+            logger.debug("Finished extracting vehicle_journeys")
 
         # Extract ServicedOrganisations
         logger.debug("Extracting serviced_organisations")

@@ -51,9 +51,11 @@ class TransXChangeTransformer:
         # stop_points = self.sync_admin_areas(stop_points)
         most_common_localities = get_most_common_localities(stop_points)
 
-        df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
-            vehicle_journeys, journey_patterns
-        )
+        df_merged_vehicle_journeys = pd.DataFrame()
+        if not vehicle_journeys.empty and not journey_patterns.empty:
+            df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
+                vehicle_journeys, journey_patterns
+            )
 
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
