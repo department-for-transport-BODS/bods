@@ -1,32 +1,31 @@
-import pytest
 import pandas as pd
+import pytest
 from django.contrib.gis.geos import Point
 from django.test import TestCase
 
+from transit_odp.naptan.dataclasses import StopPoint as StopPointDataClass
 from transit_odp.naptan.factories import (
     AdminAreaFactory,
     DistrictFactory,
     LocalityFactory,
     StopPointFactory,
 )
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint, FlexibleZone
+from transit_odp.naptan.models import AdminArea, FlexibleZone, Locality, StopPoint
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
     load_existing_localities,
     load_existing_stops,
+    load_flexible_zones,
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
-    load_flexible_zone,
 )
-
-from transit_odp.naptan.dataclasses import StopPoint as StopPointDataClass
 
 
 class TestNaptanLoad(TestCase):
     @pytest.fixture(autouse=True)
     def _get_flexible_zone(self, flexible_stops):
-        self._flexible_zone = flexible_stops
+        self._flexible_zones = flexible_stops
 
     def test_load_new_stops(self):
         # Setup
@@ -255,7 +254,7 @@ class TestNaptanLoad(TestCase):
 
     def test_load_flexible_zone(self):
         # Setup
-        flexible_stops = StopPointDataClass.from_xml(self._flexible_zone)
+        flexible_stops = StopPointDataClass.from_xml(self._flexible_zones)
         admin_area = AdminAreaFactory(id=9, atco_code="123")
         locality = LocalityFactory(gazetteer_id="E0035604")
         stop = StopPointFactory(
@@ -265,6 +264,7 @@ class TestNaptanLoad(TestCase):
             common_name="TestName1",
             stop_areas=[],
         )
+        flexible_zones = flexible_stops.stop_classification.on_street.bus.flexible_zones
         existing_stops = pd.DataFrame(
             [
                 {
@@ -281,20 +281,18 @@ class TestNaptanLoad(TestCase):
                     "obj": stop,
                     "stop_type": "BCT",
                     "bus_stop_type": "CUS",
-                    "flexible_location": flexible_stops.stop_classification.on_street.bus.flexible_zone,
+                    "flexible_zones": flexible_zones,
                 },
             ]
         ).set_index("atco_code")
 
-        load_flexible_zone(existing_stops)
+        load_flexible_zones(existing_stops)
 
         created_flexible_stops = FlexibleZone.objects.all()
 
         self.assertEqual(
             len(created_flexible_stops),
-            len(
-                flexible_stops.stop_classification.on_street.bus.flexible_zone.location
-            ),
+            len(flexible_zones.location),
         )
         self.assertEqual(created_flexible_stops[0].sequence_number, 1)
         self.assertEqual(created_flexible_stops[1].sequence_number, 2)

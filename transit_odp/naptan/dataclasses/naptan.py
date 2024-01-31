@@ -52,9 +52,10 @@ class Location(BaseModel):
     easting: Optional[int] = None
     northing: Optional[int] = None
     translation: Translation
+    sequence_number: Optional[int] = None
 
     @classmethod
-    def from_xml(cls, location):
+    def from_xml(cls, location, sequence_number=None):
         """
         Create a Location from an lxml naptan:Location.
         """
@@ -75,6 +76,7 @@ class Location(BaseModel):
             northing=northing,
             grid_type=grid_type,
             translation=translation,
+            sequence_number=sequence_number,
         )
 
 
@@ -130,13 +132,16 @@ class FlexibleZone(BaseModel):
         locations_xml = xml.findall(".//x:Location", namespaces=ns)
         location = []
         if locations_xml is not None:
-            location = [Location.from_xml(element) for element in locations_xml]
+            location = [
+                Location.from_xml(element, index + 1)
+                for index, element in enumerate(locations_xml)
+            ]
         return cls(location=location)
 
 
 class Bus(BaseModel):
     bus_stop_type: str
-    flexible_zone: Optional[FlexibleZone]
+    flexible_zones: Optional[FlexibleZone]
 
     @classmethod
     def from_xml(cls, xml):
@@ -146,10 +151,10 @@ class Bus(BaseModel):
         ns = {"x": xml.nsmap.get(None)}
         bus_stop_type = xml.findtext("./x:BusStopType", namespaces=ns)
         flexible_zone_xml = xml.find("./x:FlexibleZone", namespaces=ns)
-        flexible_zone = None
+        flexible_zones = None
         if flexible_zone_xml is not None:
-            flexible_zone = FlexibleZone.from_xml(flexible_zone_xml)
-        return cls(bus_stop_type=bus_stop_type, flexible_zone=flexible_zone)
+            flexible_zones = FlexibleZone.from_xml(flexible_zone_xml)
+        return cls(bus_stop_type=bus_stop_type, flexible_zones=flexible_zones)
 
 
 class OnStreet(BaseModel):
