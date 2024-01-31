@@ -181,14 +181,13 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
         )
 
 
-def df_to_serviced_organisations(df: pd.DataFrame) -> Iterator[ServicedOrganisations]:
-    seen_names = set()
-    for record in df.to_dict("records"):
-        name = record["name"]
+def df_to_serviced_organisations(
+    df: pd.DataFrame, existing_serviced_orgs
+) -> Iterator[ServicedOrganisations]:
+    unique_names = df.loc[~df["name"].isin(existing_serviced_orgs), "name"].unique()
 
-        if name not in seen_names:
-            seen_names.add(name)
-            yield ServicedOrganisations(name=name)
+    for name in unique_names:
+        yield ServicedOrganisations(name=name)
 
 
 def df_to_service_links(df: pd.DataFrame) -> Iterator[ServiceLink]:

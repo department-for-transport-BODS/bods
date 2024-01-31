@@ -96,15 +96,14 @@ class TransXChangeExtractor:
         logger.debug("Finished extracting journey_patterns_sections")
 
         vehicle_journeys = pd.DataFrame()
+        serviced_organisations = pd.DataFrame()
+        operating_profiles = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
             vehicle_journeys = self.extract_vehicle_journeys()
             logger.debug("Finished extracting vehicle_journeys")
 
-        serviced_organisations = pd.DataFrame()
-        operating_profiles = pd.DataFrame()
-        if is_timetable_visualiser_active:
             # Extract ServicedOrganisations
             logger.debug("Extracting serviced_organisations")
             (
@@ -257,7 +256,7 @@ class TransXChangeExtractor:
         df_operating_profile = pd.DataFrame()
         if operating_profile_vehicle_journeys:
             df_operating_profile = operating_profile_to_df(
-                operating_profile_vehicle_journeys, "VehicleJourney"
+                operating_profile_vehicle_journeys
             )
 
         else:
@@ -266,7 +265,7 @@ class TransXChangeExtractor:
             )
             if operating_profile_services:
                 df_operating_profile = operating_profile_to_df(
-                    operating_profile_services, "Services"
+                    operating_profile_services
                 )
 
         serviced_organisations = self.doc.get_all_serviced_organisations(

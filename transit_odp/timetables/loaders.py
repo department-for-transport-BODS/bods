@@ -158,18 +158,12 @@ class TransXChangeDataLoader:
         existing_serviced_orgs = ServicedOrganisations.objects.values_list(
             "name", flat=True
         )
-        serviced_org_candidate_objs = list(
-            df_to_serviced_organisations(serviced_organisations)
+        serviced_org_objs = list(
+            df_to_serviced_organisations(serviced_organisations, existing_serviced_orgs)
         )
 
-        serviced_organisations_objs = [
-            org
-            for org in serviced_org_candidate_objs
-            if org.name not in existing_serviced_orgs
-        ]
-
         created = ServicedOrganisations.objects.bulk_create(
-            serviced_organisations_objs, batch_size=BATCH_SIZE
+            serviced_org_objs, batch_size=BATCH_SIZE
         )
         serviced_organisations["id"] = pd.Series((obj.id for obj in created))
 
