@@ -3,6 +3,7 @@
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
+{% load publish_stepper %}
 
 {% block title_tag %}
     {% filter force_escape %}
@@ -12,9 +13,17 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% include 'publish/dataset_detail/breadcrumb.html' %}
+    {% breadcrumb_url 'Choose data type' 'select-data' pk1=pk1 host host.name %}
+    {% breadcrumb_url 'Timetables Data Sets' 'feed-list' pk1=pk1 host hosts.publish %}
+    {% if feed_name|length > 20 %}
+        {% with datatset_name=feed_name|slice:":19"|add:"..." %}
+            {% breadcrumb_url datatset_name 'revision-publish' pk1=pk1 pk=pk host hosts.publish %}
+        {% endwith %}
+    {% else %}
+        {% breadcrumb_url feed_name 'revision-publish' pk1=pk1 pk=pk host hosts.publish %}
+    {% endif %}
     <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}">
+        <a class="govuk-breadcrumbs__link" href="{% url 'revision-line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}">
             {{ line_name }}
         </a>
     </li>

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.db.models import Max
 from django.utils import timezone
 
-from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.publish.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.transmodel.models import BookingArrangements, Service
 
@@ -39,8 +39,13 @@ def get_distinct_dataset_txc_attributes(revision_id):
     return txc_attributes
 
 
-def get_revision_id(dataset_id):
-    print("test")
+def get_revision_details(dataset_id):
+    revision_details = []
+    revision = DatasetRevision.objects.get(dataset_id=dataset_id)
+    revision_details.append(revision.id)
+    revision_details.append(revision.name)
+
+    return revision_details
 
 
 def get_service_codes_dict(revision_id, line):
