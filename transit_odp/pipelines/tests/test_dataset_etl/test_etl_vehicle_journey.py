@@ -11,10 +11,11 @@ from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.transmodel.models import VehicleJourney
 
 from waffle.testutils import override_flag
+from django.test import override_settings
 
 TZ = tz.gettz("Europe/London")
 
-
+@override_settings(DATABASES={'default': {'ENGINE': 'django.db.backends.sqlite3'}})
 @override_flag("is_timetable_visualiser_active", active=True)
 class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_standard_service.xml"
