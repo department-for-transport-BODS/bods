@@ -19,6 +19,8 @@ from transit_odp.timetables.dataframes import (
     stop_point_refs_to_dataframe,
     booking_arrangements_to_dataframe,
     vehicle_journeys_to_dataframe,
+    serviced_organisations_to_dataframe,
+    operating_profile_to_df,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -126,9 +128,17 @@ class XmlFileParser(ETLUtility):
         vehicle_journeys = self.extract_vehicle_journeys(file_id)
         logger.debug("Finished extracting vehicle_journeys")
 
+        # Extract ServicedOrganisations
+        logger.debug("Extracting serviced_organisations")
+        (
+            serviced_organisations,
+            operating_profiles,
+        ) = self.extract_serviced_organisations(file_id)
+        logger.debug("Finished extracting serviced_organisations")
+
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
-        booking_arrangements = self.extract_booking_arrangements(doc, file_id)
+        booking_arrangements = self.extract_booking_arrangements(file_id)
         logger.debug("Finished extracting booking_arrangements")
 
         creation_datetime = extract_timestamp(self.trans.get_creation_date_time())
@@ -175,6 +185,8 @@ class XmlFileParser(ETLUtility):
             timing_point_count=timing_point_count,
             stop_count=len(stop_points) + len(provisional_stops),
             vehicle_journeys=vehicle_journeys,
+            serviced_organisations=serviced_organisations,
+            operating_profiles=operating_profiles,
         )
 
     def construct_geometry(self, point: Point):
@@ -247,6 +259,44 @@ class XmlFileParser(ETLUtility):
 
         return df_vehicle_journeys
 
+    def extract_serviced_organisations(self, file_id: int):
+        operating_profile_vehicle_journeys = self.trans.get_all_operating_profiles(
+            "VehicleJourneys", allow_none=True
+        )
+        df_operating_profile = pd.DataFrame()
+        if operating_profile_vehicle_journeys:
+            df_operating_profile = operating_profile_to_df(
+                operating_profile_vehicle_journeys, "VehicleJourney"
+            )
+
+        else:
+            operating_profile_services = self.trans.get_all_operating_profiles(
+                "Services", allow_none=True
+            )
+            if operating_profile_services:
+                df_operating_profile = operating_profile_to_df(
+                    operating_profile_services, "Services"
+                )
+
+        serviced_organisations = self.trans.get_all_serviced_organisations(
+            allow_none=True
+        )
+        df_serviced_organisation = pd.DataFrame()
+        if serviced_organisations:
+            df_serviced_organisation = serviced_organisations_to_dataframe(
+                serviced_organisations
+            )
+
+        if not df_operating_profile.empty:
+            df_operating_profile["file_id"] = file_id
+            df_operating_profile.set_index(["file_id"], inplace=True)
+
+        if not df_serviced_organisation.empty:
+            df_serviced_organisation["file_id"] = file_id
+            df_serviced_organisation.set_index(["file_id"], inplace=True)
+
+        return df_serviced_organisation, df_operating_profile
+
     def extract_journey_pattern_sections(self, doc, file_id: int):
         sections = self.trans.get_journey_pattern_sections(allow_none=True)
         timing_links = journey_pattern_sections_to_dataframe(sections)
@@ -264,7 +314,7 @@ class XmlFileParser(ETLUtility):
 
         return jp_sections, timing_links
 
-    def extract_booking_arrangements(self, doc, file_id: int):
+    def extract_booking_arrangements(self, file_id: int):
         services = self.trans.get_services()
         df = booking_arrangements_to_dataframe(services)
         df["file_id"] = file_id
