@@ -263,6 +263,8 @@ def merge_serviced_organisations_with_operating_profile(
     df_merged = pd.merge(
         serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
     )
+    df_merged.set_index("file_id", inplace=True)
+
     return df_merged
 
 

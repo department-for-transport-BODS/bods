@@ -102,13 +102,16 @@ class TransXChangeExtractor:
             vehicle_journeys = self.extract_vehicle_journeys()
             logger.debug("Finished extracting vehicle_journeys")
 
-        # Extract ServicedOrganisations
-        logger.debug("Extracting serviced_organisations")
-        (
-            serviced_organisations,
-            operating_profiles,
-        ) = self.extract_serviced_organisations()
-        logger.debug("Finished extracting serviced_organisations")
+        serviced_organisations = pd.DataFrame()
+        operating_profiles = pd.DataFrame()
+        if is_timetable_visualiser_active:
+            # Extract ServicedOrganisations
+            logger.debug("Extracting serviced_organisations")
+            (
+                serviced_organisations,
+                operating_profiles,
+            ) = self.extract_serviced_organisations()
+            logger.debug("Finished extracting serviced_organisations")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
