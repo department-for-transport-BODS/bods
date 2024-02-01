@@ -256,12 +256,7 @@ class ServicedOrganisationVehicleJourney(models.Model):
 
 
 class ServicedOrganisations(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
-    vehicle_journeys = models.ManyToManyField(
-        VehicleJourney,
-        through=ServicedOrganisationVehicleJourney,
-        related_name="serviced_organisations",
-    )
+    name = models.CharField(max_length=255, null=True, blank=True, unique=True)
 
 
 class ServicedOrganisationWorkingDays(models.Model):

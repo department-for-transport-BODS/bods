@@ -256,6 +256,50 @@ def vehicle_journeys_to_dataframe(
     return pd.DataFrame(all_vechicle_journeys)
 
 
+def operating_profile_to_df(operating_profiles):
+    serviced_orgs_refs_df = []
+    for operating_profile in operating_profiles:
+        serviced_organisation_day_type = operating_profile.get_element_or_none(
+            ["ServicedOrganisationDayType"]
+        )
+        if serviced_organisation_day_type:
+            days_of_operation = serviced_organisation_day_type.get_element_or_none(
+                ["DaysOfOperation"]
+            )
+            days_of_non_operation = serviced_organisation_day_type.get_element_or_none(
+                ["DaysOfNonOperation"]
+            )
+            if days_of_operation:
+                operational = True
+                working_days = days_of_operation.get_element("WorkingDays")
+            elif days_of_non_operation:
+                operational = False
+                working_days = days_of_non_operation.get_element("WorkingDays")
+            serviced_org_ref = working_days.get_element("ServicedOrganisationRef").text
+
+            serviced_orgs_refs_df.append(
+                {"serviced_org_ref": serviced_org_ref, "operational": operational}
+            )
+
+    return pd.DataFrame(serviced_orgs_refs_df)
+
+
+def serviced_organisations_to_dataframe(serviced_organisations):
+    serviced_organisations_df = []
+    for serviced_organisation in serviced_organisations:
+        organisation_code = serviced_organisation.get_element(["OrganisationCode"]).text
+        name = serviced_organisation.get_element(["Name"]).text
+
+        serviced_organisations_df.append(
+            {
+                "serviced_org_ref": organisation_code,
+                "name": name,
+            }
+        )
+
+    return pd.DataFrame(serviced_organisations_df)
+
+
 def booking_arrangements_to_dataframe(services):
     booking_arrangement_props = []
     for service in services:

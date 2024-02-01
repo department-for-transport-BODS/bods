@@ -16,6 +16,8 @@ class ExtractedData(object):
     timing_links: pd.DataFrame
     booking_arrangements: pd.DataFrame
     vehicle_journeys: pd.DataFrame
+    serviced_organisations: pd.DataFrame
+    operating_profiles: pd.DataFrame
 
     routes: pd.DataFrame
     route_to_route_links: pd.DataFrame
@@ -41,6 +43,7 @@ class TransformedData(object):
     service_pattern_stops: pd.DataFrame
     booking_arrangements: pd.DataFrame
     vehicle_journeys: pd.DataFrame
+    serviced_organisations: pd.DataFrame
 
     schema_version: str
     creation_datetime: datetime

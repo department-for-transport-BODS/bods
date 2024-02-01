@@ -252,6 +252,18 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         right_index=True,
         how="left",
     )
+    return df_merged
+
+
+def merge_serviced_organisations_with_operating_profile(
+    serviced_organisations, operating_profiles
+):
+    serviced_organisations.reset_index(inplace=True)
+
+    df_merged = pd.merge(
+        serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
+    )
+    df_merged.set_index("file_id", inplace=True)
 
     return df_merged
 
