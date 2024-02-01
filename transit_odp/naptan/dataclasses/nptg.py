@@ -26,8 +26,8 @@ class Translation(BaseModel):
         return cls(
             easting=xml.findtext("./x:Easting", namespaces=ns),
             northing=xml.findtext("./x:Northing", namespaces=ns),
-            longitude=xml.findtext("./x:Longitude", namespaces=ns),
-            latitude=xml.findtext("./x:Latitude", namespaces=ns),
+            longitude=xml.findtext("./x:Longitude", namespaces=ns).strip(),
+            latitude=xml.findtext("./x:Latitude", namespaces=ns).strip(),
         )
 
 

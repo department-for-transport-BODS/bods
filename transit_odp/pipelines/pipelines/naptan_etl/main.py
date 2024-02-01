@@ -1,3 +1,4 @@
+import pandas as pd
 from celery.utils.log import get_task_logger
 
 from transit_odp.common.loggers import LoaderAdapter
@@ -13,6 +14,7 @@ from transit_odp.pipelines.pipelines.naptan_etl.load import (
     load_existing_admin_areas,
     load_existing_localities,
     load_existing_stops,
+    load_flexible_zones,
     load_new_admin_areas,
     load_new_localities,
     load_new_stops,
@@ -74,6 +76,15 @@ def run():
     logger.info(f"[naptan_etl: run]: New stops {len(new_stops)} found")
     load_new_stops(new_stops)
     load_existing_stops(existing_stops)
+
+    stops_from_db = extract_stops_from_db()
+    new_flexible_stop_points = new_stops[~new_stops["flexible_zones"].isna()]
+    new_flexible_stops = get_existing_data(
+        new_flexible_stop_points, stops_from_db, merge_on_field="atco_code"
+    )
+    existing_flexible_stops = existing_stops[~existing_stops["flexible_zones"].isna()]
+    all_flexible_stops = pd.concat([new_flexible_stops, existing_flexible_stops])
+    load_flexible_zones(all_flexible_stops)
 
     cleanup()
     logger.info("[run] finished")

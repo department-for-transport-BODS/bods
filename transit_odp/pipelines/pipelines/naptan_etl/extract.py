@@ -91,6 +91,13 @@ def extract_stops(xml_file_path):
         stop_point_path = "//naptan:StopPoints/naptan:StopPoint"
         for stop in tree.iterfind(stop_point_path, namespaces=namespace):
             point = StopPoint.from_xml(stop)
+            bus_stop_type, flexible_zones = None, None
+            if (
+                point.stop_classification.on_street
+                and point.stop_classification.on_street.bus
+            ):
+                bus_stop_type = point.stop_classification.on_street.bus.bus_stop_type
+                flexible_zones = point.stop_classification.on_street.bus.flexible_zones
             yield {
                 "atco_code": point.atco_code,
                 "naptan_code": point.naptan_code,
@@ -102,6 +109,9 @@ def extract_stops(xml_file_path):
                 "latitude": point.place.location.translation.latitude,
                 "longitude": point.place.location.translation.longitude,
                 "stop_areas": point.stop_areas,
+                "stop_type": point.stop_classification.stop_type,
+                "bus_stop_type": bus_stop_type,
+                "flexible_zones": flexible_zones,
             }
 
     df = pd.DataFrame(
@@ -117,10 +127,12 @@ def extract_stops(xml_file_path):
             "latitude",
             "longitude",
             "stop_areas",
+            "stop_type",
+            "bus_stop_type",
+            "flexible_zones",
         ],
     )
     logger.info(f"A total of {len(df)} NaPTAN stops extracted.")
-
     duplicated = df["atco_code"].duplicated(keep="first")
     duplicates = df[duplicated]
     if not duplicates.empty:
