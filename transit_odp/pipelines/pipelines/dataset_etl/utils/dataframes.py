@@ -191,7 +191,6 @@ def df_to_serviced_organisations(
     names_for_unique_orgs = dict(
         filtered_df.groupby("serviced_org_ref")["name"].first()
     )
-    print("namesfor unique orgs>>>>>>>>>>>>>>>", names_for_unique_orgs)
     for org_code, name in names_for_unique_orgs.items():
         yield ServicedOrganisations(organisation_code=org_code, name=name)
 
