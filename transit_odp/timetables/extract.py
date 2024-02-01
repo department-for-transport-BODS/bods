@@ -5,6 +5,7 @@ import pandas as pd
 from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
+from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -25,6 +26,7 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     stop_point_refs_to_dataframe,
     booking_arrangements_to_dataframe,
+    vehicle_journeys_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -63,6 +65,10 @@ class TransXChangeExtractor:
         'route_section_hash' to form 'route_hash'.
         """
         logger.debug("Extracting data")
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
+
         schema_version = self.doc.get_transxchange_version()
 
         # Extract Services
@@ -86,6 +92,13 @@ class TransXChangeExtractor:
         logger.debug("Extracting journey_patterns_sections")
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
+
+        vehicle_journeys = pd.DataFrame()
+        if is_timetable_visualiser_active:
+            # Extract VehicleJourneys
+            logger.debug("Extracting vehicle_journeys")
+            vehicle_journeys = self.extract_vehicle_journeys()
+            logger.debug("Finished extracting vehicle_journeys")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
@@ -132,6 +145,7 @@ class TransXChangeExtractor:
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,
             booking_arrangements=booking_arrangements,
+            vehicle_journeys=vehicle_journeys,
         )
 
     def construct_geometry(self, point: Point):
@@ -184,6 +198,24 @@ class TransXChangeExtractor:
             journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
         return journey_patterns, jp_to_jps
+
+    def extract_vehicle_journeys(self):
+        standard_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "VehicleJourney", allow_none=True
+        )
+        flexible_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "FlexibleVehicleJourney", allow_none=True
+        )
+
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(
+            standard_vehicle_journeys, flexible_vehicle_journeys
+        )
+
+        if not df_vehicle_journeys.empty:
+            df_vehicle_journeys["file_id"] = self.file_id
+            df_vehicle_journeys.set_index(["file_id"], inplace=True)
+
+        return df_vehicle_journeys
 
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)
@@ -284,5 +316,8 @@ class TransXChangeZipExtractor:
             ),
             booking_arrangements=pd.concat(
                 (extract.booking_arrangements for extract in extracts)
+            ),
+            vehicle_journeys=pd.concat(
+                (extract.vehicle_journeys for extract in extracts)
             ),
         )

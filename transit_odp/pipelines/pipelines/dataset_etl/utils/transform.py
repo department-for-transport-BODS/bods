@@ -244,6 +244,18 @@ def transform_line_names(line_name_list):
         return line_names
 
 
+def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
+    df_merged = pd.merge(
+        vehicle_journeys,
+        journey_patterns,
+        left_on=["file_id", "journey_pattern_ref"],
+        right_index=True,
+        how="left",
+    )
+
+    return df_merged
+
+
 def transform_service_patterns(journey_patterns):
     # Create list of service patterns from journey patterns
     service_patterns = (
@@ -252,6 +264,9 @@ def transform_service_patterns(journey_patterns):
         .drop("journey_pattern_id", axis=1)
     )
 
+    # Route hash at the time of this comment was null for
+    # flexible services
+    service_patterns.dropna(subset=["route_hash"], inplace=True)
     # Create an id column for service_patterns. Note using the route_hash
     # won't result in the prettiest id
     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(

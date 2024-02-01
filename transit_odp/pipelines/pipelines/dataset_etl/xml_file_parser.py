@@ -18,6 +18,7 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     stop_point_refs_to_dataframe,
     booking_arrangements_to_dataframe,
+    vehicle_journeys_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -120,6 +121,11 @@ class XmlFileParser(ETLUtility):
         jp_sections, timing_links = self.extract_journey_pattern_sections(doc, file_id)
         logger.debug("Finished extracting journey_patterns_sections")
 
+        # Extract VehicleJourneys
+        logger.debug("Extracting vehicle_journeys")
+        vehicle_journeys = self.extract_vehicle_journeys(file_id)
+        logger.debug("Finished extracting vehicle_journeys")
+
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
         booking_arrangements = self.extract_booking_arrangements(doc, file_id)
@@ -168,6 +174,7 @@ class XmlFileParser(ETLUtility):
             line_names=line_names,
             timing_point_count=timing_point_count,
             stop_count=len(stop_points) + len(provisional_stops),
+            vehicle_journeys=vehicle_journeys,
         )
 
     def construct_geometry(self, point: Point):
@@ -210,28 +217,50 @@ class XmlFileParser(ETLUtility):
         services = self.trans.get_services()
         journey_patterns = journey_patterns_to_dataframe(services)
 
-        # Create a file_id column and include as part of the index
-        journey_patterns["file_id"] = file_id
-        journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
+        jp_to_jps = pd.DataFrame()
+        if not journey_patterns.empty:
+            # Create a file_id column and include as part of the index
+            journey_patterns["file_id"] = file_id
+            journey_patterns.set_index(["file_id", "journey_pattern_id"], inplace=True)
 
-        # Create association table between JourneyPattern and JourneyPatternSection
-        jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
-        journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
+            # Create association table between JourneyPattern and JourneyPatternSection
+            jp_to_jps = journey_pattern_section_from_journey_pattern(journey_patterns)
+            journey_patterns.drop("jp_section_refs", axis=1, inplace=True)
 
         return journey_patterns, jp_to_jps
 
-    def extract_journey_pattern_sections(self, doc, file_id: int):
-        sections = self.trans.get_journey_pattern_sections()
-        timing_links = journey_pattern_sections_to_dataframe(sections)
-        timing_links["file_id"] = file_id
-        timing_links.set_index(["file_id", "jp_timing_link_id"], inplace=True)
-
-        # Aggregate jp_sections
-        jp_sections = (
-            timing_links.reset_index()[["file_id", "jp_section_id"]]
-            .drop_duplicates("jp_section_id")
-            .set_index(["file_id", "jp_section_id"])
+    def extract_vehicle_journeys(self, file_id: int):
+        standard_vehicle_journeys = self.trans.get_all_vehicle_journeys(
+            "VehicleJourney", allow_none=True
         )
+        flexible_vehicle_journeys = self.trans.get_all_vehicle_journeys(
+            "FlexibleVehicleJourney", allow_none=True
+        )
+
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(
+            standard_vehicle_journeys, flexible_vehicle_journeys
+        )
+
+        if not df_vehicle_journeys.empty:
+            df_vehicle_journeys["file_id"] = file_id
+            df_vehicle_journeys.set_index(["file_id"], inplace=True)
+
+        return df_vehicle_journeys
+
+    def extract_journey_pattern_sections(self, doc, file_id: int):
+        sections = self.trans.get_journey_pattern_sections(allow_none=True)
+        timing_links = journey_pattern_sections_to_dataframe(sections)
+        jp_sections = pd.DataFrame()
+        if not timing_links.empty:
+            timing_links["file_id"] = file_id
+            timing_links.set_index(["file_id", "jp_timing_link_id"], inplace=True)
+
+            # Aggregate jp_sections
+            jp_sections = (
+                timing_links.reset_index()[["file_id", "jp_section_id"]]
+                .drop_duplicates("jp_section_id")
+                .set_index(["file_id", "jp_section_id"])
+            )
 
         return jp_sections, timing_links
 
