@@ -154,18 +154,22 @@ class TransXChangeDataLoader:
 
     def load_serviced_organisation(self):
         serviced_organisations = self.transformed.serviced_organisations
-        serviced_organisations.reset_index(inplace=True)
-        existing_serviced_orgs = ServicedOrganisations.objects.values_list(
-            "name", flat=True
-        )
-        serviced_org_objs = list(
-            df_to_serviced_organisations(serviced_organisations, existing_serviced_orgs)
-        )
+        if not serviced_organisations.empty:
+            serviced_organisations.reset_index(inplace=True)
+            existing_serviced_orgs = ServicedOrganisations.objects.values_list(
+                "organisation_code", flat=True
+            )
 
-        created = ServicedOrganisations.objects.bulk_create(
-            serviced_org_objs, batch_size=BATCH_SIZE
-        )
-        serviced_organisations["id"] = pd.Series((obj.id for obj in created))
+            serviced_org_objs = list(
+                df_to_serviced_organisations(
+                    serviced_organisations, existing_serviced_orgs
+                )
+            )
+
+            created = ServicedOrganisations.objects.bulk_create(
+                serviced_org_objs, batch_size=BATCH_SIZE
+            )
+            serviced_organisations["id"] = pd.Series((obj.id for obj in created))
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""
