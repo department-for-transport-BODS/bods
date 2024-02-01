@@ -6,10 +6,12 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.transmodel.models import ServicedOrganisations
+from waffle.testutils import override_flag
 
 TZ = tz.gettz("Europe/London")
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ETLServicedOrganisations(ExtractBaseTestCase):
     test_file = (
         "data/test_serviced_organisations/test_extract_serviced_organisations.xml"

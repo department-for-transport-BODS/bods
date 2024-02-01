@@ -1,8 +1,5 @@
 from dateutil import tz
 import pandas as pd
-from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
-    ETLReport,
-)
 
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
@@ -11,7 +8,6 @@ from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.transmodel.models import VehicleJourney
 
 from waffle.testutils import override_flag
-from django.test import override_settings
 
 TZ = tz.gettz("Europe/London")
 
