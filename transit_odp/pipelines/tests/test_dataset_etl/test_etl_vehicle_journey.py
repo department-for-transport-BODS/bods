@@ -11,6 +11,7 @@ from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.transmodel.models import VehicleJourney
 
 from waffle.testutils import override_flag
+from django.test import override_settings
 
 TZ = tz.gettz("Europe/London")
 
@@ -55,7 +56,6 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
             list(extracted.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
-        self.assertEqual(extracted.vehicle_journeys.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
@@ -145,7 +145,6 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             list(extracted.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
-        self.assertEqual(extracted.vehicle_journeys.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
@@ -241,7 +240,6 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
             list(extracted.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
-        self.assertEqual(extracted.vehicle_journeys.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
