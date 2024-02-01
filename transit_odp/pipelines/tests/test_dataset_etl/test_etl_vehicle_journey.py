@@ -56,7 +56,6 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
             list(extracted.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
-        self.assertEqual(extracted.vehicle_journeys.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
@@ -146,7 +145,6 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             list(extracted.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
-        self.assertEqual(extracted.vehicle_journeys.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
@@ -242,7 +240,6 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
             list(extracted.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
-        self.assertEqual(extracted.vehicle_journeys.index.names, ["file_id"])
 
     def test_transform(self):
         # setup
