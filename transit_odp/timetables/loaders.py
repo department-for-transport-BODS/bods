@@ -9,6 +9,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_df_from_queryset,
     df_to_service_links,
     df_to_service_patterns,
+    df_to_serviced_organisation_working_days,
     df_to_services,
     df_to_booking_arrangements,
     df_to_vehicle_journeys,
@@ -62,9 +63,13 @@ class TransXChangeDataLoader:
         vehicle_journeys = self.load_vehicle_journeys()
         adapter.info("Finished vehicle journeys.")
 
-        adapter.info("Loading vehicle journeys.")
-        self.load_serviced_organisation()
-        adapter.info("Finished vehicle journeys.")
+        adapter.info("Loading serviced organisations.")
+        serviced_organisations = self.load_serviced_organisation()
+        adapter.info("Finished serviced organisations.")
+
+        adapter.info("Loading serviced organisations working dates")
+        self.load_serviced_organisation_working_days(serviced_organisations)
+        adapter.info("Finished serviced organisationsworking dates")
 
         adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
@@ -166,6 +171,14 @@ class TransXChangeDataLoader:
             serviced_org_objs, batch_size=BATCH_SIZE
         )
         serviced_organisations["id"] = pd.Series((obj.id for obj in created))
+
+        return serviced_organisations
+    
+    def load_serviced_organisation_working_days(self, serviced_organisations):
+        serviced_organisation_working_days_objs = list(df_to_serviced_organisation_working_days(serviced_organisations))
+        ServicedOrganisations.objects.bulk_create(
+            serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
+        )
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""

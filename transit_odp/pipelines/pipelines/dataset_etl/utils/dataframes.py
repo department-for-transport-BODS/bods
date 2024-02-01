@@ -9,12 +9,14 @@ from typing import Iterator
 import geopandas
 import pandas as pd
 from shapely.geometry import Point
+from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import (
     Service,
     ServiceLink,
     ServicePattern,
+    ServicedOrganisationWorkingDays,
     StopPoint,
     BookingArrangements,
     VehicleJourney,
@@ -189,6 +191,13 @@ def df_to_serviced_organisations(
     for name in unique_names:
         yield ServicedOrganisations(name=name)
 
+def df_to_serviced_organisation_working_days(df: pd.DataFrame) -> Iterator[ServicedOrganisationWorkingDays]:
+    for record in df.itertuples(index=False):
+        yield ServicedOrganisationWorkingDays(
+            serviced_organisation_id=record.id,
+            start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
+            end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date()
+        )
 
 def df_to_service_links(df: pd.DataFrame) -> Iterator[ServiceLink]:
     for record in df.reset_index().to_dict("records"):
