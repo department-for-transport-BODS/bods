@@ -266,7 +266,7 @@ class XmlFileParser(ETLUtility):
         df_operating_profile = pd.DataFrame()
         if operating_profile_vehicle_journeys:
             df_operating_profile = operating_profile_to_df(
-                operating_profile_vehicle_journeys, "VehicleJourney"
+                operating_profile_vehicle_journeys
             )
 
         else:
@@ -275,7 +275,7 @@ class XmlFileParser(ETLUtility):
             )
             if operating_profile_services:
                 df_operating_profile = operating_profile_to_df(
-                    operating_profile_services, "Services"
+                    operating_profile_services
                 )
 
         serviced_organisations = self.trans.get_all_serviced_organisations(
