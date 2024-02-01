@@ -156,15 +156,18 @@ class Loader:
 
     def delete_bad_data(self):
         to_delete_services = self.to_delete_service
-        services = {
-            service.registration_number
-            for service in self.registry.get_services_with_past_effective_date(
-                to_delete_services
-            )
-        }
+        services = set(
+            [
+                service.registration_number
+                for service in self.registry.get_services_with_past_effective_date(
+                    to_delete_services
+                )
+            ]
+            + [service.registration_number for service in self.inactive_services]
+        )
 
         count, _ = Service.objects.filter(registration_number__in=services).delete()
-        logger.info(f"{count} Services removed")
+        logger.info(f"{count} Services removed because of effective date in past")
 
         count, _ = Licence.objects.filter(services=None).delete()
         logger.info(f"{count} Licences removed")
@@ -289,6 +292,15 @@ class Loader:
     @cached_property
     def registered_service(self):
         return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)
+
+    @cached_property
+    def inactive_services(self):
+        return [
+            service
+            for service in self.registry.services
+            if service.registration_status in RegistrationStatusEnum.to_change()
+            and service.variation_number == 0
+        ]
 
     @cached_property
     def to_delete_service(self):
