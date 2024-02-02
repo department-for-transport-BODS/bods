@@ -8,7 +8,6 @@ pytestmark = pytest.mark.django_db
 
 
 def test_txc_file_attributes_from_txc_file():
-
     revision = DatasetRevisionFactory()
     file_ = TXCFileFactory()
     attr = TXCFileAttributes.from_txc_file(file_, revision.id)
