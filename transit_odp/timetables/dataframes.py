@@ -289,13 +289,19 @@ def serviced_organisations_to_dataframe(serviced_organisations):
     for serviced_organisation in serviced_organisations:
         organisation_code = serviced_organisation.get_element(["OrganisationCode"]).text
         name = serviced_organisation.get_element(["Name"]).text
+        working_days = serviced_organisation.get_element(["WorkingDays"])
 
-        serviced_organisations_df.append(
-            {
-                "serviced_org_ref": organisation_code,
-                "name": name,
-            }
-        )
+        if working_days:
+            date_ranges = working_days.get_elements(["DateRange"])
+            for date_range in date_ranges:
+                serviced_organisations_df.append(
+                    {
+                        "serviced_org_ref": organisation_code,
+                        "name": name,
+                        "start_date": date_range.get_element(["StartDate"]).text,
+                        "end_date": date_range.get_element(["EndDate"]).text
+                    }
+                )
 
     return pd.DataFrame(serviced_organisations_df)
 

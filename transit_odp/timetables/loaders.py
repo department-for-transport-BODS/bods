@@ -161,9 +161,9 @@ class TransXChangeDataLoader:
         serviced_organisations = self.transformed.serviced_organisations
         if not serviced_organisations.empty:
             serviced_organisations.reset_index(inplace=True)
-            existing_serviced_orgs = ServicedOrganisations.objects.values_list(
-                "organisation_code", flat=True
-            )
+            existing_serviced_orgs = ServicedOrganisations.objects.all()
+
+            df_existing_serviced_orgs = pd.DataFrame.from_records(existing_serviced_orgs.values())
 
             serviced_org_objs = list(
                 df_to_serviced_organisations(
