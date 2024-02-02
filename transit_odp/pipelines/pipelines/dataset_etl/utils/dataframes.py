@@ -196,13 +196,21 @@ def df_to_serviced_organisations(
             organisation_code=record["serviced_org_ref"], name=record["name"]
         )
 
-def df_to_serviced_organisation_working_days(df: pd.DataFrame) -> Iterator[ServicedOrganisationWorkingDays]:
-    for record in df.itertuples(index=False):
-        yield ServicedOrganisationWorkingDays(
-            serviced_organisation_id=record.id,
-            start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
-            end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date()
-        )
+
+def df_to_serviced_organisation_working_days(
+    df: pd.DataFrame, columns_to_drop: list, columns_to_drop_duplicates: list
+) -> Iterator[ServicedOrganisationWorkingDays]:
+    if not df.empty:
+        df_to_load = df.drop(columns=columns_to_drop)
+        for record in df_to_load.drop_duplicates(
+            subset=columns_to_drop_duplicates
+        ).itertuples(index=False):
+            yield ServicedOrganisationWorkingDays(
+                serviced_organisation_id=record.id,
+                start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
+                end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date(),
+            )
+
 
 def df_to_service_links(df: pd.DataFrame) -> Iterator[ServiceLink]:
     for record in df.reset_index().to_dict("records"):

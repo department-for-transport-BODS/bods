@@ -299,7 +299,7 @@ def serviced_organisations_to_dataframe(serviced_organisations):
                         "serviced_org_ref": organisation_code,
                         "name": name,
                         "start_date": date_range.get_element(["StartDate"]).text,
-                        "end_date": date_range.get_element(["EndDate"]).text
+                        "end_date": date_range.get_element(["EndDate"]).text,
                     }
                 )
 
