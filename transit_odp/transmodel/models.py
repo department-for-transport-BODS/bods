@@ -256,7 +256,10 @@ class ServicedOrganisationVehicleJourney(models.Model):
 
 
 class ServicedOrganisations(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    organisation_code = models.CharField(
+        max_length=255, null=True, blank=True, unique=True
+    )
+    name = models.CharField(max_length=255, null=True, blank=True)
 
 
 class ServicedOrganisationWorkingDays(models.Model):

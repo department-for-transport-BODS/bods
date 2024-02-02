@@ -184,10 +184,15 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
 def df_to_serviced_organisations(
     df: pd.DataFrame, existing_serviced_orgs
 ) -> Iterator[ServicedOrganisations]:
-    unique_names = df.loc[~df["name"].isin(existing_serviced_orgs), "name"].unique()
+    unique_org_codes = df.drop_duplicates(subset="serviced_org_ref", keep="first")
+    serviced_org_records = unique_org_codes[
+        ~unique_org_codes["serviced_org_ref"].isin(existing_serviced_orgs)
+    ]
 
-    for name in unique_names:
-        yield ServicedOrganisations(name=name)
+    for record in serviced_org_records.to_dict("records"):
+        yield ServicedOrganisations(
+            organisation_code=record["serviced_org_ref"], name=record["name"]
+        )
 
 
 def df_to_service_links(df: pd.DataFrame) -> Iterator[ServiceLink]:
