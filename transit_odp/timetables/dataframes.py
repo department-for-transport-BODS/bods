@@ -256,6 +256,50 @@ def vehicle_journeys_to_dataframe(
     return pd.DataFrame(all_vechicle_journeys)
 
 
+def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):
+    flexible_operation_periods = []
+    if flexible_vechicle_journeys is not None:
+        for vehicle_journey in flexible_vechicle_journeys:
+            vehicle_journey_code = vehicle_journey.get_element(
+                ["VehicleJourneyCode"]
+            ).text
+            flexible_service_times = vehicle_journey.get_element_or_none(
+                ["FlexibleServiceTimes"]
+            )
+            found_service_period = False
+            if flexible_service_times:
+                service_periods = flexible_service_times.get_elements_or_none(
+                    ["ServicePeriod"]
+                )
+
+                for service_period in (
+                    service_periods if service_periods is not None else []
+                ):
+                    found_service_period = True
+                    start_time = service_period.get_element_or_none(["StartTime"])
+                    end_time = service_period.get_element_or_none(["EndTime"])
+                    flexible_operation_periods.append(
+                        {
+                            "vehicle_journey_code": vehicle_journey_code,
+                            "start_time": start_time.text
+                            if start_time is not None
+                            else None,
+                            "end_time": end_time.text if end_time is not None else None,
+                        }
+                    )
+
+            if not found_service_period:
+                flexible_operation_periods.append(
+                    {
+                        "vehicle_journey_code": vehicle_journey_code,
+                        "start_time": None,
+                        "end_time": None,
+                    }
+                )
+
+    return pd.DataFrame(flexible_operation_periods)
+
+
 def operating_profile_to_df(operating_profiles):
     serviced_orgs_refs_df = []
     for operating_profile in operating_profiles:

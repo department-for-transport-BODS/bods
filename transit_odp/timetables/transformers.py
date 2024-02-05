@@ -44,6 +44,9 @@ class TransXChangeTransformer:
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
         serviced_organisations = self.extracted_data.serviced_organisations.copy()
         operating_profiles = self.extracted_data.operating_profiles.copy()
+        df_flexible_operation_periods = (
+            self.extracted_data.flexible_operation_periods.copy()
+        )
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -129,6 +132,7 @@ class TransXChangeTransformer:
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
             serviced_organisations=df_merged_serviced_organisations,
+            flexible_operation_periods=df_flexible_operation_periods,
         )
 
     def sync_stop_points(self, stop_points, provisional_stops):

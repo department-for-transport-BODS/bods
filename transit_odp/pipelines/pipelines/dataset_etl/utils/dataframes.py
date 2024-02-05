@@ -9,9 +9,11 @@ from typing import Iterator
 import geopandas
 import pandas as pd
 from shapely.geometry import Point
+from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
     Service,
     ServiceLink,
     ServicePattern,
@@ -178,6 +180,26 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             start_time=record["departure_time"],
             line_ref=record["line_ref"],
             direction=record["direction"],
+        )
+
+
+def get_time_field_or_none(time_in_text):
+    time_field = None
+    if time_in_text:
+        time_field = datetime.strptime(time_in_text, "%H:%M:%S").time()
+
+    return time_field
+
+
+def df_to_flexible_service_operation_period(
+    df: pd.DataFrame,
+) -> Iterator[FlexibleServiceOperationPeriod]:
+    for record in df.to_dict("records"):
+
+        yield FlexibleServiceOperationPeriod(
+            vehicle_journey_id=record["id"],
+            start_time=get_time_field_or_none(record["start_time"]),
+            end_time=get_time_field_or_none(record["end_time"]),
         )
 
 
