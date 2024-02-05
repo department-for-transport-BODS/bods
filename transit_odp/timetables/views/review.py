@@ -180,8 +180,8 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
             revision[0], context["service_codes"], context["line_name"]
         )
 
-        context['api_root'] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        context['revision_id'] = revision_id
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        context["revision_id"] = revision_id
 
         if (
             context["service_type"] == "Flexible"
