@@ -43,9 +43,7 @@
 
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-            <!--
-                MAP
-            -->
+            {% include 'publish/snippets/dataset_map.html' %}
 
             <table class="govuk-table dataset-property-table">
                 <tbody class="govuk-table__body">
@@ -123,4 +121,11 @@
             {% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback" %}
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, {{line_name}});
+    </script>
 {% endblock %}
