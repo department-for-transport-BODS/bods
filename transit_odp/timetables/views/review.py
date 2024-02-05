@@ -160,6 +160,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         line = self.request.GET.get("line")
+        revision_id = self.request.GET.get("revision_id")
         context = super().get_context_data(**kwargs)
         dataset = self.object
         revision = get_revision_details(dataset.id)
@@ -178,6 +179,9 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         context["current_valid_files"] = get_current_files(
             revision[0], context["service_codes"], context["line_name"]
         )
+
+        context['api_root'] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        context['revision_id'] = revision_id
 
         if (
             context["service_type"] == "Flexible"
