@@ -28,9 +28,7 @@ from transit_odp.timetables.dataframes import (
     booking_arrangements_to_dataframe,
     vehicle_journeys_to_dataframe,
     serviced_organisations_to_dataframe,
-    operating_profile_to_df,
-    vehicle_journeys_operating_profiles_dataframe,
-    services_operating_profiles_dataframe,
+    operating_profiles_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -99,7 +97,6 @@ class TransXChangeExtractor:
 
         vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
-        serviced_org_operating_profiles = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
@@ -276,15 +273,13 @@ class TransXChangeExtractor:
         )
         all_services = self.doc.get_services()
 
-        df_operating_profiles = vehicle_journeys_operating_profiles_dataframe(
+        df_operating_profiles = operating_profiles_dataframe(
             all_vehicle_journeys, all_services
         )
 
         if not df_operating_profiles.empty:
             df_operating_profiles["file_id"] = self.file_id
             df_operating_profiles.set_index(["file_id"], inplace=True)
-
-        print("operating_profile_final", df_operating_profiles)
 
         return df_operating_profiles
 

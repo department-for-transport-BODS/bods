@@ -43,7 +43,6 @@ class TransXChangeTransformer:
         booking_arrangements = self.extracted_data.booking_arrangements.copy()
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
         serviced_organisations = self.extracted_data.serviced_organisations.copy()
-        # serviced_org_operating_profiles = self.extracted_data.serviced_org_operating_profiles.copy()
         operating_profiles = self.extracted_data.operating_profiles.copy()
 
         # Match stop_points with DB
