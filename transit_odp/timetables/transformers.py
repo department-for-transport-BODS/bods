@@ -16,6 +16,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     get_most_common_localities,
     merge_vehicle_journeys_with_jp,
     merge_serviced_organisations_with_operating_profile,
+    merge_vehicle_journey_services_operating_profile,
     sync_localities_and_adminareas,
     transform_line_names,
     transform_service_links,
@@ -43,7 +44,9 @@ class TransXChangeTransformer:
         booking_arrangements = self.extracted_data.booking_arrangements.copy()
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
         serviced_organisations = self.extracted_data.serviced_organisations.copy()
-        operating_profiles = self.extracted_data.operating_profiles.copy()
+        serviced_org_operating_profiles = self.extracted_data.serviced_org_operating_profiles.copy()
+        vehicle_journeys_operating_profiles = self.extracted_data.vehicle_journeys_operating_profiles.copy()
+        services_operating_profiles = self.extracted_data.services_operating_profiles.copy()
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -58,10 +61,18 @@ class TransXChangeTransformer:
             )
 
         df_merged_serviced_organisations = pd.DataFrame()
-        if not serviced_organisations.empty and not operating_profiles.empty:
+        if not serviced_organisations.empty and not serviced_org_operating_profiles.empty:
             df_merged_serviced_organisations = (
                 merge_serviced_organisations_with_operating_profile(
-                    serviced_organisations, operating_profiles
+                    serviced_organisations, serviced_org_operating_profiles
+                )
+            )
+        
+        df_merged_operating_profiles = pd.DataFrame()
+        if not vehicle_journeys_operating_profiles.empty and not services_operating_profiles.empty:
+            df_merged_operating_profiles = (
+                merge_vehicle_journey_services_operating_profile(
+                    vehicle_journeys_operating_profiles, services_operating_profiles
                 )
             )
 
@@ -129,6 +140,10 @@ class TransXChangeTransformer:
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
             serviced_organisations=df_merged_serviced_organisations,
+            serviced_org_operating_profiles=serviced_org_operating_profiles,
+            vehicle_journeys_operating_profiles=vehicle_journeys_operating_profiles,
+            services_operating_profiles=services_operating_profiles,
+            operating_profiles=df_merged_operating_profiles,
         )
 
     def sync_stop_points(self, stop_points, provisional_stops):

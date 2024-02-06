@@ -13,6 +13,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_booking_arrangements,
     df_to_vehicle_journeys,
     df_to_serviced_organisations,
+    df_to_operating_profiles,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -38,6 +39,7 @@ from transit_odp.transmodel.models import (
     BookingArrangements,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
 )
 
 BATCH_SIZE = 2000
@@ -65,6 +67,10 @@ class TransXChangeDataLoader:
         adapter.info("Loading vehicle journeys.")
         self.load_serviced_organisation()
         adapter.info("Finished vehicle journeys.")
+
+        adapter.info("Loading operating profiles.")
+        self.load_operating_profiles(vehicle_journeys)
+        adapter.info("Finished loading operating profiles.")
 
         adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
@@ -151,6 +157,8 @@ class TransXChangeDataLoader:
                 vehicle_journeys_objs, batch_size=BATCH_SIZE
             )
             vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
+        
+        return vehicle_journeys
 
     def load_serviced_organisation(self):
         serviced_organisations = self.transformed.serviced_organisations
@@ -179,6 +187,22 @@ class TransXChangeDataLoader:
                     }
                     for obj in created
                 )
+            )
+
+    def load_operating_profiles(self, vehicle_journeys):
+        operating_profiles = self.transformed.operating_profiles
+        if not operating_profiles.empty and not vehicle_journeys.empty:
+            print("vehiclejourneys:::::::::::", vehicle_journeys)
+            print("Operating Profiles::::::::::", operating_profiles)
+            vehicle_journeys = vehicle_journeys[["id", "vehicle_journey_code"]]
+            merged_df = pd.merge(vehicle_journeys, operating_profiles, on='vehicle_journey_code', how='inner')
+            # merged_df = merged_df.explode("days_of_week").rename(columns={"days_of_week": "day"})
+
+            print("::::::: merged df is ::::", merged_df)
+
+            operating_profiles_objs = list(df_to_operating_profiles(merged_df))
+            OperatingProfile.objects.bulk_create(
+                operating_profiles_objs, batch_size=BATCH_SIZE
             )
 
     def load_service_links(self, service_links: pd.DataFrame):
