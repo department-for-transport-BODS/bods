@@ -269,52 +269,6 @@ def merge_serviced_organisations_with_operating_profile(
     return df_merged
 
 
-def merge_vehicle_journey_services_operating_profile(
-    vehicle_journeys_operating_profiles, services_operating_profiles
-):
-    print(":::::::::::vehicle journey:::::::::", vehicle_journeys_operating_profiles[["service_code", "serviced_org_ref", "operational", "days_of_week"]])
-    print("::::::::::: services :::::::::", services_operating_profiles[["service_code", "serviced_org_ref", "operational", "days_of_week"]])
-
-    vehicle_journeys_operating_profiles.reset_index(inplace=True)
-
-    # Merge the dataframes
-    merged_df = pd.merge(vehicle_journeys_operating_profiles, services_operating_profiles, on="service_code", how="left", suffixes=('_vj', '_service'))
-
-    print(":::::::::::::::df_merged columns:::::::::::::::", merged_df)
-
-
-    # Replace values in vj columns with corresponding values from services dataframe
-    merged_df['serviced_org_ref_vj'] = np.where(
-        merged_df['operating_profile_exists'] == False,
-        merged_df['serviced_org_ref_service'],
-        merged_df['serviced_org_ref_vj']
-    )
-    merged_df['operational_vj'] = np.where(
-        merged_df['operating_profile_exists'] == False,
-        merged_df['operational_service'],
-        merged_df['operational_vj']
-    )
-    merged_df['days_of_week_vj'] = np.where(
-        merged_df['operating_profile_exists'] == False,
-        merged_df['days_of_week_service'],
-        merged_df['days_of_week_vj']
-    )
-
-    # Drop unnecessary columns from the services dataframe
-    merged_df.drop(['serviced_org_ref_service', 'operational_service', 'days_of_week_service'], axis=1, inplace=True)
-
-    merged_df = merged_df.rename(columns={
-        'serviced_org_ref_vj': 'serviced_org_ref',
-        'operational_vj': 'operational',
-        'days_of_week_vj': 'days_of_week'
-    })
-
-    merged_df.set_index("file_id", inplace=True)
-    print(":::::::::::::::df_merged columns:::::::::::::::", merged_df.columns)
-    print(":::::::::::::::df_merged columns:::::::::::::::", merged_df)
-    return merged_df
-
-
 def transform_service_patterns(journey_patterns):
     # Create list of service patterns from journey patterns
     service_patterns = (

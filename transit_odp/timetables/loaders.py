@@ -157,7 +157,7 @@ class TransXChangeDataLoader:
                 vehicle_journeys_objs, batch_size=BATCH_SIZE
             )
             vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
-        
+
         return vehicle_journeys
 
     def load_serviced_organisation(self):
@@ -192,14 +192,23 @@ class TransXChangeDataLoader:
     def load_operating_profiles(self, vehicle_journeys):
         operating_profiles = self.transformed.operating_profiles
         if not operating_profiles.empty and not vehicle_journeys.empty:
-            print("vehiclejourneys:::::::::::", vehicle_journeys)
-            print("Operating Profiles::::::::::", operating_profiles)
-            vehicle_journeys = vehicle_journeys[["id", "vehicle_journey_code"]]
-            merged_df = pd.merge(vehicle_journeys, operating_profiles, on='vehicle_journey_code', how='inner')
-            # merged_df = merged_df.explode("days_of_week").rename(columns={"days_of_week": "day"})
-
-            print("::::::: merged df is ::::", merged_df)
-
+            operating_profiles.reset_index(inplace=True)
+            vehicle_journeys = vehicle_journeys.rename(
+                columns={"service_code_x": "service_code"}
+            )
+            vehicle_journeys = vehicle_journeys[
+                ["id", "vehicle_journey_code", "service_code", "file_id"]
+            ]
+            operating_profiles = operating_profiles[
+                ["vehicle_journey_code", "days_of_week", "service_code", "file_id"]
+            ]
+            merged_df = pd.merge(
+                vehicle_journeys,
+                operating_profiles,
+                on=["file_id", "service_code", "vehicle_journey_code"],
+                how="inner",
+            )
+            merged_df.drop_duplicates(inplace=True)
             operating_profiles_objs = list(df_to_operating_profiles(merged_df))
             OperatingProfile.objects.bulk_create(
                 operating_profiles_objs, batch_size=BATCH_SIZE
