@@ -4,13 +4,13 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-  {% trans 'Sign out' %}
+    {% trans 'Sign out' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
+    {{ block.super }}
     {% breadcrumb_url 'My account' 'users:home' host host.name %}
-    {% breadcrumb 'Sign out' %}
+    {% breadcrumb_url 'Sign out' 'account_logout' host host.name %}
 {% endblock %}
 
 
@@ -18,15 +18,15 @@
 
 
 {% block inner %}
-  <p class="govuk-body">{% trans 'Are you sure you want to sign out?' %}</p>
+    <p class="govuk-body">{% trans 'Are you sure you want to sign out?' %}</p>
 
-  <form method="post" action="{% url 'account_logout' host host.name %}">
-    {% csrf_token %}
-    {% if redirect_field_value %}
-      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
-    {% endif %}
-    <button class="govuk-button" type="submit">{% trans 'Sign out' %}</button>
-  </form>
+    <form method="post" action="{% url 'account_logout' host host.name %}">
+        {% csrf_token %}
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+        <button class="govuk-button" type="submit">{% trans 'Sign out' %}</button>
+    </form>
 {% endblock %}
 
 

@@ -4,13 +4,13 @@
 {% load breadcrumbs %}
 
 {% block title_tag %}
-  {% trans 'You have signed out' %}
+    {% trans 'You have signed out' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'My account' 'users:home' host host.name %}
-    {% breadcrumb 'Sign out' %}
+    {% breadcrumb_url 'Sign out' 'account_logout' host host.name %}
 {% endblock %}
 
 

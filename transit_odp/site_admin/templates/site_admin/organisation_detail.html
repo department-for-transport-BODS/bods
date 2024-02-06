@@ -14,7 +14,7 @@
     {{ block.super }}
     {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
     {% with properties.name as breadcrumb_title %}
-        {% breadcrumb breadcrumb_title %}
+        {% breadcrumb_url breadcrumb_title 'users:organisation-detail' pk=properties.org_id host hosts.admin %}
     {% endwith %}
 
 {% endblock %}
