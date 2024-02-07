@@ -199,6 +199,7 @@ def get_bank_holidays():
         df_bank_holidays = []
         parsed_response = APIBankHolidays.model_validate(json_bank_holidays)
         for division_name, division_data in parsed_response.model_dump().items():
+            division_name = division_data["division"]
             for event in division_data["events"]:
                 df_bank_holidays.extend(get_bank_holiday_obj(division_name, event))
 
