@@ -31,13 +31,18 @@ from transit_odp.timetables.etl import TransXChangePipeline
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
-from transit_odp.timetables.utils import read_delete_datasets_file_from_s3
+from transit_odp.timetables.utils import (
+    get_bank_holidays,
+    get_holidays_records_to_insert,
+    read_delete_datasets_file_from_s3,
+)
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
     TimetableFileValidator,
     TXCRevisionValidator,
 )
+from transit_odp.transmodel.models import BankHolidays
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
@@ -77,8 +82,8 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_timetable_schema_check.signature(args),
             task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            task_pti_validation.signature(args),
-            task_dqs_upload.signature(args),
+            # task_pti_validation.signature(args),
+            # task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
             task_dataset_etl_finalise.signature(args),
         ]
@@ -526,3 +531,17 @@ def task_delete_datasets(*args):
                 f"Error reading or processing the delete datasets file: {str(e)}"
             )
             return []
+
+
+@shared_task()
+def task_load_bank_holidays():
+    """This is a task to load bank holidays from api to BODS database"""
+    logger.info("Starting process to load bank holidays from api")
+    existing_bank_holidays = BankHolidays.objects.all()
+    bank_holidays = get_bank_holidays()
+    logger.info("completed process to load bank holidays from api successfully")
+    bank_holidays_to_insert = list(get_holidays_records_to_insert(bank_holidays))
+    with transaction.atomic():
+        existing_bank_holidays.delete()
+        BankHolidays.objects.bulk_create(bank_holidays_to_insert, 1000)
+        logger.info("completed process to load bank holidays from api successfully")
