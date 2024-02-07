@@ -200,10 +200,8 @@ def vehicle_journeys_to_dataframe(
     standard_vehicle_journeys, flexible_vechicle_journeys
 ):
     all_vechicle_journeys = []
-    service_ref = ""
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
-            service_ref = vehicle_journey.get_element(["ServiceRef"]).text
             departure_time = vehicle_journey.get_element(["DepartureTime"]).text
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
