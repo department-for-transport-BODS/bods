@@ -28,7 +28,7 @@ from transit_odp.timetables.dataframes import (
     booking_arrangements_to_dataframe,
     vehicle_journeys_to_dataframe,
     serviced_organisations_to_dataframe,
-    operating_profile_to_df,
+    operating_profiles_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -106,11 +106,13 @@ class TransXChangeExtractor:
 
             # Extract ServicedOrganisations
             logger.debug("Extracting serviced_organisations")
-            (
-                serviced_organisations,
-                operating_profiles,
-            ) = self.extract_serviced_organisations()
+            serviced_organisations = self.extract_serviced_organisations()
             logger.debug("Finished extracting serviced_organisations")
+
+            # Extract OperatingProfiles
+            logger.debug("Extracting operating_profiles")
+            operating_profiles = self.extract_operating_profiles()
+            logger.debug("Finished extracting operating_profiles")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
@@ -250,24 +252,6 @@ class TransXChangeExtractor:
         return jp_sections, timing_links
 
     def extract_serviced_organisations(self):
-        operating_profile_vehicle_journeys = self.doc.get_all_operating_profiles(
-            "VehicleJourneys", allow_none=True
-        )
-        df_operating_profile = pd.DataFrame()
-        if operating_profile_vehicle_journeys:
-            df_operating_profile = operating_profile_to_df(
-                operating_profile_vehicle_journeys
-            )
-
-        else:
-            operating_profile_services = self.doc.get_all_operating_profiles(
-                "Services", allow_none=True
-            )
-            if operating_profile_services:
-                df_operating_profile = operating_profile_to_df(
-                    operating_profile_services
-                )
-
         serviced_organisations = self.doc.get_all_serviced_organisations(
             allow_none=True
         )
@@ -277,15 +261,27 @@ class TransXChangeExtractor:
                 serviced_organisations
             )
 
-        if not df_operating_profile.empty:
-            df_operating_profile["file_id"] = self.file_id
-            df_operating_profile.set_index(["file_id"], inplace=True)
-
         if not df_serviced_organisation.empty:
             df_serviced_organisation["file_id"] = self.file_id
             df_serviced_organisation.set_index(["file_id"], inplace=True)
 
-        return df_serviced_organisation, df_operating_profile
+        return df_serviced_organisation
+
+    def extract_operating_profiles(self):
+        all_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "VehicleJourney", allow_none=True
+        )
+        all_services = self.doc.get_services()
+
+        df_operating_profiles = operating_profiles_dataframe(
+            all_vehicle_journeys, all_services
+        )
+
+        if not df_operating_profiles.empty:
+            df_operating_profiles["file_id"] = self.file_id
+            df_operating_profiles.set_index(["file_id"], inplace=True)
+
+        return df_operating_profiles
 
     def extract_booking_arrangements(self):
         services = self.doc.get_services()

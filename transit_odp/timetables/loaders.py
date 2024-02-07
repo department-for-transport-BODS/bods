@@ -14,6 +14,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_booking_arrangements,
     df_to_vehicle_journeys,
     df_to_serviced_organisations,
+    df_to_operating_profiles,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -40,6 +41,7 @@ from transit_odp.transmodel.models import (
     ServicedOrganisationWorkingDays,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
 )
 
 BATCH_SIZE = 2000
@@ -71,6 +73,10 @@ class TransXChangeDataLoader:
         adapter.info("Loading serviced organisations working dates")
         self.load_serviced_organisation_working_days(serviced_organisations)
         adapter.info("Finished serviced organisationsworking dates")
+
+        adapter.info("Loading operating profiles.")
+        self.load_operating_profiles(vehicle_journeys)
+        adapter.info("Finished loading operating profiles.")
 
         adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
@@ -158,6 +164,8 @@ class TransXChangeDataLoader:
             )
             vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
 
+        return vehicle_journeys
+
     def load_serviced_organisation(self):
         df_serviced_organisations = self.transformed.serviced_organisations
         if not df_serviced_organisations.empty:
@@ -231,6 +239,31 @@ class TransXChangeDataLoader:
         ServicedOrganisationWorkingDays.objects.bulk_create(
             serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
         )
+        
+    def load_operating_profiles(self, vehicle_journeys):
+        operating_profiles = self.transformed.operating_profiles
+        if not operating_profiles.empty and not vehicle_journeys.empty:
+            operating_profiles.reset_index(inplace=True)
+            vehicle_journeys = vehicle_journeys.rename(
+                columns={"service_code_x": "service_code"}
+            )
+            vehicle_journeys = vehicle_journeys[
+                ["id", "vehicle_journey_code", "service_code", "file_id"]
+            ]
+            operating_profiles = operating_profiles[
+                ["vehicle_journey_code", "days_of_week", "service_code", "file_id"]
+            ]
+            merged_df = pd.merge(
+                vehicle_journeys,
+                operating_profiles,
+                on=["file_id", "service_code", "vehicle_journey_code"],
+                how="inner",
+            )
+            merged_df.drop_duplicates(inplace=True)
+            operating_profiles_objs = list(df_to_operating_profiles(merged_df))
+            OperatingProfile.objects.bulk_create(
+                operating_profiles_objs, batch_size=BATCH_SIZE
+            )
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""

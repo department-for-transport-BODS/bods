@@ -129,6 +129,7 @@ class TransXChangeTransformer:
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
             serviced_organisations=df_merged_serviced_organisations,
+            operating_profiles=self.extracted_data.operating_profiles,
         )
 
     def sync_stop_points(self, stop_points, provisional_stops):
