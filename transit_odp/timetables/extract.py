@@ -109,10 +109,10 @@ class TransXChangeExtractor:
             serviced_organisations = self.extract_serviced_organisations()
             logger.debug("Finished extracting serviced_organisations")
 
-            # Extract VehicleJourneys/OperatingProfiles
+            # Extract OperatingProfiles
             logger.debug("Extracting operating_profiles")
             operating_profiles = self.extract_operating_profiles()
-            logger.debug("Finished operating_profiles")
+            logger.debug("Finished extracting operating_profiles")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
