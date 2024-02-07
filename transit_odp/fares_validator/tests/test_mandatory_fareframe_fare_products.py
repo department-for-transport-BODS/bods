@@ -3,10 +3,10 @@ from lxml import etree
 
 from transit_odp.fares_validator.views.functions import (
     check_access_right_elements,
-    check_preassigned_fare_products,
-    check_preassigned_fare_products_charging_type,
-    check_preassigned_fare_products_type_ref,
-    check_preassigned_validable_elements,
+    check_fare_products,
+    check_fare_products_charging_type,
+    check_fare_products_type_ref,
+    check_fare_product_validable_elements,
     check_product_type,
 )
 
@@ -25,25 +25,28 @@ def get_lxml_element(xpath, string_xml):
         "type_of_frame_ref_ref_present",
         "type_of_frame_ref_ref_valid",
         "fare_products",
+        "fare_product_tag",
         "preassigned_fare_product",
         "name",
         "expected",
     ),
     [
-        (True, True, True, True, True, None),
+        (True, True, True, "PreassignedFareProduct", True, True, None),
         (
             False,
             False,
             False,
+            "PreassignedFareProduct",
             False,
             False,
             "",
         ),
-        (True, False, False, False, False, None),
+        (True, False, False, "PreassignedFareProduct", False, False, None),
         (
             True,
             True,
             False,
+            "PreassignedFareProduct",
             False,
             False,
             [
@@ -57,6 +60,7 @@ def get_lxml_element(xpath, string_xml):
             True,
             True,
             True,
+            "PreassignedFareProduct",
             False,
             False,
             [
@@ -70,6 +74,7 @@ def get_lxml_element(xpath, string_xml):
             True,
             True,
             True,
+            "PreassignedFareProduct",
             True,
             False,
             [
@@ -79,12 +84,66 @@ def get_lxml_element(xpath, string_xml):
                 "in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT",
             ],
         ),
+        (True, True, True, "AmountOfPriceUnitProduct", True, True, None),
+        (
+            False,
+            False,
+            False,
+            "AmountOfPriceUnitProduct",
+            False,
+            False,
+            "",
+        ),
+        (True, False, False, "AmountOfPriceUnitProduct", False, False, None),
+        (
+            True,
+            True,
+            False,
+            "AmountOfPriceUnitProduct",
+            False,
+            False,
+            [
+                "violation",
+                "7",
+                "'fareProducts' and it's child elements is missing"
+                " from 'FareFrame' - UK_PI_FARE_PRODUCT",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            "AmountOfPriceUnitProduct",
+            False,
+            False,
+            [
+                "violation",
+                "9",
+                "'PreassignedFareProduct' and it's child elements in"     # in no fare product is present system will throw PreassignedFareProduct error by default
+                " 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            "AmountOfPriceUnitProduct",
+            True,
+            False,
+            [
+                "violation",
+                "10",
+                "'Name' missing from 'AmountOfPriceUnitProduct' "
+                "in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT",
+            ],
+        ),
     ],
 )
 def test_preassigned_fare_products(
     type_of_frame_ref_ref_present,
     type_of_frame_ref_ref_valid,
     fare_products,
+    fare_product_tag,
     preassigned_fare_product,
     name,
     expected,
@@ -94,24 +153,30 @@ def test_preassigned_fare_products(
     fareProducts for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
-    fare_frame_with_all_children_properties = """
+    fare_product_type = "other"
+    if fare_product_tag == "AmountOfPriceUnitProduct":
+        fare_product_type = "tripCarnet"
+
+    fare_frame_with_all_children_properties = f"""
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
         <fareProducts>
-            <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
+            <{fare_product_tag} id="Trip@AdultSingle" version="1.0">
                 <Name>Adult Single</Name>
-            </PreassignedFareProduct>
+                <ProductType>{fare_product_type}</ProductType>
+            </{fare_product_tag}>
         </fareProducts>
     </FareFrame>
     """
 
-    fare_frame_type_of_frame_ref_not_present = """
+    fare_frame_type_of_frame_ref_not_present = f"""
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
         <TypeOfFrameRef />
         <fareProducts>
-            <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
+            <{fare_product_tag} id="Trip@AdultSingle" version="1.0">
                 <Name>Adult Single</Name>
-            </PreassignedFareProduct>
+                <ProductType>{fare_product_type}</ProductType>
+            </{fare_product_tag}>
         </fareProducts>
     </FareFrame>
     """
@@ -136,12 +201,13 @@ def test_preassigned_fare_products(
     </FareFrame>
     """
 
-    fare_frame_without_name = """
+    fare_frame_without_name = f"""
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
         <fareProducts>
-            <PreassignedFareProduct id="Trip@AdultSingle" version="1.0">
-            </PreassignedFareProduct>
+            <{fare_product_tag} id="Trip@AdultSingle" version="1.0">
+                <ProductType>{fare_product_type}</ProductType>
+            </{fare_product_tag}>
         </fareProducts>
     </FareFrame>
     """
@@ -177,7 +243,7 @@ def test_preassigned_fare_products(
 
     xpath = "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame"
     fare_frames = get_lxml_element(xpath, xml)
-    response = check_preassigned_fare_products("", fare_frames)
+    response = check_fare_products("", fare_frames)
     assert response == expected
 
 
@@ -287,7 +353,7 @@ def test_preassigned_fare_products_type_ref(
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
     preassigned_fare_products = get_lxml_element(X_PATH, xml)
-    response = check_preassigned_fare_products_type_ref("", preassigned_fare_products)
+    response = check_fare_products_type_ref("", preassigned_fare_products)
     assert response == expected
 
 
@@ -397,7 +463,7 @@ def test_preassigned_fare_products_charging_type(
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
     preassigned_fare_products = get_lxml_element(X_PATH, xml)
-    response = check_preassigned_fare_products_charging_type(
+    response = check_fare_products_charging_type(
         "", preassigned_fare_products
     )
     assert response == expected
@@ -636,7 +702,7 @@ def test_preassigned_validable_elements(
         xml = frames.format(fare_frame_type_of_frame_ref_not_present)
 
     preassigned_fare_products = get_lxml_element(X_PATH, xml)
-    response = check_preassigned_validable_elements("", preassigned_fare_products)
+    response = check_fare_product_validable_elements("", preassigned_fare_products)
     assert response == expected
 
 
