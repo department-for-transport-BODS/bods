@@ -70,9 +70,13 @@ class TransXChangeDataLoader:
         serviced_organisations = self.load_serviced_organisation()
         adapter.info("Finished serviced organisations.")
 
-        adapter.info("Loading serviced organisations working dates")
+        adapter.info("Loading serviced organisations working dates.")
         self.load_serviced_organisation_working_days(serviced_organisations)
-        adapter.info("Finished serviced organisationsworking dates")
+        adapter.info("Finished serviced organisationsworking dates.")
+
+        adapter.info("Loading serviced organisations vehicle journeys.")
+        self.load_serviced_organisation_vehicle_journey(vehicle_journeys, serviced_organisations)
+        adapter.info("Finished serviced organisations vehicle journeys.")
 
         adapter.info("Loading operating profiles.")
         self.load_operating_profiles(vehicle_journeys)
@@ -265,6 +269,48 @@ class TransXChangeDataLoader:
                 operating_profiles_objs, batch_size=BATCH_SIZE
             )
 
+    def load_serviced_organisation_vehicle_journey(
+        self, vehicle_journeys, serviced_organisations
+        ):
+        operating_profiles = self.transformed.operating_profiles
+        if not vehicle_journeys.empty and not serviced_organisations.empty and not operating_profiles.empty:
+
+            vehicle_journeys.rename(columns={"id": "vehicle_journey_id"}, inplace=True)
+
+            serviced_organisations.rename(
+                columns={"id": "serviced_org_id"}, inplace=True
+            )
+
+            vehicle_journeys = vehicle_journeys[
+                [
+                    "file_id",
+                    "service_code",
+                    "vehicle_journey_id",
+                    "vehicle_journey_code",
+                ]
+            ]
+            serviced_organisations = serviced_organisations[
+                [
+                    "file_id",
+                    "serviced_org_id",
+                    "serviced_org_ref",
+                    "operational",
+                ]
+            ]
+            operating_profiles = operating_profiles[
+                [
+                    "file_id",
+                    "service_code",
+                    "vehicle_journey_code",
+                    "serviced_org_ref",
+                    "operational",
+                ]
+            ]
+
+            print("::::::::::::vehicle journeys:::::::", vehicle_journeys)
+            print("::::::::::::serviced organisations:::::::::::::", serviced_organisations)
+            print("::::::::::::operating profiles:::::::::::", operating_profiles)
+    
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""
         service_link_cache = self.service_link_cache
