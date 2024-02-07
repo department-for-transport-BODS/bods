@@ -8,7 +8,10 @@ from transit_odp.publish.views.timetable.delete import (
     RevisionDeleteSuccessView,
     RevisionDeleteTimetableView,
 )
-from transit_odp.publish.views.timetable.detail import FeedDetailView
+from transit_odp.publish.views.timetable.detail import (
+    FeedDetailView,
+    LineMetadataDetailView,
+)
 from transit_odp.publish.views.timetable.download import DatasetDownloadView
 from transit_odp.publish.views.timetable.edit_description import (
     EditDraftRevisionDescriptionView,
@@ -56,4 +59,5 @@ __all__ = [
     "WizardAddNewView",
     "EditDateView",
     "DeleteView",
+    "LineMetadataDetailView",
 ]

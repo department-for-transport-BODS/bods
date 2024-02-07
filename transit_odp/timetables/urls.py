@@ -3,6 +3,7 @@ from django.urls import include, path
 from transit_odp.data_quality.views.report import DraftReportOverviewView
 from transit_odp.publish.views import timetable
 from transit_odp.timetables.views import (
+    LineMetadataRevisionView,
     PublishRevisionView,
     ReviewViolationsCSVFileView,
     RevisionPublishSuccessView,
@@ -60,6 +61,11 @@ urlpatterns = [
             [
                 path("", view=timetable.FeedDetailView.as_view(), name="feed-detail"),
                 path(
+                    "detail/",
+                    view=timetable.LineMetadataDetailView.as_view(),
+                    name="line-detail",
+                ),
+                path(
                     "violations-csv",
                     view=PublishedViolationsCSVFileView.as_view(),
                     name="revision-pti-csv",
@@ -72,6 +78,11 @@ urlpatterns = [
                                 "",
                                 view=PublishRevisionView.as_view(),
                                 name="revision-publish",
+                            ),
+                            path(
+                                "detail/",
+                                view=LineMetadataRevisionView.as_view(),
+                                name="revision-line-detail",
                             ),
                             path(
                                 "update",
