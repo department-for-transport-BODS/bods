@@ -96,6 +96,10 @@ class OTCAPIClient:
             logger.error("Validation error in OTC API response")
             logger.error(f"Response JSON: {response.text}")
             logger.error(f"Validation Error: {exc}")
+        except ValueError as exc:
+            logger.error("Validation error in OTC API response")
+            logger.error(f"Response JSON: {response.text}")
+            logger.error(f"Validation Error: {exc}")
         return APIResponse()
 
     def get_latest_variations_since(self, when: datetime) -> List[Registration]:
