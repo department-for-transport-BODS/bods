@@ -199,7 +199,7 @@ def df_to_serviced_organisations(
 def df_to_operating_profiles(df: pd.DataFrame) -> Iterator[VehicleJourney]:
     for record in df.to_dict("records"):
         yield OperatingProfile(
-            vehicle_journey_id=record["id"], day_of_week=record["days_of_week"]
+            vehicle_journey_id=record["id"], day_of_week=record["day_of_week"]
         )
 
 
