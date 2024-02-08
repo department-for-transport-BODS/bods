@@ -64,7 +64,7 @@
                             {% if current_valid_files %}
                                 {% for file_details in current_valid_files %}
                                     <div class="stacked">
-                                        {{file_details.start_date|default:'N/A'}} - {{file_details.end_date|default:'N/A'}} <br> {{file_details.filename}}
+                                        {{file_details.start_date|default:'No Start Date'}} - {{file_details.end_date|default:'No End Date'}} <br> {{file_details.filename}}
                                     </div>
                                     {% if not forloop.last %}
                                         <br>
