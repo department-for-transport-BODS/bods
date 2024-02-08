@@ -1293,8 +1293,9 @@ def check_fare_products(context, fare_frames, *args):
                 response = response_details.__list__()
                 return response
 
+            # Logic is a little tricky, because based on product type in child
+            # we can descide if we need to look for PreassignedFareProduct or AmountOfPriceUnitProduct
             xpath = "string(x:ProductType)"
-
             try:
                 fare_product_type = fare_products[0][0].xpath(
                     xpath, namespaces=NAMESPACE
@@ -1304,11 +1305,11 @@ def check_fare_products(context, fare_frames, *args):
                 fare_product_type = "other"
                 pass
 
-            xpath = "x:PreassignedFareProduct"
-            fare_product_label = "PreassignedFareProduct"
+            xpath = f"x:{FARE_STRUCTURE_PREASSIGNED_LABEL}"
+            fare_product_label = FARE_STRUCTURE_PREASSIGNED_LABEL
             if fare_product_type in TYPE_OF_AMOUNT_OF_PRICE_UNIT_PRODUCT_TYPE:
-                xpath = "x:AmountOfPriceUnitProduct"
-                fare_product_label = "AmountOfPriceUnitProduct"
+                xpath = f"x:{FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL}"
+                fare_product_label = FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL
 
             fare_product = fare_products[0].xpath(xpath, namespaces=NAMESPACE)
             if not fare_product:
