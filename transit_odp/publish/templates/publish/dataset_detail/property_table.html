@@ -28,7 +28,7 @@
             <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Description' %}{% endfilter %}</th>
             <td class="govuk-table__cell">
                 <div class="flex-between">
-                    {% filter force_escape %}{% trans object.description %}{% endfilter %}
+                    {% filter force_escape %}{% trans object.description|safe %}{% endfilter %}
                     <span style="text-align: right"><a class="govuk-link"
                         href="{% url 'dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">{% filter force_escape %}{% trans 'Edit' %}{% endfilter %}</a>
                     </span> </div>
@@ -37,7 +37,7 @@
         <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Short description' %}{% endfilter %}</th>
             <td class="govuk-table__cell">
-                <div class="flex-between">{% filter force_escape %}{% trans object.short_description %}{% endfilter %}
+                <div class="flex-between">{% filter force_escape %}{% trans object.short_description|safe %}{% endfilter %}
                     <a class="govuk-link"
                         href="{% url 'dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">{% filter force_escape %}{% trans 'Edit' %}{% endfilter %}</a>
                 </div>

@@ -1,5 +1,6 @@
 from .pti import ReviewViolationsCSVFileView
 from .review import (
+    LineMetadataRevisionView,
     PublishRevisionView,
     RevisionPublishSuccessView,
     TimetableUploadModify,
@@ -12,4 +13,5 @@ __all__ = [
     "RevisionPublishSuccessView",
     "TimetableUploadModify",
     "UpdateRevisionPublishView",
+    "LineMetadataRevisionView",
 ]

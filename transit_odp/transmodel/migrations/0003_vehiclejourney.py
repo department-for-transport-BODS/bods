@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("transmodel", "0002_timingpattern_timingpatternstop"),
     ]

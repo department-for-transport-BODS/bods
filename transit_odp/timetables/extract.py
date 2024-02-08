@@ -5,6 +5,7 @@ import pandas as pd
 from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
+from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -25,6 +26,9 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     stop_point_refs_to_dataframe,
     booking_arrangements_to_dataframe,
+    vehicle_journeys_to_dataframe,
+    serviced_organisations_to_dataframe,
+    operating_profile_to_df,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -63,6 +67,10 @@ class TransXChangeExtractor:
         'route_section_hash' to form 'route_hash'.
         """
         logger.debug("Extracting data")
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
+
         schema_version = self.doc.get_transxchange_version()
 
         # Extract Services
@@ -86,6 +94,23 @@ class TransXChangeExtractor:
         logger.debug("Extracting journey_patterns_sections")
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         logger.debug("Finished extracting journey_patterns_sections")
+
+        vehicle_journeys = pd.DataFrame()
+        serviced_organisations = pd.DataFrame()
+        operating_profiles = pd.DataFrame()
+        if is_timetable_visualiser_active:
+            # Extract VehicleJourneys
+            logger.debug("Extracting vehicle_journeys")
+            vehicle_journeys = self.extract_vehicle_journeys()
+            logger.debug("Finished extracting vehicle_journeys")
+
+            # Extract ServicedOrganisations
+            logger.debug("Extracting serviced_organisations")
+            (
+                serviced_organisations,
+                operating_profiles,
+            ) = self.extract_serviced_organisations()
+            logger.debug("Finished extracting serviced_organisations")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
@@ -132,6 +157,9 @@ class TransXChangeExtractor:
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,
             booking_arrangements=booking_arrangements,
+            vehicle_journeys=vehicle_journeys,
+            serviced_organisations=serviced_organisations,
+            operating_profiles=operating_profiles,
         )
 
     def construct_geometry(self, point: Point):
@@ -185,6 +213,24 @@ class TransXChangeExtractor:
 
         return journey_patterns, jp_to_jps
 
+    def extract_vehicle_journeys(self):
+        standard_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "VehicleJourney", allow_none=True
+        )
+        flexible_vehicle_journeys = self.doc.get_all_vehicle_journeys(
+            "FlexibleVehicleJourney", allow_none=True
+        )
+
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(
+            standard_vehicle_journeys, flexible_vehicle_journeys
+        )
+
+        if not df_vehicle_journeys.empty:
+            df_vehicle_journeys["file_id"] = self.file_id
+            df_vehicle_journeys.set_index(["file_id"], inplace=True)
+
+        return df_vehicle_journeys
+
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)
         timing_links = journey_pattern_sections_to_dataframe(sections)
@@ -202,6 +248,44 @@ class TransXChangeExtractor:
             )
 
         return jp_sections, timing_links
+
+    def extract_serviced_organisations(self):
+        operating_profile_vehicle_journeys = self.doc.get_all_operating_profiles(
+            "VehicleJourneys", allow_none=True
+        )
+        df_operating_profile = pd.DataFrame()
+        if operating_profile_vehicle_journeys:
+            df_operating_profile = operating_profile_to_df(
+                operating_profile_vehicle_journeys
+            )
+
+        else:
+            operating_profile_services = self.doc.get_all_operating_profiles(
+                "Services", allow_none=True
+            )
+            if operating_profile_services:
+                df_operating_profile = operating_profile_to_df(
+                    operating_profile_services
+                )
+
+        serviced_organisations = self.doc.get_all_serviced_organisations(
+            allow_none=True
+        )
+        df_serviced_organisation = pd.DataFrame()
+        if serviced_organisations:
+            df_serviced_organisation = serviced_organisations_to_dataframe(
+                serviced_organisations
+            )
+
+        if not df_operating_profile.empty:
+            df_operating_profile["file_id"] = self.file_id
+            df_operating_profile.set_index(["file_id"], inplace=True)
+
+        if not df_serviced_organisation.empty:
+            df_serviced_organisation["file_id"] = self.file_id
+            df_serviced_organisation.set_index(["file_id"], inplace=True)
+
+        return df_serviced_organisation, df_operating_profile
 
     def extract_booking_arrangements(self):
         services = self.doc.get_services()
@@ -284,5 +368,14 @@ class TransXChangeZipExtractor:
             ),
             booking_arrangements=pd.concat(
                 (extract.booking_arrangements for extract in extracts)
+            ),
+            vehicle_journeys=pd.concat(
+                (extract.vehicle_journeys for extract in extracts)
+            ),
+            serviced_organisations=concat_and_dedupe(
+                (extract.serviced_organisations for extract in extracts)
+            ),
+            operating_profiles=pd.concat(
+                (extract.operating_profiles for extract in extracts)
             ),
         )
