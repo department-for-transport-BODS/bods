@@ -194,7 +194,7 @@ class TransXChangeDataLoader:
         if not operating_profiles.empty and not vehicle_journeys.empty:
             operating_profiles.reset_index(inplace=True)
             vehicle_journeys = vehicle_journeys.rename(
-                columns={"service_code_x": "service_code"}
+                columns={"service_code_vj": "service_code"}
             )
             vehicle_journeys = vehicle_journeys[
                 ["id", "vehicle_journey_code", "service_code", "file_id"]
