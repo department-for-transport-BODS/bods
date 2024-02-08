@@ -90,9 +90,6 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
-        print("transformed.vehicle_journeys", transformed.vehicle_journeys)
-        print("vehicle_journey_expected", vehicle_journey_expected)
-
         self.assertTrue(
             check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
         )
