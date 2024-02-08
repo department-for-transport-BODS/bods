@@ -20,7 +20,7 @@ ddtrace = "~=2.4.0"
 decorator = "~=5.1.1"
 defusedxml = "~=0.7.1"
 django = "~=4.2.9"
-django-allauth = "~=0.59.0"
+django-allauth = "~=0.61.0"
 django-anymail = { extras = ["mailgun"], version = "~=10.2" }
 django-celery-beat = "~=2.5.0"
 django-celery-results = "~=2.5.1"
