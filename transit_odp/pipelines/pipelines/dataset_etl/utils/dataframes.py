@@ -226,7 +226,7 @@ def df_to_serviced_org_vehicle_journey(df: pd.DataFrame) -> Iterator[VehicleJour
         yield ServicedOrganisationVehicleJourney(
             vehicle_journey_id=record["vehicle_journey_id"],
             serviced_organisation_id=record["serviced_org_id"],
-            operating_on_working_days=record["operational_y"],
+            operating_on_working_days=record["operational_so"],
         )
 
 

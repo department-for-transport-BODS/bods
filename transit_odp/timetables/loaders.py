@@ -281,7 +281,7 @@ class TransXChangeDataLoader:
             and not operating_profiles.empty
         ):
             vehicle_journeys.rename(
-                columns={"id": "vehicle_journey_id", "service_code_x": "service_code"},
+                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"},
                 inplace=True,
             )
 
@@ -290,50 +290,50 @@ class TransXChangeDataLoader:
             )
             operating_profiles.reset_index(inplace=True)
 
-            vehicle_journeys = vehicle_journeys[
-                [
-                    "file_id",
-                    "service_code",
-                    "vehicle_journey_id",
-                    "vehicle_journey_code",
-                ]
-            ]
-            serviced_organisations = serviced_organisations[
-                [
-                    "file_id",
-                    "serviced_org_id",
-                    "serviced_org_ref",
-                    "operational",
-                ]
-            ]
-            operating_profiles = operating_profiles[
-                [
-                    "file_id",
-                    "service_code",
-                    "vehicle_journey_code",
-                    "serviced_org_ref",
-                    "operational",
-                ]
-            ]
-
-            merged_df = pd.merge(
-                operating_profiles,
-                serviced_organisations,
+            operating_profiles_serviced_orgs_merged_df = pd.merge(
+                operating_profiles[
+                    [
+                        "file_id",
+                        "service_code",
+                        "vehicle_journey_code",
+                        "serviced_org_ref",
+                        "operational",
+                    ]
+                ],
+                serviced_organisations[
+                    [
+                        "file_id",
+                        "serviced_org_id",
+                        "serviced_org_ref",
+                        "operational",
+                    ]
+                ],
                 on=["file_id", "serviced_org_ref"],
                 how="inner",
+                suffixes=["_op", "_so"],
             )
-            merged_df.drop_duplicates(inplace=True)
+            operating_profiles_serviced_orgs_merged_df.drop_duplicates(inplace=True)
 
-            output_merged_df = pd.merge(
-                merged_df,
-                vehicle_journeys,
+            operating_profiles_serviced_orgs_vehicle_journeys_merged_df = pd.merge(
+                operating_profiles_serviced_orgs_merged_df,
+                vehicle_journeys[
+                    [
+                        "file_id",
+                        "service_code",
+                        "vehicle_journey_id",
+                        "vehicle_journey_code",
+                    ]
+                ],
                 on=["file_id", "service_code", "vehicle_journey_code"],
                 how="inner",
             )
-            output_merged_df.drop_duplicates(inplace=True)
-
+            operating_profiles_serviced_orgs_vehicle_journeys_merged_df.drop_duplicates(
+                inplace=True
+            )
             serviced_org_vehicle_journey_objs = list(
-                df_to_serviced_org_vehicle_journey(output_merged_df)
+                df_to_serviced_org_vehicle_journey(
+                    operating_profiles_serviced_orgs_vehicle_journeys_merged_df
+                )
             )
             ServicedOrganisationVehicleJourney.objects.bulk_create(
                 serviced_org_vehicle_journey_objs, batch_size=BATCH_SIZE
