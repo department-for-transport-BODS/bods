@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import LineString
 
