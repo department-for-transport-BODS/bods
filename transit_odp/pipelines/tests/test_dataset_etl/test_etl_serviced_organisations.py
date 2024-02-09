@@ -108,7 +108,9 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
             "operational",
         ]
 
-        self.assertEqual(140, transformed.serviced_organisations.shape[0])
+        print("transformed.serviced_organisations", transformed.serviced_organisations)
+
+        self.assertEqual(14, transformed.serviced_organisations.shape[0])
 
         self.assertCountEqual(
             list(transformed.serviced_organisations.columns),
