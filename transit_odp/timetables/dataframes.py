@@ -302,7 +302,70 @@ def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):
     return pd.DataFrame(flexible_operation_periods)
 
 
-def populate_operating_profiles(operating_profile_services):
+def get_operating_profile_with_exception(
+    operating_profile,
+    date_range,
+    exceptions_operational=False,
+    is_exceptions=False,
+    is_bank_holiday_exceptions=False,
+):
+    operating_profile = {
+        "service_code": operating_profile.service_ref,
+        "vehicle_journey_code": operating_profile.vehicle_journey_code,
+        "serviced_org_ref": operating_profile.serviced_org_ref,
+        "operational": operating_profile.operational,
+        "day_of_week": operating_profile.days_of_week,
+        "exceptions_operational": exceptions_operational,
+        "exceptions_start_Date": None,
+        "exceptions_end_Date": None,
+        "exceptions_bank_holiday_start_date": None,
+        "exceptions_bank_holiday_end_date": None,
+    }
+
+    if is_exceptions:
+        operating_profile.exceptions_start_Date = date_range.get_element(
+            ["StartDate"]
+        ).text
+        operating_profile.exceptions_end_Date = date_range.get_element(["EndDate"]).text
+    elif is_bank_holiday_exceptions:
+        operating_profile.exceptions_bank_holiday_start_date = date_range.get_element(
+            ["StartDate"]
+        ).text
+        operating_profile.exceptions_bank_holiday_end_date = date_range.get_element(
+            ["EndDate"]
+        ).text
+
+    return operating_profile
+
+
+def get_operating_profiles_for_all_exceptions(
+    operating_profile, operations, is_days_of_operation
+):
+    operating_profile_list = []
+    date_range = operations.get_elements_or_none(["DateRange"])
+    for range in date_range:
+        if is_days_of_operation:
+            operating_profile_list.append(
+                get_operating_profile_with_exception(
+                    operating_profile, range, is_days_of_operation, is_exceptions=True
+                )
+            )
+        else:
+            operating_profile_list.append(
+                get_operating_profile_with_exception(
+                    operating_profile,
+                    range,
+                    is_days_of_operation,
+                    False,
+                    is_bank_holiday_exceptions=True,
+                )
+            )
+
+
+def populate_operating_profiles(
+    operating_profile_services, vehicle_journey_code, service_ref
+):
+    operating_profile_list = []
     serviced_org_ref = ""
     days_of_week = ""
     operational = ""
@@ -312,11 +375,15 @@ def populate_operating_profiles(operating_profile_services):
     regular_day_type = operating_profile_services.get_element_or_none(
         ["RegularDayType"]
     )
+    special_days_operation = operating_profile_services.get_element_or_none(
+        ["SpecialDaysOperation"]
+    )
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])
         if days_of_week_elements:
             days_of_week_element = days_of_week_elements[0]
             days_of_week = [day.localname for day in days_of_week_element.children]
+
     if serviced_organisation_day_type:
         days_of_operation = serviced_organisation_day_type.get_element_or_none(
             ["DaysOfOperation"]
@@ -332,7 +399,42 @@ def populate_operating_profiles(operating_profile_services):
             working_days = days_of_non_operation.get_element("WorkingDays")
         serviced_org_ref = working_days.get_element("ServicedOrganisationRef").text
 
-    return serviced_org_ref, days_of_week, operational
+        operating_profile_obj = {
+            "service_code": service_ref,
+            "vehicle_journey_code": vehicle_journey_code,
+            "serviced_org_ref": serviced_org_ref,
+            "operational": operational,
+            "day_of_week": days_of_week,
+        }
+
+        if special_days_operation:
+            days_of_operation = special_days_operation.get_element_or_none(
+                ["DaysOfOperation"]
+            )
+
+            days_of_non_operation = special_days_operation.get_element_or_none(
+                ["DaysOfNonOperation"]
+            )
+
+            if days_of_operation:
+                operating_profile_list.extend(
+                    get_operating_profiles_for_all_exceptions(
+                        operating_profile_obj,
+                        days_of_operation,
+                        is_days_of_operation=True,
+                    )
+                )
+
+            if days_of_non_operation:
+                operating_profile_list.extend(
+                    get_operating_profiles_for_all_exceptions(
+                        operating_profile_obj,
+                        days_of_non_operation,
+                        is_days_of_operation=False,
+                    )
+                )
+
+    return operating_profile_list
 
 
 def operating_profiles_to_dataframe(vehicle_journeys, services):
