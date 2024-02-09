@@ -47,6 +47,7 @@ MESSAGE_OBSERVATION_FARE_VALIDABLE_FARE_REF_MISSING = "'FareStructureElementRef'
 MESSAGE_OBSERVATION_ACCESS_MISSING = "'accessRightsInProduct' missing from '{}' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_ACCESS_VALIDABLE_MISSING = "'ValidableElementRef' missing from 'accessRightsInProduct' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_PRODUCT_TYPE_MISSING = "'ProductType' missing or empty from '{}' in 'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT"
+MESSAGE_OBSERVATION_WRONG_PRODUCT_TYPE = "'ProductType' for 'AmountOfPriceUnitProduct' in 'fareProducts' must be tripCarnet or passCarnet"
 MESSAGE_OBSERVATION_SALES_OFFER_PACKAGES_MISSING = "'salesOfferPackages' and it's child elements is missing from 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_PACKAGE_MISSING = "'salesOfferPackage' and it's child elements is missing from 'salesOfferPackages' in 'FareFrame' - UK_PI_FARE_PRODUCT"
 MESSAGE_OBSERVATION_SALES_OFFER_ASSIGNMENTS_MISSING = "'distributionAssignments' and it's child elements is missing from 'salesOfferPackage' in 'FareFrame' - UK_PI_FARE_PRODUCT"

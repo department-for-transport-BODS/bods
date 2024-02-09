@@ -1566,6 +1566,18 @@ def check_product_type(context, fare_products, *args):
                 )
                 response = response_details.__list__()
                 return response
+            if (
+                fare_product_label == FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL
+                and not product_type in TYPE_OF_AMOUNT_OF_PRICE_UNIT_PRODUCT_TYPE
+            ):
+                sourceline_fare_frame = fare_product.sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_fare_frame,
+                    msg.MESSAGE_OBSERVATION_WRONG_PRODUCT_TYPE,
+                )
+                response = response_details.__list__()
+                return response
 
 
 def check_sales_offer_package(context, fare_frames, *args):

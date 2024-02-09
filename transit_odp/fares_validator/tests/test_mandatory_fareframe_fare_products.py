@@ -1562,20 +1562,23 @@ def test_preassigned_product_type(
         "type_of_frame_ref_ref_present",
         "type_of_frame_ref_ref_valid",
         "product_type",
+        "wrong_product_type",
         "expected",
     ),
     [
-        (True, True, True, None),
+        (True, True, True, False, None),
         (
+            False,
             False,
             False,
             False,
             "",
         ),
-        (True, False, False, None),
+        (True, False, False, False, None),
         (
             True,
             True,
+            False,
             False,
             [
                 "violation",
@@ -1584,10 +1587,26 @@ def test_preassigned_product_type(
                 "'fareProducts' for 'FareFrame' - UK_PI_FARE_PRODUCT",
             ],
         ),
+        (
+            True,
+            True,
+            True,
+            True,
+            [
+                "violation",
+                "10",
+                "'ProductType' for 'AmountOfPriceUnitProduct' in 'fareProducts' must be tripCarnet or passCarnet"
+                "",
+            ],
+        ),
     ],
 )
 def test_amountofpriceunit_product_type(
-    type_of_frame_ref_ref_present, type_of_frame_ref_ref_valid, product_type, expected
+    type_of_frame_ref_ref_present,
+    type_of_frame_ref_ref_valid,
+    product_type,
+    wrong_product_type,
+    expected,
 ):
     """
     Test if mandatory element 'ProductType'is missing in
@@ -1595,6 +1614,17 @@ def test_amountofpriceunit_product_type(
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
     fare_frame_with_all_children_properties = """
+    <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+        <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
+        <fareProducts>
+            <AmountOfPriceUnitProduct id="Trip@AdultSingle" version="1.0">
+                <ProductType>passCarnet</ProductType>
+            </AmountOfPriceUnitProduct>
+        </fareProducts>
+    </FareFrame>
+    """
+
+    fare_frame_with_wrong_product_type = """
     <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
         <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />
         <fareProducts>
@@ -1610,7 +1640,7 @@ def test_amountofpriceunit_product_type(
         <TypeOfFrameRef />
         <fareProducts>
             <AmountOfPriceUnitProduct id="Trip@AdultSingle" version="1.0">
-                <ProductType>dayPass</ProductType>
+                <ProductType>passCarnet</ProductType>
             </AmountOfPriceUnitProduct>
         </fareProducts>
     </FareFrame>
@@ -1651,7 +1681,10 @@ def test_amountofpriceunit_product_type(
     if type_of_frame_ref_ref_present:
         if type_of_frame_ref_ref_valid:
             if product_type:
-                xml = frames.format(fare_frame_with_all_children_properties)
+                if wrong_product_type:
+                    xml = frames.format(fare_frame_with_wrong_product_type)
+                else:
+                    xml = frames.format(fare_frame_with_all_children_properties)
             else:
                 xml = frames.format(fare_frame_without_product_type)
         else:
