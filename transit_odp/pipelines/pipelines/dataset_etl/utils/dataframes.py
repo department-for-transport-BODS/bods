@@ -21,6 +21,7 @@ from transit_odp.transmodel.models import (
     BookingArrangements,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -214,6 +215,13 @@ def df_to_serviced_organisations(
     for record in serviced_org_records.to_dict("records"):
         yield ServicedOrganisations(
             organisation_code=record["serviced_org_ref"], name=record["name"]
+        )
+
+
+def df_to_operating_profiles(df: pd.DataFrame) -> Iterator[VehicleJourney]:
+    for record in df.to_dict("records"):
+        yield OperatingProfile(
+            vehicle_journey_id=record["id"], day_of_week=record["days_of_week"]
         )
 
 
