@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import LineString
 
@@ -251,6 +252,7 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         left_on=["file_id", "journey_pattern_ref"],
         right_index=True,
         how="left",
+        suffixes=("_vj", "_jp"),
     )
     return df_merged
 
@@ -263,6 +265,11 @@ def merge_serviced_organisations_with_operating_profile(
     df_merged = pd.merge(
         serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
     )
+    df_merged = df_merged[
+        ["file_id", "serviced_org_ref", "name", "operational", "start_date", "end_date"]
+    ]
+    df_merged.drop_duplicates(inplace=True)
+    df_merged["operational"] = df_merged["operational"].astype(bool)
     df_merged.set_index("file_id", inplace=True)
 
     return df_merged

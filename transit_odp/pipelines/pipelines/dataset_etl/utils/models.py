@@ -44,6 +44,7 @@ class TransformedData(object):
     booking_arrangements: pd.DataFrame
     vehicle_journeys: pd.DataFrame
     serviced_organisations: pd.DataFrame
+    operating_profiles: pd.DataFrame
 
     schema_version: str
     creation_datetime: datetime
