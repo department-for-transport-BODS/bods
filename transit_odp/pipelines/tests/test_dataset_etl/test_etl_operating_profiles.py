@@ -30,7 +30,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -38,7 +38,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -46,7 +46,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -54,7 +54,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
                 {
                     "file_id": file_id,
@@ -62,7 +62,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -70,7 +70,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -78,7 +78,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -86,7 +86,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
             ]
         ).set_index("file_id")
@@ -117,7 +117,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -125,7 +125,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -133,7 +133,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -141,7 +141,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
                 {
                     "file_id": file_id,
@@ -149,7 +149,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -157,7 +157,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -165,7 +165,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -173,7 +173,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "serviced_org_ref": "Sch:11",
                     "operational": True,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
             ]
         ).set_index("file_id")
@@ -223,7 +223,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Monday",
+                    "day_of_week": "Monday",
                 },
                 {
                     "file_id": file_id,
@@ -231,7 +231,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -239,7 +239,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -247,7 +247,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -255,7 +255,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
                 {
                     "file_id": file_id,
@@ -263,7 +263,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Monday",
+                    "day_of_week": "Monday",
                 },
                 {
                     "file_id": file_id,
@@ -271,7 +271,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -279,7 +279,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -287,7 +287,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -295,7 +295,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
             ]
         ).set_index("file_id")
@@ -326,7 +326,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Monday",
+                    "day_of_week": "Monday",
                 },
                 {
                     "file_id": file_id,
@@ -334,7 +334,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -342,7 +342,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -350,7 +350,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -358,7 +358,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ4",
                     "serviced_org_ref": "NYCCSC",
                     "operational": True,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
                 {
                     "file_id": file_id,
@@ -366,7 +366,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Monday",
+                    "day_of_week": "Monday",
                 },
                 {
                     "file_id": file_id,
@@ -374,7 +374,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Tuesday",
+                    "day_of_week": "Tuesday",
                 },
                 {
                     "file_id": file_id,
@@ -382,7 +382,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Wednesday",
+                    "day_of_week": "Wednesday",
                 },
                 {
                     "file_id": file_id,
@@ -390,7 +390,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Thursday",
+                    "day_of_week": "Thursday",
                 },
                 {
                     "file_id": file_id,
@@ -398,7 +398,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
                     "vehicle_journey_code": "VJ12",
                     "serviced_org_ref": "NYCCSC",
                     "operational": False,
-                    "days_of_week": "Friday",
+                    "day_of_week": "Friday",
                 },
             ]
         ).set_index("file_id")

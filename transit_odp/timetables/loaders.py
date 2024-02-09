@@ -222,15 +222,13 @@ class TransXChangeDataLoader:
             vehicle_journeys = vehicle_journeys.rename(
                 columns={"service_code_vj": "service_code"}
             )
-            vehicle_journeys = vehicle_journeys[
-                ["id", "vehicle_journey_code", "service_code", "file_id"]
-            ]
-            operating_profiles = operating_profiles[
-                ["vehicle_journey_code", "days_of_week", "service_code", "file_id"]
-            ]
             merged_df = pd.merge(
-                vehicle_journeys,
-                operating_profiles,
+                vehicle_journeys[
+                    ["id", "vehicle_journey_code", "service_code", "file_id"]
+                ],
+                operating_profiles[
+                    ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
+                ],
                 on=["file_id", "service_code", "vehicle_journey_code"],
                 how="inner",
             )
