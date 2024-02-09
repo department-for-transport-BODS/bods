@@ -95,24 +95,38 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
+        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
         # test
         transformed = self.feed_parser.transform(extracted)
 
-        expected_serviced_organisation_columns = [
-            "serviced_org_ref",
-            "name",
-            "start_date",
-            "end_date",
-            "operational",
-        ]
+        expected_serviced_organisation = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC Schools",
+                    "operational": True,
+                    "start_date": "2022-06-05",
+                    "end_date": "2022-07-26",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC Schools",
+                    "operational": False,
+                    "start_date": "2022-06-05",
+                    "end_date": "2022-07-26",
+                },
+            ]
+        ).set_index("file_id")
 
         self.assertEqual(14, transformed.serviced_organisations.shape[0])
 
         self.assertCountEqual(
             list(transformed.serviced_organisations.columns),
-            expected_serviced_organisation_columns,
+            expected_serviced_organisation.columns,
         )
 
     def test_load(self):

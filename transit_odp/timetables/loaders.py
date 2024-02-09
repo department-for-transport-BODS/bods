@@ -180,13 +180,13 @@ class TransXChangeDataLoader:
             df_serviced_organisations.reset_index(inplace=True)
 
             existing_serviced_orgs = ServicedOrganisations.objects.all()
-            existing_orgs_list = existing_serviced_orgs.values_list(
+            existing_serviced_orgs_list = existing_serviced_orgs.values_list(
                 "organisation_code", flat=True
             )
 
             serviced_org_objs = list(
                 df_to_serviced_organisations(
-                    df_serviced_organisations, existing_orgs_list
+                    df_serviced_organisations, existing_serviced_orgs_list
                 )
             )
 
