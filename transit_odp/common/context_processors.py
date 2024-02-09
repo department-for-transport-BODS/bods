@@ -55,4 +55,5 @@ def global_settings(request):
     # return any necessary values
     return {
         "GOOGLE_ANALYTICS_KEY": settings.GOOGLE_ANALYTICS_KEY,
+        "MAPBOX_KEY": settings.MAPBOX_KEY
     }

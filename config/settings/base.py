@@ -656,3 +656,5 @@ if env("GDAL_LIBRARY_PATH", default=None):
 
 if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
+
+MAPBOX_KEY =  env("MAPBOX_KEY", default=None)
