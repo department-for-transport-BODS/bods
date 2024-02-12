@@ -302,16 +302,14 @@ def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):
     return pd.DataFrame(flexible_operation_periods)
 
 
-def populate_operating_profiles(operating_profile_services):
-    serviced_org_ref = ""
+def populate_operating_profiles(operating_profiles):
+    serviced_org_refs = []
     days_of_week = ""
     operational = ""
-    serviced_organisation_day_type = operating_profile_services.get_element_or_none(
+    serviced_organisation_day_type = operating_profiles.get_element_or_none(
         ["ServicedOrganisationDayType"]
     )
-    regular_day_type = operating_profile_services.get_element_or_none(
-        ["RegularDayType"]
-    )
+    regular_day_type = operating_profiles.get_element_or_none(["RegularDayType"])
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])
         if days_of_week_elements:
@@ -326,13 +324,21 @@ def populate_operating_profiles(operating_profile_services):
         )
         if days_of_operation:
             operational = True
-            working_days = days_of_operation.get_element("WorkingDays")
+            serviced_orgs_working_days = days_of_operation.get_element("WorkingDays")
         elif days_of_non_operation:
             operational = False
-            working_days = days_of_non_operation.get_element("WorkingDays")
-        serviced_org_ref = working_days.get_element("ServicedOrganisationRef").text
+            serviced_orgs_working_days = days_of_non_operation.get_element(
+                "WorkingDays"
+            )
+        serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
+            "ServicedOrganisationRef"
+        )
+        serviced_org_refs = [
+            serviced_org_ref_element.text
+            for serviced_org_ref_element in serviced_org_ref_elements
+        ]
 
-    return serviced_org_ref, days_of_week, operational
+    return serviced_org_refs, days_of_week, operational
 
 
 def operating_profiles_to_dataframe(vehicle_journeys, services):
@@ -353,20 +359,21 @@ def operating_profiles_to_dataframe(vehicle_journeys, services):
                         ["OperatingProfile"]
                     )
         if operating_profile:
-            serviced_org_ref, days_of_week, operational = populate_operating_profiles(
+            serviced_org_refs, days_of_week, operational = populate_operating_profiles(
                 operating_profile
             )
             operating_profile_list.append(
                 {
                     "service_code": service_ref,
                     "vehicle_journey_code": vehicle_journey_code,
-                    "serviced_org_ref": serviced_org_ref,
+                    "serviced_org_ref": serviced_org_refs,
                     "operational": operational,
                     "day_of_week": days_of_week,
                 }
             )
     operating_profile_df = pd.DataFrame(operating_profile_list)
     operating_profile_df = operating_profile_df.explode("day_of_week")
+    operating_profile_df = operating_profile_df.explode("serviced_org_ref")
     operating_profile_df.drop_duplicates(inplace=True)
     operating_profile_df.reset_index(drop=True, inplace=True)
 
