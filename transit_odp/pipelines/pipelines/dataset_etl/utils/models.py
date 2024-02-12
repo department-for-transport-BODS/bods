@@ -46,6 +46,7 @@ class TransformedData(object):
     vehicle_journeys: pd.DataFrame
     serviced_organisations: pd.DataFrame
     flexible_operation_periods: pd.DataFrame
+    operating_profiles: pd.DataFrame
 
     schema_version: str
     creation_datetime: datetime

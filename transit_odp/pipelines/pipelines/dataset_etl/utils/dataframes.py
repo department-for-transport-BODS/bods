@@ -17,10 +17,12 @@ from transit_odp.transmodel.models import (
     Service,
     ServiceLink,
     ServicePattern,
+    ServicedOrganisationWorkingDays,
     StopPoint,
     BookingArrangements,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -214,6 +216,28 @@ def df_to_serviced_organisations(
     for record in serviced_org_records.to_dict("records"):
         yield ServicedOrganisations(
             organisation_code=record["serviced_org_ref"], name=record["name"]
+        )
+
+
+def df_to_serviced_organisation_working_days(
+    df: pd.DataFrame, columns_to_drop: list, columns_to_drop_duplicates: list
+) -> Iterator[ServicedOrganisationWorkingDays]:
+    if not df.empty:
+        df_to_load = df.drop(columns=columns_to_drop)
+        for record in df_to_load.drop_duplicates(
+            subset=columns_to_drop_duplicates
+        ).itertuples(index=False):
+            yield ServicedOrganisationWorkingDays(
+                serviced_organisation_id=record.id,
+                start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
+                end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date(),
+            )
+
+
+def df_to_operating_profiles(df: pd.DataFrame) -> Iterator[VehicleJourney]:
+    for record in df.to_dict("records"):
+        yield OperatingProfile(
+            vehicle_journey_id=record["id"], day_of_week=record["day_of_week"]
         )
 
 
