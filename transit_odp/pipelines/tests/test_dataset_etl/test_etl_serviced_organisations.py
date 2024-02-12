@@ -175,17 +175,6 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
-        #         1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-01-04  2023-02-10
-        # 1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-02-20  2023-03-31
-        # 1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-02-20  2023-03-31
-        # 1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-04-17  2023-05-26
-        # 1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-06-05  2023-07-21
-        # 1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-09-05  2023-10-27
-        # 1149560169008127346       NYCC2023:2  North Yorkshire 2023  2023-11-06  2023-12-22
-        # 1149560169008127346           NY2024  North Yorkshire 2024  2024-01-08  2024-02-09
-        # 1149560169008127346           NY2024  North Yorkshire 2024  2024-02-19  2024-03-22
-        # 1149560169008127346           NY2024  North Yorkshire 2024  2024-04-08  2024-05-24
-        # 1149560169008127346           NY2024  North Yorkshire 2024  2024-06-03  2024-07-19
         expected_serviced_organisation = pd.DataFrame(
             [
                 {

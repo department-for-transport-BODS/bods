@@ -7,6 +7,7 @@ from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_df_from_queryset,
+    df_to_flexible_service_operation_period,
     df_to_service_links,
     df_to_service_patterns,
     df_to_serviced_organisation_working_days,
@@ -35,6 +36,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     starting_timestamp,
 )
 from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
     Service,
     ServiceLink,
     ServicePattern,
@@ -67,6 +69,10 @@ class TransXChangeDataLoader:
         adapter.info("Loading vehicle journeys.")
         vehicle_journeys = self.load_vehicle_journeys()
         adapter.info("Finished vehicle journeys.")
+
+        adapter.info("Loading flexible operation periods.")
+        self.load_flexible_service_operation_periods(vehicle_journeys)
+        adapter.info("Finished flexible operation periods.")
 
         adapter.info("Loading serviced organisations.")
         serviced_organisations = self.load_serviced_organisation()
@@ -173,6 +179,26 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
 
         return vehicle_journeys
+
+    def load_flexible_service_operation_periods(self, vehicle_journeys):
+
+        flexible_service_operation_periods = self.transformed.flexible_operation_periods
+
+        if not flexible_service_operation_periods.empty and not vehicle_journeys.empty:
+            df_merged = pd.merge(
+                flexible_service_operation_periods,
+                vehicle_journeys[["file_id", "id", "vehicle_journey_code"]],
+                how="inner",
+                left_on=["file_id", "vehicle_journey_code"],
+                right_on=["file_id", "vehicle_journey_code"],
+            )
+            flexible_service_operation_period_objs = list(
+                df_to_flexible_service_operation_period(df_merged)
+            )
+
+            FlexibleServiceOperationPeriod.objects.bulk_create(
+                flexible_service_operation_period_objs, batch_size=BATCH_SIZE
+            )
 
     def load_serviced_organisation(self):
         df_serviced_organisations = self.transformed.serviced_organisations
