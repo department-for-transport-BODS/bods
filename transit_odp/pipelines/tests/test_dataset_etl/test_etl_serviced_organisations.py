@@ -386,3 +386,43 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
         self.assertIn("North Yorkshire 2023", serviced_org_names)
 
         self.assertIn("North Yorkshire 2024", serviced_org_names)
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
+    test_file = "data/test_serviced_orgs_vehicle_journeys_junction/test_load_serviced_orgs_vjs_junction.xml"
+
+    def test_load_operating_profiles_in_services(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        serviced_orgs_vehicle_journeys = (
+            ServicedOrganisationVehicleJourney.objects.all()
+        )
+
+        # test
+        self.assertEqual(2, serviced_orgs_vehicle_journeys.count())
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
+    test_file = (
+        "data/test_serviced_organisations/test_extract_serviced_organisations.xml"
+    )
+
+    def test_load_operating_profiles_in_vehicle_journeys(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        serviced_orgs_vehicle_journeys = (
+            ServicedOrganisationVehicleJourney.objects.all()
+        )
+
+        # test
+        self.assertEqual(40, serviced_orgs_vehicle_journeys.count())
