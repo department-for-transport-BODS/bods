@@ -19,6 +19,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.aggregations import (
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import ExtractedData
 from transit_odp.timetables.dataframes import (
+    flexible_operation_period_to_dataframe,
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
@@ -98,10 +99,14 @@ class TransXChangeExtractor:
         vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
+        flexible_operation_periods = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
-            vehicle_journeys = self.extract_vehicle_journeys()
+            (
+                vehicle_journeys,
+                flexible_operation_periods,
+            ) = self.extract_vehicle_journeys()
             logger.debug("Finished extracting vehicle_journeys")
 
             # Extract ServicedOrganisations
@@ -162,6 +167,7 @@ class TransXChangeExtractor:
             vehicle_journeys=vehicle_journeys,
             serviced_organisations=serviced_organisations,
             operating_profiles=operating_profiles,
+            flexible_operation_periods=flexible_operation_periods,
         )
 
     def construct_geometry(self, point: Point):
@@ -227,11 +233,19 @@ class TransXChangeExtractor:
             standard_vehicle_journeys, flexible_vehicle_journeys
         )
 
+        df_flexible_operation_period = flexible_operation_period_to_dataframe(
+            flexible_vehicle_journeys
+        )
+
         if not df_vehicle_journeys.empty:
             df_vehicle_journeys["file_id"] = self.file_id
             df_vehicle_journeys.set_index(["file_id"], inplace=True)
 
-        return df_vehicle_journeys
+        if not df_flexible_operation_period.empty:
+            df_flexible_operation_period["file_id"] = self.file_id
+            df_flexible_operation_period.set_index(["file_id"], inplace=True)
+
+        return df_vehicle_journeys, df_flexible_operation_period
 
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)
@@ -375,5 +389,8 @@ class TransXChangeZipExtractor:
             ),
             operating_profiles=pd.concat(
                 (extract.operating_profiles for extract in extracts)
+            ),
+            flexible_operation_periods=pd.concat(
+                (extract.flexible_operation_periods for extract in extracts)
             ),
         )

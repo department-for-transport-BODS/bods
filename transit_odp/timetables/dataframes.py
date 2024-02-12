@@ -10,6 +10,9 @@ from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
+from datetime import datetime, timedelta
+
+from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
@@ -258,7 +261,136 @@ def vehicle_journeys_to_dataframe(
     return pd.DataFrame(all_vechicle_journeys)
 
 
-def populate_operating_profiles(operating_profile_services):
+def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):
+    flexible_operation_periods = []
+    if flexible_vechicle_journeys is not None:
+        for vehicle_journey in flexible_vechicle_journeys:
+            vehicle_journey_code = vehicle_journey.get_element(
+                ["VehicleJourneyCode"]
+            ).text
+            flexible_service_times = vehicle_journey.get_element_or_none(
+                ["FlexibleServiceTimes"]
+            )
+            found_service_period = False
+            if flexible_service_times:
+                service_periods = flexible_service_times.get_elements_or_none(
+                    ["ServicePeriod"]
+                )
+
+                for service_period in (
+                    service_periods if service_periods is not None else []
+                ):
+                    found_service_period = True
+                    start_time = service_period.get_element_or_none(["StartTime"])
+                    end_time = service_period.get_element_or_none(["EndTime"])
+                    flexible_operation_periods.append(
+                        {
+                            "vehicle_journey_code": vehicle_journey_code,
+                            "start_time": start_time.text
+                            if start_time is not None
+                            else None,
+                            "end_time": end_time.text if end_time is not None else None,
+                        }
+                    )
+
+            if not found_service_period:
+                flexible_operation_periods.append(
+                    {
+                        "vehicle_journey_code": vehicle_journey_code,
+                        "start_time": None,
+                        "end_time": None,
+                    }
+                )
+
+    return pd.DataFrame(flexible_operation_periods)
+
+
+def get_operating_profile_with_exception(
+    operating_profile,
+    date=None,
+    exceptions_operational=False,
+    is_exceptions=False,
+):
+    operating_profile = {
+        "service_code": operating_profile["service_code"],
+        "vehicle_journey_code": operating_profile["vehicle_journey_code"],
+        "serviced_org_ref": operating_profile["serviced_org_ref"],
+        "operational": operating_profile["operational"],
+        "day_of_week": operating_profile["day_of_week"],
+        "exceptions_operational": None,
+        "exceptions_date": None,
+    }
+
+    if is_exceptions:
+        operating_profile["exceptions_operational"] = exceptions_operational
+        if date:
+            operating_profile["exceptions_date"] = date
+
+    return operating_profile
+
+
+def get_operating_profiles_for_all_exceptions(
+    operating_profile,
+    operations=None,
+    df_bank_holidays_from_db=pd.DataFrame(),
+    is_bank_holiday_exception=False,
+    is_special_operation=False,
+    is_days_of_operation=False,
+):
+    operating_profile_list = []
+
+    if is_bank_holiday_exception:
+        for holiday in operations.children:
+            date = None
+            if holiday.tag_localname == "OtherPublicHoliday":
+                date = datetime.strptime(
+                    holiday.get_element(["Date"]).text, "%Y-%m-%d"
+                ).date()
+            else:
+                date = df_bank_holidays_from_db.loc[
+                    df_bank_holidays_from_db["txc_element"] == holiday.tag_localname,
+                    "date",
+                ].values[0]
+
+            operating_profile_list.append(
+                get_operating_profile_with_exception(
+                    operating_profile, date, is_days_of_operation, is_exceptions=True
+                )
+            )
+
+    elif is_special_operation:
+        if operations:
+            date_range = operations.get_elements_or_none(["DateRange"])
+            for range in date_range:
+                start_date = datetime.strptime(
+                    range.get_element(["StartDate"]).text, "%Y-%m-%d"
+                ).date()
+                end_date = datetime.strptime(
+                    range.get_element(["EndDate"]).text, "%Y-%m-%d"
+                ).date()
+
+                while start_date <= end_date:
+                    start_date = start_date + timedelta(days=1)
+                    operating_profile_list.append(
+                        get_operating_profile_with_exception(
+                            operating_profile,
+                            start_date,
+                            is_days_of_operation,
+                            is_exceptions=True,
+                        )
+                    )
+    else:
+        operating_profile_list.append(
+            get_operating_profile_with_exception(operating_profile)
+        )
+
+    return operating_profile_list
+
+
+def populate_operating_profiles(
+    operating_profile_services, vehicle_journey_code, service_ref
+):
+    operating_profile_list = []
     serviced_org_ref = ""
     days_of_week = ""
     operational = ""
@@ -268,11 +400,26 @@ def populate_operating_profiles(operating_profile_services):
     regular_day_type = operating_profile_services.get_element_or_none(
         ["RegularDayType"]
     )
+    special_days_operation = operating_profile_services.get_element_or_none(
+        ["SpecialDaysOperation"]
+    )
+    bank_holiday_operation = operating_profile_services.get_element_or_none(
+        ["BankHolidayOperation"]
+    )
+
+    bank_holiday_columns = ["txc_element", "date"]
+    db_bank_holidays = BankHolidays.objects.values(*bank_holiday_columns)
+    df_bank_holidays_from_db = pd.DataFrame(
+        db_bank_holidays, columns=bank_holiday_columns
+    )
+    df_bank_holidays_from_db.drop_duplicates(inplace=True)
+
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])
         if days_of_week_elements:
             days_of_week_element = days_of_week_elements[0]
             days_of_week = [day.localname for day in days_of_week_element.children]
+
     if serviced_organisation_day_type:
         days_of_operation = serviced_organisation_day_type.get_element_or_none(
             ["DaysOfOperation"]
@@ -288,7 +435,84 @@ def populate_operating_profiles(operating_profile_services):
             working_days = days_of_non_operation.get_element("WorkingDays")
         serviced_org_ref = working_days.get_element("ServicedOrganisationRef").text
 
-    return serviced_org_ref, days_of_week, operational
+        operating_profile_obj = {
+            "service_code": service_ref,
+            "vehicle_journey_code": vehicle_journey_code,
+            "serviced_org_ref": serviced_org_ref,
+            "operational": operational,
+            "day_of_week": days_of_week,
+        }
+
+        if special_days_operation:
+            days_of_operation = special_days_operation.get_element_or_none(
+                ["DaysOfOperation"]
+            )
+            days_of_non_operation = special_days_operation.get_element_or_none(
+                ["DaysOfNonOperation"]
+            )
+
+            if days_of_operation:
+                operating_profile_list.extend(
+                    get_operating_profiles_for_all_exceptions(
+                        operating_profile_obj,
+                        days_of_operation,
+                        df_bank_holidays_from_db,
+                        is_bank_holiday_exception=False,
+                        is_special_operation=True,
+                        is_days_of_operation=True,
+                    )
+                )
+
+            if days_of_non_operation:
+                operating_profile_list.extend(
+                    get_operating_profiles_for_all_exceptions(
+                        operating_profile_obj,
+                        days_of_non_operation,
+                        df_bank_holidays_from_db,
+                        is_bank_holiday_exception=False,
+                        is_special_operation=True,
+                        is_days_of_operation=False,
+                    )
+                )
+
+        if bank_holiday_operation:
+            days_of_operation = bank_holiday_operation.get_element_or_none(
+                ["DaysOfOperation"]
+            )
+            days_of_non_operation = bank_holiday_operation.get_element_or_none(
+                ["DaysOfNonOperation"]
+            )
+
+            if days_of_operation:
+                operating_profile_list.extend(
+                    get_operating_profiles_for_all_exceptions(
+                        operating_profile_obj,
+                        days_of_operation,
+                        df_bank_holidays_from_db,
+                        is_bank_holiday_exception=True,
+                        is_special_operation=False,
+                        is_days_of_operation=True,
+                    )
+                )
+
+            if days_of_non_operation:
+                operating_profile_list.extend(
+                    get_operating_profiles_for_all_exceptions(
+                        operating_profile_obj,
+                        days_of_non_operation,
+                        df_bank_holidays_from_db,
+                        is_bank_holiday_exception=True,
+                        is_special_operation=False,
+                        is_days_of_operation=False,
+                    )
+                )
+
+        if not special_days_operation or not bank_holiday_operation:
+            operating_profile_list.extend(
+                get_operating_profiles_for_all_exceptions(operating_profile_obj)
+            )
+
+    return operating_profile_list
 
 
 def operating_profiles_to_dataframe(vehicle_journeys, services):
@@ -309,18 +533,10 @@ def operating_profiles_to_dataframe(vehicle_journeys, services):
                         ["OperatingProfile"]
                     )
         if operating_profile:
-            serviced_org_ref, days_of_week, operational = populate_operating_profiles(
-                operating_profile
+            operating_profiles = populate_operating_profiles(
+                operating_profile, vehicle_journey_code, service_ref
             )
-            operating_profile_list.append(
-                {
-                    "service_code": service_ref,
-                    "vehicle_journey_code": vehicle_journey_code,
-                    "serviced_org_ref": serviced_org_ref,
-                    "operational": operational,
-                    "day_of_week": days_of_week,
-                }
-            )
+            operating_profile_list.extend(operating_profiles)
     operating_profile_df = pd.DataFrame(operating_profile_list)
     operating_profile_df = operating_profile_df.explode("day_of_week")
     operating_profile_df.drop_duplicates(inplace=True)

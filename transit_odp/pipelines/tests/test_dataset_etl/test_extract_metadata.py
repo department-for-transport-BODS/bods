@@ -982,6 +982,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         timing_point_count = ""
         vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
+        flexible_operation_periods = pd.DataFrame()
         operating_profiles = pd.DataFrame()
 
         transformed = TransformedData(
@@ -1003,6 +1004,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             timing_point_count=timing_point_count,
             vehicle_journeys=vehicle_journeys,
             serviced_organisations=serviced_organisations,
+            flexible_operation_periods=flexible_operation_periods,
             operating_profiles=operating_profiles,
         )
 
