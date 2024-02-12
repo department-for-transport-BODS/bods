@@ -34,6 +34,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
+from transit_odp.timetables.utils import filter_rows_by_journeys
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
     Service,
@@ -81,7 +82,7 @@ class TransXChangeDataLoader:
         adapter.info("Finished serviced organisationsworking dates")
 
         adapter.info("Loading operating profiles.")
-        self.load_operating_profiles(vehicle_journeys)
+        self.load_operating_profiles_and_related_tables(vehicle_journeys)
         adapter.info("Finished loading operating profiles.")
 
         adapter.info("Loading service patterns.")
@@ -266,28 +267,83 @@ class TransXChangeDataLoader:
             serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
         )
 
-    def load_operating_profiles(self, vehicle_journeys):
+    def load_operating_profiles(self, merged_operating_profiles_and_journeys):
+        refined_operating_profiles_and_journeys = (
+            merged_operating_profiles_and_journeys.drop(
+                columns=["exceptions_operational", "exceptions_date"], errors="ignore"
+            )
+        )
+        refined_operating_profiles_and_journeys.drop_duplicates(inplace=True)
+
+        operating_profiles_objs = list(
+            df_to_operating_profiles(refined_operating_profiles_and_journeys)
+        )
+        OperatingProfile.objects.bulk_create(
+            operating_profiles_objs, batch_size=BATCH_SIZE
+        )
+
+    def load_operating_dates_exceptions(self, merged_operating_profiles_and_journeys):
+        merged_operating_profiles_and_journeys.drop_duplicates(inplace=True)
+        print(
+            f"merged_operating_profiles_and_journeys---{merged_operating_profiles_and_journeys}"
+        )
+        journey_mapping = (
+            merged_operating_profiles_and_journeys.groupby("vehicle_journey_code")[
+                "day_of_week"
+            ]
+            .unique()
+            .apply(list)
+            .to_dict()
+        )
+        print(f"journey_mapping-----{journey_mapping}")
+        merged_operating_profiles_and_journeys = merged_operating_profiles_and_journeys[
+            merged_operating_profiles_and_journeys.apply(
+                lambda row: filter_rows_by_journeys(row, journey_mapping), axis=1
+            )
+        ]
+        df_to_load = merged_operating_profiles_and_journeys[
+            ["id", "exceptions_operational", "exceptions_date"]
+        ]
+        df_to_load.drop_duplicates(inplace=True)
+        print(f"merged_df---{df_to_load}")
+
+    def load_operating_profiles_and_related_tables(self, vehicle_journeys):
         operating_profiles = self.transformed.operating_profiles
         if not operating_profiles.empty and not vehicle_journeys.empty:
             operating_profiles.reset_index(inplace=True)
             vehicle_journeys = vehicle_journeys.rename(
                 columns={"service_code_vj": "service_code"}
             )
+            columns_operating_profiles = operating_profiles.columns
+
+            if "exceptions_operational" in columns_operating_profiles:
+                operating_profiles = operating_profiles[
+                    [
+                        "vehicle_journey_code",
+                        "day_of_week",
+                        "service_code",
+                        "file_id",
+                        "exceptions_operational",
+                        "exceptions_date",
+                    ]
+                ]
+            else:
+                operating_profiles = operating_profiles[
+                    ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
+                ]
+
+            print(f"operating_profiles--------{operating_profiles}")
             merged_df = pd.merge(
                 vehicle_journeys[
                     ["id", "vehicle_journey_code", "service_code", "file_id"]
                 ],
-                operating_profiles[
-                    ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
-                ],
+                operating_profiles,
                 on=["file_id", "service_code", "vehicle_journey_code"],
                 how="inner",
             )
-            merged_df.drop_duplicates(inplace=True)
-            operating_profiles_objs = list(df_to_operating_profiles(merged_df))
-            OperatingProfile.objects.bulk_create(
-                operating_profiles_objs, batch_size=BATCH_SIZE
-            )
+
+            self.load_operating_profiles(merged_df)
+            self.load_operating_dates_exceptions(merged_df)
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""

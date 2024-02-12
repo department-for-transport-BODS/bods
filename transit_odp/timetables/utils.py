@@ -223,3 +223,10 @@ def get_holidays_records_to_insert(records):
                 notes=record["notes"],
                 division=record["division"],
             )
+
+
+def filter_rows_by_journeys(row, journey_mapping):
+    return (
+        row["exceptions_date"].day_name()
+        not in journey_mapping[row["vehicle_journey_code"]]
+    )
