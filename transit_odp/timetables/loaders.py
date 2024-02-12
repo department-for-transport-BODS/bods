@@ -181,7 +181,6 @@ class TransXChangeDataLoader:
         return vehicle_journeys
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
-
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
 
         if not flexible_service_operation_periods.empty and not vehicle_journeys.empty:
@@ -281,17 +280,27 @@ class TransXChangeDataLoader:
             vehicle_journeys = vehicle_journeys.rename(
                 columns={"service_code_vj": "service_code"}
             )
-            merged_df = pd.merge(
-                vehicle_journeys[
-                    ["id", "vehicle_journey_code", "service_code", "file_id"]
-                ],
-                operating_profiles[
-                    ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
-                ],
-                on=["file_id", "service_code", "vehicle_journey_code"],
-                how="inner",
+            merged_df = (
+                pd.merge(
+                    vehicle_journeys[
+                        ["id", "vehicle_journey_code", "service_code", "file_id"]
+                    ],
+                    operating_profiles[
+                        [
+                            "vehicle_journey_code",
+                            "day_of_week",
+                            "service_code",
+                            "file_id",
+                        ]
+                    ],
+                    on=["file_id", "service_code", "vehicle_journey_code"],
+                    how="inner",
+                )
+                .dropna(subset=["day_of_week"])
+                .query("day_of_week != ''")
+                .drop_duplicates()
             )
-            merged_df.drop_duplicates(inplace=True)
+
             operating_profiles_objs = list(df_to_operating_profiles(merged_df))
             OperatingProfile.objects.bulk_create(
                 operating_profiles_objs, batch_size=BATCH_SIZE

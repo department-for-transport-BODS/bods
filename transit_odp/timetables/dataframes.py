@@ -311,10 +311,9 @@ def populate_operating_profiles(operating_profiles):
     )
     regular_day_type = operating_profiles.get_element_or_none(["RegularDayType"])
     if regular_day_type:
-        days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])
+        days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
         if days_of_week_elements:
-            days_of_week_element = days_of_week_elements[0]
-            days_of_week = [day.localname for day in days_of_week_element.children]
+            days_of_week = [day.localname for day in days_of_week_elements.children]
     if serviced_organisation_day_type:
         days_of_operation = serviced_organisation_day_type.get_element_or_none(
             ["DaysOfOperation"]
