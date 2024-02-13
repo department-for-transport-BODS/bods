@@ -8,6 +8,7 @@ from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_df_from_queryset,
     df_to_flexible_service_operation_period,
+    df_to_operating_dates_exceptions,
     df_to_service_links,
     df_to_service_patterns,
     df_to_serviced_organisation_working_days,
@@ -37,6 +38,8 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
 from transit_odp.timetables.utils import filter_rows_by_journeys
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
     Service,
     ServiceLink,
     ServicePattern,
@@ -284,9 +287,6 @@ class TransXChangeDataLoader:
 
     def load_operating_dates_exceptions(self, merged_operating_profiles_and_journeys):
         merged_operating_profiles_and_journeys.drop_duplicates(inplace=True)
-        print(
-            f"merged_operating_profiles_and_journeys---{merged_operating_profiles_and_journeys}"
-        )
         journey_mapping = (
             merged_operating_profiles_and_journeys.groupby("vehicle_journey_code")[
                 "day_of_week"
@@ -295,7 +295,6 @@ class TransXChangeDataLoader:
             .apply(list)
             .to_dict()
         )
-        print(f"journey_mapping-----{journey_mapping}")
         merged_operating_profiles_and_journeys = merged_operating_profiles_and_journeys[
             merged_operating_profiles_and_journeys.apply(
                 lambda row: filter_rows_by_journeys(row, journey_mapping), axis=1
@@ -305,7 +304,25 @@ class TransXChangeDataLoader:
             ["id", "exceptions_operational", "exceptions_date"]
         ]
         df_to_load.drop_duplicates(inplace=True)
-        print(f"merged_df---{df_to_load}")
+
+        operating_dates_obj = list(
+            df_to_operating_dates_exceptions(
+                df_to_load[df_to_load["exceptions_operational"] == True]
+            )
+        )
+
+        non_operating_dates_obj = list(
+            df_to_operating_dates_exceptions(
+                df_to_load[df_to_load["exceptions_operational"] == False]
+            )
+        )
+
+        OperatingDatesExceptions.objects.bulk_create(
+            operating_dates_obj, batch_size=BATCH_SIZE
+        )
+        NonOperatingDatesExceptions.objects.bulk_create(
+            operating_dates_obj, batch_size=BATCH_SIZE
+        )
 
     def load_operating_profiles_and_related_tables(self, vehicle_journeys):
         operating_profiles = self.transformed.operating_profiles
@@ -328,11 +345,12 @@ class TransXChangeDataLoader:
                     ]
                 ]
             else:
+                # When SpecialOperations or BankHolidays are not mentioned
+                # exceptions_operational and exceptions_date fields are not set
                 operating_profiles = operating_profiles[
                     ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
                 ]
 
-            print(f"operating_profiles--------{operating_profiles}")
             merged_df = pd.merge(
                 vehicle_journeys[
                     ["id", "vehicle_journey_code", "service_code", "file_id"]
