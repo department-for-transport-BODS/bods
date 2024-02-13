@@ -25,7 +25,7 @@ const getMapDataUrl = (apiRoot, revisionId, serviceName) => {
   var servicePatternUrl =
     apiRoot + "service_pattern/?revision=" + revisionId.toString();
   if (serviceName) {
-    servicePatternUrl += "&service_name=" + serviceName;
+    servicePatternUrl += "&service_name=" + serviceName.toString();
   }
   return servicePatternUrl;
 };
