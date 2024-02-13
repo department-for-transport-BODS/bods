@@ -10,7 +10,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'My account' 'users:home' host host.name %}
-    {% breadcrumb_url 'Sign out' 'account_logout' host host.name %}
+    {% breadcrumb_url 'Sign out' 'account_logout_success' host host.name %}
 {% endblock %}
 
 
