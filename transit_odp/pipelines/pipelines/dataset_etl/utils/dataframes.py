@@ -25,6 +25,38 @@ ServicePatternThrough = ServicePattern.service_links.through
 logger = logging.getLogger(__name__)
 
 
+def create_naptan_flexible_zone_df_from_queryset(queryset):
+    flexible_zone = (
+        {
+            "naptan_id": obj.naptan_stoppoint_id,
+            "flexible_location": Point(obj.location.x, obj.location.y),
+            "sequence_number": obj.sequence_number
+        }
+        for obj in queryset
+    )
+    print(f"flexible_zone queryset: {flexible_zone}")
+    df = create_flexible_zone_df(flexible_zone)
+
+    # perform grouping of data on naptan_id and create list of flexible zone geometry
+    df = df.groupby(['naptan_id'])['flexible_location'].agg(list).reset_index()
+    return df
+
+
+def create_flexible_zone_df(data=None):
+    typings = OrderedDict(
+        {
+            "naptan_id": "object",
+            "flexible_location": "geometry",
+            "sequence_number": "int"
+        }
+    )
+    df = (
+        geopandas.GeoDataFrame(data, columns=typings.keys())
+        .astype(typings)
+    )
+    return df
+
+
 def create_stop_point_cache(revision_id):
     stops = (
         StopPoint.objects.filter(

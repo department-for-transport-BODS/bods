@@ -229,6 +229,15 @@ class TransXChangeDocument:
         """
         xpath = ["StopPoints", "StopPoint"]
         return self.find_anywhere(xpath)
+    
+    def get_flexible_service(self):
+        """Get all the StopPoint elements in the TransXChangeDocument.
+
+        Returns:
+            List[TransXChangeElement]: A list of TransXChangeElement StopPoint elements.
+        """
+        xpath = ["Services", "Service", "FlexibleService"]
+        return self.find_anywhere(xpath)
 
     def has_latitude(self):
         """Check if the first stop point contains a latitude element.

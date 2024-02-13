@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint
+from transit_odp.naptan.models import AdminArea, Locality, StopPoint, FlexibleZone
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.managers import (
     ServicePatternManager,
