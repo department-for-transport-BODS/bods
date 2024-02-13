@@ -500,7 +500,7 @@ def test_check_payment_methods(
             [
                 "violation",
                 "13",
-                "'PreassignedFareProductRef' element is missing from 'SalesOfferPackageElement' in 'FareFrame' - UK_PI_FARE_PRODUCT",
+                "'PreassignedFareProductRef' and 'AmountOfPriceUnitProductRef' element is missing from 'SalesOfferPackageElement' in 'FareFrame' - UK_PI_FARE_PRODUCT",
             ],
         ),
         (
@@ -511,7 +511,7 @@ def test_check_payment_methods(
         ),
     ],
 )
-def test_check_fare_product_ref(
+def test_check_preassigned_fare_product_ref(
     type_of_frame_ref_present,
     type_of_frame_ref_correct,
     sales_offer_element_preassigned_ref_present,
@@ -525,6 +525,131 @@ def test_check_fare_product_ref(
           <SalesOfferPackageElement id="Trip@AdultSingle-SOP@Onboard@printed_ticket" version="1.0" order="1">
             <TypeOfTravelDocumentRef version="fxc:v1.0" ref="fxc:printed_ticket" />
             <PreassignedFareProductRef version="1.0" ref="Trip@AdultSingle" />
+          </SalesOfferPackageElement>
+        </salesOfferPackageElements>
+      </SalesOfferPackage>
+    </salesOfferPackages>"""
+    sales_offer_packages_without_preassigned_ref = """<salesOfferPackages>
+      <SalesOfferPackage id="Trip@AdultSingle-SOP@Onboard" version="1.0">
+        <Name>Onboard</Name>
+        <Description>Purchasable on board the bus, with cash or contactless card, as a paper ticket.</Description>
+        <salesOfferPackageElements>
+          <SalesOfferPackageElement id="Trip@AdultSingle-SOP@Onboard@printed_ticket" version="1.0" order="1">
+            <TypeOfTravelDocumentRef version="fxc:v1.0" ref="fxc:printed_ticket" />
+          </SalesOfferPackageElement>
+        </salesOfferPackageElements>
+      </SalesOfferPackage>
+    </salesOfferPackages>"""
+    type_of_frame_ref_attr_present = """
+    <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP" version="fxc:v1.0" />"""
+    type_of_frame_ref_attr_missing = """
+    <TypeOfFrameRef version="fxc:v1.0" />
+    """
+    type_of_frame_ref_attr_incorrect = """<TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_:FXCP" version="fxc:v1.0" />
+    """
+    fare_frames = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <dataObjects>
+    <CompositeFrame version="1.0" id="epd:UK:FSYO:CompositeFrame_UK_PI_LINE_FARE_OFFER:Trip@Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+    <frames>
+  <FareFrame version="1.0" id="epd:UK:FSYO:FareFrame_UK_PI_FARE_PRODUCT:Line_9_Outbound:op" dataSourceRef="data_source" responsibilitySetRef="tariffs">
+    {0}
+    {1}
+  </FareFrame>
+  </frames>
+</CompositeFrame>
+  </dataObjects>
+  </PublicationDelivery>"""
+
+    if type_of_frame_ref_present:
+        if type_of_frame_ref_correct:
+            if sales_offer_element_preassigned_ref_present:
+                xml = fare_frames.format(
+                    type_of_frame_ref_attr_present,
+                    sales_offer_packages,
+                )
+            else:
+                xml = fare_frames.format(
+                    type_of_frame_ref_attr_present,
+                    sales_offer_packages_without_preassigned_ref,
+                )
+        else:
+            xml = fare_frames.format(
+                type_of_frame_ref_attr_incorrect,
+                sales_offer_packages,
+            )
+    else:
+        xml = fare_frames.format(
+            type_of_frame_ref_attr_missing,
+            sales_offer_packages,
+        )
+
+    sales_offer_package = get_lxml_element(
+        "//x:FareFrame/x:salesOfferPackages/x:SalesOfferPackage/x:salesOfferPackageElements/x:SalesOfferPackageElement",
+        xml,
+    )
+    result = check_fare_product_ref("", sales_offer_package)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    (
+        "type_of_frame_ref_present",
+        "type_of_frame_ref_correct",
+        "sales_offer_element_preassigned_ref_present",
+        "expected",
+    ),
+    [
+        (True, True, True, None),
+        (
+            False,
+            False,
+            False,
+            "",
+        ),
+        (
+            False,
+            True,
+            True,
+            "",
+        ),
+        (
+            True,
+            False,
+            True,
+            None,
+        ),
+        (
+            True,
+            True,
+            False,
+            [
+                "violation",
+                "13",
+                "'PreassignedFareProductRef' and 'AmountOfPriceUnitProductRef' element is missing from 'SalesOfferPackageElement' in 'FareFrame' - UK_PI_FARE_PRODUCT",
+            ],
+        ),
+        (
+            True,
+            True,
+            True,
+            None,
+        ),
+    ],
+)
+def test_check_amountofunitprice_fare_product_ref(
+    type_of_frame_ref_present,
+    type_of_frame_ref_correct,
+    sales_offer_element_preassigned_ref_present,
+    expected,
+):
+    sales_offer_packages = """<salesOfferPackages>
+      <SalesOfferPackage id="Trip@AdultSingle-SOP@Onboard" version="1.0">
+        <Name>Onboard</Name>
+        <Description>Purchasable on board the bus, with cash or contactless card, as a paper ticket.</Description>
+        <salesOfferPackageElements>
+          <SalesOfferPackageElement id="Trip@AdultSingle-SOP@Onboard@printed_ticket" version="1.0" order="1">
+            <TypeOfTravelDocumentRef version="fxc:v1.0" ref="fxc:printed_ticket" />
+            <AmountOfPriceUnitProductRef version="1.0" ref="Trip@AdultSingle" />
           </SalesOfferPackageElement>
         </salesOfferPackageElements>
       </SalesOfferPackage>
