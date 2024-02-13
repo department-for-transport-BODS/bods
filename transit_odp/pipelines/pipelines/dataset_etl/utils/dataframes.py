@@ -14,6 +14,7 @@ from datetime import datetime
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
+    NonOperatingDatesExceptions,
     OperatingDatesExceptions,
     Service,
     ServiceLink,
