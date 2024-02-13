@@ -96,8 +96,7 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
   const url = disruptionId ? apiRoot + "disruption_detail_map_data/?orgId=" + orgId.toString() + "&disruptionId=" + disruptionId.toString() : apiRoot + "organisation_map_data/?orgId=" + orgId.toString();
 
   // Initialise Map
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoiaGFsYmVydHJhbSIsImEiOiJjaXFiNXVnazIwMDA0aTJuaGxlaTU1M2ZtIn0.85dXvyj6V2LbBFvXfpQyYA";
+  mapboxgl.accessToken = mapboxKey;
   const map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v12",

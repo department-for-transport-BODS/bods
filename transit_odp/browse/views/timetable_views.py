@@ -358,6 +358,7 @@ class LineMetadataDetailView(DetailView):
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_codes"], kwargs["line_name"]
         )
+        kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
         if (
             kwargs["service_type"] == "Flexible"
