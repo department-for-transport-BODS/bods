@@ -64,7 +64,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(512, df_extracted_data.shape[0])
+        self.assertEqual(507, df_extracted_data.shape[0])
 
     def test_transform(self):
         # setup
@@ -97,7 +97,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(512, df_extracted_data.shape[0])
+        self.assertEqual(507, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
@@ -112,4 +112,4 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
             "operating_date", flat=True
         )
         # test
-        self.assertEqual(4, operating_dates_exception.count())
+        self.assertEqual(14, operating_dates_exception.count())
