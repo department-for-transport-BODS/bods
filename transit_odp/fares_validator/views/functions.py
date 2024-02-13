@@ -2,16 +2,19 @@ from ..constants import (
     FARE_STRUCTURE_ACCESS_RIGHT_ELIGIBILITY_REF,
     FARE_STRUCTURE_ACCESS_RIGHT_REF,
     FARE_STRUCTURE_ACCESS_RIGHT_TRAVEL_REF,
+    FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL,
     FARE_STRUCTURE_ELEMENT_ACCESS_REF,
     FARE_STRUCTURE_ELEMENT_DURATION_REF,
     FARE_STRUCTURE_ELEMENT_ELIGIBILITY_REF,
     FARE_STRUCTURE_ELEMENT_TRAVEL_REF,
+    FARE_STRUCTURE_PREASSIGNED_LABEL,
     FAREFRAME_TYPE_OF_FRAME_REF_SUBSTRING,
     LENGTH_OF_OPERATOR,
     LENGTH_OF_PUBLIC_CODE,
     NAMESPACE,
     ORG_OPERATOR_ID_SUBSTRING,
     STOP_POINT_ID_SUBSTRING,
+    TYPE_OF_AMOUNT_OF_PRICE_UNIT_PRODUCT_TYPE,
     TYPE_OF_FRAME_FARE_TABLES_REF_SUBSTRING,
     TYPE_OF_FRAME_METADATA_SUBSTRING,
     TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING,
@@ -1260,7 +1263,7 @@ def is_uk_pi_fare_price_frame_present(context, fare_frames, *args):
                 return response
 
 
-def check_preassigned_fare_products(context, fare_frames, *args):
+def check_fare_products(context, fare_frames, *args):
     """
     Check if mandatory element 'PreassignedFareProduct' missing in fareProducts
     for FareFrame - UK_PI_FARE_PRODUCT
@@ -1289,41 +1292,55 @@ def check_preassigned_fare_products(context, fare_frames, *args):
                 )
                 response = response_details.__list__()
                 return response
-            xpath = "x:PreassignedFareProduct"
-            preassigned_fare_product = fare_products[0].xpath(
-                xpath, namespaces=NAMESPACE
-            )
-            if not preassigned_fare_product:
+
+            fare_product_label = FARE_STRUCTURE_PREASSIGNED_LABEL
+            if len(fare_products) > 0 and fare_products[0].find(
+                f"x:{FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL}", namespaces=NAMESPACE
+            ):
+                fare_product_label = FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL
+
+            xpath = f"x:{fare_product_label}"
+            fare_product = fare_products[0].xpath(xpath, namespaces=NAMESPACE)
+            if not fare_product:
                 sourceline_fare_product = fare_products[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_product,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_MISSING.format(fare_product_label),
                 )
                 response = response_details.__list__()
                 return response
             xpath = "string(x:Name)"
-            name = preassigned_fare_product[0].xpath(xpath, namespaces=NAMESPACE)
+            name = fare_product[0].xpath(xpath, namespaces=NAMESPACE)
             if not name:
-                sourceline_preassigned = preassigned_fare_product[0].sourceline
+                sourceline_preassigned = fare_product[0].sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_NAME_MISSING,
+                    msg.MESSAGE_OBSERVATION_PRODUCT_FARE_NAME_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
 
 
-def check_preassigned_fare_products_type_ref(context, preassigned_fare_products, *args):
+def get_fare_product_label_name(fare_product):
+    if FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL in fare_product.tag:
+        return FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL
+    return FARE_STRUCTURE_PREASSIGNED_LABEL
+
+
+def check_fare_products_type_ref(context, fare_products, *args):
     """
     Check if mandatory element is 'TypeOfFareProductRef' present
-    in PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
+    in PreassignedFareProduct or In AmountOfPriceUnitProduct Ref for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
-    preassigned_fare_product = preassigned_fare_products[0]
+    fare_product = fare_products[0]
+    fare_product_label = get_fare_product_label_name(fare_product)
     xpath = "../../x:TypeOfFrameRef"
-    type_of_frame_refs = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_refs = fare_product.xpath(xpath, namespaces=NAMESPACE)
     if type_of_frame_refs:
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
@@ -1334,31 +1351,30 @@ def check_preassigned_fare_products_type_ref(context, preassigned_fare_products,
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
             xpath = "x:TypeOfFareProductRef"
-            type_of_fare_product = preassigned_fare_product.xpath(
-                xpath, namespaces=NAMESPACE
-            )
+            type_of_fare_product = fare_product.xpath(xpath, namespaces=NAMESPACE)
             if not type_of_fare_product:
-                sourceline_preassigned = preassigned_fare_product.sourceline
+                sourceline_preassigned = fare_product.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_TYPE_OF_FARE_MISSING,
+                    msg.MESSAGE_OBSERVATION_TYPE_OF_FARE_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
 
 
-def check_preassigned_fare_products_charging_type(
-    context, preassigned_fare_products, *args
-):
+def check_fare_products_charging_type(context, fare_products, *args):
     """
     Check if mandatory element is 'ChargingMomentType' present in PreassignedFareProduct
     for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
-    preassigned_fare_product = preassigned_fare_products[0]
+    fare_product = fare_products[0]
+    fare_product_label = get_fare_product_label_name(fare_product)
     xpath = "../../x:TypeOfFrameRef"
-    type_of_frame_refs = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_refs = fare_product.xpath(xpath, namespaces=NAMESPACE)
     if type_of_frame_refs:
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
@@ -1369,29 +1385,30 @@ def check_preassigned_fare_products_charging_type(
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
             xpath = "string(x:ChargingMomentType)"
-            charging_moment_type = preassigned_fare_product.xpath(
-                xpath, namespaces=NAMESPACE
-            )
+            charging_moment_type = fare_product.xpath(xpath, namespaces=NAMESPACE)
             if not charging_moment_type:
-                sourceline_preassigned = preassigned_fare_product.sourceline
+                sourceline_preassigned = fare_product.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_CHARGING_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_CHARGING_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
 
 
-def check_preassigned_validable_elements(context, preassigned_fare_products, *args):
+def check_fare_product_validable_elements(context, fare_products, *args):
     """
     Check if element 'validableElements' or it's children missing in
     fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
-    preassigned_fare_product = preassigned_fare_products[0]
+    fare_product = fare_products[0]
+    fare_product_label = get_fare_product_label_name(fare_product)
     xpath = "../../x:TypeOfFrameRef"
-    type_of_frame_refs = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_refs = fare_product.xpath(xpath, namespaces=NAMESPACE)
     if type_of_frame_refs:
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
@@ -1402,15 +1419,15 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
             xpath = "x:validableElements"
-            validable_elements = preassigned_fare_product.xpath(
-                xpath, namespaces=NAMESPACE
-            )
+            validable_elements = fare_product.xpath(xpath, namespaces=NAMESPACE)
             if not validable_elements:
-                sourceline_fare_frame = preassigned_fare_product.sourceline
+                sourceline_fare_frame = fare_product.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_frame,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENTS_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_VALIDABLE_ELEMENTS_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
@@ -1421,7 +1438,9 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_validable_element,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_ELEMENT_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_VALIDABLE_ELEMENT_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
@@ -1434,7 +1453,9 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_VALIDABLE_FARE_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
@@ -1447,21 +1468,24 @@ def check_preassigned_validable_elements(context, preassigned_fare_products, *ar
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_structure_ref,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_FARE_VALIDABLE_FARE_REF_MISSING,
+                    msg.MESSAGE_OBSERVATION_FARE_VALIDABLE_FARE_REF_MISSING.format(
+                        fare_product_label
+                    ),
                 )
                 response = response_details.__list__()
                 return response
 
 
-def check_access_right_elements(context, preassigned_fare_products, *args):
+def check_access_right_elements(context, fare_products, *args):
     """
     Check if mandatory element 'AccessRightInProduct' or it's children missing in
     fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
-    preassigned_fare_product = preassigned_fare_products[0]
+    fare_product = fare_products[0]
+    fare_product_label = get_fare_product_label_name(fare_product)
     xpath = "../../x:TypeOfFrameRef"
-    type_of_frame_refs = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_refs = fare_product.xpath(xpath, namespaces=NAMESPACE)
     if type_of_frame_refs:
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
@@ -1472,13 +1496,13 @@ def check_access_right_elements(context, preassigned_fare_products, *args):
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
             xpath = "x:accessRightsInProduct"
-            access_right = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+            access_right = fare_product.xpath(xpath, namespaces=NAMESPACE)
             if not access_right:
-                sourceline_preassigned = preassigned_fare_product.sourceline
+                sourceline_preassigned = fare_product.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_preassigned,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_MISSING,
+                    msg.MESSAGE_OBSERVATION_ACCESS_MISSING.format(fare_product_label),
                 )
                 response = response_details.__list__()
                 return response
@@ -1493,21 +1517,22 @@ def check_access_right_elements(context, preassigned_fare_products, *args):
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_validable_element_ref,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_ACCESS_VALIDABLE_MISSING,
+                    msg.MESSAGE_OBSERVATION_ACCESS_VALIDABLE_MISSING,
                 )
                 response = response_details.__list__()
                 return response
 
 
-def check_product_type(context, preassigned_fare_products, *args):
+def check_product_type(context, fare_products, *args):
     """
     Check if mandatory element 'ProductType'is missing in
     fareProducts.PreassignedFareProduct for FareFrame - UK_PI_FARE_PRODUCT
     FareFrame UK_PI_FARE_PRODUCT is mandatory
     """
-    preassigned_fare_product = preassigned_fare_products[0]
+    fare_product = fare_products[0]
+    fare_product_label = get_fare_product_label_name(fare_product)
     xpath = "../../x:TypeOfFrameRef"
-    type_of_frame_refs = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+    type_of_frame_refs = fare_product.xpath(xpath, namespaces=NAMESPACE)
     if type_of_frame_refs:
         try:
             type_of_frame_ref_ref = _extract_attribute(type_of_frame_refs, "ref")
@@ -1518,13 +1543,27 @@ def check_product_type(context, preassigned_fare_products, *args):
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
             xpath = "string(x:ProductType)"
-            product_type = preassigned_fare_product.xpath(xpath, namespaces=NAMESPACE)
+            product_type = fare_product.xpath(xpath, namespaces=NAMESPACE)
             if not product_type:
-                sourceline_fare_frame = preassigned_fare_product.sourceline
+                sourceline_fare_frame = fare_product.sourceline
                 response_details = XMLViolationDetail(
                     "violation",
                     sourceline_fare_frame,
-                    msg.MESSAGE_OBSERVATION_PREASSIGNED_PRODUCT_TYPE_MISSING,
+                    msg.MESSAGE_OBSERVATION_PRODUCT_TYPE_MISSING.format(
+                        fare_product_label
+                    ),
+                )
+                response = response_details.__list__()
+                return response
+            if (
+                fare_product_label == FARE_STRUCTURE_AMOUNT_OF_PRICE_UNIT_LABEL
+                and not product_type in TYPE_OF_AMOUNT_OF_PRICE_UNIT_PRODUCT_TYPE
+            ):
+                sourceline_fare_frame = fare_product.sourceline
+                response_details = XMLViolationDetail(
+                    "violation",
+                    sourceline_fare_frame,
+                    msg.MESSAGE_OBSERVATION_WRONG_PRODUCT_TYPE,
                 )
                 response = response_details.__list__()
                 return response
@@ -1745,20 +1784,25 @@ def check_fare_product_ref(context, sales_offer_package_elements, *args):
             and TYPE_OF_FRAME_REF_FARE_PRODUCT_SUBSTRING in type_of_frame_ref_ref
         ):
             xpath = "x:PreassignedFareProductRef"
-            preassigned_fare_product_ref = sales_offer_package_element.xpath(
+            fare_product_ref = sales_offer_package_element.xpath(
                 xpath, namespaces=NAMESPACE
             )
-            if not preassigned_fare_product_ref:
-                sourceline_sales_offer_package_element = (
-                    sales_offer_package_element.sourceline
+            if not fare_product_ref:
+                xpath = "x:AmountOfPriceUnitProductRef"
+                fare_product_ref = sales_offer_package_element.xpath(
+                    xpath, namespaces=NAMESPACE
                 )
-                response_details = XMLViolationDetail(
-                    "violation",
-                    sourceline_sales_offer_package_element,
-                    msg.MESSAGE_OBSERVATION_SALES_OFFER_FARE_PROD_REF_MISSING,
-                )
-                response = response_details.__list__()
-                return response
+                if not fare_product_ref:
+                    sourceline_sales_offer_package_element = (
+                        sales_offer_package_element.sourceline
+                    )
+                    response_details = XMLViolationDetail(
+                        "violation",
+                        sourceline_sales_offer_package_element,
+                        msg.MESSAGE_OBSERVATION_SALES_OFFER_FARE_PROD_REF_MISSING,
+                    )
+                    response = response_details.__list__()
+                    return response
 
 
 def check_generic_parameters_for_access(context, elements, *args):
