@@ -257,7 +257,7 @@ def df_to_non_operating_dates_exceptions(
 ) -> Iterator[NonOperatingDatesExceptions]:
     for record in df.to_dict("records"):
         yield NonOperatingDatesExceptions(
-            vehicle_journey_id=record["id"], operating_date=record["exceptions_date"]
+            vehicle_journey_id=record["id"], non_operating_date=record["exceptions_date"]
         )
 
 
