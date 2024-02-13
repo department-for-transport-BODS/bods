@@ -38,8 +38,7 @@ const initFaresDetailMap = (apiRoot, revisionId) => {
   var stopPointUrl = apiRoot + "fare_stops/?revision=" + revisionId.toString();
 
   // Initialise Map
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoiaGFsYmVydHJhbSIsImEiOiJjaXFiNXVnazIwMDA0aTJuaGxlaTU1M2ZtIn0.85dXvyj6V2LbBFvXfpQyYA";
+  mapboxgl.accessToken = mapboxKey;
   var map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/light-v9",
