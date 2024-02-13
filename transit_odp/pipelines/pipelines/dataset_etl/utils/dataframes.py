@@ -14,6 +14,8 @@ from datetime import datetime
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
     Service,
     ServiceLink,
     ServicePattern,
@@ -248,6 +250,25 @@ def df_to_serviced_org_vehicle_journey(df: pd.DataFrame) -> Iterator[VehicleJour
             vehicle_journey_id=record["vehicle_journey_id"],
             serviced_organisation_id=record["serviced_org_id"],
             operating_on_working_days=record["operational_so"],
+        )
+
+  
+def df_to_operating_dates_exceptions(
+    df: pd.DataFrame,
+) -> Iterator[OperatingDatesExceptions]:
+    for record in df.to_dict("records"):
+        yield OperatingDatesExceptions(
+            vehicle_journey_id=record["id"], operating_date=record["exceptions_date"]
+        )
+
+
+def df_to_non_operating_dates_exceptions(
+    df: pd.DataFrame,
+) -> Iterator[NonOperatingDatesExceptions]:
+    for record in df.to_dict("records"):
+        yield NonOperatingDatesExceptions(
+            vehicle_journey_id=record["id"],
+            non_operating_date=record["exceptions_date"],
         )
 
 

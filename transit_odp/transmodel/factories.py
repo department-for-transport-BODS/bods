@@ -8,6 +8,7 @@ from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.transmodel.models import (
+    BankHolidays,
     Service,
     ServicePattern,
     ServicePatternStop,
@@ -110,3 +111,14 @@ class ServicedOrganisationsFactory(DjangoModelFactory):
 
     organisation_code = FuzzyText(length=5)
     name = FuzzyText(length=12)
+
+
+class BankHolidaysFactory(DjangoModelFactory):
+    class Meta:
+        model = BankHolidays
+
+    txc_element = FuzzyText(length=255)
+    title = FuzzyText(length=255)
+    date = FuzzyDate(datetime.date.today())
+    notes = FuzzyText(length=255)
+    division = FuzzyText(length=255)
