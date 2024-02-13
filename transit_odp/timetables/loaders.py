@@ -8,6 +8,7 @@ from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_df_from_queryset,
     df_to_flexible_service_operation_period,
+    df_to_non_operating_dates_exceptions,
     df_to_operating_dates_exceptions,
     df_to_service_links,
     df_to_service_patterns,
@@ -312,7 +313,7 @@ class TransXChangeDataLoader:
         )
 
         non_operating_dates_obj = list(
-            df_to_operating_dates_exceptions(
+            df_to_non_operating_dates_exceptions(
                 df_to_load[df_to_load["exceptions_operational"] == False]
             )
         )
@@ -321,7 +322,7 @@ class TransXChangeDataLoader:
             operating_dates_obj, batch_size=BATCH_SIZE
         )
         NonOperatingDatesExceptions.objects.bulk_create(
-            operating_dates_obj, batch_size=BATCH_SIZE
+            non_operating_dates_obj, batch_size=BATCH_SIZE
         )
 
     def load_operating_profiles_and_related_tables(self, vehicle_journeys):
