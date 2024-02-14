@@ -29,7 +29,7 @@ from transit_odp.timetables.dataframes import (
     vehicle_journeys_to_dataframe,
     serviced_organisations_to_dataframe,
     operating_profile_to_df,
-    flexible_service_stop_points_dataframe
+    flexible_service_stop_points_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -100,7 +100,7 @@ class TransXChangeExtractor:
         jp_sections, timing_links = self.extract_journey_pattern_sections()
         jp_sections.to_csv("jp_sections_extract.csv")
         timing_links.to_csv("timing_links_extract.csv")
-        
+
         logger.debug("Finished extracting journey_patterns_sections")
 
         vehicle_journeys = pd.DataFrame()
@@ -150,18 +150,33 @@ class TransXChangeExtractor:
         flexible_journey_patterns = self.extract_flexible_journey_patterns()
         flexible_journey_patterns.to_csv("flexible_journey_patterns.csv")
 
-        flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(flexible_journey_patterns)
+        flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(
+            flexible_journey_patterns
+        )
         flexible_jp_sections.to_csv("flexible_jp_sections.csv")
         flexible_jp_to_jps.to_csv("flexible_jp_to_jps.csv")
 
-        flexible_timing_links = self.create_flexible_timing_link(flexible_journey_patterns, flexible_jp_to_jps)
+        flexible_timing_links = self.create_flexible_timing_link(
+            flexible_journey_patterns, flexible_jp_to_jps
+        )
         flexible_timing_links.to_csv("flexible_timing_links.csv")
         # extract flexible stop points from flexible journey patterns
-        flexible_stop_points = flexible_journey_patterns[["atco_code", "bus_stop_type"]]
-        flexible_stop_points.to_csv("flexible_stop_points.csv")
 
-        flexible_journey_patterns = flexible_journey_patterns[["file_id","journey_pattern_id", "service_code"]].drop_duplicates(['journey_pattern_id'])
-        flexible_journey_patterns.to_csv("flexible_journey_patterns.csv")
+        if not flexible_journey_patterns.empty:
+            flexible_stop_points = flexible_journey_patterns[
+                ["atco_code", "bus_stop_type"]
+            ].set_index("atco_code")
+            flexible_stop_points.to_csv("flexible_stop_points.csv")
+            flexible_journey_patterns = (
+                flexible_journey_patterns.reset_index()[
+                    ["file_id", "journey_pattern_id", "service_code"]
+                ]
+                .drop_duplicates(["journey_pattern_id"])
+                .set_index(["file_id", "journey_pattern_id"])
+            )
+            flexible_journey_patterns.to_csv("flexible_journey_patterns.csv")
+        else:
+            flexible_stop_points = pd.DataFrame()
 
         return ExtractedData(
             services=services,
@@ -193,36 +208,92 @@ class TransXChangeExtractor:
             operating_profiles=operating_profiles,
         )
 
-    def create_flexible_timing_link(self, flexible_journey_patterns, flexible_jp_to_jps):
-        def get_stop_sequence(group, jp_section_id):
-            group['order'] = range(len(group))
-            group['route_link_ref'] = str(jp_section_id) + 'RL' + (group['order'] + 1).astype(str)
-            group['jp_timing_link_id'] = str(jp_section_id) + 'TL' + (group['order'] + 1).astype(str)
-            group['from_stop_ref'] = group['atco_code'].shift(0)
-            group['to_stop_ref'] = group['atco_code'].shift(-1)
-            return group.dropna(subset=['to_stop_ref'])
-        
-        flexible_jp_to_jps = flexible_jp_to_jps[["journey_pattern_id", "jp_section_id"]]
-        journey_patterns = flexible_journey_patterns.merge(flexible_jp_to_jps, how="left", left_on="journey_pattern_id", right_on="journey_pattern_id")
-        journey_patterns.to_csv("journey_patterns_extract.csv")
-        grouped = journey_patterns.groupby('jp_section_id')
-        flexible_timing_links = pd.concat([get_stop_sequence(group, jp_section_id) for jp_section_id, group in grouped])
-        flexible_timing_links = flexible_timing_links[["file_id", "jp_timing_link_id", "route_link_ref", "jp_section_id", "order", "from_stop_ref", "to_stop_ref"]]
-        return flexible_timing_links
+    def create_flexible_timing_link(
+        self, flexible_journey_patterns, flexible_jp_to_jps
+    ):
+        def get_stop_sequence(group, jp_section_ref):
+            group["order"] = range(len(group))
+            group["route_link_ref"] = (
+                str(jp_section_ref) + "RL" + (group["order"] + 1).astype(str)
+            )
+            group["jp_timing_link_id"] = (
+                str(jp_section_ref) + "TL" + (group["order"] + 1).astype(str)
+            )
+            group["from_stop_ref"] = group["atco_code"].shift(0)
+            group["to_stop_ref"] = group["atco_code"].shift(-1)
+            return group.dropna(subset=["to_stop_ref"])
 
-    def create_flexible_jps(self, df): 
-        flexible_jps = df.reset_index()
-        flexible_jps['jp_section_id'] = df.apply(lambda x: hash(str(x.journey_pattern_id)+str(x.service_code)+str(x.file_id)), axis=1)
-        flexible_jp_to_jps = flexible_jps[["file_id", "journey_pattern_id", "jp_section_id"]].drop_duplicates(["jp_section_id"])
-        flexible_jp_to_jps['order'] = range(len(flexible_jp_to_jps))
-        flexible_jps = flexible_jps[["file_id", "jp_section_id"]].drop_duplicates(['jp_section_id'])
-        return flexible_jps, flexible_jp_to_jps
+        if not flexible_journey_patterns.empty and not flexible_jp_to_jps.empty:
+            flexible_jp_to_jps = flexible_jp_to_jps.reset_index()[
+                ["journey_pattern_id", "jp_section_ref"]
+            ]
+            journey_patterns = flexible_journey_patterns.reset_index().merge(
+                flexible_jp_to_jps,
+                how="left",
+                left_on="journey_pattern_id",
+                right_on="journey_pattern_id",
+            )
+            grouped = journey_patterns.groupby("jp_section_ref")
+            flexible_timing_links = pd.concat(
+                [
+                    get_stop_sequence(group, jp_section_ref)
+                    for jp_section_ref, group in grouped
+                ]
+            )
+            flexible_timing_links = (
+                flexible_timing_links[
+                    [
+                        "file_id",
+                        "jp_timing_link_id",
+                        "route_link_ref",
+                        "jp_section_ref",
+                        "order",
+                        "from_stop_ref",
+                        "to_stop_ref",
+                    ]
+                ]
+                .rename(columns={"jp_section_ref": "jp_section_id"})
+                .set_index(["file_id", "jp_section_id"])
+            )
+            return flexible_timing_links
+        return pd.DataFrame()
+
+    def create_flexible_jps(self, df):
+        if not df.empty:
+            flexible_jps = df.reset_index()
+            flexible_jps["jp_section_ref"] = flexible_jps.apply(
+                lambda x: hash(
+                    str(x.journey_pattern_id) + str(x.service_code) + str(x.file_id)
+                ),
+                axis=1,
+            )
+            flexible_jp_to_jps = flexible_jps[
+                ["file_id", "journey_pattern_id", "jp_section_ref"]
+            ].drop_duplicates(["jp_section_ref"])
+            flexible_jp_to_jps["order"] = range(len(flexible_jp_to_jps))
+            flexible_jps = (
+                flexible_jps[["file_id", "jp_section_ref"]]
+                .drop_duplicates(["jp_section_ref"])
+                .rename(columns={"jp_section_ref": "jp_section_id"})
+                .set_index(["file_id", "jp_section_id"])
+            )
+            flexible_jp_to_jps.set_index(
+                ["file_id", "journey_pattern_id", "order"], inplace=True
+            )
+            return flexible_jps, flexible_jp_to_jps
+
+        return pd.DataFrame(), pd.DataFrame()
 
     def extract_flexible_journey_patterns(self):
         services = self.doc.get_services()
         flexible_journey_patterns = flexible_service_stop_points_dataframe(services)
-        flexible_journey_patterns["file_id"] = self.file_id
-        return flexible_journey_patterns
+        if not flexible_journey_patterns.empty:
+            flexible_journey_patterns["file_id"] = self.file_id
+            flexible_journey_patterns.set_index(
+                ["file_id", "journey_pattern_id"], inplace=True
+            )
+            return flexible_journey_patterns
+        return pd.DataFrame()
 
     def construct_geometry(self, point: Point):
         """Functionality extracted out, proxied here to not break the API"""

@@ -19,29 +19,42 @@ def flexible_service_stop_points_dataframe(services):
     stop_points = []
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
-        flexible_services = service.get_elements(["FlexibleService"])
-        for flexible_service in flexible_services:
-            for pattern in flexible_service.get_elements(["FlexibleJourneyPattern"]):
-                flexible_zone = pattern.get_element_or_none("FlexibleZones")
-                if flexible_zone:
-                    for flexistopusage in flexible_zone.get_elements("FlexibleStopUsage"):
-                        atco_code = flexistopusage.get_element("StopPointRef").text
-                        stop_points.append({
-                            "service_code": service_code,
-                            "atco_code": atco_code,
-                            "bus_stop_type": "flexible",
-                            "journey_pattern_id": pattern["id"]
-                        })
-                fixed_stop_points = pattern.get_element_or_none("FixedStopPoints")
-                if fixed_stop_points:
-                    for fixed_stop_usage in fixed_stop_points.get_elements("FixedStopUsage"):
-                        atco_code = fixed_stop_usage.get_element("StopPointRef").text
-                        stop_points.append({
-                            "service_code": service_code,
-                            "atco_code": atco_code,
-                            "bus_stop_type": "fixed_flexible",
-                            "journey_pattern_id": pattern["id"]
-                    })
+        flexible_services = service.get_elements_or_none(["FlexibleService"])
+        if flexible_services:
+            for flexible_service in flexible_services:
+                for pattern in flexible_service.get_elements(
+                    ["FlexibleJourneyPattern"]
+                ):
+                    flexible_zone = pattern.get_element_or_none("FlexibleZones")
+                    if flexible_zone:
+                        for flexistopusage in flexible_zone.get_elements(
+                            "FlexibleStopUsage"
+                        ):
+                            atco_code = flexistopusage.get_element("StopPointRef").text
+                            stop_points.append(
+                                {
+                                    "service_code": service_code,
+                                    "atco_code": atco_code,
+                                    "bus_stop_type": "flexible",
+                                    "journey_pattern_id": pattern["id"],
+                                }
+                            )
+                    fixed_stop_points = pattern.get_element_or_none("FixedStopPoints")
+                    if fixed_stop_points:
+                        for fixed_stop_usage in fixed_stop_points.get_elements(
+                            "FixedStopUsage"
+                        ):
+                            atco_code = fixed_stop_usage.get_element(
+                                "StopPointRef"
+                            ).text
+                            stop_points.append(
+                                {
+                                    "service_code": service_code,
+                                    "atco_code": atco_code,
+                                    "bus_stop_type": "fixed_flexible",
+                                    "journey_pattern_id": pattern["id"],
+                                }
+                            )
     if stop_points:
         columns = ["atco_code", "bus_stop_type", "journey_pattern_id", "service_code"]
         return pd.DataFrame(stop_points, columns=columns)
