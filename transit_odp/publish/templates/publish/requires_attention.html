@@ -11,7 +11,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url ancestor 'feed-list' pk1=org_id host hosts.publish %}
-    {% breadcrumb 'Service Codes Requiring Attention' %}
+    {% breadcrumb_url 'Service Codes Requiring Attention' 'requires-attention' pk1=org_id host hosts.publish %}
 {% endblock %}
 
 {% block full_width_content %}
