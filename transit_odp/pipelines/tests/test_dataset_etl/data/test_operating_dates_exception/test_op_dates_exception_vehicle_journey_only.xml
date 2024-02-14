@@ -13934,16 +13934,7 @@
             <ChristmasDay></ChristmasDay>
             <BoxingDay></BoxingDay>
             <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
             <ChristmasDayHoliday></ChristmasDayHoliday>
-            <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
           </DaysOfNonOperation>
         </BankHolidayOperation>
       </OperatingProfile>
@@ -14004,21 +13995,21 @@
           </DaysOfNonOperation>
         </SpecialDaysOperation>
         <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
+          <DaysOfOperation>
+            <GoodFriday/>
+            <OtherPublicHoliday>
+              <Description>Platinum Jubilee</Description>
+              <Date>2024-02-13</Date>
+            </OtherPublicHoliday>
+            <OtherPublicHoliday>
+              <Description>Another Jubilee</Description>
+              <Date>2024-02-16</Date>
+            </OtherPublicHoliday>
+          </DaysOfOperation>
           <DaysOfNonOperation>
             <ChristmasDay></ChristmasDay>
             <BoxingDay></BoxingDay>
-            <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
             <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
           </DaysOfNonOperation>
         </BankHolidayOperation>
       </OperatingProfile>
@@ -14063,6 +14054,10 @@
               <StartDate>2023-11-30</StartDate>
               <EndDate>2023-11-30</EndDate>
             </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-08-30</EndDate>
+            </DateRange>
           </DaysOfOperation>
           <DaysOfNonOperation>
             <DateRange>
@@ -14072,10 +14067,6 @@
             <DateRange>
               <StartDate>2024-03-28</StartDate>
               <EndDate>2024-03-28</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-22</StartDate>
-              <EndDate>2024-08-30</EndDate>
             </DateRange>
             <DateRange>
               <StartDate>2024-07-01</StartDate>
@@ -14089,16 +14080,7 @@
             <ChristmasDay></ChristmasDay>
             <BoxingDay></BoxingDay>
             <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
             <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
           </DaysOfNonOperation>
         </BankHolidayOperation>
       </OperatingProfile>

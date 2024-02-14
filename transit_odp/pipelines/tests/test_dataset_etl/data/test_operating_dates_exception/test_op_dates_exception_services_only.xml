@@ -13797,7 +13797,6 @@
       <OperatingProfile>
         <RegularDayType>
           <DaysOfWeek>
-            <Monday></Monday>
             <Tuesday></Tuesday>
             <Wednesday></Wednesday>
             <Thursday></Thursday>
@@ -13815,7 +13814,7 @@
           <DaysOfOperation>
             <DateRange>
               <StartDate>2023-11-30</StartDate>
-              <EndDate>2023-11-30</EndDate>
+              <EndDate>2023-12-31</EndDate>
             </DateRange>
           </DaysOfOperation>
           <DaysOfNonOperation>
@@ -13834,21 +13833,21 @@
           </DaysOfNonOperation>
         </SpecialDaysOperation>
         <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
-          <DaysOfNonOperation>
-            <ChristmasDay></ChristmasDay>
+          <DaysOfOperation>
+            <ChristmasDay/>
+            <OtherPublicHoliday>
+              <Description>Platinum Jubilee</Description>
+              <Date>2024-02-12</Date>
+            </OtherPublicHoliday>
+            <OtherPublicHoliday>
+              <Description>Another Jubilee</Description>
+              <Date>2024-02-16</Date>
+            </OtherPublicHoliday>
+          </DaysOfOperation>
+          <DaysOfNonOperation>            
             <BoxingDay></BoxingDay>
             <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
             <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
           </DaysOfNonOperation>
         </BankHolidayOperation>
       </OperatingProfile>

@@ -342,21 +342,30 @@ def get_operating_profiles_for_all_exceptions(
     if is_bank_holiday_exception:
         for holiday in operations.children:
             date = None
+            no_bank_holidays = False
             if holiday.tag_localname == "OtherPublicHoliday":
                 date = datetime.strptime(
                     holiday.get_element(["Date"]).text, "%Y-%m-%d"
                 ).date()
             else:
-                date = df_bank_holidays_from_db.loc[
+                filtered_df = df_bank_holidays_from_db.loc[
                     df_bank_holidays_from_db["txc_element"] == holiday.tag_localname,
                     "date",
-                ].values[0]
+                ]
 
-            operating_profile_list.append(
-                get_operating_profile_with_exception(
-                    operating_profile, date, is_days_of_operation, is_exceptions=True
+                if not filtered_df.empty:
+                    date = filtered_df.values[0]
+                else:
+                    no_bank_holidays = True
+            if not no_bank_holidays:
+                operating_profile_list.append(
+                    get_operating_profile_with_exception(
+                        operating_profile,
+                        date,
+                        is_days_of_operation,
+                        is_exceptions=True,
+                    )
                 )
-            )
 
     elif is_special_operation:
         if operations:
