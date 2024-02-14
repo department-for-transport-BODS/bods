@@ -13915,9 +13915,8 @@
           </DaysOfNonOperation>
         </SpecialDaysOperation>
         <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
+          <DaysOfOperation><ChristmasDay></ChristmasDay></DaysOfOperation>
           <DaysOfNonOperation>
-            <ChristmasDay></ChristmasDay>
             <BoxingDay></BoxingDay>
             <BoxingDayHoliday></BoxingDayHoliday>
           </DaysOfNonOperation>
@@ -13980,7 +13979,17 @@
           </DaysOfNonOperation>
         </SpecialDaysOperation>
         <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
+          <DaysOfOperation>
+            <GoodFriday></GoodFriday>
+            <OtherPublicHoliday>
+              <Description>Platinum Jubilee</Description>
+              <Date>2024-02-13</Date>
+            </OtherPublicHoliday>
+            <OtherPublicHoliday>
+              <Description>Another Jubilee</Description>
+              <Date>2024-02-16</Date>
+            </OtherPublicHoliday>
+          </DaysOfOperation>
           <DaysOfNonOperation>
             <ChristmasDay></ChristmasDay>
             <BoxingDay></BoxingDay>
