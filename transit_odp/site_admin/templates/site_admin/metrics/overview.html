@@ -11,7 +11,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
-    {% breadcrumb 'Overview' %}
+    {% breadcrumb_url 'Overview' 'overview-metrics' host host.name %}
 {% endblock %}
 
 {% block content %}

@@ -13,7 +13,7 @@
     {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
     {% breadcrumb_url 'Disruption data' 'disruptions-data' host hosts.data %}
     {% with name=object.name|truncatechars:19 %}
-        {% breadcrumb name %}
+        {% breadcrumb_url name 'org-detail' orgId=org_id host hosts.data %}
     {% endwith %}
 {% endblock %}
 
@@ -23,7 +23,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column">
             {% if not error %}
-            {% include "browse/disruptions/organisation/success_content.html" %}
+                {% include "browse/disruptions/organisation/success_content.html" %}
             {% endif %}
         </div>
     </div>

@@ -14,7 +14,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Local Transport Authority Profiles' %}
+    {% breadcrumb_url 'Local Transport Authority Profiles' 'local-authority' host hosts.data %}
 {% endblock %}
 
 {% block full_width_content %}

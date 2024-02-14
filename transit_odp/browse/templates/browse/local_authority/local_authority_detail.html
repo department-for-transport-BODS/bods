@@ -14,7 +14,11 @@
     {{ block.super }}
     {% breadcrumb_url 'Local Authority Profiles' 'local-authority' %}
     {% with name=object.ui_lta_name|truncatechars:19 %}
-        {% breadcrumb name %}
+        <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="{% url 'local-authority-detail' host hosts.data %}?auth_ids={{ auth_ids }}">
+                {{ name }}
+            </a>
+        </li>
     {% endwith %}
 {% endblock %}
 

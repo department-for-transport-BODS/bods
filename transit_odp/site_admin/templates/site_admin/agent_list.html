@@ -12,7 +12,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Agents' %}
+    {% breadcrumb_url 'Agents' 'users:agent-list' host hosts.admin %}
 {% endblock %}
 
 {% block full_width_content %}
