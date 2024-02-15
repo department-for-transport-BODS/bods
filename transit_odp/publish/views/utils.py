@@ -197,7 +197,7 @@ def get_valid_files(revision_id, valid_files, service_codes, line_name):
 
             if len(booking_arrangements_qs) == 1:
                 return get_single_booking_arrangements_file(
-                    booking_arrangements_qs.revision_id
+                    booking_arrangements_qs.first().revision_id
                 )
 
             lastest_operating_period_start = get_lastest_operating_period_start_date(
@@ -212,7 +212,7 @@ def get_valid_files(revision_id, valid_files, service_codes, line_name):
 
             if len(booking_arrangements_qs) == 1:
                 return get_single_booking_arrangements_file(
-                    booking_arrangements_qs.revision_id
+                    booking_arrangements_qs.first().revision_id
                 )
 
             booking_arrangements_qs = booking_arrangements_qs.order_by(
