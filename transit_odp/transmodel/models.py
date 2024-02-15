@@ -238,9 +238,9 @@ class FlexibleServiceOperationPeriod(models.Model):
         related_name="flexible_service_operation_period",
     )
 
-    start_time = models.TimeField(blank=True, null=True)
+    start_time = models.TimeField(null=True, blank=True)
 
-    end_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(null=True, blank=True)
 
 
 class ServicedOrganisationVehicleJourney(models.Model):
