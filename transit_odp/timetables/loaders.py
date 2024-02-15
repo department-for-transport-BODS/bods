@@ -296,7 +296,6 @@ class TransXChangeDataLoader:
                     on=["file_id", "service_code", "vehicle_journey_code"],
                     how="inner",
                 )
-                .dropna(subset=["day_of_week"])
                 .query("day_of_week != ''")
                 .drop_duplicates()
             )
