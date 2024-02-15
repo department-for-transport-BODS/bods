@@ -30,7 +30,7 @@ def create_naptan_flexible_zone_df_from_queryset(queryset):
         {
             "naptan_id": obj.naptan_stoppoint_id,
             "flexible_location": Point(obj.location.x, obj.location.y),
-            "sequence_number": obj.sequence_number
+            "sequence_number": obj.sequence_number,
         }
         for obj in queryset
     )
@@ -38,7 +38,7 @@ def create_naptan_flexible_zone_df_from_queryset(queryset):
     df = create_flexible_zone_df(flexible_zone)
 
     # perform grouping of data on naptan_id and create list of flexible zone geometry
-    df = df.groupby(['naptan_id'])['flexible_location'].agg(list).reset_index()
+    df = df.groupby(["naptan_id"])["flexible_location"].agg(list).reset_index()
     return df
 
 
@@ -47,13 +47,10 @@ def create_flexible_zone_df(data=None):
         {
             "naptan_id": "object",
             "flexible_location": "geometry",
-            "sequence_number": "int"
+            "sequence_number": "int",
         }
     )
-    df = (
-        geopandas.GeoDataFrame(data, columns=typings.keys())
-        .astype(typings)
-    )
+    df = geopandas.GeoDataFrame(data, columns=typings.keys()).astype(typings)
     return df
 
 
