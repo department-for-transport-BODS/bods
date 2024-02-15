@@ -270,3 +270,11 @@ class ServicedOrganisationWorkingDays(models.Model):
     )
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+
+
+class BankHolidays(models.Model):
+    txc_element = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateField()
+    notes = models.CharField(max_length=255, null=True, blank=True)
+    division = models.CharField(max_length=255, null=True, blank=True)
