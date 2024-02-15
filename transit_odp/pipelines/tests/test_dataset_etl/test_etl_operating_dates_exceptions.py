@@ -21,12 +21,12 @@ columns = [
 
 
 def setup_bank_holidays():
-    BankHolidaysFactory(txc_element="ChristmasDay", date=datetime.date(2023, 12, 25))
-    BankHolidaysFactory(txc_element="BoxingDay", date=datetime.date(2023, 12, 26))
+    BankHolidaysFactory(txc_element="ChristmasDay", date=datetime.date(2024, 12, 25))
+    BankHolidaysFactory(txc_element="BoxingDay", date=datetime.date(2024, 12, 26))
     BankHolidaysFactory(
-        txc_element="BoxingDayHoliday", date=datetime.date(2023, 12, 27)
+        txc_element="BoxingDayHoliday", date=datetime.date(2024, 12, 27)
     )
-    BankHolidaysFactory(txc_element="GoodFriday", date=datetime.date(2023, 4, 7))
+    BankHolidaysFactory(txc_element="GoodFriday", date=datetime.date(2024, 3, 29))
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -112,7 +112,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
         # test
         self.assertEqual(16, operating_dates_exception.count())
         # Verify bank holiday date in days of operation tag
-        self.assertIn(datetime.date(2023, 12, 25), operating_dates_exception)
+        self.assertIn(datetime.date(2024, 12, 25), operating_dates_exception)
         # Verify other bank holiday date in days of operation tag
         self.assertIn(datetime.date(2024, 2, 13), operating_dates_exception)
         # Verify day of operation for operating profile with HolidaysOnly
@@ -125,7 +125,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
         self.assertNotIn(datetime.date(2023, 11, 30), operating_dates_exception)
         # Verify bank holiday date is not in the table as
         # it falls on the day of the week mentioned in operating profile
-        self.assertNotIn(datetime.date(2023, 4, 7), operating_dates_exception)
+        self.assertNotIn(datetime.date(2024, 3, 29), operating_dates_exception)
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -165,7 +165,7 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(1264, df_extracted_data.shape[0])
+        self.assertEqual(1280, df_extracted_data.shape[0])
 
     def test_transform(self):
         # setup
@@ -200,7 +200,7 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(1264, df_extracted_data.shape[0])
+        self.assertEqual(1280, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
@@ -311,7 +311,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
         # test
         self.assertEqual(16, operating_dates_exception.count())
         # Verify bank holiday date in days of operation tag
-        self.assertIn(datetime.date(2023, 12, 25), operating_dates_exception)
+        self.assertIn(datetime.date(2024, 12, 25), operating_dates_exception)
         # Verify other bank holiday date in days of operation tag
         self.assertIn(datetime.date(2024, 2, 13), operating_dates_exception)
         # Verify day of operation for operating profile with HolidaysOnly
@@ -324,4 +324,4 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
         self.assertNotIn(datetime.date(2023, 11, 30), operating_dates_exception)
         # Verify bank holiday date is not in the table as
         # it falls on the day of the week mentioned in operating profile
-        self.assertNotIn(datetime.date(2023, 4, 7), operating_dates_exception)
+        self.assertNotIn(datetime.date(2024, 3, 29), operating_dates_exception)

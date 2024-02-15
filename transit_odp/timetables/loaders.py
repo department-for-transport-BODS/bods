@@ -295,6 +295,7 @@ class TransXChangeDataLoader:
         )
 
     def load_operating_dates_exceptions(self, merged_operating_profiles_and_journeys):
+
         merged_operating_profiles_and_journeys.drop_duplicates(inplace=True)
         journey_mapping = (
             merged_operating_profiles_and_journeys.groupby("vehicle_journey_code")[
@@ -309,6 +310,7 @@ class TransXChangeDataLoader:
                 lambda row: filter_rows_by_journeys(row, journey_mapping), axis=1
             )
         ]
+
         df_to_load = merged_operating_profiles_and_journeys[
             ["id", "exceptions_operational", "exceptions_date"]
         ]

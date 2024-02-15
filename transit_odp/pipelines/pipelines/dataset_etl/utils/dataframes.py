@@ -4,7 +4,7 @@ BODS transxchange models.
 """
 import logging
 from collections import OrderedDict
-from typing import Iterator
+from typing import Iterator, List
 
 import geopandas
 import pandas as pd
@@ -26,6 +26,7 @@ from transit_odp.transmodel.models import (
     ServicedOrganisations,
     OperatingProfile,
     ServicedOrganisationVehicleJourney,
+    BankHolidays,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -296,6 +297,15 @@ def df_to_service_pattern_service(
             servicepattern_id=record["id"], servicelink_id=record["service_link_id"]
         )
 
+def db_bank_holidays_to_df(columns: List[str]) -> pd.DataFrame:
+
+    db_bank_holidays = BankHolidays.objects.values(*columns)
+    df_bank_holidays_from_db = pd.DataFrame(
+        db_bank_holidays, columns=columns
+    )
+    df_bank_holidays_from_db.drop_duplicates(inplace=True)
+
+    return df_bank_holidays_from_db
 
 def get_first_and_last_expiration_dates(expiration_dates: list, start_dates: list):
     """Compute the first and last expiration dates (excluding '9999-09-09'
