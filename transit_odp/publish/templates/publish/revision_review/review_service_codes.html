@@ -26,7 +26,7 @@
                             <div id="sub-accordion-content-{{ forloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.counter }}">
                                 {% for line_name, service_codes in line_names_dict.items %}
                                     <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
-                                        <a class="govuk-link" href="{% url 'revision-line-detail' pk1=pk1 pk=pk host hosts.publish %}?line={{ line_name }}&revision_id={{ object.id }}">{{ line_name }} - {{service_codes|join:", "}}</a>
+                                        <a class="govuk-link" href="{% url 'revision-line-detail' pk1=pk1 pk=pk host hosts.publish %}?line={{ line_name }}&revision_id={{ object.id }}&noc={{noc}}">{{ line_name }} - {{service_codes|join:", "}}</a>
                                     </p>
                                 {% endfor %}
                             </div>

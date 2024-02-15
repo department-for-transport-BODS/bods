@@ -21,17 +21,20 @@ const getLineStringBounds = (coordinates) => {
   }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 };
 
-const getMapDataUrl = (apiRoot, revisionId, serviceName) => {
+const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes) => {
   var servicePatternUrl =
     apiRoot + "service_pattern/?revision=" + revisionId.toString();
-  if (serviceName) {
-    servicePatternUrl += "&service_name=" + serviceName.toString();
+  if (lineName) {
+    servicePatternUrl += "&line_name=" + lineName.toString();
+  }
+  if (serviceCodes) {
+    servicePatternUrl += "&service_codes=" + serviceCodes.toString();
   }
   return servicePatternUrl;
 };
 
-const initMap = (apiRoot, revisionId, serviceName) => {
-  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, serviceName);
+const initMap = (apiRoot, revisionId, lineName, serviceCodes) => {
+  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes);
 
   // Initialise Map
   mapboxgl.accessToken = mapboxKey;
