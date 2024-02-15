@@ -164,7 +164,7 @@ class ETLServicedOrganisationsWithOrgInDB(ExtractBaseTestCase):
         self.assertEqual(14, serviced_org_working_days.count())
 
 
-@override_flag("is_timetable_visualiser_active", active=True)        
+@override_flag("is_timetable_visualiser_active", active=True)
 class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
     test_file = "data/test_serviced_organisations/test_extract_serviced_organisations_for_multiple_refs.xml"
 
@@ -375,6 +375,30 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
 
         self.feed_parser.load(transformed)
 
+        serviced_orgs = ServicedOrganisations.objects.all()
+        serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
+        # test
+        self.assertEqual(2, serviced_orgs.count())
+        self.assertEqual(10, serviced_org_working_days.count())
+
+        serviced_org_names = {serviced_org.name for serviced_org in serviced_orgs}
+
+        self.assertIn("North Yorkshire 2023", serviced_org_names)
+
+        self.assertIn("North Yorkshire 2024", serviced_org_names)
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
+    test_file = "data/test_serviced_orgs_vehicle_journeys_junction/test_load_serviced_orgs_vjs_junction.xml"
+
+    def test_load_operating_profiles_in_services(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
         serviced_orgs_vehicle_journeys = (
             ServicedOrganisationVehicleJourney.objects.all()
         )
@@ -402,14 +426,3 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
 
         # test
         self.assertEqual(40, serviced_orgs_vehicle_journeys.count())
-        serviced_orgs = ServicedOrganisations.objects.all()
-        serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
-        # test
-        self.assertEqual(2, serviced_orgs.count())
-        self.assertEqual(10, serviced_org_working_days.count())
-
-        serviced_org_names = {serviced_org.name for serviced_org in serviced_orgs}
-
-        self.assertIn("North Yorkshire 2023", serviced_org_names)
-
-        self.assertIn("North Yorkshire 2024", serviced_org_names)
