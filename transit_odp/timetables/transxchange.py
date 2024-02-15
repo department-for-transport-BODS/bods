@@ -229,7 +229,7 @@ class TransXChangeDocument:
         """
         xpath = ["StopPoints", "StopPoint"]
         return self.find_anywhere(xpath)
-    
+
     def get_flexible_service(self):
         """Get all the StopPoint elements in the TransXChangeDocument.
 
