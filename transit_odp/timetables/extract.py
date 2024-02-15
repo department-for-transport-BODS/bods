@@ -83,23 +83,17 @@ class TransXChangeExtractor:
         # within this ETL process)
         logger.debug("Extracting stop points")
         stop_points = self.extract_stop_points()
-        stop_points.to_csv("stop_points_extract.csv")
         provisional_stops = self.extract_provisional_stops()
-        provisional_stops.to_csv("provisional_stops.csv")
         logger.debug("Finished extracted stop points")
 
         # Extract JourneyPattern and JourneyPatternSections
         logger.debug("Extracting journey_patterns")
         journey_patterns, jp_to_jps = self.extract_journey_patterns()
-        journey_patterns.to_csv("journey_patterns_extract.csv")
-        jp_to_jps.to_csv("jp_to_jps.csv")
         logger.debug("Finished extracting journey_patterns")
 
         # Extract JourneyPatternSections, TimingLinks and RouteLinks
         logger.debug("Extracting journey_patterns_sections")
         jp_sections, timing_links = self.extract_journey_pattern_sections()
-        jp_sections.to_csv("jp_sections_extract.csv")
-        timing_links.to_csv("timing_links_extract.csv")
 
         logger.debug("Finished extracting journey_patterns_sections")
 
@@ -148,25 +142,19 @@ class TransXChangeExtractor:
         # extract flexible journey patterns
         logger.debug("Extracting flexible journey patterns")
         flexible_journey_patterns = self.extract_flexible_journey_patterns()
-        flexible_journey_patterns.to_csv("flexible_journey_patterns.csv")
 
         flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(
             flexible_journey_patterns
         )
-        flexible_jp_sections.to_csv("flexible_jp_sections.csv")
-        flexible_jp_to_jps.to_csv("flexible_jp_to_jps.csv")
 
         flexible_timing_links = self.create_flexible_timing_link(
             flexible_journey_patterns, flexible_jp_to_jps
         )
-        flexible_timing_links.to_csv("flexible_timing_links.csv")
         # extract flexible stop points from flexible journey patterns
-
         if not flexible_journey_patterns.empty:
             flexible_stop_points = flexible_journey_patterns[
                 ["atco_code", "bus_stop_type"]
             ].set_index("atco_code")
-            flexible_stop_points.to_csv("flexible_stop_points.csv")
             flexible_journey_patterns = (
                 flexible_journey_patterns.reset_index()[
                     ["file_id", "journey_pattern_id", "service_code"]
@@ -174,7 +162,6 @@ class TransXChangeExtractor:
                 .drop_duplicates(["journey_pattern_id"])
                 .set_index(["file_id", "journey_pattern_id"])
             )
-            flexible_journey_patterns.to_csv("flexible_journey_patterns.csv")
         else:
             flexible_stop_points = pd.DataFrame()
 

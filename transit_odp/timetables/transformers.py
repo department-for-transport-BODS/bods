@@ -25,14 +25,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     transform_service_patterns,
     transform_stop_sequence,
     transform_geometry,
-    # create_flexible_jps,
-    # create_flexible_route_links,
-    # create_flexible_route_to_route_links,
-    # transform_flexible_service_links,
-    # create_flexible_routes,
-    # transform_flexible_service_patterns,
-    # transform_flexible_service_pattern_to_service_links,
-    # transform_flexible_service_pattern_stops,
     transform_flexible_stop_sequence,
 )
 from transit_odp.transmodel.models import StopPoint, FlexibleZone
@@ -67,12 +59,9 @@ class TransXChangeTransformer:
             # get atco_code value from index
             flexible_stop_points_list = list(flexible_stop_points.index.values)
             print(f"flexible_stop_points_list: {flexible_stop_points_list}")
-            # stop_points = stop_points.reset_index()
             stop_points = stop_points[
                 ~stop_points.index.isin(flexible_stop_points_list)
             ]
-            # stop_points = stop_points[~stop_points['atco_code'].isin(flexible_stop_points_list)]
-            # stop_points.set_index("atco_code", inplace=True)
 
         print(f"stop_points after removing flexible: {list(stop_points.index.values)}")
         # Match stop_points with DB
@@ -98,31 +87,20 @@ class TransXChangeTransformer:
         # Create missing route information
         route_links = pd.DataFrame()
         if not timing_links.empty:
-            timing_links.to_csv("timing_links_before_routes.csv")
             route_links = create_route_links(timing_links, stop_points)
-            route_links.to_csv("route_links_transform.csv")
 
         if (
             not journey_patterns.empty
             and not jp_to_jps.empty
             and not timing_links.empty
         ):
-            journey_patterns.to_csv("journey_patterns_before_create_routes.csv")
-            jp_to_jps.to_csv("jp_to_jps_before_create_routes.csv")
-            jp_sections.to_csv("jp_sections_before_create_routes.csv")
-            timing_links.to_csv("timing_links_before_create_routes.csv")
             create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
-            journey_patterns.to_csv("journey_patterns_after_create_routes.csv")
-            jp_to_jps.to_csv("jp_to_jps_after_create_routes.csv")
-            jp_sections.to_csv("jp_sections_after_create_routes.csv")
-            timing_links.to_csv("timing_links_after_create_routes.csv")
 
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:
             route_to_route_links = create_route_to_route_links(
                 journey_patterns, jp_to_jps, timing_links
             )
-            route_to_route_links.to_csv("route_to_route_links_transform.csv")
 
         line_names = transform_line_names(self.extracted_data.line_names)
 
@@ -136,16 +114,10 @@ class TransXChangeTransformer:
         service_pattern_stops = pd.DataFrame()
         if not journey_patterns.empty and not route_to_route_links.empty:
             service_patterns = transform_service_patterns(journey_patterns)
-            service_patterns.to_csv("service_patterns_before.csv")
-            route_to_route_links.to_csv("route_to_route_links_before_service_link.csv")
-            route_links.to_csv("route_links_before_service_link.csv")
             service_pattern_to_service_links = (
                 transform_service_pattern_to_service_links(  # noqa: E501
                     service_patterns, route_to_route_links, route_links
                 )
-            )
-            service_pattern_to_service_links.to_csv(
-                "service_pattern_to_service_links.csv"
             )
 
             # aggregate stop_sequence and geometry
@@ -153,11 +125,9 @@ class TransXChangeTransformer:
                 service_pattern_to_service_links, stop_points
             )
 
-            service_pattern_stops.to_csv("service_pattern_stops.csv")
             service_patterns = transform_stop_sequence(
                 service_pattern_stops, service_patterns
             )
-            service_patterns.to_csv("service_patterns_final.csv")
 
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
@@ -165,26 +135,13 @@ class TransXChangeTransformer:
             flexible_stop_points_with_naptan_id = self.sync_flexible_stop_points(
                 flexible_stop_points
             )
-            flexible_stop_points_with_naptan_id.to_csv(
-                "flexible_stop_points_with_naptan_id.csv"
-            )
 
             flexible_stop_points_with_naptan_id = sync_localities_and_adminareas(
                 flexible_stop_points_with_naptan_id
             )
-            flexible_stop_points_with_naptan_id.to_csv(
-                "flexible_stop_points_with_naptan_id_adminarea.csv"
-            )
-            print(
-                f"flexible_stop_points_with_naptan_id.columns: {flexible_stop_points_with_naptan_id.columns}"
-            )
-            print(
-                f"flexible_stop_points_with_naptan_id.index: {flexible_stop_points_with_naptan_id.index}"
-            )
 
             # 2. extract flexible zone data
             flexible_zone = self.sync_flexible_zone(flexible_stop_points_with_naptan_id)
-            flexible_zone.to_csv("flexible_zone.csv")
 
             # 3. merge the flexible stop points and flexible zone to get the required geometry
             flexible_stop_points_with_geometry = (
@@ -195,16 +152,11 @@ class TransXChangeTransformer:
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
-            flexible_stop_points_with_geometry.to_csv(
-                "flexible_stop_points_with_geometry.csv"
-            )
 
-            # 4. create dummy route_link_ref (create from_atco and to_atco)
-            # flexible_route_links = create_flexible_route_links(flexible_timing_links)
+            # 4. create dummy route_link_ref
             flexible_route_links = create_route_links(
                 flexible_timing_links, flexible_stop_points_with_geometry
             )
-            flexible_route_links.to_csv("flexible_route_links_transform.csv")
 
             # 5. create flexible routes
             create_routes(
@@ -213,22 +165,14 @@ class TransXChangeTransformer:
                 flexible_jp_sections,
                 flexible_timing_links,
             )
-            flexible_journey_patterns.to_csv(
-                "flexible_journey_patterns_after_routes.csv"
-            )
-            flexible_jp_sections.to_csv("flexible_jp_sections_after_routes.csv")
 
             # 6. create route hash for flexible route link
-            # flexible_route_to_route_links = create_flexible_route_to_route_links(flexible_journey_patterns, flexible_jp_to_jps, flexible_timing_links)
             flexible_route_to_route_links = create_route_to_route_links(
                 flexible_journey_patterns, flexible_jp_to_jps, flexible_timing_links
             )
-            flexible_route_to_route_links.to_csv("flexible_route_to_route_links.csv")
 
             # 7. create flexible service link
-            # flexible_service_links = transform_flexible_service_links(flexible_route_links)
             flexible_service_links = transform_service_links(flexible_route_links)
-            flexible_service_links.to_csv("flexible_service_links.csv")
 
             # 8. create flexible service_patterns and service_patterns_stops
             flexible_service_patterns = pd.DataFrame()
@@ -238,7 +182,6 @@ class TransXChangeTransformer:
             flexible_service_patterns = transform_service_patterns(
                 flexible_journey_patterns
             )
-            flexible_service_patterns.to_csv("flexible_service_patterns.csv")
 
             flexible_service_pattern_to_service_links = (
                 transform_service_pattern_to_service_links(  # noqa: E501
@@ -247,21 +190,17 @@ class TransXChangeTransformer:
                     flexible_route_links,
                 )
             )
-            flexible_service_pattern_to_service_links.to_csv(
-                "flexible_service_pattern_to_service_links.csv"
-            )
 
             flexible_service_pattern_stops = transform_service_pattern_stops(
                 flexible_service_pattern_to_service_links,
                 flexible_stop_points_with_geometry,
             )
-            flexible_service_pattern_stops.to_csv("flexible_service_pattern_stops.csv")
 
             flexible_service_patterns = transform_flexible_stop_sequence(
                 flexible_service_pattern_stops, flexible_service_patterns
             )
-            flexible_service_patterns.to_csv("flexible_service_patterns_final.csv")
 
+            # 9. merge the required dataframes before loading
             service_patterns = pd.concat(
                 [
                     service_patterns.reset_index(),
@@ -269,35 +208,20 @@ class TransXChangeTransformer:
                 ]
             )
 
-            print(f"service_pattern_stops.index: {service_pattern_stops.index}")
-            print(
-                f"flexible_service_pattern_stops.index: {flexible_service_pattern_stops.index}"
-            )
-            print(
-                f"flexible_service_pattern_stops.columns: {flexible_service_pattern_stops.columns}"
-            )
-            service_pattern_stops = service_pattern_stops.reset_index().droplevel(
-                level=0, axis=1
-            )
-            flexible_service_pattern_stops = (
-                flexible_service_pattern_stops.reset_index().droplevel(level=0, axis=1)
-            )
-            print(
-                f"flexible_service_pattern_stops after dropping: {flexible_service_pattern_stops.columns}"
+            service_patterns.drop(columns=["index"], inplace=True)
+            service_patterns.set_index(
+                ["file_id", "service_pattern_id"], append=True, inplace=True
             )
             service_pattern_stops = pd.concat(
-                [service_pattern_stops, flexible_service_pattern_stops]
+                [
+                    service_pattern_stops.reset_index(),
+                    flexible_service_pattern_stops.reset_index(),
+                ]
             )
-            print(
-                f"service_pattern_stops after concat: {service_pattern_stops.columns}"
-            )
-            print(f"service_pattern_stops index: {service_pattern_stops.index}")
-            service_pattern_stops.set_index(
-                ["file_id"], inplace=True, append=True, verify_integrity=True
-            )
-            print(f"service_pattern_stops after index: {service_pattern_stops.columns}")
-            print(f"service_pattern_stops index1: {service_pattern_stops.index}")
-            service_pattern_stops.to_csv("service_pattern_stops_final.csv")
+            service_pattern_stops.drop(columns=["level_0", "index"], inplace=True)
+            service_pattern_stops.set_index(["file_id"], append=True, inplace=True)
+
+            service_links = pd.concat([service_links, flexible_service_links])
 
         return TransformedData(
             services=services,

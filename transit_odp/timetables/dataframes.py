@@ -55,6 +55,25 @@ def flexible_service_stop_points_dataframe(services):
                                     "journey_pattern_id": pattern["id"],
                                 }
                             )
+                    stoppoint_in_sequence = pattern.get_element_or_none(
+                        "StopPointsInSequence"
+                    )
+                    for children in stoppoint_in_sequence.children:
+                        bus_stop_type = (
+                            "fixed_flexible"
+                            if children.localname == "FixedStopUsage"
+                            else "flexible"
+                        )
+                        atco_code = children.get_element_or_none("StopPointRef").text
+                        stop_points.append(
+                            {
+                                "service_code": service_code,
+                                "atco_code": atco_code,
+                                "bus_stop_type": bus_stop_type,
+                                "journey_pattern_id": pattern["id"],
+                            }
+                        )
+
     if stop_points:
         columns = ["atco_code", "bus_stop_type", "journey_pattern_id", "service_code"]
         return pd.DataFrame(stop_points, columns=columns)
