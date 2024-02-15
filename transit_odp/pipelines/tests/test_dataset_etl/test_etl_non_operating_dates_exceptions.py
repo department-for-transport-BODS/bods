@@ -28,17 +28,16 @@ def setup_bank_holidays():
         txc_element="BoxingDayHoliday", date=datetime.date(2024, 12, 27)
     )
     BankHolidaysFactory(txc_element="GoodFriday", date=datetime.date(2024, 4, 7))
-    BankHolidaysFactory(
-        txc_element="NewYearsEve", date=datetime.date(2024, 12, 31)
-    )
+    BankHolidaysFactory(txc_element="NewYearsEve", date=datetime.date(2024, 12, 31))
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
 class ETLNonOperatingDatesException(ExtractBaseTestCase):
-    test_file = "data/test_non_operating_dates_exception/test_non_op_dates_exceptions_mixed.xml"
+    test_file = (
+        "data/test_non_operating_dates_exception/test_non_op_dates_exceptions_mixed.xml"
+    )
 
     def test_extract(self):
-
         setup_bank_holidays()
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -98,15 +97,11 @@ class ETLNonOperatingDatesException(ExtractBaseTestCase):
         self.assertNotIn(datetime.date(2024, 12, 31), non_operating_dates_exception)
 
 
-
 @override_flag("is_timetable_visualiser_active", active=True)
 class ETLNonOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
-    test_file = (
-        "data/test_non_operating_dates_exception/test_non_op_dates_exceptions_only_services.xml"
-    )
+    test_file = "data/test_non_operating_dates_exception/test_non_op_dates_exceptions_only_services.xml"
 
     def test_extract(self):
-
         setup_bank_holidays()
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -134,8 +129,6 @@ class ETLNonOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
         )
         self.assertEqual(135, df_extracted_data.shape[0])
 
-   
-
     def test_load(self):
         # setup
         setup_bank_holidays()
@@ -161,7 +154,6 @@ class ETLNonOperatingDatesExceptionsInOpProfile(ExtractBaseTestCase):
     test_file = "data/test_non_operating_dates_exception/test_non_op_dates_exceptions_outside_op_profiles.xml"
 
     def test_extract(self):
-
         setup_bank_holidays()
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -181,9 +173,7 @@ class ETLNonOperatingDatesExceptionsInOpProfile(ExtractBaseTestCase):
         )
         self.assertEqual(81, df_extracted_data.shape[0])
 
-
     def test_load(self):
-
         setup_bank_holidays()
 
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -196,18 +186,18 @@ class ETLNonOperatingDatesExceptionsInOpProfile(ExtractBaseTestCase):
         )
         # test
         self.assertEqual(9, non_operating_dates_exception.count())
-        # Verify GoodFriday is not in the non operating exceptions 
+        # Verify GoodFriday is not in the non operating exceptions
         # as it already falls outside the op profile
         self.assertNotIn(datetime.date(2024, 3, 29), non_operating_dates_exception)
-        # Verify EasterMonday is not in the non operating exceptions 
+        # Verify EasterMonday is not in the non operating exceptions
         # as it already falls outside the op profile
         self.assertNotIn(datetime.date(2024, 4, 1), non_operating_dates_exception)
-        # Verify SpringBank is not in the non operating exceptions 
+        # Verify SpringBank is not in the non operating exceptions
         # as it already falls outside the op profile
         self.assertNotIn(datetime.date(2023, 5, 27), non_operating_dates_exception)
-        # Verify OtherBankHoliday QueensJubilee is not in the non operating exceptions 
+        # Verify OtherBankHoliday QueensJubilee is not in the non operating exceptions
         # as it already falls outside the op profile
         self.assertNotIn(datetime.date(2022, 3, 6), non_operating_dates_exception)
-        # Verify CoronationOfKingCharlesIII is not in the non operating exceptions 
+        # Verify CoronationOfKingCharlesIII is not in the non operating exceptions
         # as it already falls outside the op profile
         self.assertNotIn(datetime.date(2023, 5, 8), non_operating_dates_exception)

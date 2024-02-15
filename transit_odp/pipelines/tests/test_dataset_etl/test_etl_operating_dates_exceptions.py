@@ -34,7 +34,6 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
     test_file = "data/test_operating_dates_exception/test_op_dates_exceptions.xml"
 
     def test_extract(self):
-
         setup_bank_holidays()
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -66,7 +65,6 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
         self.assertEqual(510, df_extracted_data.shape[0])
 
     def test_transform(self):
-
         setup_bank_holidays()
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         # test
@@ -135,7 +133,6 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
     )
 
     def test_extract(self):
-
         setup_bank_holidays()
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -233,7 +230,6 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
     test_file = "data/test_operating_dates_exception/test_op_dates_exceptions.xml"
 
     def test_extract(self):
-
         setup_bank_holidays()
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -265,7 +261,6 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
         self.assertEqual(510, df_extracted_data.shape[0])
 
     def test_transform(self):
-
         setup_bank_holidays()
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         # test

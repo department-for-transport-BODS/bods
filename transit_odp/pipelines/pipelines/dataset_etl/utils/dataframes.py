@@ -201,7 +201,6 @@ def df_to_flexible_service_operation_period(
     df: pd.DataFrame,
 ) -> Iterator[FlexibleServiceOperationPeriod]:
     for record in df.to_dict("records"):
-
         yield FlexibleServiceOperationPeriod(
             vehicle_journey_id=record["id"],
             start_time=get_time_field_or_none(record["start_time"]),
@@ -253,7 +252,7 @@ def df_to_serviced_org_vehicle_journey(df: pd.DataFrame) -> Iterator[VehicleJour
             operating_on_working_days=record["operational_so"],
         )
 
-  
+
 def df_to_operating_dates_exceptions(
     df: pd.DataFrame,
 ) -> Iterator[OperatingDatesExceptions]:
@@ -297,15 +296,14 @@ def df_to_service_pattern_service(
             servicepattern_id=record["id"], servicelink_id=record["service_link_id"]
         )
 
-def db_bank_holidays_to_df(columns: List[str]) -> pd.DataFrame:
 
+def db_bank_holidays_to_df(columns: List[str]) -> pd.DataFrame:
     db_bank_holidays = BankHolidays.objects.values(*columns)
-    df_bank_holidays_from_db = pd.DataFrame(
-        db_bank_holidays, columns=columns
-    )
+    df_bank_holidays_from_db = pd.DataFrame(db_bank_holidays, columns=columns)
     df_bank_holidays_from_db.drop_duplicates(inplace=True)
 
     return df_bank_holidays_from_db
+
 
 def get_first_and_last_expiration_dates(expiration_dates: list, start_dates: list):
     """Compute the first and last expiration dates (excluding '9999-09-09'

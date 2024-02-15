@@ -10,7 +10,9 @@ from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
-from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import db_bank_holidays_to_df
+from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
+    db_bank_holidays_to_df,
+)
 from datetime import datetime, timedelta
 
 from transit_odp.transmodel.models import BankHolidays
@@ -419,10 +421,12 @@ def populate_operating_profiles(
 
     bank_holiday_columns = ["txc_element", "date"]
     df_bank_holidays_from_db = db_bank_holidays_to_df(bank_holiday_columns)
-    
+
     current_year = datetime.today().year
 
-    df_bank_holidays_from_db = df_bank_holidays_from_db[df_bank_holidays_from_db["date"].apply(lambda x: x.year) == current_year]
+    df_bank_holidays_from_db = df_bank_holidays_from_db[
+        df_bank_holidays_from_db["date"].apply(lambda x: x.year) == current_year
+    ]
 
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])

@@ -186,7 +186,6 @@ class TransXChangeDataLoader:
         return vehicle_journeys
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
-
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
 
         if not flexible_service_operation_periods.empty and not vehicle_journeys.empty:
@@ -295,7 +294,6 @@ class TransXChangeDataLoader:
         )
 
     def load_operating_dates_exceptions(self, merged_operating_profiles_and_journeys):
-
         merged_operating_profiles_and_journeys.drop_duplicates(inplace=True)
         journey_mapping = (
             merged_operating_profiles_and_journeys.groupby("vehicle_journey_code")[
