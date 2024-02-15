@@ -314,7 +314,7 @@ class LineMetadataDetailView(DetailView):
 
                 if len(booking_arrangements_qs) == 1:
                     return self.get_single_booking_arrangements_file(
-                        booking_arrangements_qs.revision_id
+                        booking_arrangements_qs.first().revision_id
                     )
 
                 lastest_operating_period_start = (
@@ -331,7 +331,7 @@ class LineMetadataDetailView(DetailView):
 
                 if len(booking_arrangements_qs) == 1:
                     return self.get_single_booking_arrangements_file(
-                        booking_arrangements_qs.revision_id
+                        booking_arrangements_qs.first().revision_id
                     )
 
                 booking_arrangements_qs = booking_arrangements_qs.order_by(
