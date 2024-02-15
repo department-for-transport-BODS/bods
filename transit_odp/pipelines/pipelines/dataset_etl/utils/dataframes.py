@@ -183,6 +183,7 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             start_time=record["departure_time"],
             line_ref=record["line_ref"],
             direction=record["direction"],
+            departure_day_shift=record["departure_day_shift"],
         )
 
 
@@ -198,7 +199,6 @@ def df_to_flexible_service_operation_period(
     df: pd.DataFrame,
 ) -> Iterator[FlexibleServiceOperationPeriod]:
     for record in df.to_dict("records"):
-
         yield FlexibleServiceOperationPeriod(
             vehicle_journey_id=record["id"],
             start_time=get_time_field_or_none(record["start_time"]),

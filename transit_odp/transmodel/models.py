@@ -142,6 +142,7 @@ class VehicleJourney(models.Model):
     line_ref = models.CharField(max_length=255, null=True, blank=True)
     journey_code = models.CharField(max_length=255, null=True, blank=True)
     direction = models.CharField(max_length=255, null=True, blank=True)
+    departure_day_shift = models.BooleanField(default=False)
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
