@@ -142,14 +142,20 @@ class TransXChangeExtractor:
         # extract flexible journey patterns
         logger.debug("Extracting flexible journey patterns")
         flexible_journey_patterns = self.extract_flexible_journey_patterns()
+        logger.debug("Finished extracting flexible journey patterns")
 
+        logger.debug("Extracting flexible journey pattern sections")
         flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(
             flexible_journey_patterns
         )
+        logger.debug("Finished extracting flexible journey pattern sections")
 
+        logger.debug("Extracting flexible journey pattern timing links")
         flexible_timing_links = self.create_flexible_timing_link(
             flexible_journey_patterns, flexible_jp_to_jps
         )
+        logger.debug("Finished extracting flexible journey pattern timing links")
+
         # extract flexible stop points from flexible journey patterns
         if not flexible_journey_patterns.empty:
             flexible_stop_points = flexible_journey_patterns[
