@@ -16,6 +16,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_vehicle_journeys,
     df_to_serviced_organisations,
     df_to_operating_profiles,
+    df_to_serviced_org_vehicle_journey,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -44,6 +45,7 @@ from transit_odp.transmodel.models import (
     VehicleJourney,
     ServicedOrganisations,
     OperatingProfile,
+    ServicedOrganisationVehicleJourney,
 )
 
 BATCH_SIZE = 2000
@@ -76,13 +78,19 @@ class TransXChangeDataLoader:
         serviced_organisations = self.load_serviced_organisation()
         adapter.info("Finished serviced organisations.")
 
-        adapter.info("Loading serviced organisations working dates")
+        adapter.info("Loading serviced organisations working dates.")
         self.load_serviced_organisation_working_days(serviced_organisations)
-        adapter.info("Finished serviced organisationsworking dates")
+        adapter.info("Finished serviced organisationsworking dates.")
 
         adapter.info("Loading operating profiles.")
         self.load_operating_profiles(vehicle_journeys)
         adapter.info("Finished loading operating profiles.")
+
+        adapter.info("Loading serviced organisations vehicle journeys.")
+        self.load_serviced_organisation_vehicle_journey(
+            vehicle_journeys, serviced_organisations
+        )
+        adapter.info("Finished serviced organisations vehicle journeys.")
 
         adapter.info("Loading service patterns.")
         self.load_service_patterns(services, revision)
@@ -173,7 +181,6 @@ class TransXChangeDataLoader:
         return vehicle_journeys
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
-
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
 
         if not flexible_service_operation_periods.empty and not vehicle_journeys.empty:
@@ -273,20 +280,97 @@ class TransXChangeDataLoader:
             vehicle_journeys = vehicle_journeys.rename(
                 columns={"service_code_vj": "service_code"}
             )
-            merged_df = pd.merge(
-                vehicle_journeys[
-                    ["id", "vehicle_journey_code", "service_code", "file_id"]
-                ],
+            merged_df = (
+                pd.merge(
+                    vehicle_journeys[
+                        ["id", "vehicle_journey_code", "service_code", "file_id"]
+                    ],
+                    operating_profiles[
+                        [
+                            "vehicle_journey_code",
+                            "day_of_week",
+                            "service_code",
+                            "file_id",
+                        ]
+                    ],
+                    on=["file_id", "service_code", "vehicle_journey_code"],
+                    how="inner",
+                )
+                .query("day_of_week != ''")
+                .drop_duplicates()
+            )
+
+            operating_profiles_objs = list(df_to_operating_profiles(merged_df))
+            OperatingProfile.objects.bulk_create(
+                operating_profiles_objs, batch_size=BATCH_SIZE
+            )
+
+    def load_serviced_organisation_vehicle_journey(
+        self, vehicle_journeys, serviced_organisations
+    ):
+        operating_profiles = self.transformed.operating_profiles
+        if (
+            not vehicle_journeys.empty
+            and not serviced_organisations.empty
+            and not operating_profiles.empty
+        ):
+            vehicle_journeys.rename(
+                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"},
+                inplace=True,
+            )
+
+            serviced_organisations.rename(
+                columns={"id": "serviced_org_id"}, inplace=True
+            )
+            operating_profiles.reset_index(inplace=True)
+
+            operating_profiles_serviced_orgs_merged_df = pd.merge(
                 operating_profiles[
-                    ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
+                    [
+                        "file_id",
+                        "service_code",
+                        "vehicle_journey_code",
+                        "serviced_org_ref",
+                        "operational",
+                    ]
+                ],
+                serviced_organisations[
+                    [
+                        "file_id",
+                        "serviced_org_id",
+                        "serviced_org_ref",
+                        "operational",
+                    ]
+                ],
+                on=["file_id", "serviced_org_ref"],
+                how="inner",
+                suffixes=["_op", "_so"],
+            )
+            operating_profiles_serviced_orgs_merged_df.drop_duplicates(inplace=True)
+
+            operating_profiles_serviced_orgs_vehicle_journeys_merged_df = pd.merge(
+                operating_profiles_serviced_orgs_merged_df,
+                vehicle_journeys[
+                    [
+                        "file_id",
+                        "service_code",
+                        "vehicle_journey_id",
+                        "vehicle_journey_code",
+                    ]
                 ],
                 on=["file_id", "service_code", "vehicle_journey_code"],
                 how="inner",
             )
-            merged_df.drop_duplicates(inplace=True)
-            operating_profiles_objs = list(df_to_operating_profiles(merged_df))
-            OperatingProfile.objects.bulk_create(
-                operating_profiles_objs, batch_size=BATCH_SIZE
+            operating_profiles_serviced_orgs_vehicle_journeys_merged_df.drop_duplicates(
+                inplace=True
+            )
+            serviced_org_vehicle_journey_objs = list(
+                df_to_serviced_org_vehicle_journey(
+                    operating_profiles_serviced_orgs_vehicle_journeys_merged_df
+                )
+            )
+            ServicedOrganisationVehicleJourney.objects.bulk_create(
+                serviced_org_vehicle_journey_objs, batch_size=BATCH_SIZE
             )
 
     def load_service_links(self, service_links: pd.DataFrame):
