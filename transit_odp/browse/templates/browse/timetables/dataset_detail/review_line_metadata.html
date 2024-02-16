@@ -126,6 +126,6 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}");
+        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_codes|join:','}}");
     </script>
 {% endblock %}

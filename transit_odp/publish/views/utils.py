@@ -48,9 +48,11 @@ def get_revision_details(dataset_id):
     return revision_details
 
 
-def get_service_codes_dict(revision_id, line):
+def get_service_codes_dict(revision_id, line, noc):
     service_codes_list = []
-    txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
+    txc_file_attributes = TXCFileAttributes.objects.filter(
+        revision_id=revision_id
+    ).filter(national_operator_code=noc)
 
     for file_attribute in txc_file_attributes:
         for line_name in file_attribute.line_names:
@@ -165,10 +167,12 @@ def get_lastest_operating_period_start_date(
     ).aggregate(max_start_date=Max("operating_period_start_date"))["max_start_date"]
 
 
-def get_single_booking_arrangements_file(revision_id):
+def get_single_booking_arrangements_file(revision_id, service_codes):
     try:
-        service_ids = Service.objects.filter(revision=revision_id).values_list(
-            "id", flat=True
+        service_ids = (
+            Service.objects.filter(revision=revision_id)
+            .filter(service_code__in=service_codes)
+            .values_list("id", flat=True)
         )
     except Service.DoesNotExist:
         return None
@@ -181,7 +185,7 @@ def get_single_booking_arrangements_file(revision_id):
 
 def get_valid_files(revision_id, valid_files, service_codes, line_name):
     if len(valid_files) == 1:
-        return get_single_booking_arrangements_file(revision_id)
+        return get_single_booking_arrangements_file(revision_id, service_codes)
     elif len(valid_files) > 1:
         booking_arrangements_qs = None
         for service_code in service_codes:
@@ -197,7 +201,7 @@ def get_valid_files(revision_id, valid_files, service_codes, line_name):
 
             if len(booking_arrangements_qs) == 1:
                 return get_single_booking_arrangements_file(
-                    booking_arrangements_qs.first().revision_id
+                    booking_arrangements_qs.first().revision_id, [service_code]
                 )
 
             lastest_operating_period_start = get_lastest_operating_period_start_date(
@@ -212,7 +216,7 @@ def get_valid_files(revision_id, valid_files, service_codes, line_name):
 
             if len(booking_arrangements_qs) == 1:
                 return get_single_booking_arrangements_file(
-                    booking_arrangements_qs.first().revision_id
+                    booking_arrangements_qs.first().revision_id, [service_code]
                 )
 
             booking_arrangements_qs = booking_arrangements_qs.order_by(
@@ -220,5 +224,5 @@ def get_valid_files(revision_id, valid_files, service_codes, line_name):
             ).first()
 
             return get_single_booking_arrangements_file(
-                booking_arrangements_qs.revision_id
+                booking_arrangements_qs.revision_id, [service_code]
             )
