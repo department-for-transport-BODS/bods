@@ -167,11 +167,11 @@ class LineMetadataDetailView(DetailView):
             .add_is_live_pti_compliant()
         )
 
-    def get_service_codes_dict(self, revision_id, line, noc):
+    def get_service_codes_dict(self, revision_id, line, noc, licence_no):
         service_codes_list = []
         txc_file_attributes = TXCFileAttributes.objects.filter(
             revision_id=revision_id
-        ).filter(national_operator_code=noc)
+        ).filter(national_operator_code=noc).filter(licence_number=licence_no)
 
         for file_attribute in txc_file_attributes:
             for line_name in file_attribute.line_names:
@@ -349,6 +349,7 @@ class LineMetadataDetailView(DetailView):
     def get_context_data(self, **kwargs):
         line = self.request.GET.get("line")
         noc = self.request.GET.get("noc")
+        licence_no = self.request.GET.get("l")
         kwargs = super().get_context_data(**kwargs)
 
         dataset = self.object
@@ -357,7 +358,7 @@ class LineMetadataDetailView(DetailView):
 
         kwargs["line_name"] = line
         kwargs["service_codes"] = self.get_service_codes_dict(
-            live_revision.id, line, noc
+            live_revision.id, line, noc, licence_no
         )
         kwargs["service_type"] = self.get_service_type(
             live_revision.id, kwargs["service_codes"], kwargs["line_name"]
