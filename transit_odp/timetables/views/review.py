@@ -174,7 +174,9 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
                 "feed_name": revision[1],
             }
         )
-        context["service_codes"] = get_service_codes_dict(revision[0], line, noc, licence_no)
+        context["service_codes"] = get_service_codes_dict(
+            revision[0], line, noc, licence_no
+        )
         context["service_type"] = get_service_type(
             revision[0], context["service_codes"], context["line_name"]
         )

@@ -169,9 +169,11 @@ class LineMetadataDetailView(DetailView):
 
     def get_service_codes_dict(self, revision_id, line, noc, licence_no):
         service_codes_list = []
-        txc_file_attributes = TXCFileAttributes.objects.filter(
-            revision_id=revision_id
-        ).filter(national_operator_code=noc).filter(licence_number=licence_no)
+        txc_file_attributes = (
+            TXCFileAttributes.objects.filter(revision_id=revision_id)
+            .filter(national_operator_code=noc)
+            .filter(licence_number=licence_no)
+        )
 
         for file_attribute in txc_file_attributes:
             for line_name in file_attribute.line_names:

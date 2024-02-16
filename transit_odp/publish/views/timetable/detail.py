@@ -106,7 +106,9 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
         kwargs["line_name"] = line
-        kwargs["service_codes"] = get_service_codes_dict(live_revision.id, line, noc, licence_no)
+        kwargs["service_codes"] = get_service_codes_dict(
+            live_revision.id, line, noc, licence_no
+        )
         kwargs["service_type"] = get_service_type(
             live_revision.id, kwargs["service_codes"], kwargs["line_name"]
         )
