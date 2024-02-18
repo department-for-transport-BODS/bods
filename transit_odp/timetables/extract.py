@@ -151,6 +151,7 @@ class TransXChangeExtractor:
         logger.debug("Finished extracting flexible journey pattern sections")
 
         logger.debug("Extracting flexible journey pattern timing links")
+
         flexible_timing_links = self.create_flexible_timing_link(
             flexible_journey_patterns, flexible_jp_to_jps
         )
