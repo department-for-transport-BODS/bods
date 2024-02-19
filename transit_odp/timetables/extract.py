@@ -463,18 +463,33 @@ class TransXChangeZipExtractor:
             stop_points=concat_and_dedupe(
                 (extract.stop_points for extract in extracts)
             ),
+            flexible_stop_points=concat_and_dedupe(
+                (extract.flexible_stop_points for extract in extracts)
+            ),
             provisional_stops=concat_and_dedupe(
                 (extract.provisional_stops for extract in extracts)
             ),
             journey_patterns=concat_and_dedupe(
                 (extract.journey_patterns for extract in extracts)
             ),
+            flexible_journey_patterns=concat_and_dedupe(
+                (extract.flexible_journey_patterns for extract in extracts)
+            ),
             jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
+            flexible_jp_to_jps=concat_and_dedupe(
+                (extract.flexible_jp_to_jps for extract in extracts)
+            ),
             jp_sections=concat_and_dedupe(
                 (extract.jp_sections for extract in extracts)
             ),
+            flexible_jp_sections=concat_and_dedupe(
+                (extract.flexible_jp_sections for extract in extracts)
+            ),
             timing_links=concat_and_dedupe(
                 (extract.timing_links for extract in extracts)
+            ),
+            flexible_timing_links=concat_and_dedupe(
+                (extract.flexible_timing_links for extract in extracts)
             ),
             routes=concat_and_dedupe((extract.routes for extract in extracts)),
             route_to_route_links=concat_and_dedupe(

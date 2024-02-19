@@ -68,6 +68,7 @@ def test_create_flexible_zone_df():
     # test
 
     df = create_flexible_zone_df(flexible_zone)
+    df.to_csv("df_flexible_zone.csv")
     columns_names = list(df.columns)
     assert len(df) == 2
     assert columns_names == ["naptan_id", "flexible_location", "sequence_number"]
