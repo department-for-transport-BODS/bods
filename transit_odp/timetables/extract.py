@@ -118,6 +118,8 @@ class TransXChangeExtractor:
             logger.debug("Extracting operating_profiles")
             operating_profiles = self.extract_operating_profiles()
             logger.debug("Finished extracting operating_profiles")
+        else:
+            timing_links.drop(columns=["is_timing_status", "run_time", "wait_time"], axis=1 ,inplace=True)
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")

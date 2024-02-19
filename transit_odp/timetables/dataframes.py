@@ -174,7 +174,20 @@ def journey_pattern_sections_to_dataframe(sections):
             for order, link in enumerate(links):
                 from_stop_ref = link.get_element(["From", "StopPointRef"]).text
                 to_stop_ref = link.get_element(["To", "StopPointRef"]).text
+                to_stop_timing_status = link.get_element_or_none(["To", "TimingStatus"])
+                is_timing_status = False
+                if to_stop_timing_status and to_stop_timing_status.text in ["principalTimingPoint","PTP"]:
+                    is_timing_status = True
                 timing_link_id = link["id"]
+
+                run_time = pd.NaT
+                element_run_time = link.get_element_or_none(["RunTime"])
+                if element_run_time:
+                    run_time = pd.to_timedelta(element_run_time.text)
+                element_wait_time = link.get_element_or_none(["To", "WaitTime"])
+                wait_time = pd.NaT
+                if element_wait_time:
+                    wait_time = pd.to_timedelta(element_wait_time.text)
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
@@ -190,6 +203,9 @@ def journey_pattern_sections_to_dataframe(sections):
                         "order": order,
                         "from_stop_ref": from_stop_ref,
                         "to_stop_ref": to_stop_ref,
+                        "is_timing_status": is_timing_status,
+                        "run_time": run_time,
+                        "wait_time": wait_time,
                     }
                 )
     timing_links = pd.DataFrame(all_links)
@@ -222,16 +238,39 @@ def vehicle_journeys_to_dataframe(
             ).text
             service_ref = vehicle_journey.get_element(["ServiceRef"]).text
 
-            all_vechicle_journeys.append(
-                {
-                    "service_code": service_ref,
-                    "departure_time": departure_time,
-                    "journey_pattern_ref": "-".join([service_ref, journey_pattern_ref]),
-                    "line_ref": line_ref,
-                    "journey_code": journey_code,
-                    "vehicle_journey_code": vehicle_journey_code,
-                }
-            )
+            vj_timing_links = vehicle_journey.get_elements_or_none(["VehicleJourneyTimingLink"])
+
+            if vj_timing_links:
+                for links in vj_timing_links:
+                    timing_link_ref = links.get_element(["JourneyPatternTimingLinkRef"]).text
+                    run_time = pd.to_timedelta(links.get_element(["RunTime"]).text)
+                    
+                    all_vechicle_journeys.append(
+                        {
+                            "service_code": service_ref,
+                            "departure_time": departure_time,
+                            "journey_pattern_ref": "-".join([service_ref, journey_pattern_ref]),
+                            "line_ref": line_ref,
+                            "journey_code": journey_code,
+                            "vehicle_journey_code": vehicle_journey_code,
+                            "timing_link_ref": timing_link_ref,
+                            "run_time": run_time
+                        }
+                    )
+
+            else:
+                all_vechicle_journeys.append(
+                    {
+                        "service_code": service_ref,
+                        "departure_time": departure_time,
+                        "journey_pattern_ref": "-".join([service_ref, journey_pattern_ref]),
+                        "line_ref": line_ref,
+                        "journey_code": journey_code,
+                        "vehicle_journey_code": vehicle_journey_code,
+                        "timing_link_ref": None,
+                        "run_time": pd.NaT,
+                    }
+                )
 
     if flexible_vechicle_journeys is not None:
         for vehicle_journey in flexible_vechicle_journeys:
@@ -252,6 +291,8 @@ def vehicle_journeys_to_dataframe(
                     "line_ref": line_ref,
                     "journey_code": None,
                     "vehicle_journey_code": vehicle_journey_code,
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 }
             )
 

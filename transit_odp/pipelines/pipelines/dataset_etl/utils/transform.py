@@ -11,14 +11,18 @@ logger = get_task_logger(__name__)
 
 def create_stop_sequence(df: pd.DataFrame):
     df = df.reset_index().sort_values("order")
-
-    stops_atcos = df[["from_stop_atco"]].rename(columns={"from_stop_atco": "stop_atco"})
-
+    stops_atcos = df[["from_stop_atco", "departure_time", "is_timing_status"]].iloc[[0]].rename(columns={"from_stop_atco": "stop_atco"})
+    stops_atcos["is_timing_status"] = True
     last_stop = (
-        df[["to_stop_atco"]].iloc[[-1]].rename(columns={"to_stop_atco": "stop_atco"})
+        df[["to_stop_atco", "is_timing_status", "run_time",
+       "wait_time"]].rename(columns={"to_stop_atco": "stop_atco"})
     )
 
+    last_stop['departure_time'] = last_stop['run_time'].fillna(pd.Timedelta(0)) + last_stop['wait_time'].fillna(pd.Timedelta(0))
+    last_stop.drop(columns=["run_time", "wait_time"], inplace=True)
+
     stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
+    stops_atcos['departure_time'] = stops_atcos['departure_time'].cumsum()
     stops_atcos.index.name = "order"
     return stops_atcos
 
@@ -35,7 +39,6 @@ def transform_service_pattern_stops(
         .reset_index()
         .set_index(["file_id"], append=True, verify_integrity=True)
     )
-
     # Merge with stops to have sequence of naptan_id, geometry, etc.
     stop_cols = ["naptan_id", "geometry", "locality_id", "admin_area_id"]
     service_pattern_stops = service_pattern_stops.merge(
@@ -145,7 +148,7 @@ def create_route_links(timing_links, stop_points):
         timing_links.reset_index()
         .drop_duplicates(["file_id", "route_link_ref"])
         .set_index(["file_id", "route_link_ref"])
-        .loc[:, ["from_stop_ref", "to_stop_ref"]]
+        .loc[:, ["from_stop_ref", "to_stop_ref", "is_timing_status", "run_time", "wait_time"]]
         .rename(
             columns={"from_stop_ref": "from_stop_atco", "to_stop_ref": "to_stop_atco"}
         )
@@ -188,7 +191,7 @@ def create_hash(s: pd.Series):
     return hash(tuple(s))
 
 
-def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links):
+def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links, vehicle_journeys_with_timing_refs):
     """
     Merge timing_links with jp_to_jps to get timing links for each journey
     pattern, Note 'order' column appears in both jp_to_jps and timing_links,
@@ -213,16 +216,32 @@ def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links):
         suffixes=["_section", "_link"],
     )
 
-    # Build the new sequence. To get the final ordering of route_link_ref,
-    # we sort each group by the two
-    # orderings and use 'reset_index' to create a new sequential index in this order
-    route_to_route_links = route_to_route_links.groupby(
-        ["file_id", "route_hash"]
-    ).apply(
-        lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-            ["route_link_ref"]
-        ]
-    )
+    if not vehicle_journeys_with_timing_refs.empty:
+        route_to_route_links = route_to_route_links.merge(
+            vehicle_journeys_with_timing_refs.reset_index(),
+            left_on=["file_id", "journey_pattern_id", "timing_link_ref"],
+            right_on=["file_id", "journey_pattern_id", "jp_timing_link_id"],
+            how="left",
+            suffixes=["_rl", "_vj"],
+        )
+        route_to_route_links = route_to_route_links.groupby(
+            ["file_id", "route_hash"]
+        ).apply(
+            lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
+                ["route_link_ref", "run_time_vj"]
+            ]
+        )
+    else:
+        # Build the new sequence. To get the final ordering of route_link_ref,
+        # we sort each group by the two
+        # orderings and use 'reset_index' to create a new sequential index in this order
+        route_to_route_links = route_to_route_links.groupby(
+            ["file_id", "route_hash"]
+        ).apply(
+            lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
+                ["route_link_ref"]
+            ]
+        )
     route_to_route_links.index.names = ["file_id", "route_hash", "order"]
 
     return route_to_route_links
@@ -243,6 +262,18 @@ def transform_line_names(line_name_list):
         line_names = ",".join(key for key in line_name_list)
         return line_names
 
+def get_vehicle_journey_without_timing_refs(vehicle_journeys):
+    df_subset = vehicle_journeys[vehicle_journeys.columns.difference(["timing_link_ref","run_time"])].drop_duplicates()
+    df_subset = df_subset.drop(['service_code'], axis=1)
+    return df_subset
+
+def get_vehicle_journey_with_timing_refs(vehicle_journeys):
+    df_subset = vehicle_journeys.loc[:, ["journey_pattern_ref", "service_code", "timing_link_ref", "run_time"]]
+    df_subset["journey_pattern_id"] = df_subset["journey_pattern_ref"].str.cat(
+        df_subset["service_code"], sep="-"
+    )
+    df_subset = df_subset.drop(['journey_pattern_ref', 'service_code'], axis=1)
+    return df_subset[df_subset["timing_link_ref"].notna()].drop_duplicates()
 
 def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
     df_merged = pd.merge(
@@ -253,6 +284,21 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         how="left",
         suffixes=("_vj", "_jp"),
     )
+    return df_merged
+
+
+def merge_journey_pattern_with_vj_for_departure_time(vehicle_journeys, journey_patterns):
+    index = journey_patterns.index
+    df_merged = pd.merge(
+        journey_patterns.reset_index(),
+        vehicle_journeys[["file_id","journey_pattern_ref","departure_time"]],
+        left_on=["file_id", "journey_pattern_id"],
+        right_on=["file_id", "journey_pattern_ref"],
+        how="left",
+        suffixes=("_vj", "_jp"),
+    )
+    df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
+    df_merged.set_index(index.names, inplace=True)
     return df_merged
 
 
@@ -317,7 +363,8 @@ def transform_service_pattern_to_service_links(
 
     # filter and rename columns
     service_pattern_to_service_links = service_pattern_to_service_links[
-        ["file_id", "service_pattern_id", "order", "from_stop_atco", "to_stop_atco"]
+        ["file_id", "service_pattern_id", "order", "from_stop_atco", "to_stop_atco", "departure_time", "is_timing_status", "run_time",
+       "wait_time"]
     ].set_index(["file_id", "service_pattern_id", "order"])
 
     # no longer need route_hash

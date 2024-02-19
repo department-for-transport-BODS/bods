@@ -14,6 +14,9 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_route_to_route_links,
     create_routes,
     get_most_common_localities,
+    get_vehicle_journey_with_timing_refs,
+    get_vehicle_journey_without_timing_refs,
+    merge_journey_pattern_with_vj_for_departure_time,
     merge_vehicle_journeys_with_jp,
     merge_serviced_organisations_with_operating_profile,
     sync_localities_and_adminareas,
@@ -55,10 +58,15 @@ class TransXChangeTransformer:
         most_common_localities = get_most_common_localities(stop_points)
 
         df_merged_vehicle_journeys = pd.DataFrame()
+        vehicle_journeys_with_timing_refs = pd.DataFrame()
         if not vehicle_journeys.empty and not journey_patterns.empty:
+            vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(vehicle_journeys)
+            vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
+            
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns
             )
+            journey_patterns = merge_journey_pattern_with_vj_for_departure_time(vehicle_journeys.reset_index(), journey_patterns)
 
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
@@ -83,7 +91,7 @@ class TransXChangeTransformer:
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:
             route_to_route_links = create_route_to_route_links(
-                journey_patterns, jp_to_jps, timing_links
+                journey_patterns, jp_to_jps, timing_links, vehicle_journeys_with_timing_refs
             )
 
         line_names = transform_line_names(self.extracted_data.line_names)
@@ -103,7 +111,6 @@ class TransXChangeTransformer:
                     service_patterns, route_to_route_links, route_links
                 )
             )
-
             # aggregate stop_sequence and geometry
             service_pattern_stops = transform_service_pattern_stops(
                 service_pattern_to_service_links, stop_points
