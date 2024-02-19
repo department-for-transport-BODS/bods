@@ -415,8 +415,7 @@ def populate_operating_profiles(operating_profiles, vehicle_journey_code, servic
         ["BankHolidayOperation"]
     )
 
-    bank_holiday_columns = ["txc_element", "date"]
-    df_bank_holidays_from_db = db_bank_holidays_to_df(bank_holiday_columns)
+    df_bank_holidays_from_db = db_bank_holidays_to_df(["txc_element", "date"])
 
     current_year = datetime.today().year
 
@@ -426,8 +425,11 @@ def populate_operating_profiles(operating_profiles, vehicle_journey_code, servic
 
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
-        if days_of_week_elements:
-            days_of_week = [day.localname for day in days_of_week_elements.children]
+        days_of_week = (
+            [day.localname for day in days_of_week_elements.children]
+            if days_of_week_elements
+            else ""
+        )
 
     operating_profile_obj = {
         "service_code": service_ref,
