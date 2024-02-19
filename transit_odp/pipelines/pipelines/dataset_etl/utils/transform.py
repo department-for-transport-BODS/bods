@@ -216,14 +216,16 @@ def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links, vehic
         suffixes=["_section", "_link"],
     )
 
+    print(f"vehicle_journeys_with_timing_refs----{vehicle_journeys_with_timing_refs}") 
     if not vehicle_journeys_with_timing_refs.empty:
         route_to_route_links = route_to_route_links.merge(
             vehicle_journeys_with_timing_refs.reset_index(),
-            left_on=["file_id", "journey_pattern_id", "timing_link_ref"],
-            right_on=["file_id", "journey_pattern_id", "jp_timing_link_id"],
+            left_on=["file_id", "journey_pattern_id", "jp_timing_link_id"],
+            right_on=["file_id", "journey_pattern_id", "timing_link_ref"],
             how="left",
             suffixes=["_rl", "_vj"],
         )
+        print(f"values----{route_to_route_links}") 
         route_to_route_links = route_to_route_links.groupby(
             ["file_id", "route_hash"]
         ).apply(
@@ -242,6 +244,7 @@ def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links, vehic
                 ["route_link_ref"]
             ]
         )
+    print(f"route_to_route_links----{route_to_route_links}")    
     route_to_route_links.index.names = ["file_id", "route_hash", "order"]
 
     return route_to_route_links
@@ -269,9 +272,6 @@ def get_vehicle_journey_without_timing_refs(vehicle_journeys):
 
 def get_vehicle_journey_with_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys.loc[:, ["journey_pattern_ref", "service_code", "timing_link_ref", "run_time"]]
-    df_subset["journey_pattern_id"] = df_subset["journey_pattern_ref"].str.cat(
-        df_subset["service_code"], sep="-"
-    )
     df_subset = df_subset.drop(['journey_pattern_ref', 'service_code'], axis=1)
     return df_subset[df_subset["timing_link_ref"].notna()].drop_duplicates()
 
