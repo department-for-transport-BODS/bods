@@ -510,7 +510,7 @@ NPTG_IMPORT_URL = env(
 )
 
 BANK_HOLIDAY_API_URL = env(
-    "NPTG_IMPORT_URL", default="https://www.gov.uk/bank-holidays.json"
+    "BANK_HOLIDAY_API_URL", default="https://www.gov.uk/bank-holidays.json"
 )
 
 # Google Analytics Key

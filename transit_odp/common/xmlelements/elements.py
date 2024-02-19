@@ -190,8 +190,3 @@ class XMLElement:
     def line_number(self):
         """Returns the line number of the element."""
         return self._element.sourceline
-
-    @property
-    def tag_localname(self):
-        """Returns the local name (tag without namespace) of the current element."""
-        return etree.QName(self._element).localname

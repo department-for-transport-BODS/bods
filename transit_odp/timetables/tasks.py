@@ -52,7 +52,7 @@ from transit_odp.validate import (
 
 logger = getLogger(__name__)
 
-BATCH_SIZE = 25_000
+BATCH_SIZE = 2000
 
 
 @shared_task(bind=True)
@@ -537,11 +537,10 @@ def task_delete_datasets(*args):
 def task_load_bank_holidays():
     """This is a task to load bank holidays from api to BODS database"""
     logger.info("Starting process to load bank holidays from api")
-    existing_bank_holidays = BankHolidays.objects.all()
     bank_holidays = get_bank_holidays()
     logger.info("completed process to load bank holidays from api successfully")
     bank_holidays_to_insert = list(get_holidays_records_to_insert(bank_holidays))
     with transaction.atomic():
-        existing_bank_holidays.delete()
-        BankHolidays.objects.bulk_create(bank_holidays_to_insert, 1000)
+        BankHolidays.objects.all().delete()
+        BankHolidays.objects.bulk_create(bank_holidays_to_insert, BATCH_SIZE)
         logger.info("completed process to load bank holidays from api successfully")

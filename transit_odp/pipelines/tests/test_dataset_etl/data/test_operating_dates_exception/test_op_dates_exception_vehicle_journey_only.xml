@@ -13794,64 +13794,6 @@
         <StartDate>2023-09-05</StartDate>
         <EndDate>2024-08-30</EndDate>
       </OperatingPeriod>
-      <!-- <OperatingProfile>
-        <RegularDayType>
-          <DaysOfWeek>
-            <Monday></Monday>
-            <Tuesday></Tuesday>
-            <Wednesday></Wednesday>
-            <Thursday></Thursday>
-            <Friday></Friday>
-          </DaysOfWeek>
-        </RegularDayType>
-        <ServicedOrganisationDayType>
-          <DaysOfOperation>
-            <WorkingDays>
-              <ServicedOrganisationRef>811SCH</ServicedOrganisationRef>
-            </WorkingDays>
-          </DaysOfOperation>
-        </ServicedOrganisationDayType>
-        <SpecialDaysOperation>
-          <DaysOfOperation>
-            <DateRange>
-              <StartDate>2023-11-30</StartDate>
-              <EndDate>2023-11-30</EndDate>
-            </DateRange>
-          </DaysOfOperation>
-          <DaysOfNonOperation>
-            <DateRange>
-              <StartDate>2023-09-29</StartDate>
-              <EndDate>2023-09-29</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-01</StartDate>
-              <EndDate>2024-07-01</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-22</StartDate>
-              <EndDate>2024-08-30</EndDate>
-            </DateRange>
-          </DaysOfNonOperation>
-        </SpecialDaysOperation>
-        <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
-          <DaysOfNonOperation>
-            <ChristmasDay></ChristmasDay>
-            <BoxingDay></BoxingDay>
-            <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
-            <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
-          </DaysOfNonOperation>
-        </BankHolidayOperation>
-      </OperatingProfile> -->
       <VehicleType>
         <WheelchairAccessible>true</WheelchairAccessible>
       </VehicleType>

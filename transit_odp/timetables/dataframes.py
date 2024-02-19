@@ -346,13 +346,13 @@ def get_operating_profiles_for_all_exceptions(
         for holiday in operations.children:
             date = None
             no_bank_holidays = False
-            if holiday.tag_localname == "OtherPublicHoliday":
+            if holiday.localname == "OtherPublicHoliday":
                 date = datetime.strptime(
                     holiday.get_element(["Date"]).text, "%Y-%m-%d"
                 ).date()
             else:
                 filtered_df = df_bank_holidays_from_db.loc[
-                    df_bank_holidays_from_db["txc_element"] == holiday.tag_localname,
+                    df_bank_holidays_from_db["txc_element"] == holiday.localname,
                     "date",
                 ]
 
@@ -399,23 +399,19 @@ def get_operating_profiles_for_all_exceptions(
     return operating_profile_list
 
 
-def populate_operating_profiles(
-    operating_profile_services, vehicle_journey_code, service_ref
-):
+def populate_operating_profiles(operating_profiles, vehicle_journey_code, service_ref):
     operating_profile_list = []
     serviced_org_refs = []
     days_of_week = ""
     operational = ""
-    serviced_organisation_day_type = operating_profile_services.get_element_or_none(
+    serviced_organisation_day_type = operating_profiles.get_element_or_none(
         ["ServicedOrganisationDayType"]
     )
-    regular_day_type = operating_profile_services.get_element_or_none(
-        ["RegularDayType"]
-    )
-    special_days_operation = operating_profile_services.get_element_or_none(
+    regular_day_type = operating_profiles.get_element_or_none(["RegularDayType"])
+    special_days_operation = operating_profiles.get_element_or_none(
         ["SpecialDaysOperation"]
     )
-    bank_holiday_operation = operating_profile_services.get_element_or_none(
+    bank_holiday_operation = operating_profiles.get_element_or_none(
         ["BankHolidayOperation"]
     )
 
@@ -429,10 +425,9 @@ def populate_operating_profiles(
     ]
 
     if regular_day_type:
-        days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])
+        days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
         if days_of_week_elements:
-            days_of_week_element = days_of_week_elements[0]
-            days_of_week = [day.localname for day in days_of_week_element.children]
+            days_of_week = [day.localname for day in days_of_week_elements.children]
 
     operating_profile_obj = {
         "service_code": service_ref,
