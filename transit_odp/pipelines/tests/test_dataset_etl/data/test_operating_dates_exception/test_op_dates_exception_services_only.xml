@@ -13897,55 +13897,6 @@
           <Direction>inbound</Direction>
         </TicketMachine>
       </Operational>
-      <!-- <OperatingProfile>
-        <RegularDayType>
-          <HolidaysOnly></HolidaysOnly>
-        </RegularDayType>
-        <SpecialDaysOperation>
-          <DaysOfOperation>
-            <DateRange>
-              <StartDate>2023-09-15</StartDate>
-              <EndDate>2023-09-15</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2023-12-20</StartDate>
-              <EndDate>2023-12-20</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-03-28</StartDate>
-              <EndDate>2024-03-28</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-19</StartDate>
-              <EndDate>2024-07-19</EndDate>
-            </DateRange>
-          </DaysOfOperation>
-          <DaysOfNonOperation>
-            <DateRange>
-              <StartDate>2024-07-22</StartDate>
-              <EndDate>2024-08-30</EndDate>
-            </DateRange>
-          </DaysOfNonOperation>
-        </SpecialDaysOperation>
-        <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
-          <DaysOfNonOperation>
-            <ChristmasDay></ChristmasDay>
-            <BoxingDay></BoxingDay>
-            <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
-            <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
-          </DaysOfNonOperation>
-        </BankHolidayOperation>
-      </OperatingProfile> -->
       <VehicleJourneyCode>VJ_9</VehicleJourneyCode>
       <ServiceRef>PF0001633:2</ServiceRef>
       <LineRef>CARL:PF0001633:2:811</LineRef>
@@ -13965,62 +13916,6 @@
           <Direction>inbound</Direction>
         </TicketMachine>
       </Operational>
-      <!-- <OperatingProfile>
-        <RegularDayType>
-          <DaysOfWeek>
-            <Friday></Friday>
-          </DaysOfWeek>
-        </RegularDayType>
-        <ServicedOrganisationDayType>
-          <DaysOfOperation>
-            <WorkingDays>
-              <ServicedOrganisationRef>811SCH</ServicedOrganisationRef>
-            </WorkingDays>
-          </DaysOfOperation>
-        </ServicedOrganisationDayType>
-        <SpecialDaysOperation>
-          <DaysOfNonOperation>
-            <DateRange>
-              <StartDate>2023-09-15</StartDate>
-              <EndDate>2023-09-15</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-03-29</StartDate>
-              <EndDate>2024-03-29</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-19</StartDate>
-              <EndDate>2024-07-19</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2023-09-29</StartDate>
-              <EndDate>2023-09-29</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-22</StartDate>
-              <EndDate>2024-08-30</EndDate>
-            </DateRange>
-          </DaysOfNonOperation>
-        </SpecialDaysOperation>
-        <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
-          <DaysOfNonOperation>
-            <ChristmasDay></ChristmasDay>
-            <BoxingDay></BoxingDay>
-            <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
-            <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
-          </DaysOfNonOperation>
-        </BankHolidayOperation>
-      </OperatingProfile> -->
       <VehicleJourneyCode>VJ_8</VehicleJourneyCode>
       <ServiceRef>PF0001633:2</ServiceRef>
       <LineRef>CARL:PF0001633:2:811</LineRef>
@@ -14040,67 +13935,6 @@
           <Direction>inbound</Direction>
         </TicketMachine>
       </Operational>
-      <!-- <OperatingProfile>
-        <RegularDayType>
-          <DaysOfWeek>
-            <Monday></Monday>
-            <Tuesday></Tuesday>
-            <Wednesday></Wednesday>
-            <Thursday></Thursday>
-          </DaysOfWeek>
-        </RegularDayType>
-        <ServicedOrganisationDayType>
-          <DaysOfOperation>
-            <WorkingDays>
-              <ServicedOrganisationRef>811SCH</ServicedOrganisationRef>
-            </WorkingDays>
-          </DaysOfOperation>
-        </ServicedOrganisationDayType>
-        <SpecialDaysOperation>
-          <DaysOfOperation>
-            <DateRange>
-              <StartDate>2023-11-30</StartDate>
-              <EndDate>2023-11-30</EndDate>
-            </DateRange>
-          </DaysOfOperation>
-          <DaysOfNonOperation>
-            <DateRange>
-              <StartDate>2023-12-20</StartDate>
-              <EndDate>2023-12-20</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-03-28</StartDate>
-              <EndDate>2024-03-28</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-22</StartDate>
-              <EndDate>2024-08-30</EndDate>
-            </DateRange>
-            <DateRange>
-              <StartDate>2024-07-01</StartDate>
-              <EndDate>2024-07-01</EndDate>
-            </DateRange>
-          </DaysOfNonOperation>
-        </SpecialDaysOperation>
-        <BankHolidayOperation>
-          <DaysOfOperation></DaysOfOperation>
-          <DaysOfNonOperation>
-            <ChristmasDay></ChristmasDay>
-            <BoxingDay></BoxingDay>
-            <GoodFriday></GoodFriday>
-            <NewYearsDay></NewYearsDay>
-            <LateSummerBankHolidayNotScotland></LateSummerBankHolidayNotScotland>
-            <MayDay></MayDay>
-            <EasterMonday></EasterMonday>
-            <SpringBank></SpringBank>
-            <ChristmasDayHoliday></ChristmasDayHoliday>
-            <BoxingDayHoliday></BoxingDayHoliday>
-            <NewYearsDayHoliday></NewYearsDayHoliday>
-            <ChristmasEve></ChristmasEve>
-            <NewYearsEve></NewYearsEve>
-          </DaysOfNonOperation>
-        </BankHolidayOperation>
-      </OperatingProfile> -->
       <VehicleJourneyCode>VJ_7</VehicleJourneyCode>
       <ServiceRef>PF0001633:2</ServiceRef>
       <LineRef>CARL:PF0001633:2:811</LineRef>

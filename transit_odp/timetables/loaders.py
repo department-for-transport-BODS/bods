@@ -370,7 +370,6 @@ class TransXChangeDataLoader:
 
             self.load_operating_profiles(merged_df)
             self.load_operating_dates_exceptions(merged_df)
-            
 
     def load_serviced_organisation_vehicle_journey(
         self, vehicle_journeys, serviced_organisations

@@ -262,7 +262,7 @@ def df_to_non_operating_dates_exceptions(
             non_operating_date=record["exceptions_date"],
         )
 
-        
+
 def df_to_serviced_org_vehicle_journey(df: pd.DataFrame) -> Iterator[VehicleJourney]:
     for record in df.to_dict("records"):
         yield ServicedOrganisationVehicleJourney(
