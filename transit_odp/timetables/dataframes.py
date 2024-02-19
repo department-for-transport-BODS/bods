@@ -424,10 +424,9 @@ def populate_operating_profiles(
     df_bank_holidays_from_db.drop_duplicates(inplace=True)
 
     if regular_day_type:
-        days_of_week_elements = regular_day_type.get_elements_or_none(["DaysOfWeek"])
+        days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
         if days_of_week_elements:
-            days_of_week_element = days_of_week_elements[0]
-            days_of_week = [day.localname for day in days_of_week_element.children]
+            days_of_week = [day.localname for day in days_of_week_elements.children]
 
     operating_profile_obj = {
         "service_code": service_ref,
