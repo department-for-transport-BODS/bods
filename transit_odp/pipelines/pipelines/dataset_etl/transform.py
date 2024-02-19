@@ -28,6 +28,8 @@ from .utils.transform import (
     transform_service_pattern_to_service_links,
     transform_service_patterns,
     transform_stop_sequence,
+    transform_geometry,
+    transform_flexible_stop_sequence,
 )
 
 logger = get_task_logger(__name__)
@@ -45,6 +47,19 @@ class Transform(ETLUtility):
         timing_links = extracted_data.timing_links.copy()
         stop_points = extracted_data.stop_points.copy()
         provisional_stops = extracted_data.provisional_stops.copy()
+        flexible_stop_points = self.extracted_data.flexible_stop_points.copy()
+        flexible_timing_links = self.extracted_data.flexible_timing_links.copy()
+        flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
+        flexible_jp_to_jps = self.extracted_data.flexible_jp_to_jps.copy()
+        flexible_jp_sections = self.extracted_data.flexible_jp_sections.copy()
+
+        # remove flexible stop points from stop points
+        if not flexible_stop_points.empty:
+            # get atco_code value from index
+            flexible_stop_points_list = list(flexible_stop_points.index.values)
+            stop_points = stop_points[
+                ~stop_points.index.isin(flexible_stop_points_list)
+            ]
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -77,6 +92,127 @@ class Transform(ETLUtility):
         service_patterns = transform_stop_sequence(
             service_pattern_stops, service_patterns
         )
+
+        ### logic for flexible stop points transformation
+        if not flexible_stop_points.empty:
+            # 1. extract naptan stoppoints data
+            flexible_stop_points_with_naptan_id = self.sync_flexible_stop_points(
+                flexible_stop_points
+            )
+
+            flexible_stop_points_with_naptan_id = sync_localities_and_adminareas(
+                flexible_stop_points_with_naptan_id
+            )
+
+            # 2. extract flexible zone data
+            flexible_zone = self.sync_flexible_zone(flexible_stop_points_with_naptan_id)
+
+            # 3. merge the flexible stop points and flexible zone to get the required geometry
+            flexible_stop_points_with_geometry = (
+                flexible_stop_points_with_naptan_id.merge(
+                    flexible_zone, how="left", left_on="atco_code", right_on="atco_code"
+                )
+            )
+            flexible_stop_points_with_geometry = transform_geometry(
+                flexible_stop_points_with_geometry
+            )
+
+            # 4. create dummy route_link_ref
+            flexible_route_links = pd.DataFrame()
+            if not flexible_timing_links.empty:
+                flexible_route_links = create_route_links(
+                    flexible_timing_links, flexible_stop_points_with_geometry
+                )
+
+            # 5. create flexible routes
+            if (
+                not flexible_journey_patterns.empty
+                and not flexible_jp_to_jps.empty
+                and not flexible_timing_links.empty
+            ):
+                create_routes(
+                    flexible_journey_patterns,
+                    flexible_jp_to_jps,
+                    flexible_jp_sections,
+                    flexible_timing_links,
+                )
+
+            # 6. create route hash for flexible route link
+            flexible_route_to_route_links = pd.DataFrame()
+            if (
+                not flexible_journey_patterns.empty
+                and not flexible_jp_to_jps.empty
+                and not flexible_timing_links.empty
+            ):
+                flexible_route_to_route_links = create_route_to_route_links(
+                    flexible_journey_patterns, flexible_jp_to_jps, flexible_timing_links
+                )
+
+            # 7. create flexible service link
+            if not flexible_route_links.empty:
+                flexible_service_links = transform_service_links(flexible_route_links)
+
+            # 8. create flexible service_patterns and service_patterns_stops
+            flexible_service_patterns = pd.DataFrame()
+            flexible_service_pattern_to_service_links = pd.DataFrame()
+            flexible_service_pattern_stops = pd.DataFrame()
+
+            if (
+                not flexible_journey_patterns.empty
+                and not flexible_route_to_route_links.empty
+            ):
+                flexible_service_patterns = transform_service_patterns(
+                    flexible_journey_patterns
+                )
+
+                flexible_service_pattern_to_service_links = (
+                    transform_service_pattern_to_service_links(
+                        flexible_service_patterns,
+                        flexible_route_to_route_links,
+                        flexible_route_links,
+                    )
+                )
+
+                flexible_service_pattern_stops = transform_service_pattern_stops(
+                    flexible_service_pattern_to_service_links,
+                    flexible_stop_points_with_geometry,
+                )
+
+                flexible_service_patterns = transform_flexible_stop_sequence(
+                    flexible_service_pattern_stops, flexible_service_patterns
+                )
+
+                # 9. merge the service_patterns and flexible_service_patterns
+                service_patterns = pd.concat(
+                    [
+                        service_patterns.reset_index(),
+                        flexible_service_patterns.reset_index(),
+                    ]
+                )
+
+                if "index" in service_patterns.columns:
+                    service_patterns.drop(columns=["index"], inplace=True)
+                service_patterns.set_index(
+                    ["file_id", "service_pattern_id"], append=True, inplace=True
+                )
+
+                # 9.a merge the service_patterns_stops and flexible_service_pattern_stops
+                service_pattern_stops = pd.concat(
+                    [
+                        service_pattern_stops.reset_index(),
+                        flexible_service_pattern_stops.reset_index(),
+                    ]
+                )
+                drop_column_names = ["level_0", "index"]
+                for drop_column_name in drop_column_names:
+                    if drop_column_name in service_pattern_stops.columns:
+                        service_pattern_stops.drop(
+                            columns=[drop_column_name], inplace=True
+                        )
+
+                service_pattern_stops.set_index(["file_id"], append=True, inplace=True)
+
+                service_links = pd.concat([service_links, flexible_service_links])
 
         return TransformedData(
             services=services,

@@ -151,6 +151,7 @@ class TransXChangeTransformer:
             )
 
             # 4. create dummy route_link_ref
+            flexible_route_links = pd.DataFrame()
             if not flexible_timing_links.empty:
                 flexible_route_links = create_route_links(
                     flexible_timing_links, flexible_stop_points_with_geometry
@@ -168,16 +169,19 @@ class TransXChangeTransformer:
                     flexible_jp_sections,
                     flexible_timing_links,
                 )
-
             # 6. create route hash for flexible route link
             flexible_route_to_route_links = pd.DataFrame()
-            if not flexible_journey_patterns.empty and not flexible_jp_to_jps.empty:
+            if (
+                not flexible_journey_patterns.empty
+                and not flexible_jp_to_jps.empty
+                and not flexible_timing_links.empty
+            ):
                 flexible_route_to_route_links = create_route_to_route_links(
                     flexible_journey_patterns, flexible_jp_to_jps, flexible_timing_links
                 )
 
             # 7. create flexible service link
-            if not flexible_journey_patterns.empty and not flexible_jp_to_jps.empty:
+            if not flexible_route_links.empty:
                 flexible_service_links = transform_service_links(flexible_route_links)
 
             # 8. create flexible service_patterns and service_patterns_stops
@@ -192,7 +196,6 @@ class TransXChangeTransformer:
                 flexible_service_patterns = transform_service_patterns(
                     flexible_journey_patterns
                 )
-
                 flexible_service_pattern_to_service_links = (
                     transform_service_pattern_to_service_links(
                         flexible_service_patterns,
@@ -200,7 +203,6 @@ class TransXChangeTransformer:
                         flexible_route_links,
                     )
                 )
-
                 flexible_service_pattern_stops = transform_service_pattern_stops(
                     flexible_service_pattern_to_service_links,
                     flexible_stop_points_with_geometry,
@@ -218,7 +220,9 @@ class TransXChangeTransformer:
                     ]
                 )
 
-                service_patterns.drop(columns=["index"], inplace=True)
+                if "index" in service_patterns.columns:
+                    service_patterns.drop(columns=["index"], inplace=True)
+
                 service_patterns.set_index(
                     ["file_id", "service_pattern_id"], append=True, inplace=True
                 )
@@ -230,11 +234,16 @@ class TransXChangeTransformer:
                         flexible_service_pattern_stops.reset_index(),
                     ]
                 )
-                service_pattern_stops.drop(columns=["level_0", "index"], inplace=True)
+                drop_column_names = ["level_0", "index"]
+                for drop_column_name in drop_column_names:
+                    if drop_column_name in service_pattern_stops.columns:
+                        service_pattern_stops.drop(
+                            columns=[drop_column_name], inplace=True
+                        )
+
                 service_pattern_stops.set_index(["file_id"], append=True, inplace=True)
 
                 service_links = pd.concat([service_links, flexible_service_links])
-
         return TransformedData(
             services=services,
             service_patterns=service_patterns,

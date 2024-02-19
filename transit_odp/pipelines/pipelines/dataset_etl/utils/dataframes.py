@@ -34,7 +34,6 @@ def create_naptan_flexible_zone_df_from_queryset(queryset):
         }
         for obj in queryset
     )
-    print(f"flexible_zone queryset: {flexible_zone}")
     df = create_flexible_zone_df(flexible_zone)
 
     # perform grouping of data on naptan_id and create list of flexible zone geometry
