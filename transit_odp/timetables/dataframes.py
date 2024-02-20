@@ -10,6 +10,9 @@ from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
+from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
+    db_bank_holidays_to_df,
+)
 from datetime import datetime, timedelta
 
 from transit_odp.transmodel.models import BankHolidays
@@ -412,17 +415,21 @@ def populate_operating_profiles(operating_profiles, vehicle_journey_code, servic
         ["BankHolidayOperation"]
     )
 
-    bank_holiday_columns = ["txc_element", "date"]
-    db_bank_holidays = BankHolidays.objects.values(*bank_holiday_columns)
-    df_bank_holidays_from_db = pd.DataFrame(
-        db_bank_holidays, columns=bank_holiday_columns
-    )
-    df_bank_holidays_from_db.drop_duplicates(inplace=True)
+    df_bank_holidays_from_db = db_bank_holidays_to_df(["txc_element", "date"])
+
+    current_year = datetime.today().year
+
+    df_bank_holidays_from_db = df_bank_holidays_from_db[
+        df_bank_holidays_from_db["date"].apply(lambda x: x.year) == current_year
+    ]
 
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
-        if days_of_week_elements:
-            days_of_week = [day.localname for day in days_of_week_elements.children]
+        days_of_week = (
+            [day.localname for day in days_of_week_elements.children]
+            if days_of_week_elements
+            else ""
+        )
 
     operating_profile_obj = {
         "service_code": service_ref,
