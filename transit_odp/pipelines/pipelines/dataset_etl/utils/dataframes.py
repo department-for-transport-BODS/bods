@@ -37,7 +37,8 @@ def create_naptan_flexible_zone_df_from_queryset(queryset):
     df = create_flexible_zone_df(flexible_zone)
 
     # perform grouping of data on naptan_id and create list of flexible zone geometry
-    df = df.groupby(["naptan_id"])["flexible_location"].agg(list).reset_index()
+    if not df.empty:
+        df = df.groupby(["naptan_id"])["flexible_location"].agg(list).reset_index()
     return df
 
 

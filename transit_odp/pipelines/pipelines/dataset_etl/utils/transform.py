@@ -64,15 +64,11 @@ def transform_service_pattern_stops(
 
 def create_flexible_stop_sequence(df: pd.DataFrame):
     df = df.reset_index()
-    print(f"df: {df}")
     stops_atcos = df[["from_stop_atco"]].rename(columns={"from_stop_atco": "stop_atco"})
-    print(f"stops_atcos before: {stops_atcos}")
     last_stop = (
         df[["to_stop_atco"]].iloc[[-1]].rename(columns={"to_stop_atco": "stop_atco"})
     )
-    print(f"last_stop before: {last_stop}")
     stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
-    print(f"stops_atcos: {stops_atcos}")
     return stops_atcos
 
 

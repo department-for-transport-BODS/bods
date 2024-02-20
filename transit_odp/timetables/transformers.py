@@ -127,36 +127,38 @@ class TransXChangeTransformer:
             )
 
         ### logic for flexible stop points transformation
-        if not flexible_stop_points.empty:
-            # 1. extract naptan stoppoints data
-            flexible_stop_points_with_naptan_id = self.sync_flexible_stop_points(
-                flexible_stop_points
-            )
-
+        # 1. extract naptan stoppoints data
+        flexible_stop_points_with_naptan_id = self.sync_flexible_stop_points(
+            flexible_stop_points
+        )
+        if not flexible_stop_points_with_naptan_id.empty:
             flexible_stop_points_with_naptan_id = sync_localities_and_adminareas(
                 flexible_stop_points_with_naptan_id
             )
-
             # 2. extract flexible zone data
             flexible_zone = self.sync_flexible_zone(flexible_stop_points_with_naptan_id)
-
             # 3. merge the flexible stop points and flexible zone to get the required geometry
             flexible_stop_points_with_geometry = (
-                flexible_stop_points_with_naptan_id.merge(
-                    flexible_zone, how="left", left_on="atco_code", right_on="atco_code"
+                (
+                    flexible_stop_points_with_naptan_id.merge(
+                        flexible_zone,
+                        how="left",
+                        left_on="atco_code",
+                        right_on="atco_code",
+                    )
                 )
+                if flexible_zone
+                else flexible_stop_points_with_naptan_id
             )
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
-
             # 4. create dummy route_link_ref
             flexible_route_links = pd.DataFrame()
             if not flexible_timing_links.empty:
                 flexible_route_links = create_route_links(
                     flexible_timing_links, flexible_stop_points_with_geometry
                 )
-
             # 5. create flexible routes
             if (
                 not flexible_journey_patterns.empty
@@ -177,18 +179,17 @@ class TransXChangeTransformer:
                 and not flexible_timing_links.empty
             ):
                 flexible_route_to_route_links = create_route_to_route_links(
-                    flexible_journey_patterns, flexible_jp_to_jps, flexible_timing_links
+                    flexible_journey_patterns,
+                    flexible_jp_to_jps,
+                    flexible_timing_links,
                 )
-
             # 7. create flexible service link
             if not flexible_route_links.empty:
                 flexible_service_links = transform_service_links(flexible_route_links)
-
             # 8. create flexible service_patterns and service_patterns_stops
             flexible_service_patterns = pd.DataFrame()
             flexible_service_pattern_to_service_links = pd.DataFrame()
             flexible_service_pattern_stops = pd.DataFrame()
-
             if (
                 not flexible_journey_patterns.empty
                 and not flexible_route_to_route_links.empty
@@ -211,7 +212,6 @@ class TransXChangeTransformer:
                 flexible_service_patterns = transform_flexible_stop_sequence(
                     flexible_service_pattern_stops, flexible_service_patterns
                 )
-
                 # 9. merge the service_patterns and flexible_service_patterns
                 service_patterns = pd.concat(
                     [
@@ -226,7 +226,6 @@ class TransXChangeTransformer:
                 service_patterns.set_index(
                     ["file_id", "service_pattern_id"], append=True, inplace=True
                 )
-
                 # 9.a merge the service_patterns_stops and flexible_service_pattern_stops
                 service_pattern_stops = pd.concat(
                     [
@@ -322,35 +321,43 @@ class TransXChangeTransformer:
     def sync_flexible_stop_points(self, flexible_stop_points):
         # get stop points from index
         stop_ponts_list = list(flexible_stop_points.index.values)
-        qs = StopPoint.objects.filter(atco_code__in=stop_ponts_list)
-        naptan_stop_points_df = create_naptan_stoppoint_df_from_queryset(qs)
-        flexible_stop_points = flexible_stop_points.reset_index().merge(
-            naptan_stop_points_df.reset_index(),
-            how="left",
-            left_on="atco_code",
-            right_on="atco_code",
+        stoppoint_queryset = StopPoint.objects.filter(atco_code__in=stop_ponts_list)
+        naptan_stop_points_df = create_naptan_stoppoint_df_from_queryset(
+            stoppoint_queryset
         )
-
-        flexible_stop_points.set_index("atco_code", inplace=True)
-        return flexible_stop_points
+        if not naptan_stop_points_df.empty:
+            flexible_stop_points = (
+                flexible_stop_points.reset_index()
+                .merge(
+                    naptan_stop_points_df.reset_index(),
+                    how="left",
+                    left_on="atco_code",
+                    right_on="atco_code",
+                )
+                .set_index("atco_code")
+            )
+            return flexible_stop_points
+        return pd.DataFrame()
 
     def sync_flexible_zone(self, flexible_stop_points_with_naptan_id):
         filtered_stop_points = flexible_stop_points_with_naptan_id[
             flexible_stop_points_with_naptan_id["bus_stop_type"] == "flexible"
         ]
         filtered_stop_points_naptan_id = list(filtered_stop_points["naptan_id"].values)
-        qs = FlexibleZone.objects.filter(
+        flexiblezone_qs = FlexibleZone.objects.filter(
             naptan_stoppoint_id__in=filtered_stop_points_naptan_id
         )
-        flexible_zone_df = create_naptan_flexible_zone_df_from_queryset(qs)
-        filtered_stop_points_naptan_id = filtered_stop_points.reset_index().merge(
-            flexible_zone_df.reset_index(),
-            how="left",
-            left_on="naptan_id",
-            right_on="naptan_id",
-        )
-        filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
-            ["atco_code", "flexible_location"]
-        ]
-        filtered_stop_points_naptan_id.set_index("atco_code", inplace=True)
-        return filtered_stop_points_naptan_id
+        flexible_zone_df = create_naptan_flexible_zone_df_from_queryset(flexiblezone_qs)
+        if not flexible_zone_df.empty:
+            filtered_stop_points_naptan_id = filtered_stop_points.reset_index().merge(
+                flexible_zone_df.reset_index(),
+                how="left",
+                left_on="naptan_id",
+                right_on="naptan_id",
+            )
+            filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
+                ["atco_code", "flexible_location"]
+            ]
+            filtered_stop_points_naptan_id.set_index("atco_code", inplace=True)
+            return filtered_stop_points_naptan_id
+        return pd.DataFrame
