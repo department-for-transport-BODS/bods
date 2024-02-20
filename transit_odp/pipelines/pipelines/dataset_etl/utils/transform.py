@@ -3,26 +3,45 @@ from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import LineString
 
 from transit_odp.naptan.models import Locality
+from datetime import datetime
 
 from .dataframes import create_naptan_locality_df
 
 logger = get_task_logger(__name__)
 
+def convert_to_time_field(time_delta_value):
+    base_datetime = pd.to_datetime('2000-01-01')
+    time_delta_value = base_datetime + time_delta_value
+    return time_delta_value.strftime('%H:%M:%S')
 
 def create_stop_sequence(df: pd.DataFrame):
     df = df.reset_index().sort_values("order")
     stops_atcos = df[["from_stop_atco", "departure_time", "is_timing_status"]].iloc[[0]].rename(columns={"from_stop_atco": "stop_atco"})
     stops_atcos["is_timing_status"] = True
-    last_stop = (
-        df[["to_stop_atco", "is_timing_status", "run_time",
-       "wait_time"]].rename(columns={"to_stop_atco": "stop_atco"})
-    )
+    stops_atcos['departure_time'] = pd.to_timedelta(stops_atcos['departure_time'])
+    columns = df.columns
+    use_vehicle_journey_runtime = False
+    if "run_time_vj" in columns:
+        use_vehicle_journey_runtime = True
+        columns = ["to_stop_atco", "is_timing_status", "run_time", "wait_time", "run_time_vj"]
+    else:
+        columns = ["to_stop_atco", "is_timing_status", "run_time", "wait_time"]
 
-    last_stop['departure_time'] = last_stop['run_time'].fillna(pd.Timedelta(0)) + last_stop['wait_time'].fillna(pd.Timedelta(0))
-    last_stop.drop(columns=["run_time", "wait_time"], inplace=True)
+    last_stop = (
+        df[columns].rename(columns={"to_stop_atco": "stop_atco"})
+    )
+    columns.remove("to_stop_atco")
+    columns.remove("is_timing_status")
+    if use_vehicle_journey_runtime:
+        last_stop['departure_time'] = last_stop['run_time_vj'].combine_first(last_stop['run_time']).fillna(pd.Timedelta(0)) + last_stop['wait_time'].fillna(pd.Timedelta(0))
+    else:
+        last_stop['departure_time'] = last_stop['run_time'].fillna(pd.Timedelta(0)) + last_stop['wait_time'].fillna(pd.Timedelta(0))
+    
+    last_stop.drop(columns=columns, inplace=True)
 
     stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
     stops_atcos['departure_time'] = stops_atcos['departure_time'].cumsum()
+    stops_atcos['departure_time'] = stops_atcos['departure_time'].apply(convert_to_time_field)
     stops_atcos.index.name = "order"
     return stops_atcos
 
@@ -216,7 +235,6 @@ def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links, vehic
         suffixes=["_section", "_link"],
     )
 
-    print(f"vehicle_journeys_with_timing_refs----{vehicle_journeys_with_timing_refs}") 
     if not vehicle_journeys_with_timing_refs.empty:
         route_to_route_links = route_to_route_links.merge(
             vehicle_journeys_with_timing_refs.reset_index(),
@@ -225,7 +243,6 @@ def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links, vehic
             how="left",
             suffixes=["_rl", "_vj"],
         )
-        print(f"values----{route_to_route_links}") 
         route_to_route_links = route_to_route_links.groupby(
             ["file_id", "route_hash"]
         ).apply(
@@ -244,7 +261,6 @@ def create_route_to_route_links(journey_patterns, jp_to_jps, timing_links, vehic
                 ["route_link_ref"]
             ]
         )
-    print(f"route_to_route_links----{route_to_route_links}")    
     route_to_route_links.index.names = ["file_id", "route_hash", "order"]
 
     return route_to_route_links
@@ -272,7 +288,7 @@ def get_vehicle_journey_without_timing_refs(vehicle_journeys):
 
 def get_vehicle_journey_with_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys.loc[:, ["journey_pattern_ref", "service_code", "timing_link_ref", "run_time"]]
-    df_subset = df_subset.drop(['journey_pattern_ref', 'service_code'], axis=1)
+    df_subset = df_subset.rename(columns={"journey_pattern_ref": "journey_pattern_id"}).drop(["service_code"], axis=1)
     return df_subset[df_subset["timing_link_ref"].notna()].drop_duplicates()
 
 def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
@@ -361,11 +377,15 @@ def transform_service_pattern_to_service_links(
         )
     )
 
+    link_columns = service_pattern_to_service_links.columns
+
+    if "run_time_vj" in link_columns:
+        link_columns = ["file_id", "service_pattern_id", "order", "from_stop_atco", "to_stop_atco", "departure_time", "is_timing_status", "run_time", "wait_time", "run_time_vj"]
+    else:
+        link_columns = ["file_id", "service_pattern_id", "order", "from_stop_atco", "to_stop_atco", "departure_time", "is_timing_status", "run_time", "wait_time"]
+
     # filter and rename columns
-    service_pattern_to_service_links = service_pattern_to_service_links[
-        ["file_id", "service_pattern_id", "order", "from_stop_atco", "to_stop_atco", "departure_time", "is_timing_status", "run_time",
-       "wait_time"]
-    ].set_index(["file_id", "service_pattern_id", "order"])
+    service_pattern_to_service_links = service_pattern_to_service_links[link_columns].set_index(["file_id", "service_pattern_id", "order"])
 
     # no longer need route_hash
     service_patterns.drop("route_hash", axis=1, inplace=True)
