@@ -10,7 +10,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Guide Me' %}
+    {% breadcrumb_url 'Guide Me' 'guide-me' host host.name %}
 {% endblock %}
 
 {% block heading.title.text %}

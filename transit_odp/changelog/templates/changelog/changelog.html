@@ -5,7 +5,7 @@
 {% block breadcrumb.content %}
     {# defining here otherwise root-home is shown twice #}
     {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
-    {% breadcrumb "Service Changelog" %}
+    {% breadcrumb_url "Service Changelog" 'changelog' host hosts.root %}
 {% endblock %}
 
 {% block backlink %}

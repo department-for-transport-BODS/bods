@@ -57,6 +57,7 @@ class ManageView(OrgAdminViewMixin, BaseDetailView, ContextMixin):
                     status=AgentUserInvite.PENDING
                 ),
                 "users": organisation.users.all(),
+                "pk": organisation.id,
             }
         )
 
@@ -162,7 +163,6 @@ class OrgProfileEditView(AgentOrgAdminViewMixin, BaseUpdateView):
         return kwargs
 
     def form_valid(self, form):
-
         noc_has_changed = form.nested_noc.has_changed()
         response = super().form_valid(form)
 
