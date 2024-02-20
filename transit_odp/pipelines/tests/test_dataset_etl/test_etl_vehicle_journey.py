@@ -9,14 +9,6 @@ from transit_odp.transmodel.models import VehicleJourney
 
 from waffle.testutils import override_flag
 
-from transit_odp.naptan.factories import (
-    AdminAreaFactory,
-    FlexibleZoneFactory,
-    StopPointFactory,
-    LocalityFactory,
-    DistrictFactory,
-)
-
 TZ = tz.gettz("Europe/London")
 
 
@@ -120,17 +112,6 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
 @override_flag("is_timetable_visualiser_active", active=True)
 class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_flexible_service.xml"
-
-    @classmethod
-    def setup_class(cls):
-        admin_area = AdminAreaFactory()
-        district = DistrictFactory()
-        locality = LocalityFactory(admin_area=admin_area, district=district)
-        naptan_stoppoint = StopPointFactory(
-            atco_code="270002700155", locality=locality, admin_area=admin_area
-        )
-        FlexibleZoneFactory(naptan_stoppoint=naptan_stoppoint, sequence_number=1)
-        FlexibleZoneFactory(naptan_stoppoint=naptan_stoppoint, sequence_number=2)
 
     def test_extract(self):
         # setup

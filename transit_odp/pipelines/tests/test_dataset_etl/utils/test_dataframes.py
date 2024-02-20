@@ -35,6 +35,5 @@ def test_create_naptan_flexible_zone_df_from_queryset():
     # test
     df = create_naptan_flexible_zone_df_from_queryset(qs)
     columns_names = list(df.columns)
-    print(f"df.columns: {df.columns}")
     assert len(df) == 1
     assert columns_names == ["naptan_id", "flexible_location"]

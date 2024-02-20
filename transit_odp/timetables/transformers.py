@@ -242,7 +242,9 @@ class TransXChangeTransformer:
                         )
 
                 service_pattern_stops.set_index(["file_id"], append=True, inplace=True)
-
+                service_pattern_stops.dropna(
+                    subset=["stop_atco", "geometry"], inplace=True
+                )
                 service_links = pd.concat([service_links, flexible_service_links])
         return TransformedData(
             services=services,
