@@ -227,6 +227,13 @@ def vehicle_journeys_to_dataframe(
                 ["VehicleJourneyCode"]
             ).text
             service_ref = vehicle_journey.get_element(["ServiceRef"]).text
+            departure_day_shift = False
+            departure_day_shift_element = vehicle_journey.get_element_or_none(
+                ["DepartureDayShift"]
+            )
+
+            if departure_day_shift_element:
+                departure_day_shift = True
 
             all_vechicle_journeys.append(
                 {
@@ -236,6 +243,7 @@ def vehicle_journeys_to_dataframe(
                     "line_ref": line_ref,
                     "journey_code": journey_code,
                     "vehicle_journey_code": vehicle_journey_code,
+                    "departure_day_shift": departure_day_shift,
                 }
             )
 
@@ -258,6 +266,7 @@ def vehicle_journeys_to_dataframe(
                     "line_ref": line_ref,
                     "journey_code": None,
                     "vehicle_journey_code": vehicle_journey_code,
+                    "departure_day_shift": False,
                 }
             )
 
