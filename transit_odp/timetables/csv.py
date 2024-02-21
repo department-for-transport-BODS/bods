@@ -52,6 +52,8 @@ OTC_COLUMNS = (
     "effective_date",
     "received_date",
     "service_type_other_details",
+    "local_authority_name",
+    "traveline_region",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -284,6 +286,16 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
         ),
         "service_type_other_details": Column(
             "OTC:Service Type Other Details",
+            "The service type other details element as extracted from the "
+            "OTC database.",
+        ),
+        "local_authority_name": Column(
+            "OTC:Local Authority Name",
+            "The service type other details element as extracted from the "
+            "OTC database.",
+        ),
+        "traveline_region": Column(
+            "OTC:Traveline Region",
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
