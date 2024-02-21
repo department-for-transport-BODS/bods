@@ -38,6 +38,11 @@ def truncate_data(data):
     return data
 
 
+def get_weca_data(path = "weca/response.json"):
+    waca_data = API_DATA_PATH / Path(path)
+    return get_data_by_path(waca_data)
+
+
 @pytest.fixture
 def otc_data_from_filename_truncated():
     """
@@ -182,4 +187,11 @@ def otc_date_data_truncated_no_content(otc_date_data_truncated):
     mock = otc_date_data_truncated
     qp = "latestVariation=true&page=1&limit=100&lastModifiedOn=2022-11-06"
     mock.get(f"{settings.OTC_API_URL}?{qp}", text="", status_code=204)
+    yield mock
+
+@pytest.fixture
+def weca_get_agliebase_data():
+    with requests_mock.Mocker() as mock:
+        data = get_weca_data("weca/response.json")
+        mock.post(f"{settings.WECA_API_URL}?c={settings.WECA_PARAM_C}&t={settings.WECA_PARAM_T}&r={settings.WECA_PARAM_R}&get_report_json=true&json_format=json", json=data)
     yield mock

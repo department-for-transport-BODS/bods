@@ -1,6 +1,5 @@
 from logging import getLogger
-from transit_odp.otc.weca.client import WecaClient, APIResponse, DataModel, FieldModel
-from typing import List
+from transit_odp.otc.weca.client import WecaClient, APIResponse
 
 
 logger = getLogger(__name__)
@@ -10,7 +9,7 @@ class Registry:
         self._client = WecaClient()
         self.services = []
         self.fields = []
-    
+
     def fetch_all_records(self) -> APIResponse:
         logger.info("Fetching WECA services")
         response = self._client.fetch_weca_services()
