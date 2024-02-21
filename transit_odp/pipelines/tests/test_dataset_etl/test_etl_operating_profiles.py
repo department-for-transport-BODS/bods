@@ -1,5 +1,4 @@
 from dateutil import tz
-import pandas as pd
 
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,

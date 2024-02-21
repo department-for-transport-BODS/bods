@@ -60,13 +60,17 @@ class TransXChangeTransformer:
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
         if not vehicle_journeys.empty and not journey_patterns.empty:
-            vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(vehicle_journeys)
+            vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
+                vehicle_journeys
+            )
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
-            
+
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns
             )
-            journey_patterns = merge_journey_pattern_with_vj_for_departure_time(vehicle_journeys.reset_index(), journey_patterns)
+            journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
+                vehicle_journeys.reset_index(), journey_patterns
+            )
 
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
@@ -91,7 +95,10 @@ class TransXChangeTransformer:
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:
             route_to_route_links = create_route_to_route_links(
-                journey_patterns, jp_to_jps, timing_links, vehicle_journeys_with_timing_refs
+                journey_patterns,
+                jp_to_jps,
+                timing_links,
+                vehicle_journeys_with_timing_refs,
             )
 
         line_names = transform_line_names(self.extracted_data.line_names)
@@ -106,10 +113,11 @@ class TransXChangeTransformer:
         service_pattern_stops = pd.DataFrame()
         if not journey_patterns.empty and not route_to_route_links.empty:
             service_patterns = transform_service_patterns(journey_patterns)
-            service_pattern_to_service_links = (
-                transform_service_pattern_to_service_links(  # noqa: E501
-                    service_patterns, route_to_route_links, route_links
-                )
+            (
+                service_pattern_to_service_links,
+                drop_columns,
+            ) = transform_service_pattern_to_service_links(  # noqa: E501
+                service_patterns, route_to_route_links, route_links
             )
             # aggregate stop_sequence and geometry
             service_pattern_stops = transform_service_pattern_stops(
@@ -118,6 +126,13 @@ class TransXChangeTransformer:
             service_patterns = transform_stop_sequence(
                 service_pattern_stops, service_patterns
             )
+            service_pattern_to_service_links.drop(
+                columns=drop_columns, axis=1, inplace=True
+            )
+            if drop_columns:
+                service_patterns.drop(columns=["departure_time"], axis=1, inplace=True)
+
+        stop_points.drop(columns=["common_name"], axis=1, inplace=True)
 
         return TransformedData(
             services=services,
@@ -155,6 +170,7 @@ class TransXChangeTransformer:
         if fetch_stops != set():
             qs = StopPoint.objects.filter(atco_code__in=fetch_stops)
             fetched = create_naptan_stoppoint_df_from_queryset(qs)
+            fetched["common_name"] = None
 
             # Create missing stops
             # Note we do not create any real StopPoints, just a lookup of atco_code
@@ -184,12 +200,13 @@ class TransXChangeTransformer:
                     for index in missing_stops
                 )
             )
-
+            df_missing_stops_merged = pd.merge(
+                missing, stop_points, left_index=True, right_index=True, how="left"
+            )
             # update cache with fetched stops and missing stops
             stop_point_cache = pd.concat(
-                [stop_point_cache, fetched, missing], sort=True
+                [stop_point_cache, fetched, df_missing_stops_merged], sort=True
             )
-
         # Return the subselection of stop points seen in the doc (useful when
         # processing large zip files)
         return stop_point_cache.reindex(sorted(stop_point_refs))

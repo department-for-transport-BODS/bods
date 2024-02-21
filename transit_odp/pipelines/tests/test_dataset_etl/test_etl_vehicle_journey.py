@@ -33,6 +33,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3681",
                     "vehicle_journey_code": "3681",
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 },
                 {
                     "file_id": file_id,
@@ -42,10 +44,11 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
                     "vehicle_journey_code": "3682",
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 },
             ]
         ).set_index("file_id")
-
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
         )
@@ -72,8 +75,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3681",
                     "vehicle_journey_code": "3681",
-                    "service_code_vj": "PB0000582:186",
-                    "service_code_jp": "PB0000582:186",
+                    "service_code": "PB0000582:186",
                     "direction": "outbound",
                 },
                 {
@@ -83,13 +85,11 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
                     "vehicle_journey_code": "3682",
-                    "service_code_vj": "PB0000582:186",
-                    "service_code_jp": "PB0000582:186",
+                    "service_code": "PB0000582:186",
                     "direction": "inbound",
                 },
             ]
         ).set_index("file_id")
-
         self.assertTrue(
             check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
         )
@@ -135,6 +135,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "CALC:UZ000CALC:53M:53M",
                     "journey_code": None,
                     "vehicle_journey_code": "vj_1",
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 }
             ]
         ).set_index("file_id")
@@ -165,8 +167,7 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "CALC:UZ000CALC:53M:53M",
                     "journey_code": None,
                     "vehicle_journey_code": "vj_1",
-                    "service_code_vj": "UZ000CALC:53M",
-                    "service_code_jp": "UZ000CALC:53M",
+                    "service_code": "UZ000CALC:53M",
                     "direction": "inbound",
                 },
             ]
@@ -217,6 +218,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:UZ000WBCT:B1081:123",
                     "journey_code": "1094",
                     "vehicle_journey_code": "vj_3",
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 },
                 {
                     "file_id": file_id,
@@ -226,6 +229,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:PB0002032:467:53M",
                     "journey_code": None,
                     "vehicle_journey_code": "vj_1",
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 },
                 {
                     "file_id": file_id,
@@ -235,6 +240,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:UZ000WOCT:216:53M",
                     "journey_code": None,
                     "vehicle_journey_code": "vj_2",
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                 },
             ]
         ).set_index("file_id")
@@ -265,8 +272,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:UZ000WBCT:B1081:123",
                     "journey_code": "1094",
                     "vehicle_journey_code": "vj_3",
-                    "service_code_vj": "UZ000WBCT:B1081",
-                    "service_code_jp": "UZ000WBCT:B1081",
+                    "service_code": "UZ000WBCT:B1081",
                     "direction": "inbound",
                 },
                 {
@@ -276,8 +282,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:PB0002032:467:53M",
                     "journey_code": None,
                     "vehicle_journey_code": "vj_1",
-                    "service_code_vj": "PB0002032:467",
-                    "service_code_jp": "PB0002032:467",
+                    "service_code": "PB0002032:467",
                     "direction": "outbound",
                 },
                 {
@@ -287,8 +292,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:UZ000WOCT:216:53M",
                     "journey_code": None,
                     "vehicle_journey_code": "vj_2",
-                    "service_code_vj": "UZ000WOCT:216",
-                    "service_code_jp": "UZ000WOCT:216",
+                    "service_code": "UZ000WOCT:216",
                     "direction": "outbound",
                 },
             ]
