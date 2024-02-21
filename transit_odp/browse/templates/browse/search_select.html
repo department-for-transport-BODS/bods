@@ -10,7 +10,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Browse' %}
+    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
 {% endblock %}
 
 {% block full_width_content %}
@@ -103,23 +103,23 @@
         </div>
 
         <div class="govuk-grid-row govuk-!-margin-top-7">
-          <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}">
-              {% trans 'Disruption data' %}
-          </a>
-          <p class="govuk-body govuk-!-padding-top-3">
-              {% blocktrans %}
-                  You can browse specific disruption data.
-              {% endblocktrans %}
-          </p>
-          <ul class="govuk-list">
-              <li>
-                  <b>{% trans 'Format' %}:</b>
-                  {% trans 'SIRI-SX' %} {% include "browse/snippets/help_modals/sirisx.html" %}
-              </li>
-              <li><b>{% trans 'File type' %}:</b> {% trans 'XML file' %}</li>
-              <li><b>{% trans 'Data type' %}:</b> {% trans 'Real-time' %}</li>
-              <li><b>{% trans 'Data source' %}:</b> {% trans 'Local authorities' %}</li>
-          </ul>
+            <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}">
+                {% trans 'Disruption data' %}
+            </a>
+            <p class="govuk-body govuk-!-padding-top-3">
+                {% blocktrans %}
+                    You can browse specific disruption data.
+                {% endblocktrans %}
+            </p>
+            <ul class="govuk-list">
+                <li>
+                    <b>{% trans 'Format' %}:</b>
+                    {% trans 'SIRI-SX' %} {% include "browse/snippets/help_modals/sirisx.html" %}
+                </li>
+                <li><b>{% trans 'File type' %}:</b> {% trans 'XML file' %}</li>
+                <li><b>{% trans 'Data type' %}:</b> {% trans 'Real-time' %}</li>
+                <li><b>{% trans 'Data source' %}:</b> {% trans 'Local authorities' %}</li>
+            </ul>
         </div>
     </div>
 {% endblock %}

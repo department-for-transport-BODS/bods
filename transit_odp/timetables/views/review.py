@@ -11,13 +11,20 @@ from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
+from transit_odp.publish.views.utils import (
+    get_current_files,
+    get_distinct_dataset_txc_attributes,
+    get_revision_details,
+    get_service_codes_dict,
+    get_service_type,
+    get_valid_files,
+)
 from transit_odp.timetables.views.constants import (
     DATA_QUALITY_LABEL,
     DATA_QUALITY_WITH_VIOLATIONS_LABEL,
     ERROR_CODE_LOOKUP,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
-from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
 
 
 class BaseTimetableReviewView(ReviewBaseView):
@@ -106,6 +113,7 @@ class PublishRevisionView(BaseTimetableReviewView):
         revision = self.object
         context.update(
             {
+                "pk": revision.dataset_id,
                 "is_update": False,
                 "distinct_attributes": get_distinct_dataset_txc_attributes(revision.id),
             }
@@ -141,6 +149,59 @@ class UpdateRevisionPublishView(BaseTimetableReviewView):
             kwargs={"pk": dataset_id, "pk1": self.kwargs["pk1"]},
             host=config.hosts.PUBLISH_HOST,
         )
+
+
+class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
+    template_name = "publish/revision_review/review_line_metadata.html"
+    model = Dataset
+
+    def get_queryset(self):
+        return super().get_queryset()
+
+    def get_context_data(self, **kwargs):
+        line = self.request.GET.get("line")
+        revision_id = self.request.GET.get("revision_id")
+        noc = self.request.GET.get("noc")
+        licence_no = self.request.GET.get("l")
+        context = super().get_context_data(**kwargs)
+        dataset = self.object
+        revision = get_revision_details(dataset.id)
+        context.update(
+            {
+                "line_name": line,
+                "pk1": dataset.organisation_id,
+                "pk": dataset.id,
+                "feed_name": revision[1],
+            }
+        )
+        context["service_codes"] = get_service_codes_dict(
+            revision[0], line, noc, licence_no
+        )
+        context["service_type"] = get_service_type(
+            revision[0], context["service_codes"], context["line_name"]
+        )
+        context["current_valid_files"] = get_current_files(
+            revision[0], context["service_codes"], context["line_name"]
+        )
+
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        context["revision_id"] = revision_id
+
+        if (
+            context["service_type"] == "Flexible"
+            or context["service_type"] == "Flexible/Standard"
+        ):
+            booking_arrangements_info = get_valid_files(
+                revision[0],
+                context["current_valid_files"],
+                context["service_codes"],
+                context["line_name"],
+            )
+            if booking_arrangements_info:
+                context["booking_arrangements"] = booking_arrangements_info[0][0]
+                context["booking_methods"] = booking_arrangements_info[0][1:]
+
+        return context
 
 
 class RevisionPublishSuccessView(OrgUserViewMixin, DetailView):

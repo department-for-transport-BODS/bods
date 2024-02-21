@@ -12,7 +12,7 @@
 {% block breadcrumb.content %}
     {% breadcrumb_url root_site.name 'home' host hosts.root %}
     {% breadcrumb_url site.name 'home' host hosts.publish %}
-    {% breadcrumb page_title %}
+    {% breadcrumb_url page_title 'select-org' host hosts.publish %}
 {% endblock %}
 
 {% block content %}

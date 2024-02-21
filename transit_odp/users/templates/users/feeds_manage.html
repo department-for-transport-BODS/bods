@@ -6,61 +6,61 @@
 {% load django_tables2 %}
 
 {% block title_tag %}
-  {% trans 'Manage subscriptions' %}
+    {% trans 'Manage subscriptions' %}
 {% endblock %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb 'Manage subscriptions' %}
+    {{ block.super }}
+    {% breadcrumb_url 'Manage subscriptions' 'users:feeds-manage' host host.name %}
 {% endblock %}
 
 {% block content_heading %}
-<h1 class="govuk-heading-xl">Manage subscriptions</h1>
+    <h1 class="govuk-heading-xl">Manage subscriptions</h1>
 {% endblock %}
 {% block inner %}
-     {% if object_list.count > 0 %}
+    {% if object_list.count > 0 %}
         {% render_table table %}
-         <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
-         <form method="post" novalidate>
-         {% csrf_token %}
-          <div class="govuk-form-group">
-           <fieldset class="govuk-fieldset">
-             <div class="govuk-checkboxes">
-               <div class="govuk-checkboxes__item">
-                 <input class="govuk-checkboxes__input"
-                        id="mute"
-                        name="mute_notifications"
-                        type="checkbox"
-                        value=True
-                        {% if mute_notifications %} checked {% endif %}
-                        onchange="this.form.submit()">
-                 <label class="govuk-label govuk-checkboxes__label" for="mute">
-                   {% trans "Mute all subscriptions" %}
-                 </label>
-               </div>
-             </div>
-           </fieldset>
-          </div>
-         </form>
-      {% else %}
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <div class="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input"
+                                id="mute"
+                                name="mute_notifications"
+                                type="checkbox"
+                                value=True
+                                {% if mute_notifications %} checked {% endif %}
+                                onchange="this.form.submit()">
+                            <label class="govuk-label govuk-checkboxes__label" for="mute">
+                                {% trans "Mute all subscriptions" %}
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+    {% else %}
         <div class="govuk-inset-text">
-          {% trans 'Your subscribed data sets will be listed here' %}
+            {% trans 'Your subscribed data sets will be listed here' %}
         </div>
-      {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block inner_secondary %}
-   <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
-   <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-     <li>
-      <a class="govuk-link govuk-body" href="{% url 'guidance:support-developer' host hosts.data %}">
-       {% trans "View our guidelines here" %}
-      </a>
-     </li>
-     <li>
-      <a class="govuk-link govuk-body" href="{% url 'contact' host hosts.data %}">
-       {% trans "Contact the Bus Open Data Service" %}
-      </a>
-     </li>
-   </ul>
+    <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li>
+            <a class="govuk-link govuk-body" href="{% url 'guidance:support-developer' host hosts.data %}">
+                {% trans "View our guidelines here" %}
+            </a>
+        </li>
+        <li>
+            <a class="govuk-link govuk-body" href="{% url 'contact' host hosts.data %}">
+                {% trans "Contact the Bus Open Data Service" %}
+            </a>
+        </li>
+    </ul>
 {% endblock %}

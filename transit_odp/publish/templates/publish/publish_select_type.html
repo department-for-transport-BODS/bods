@@ -13,10 +13,10 @@
     {% breadcrumb_url root_site.name 'home' host hosts.root %}
     {% breadcrumb_url site.name 'home' host hosts.publish %}
     {% if user.is_agent_user %}
-        {% breadcrumb 'Operator Dashboard' %}
-        {% breadcrumb 'Publish a Dataset or Data Feed' %}
+        {% breadcrumb_url 'Operator Dashboard' 'select-org' host hosts.publish %}
+        {% breadcrumb_url 'Publish a Dataset or Data Feed' 'select-data' pk1=pk1 host host.name %}
     {% else %}
-        {% breadcrumb 'Publish a Dataset or Data Feed' %}
+        {% breadcrumb_url 'Publish a Dataset or Data Feed' 'select-data' pk1=pk1 host host.name %}
     {% endif %}
 {% endblock %}
 

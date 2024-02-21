@@ -10,10 +10,10 @@
 {% endif %}
 {% if object.name|length > 20 %}
     {% with feed_name=object.name|slice:":19"|add:"..." %}
-        {% breadcrumb feed_name %}
+        {% breadcrumb_url feed_name 'feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
     {% endwith %}
 {% else %}
     {% with feed_name=object.name %}
-        {% breadcrumb feed_name %}
+        {% breadcrumb_url feed_name 'feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
     {% endwith %}
 {% endif %}

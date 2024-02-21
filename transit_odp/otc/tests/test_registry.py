@@ -104,7 +104,7 @@ def test_get_latest_variations_since_returns_all_service_types(mock_all, mock_de
     registry = Registry()
     registry.get_variations_since(one_day_ago, [])
 
-    assert len(registry.services) == 5 + 2
+    assert len(registry.services) == 5 + 2 + 2
     service = registry.get_service_by_key(
         refetch1.registration_number, "Normal Stopping"
     )
@@ -117,11 +117,11 @@ def test_get_latest_variations_since_returns_all_service_types(mock_all, mock_de
     service = registry.get_service_by_key(
         refetch2.registration_number, "Normal Stopping"
     )
-    assert service is None
+    assert service is not None
     service = registry.get_service_by_key(
         refetch2.registration_number, "School Service"
     )
-    assert service is None
+    assert service is not None
 
 
 @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")

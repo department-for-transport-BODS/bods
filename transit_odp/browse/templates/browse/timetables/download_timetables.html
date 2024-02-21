@@ -11,7 +11,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
-    {% breadcrumb 'All Timetables Data' %}
+    {% breadcrumb_url 'All Timetables Data' 'download-timetables' host hosts.data %}
 {% endblock %}
 
 {% block heading.title.text %}{% trans 'All timetables data' %}{% endblock %}

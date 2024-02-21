@@ -21,13 +21,23 @@ const getLineStringBounds = (coordinates) => {
   }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 };
 
-const initMap = (apiRoot, revisionId) => {
+const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes) => {
   var servicePatternUrl =
     apiRoot + "service_pattern/?revision=" + revisionId.toString();
+  if (lineName) {
+    servicePatternUrl += "&line_name=" + lineName.toString();
+  }
+  if (serviceCodes) {
+    servicePatternUrl += "&service_codes=" + serviceCodes.toString();
+  }
+  return servicePatternUrl;
+};
+
+const initMap = (apiRoot, revisionId, lineName, serviceCodes) => {
+  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes);
 
   // Initialise Map
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoiaGFsYmVydHJhbSIsImEiOiJjaXFiNXVnazIwMDA0aTJuaGxlaTU1M2ZtIn0.85dXvyj6V2LbBFvXfpQyYA";
+  mapboxgl.accessToken = mapboxKey;
   var map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/light-v9",

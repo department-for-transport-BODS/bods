@@ -10,7 +10,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Try API Service' %}
+    {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
 {% endblock %}
 
 {% block heading.title.text %}
@@ -46,7 +46,7 @@
                     {% filter force_escape %}{% trans 'Fares data API' %}{% endfilter %}
                 </a>
             </li>
-             <li class="govuk-!-margin-bottom-4">
+            <li class="govuk-!-margin-bottom-4">
                 <a class="govuk-link-bold" href="{% url 'api:disruptionsopenapi' host hosts.data %}">
                     {% filter force_escape %}{% trans 'Disruption data API' %}{% endfilter %}
                 </a>
