@@ -7,7 +7,7 @@
 {% block breadcrumb.content %}
     {% breadcrumb_url root_site.name 'home' host hosts.root %}
     {% breadcrumb_url site.name 'home' host hosts.publish %}
-    {% breadcrumb 'My account' %}
+    {% breadcrumb_url 'My account' 'users:home' host host.name %}
 {% endblock %}
 
 {% block title_tag %}
@@ -16,29 +16,29 @@
 
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">
-        You are now acting as an agent on behalf of {{object.organisation.name}}
-      </h1>
-      <p class="govuk-body-m govuk-!-margin-bottom-6">
-        {% blocktrans %}
-          You can now do the following on their behalf:
-        {% endblocktrans %}
-      </p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>{% trans 'Publish all 3 types of data (if you choose to)' %}</li>
-        <li>{% trans 'Amend their National Operator Code (NOC) on BODS' %}</li>
-      </ul>
-      <p class="govuk-body-m govuk-!-margin-bottom-6">
-        {% blocktrans %}
-          Please make sure you have regular communications with your operator and have
-          contracts agreed with them external to this platform.
-        {% endblocktrans %}
-      </p>
-      <a href="{% url 'users:home' host host.name %}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-        Return to My account
-      </a>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-xl">
+                You are now acting as an agent on behalf of {{object.organisation.name}}
+            </h1>
+            <p class="govuk-body-m govuk-!-margin-bottom-6">
+                {% blocktrans %}
+                    You can now do the following on their behalf:
+                {% endblocktrans %}
+            </p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{% trans 'Publish all 3 types of data (if you choose to)' %}</li>
+                <li>{% trans 'Amend their National Operator Code (NOC) on BODS' %}</li>
+            </ul>
+            <p class="govuk-body-m govuk-!-margin-bottom-6">
+                {% blocktrans %}
+                    Please make sure you have regular communications with your operator and have
+                    contracts agreed with them external to this platform.
+                {% endblocktrans %}
+            </p>
+            <a href="{% url 'users:home' host host.name %}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                Return to My account
+            </a>
+        </div>
     </div>
-  </div>
 {% endblock %}

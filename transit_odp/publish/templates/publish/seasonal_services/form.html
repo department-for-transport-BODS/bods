@@ -25,7 +25,7 @@
     {% endif %}
     {% breadcrumb_url "Manage seasonal services" "seasonal-service" pk1=pk1 host hosts.publish %}
     {% block breadcrumb_extend %}
-        {% breadcrumb "Edit dates" %}
+        {% breadcrumb_url "Edit dates" 'edit-seasonal-service-date' pk1=pk1 pk=pk host hosts.publish %}
     {% endblock %}
 {% endblock %}
 

@@ -11,7 +11,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Guidance' 'guidance:operators-home' host hosts.publish %}
-    {% breadcrumb 'Observation definitions' %}
+    {% breadcrumb_url 'Observation definitions' 'guidance:dq-definitions' host hosts.publish %}
 {% endblock %}
 
 {% block content %}

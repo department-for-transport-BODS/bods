@@ -11,7 +11,7 @@
     {{ block.super }}
     {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
     {% breadcrumb_url organisation.name 'users:organisation-detail' pk=organisation.id host hosts.admin %}
-    {% breadcrumb 'User management' %}
+    {% breadcrumb_url 'User management' 'users:org-user-manage' pk=organisation.id host hosts.admin %}
 {% endblock %}
 
 

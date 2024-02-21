@@ -69,6 +69,7 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             published_by = revision.published_by.username
 
         kwargs["pk1"] = self.kwargs["pk1"]
+        kwargs["pk"] = dataset.id
 
         last_server_update = ""
         if dataset.avl_feed_last_checked is not None:

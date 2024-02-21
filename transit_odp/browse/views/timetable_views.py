@@ -167,9 +167,13 @@ class LineMetadataDetailView(DetailView):
             .add_is_live_pti_compliant()
         )
 
-    def get_service_codes_dict(self, revision_id, line):
+    def get_service_codes_dict(self, revision_id, line, noc, licence_no):
         service_codes_list = []
-        txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
+        txc_file_attributes = (
+            TXCFileAttributes.objects.filter(revision_id=revision_id)
+            .filter(national_operator_code=noc)
+            .filter(licence_number=licence_no)
+        )
 
         for file_attribute in txc_file_attributes:
             for line_name in file_attribute.line_names:
@@ -281,10 +285,12 @@ class LineMetadataDetailView(DetailView):
             modification_datetime=recent_modification_datetime,
         ).aggregate(max_start_date=Max("operating_period_start_date"))["max_start_date"]
 
-    def get_single_booking_arrangements_file(self, revision_id):
+    def get_single_booking_arrangements_file(self, revision_id, service_codes):
         try:
-            service_ids = Service.objects.filter(revision=revision_id).values_list(
-                "id", flat=True
+            service_ids = (
+                Service.objects.filter(revision=revision_id)
+                .filter(service_code__in=service_codes)
+                .values_list("id", flat=True)
             )
         except Service.DoesNotExist:
             return None
@@ -296,7 +302,7 @@ class LineMetadataDetailView(DetailView):
 
     def get_valid_files(self, revision_id, valid_files, service_codes, line_name):
         if len(valid_files) == 1:
-            return self.get_single_booking_arrangements_file(revision_id)
+            return self.get_single_booking_arrangements_file(revision_id, service_codes)
         elif len(valid_files) > 1:
             booking_arrangements_qs = None
             for service_code in service_codes:
@@ -314,7 +320,7 @@ class LineMetadataDetailView(DetailView):
 
                 if len(booking_arrangements_qs) == 1:
                     return self.get_single_booking_arrangements_file(
-                        booking_arrangements_qs.revision_id
+                        booking_arrangements_qs.first().revision_id, [service_code]
                     )
 
                 lastest_operating_period_start = (
@@ -331,7 +337,7 @@ class LineMetadataDetailView(DetailView):
 
                 if len(booking_arrangements_qs) == 1:
                     return self.get_single_booking_arrangements_file(
-                        booking_arrangements_qs.revision_id
+                        booking_arrangements_qs.first().revision_id, [service_code]
                     )
 
                 booking_arrangements_qs = booking_arrangements_qs.order_by(
@@ -339,11 +345,13 @@ class LineMetadataDetailView(DetailView):
                 ).first()
 
                 return self.get_single_booking_arrangements_file(
-                    booking_arrangements_qs.revision_id
+                    booking_arrangements_qs.revision_id, [service_code]
                 )
 
     def get_context_data(self, **kwargs):
         line = self.request.GET.get("line")
+        noc = self.request.GET.get("noc")
+        licence_no = self.request.GET.get("l")
         kwargs = super().get_context_data(**kwargs)
 
         dataset = self.object
@@ -351,13 +359,16 @@ class LineMetadataDetailView(DetailView):
         kwargs["pk"] = dataset.id
 
         kwargs["line_name"] = line
-        kwargs["service_codes"] = self.get_service_codes_dict(live_revision.id, line)
+        kwargs["service_codes"] = self.get_service_codes_dict(
+            live_revision.id, line, noc, licence_no
+        )
         kwargs["service_type"] = self.get_service_type(
             live_revision.id, kwargs["service_codes"], kwargs["line_name"]
         )
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_codes"], kwargs["line_name"]
         )
+        kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
         if (
             kwargs["service_type"] == "Flexible"

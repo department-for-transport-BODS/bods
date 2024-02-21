@@ -10,7 +10,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Data monitoring' %}
+    {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
 {% endblock %}
 
 {% block content %}
