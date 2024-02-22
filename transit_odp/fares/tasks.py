@@ -21,7 +21,10 @@ from transit_odp.fares.netex import (
     get_netex_schema,
 )
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
-from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.fares.utils import (
+    get_etl_task_or_pipeline_exception,
+    read_fares_validator_rerun_datasets_file_from_s3,
+)
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
@@ -364,6 +367,66 @@ def task_update_fares_catalogue_data_existing_datasets():
     success_count = total_count - len(failed_datasets)
     logger.info(
         f"Total number of datasets processed successfully is {success_count} out of {total_count}"
+    )
+    logger.info(
+        f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
+    )
+
+
+@shared_task(ignore_errors=True)
+def task_rerun_fares_validation_specific_datasets():
+    """This is a one-off task to rerun the fares validator for a list of datasets
+    provided in a csv file available in AWS S3 bucket
+    """
+
+    dataset_ids = read_fares_validator_rerun_datasets_file_from_s3()
+    if not dataset_ids:
+        logger.info("No valid dataset IDs found in the file.")
+        return
+    logger.info(f"Total number of datasets to be processed: {len(dataset_ids)}")
+    fares_datasets = Dataset.objects.filter(id__in=dataset_ids).get_active()
+
+    if not fares_datasets:
+        logger.info(f"No active datasets found in BODS with these dataset IDs")
+        return
+
+    processed_count = 0
+    successfully_processed_ids = []
+    failed_datasets = []
+
+    total_count = fares_datasets.count()
+    for fares_dataset in fares_datasets:
+        logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+        revision = fares_dataset.live_revision
+        if revision:
+            revision_id = revision.id
+            try:
+                revision = DatasetRevision.objects.get(
+                    pk=revision_id, dataset__dataset_type=FaresType
+                )
+            except DatasetRevision.DoesNotExist as exc:
+                message = f"DatasetRevision {revision_id} does not exist."
+                failed_datasets.append(fares_dataset.id)
+                logger.exception(message, exc_info=True)
+                raise PipelineException(message) from exc
+
+            task_id = uuid.uuid4()
+            task = DatasetETLTaskResult.objects.create(
+                revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
+            )
+
+            task_download_fares_file(task.id)
+            task_set_fares_validation_result(task.id)
+            task_run_fares_etl(task.id)
+
+            task.update_progress(100)
+            task.to_success()
+            successfully_processed_ids.append(fares_dataset.id)
+            processed_count += 1
+            logger.info(f"The task completed for {processed_count} of {total_count}")
+
+    logger.info(
+        f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
     )
     logger.info(
         f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
