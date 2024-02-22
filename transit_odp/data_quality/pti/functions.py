@@ -13,6 +13,7 @@ from transit_odp.data_quality.pti.constants import (
     OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
 )
+
 from transit_odp.naptan.models import StopPoint
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
