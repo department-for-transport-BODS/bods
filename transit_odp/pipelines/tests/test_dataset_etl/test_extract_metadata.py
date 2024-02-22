@@ -166,8 +166,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         ensure that both the extract method of this class and the XmlFileParser return
         the same result."""
         now = self.xml_file_parser.feed_parser.now
-        extracted = TransXChangeExtractor(self.file_obj, now).extract()
-        file_id = extracted.file_id
+        transxchange_extractor = TransXChangeExtractor(self.file_obj, now)
+        extracted = transxchange_extractor.extract()
+        file_id = transxchange_extractor.file_id
 
         services_expected = pd.DataFrame(
             [
@@ -574,7 +575,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_load_services(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
 
         indata = pd.DataFrame(
             [
@@ -852,8 +853,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
