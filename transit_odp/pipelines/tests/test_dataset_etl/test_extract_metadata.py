@@ -165,9 +165,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         """This is a re-implementation of the XML file parser class, this is to
         ensure that both the extract method of this class and the XmlFileParser return
         the same result."""
-        file_id = hash(self.file_obj.file)
         now = self.xml_file_parser.feed_parser.now
         extracted = TransXChangeExtractor(self.file_obj, now).extract()
+        file_id = extracted.file_id
 
         services_expected = pd.DataFrame(
             [
@@ -293,11 +293,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # assert
         services_expected = pd.DataFrame(
@@ -423,8 +421,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
         Locality.objects.add_district_name()
 
         # test
@@ -817,11 +815,9 @@ class ETLBookingArrangements(ExtractBaseTestCase):
     test_file = "data/test_extract_booking_arrangements.xml"
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # assert
         booking_arrangements_expected = pd.DataFrame(
@@ -892,7 +888,6 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
 
@@ -1032,11 +1027,9 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
     test_file = "data/test_extract_booking_arrangements_with_minimum_elements.xml"
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # assert
         booking_arrangements_expected = pd.DataFrame(
@@ -1081,8 +1074,8 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -1128,7 +1121,6 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
 

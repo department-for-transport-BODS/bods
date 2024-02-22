@@ -27,7 +27,7 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
         expected_serviced_organisation = pd.DataFrame(
             [
                 {
-                    "file_id": file_id,
+                    "file_id": self.xml_file_parser.file_id,
                     "serviced_org_ref": "NYCCSC",
                     "name": "NYCC Schools",
                 },
@@ -48,8 +48,8 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
