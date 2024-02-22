@@ -5,6 +5,7 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 logger = logging.getLogger(__name__)
 
+
 def get_s3_bucket_storage():
     bucket_name = getattr(settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None)
     if not bucket_name:
