@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 
 import pandas as pd
 from celery.utils.log import get_task_logger
@@ -96,7 +97,7 @@ class XmlFileParser(ETLUtility):
         'route_section_hash' to form 'route_hash'.
         """
         logger.debug("Extracting data")
-        file_id = hash(file_obj.file)
+        file_id = uuid.uuid4()
         filename = file_obj.name
         self.trans = TransXChangeDocument(file_obj.file)
         schema_version = self.trans.get_transxchange_version()
