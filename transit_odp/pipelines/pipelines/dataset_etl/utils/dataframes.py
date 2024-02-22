@@ -186,6 +186,7 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             start_time=record["departure_time"],
             line_ref=record["line_ref"],
             direction=record["direction"],
+            departure_day_shift=record["departure_day_shift"],
         )
 
 

@@ -16,7 +16,7 @@ TZ = tz.gettz("Europe/London")
 
 @override_flag("is_timetable_visualiser_active", active=True)
 class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
-    test_file = "data/vehicle_journeys/test_flexible_service.xml"
+    test_file = "data/test_vehicle_journeys/test_flexible_service.xml"
 
     def test_extract(self):
         # setup
@@ -117,7 +117,7 @@ class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
 
 @override_flag("is_timetable_visualiser_active", active=True)
 class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
-    test_file = "data/vehicle_journeys/test_flexible_service_with_all_day.xml"
+    test_file = "data/test_vehicle_journeys/test_flexible_service_with_all_day.xml"
 
     def test_extract(self):
         # setup
@@ -200,7 +200,7 @@ class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
 
 @override_flag("is_timetable_visualiser_active", active=True)
 class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
-    test_file = "data/vehicle_journeys/test_flexible_and_standard_service.xml"
+    test_file = "data/test_vehicle_journeys/test_flexible_and_standard_service.xml"
 
     def test_extract(self):
         # setup

@@ -249,6 +249,13 @@ def vehicle_journeys_to_dataframe(
                 ["VehicleJourneyCode"]
             ).text
             service_ref = vehicle_journey.get_element(["ServiceRef"]).text
+            departure_day_shift = False
+            departure_day_shift_element = vehicle_journey.get_element_or_none(
+                ["DepartureDayShift"]
+            )
+
+            if departure_day_shift_element:
+                departure_day_shift = True
 
             vj_timing_links = vehicle_journey.get_elements_or_none(
                 ["VehicleJourneyTimingLink"]
@@ -273,6 +280,7 @@ def vehicle_journeys_to_dataframe(
                             "vehicle_journey_code": vehicle_journey_code,
                             "timing_link_ref": timing_link_ref,
                             "run_time": run_time,
+                            "departure_day_shift": departure_day_shift,
                         }
                     )
 
@@ -289,6 +297,7 @@ def vehicle_journeys_to_dataframe(
                         "vehicle_journey_code": vehicle_journey_code,
                         "timing_link_ref": None,
                         "run_time": pd.NaT,
+                        "departure_day_shift": departure_day_shift,
                     }
                 )
 
@@ -313,6 +322,7 @@ def vehicle_journeys_to_dataframe(
                     "vehicle_journey_code": vehicle_journey_code,
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
+                    "departure_day_shift": False,
                 }
             )
 
