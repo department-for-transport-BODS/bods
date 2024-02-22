@@ -17,7 +17,6 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
     check_flexible_service_stop_point_ref,
-    check_flexible_service_times,
     check_flexible_service_timing_status,
     check_service_group_validations,
     contains_date,
@@ -496,10 +495,6 @@ class PTIValidator:
         self.register_function("has_prohibited_chars", has_prohibited_chars)
         self.register_function(
             "check_service_group_validations", check_service_group_validations
-        )
-        self.register_function(
-            "check_flexible_service_times",
-            check_flexible_service_times,
         )
         self.register_function("in", is_member_of)
         self.register_function("regex", regex)

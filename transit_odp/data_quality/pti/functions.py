@@ -407,23 +407,3 @@ def get_stop_point_ref_list(stop_points, ns):
                 )
 
     return stop_point_ref_list
-
-
-def check_flexible_service_times(context, vehiclejourneys):
-    """
-    Check when FlexibleVehicleJourney is present, that FlexibleServiceTimes
-    is also present at least once. If not present at all, then return False.
-    """
-    ns = {"x": vehiclejourneys[0].nsmap.get(None)}
-    flexible_vehiclejourneys = vehiclejourneys[0].xpath(
-        "x:FlexibleVehicleJourney", namespaces=ns
-    )
-    if flexible_vehiclejourneys:
-        for flexible_journey in flexible_vehiclejourneys:
-            flexible_service_times = flexible_journey.xpath(
-                "x:FlexibleServiceTimes", namespaces=ns
-            )
-            if len(flexible_service_times) == 0:
-                return False
-
-            return True
