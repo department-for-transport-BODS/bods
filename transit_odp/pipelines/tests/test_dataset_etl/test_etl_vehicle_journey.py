@@ -382,7 +382,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 },
             ]
         ).set_index("file_id")
-        
+
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
         )
