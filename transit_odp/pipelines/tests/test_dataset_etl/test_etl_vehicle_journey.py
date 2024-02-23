@@ -17,11 +17,9 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_standard_service.xml"
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -55,8 +53,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -114,11 +112,9 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_flexible_service.xml"
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -144,8 +140,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -193,11 +189,9 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
     test_file = "data/vehicle_journeys/test_flexible_and_standard_service.xml"
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -239,8 +233,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)

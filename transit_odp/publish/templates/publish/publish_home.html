@@ -10,7 +10,7 @@
 
 {% block breadcrumb.content %}
     {% breadcrumb_url root_site.name 'home' host hosts.root %}
-    {% breadcrumb site.name %}
+    {% breadcrumb_url site.name 'home' host hosts.publish %}
 {% endblock %}
 
 {% block full_width_content %}

@@ -6,7 +6,7 @@
 {% load breadcrumbs %}
 
 {% block breadcrumb_extend %}
-    {% breadcrumb "Add new" %}
+    {% breadcrumb_url "Add new" 'add-seasonal-service' pk1=pk1 host hosts.publish %}
     </div>
     <div class="govuk-breadcrumbs">
         {% stepper %}

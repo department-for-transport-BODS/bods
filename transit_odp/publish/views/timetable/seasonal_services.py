@@ -130,6 +130,7 @@ class EditDateView(OrgUserViewMixin, BaseUpdateView):
 
     def get_queryset(self):
         self.org_id = self.kwargs.get("pk1")
+        self.pk_id = self.kwargs.get("pk")
         qs = super().get_queryset()
         return qs.filter(licence__organisation__id=self.org_id).distinct("id")
 
@@ -149,6 +150,7 @@ class EditDateView(OrgUserViewMixin, BaseUpdateView):
         context.update(
             {
                 "pk1": self.org_id,
+                "pk": self.pk_id,
                 "organisation": Organisation.objects.get(id=self.org_id),
             }
         )

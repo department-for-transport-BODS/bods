@@ -52,8 +52,10 @@ class AgentDetailView(
         )
 
     def get_context_data(self, **kwargs):
+        user_id = self.object.id
         orgs = self.get_table_data()
         context = super().get_context_data(object_list=orgs)
+        context["pk"] = user_id
         return context
 
 

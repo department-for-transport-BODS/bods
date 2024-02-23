@@ -61,6 +61,9 @@
 
             {% block scripts %}
                 {{ GOOGLE_ANALYTICS_KEY | json_script:"ga-data" }}
+                <script>
+                    var mapboxKey = '{{MAPBOX_KEY}}'
+                </script>
                 <script src="{% static 'frontend/vendor.bundle.js' %}"></script>
                 <script src="{% static 'frontend/main.bundle.js' %}"></script>
                 <script>
