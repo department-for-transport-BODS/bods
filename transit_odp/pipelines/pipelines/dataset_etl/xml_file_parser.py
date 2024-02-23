@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 
 import pandas as pd
 from celery.utils.log import get_task_logger
@@ -41,7 +42,7 @@ class XmlFileParser(ETLUtility):
         # to create an artificial prefix
         # and then search by that prefix
         self.namespaces = {"x": "http://www.transxchange.org.uk/"}
-
+        self.file_id = uuid.uuid4()
         self.xml_toolkit = XmlToolkit(self.namespaces)
 
     def extract(self, file_obj: File) -> ExtractedData:
@@ -96,14 +97,14 @@ class XmlFileParser(ETLUtility):
         'route_section_hash' to form 'route_hash'.
         """
         logger.debug("Extracting data")
-        file_id = hash(file_obj.file)
+
         filename = file_obj.name
         self.trans = TransXChangeDocument(file_obj.file)
         schema_version = self.trans.get_transxchange_version()
 
         # Extract Services
         logger.debug("Extracting services")
-        services = self.extract_services(doc, file_id, filename)
+        services = self.extract_services(doc, self.file_id, filename)
         logger.debug("Finished extracting services")
 
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
@@ -115,17 +116,19 @@ class XmlFileParser(ETLUtility):
 
         # Extract JourneyPattern and JourneyPatternSections
         logger.debug("Extracting journey_patterns")
-        journey_patterns, jp_to_jps = self.extract_journey_patterns(doc, file_id)
+        journey_patterns, jp_to_jps = self.extract_journey_patterns(doc, self.file_id)
         logger.debug("Finished extracting journey_patterns")
 
         # Extract JourneyPatternSections, TimingLinks and RouteLinks
         logger.debug("Extracting journey_patterns_sections")
-        jp_sections, timing_links = self.extract_journey_pattern_sections(doc, file_id)
+        jp_sections, timing_links = self.extract_journey_pattern_sections(
+            doc, self.file_id
+        )
         logger.debug("Finished extracting journey_patterns_sections")
 
         # Extract VehicleJourneys
         logger.debug("Extracting vehicle_journeys")
-        vehicle_journeys = self.extract_vehicle_journeys(file_id)
+        vehicle_journeys = self.extract_vehicle_journeys(self.file_id)
         logger.debug("Finished extracting vehicle_journeys")
 
         # Extract ServicedOrganisations
@@ -133,12 +136,12 @@ class XmlFileParser(ETLUtility):
         (
             serviced_organisations,
             operating_profiles,
-        ) = self.extract_serviced_organisations(file_id)
+        ) = self.extract_serviced_organisations(self.file_id)
         logger.debug("Finished extracting serviced_organisations")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
-        booking_arrangements = self.extract_booking_arrangements(file_id)
+        booking_arrangements = self.extract_booking_arrangements(self.file_id)
         logger.debug("Finished extracting booking_arrangements")
 
         creation_datetime = extract_timestamp(self.trans.get_creation_date_time())

@@ -1,5 +1,6 @@
 import zipfile
 from datetime import datetime
+import uuid
 
 import pandas as pd
 from celery.utils.log import get_task_logger
@@ -40,7 +41,7 @@ class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
     def __init__(self, file_obj: File, start_time):
-        self.file_id = hash(file_obj.file)
+        self.file_id = uuid.uuid4()
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
         self.start_time = start_time
@@ -67,6 +68,7 @@ class TransXChangeExtractor:
         'route_section_hash' to form 'route_hash'.
         """
         logger.debug("Extracting data")
+        logger.debug(f"file_id: {self.file_id}, file_name: {self.filename}")
         is_timetable_visualiser_active = flag_is_active(
             "", "is_timetable_visualiser_active"
         )
