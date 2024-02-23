@@ -4,6 +4,7 @@ from requests.exceptions import HTTPError
 
 from transit_odp.otc.weca.client import WecaClient
 
+
 def test_weca_api_response_returned(weca_get_agliebase_data):
     with weca_get_agliebase_data:
         client = WecaClient()

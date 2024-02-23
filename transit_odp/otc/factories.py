@@ -128,6 +128,7 @@ class ServiceFactory(factory.Factory):
     subsidies_details = factory.Faker("sentence")
     last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
 
+
 class WecaServiceFactory(DjangoModelFactory, factory.Factory):
     class Meta:
         model = ServiceModel

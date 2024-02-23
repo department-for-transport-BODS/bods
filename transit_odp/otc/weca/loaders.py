@@ -14,8 +14,11 @@ class Loader:
         # sync all the records from
         logger.info("WECA job to refresh all the services started")
         self.registry.fetch_all_records()
-        self.delete_services()
-        self.load_services()
+        if len(self.registry.services) > 0:
+            self.delete_services()
+            self.load_services()
+
+        logger.info("WECA job finished the execution")
 
     def load_services(self):
         services = self.registry.services

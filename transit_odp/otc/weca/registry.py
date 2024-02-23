@@ -4,6 +4,7 @@ from transit_odp.otc.weca.client import WecaClient, APIResponse
 
 logger = getLogger(__name__)
 
+
 class Registry:
     def __init__(self) -> None:
         self._client = WecaClient()

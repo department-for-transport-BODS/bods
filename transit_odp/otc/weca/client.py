@@ -8,12 +8,8 @@ from requests import HTTPError, RequestException, Timeout
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
-from pydantic import Field, field_validator, validator
+from pydantic import Field, validator
 from pydantic.main import BaseModel
-
-from tenacity import retry, wait_exponential
-from tenacity.retry import retry_if_exception_type
-from tenacity.stop import stop_after_attempt
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +110,7 @@ class WecaClient:
                 f"Empty Response, API return {HTTPStatus.NO_CONTENT}, "
                 f"for params {params}"
             )
-            return APIResponse()
+            return self.default_response()
         try:
             return APIResponse(**response.json())
         except ValidationError as exc:
@@ -125,7 +121,11 @@ class WecaClient:
             logger.error("Validation error in WECA API response")
             logger.error(f"Response JSON: {response.text}")
             logger.error(f"Validation Error: {exc}")
-        return APIResponse()
+        return self.default_response()
+
+    def default_response(self):
+        response = {"fields": [], "data": []}
+        return APIResponse(**response)
 
     def fetch_weca_services(self) -> APIResponse:
         response = self._make_request()

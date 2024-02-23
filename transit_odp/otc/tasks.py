@@ -26,6 +26,7 @@ def task_get_all_otc_data():
     loader = Loader(registry)
     loader.load_into_fresh_database()
 
+
 @shared_task()
 def task_refresh_weca_data():
     registry = WecaRegistry()

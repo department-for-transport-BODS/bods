@@ -85,7 +85,6 @@ class Service(models.Model):
     api_type = models.TextField(blank=True, null=True, db_index=True)
     atco_code = models.TextField(blank=True, null=True)
 
-
     objects = ServiceManager()
 
     @classmethod
