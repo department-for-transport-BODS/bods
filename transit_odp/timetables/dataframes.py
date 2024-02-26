@@ -3,7 +3,6 @@
 """
 
 import logging
-import uuid
 
 import pandas as pd
 
@@ -15,8 +14,8 @@ from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
 logger = logging.getLogger(__name__)
 
 
-def flexible_service_stop_points_dataframe(services):
-    stop_points = []
+def flexible_journey_patterns_to_dataframe(services):
+    flexible_journey_patterns = []
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
         flexible_services = service.get_elements_or_none(["FlexibleService"])
@@ -26,17 +25,20 @@ def flexible_service_stop_points_dataframe(services):
                     ["FlexibleJourneyPattern"]
                 ):
                     flexible_zone = pattern.get_element_or_none("FlexibleZones")
+                    direction = pattern.get_element_or_none("Direction").text
+                    direction = direction if direction else ""
                     if flexible_zone:
                         for flexistopusage in flexible_zone.get_elements(
                             "FlexibleStopUsage"
                         ):
                             atco_code = flexistopusage.get_element("StopPointRef").text
-                            stop_points.append(
+                            flexible_journey_patterns.append(
                                 {
                                     "service_code": service_code,
                                     "atco_code": atco_code,
                                     "bus_stop_type": "flexible",
                                     "journey_pattern_id": pattern["id"],
+                                    "direction": direction,
                                 }
                             )
                     fixed_stop_points = pattern.get_element_or_none("FixedStopPoints")
@@ -47,12 +49,13 @@ def flexible_service_stop_points_dataframe(services):
                             atco_code = fixed_stop_usage.get_element(
                                 "StopPointRef"
                             ).text
-                            stop_points.append(
+                            flexible_journey_patterns.append(
                                 {
                                     "service_code": service_code,
                                     "atco_code": atco_code,
                                     "bus_stop_type": "fixed_flexible",
                                     "journey_pattern_id": pattern["id"],
+                                    "direction": direction,
                                 }
                             )
                     stoppoint_in_sequence = pattern.get_element_or_none(
@@ -68,18 +71,33 @@ def flexible_service_stop_points_dataframe(services):
                             atco_code = children.get_element_or_none(
                                 "StopPointRef"
                             ).text
-                            stop_points.append(
+                            flexible_journey_patterns.append(
                                 {
                                     "service_code": service_code,
                                     "atco_code": atco_code,
                                     "bus_stop_type": bus_stop_type,
                                     "journey_pattern_id": pattern["id"],
+                                    "direction": direction,
                                 }
                             )
 
-    if stop_points:
-        columns = ["atco_code", "bus_stop_type", "journey_pattern_id", "service_code"]
-        return pd.DataFrame(stop_points, columns=columns)
+    if flexible_journey_patterns:
+        columns = [
+            "atco_code",
+            "bus_stop_type",
+            "journey_pattern_id",
+            "service_code",
+            "direction",
+        ]
+        flexible_journey_patterns_df = pd.DataFrame(
+            flexible_journey_patterns, columns=columns
+        )
+        flexible_journey_patterns_df[
+            "journey_pattern_id"
+        ] = flexible_journey_patterns_df["service_code"].str.cat(
+            flexible_journey_patterns_df["journey_pattern_id"], sep="-"
+        )
+        return flexible_journey_patterns_df
 
     return pd.DataFrame()
 
@@ -171,7 +189,6 @@ def journey_patterns_to_dataframe(services):
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
         standard_service = service.get_element_or_none(["StandardService"])
-        flexible_service = service.get_element_or_none(["FlexibleService"])
 
         if standard_service:
             for pattern in standard_service.get_elements(["JourneyPattern"]):
@@ -183,18 +200,6 @@ def journey_patterns_to_dataframe(services):
                         "journey_pattern_id": pattern["id"],
                         "direction": direction.text if direction is not None else "",
                         "jp_section_refs": [ref.text for ref in section_refs],
-                    }
-                )
-
-        if flexible_service:
-            for pattern in flexible_service.get_elements(["FlexibleJourneyPattern"]):
-                direction = pattern.get_element_or_none(["Direction"])
-                all_items.append(
-                    {
-                        "service_code": service_code,
-                        "journey_pattern_id": pattern["id"],
-                        "direction": direction.text if direction is not None else "",
-                        "jp_section_refs": [],
                     }
                 )
 
@@ -266,9 +271,7 @@ def journey_pattern_sections_to_dataframe(sections):
     return timing_links
 
 
-def vehicle_journeys_to_dataframe(
-    standard_vehicle_journeys, flexible_vechicle_journeys
-):
+def vehicle_journeys_to_dataframe(standard_vehicle_journeys):
     all_vechicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
@@ -302,6 +305,11 @@ def vehicle_journeys_to_dataframe(
                 }
             )
 
+    return pd.DataFrame(all_vechicle_journeys)
+
+
+def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
+    all_vechicle_journeys = []
     if flexible_vechicle_journeys is not None:
         for vehicle_journey in flexible_vechicle_journeys:
             line_ref = vehicle_journey.get_element(["LineRef"]).text

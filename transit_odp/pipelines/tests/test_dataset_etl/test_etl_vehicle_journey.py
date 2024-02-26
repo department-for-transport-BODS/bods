@@ -129,6 +129,9 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
+        print(f"extracted.vehicle_journeys: {extracted.vehicle_journeys}")
+        print(f"vehicle_journey_expected: {vehicle_journey_expected}")
+
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
         )
@@ -146,20 +149,7 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
         # test
         transformed = self.feed_parser.transform(extracted)
 
-        vehicle_journey_expected = pd.DataFrame(
-            [
-                {
-                    "file_id": file_id,
-                    "departure_time": None,
-                    "journey_pattern_ref": "UZ000CALC:53M-jp_1",
-                    "line_ref": "CALC:UZ000CALC:53M:53M",
-                    "journey_code": None,
-                    "vehicle_journey_code": "vj_1",
-                    "service_code": "UZ000CALC:53M",
-                    "direction": "inbound",
-                },
-            ]
-        ).set_index("file_id")
+        vehicle_journey_expected = pd.DataFrame()
         self.assertTrue(
             check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
         )
@@ -177,11 +167,9 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
         self.feed_parser.load(transformed)
 
         vehicle_journeys = VehicleJourney.objects.all()
+        print(f"vehicle_journeys: {vehicle_journeys}")
 
-        self.assertEqual(1, vehicle_journeys.count())
-        for journey in vehicle_journeys:
-            self.assertEqual(journey.line_ref, "CALC:UZ000CALC:53M:53M")
-            self.assertEqual(journey.journey_code, None)
+        self.assertEqual(0, vehicle_journeys.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -202,26 +190,11 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "line_ref": "ARBB:UZ000WBCT:B1081:123",
                     "journey_code": "1094",
                     "vehicle_journey_code": "vj_3",
-                },
-                {
-                    "file_id": file_id,
-                    "departure_time": None,
-                    "journey_pattern_ref": "PB0002032:467-jp_1",
-                    "line_ref": "ARBB:PB0002032:467:53M",
-                    "journey_code": None,
-                    "vehicle_journey_code": "vj_1",
-                },
-                {
-                    "file_id": file_id,
-                    "departure_time": None,
-                    "journey_pattern_ref": "UZ000WOCT:216-jp_2",
-                    "line_ref": "ARBB:UZ000WOCT:216:53M",
-                    "journey_code": None,
-                    "vehicle_journey_code": "vj_2",
-                },
+                }
             ]
         ).set_index("file_id")
-
+        print(f"extracted.vehicle_journeys: {extracted.vehicle_journeys}")
+        print(f"vehicle_journey_expected: {vehicle_journey_expected}")
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
         )

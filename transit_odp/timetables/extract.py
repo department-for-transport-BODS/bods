@@ -30,7 +30,8 @@ from transit_odp.timetables.dataframes import (
     vehicle_journeys_to_dataframe,
     serviced_organisations_to_dataframe,
     operating_profile_to_df,
-    flexible_service_stop_points_dataframe,
+    flexible_journey_patterns_to_dataframe,
+    flexible_vehicle_journeys_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -100,12 +101,15 @@ class TransXChangeExtractor:
         logger.debug("Finished extracting journey_patterns_sections")
 
         vehicle_journeys = pd.DataFrame()
+        flexible_vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
             vehicle_journeys = self.extract_vehicle_journeys()
+            logger.debug("Extracting flexible vehicle journeys")
+            flexible_vehicle_journeys = self.extract_flexible_vehicle_journeys()
             logger.debug("Finished extracting vehicle_journeys")
 
             # Extract ServicedOrganisations
@@ -143,36 +147,24 @@ class TransXChangeExtractor:
 
         # extract flexible journey patterns
         logger.debug("Extracting flexible journey patterns")
-        flexible_journey_patterns = self.extract_flexible_journey_patterns()
+        flexible_journey_details = self.extract_flexible_journey_details()
         logger.debug("Finished extracting flexible journey patterns")
 
-        logger.debug("Extracting flexible journey pattern sections")
-        flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(
-            flexible_journey_patterns
-        )
-        logger.debug("Finished extracting flexible journey pattern sections")
-
-        logger.debug("Extracting flexible journey pattern timing links")
-
-        flexible_timing_links = self.create_flexible_timing_link(
-            flexible_journey_patterns, flexible_jp_to_jps
-        )
-        logger.debug("Finished extracting flexible journey pattern timing links")
-
         # extract flexible stop points from flexible journey patterns
-        if not flexible_journey_patterns.empty:
-            flexible_stop_points = flexible_journey_patterns[
+        if not flexible_journey_details.empty:
+            flexible_stop_points = flexible_journey_details[
                 ["atco_code", "bus_stop_type"]
             ].set_index("atco_code")
             flexible_journey_patterns = (
-                flexible_journey_patterns.reset_index()[
-                    ["file_id", "journey_pattern_id", "service_code"]
+                flexible_journey_details.reset_index()[
+                    ["file_id", "journey_pattern_id", "service_code", "direction"]
                 ]
                 .drop_duplicates(["journey_pattern_id"])
                 .set_index(["file_id", "journey_pattern_id"])
             )
         else:
             flexible_stop_points = pd.DataFrame()
+            flexible_journey_patterns = pd.DataFrame()
 
         return ExtractedData(
             services=services,
@@ -181,12 +173,10 @@ class TransXChangeExtractor:
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
             flexible_journey_patterns=flexible_journey_patterns,
+            flexible_journey_details=flexible_journey_details,
             jp_to_jps=jp_to_jps,
-            flexible_jp_to_jps=flexible_jp_to_jps,
             jp_sections=jp_sections,
-            flexible_jp_sections=flexible_jp_sections,
             timing_links=timing_links,
-            flexible_timing_links=flexible_timing_links,
             routes=routes,
             route_to_route_links=route_to_route_links,
             route_links=route_links,
@@ -200,89 +190,14 @@ class TransXChangeExtractor:
             timing_point_count=timing_point_count,
             booking_arrangements=booking_arrangements,
             vehicle_journeys=vehicle_journeys,
+            flexible_vehicle_journeys=flexible_vehicle_journeys,
             serviced_organisations=serviced_organisations,
             operating_profiles=operating_profiles,
         )
 
-    def create_flexible_timing_link(
-        self, flexible_journey_patterns, flexible_jp_to_jps
-    ):
-        def get_stop_sequence(group, jp_section_ref):
-            group["order"] = range(len(group))
-            group["route_link_ref"] = (
-                str(jp_section_ref) + "RL" + (group["order"] + 1).astype(str)
-            )
-            group["jp_timing_link_id"] = (
-                str(jp_section_ref) + "TL" + (group["order"] + 1).astype(str)
-            )
-            group["from_stop_ref"] = group["atco_code"].shift(0)
-            group["to_stop_ref"] = group["atco_code"].shift(-1)
-            return group.dropna(subset=["to_stop_ref"])
-
-        if not flexible_journey_patterns.empty and not flexible_jp_to_jps.empty:
-            flexible_jp_to_jps = flexible_jp_to_jps.reset_index()[
-                ["journey_pattern_id", "jp_section_ref"]
-            ]
-            journey_patterns = flexible_journey_patterns.reset_index().merge(
-                flexible_jp_to_jps,
-                how="left",
-                left_on="journey_pattern_id",
-                right_on="journey_pattern_id",
-            )
-            grouped = journey_patterns.groupby("jp_section_ref")
-            flexible_timing_links = pd.concat(
-                [
-                    get_stop_sequence(group, jp_section_ref)
-                    for jp_section_ref, group in grouped
-                ]
-            )
-            flexible_timing_links = (
-                flexible_timing_links[
-                    [
-                        "file_id",
-                        "jp_timing_link_id",
-                        "route_link_ref",
-                        "jp_section_ref",
-                        "order",
-                        "from_stop_ref",
-                        "to_stop_ref",
-                    ]
-                ]
-                .rename(columns={"jp_section_ref": "jp_section_id"})
-                .set_index(["file_id", "jp_section_id"])
-            )
-            return flexible_timing_links
-        return pd.DataFrame()
-
-    def create_flexible_jps(self, df):
-        if not df.empty:
-            flexible_jps = df.reset_index()
-            flexible_jps["jp_section_ref"] = flexible_jps.apply(
-                lambda x: hash(
-                    str(x.journey_pattern_id) + str(x.service_code) + str(x.file_id)
-                ),
-                axis=1,
-            )
-            flexible_jp_to_jps = flexible_jps[
-                ["file_id", "journey_pattern_id", "jp_section_ref"]
-            ].drop_duplicates(["jp_section_ref"])
-            flexible_jp_to_jps["order"] = range(len(flexible_jp_to_jps))
-            flexible_jps = (
-                flexible_jps[["file_id", "jp_section_ref"]]
-                .drop_duplicates(["jp_section_ref"])
-                .rename(columns={"jp_section_ref": "jp_section_id"})
-                .set_index(["file_id", "jp_section_id"])
-            )
-            flexible_jp_to_jps.set_index(
-                ["file_id", "journey_pattern_id", "order"], inplace=True
-            )
-            return flexible_jps, flexible_jp_to_jps
-
-        return pd.DataFrame(), pd.DataFrame()
-
-    def extract_flexible_journey_patterns(self):
+    def extract_flexible_journey_details(self):
         services = self.doc.get_services()
-        flexible_journey_patterns = flexible_service_stop_points_dataframe(services)
+        flexible_journey_patterns = flexible_journey_patterns_to_dataframe(services)
         if not flexible_journey_patterns.empty:
             flexible_journey_patterns["file_id"] = self.file_id
             flexible_journey_patterns.set_index(
@@ -346,12 +261,22 @@ class TransXChangeExtractor:
         standard_vehicle_journeys = self.doc.get_all_vehicle_journeys(
             "VehicleJourney", allow_none=True
         )
+
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(standard_vehicle_journeys)
+
+        if not df_vehicle_journeys.empty:
+            df_vehicle_journeys["file_id"] = self.file_id
+            df_vehicle_journeys.set_index(["file_id"], inplace=True)
+
+        return df_vehicle_journeys
+
+    def extract_flexible_vehicle_journeys(self):
         flexible_vehicle_journeys = self.doc.get_all_vehicle_journeys(
             "FlexibleVehicleJourney", allow_none=True
         )
 
-        df_vehicle_journeys = vehicle_journeys_to_dataframe(
-            standard_vehicle_journeys, flexible_vehicle_journeys
+        df_vehicle_journeys = flexible_vehicle_journeys_to_dataframe(
+            flexible_vehicle_journeys
         )
 
         if not df_vehicle_journeys.empty:
@@ -477,21 +402,15 @@ class TransXChangeZipExtractor:
             flexible_journey_patterns=concat_and_dedupe(
                 (extract.flexible_journey_patterns for extract in extracts)
             ),
-            jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
-            flexible_jp_to_jps=concat_and_dedupe(
-                (extract.flexible_jp_to_jps for extract in extracts)
+            flexible_journey_details=concat_and_dedupe(
+                (extract.flexible_journey_patterns for extract in extracts)
             ),
+            jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
             jp_sections=concat_and_dedupe(
                 (extract.jp_sections for extract in extracts)
             ),
-            flexible_jp_sections=concat_and_dedupe(
-                (extract.flexible_jp_sections for extract in extracts)
-            ),
             timing_links=concat_and_dedupe(
                 (extract.timing_links for extract in extracts)
-            ),
-            flexible_timing_links=concat_and_dedupe(
-                (extract.flexible_timing_links for extract in extracts)
             ),
             routes=concat_and_dedupe((extract.routes for extract in extracts)),
             route_to_route_links=concat_and_dedupe(
@@ -515,6 +434,9 @@ class TransXChangeZipExtractor:
             ),
             vehicle_journeys=pd.concat(
                 (extract.vehicle_journeys for extract in extracts)
+            ),
+            flexible_vehicle_journeys=pd.concat(
+                (extract.flexible_vehicle_journeys for extract in extracts)
             ),
             serviced_organisations=concat_and_dedupe(
                 (extract.serviced_organisations for extract in extracts)

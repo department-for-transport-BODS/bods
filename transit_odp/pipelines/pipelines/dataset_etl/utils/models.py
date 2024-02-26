@@ -13,14 +13,13 @@ class ExtractedData(object):
     provisional_stops: pd.DataFrame
     journey_patterns: pd.DataFrame
     flexible_journey_patterns: pd.DataFrame
+    flexible_journey_details: pd.DataFrame
     jp_to_jps: pd.DataFrame
     jp_sections: pd.DataFrame
-    flexible_jp_sections: pd.DataFrame
-    flexible_jp_to_jps: pd.DataFrame
     timing_links: pd.DataFrame
-    flexible_timing_links: pd.DataFrame
     booking_arrangements: pd.DataFrame
     vehicle_journeys: pd.DataFrame
+    flexible_vehicle_journeys: pd.DataFrame
     serviced_organisations: pd.DataFrame
     operating_profiles: pd.DataFrame
 

@@ -11,13 +11,14 @@ logger = get_task_logger(__name__)
 
 def transform_geometry(df: pd.DataFrame):
     def get_geometry(row):
-        if row.bus_stop_type == "flexible":
+        if row.bus_stop_type == "flexible" and hasattr(row, "flexible_location"):
             return row.flexible_location
         else:
             return [row.geometry]
 
     df["geometry"] = df.apply(get_geometry, axis=1)
-    df.drop(["flexible_location"], axis=1, inplace=True)
+    if "flexible_location" in df.columns:
+        df.drop(["flexible_location"], axis=1, inplace=True)
     return df
 
 
