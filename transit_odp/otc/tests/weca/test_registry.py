@@ -1,6 +1,8 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 from requests.exceptions import HTTPError
+
 from transit_odp.otc.tests.conftest import get_weca_data
 from transit_odp.otc.weca.client import APIResponse
 from transit_odp.otc.weca.registry import Registry
