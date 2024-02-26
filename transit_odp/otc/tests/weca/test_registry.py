@@ -25,7 +25,7 @@ def test_weca_registry(mock_weca_fetch):
     response = registry.fetch_all_records()
 
     assert type(response) == APIResponse
-    assert len(registry.services) == 5
+    assert len(registry.data) == 5
     assert len(registry.fields) == 12
 
 
@@ -37,5 +37,5 @@ def test_weca_registry_blank_response(mock_weca_fetch):
     response = registry.fetch_all_records()
 
     assert type(response) == APIResponse
-    assert len(registry.services) == 0
+    assert len(registry.data) == 0
     assert len(registry.fields) == 0

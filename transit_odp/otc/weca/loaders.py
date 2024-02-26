@@ -1,7 +1,7 @@
 from logging import getLogger
 
-from transit_odp.otc.weca.registry import Registry
 from transit_odp.otc.models import Service
+from transit_odp.otc.weca.registry import Registry
 
 logger = getLogger(__name__)
 
@@ -13,7 +13,7 @@ class Loader:
     def load(self):
         # sync all the records from
         logger.info("WECA job to refresh all the services started")
-        self.registry.fetch_all_records()
+        self.registry.process_services()
         if len(self.registry.services) > 0:
             self.delete_services()
             self.load_services()
@@ -21,11 +21,11 @@ class Loader:
         logger.info("WECA job finished the execution")
 
     def load_services(self):
-        services = self.registry.services
         logger.info("Loading services into the database")
         service_objects = []
-        for service in services:
-            service_objects.append(Service.from_registry_service(service, None, None))
+        self.registry.services.reset_index()
+        for index, service in self.registry.services.iterrows():
+            service_objects.append(Service(**service))
 
         Service.objects.bulk_create(service_objects)
         logger.info("WECA services inserted into the database")
