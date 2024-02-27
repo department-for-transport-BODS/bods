@@ -10,6 +10,12 @@ from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
+from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
+    db_bank_holidays_to_df,
+)
+from datetime import datetime, timedelta
+
+from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
@@ -61,9 +67,12 @@ def stop_point_refs_to_dataframe(stop_point_refs):
     all_points = []
     for ref in stop_point_refs:
         atco_code = ref.get_element(["StopPointRef"]).text
-        all_points.append({"atco_code": atco_code})
+        common_name = ref.get_element(["CommonName"]).text
+        all_points.append({"atco_code": atco_code, "common_name": common_name})
 
-    return pd.DataFrame(all_points, columns=["atco_code"]).set_index("atco_code")
+    return pd.DataFrame(all_points, columns=["atco_code", "common_name"]).set_index(
+        "atco_code"
+    )
 
 
 def provisional_stops_to_dataframe(stops, system=None):
@@ -174,7 +183,23 @@ def journey_pattern_sections_to_dataframe(sections):
             for order, link in enumerate(links):
                 from_stop_ref = link.get_element(["From", "StopPointRef"]).text
                 to_stop_ref = link.get_element(["To", "StopPointRef"]).text
+                to_stop_timing_status = link.get_element_or_none(["To", "TimingStatus"])
+                is_timing_status = False
+                if to_stop_timing_status and to_stop_timing_status.text in [
+                    "principalTimingPoint",
+                    "PTP",
+                ]:
+                    is_timing_status = True
                 timing_link_id = link["id"]
+
+                run_time = pd.NaT
+                element_run_time = link.get_element_or_none(["RunTime"])
+                if element_run_time:
+                    run_time = pd.to_timedelta(element_run_time.text)
+                element_wait_time = link.get_element_or_none(["To", "WaitTime"])
+                wait_time = pd.NaT
+                if element_wait_time:
+                    wait_time = pd.to_timedelta(element_wait_time.text)
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
@@ -190,6 +215,9 @@ def journey_pattern_sections_to_dataframe(sections):
                         "order": order,
                         "from_stop_ref": from_stop_ref,
                         "to_stop_ref": to_stop_ref,
+                        "is_timing_status": is_timing_status,
+                        "run_time": run_time,
+                        "wait_time": wait_time,
                     }
                 )
     timing_links = pd.DataFrame(all_links)
@@ -229,17 +257,49 @@ def vehicle_journeys_to_dataframe(
             if departure_day_shift_element:
                 departure_day_shift = True
 
-            all_vechicle_journeys.append(
-                {
-                    "service_code": service_ref,
-                    "departure_time": departure_time,
-                    "journey_pattern_ref": "-".join([service_ref, journey_pattern_ref]),
-                    "line_ref": line_ref,
-                    "journey_code": journey_code,
-                    "vehicle_journey_code": vehicle_journey_code,
-                    "departure_day_shift": departure_day_shift,
-                }
+            vj_timing_links = vehicle_journey.get_elements_or_none(
+                ["VehicleJourneyTimingLink"]
             )
+
+            if vj_timing_links:
+                for links in vj_timing_links:
+                    timing_link_ref = links.get_element(
+                        ["JourneyPatternTimingLinkRef"]
+                    ).text
+                    run_time = pd.to_timedelta(links.get_element(["RunTime"]).text)
+
+                    all_vechicle_journeys.append(
+                        {
+                            "service_code": service_ref,
+                            "departure_time": departure_time,
+                            "journey_pattern_ref": "-".join(
+                                [service_ref, journey_pattern_ref]
+                            ),
+                            "line_ref": line_ref,
+                            "journey_code": journey_code,
+                            "vehicle_journey_code": vehicle_journey_code,
+                            "timing_link_ref": timing_link_ref,
+                            "run_time": run_time,
+                            "departure_day_shift": departure_day_shift,
+                        }
+                    )
+
+            else:
+                all_vechicle_journeys.append(
+                    {
+                        "service_code": service_ref,
+                        "departure_time": departure_time,
+                        "journey_pattern_ref": "-".join(
+                            [service_ref, journey_pattern_ref]
+                        ),
+                        "line_ref": line_ref,
+                        "journey_code": journey_code,
+                        "vehicle_journey_code": vehicle_journey_code,
+                        "timing_link_ref": None,
+                        "run_time": pd.NaT,
+                        "departure_day_shift": departure_day_shift,
+                    }
+                )
 
     if flexible_vechicle_journeys is not None:
         for vehicle_journey in flexible_vechicle_journeys:
@@ -260,6 +320,8 @@ def vehicle_journeys_to_dataframe(
                     "line_ref": line_ref,
                     "journey_code": None,
                     "vehicle_journey_code": vehicle_journey_code,
+                    "timing_link_ref": None,
+                    "run_time": pd.NaT,
                     "departure_day_shift": False,
                 }
             )
@@ -311,7 +373,99 @@ def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):
     return pd.DataFrame(flexible_operation_periods)
 
 
-def populate_operating_profiles(operating_profiles):
+def get_operating_profile_with_exception(
+    operating_profile,
+    date=None,
+    exceptions_operational=False,
+    is_exceptions=False,
+):
+    operating_profile = {
+        "service_code": operating_profile["service_code"],
+        "vehicle_journey_code": operating_profile["vehicle_journey_code"],
+        "serviced_org_ref": operating_profile["serviced_org_ref"],
+        "operational": operating_profile["operational"],
+        "day_of_week": operating_profile["day_of_week"],
+        "exceptions_operational": None,
+        "exceptions_date": None,
+    }
+
+    if is_exceptions:
+        operating_profile["exceptions_operational"] = exceptions_operational
+        if date:
+            operating_profile["exceptions_date"] = date
+
+    return operating_profile
+
+
+def get_operating_profiles_for_all_exceptions(
+    operating_profile,
+    operations=None,
+    df_bank_holidays_from_db=pd.DataFrame(),
+    is_bank_holiday_exception=False,
+    is_special_operation=False,
+    is_days_of_operation=False,
+):
+    operating_profile_list = []
+
+    if is_bank_holiday_exception:
+        for holiday in operations.children:
+            date = None
+            no_bank_holidays = False
+            if holiday.localname == "OtherPublicHoliday":
+                date = datetime.strptime(
+                    holiday.get_element(["Date"]).text, "%Y-%m-%d"
+                ).date()
+            else:
+                filtered_df = df_bank_holidays_from_db.loc[
+                    df_bank_holidays_from_db["txc_element"] == holiday.localname,
+                    "date",
+                ]
+
+                if not filtered_df.empty:
+                    date = filtered_df.values[0]
+                else:
+                    no_bank_holidays = True
+            if not no_bank_holidays:
+                operating_profile_list.append(
+                    get_operating_profile_with_exception(
+                        operating_profile,
+                        date,
+                        is_days_of_operation,
+                        is_exceptions=True,
+                    )
+                )
+
+    elif is_special_operation:
+        if operations:
+            date_range = operations.get_elements_or_none(["DateRange"])
+            for range in date_range:
+                start_date = datetime.strptime(
+                    range.get_element(["StartDate"]).text, "%Y-%m-%d"
+                ).date()
+                end_date = datetime.strptime(
+                    range.get_element(["EndDate"]).text, "%Y-%m-%d"
+                ).date()
+
+                while start_date <= end_date:
+                    operating_profile_list.append(
+                        get_operating_profile_with_exception(
+                            operating_profile,
+                            start_date,
+                            is_days_of_operation,
+                            is_exceptions=True,
+                        )
+                    )
+                    start_date = start_date + timedelta(days=1)
+    else:
+        operating_profile_list.append(
+            get_operating_profile_with_exception(operating_profile)
+        )
+
+    return operating_profile_list
+
+
+def populate_operating_profiles(operating_profiles, vehicle_journey_code, service_ref):
+    operating_profile_list = []
     serviced_org_refs = []
     days_of_week = ""
     operational = ""
@@ -319,10 +473,37 @@ def populate_operating_profiles(operating_profiles):
         ["ServicedOrganisationDayType"]
     )
     regular_day_type = operating_profiles.get_element_or_none(["RegularDayType"])
+    special_days_operation = operating_profiles.get_element_or_none(
+        ["SpecialDaysOperation"]
+    )
+    bank_holiday_operation = operating_profiles.get_element_or_none(
+        ["BankHolidayOperation"]
+    )
+
+    df_bank_holidays_from_db = db_bank_holidays_to_df(["txc_element", "date"])
+
+    current_year = datetime.today().year
+
+    df_bank_holidays_from_db = df_bank_holidays_from_db[
+        df_bank_holidays_from_db["date"].apply(lambda x: x.year) == current_year
+    ]
+
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
-        if days_of_week_elements:
-            days_of_week = [day.localname for day in days_of_week_elements.children]
+        days_of_week = (
+            [day.localname for day in days_of_week_elements.children]
+            if days_of_week_elements
+            else ""
+        )
+
+    operating_profile_obj = {
+        "service_code": service_ref,
+        "vehicle_journey_code": vehicle_journey_code,
+        "serviced_org_ref": serviced_org_refs,
+        "day_of_week": days_of_week,
+        "operational": operational,
+    }
+
     if serviced_organisation_day_type:
         days_of_operation = serviced_organisation_day_type.get_element_or_none(
             ["DaysOfOperation"]
@@ -345,8 +526,79 @@ def populate_operating_profiles(operating_profiles):
             serviced_org_ref_element.text
             for serviced_org_ref_element in serviced_org_ref_elements
         ]
+        operating_profile_obj["serviced_org_ref"] = serviced_org_refs
+        operating_profile_obj["operational"] = operational
 
-    return serviced_org_refs, days_of_week, operational
+    if special_days_operation:
+        days_of_operation = special_days_operation.get_element_or_none(
+            ["DaysOfOperation"]
+        )
+        days_of_non_operation = special_days_operation.get_element_or_none(
+            ["DaysOfNonOperation"]
+        )
+
+        if days_of_operation:
+            operating_profile_list.extend(
+                get_operating_profiles_for_all_exceptions(
+                    operating_profile_obj,
+                    days_of_operation,
+                    df_bank_holidays_from_db,
+                    is_bank_holiday_exception=False,
+                    is_special_operation=True,
+                    is_days_of_operation=True,
+                )
+            )
+
+        if days_of_non_operation:
+            operating_profile_list.extend(
+                get_operating_profiles_for_all_exceptions(
+                    operating_profile_obj,
+                    days_of_non_operation,
+                    df_bank_holidays_from_db,
+                    is_bank_holiday_exception=False,
+                    is_special_operation=True,
+                    is_days_of_operation=False,
+                )
+            )
+
+    if bank_holiday_operation:
+        days_of_operation = bank_holiday_operation.get_element_or_none(
+            ["DaysOfOperation"]
+        )
+        days_of_non_operation = bank_holiday_operation.get_element_or_none(
+            ["DaysOfNonOperation"]
+        )
+
+        if days_of_operation:
+            operating_profile_list.extend(
+                get_operating_profiles_for_all_exceptions(
+                    operating_profile_obj,
+                    days_of_operation,
+                    df_bank_holidays_from_db,
+                    is_bank_holiday_exception=True,
+                    is_special_operation=False,
+                    is_days_of_operation=True,
+                )
+            )
+
+        if days_of_non_operation:
+            operating_profile_list.extend(
+                get_operating_profiles_for_all_exceptions(
+                    operating_profile_obj,
+                    days_of_non_operation,
+                    df_bank_holidays_from_db,
+                    is_bank_holiday_exception=True,
+                    is_special_operation=False,
+                    is_days_of_operation=False,
+                )
+            )
+
+    if not special_days_operation or not bank_holiday_operation:
+        operating_profile_list.extend(
+            get_operating_profiles_for_all_exceptions(operating_profile_obj)
+        )
+
+    return operating_profile_list
 
 
 def operating_profiles_to_dataframe(vehicle_journeys, services):
@@ -367,18 +619,11 @@ def operating_profiles_to_dataframe(vehicle_journeys, services):
                         ["OperatingProfile"]
                     )
         if operating_profile:
-            serviced_org_refs, days_of_week, operational = populate_operating_profiles(
-                operating_profile
+            operating_profiles = populate_operating_profiles(
+                operating_profile, vehicle_journey_code, service_ref
             )
-            operating_profile_list.append(
-                {
-                    "service_code": service_ref,
-                    "vehicle_journey_code": vehicle_journey_code,
-                    "serviced_org_ref": serviced_org_refs,
-                    "operational": operational,
-                    "day_of_week": days_of_week,
-                }
-            )
+            operating_profile_list.extend(operating_profiles)
+
     operating_profile_df = pd.DataFrame(operating_profile_list)
     operating_profile_df = operating_profile_df.explode("day_of_week")
     operating_profile_df = operating_profile_df.explode("serviced_org_ref")

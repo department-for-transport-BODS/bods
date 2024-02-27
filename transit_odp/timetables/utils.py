@@ -223,3 +223,14 @@ def get_holidays_records_to_insert(records):
                 notes=record["notes"],
                 division=record["division"],
             )
+
+
+def filter_rows_by_journeys(row, journey_mapping):
+    date_obj = row["exceptions_date"]
+    if date_obj:
+        day_of_week = date_obj.strftime("%A")
+        if row["exceptions_operational"] == True:
+            return day_of_week not in journey_mapping[row["vehicle_journey_code"]]
+        return day_of_week in journey_mapping[row["vehicle_journey_code"]]
+    else:
+        return False
