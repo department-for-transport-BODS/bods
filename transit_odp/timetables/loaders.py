@@ -381,9 +381,8 @@ class TransXChangeDataLoader:
             and not serviced_organisations.empty
             and not operating_profiles.empty
         ):
-            vehicle_journeys.rename(
-                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"},
-                inplace=True,
+            df_vehicle_journeys = vehicle_journeys.rename(
+                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"}
             )
 
             serviced_organisations.rename(
@@ -417,7 +416,7 @@ class TransXChangeDataLoader:
 
             operating_profiles_serviced_orgs_vehicle_journeys_merged_df = pd.merge(
                 operating_profiles_serviced_orgs_merged_df,
-                vehicle_journeys[
+                df_vehicle_journeys[
                     [
                         "file_id",
                         "service_code",

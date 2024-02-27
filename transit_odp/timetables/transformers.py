@@ -207,6 +207,9 @@ class TransXChangeTransformer:
             stop_point_cache = pd.concat(
                 [stop_point_cache, fetched, df_missing_stops_merged], sort=True
             )
+        else:
+            if "common_name" not in stop_point_cache.columns:
+                stop_point_cache["common_name"] = ""
         # Return the subselection of stop points seen in the doc (useful when
         # processing large zip files)
         return stop_point_cache.reindex(sorted(stop_point_refs))
