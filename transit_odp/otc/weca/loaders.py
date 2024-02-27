@@ -11,7 +11,6 @@ class Loader:
         self.registry: Registry = registry
 
     def load(self):
-        # sync all the records from
         logger.info("WECA job to refresh all the services started")
         self.registry.process_services()
         if len(self.registry.services) > 0:
