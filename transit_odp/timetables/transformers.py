@@ -149,11 +149,12 @@ class TransXChangeTransformer:
                 flexible_stop_points_with_geometry
             )
 
+            df_merged_flexible_vehicle_journeys = pd.DataFrame()
             if (
                 not flexible_vehicle_journeys.empty
                 and not flexible_journey_patterns.empty
             ):
-                flexible_vehicle_journey = merge_vehicle_journeys_with_jp(
+                df_merged_flexible_vehicle_journeys = merge_vehicle_journeys_with_jp(
                     flexible_vehicle_journeys, flexible_journey_patterns
                 )
             # creating flexible jp sections and jp to jps mapping
@@ -232,13 +233,6 @@ class TransXChangeTransformer:
                     service_patterns = pd.concat(
                         [service_patterns, flexible_service_patterns]
                     )
-
-                    # if "index" in service_patterns.columns:
-                    #     service_patterns.drop(columns=["index"], inplace=True)
-
-                    # service_patterns.set_index(
-                    #     ["file_id", "service_pattern_id"], append=True, inplace=True
-                    # )
                     # 9.a merge the service_patterns_stops and flexible_service_pattern_stops
                     service_pattern_stops = pd.concat(
                         [
@@ -247,15 +241,11 @@ class TransXChangeTransformer:
                         ]
                     )
                     df_merged_vehicle_journeys = pd.concat(
-                        [df_merged_vehicle_journeys, flexible_vehicle_journey]
+                        [
+                            df_merged_vehicle_journeys,
+                            df_merged_flexible_vehicle_journeys,
+                        ]
                     )
-                    drop_column_names = ["level_0", "index"]
-                    for drop_column_name in drop_column_names:
-                        if drop_column_name in service_pattern_stops.columns:
-                            service_pattern_stops.drop(
-                                columns=[drop_column_name], inplace=True
-                            )
-
                     # service_pattern_stops.set_index(["file_id"], append=True, inplace=True)
                     service_pattern_stops.dropna(
                         subset=["stop_atco", "geometry"], inplace=True

@@ -116,7 +116,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         file_id = self.xml_file_parser.file_id
 
-        vehicle_journey_expected = pd.DataFrame(
+        vehicle_journey_expected = pd.DataFrame()
+        flexible_vehicle_journey_expected = pd.DataFrame(
             [
                 {
                     "file_id": file_id,
@@ -129,11 +130,13 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
-        print(f"extracted.vehicle_journeys: {extracted.vehicle_journeys}")
-        print(f"vehicle_journey_expected: {vehicle_journey_expected}")
-
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
+        )
+        self.assertTrue(
+            check_frame_equal(
+                extracted.flexible_vehicle_journeys, flexible_vehicle_journey_expected
+            )
         )
 
         self.assertCountEqual(
@@ -167,7 +170,6 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
         self.feed_parser.load(transformed)
 
         vehicle_journeys = VehicleJourney.objects.all()
-        print(f"vehicle_journeys: {vehicle_journeys}")
 
         self.assertEqual(0, vehicle_journeys.count())
 
@@ -193,8 +195,6 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                 }
             ]
         ).set_index("file_id")
-        print(f"extracted.vehicle_journeys: {extracted.vehicle_journeys}")
-        print(f"vehicle_journey_expected: {vehicle_journey_expected}")
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
         )
