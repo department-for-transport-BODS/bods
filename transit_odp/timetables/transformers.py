@@ -45,7 +45,6 @@ class TransXChangeTransformer:
         provisional_stops = self.extracted_data.provisional_stops.copy()
         booking_arrangements = self.extracted_data.booking_arrangements.copy()
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
-        flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
         serviced_organisations = self.extracted_data.serviced_organisations.copy()
         operating_profiles = self.extracted_data.operating_profiles.copy()
         flexible_stop_points = self.extracted_data.flexible_stop_points.copy()
@@ -148,15 +147,6 @@ class TransXChangeTransformer:
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
-
-            df_merged_flexible_vehicle_journeys = pd.DataFrame()
-            if (
-                not flexible_vehicle_journeys.empty
-                and not flexible_journey_patterns.empty
-            ):
-                df_merged_flexible_vehicle_journeys = merge_vehicle_journeys_with_jp(
-                    flexible_vehicle_journeys, flexible_journey_patterns
-                )
             # creating flexible jp sections and jp to jps mapping
             if not flexible_journey_details.empty:
                 flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(
@@ -238,12 +228,6 @@ class TransXChangeTransformer:
                         [
                             service_pattern_stops,
                             flexible_service_pattern_stops,
-                        ]
-                    )
-                    df_merged_vehicle_journeys = pd.concat(
-                        [
-                            df_merged_vehicle_journeys,
-                            df_merged_flexible_vehicle_journeys,
                         ]
                     )
                     # service_pattern_stops.set_index(["file_id"], append=True, inplace=True)

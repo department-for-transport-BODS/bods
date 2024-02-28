@@ -23,7 +23,6 @@ from transit_odp.timetables.dataframes import (
     serviced_organisations_to_dataframe,
     operating_profile_to_df,
     flexible_journey_patterns_to_dataframe,
-    flexible_vehicle_journeys_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -131,8 +130,6 @@ class XmlFileParser(ETLUtility):
         # Extract VehicleJourneys
         logger.debug("Extracting vehicle_journeys")
         vehicle_journeys = self.extract_vehicle_journeys()
-        logger.debug("Extracting flexible vehicle journeys")
-        flexible_vehicle_journeys = self.extract_flexible_vehicle_journeys()
         logger.debug("Finished extracting vehicle_journeys")
 
         # Extract ServicedOrganisations
@@ -216,7 +213,6 @@ class XmlFileParser(ETLUtility):
             timing_point_count=timing_point_count,
             stop_count=len(stop_points) + len(provisional_stops),
             vehicle_journeys=vehicle_journeys,
-            flexible_vehicle_journeys=flexible_vehicle_journeys,
             serviced_organisations=serviced_organisations,
             operating_profiles=operating_profiles,
         )
@@ -288,22 +284,12 @@ class XmlFileParser(ETLUtility):
         standard_vehicle_journeys = self.trans.get_all_vehicle_journeys(
             "VehicleJourney", allow_none=True
         )
-
-        df_vehicle_journeys = vehicle_journeys_to_dataframe(standard_vehicle_journeys)
-
-        if not df_vehicle_journeys.empty:
-            df_vehicle_journeys["file_id"] = self.file_id
-            df_vehicle_journeys.set_index(["file_id"], inplace=True)
-
-        return df_vehicle_journeys
-
-    def extract_flexible_vehicle_journeys(self):
         flexible_vehicle_journeys = self.trans.get_all_vehicle_journeys(
             "FlexibleVehicleJourney", allow_none=True
         )
 
-        df_vehicle_journeys = flexible_vehicle_journeys_to_dataframe(
-            flexible_vehicle_journeys
+        df_vehicle_journeys = vehicle_journeys_to_dataframe(
+            standard_vehicle_journeys, flexible_vehicle_journeys
         )
 
         if not df_vehicle_journeys.empty:

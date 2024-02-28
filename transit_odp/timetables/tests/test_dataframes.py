@@ -5,7 +5,11 @@ import pytest
 from django.core.files import File
 
 from transit_odp.timetables.transxchange import TransXChangeDocument
-from transit_odp.timetables.dataframes import flexible_journey_patterns_to_dataframe
+from transit_odp.timetables.dataframes import (
+    flexible_journey_patterns_to_dataframe,
+    flexible_stop_points_from_journey_details,
+    flexible_jp_from_journey_details,
+)
 from transit_odp.pipelines.tests.utils import check_frame_equal
 
 
@@ -45,3 +49,115 @@ def test_flexible_journey_patterns_to_dataframe():
     # test
     stoppoint_df = flexible_journey_patterns_to_dataframe(services)
     assert check_frame_equal(stoppoint_df, expected_stopoint_df)
+
+
+def test_flexible_stop_points_from_journey_details():
+    # setup
+    flexible_journey_pattern_details = pd.DataFrame(
+        [
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058880001",
+                "bus_stop_type": "flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058860001",
+                "bus_stop_type": "flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058920001",
+                "bus_stop_type": "fixed_flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058870001",
+                "bus_stop_type": "fixed_flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+        ]
+    )
+
+    expected_stopoint_df = pd.DataFrame(
+        [
+            {"atco_code": "030058880001", "bus_stop_type": "flexible"},
+            {"atco_code": "030058860001", "bus_stop_type": "flexible"},
+            {"atco_code": "030058920001", "bus_stop_type": "fixed_flexible"},
+            {"atco_code": "030058870001", "bus_stop_type": "fixed_flexible"},
+        ]
+    ).set_index("atco_code")
+
+    # test
+    stop_points = flexible_stop_points_from_journey_details(
+        flexible_journey_pattern_details
+    )
+    assert check_frame_equal(stop_points, expected_stopoint_df)
+
+
+def test_flexible_jp_from_journey_details():
+    # setup
+    flexible_journey_pattern_details = pd.DataFrame(
+        [
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058880001",
+                "bus_stop_type": "flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058860001",
+                "bus_stop_type": "flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058920001",
+                "bus_stop_type": "fixed_flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "atco_code": "030058870001",
+                "bus_stop_type": "fixed_flexible",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            },
+        ]
+    )
+
+    expected_journey_patterns = pd.DataFrame(
+        [
+            {
+                "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
+                "journey_pattern_id": "PF0000508:11-jp_1",
+                "service_code": "PF0000508:11",
+                "direction": "outbound",
+            }
+        ]
+    ).set_index(["file_id", "journey_pattern_id"])
+
+    # test
+    journey_patterns = flexible_jp_from_journey_details(
+        flexible_journey_pattern_details
+    )
+    assert check_frame_equal(journey_patterns, expected_journey_patterns)

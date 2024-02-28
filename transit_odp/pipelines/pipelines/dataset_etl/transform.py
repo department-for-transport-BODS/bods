@@ -49,7 +49,6 @@ class Transform(ETLUtility):
         timing_links = extracted_data.timing_links.copy()
         stop_points = extracted_data.stop_points.copy()
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
-        flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
         provisional_stops = extracted_data.provisional_stops.copy()
         flexible_stop_points = extracted_data.flexible_stop_points.copy()
         flexible_journey_patterns = extracted_data.flexible_journey_patterns.copy()
@@ -123,13 +122,6 @@ class Transform(ETLUtility):
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
-            if (
-                not flexible_vehicle_journeys.empty
-                and not flexible_journey_patterns.empty
-            ):
-                flexible_vehicle_journey = merge_vehicle_journeys_with_jp(
-                    flexible_vehicle_journeys, flexible_journey_patterns
-                )
             # creating flexible jp sections and jp to jps mapping
             if not flexible_journey_details.empty:
                 flexible_jp_sections, flexible_jp_to_jps = self.create_flexible_jps(
@@ -236,9 +228,6 @@ class Transform(ETLUtility):
                         subset=["stop_atco", "geometry"], inplace=True
                     )
                     service_links = pd.concat([service_links, flexible_service_links])
-                    df_merged_vehicle_journeys = pd.concat(
-                        [df_merged_vehicle_journeys, flexible_vehicle_journey]
-                    )
         return TransformedData(
             services=services,
             service_patterns=service_patterns,

@@ -271,7 +271,9 @@ def journey_pattern_sections_to_dataframe(sections):
     return timing_links
 
 
-def vehicle_journeys_to_dataframe(standard_vehicle_journeys):
+def vehicle_journeys_to_dataframe(
+    standard_vehicle_journeys, flexible_vechicle_journeys
+):
     all_vechicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
@@ -305,11 +307,6 @@ def vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                 }
             )
 
-    return pd.DataFrame(all_vechicle_journeys)
-
-
-def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
-    all_vechicle_journeys = []
     if flexible_vechicle_journeys is not None:
         for vehicle_journey in flexible_vechicle_journeys:
             line_ref = vehicle_journey.get_element(["LineRef"]).text
@@ -435,3 +432,25 @@ def booking_arrangements_to_dataframe(services):
         ]
         return pd.DataFrame(booking_arrangements_df, columns=columns)
     return booking_arrangements_df
+
+
+def flexible_stop_points_from_journey_details(flexible_journey_details):
+    if not flexible_journey_details.empty:
+        flexible_stop_points = flexible_journey_details[
+            ["atco_code", "bus_stop_type"]
+        ].set_index("atco_code")
+        return flexible_stop_points
+    return pd.DataFrame()
+
+
+def flexible_jp_from_journey_details(flexible_journey_details):
+    if not flexible_journey_details.empty:
+        flexible_journey_patterns = (
+            flexible_journey_details.reset_index()[
+                ["file_id", "journey_pattern_id", "service_code", "direction"]
+            ]
+            .drop_duplicates(["journey_pattern_id"])
+            .set_index(["file_id", "journey_pattern_id"])
+        )
+        return flexible_journey_patterns
+    return pd.DataFrame()
