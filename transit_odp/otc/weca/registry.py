@@ -11,7 +11,7 @@ logger = getLogger(__name__)
 class Registry:
     def __init__(self) -> None:
         self._client = WecaClient()
-        self.services = []
+        self.services = pd.DataFrame()
         self.data = []
         self.fields = []
 
@@ -53,21 +53,21 @@ class Registry:
         Expectation is such scenarios will not happen but if they are those will be
         skipped from the dataframe
         """
-        registrations_queryset = Service.objects.filter(
+        services_queryset = Service.objects.filter(
             registration_number__in=self.services["registration_number"].tolist(),
             api_type__isnull=True,
         ).values_list("registration_number")
-        registrations_to_ignore = [service[0] for service in registrations_queryset]
+        services_to_ignore = [service[0] for service in services_queryset]
         logger.info(
             "Found {} services of OTC in weca data, and these will be ignored".format(
-                len(registrations_to_ignore)
+                len(services_to_ignore)
             )
         )
         self.services = self.services[
-            ~self.services["registration_number"].isin(registrations_to_ignore)
+            ~self.services["registration_number"].isin(services_to_ignore)
         ]
 
-    def convert_to_pandas(self) -> None:
+    def convert_services_to_df(self) -> None:
         services_list = [service.model_dump() for service in self.data]
         self.services = pd.DataFrame(services_list)
 
@@ -79,12 +79,13 @@ class Registry:
         3. Ignore the services which belongs to OTC
         """
         self.fetch_all_records()
-        self.convert_to_pandas()
-        logger.info("Removing WECA duplicates.")
-        self.remove_duplicates()
-        logger.info(
-            "Merging WECA records for same registration numbers by making service name seprated from pipe."
-        )
-        self.merge_service_numbers()
-        logger.info("Ignoring OTC services present in WECA records.")
-        self.ignore_otc_services()
+        self.convert_services_to_df()
+        if not self.services.empty:
+            logger.info("Removing WECA duplicates.")
+            self.remove_duplicates()
+            logger.info(
+                "Merging WECA records for same registration numbers by making service name seprated from pipe."
+            )
+            self.merge_service_numbers()
+            logger.info("Ignoring OTC services present in WECA records.")
+            self.ignore_otc_services()
