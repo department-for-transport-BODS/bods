@@ -224,7 +224,6 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
         .groupby(["file_id", "journey_pattern_id"])
         .apply(lambda df: create_hash(df.sort_values("order")["route_section_hash"]))
     )
-
     # Create Routes from journey_patterns with unique route_hash
     routes = (
         journey_patterns.reset_index()[["file_id", "route_hash"]]
@@ -336,6 +335,7 @@ def get_vehicle_journey_with_timing_refs(vehicle_journeys):
 
 
 def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
+
     df_merged = pd.merge(
         vehicle_journeys,
         journey_patterns,
@@ -350,10 +350,13 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
 def merge_journey_pattern_with_vj_for_departure_time(
     vehicle_journeys, journey_patterns
 ):
+    print("vehicle_journeys", vehicle_journeys)
+    print("journey_patterns::", journey_patterns)
+    # print("vehicle_journeysTTTTTTTTTTT1:::::>>>>>", vehicle_journeys)
     index = journey_patterns.index
     df_merged = pd.merge(
         journey_patterns.reset_index(),
-        vehicle_journeys[["file_id", "journey_pattern_ref", "departure_time"]],
+        vehicle_journeys[["file_id", "journey_pattern_ref", "departure_time", "line_name", "outbound_description", "inbound_description"]],
         left_on=["file_id", "journey_pattern_id"],
         right_on=["file_id", "journey_pattern_ref"],
         how="left",
@@ -361,6 +364,7 @@ def merge_journey_pattern_with_vj_for_departure_time(
     )
     df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
     df_merged.set_index(index.names, inplace=True)
+    print("journey_patternsTTTTTTTTTTT2:::::>>>>>", df_merged)
     return df_merged
 
 
@@ -379,6 +383,12 @@ def merge_serviced_organisations_with_operating_profile(
     df_merged["operational"] = df_merged["operational"].astype(bool)
     df_merged.set_index("file_id", inplace=True)
 
+    return df_merged
+
+def merge_lines_with_vehicle_journey(
+    vehicle_journeys, lines
+):
+    df_merged = pd.merge(vehicle_journeys, lines, left_on=['file_id', 'line_ref'], right_on=["file_id", 'line_id'], how='inner')
     return df_merged
 
 

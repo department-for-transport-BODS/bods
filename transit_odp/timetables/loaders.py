@@ -37,7 +37,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
-from transit_odp.timetables.utils import filter_rows_by_journeys
+from transit_odp.timetables.utils import filter_rows_by_journeys, get_line_description_based_on_direction
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
@@ -487,8 +487,12 @@ class TransXChangeDataLoader:
         return service_links
 
     def load_service_patterns(self, services, revision):
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         service_patterns = self.transformed.service_patterns
+        service_patterns["description"] = service_patterns.apply(get_line_description_based_on_direction, axis=1)
+        # print("service_patterns:::::::::::>>>>>", service_patterns)
         service_pattern_stops = self.transformed.service_pattern_stops
 
         adapter.info("Bulk creating service patterns.")

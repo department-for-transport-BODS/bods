@@ -23,6 +23,7 @@ from transit_odp.timetables.dataframes import (
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
+    lines_to_df,
     provisional_stops_to_dataframe,
     services_to_dataframe,
     stop_point_refs_to_dataframe,
@@ -100,6 +101,7 @@ class TransXChangeExtractor:
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
+        lines = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
@@ -118,12 +120,18 @@ class TransXChangeExtractor:
             logger.debug("Extracting operating_profiles")
             operating_profiles = self.extract_operating_profiles()
             logger.debug("Finished extracting operating_profiles")
+
+            # Extract Lines
+            logger.debug("Extracting Lines")
+            lines = self.extract_lines()
+            logger.debug("Finished extracting lines")
         else:
             timing_links.drop(
                 columns=["is_timing_status", "run_time", "wait_time"],
                 axis=1,
                 inplace=True,
             )
+
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
@@ -166,6 +174,7 @@ class TransXChangeExtractor:
             modification_datetime=modification_datetime,
             import_datetime=self.start_time,
             line_count=line_count,
+            lines = lines,
             line_names=line_names,
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,
@@ -305,6 +314,16 @@ class TransXChangeExtractor:
 
         return df_operating_profiles
 
+    def extract_lines(self):
+        lines = self.doc.get_lines()
+        lines_df = lines_to_df(lines)
+
+        if not lines_df.empty:
+            lines_df["file_id"] = self.file_id
+            lines_df.set_index(["file_id"], inplace=True)
+
+        return lines_df
+
     def extract_booking_arrangements(self):
         services = self.doc.get_services()
         df = booking_arrangements_to_dataframe(services)
@@ -399,4 +418,5 @@ class TransXChangeZipExtractor:
             flexible_operation_periods=pd.concat(
                 (extract.flexible_operation_periods for extract in extracts)
             ),
+            lines=pd.concat(extract.lines for extract in extracts),
         )

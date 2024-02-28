@@ -19,6 +19,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     merge_journey_pattern_with_vj_for_departure_time,
     merge_vehicle_journeys_with_jp,
     merge_serviced_organisations_with_operating_profile,
+    merge_lines_with_vehicle_journey,
     sync_localities_and_adminareas,
     transform_line_names,
     transform_service_links,
@@ -50,6 +51,7 @@ class TransXChangeTransformer:
         df_flexible_operation_periods = (
             self.extracted_data.flexible_operation_periods.copy()
         )
+        lines = self.extracted_data.lines.copy()
 
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -60,6 +62,8 @@ class TransXChangeTransformer:
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
         if not vehicle_journeys.empty and not journey_patterns.empty:
+            pd.set_option('display.max_rows', None)
+            pd.set_option('display.max_columns', None)
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
             )
@@ -68,9 +72,14 @@ class TransXChangeTransformer:
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns
             )
+
+            df_merged_vehicle_journeys_with_lines = merge_lines_with_vehicle_journey(df_merged_vehicle_journeys.reset_index(), lines)
+
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
-                vehicle_journeys.reset_index(), journey_patterns
+                df_merged_vehicle_journeys_with_lines.reset_index(), journey_patterns
             )
+
+            # print("journey_pattern1111>>>>", journey_patterns)
 
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
@@ -84,13 +93,15 @@ class TransXChangeTransformer:
         route_links = pd.DataFrame()
         if not timing_links.empty:
             route_links = create_route_links(timing_links, stop_points)
-
+        
         if (
             not journey_patterns.empty
             and not jp_to_jps.empty
             and not timing_links.empty
         ):
             create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
+        
+        # print("journey_patterns222222", journey_patterns)
 
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:
@@ -100,14 +111,15 @@ class TransXChangeTransformer:
                 timing_links,
                 vehicle_journeys_with_timing_refs,
             )
-
         line_names = transform_line_names(self.extracted_data.line_names)
+
+        # print("journey_patterns33333", journey_patterns)
 
         # Transform route information into service patterns
         service_links = pd.DataFrame()
         if not route_links.empty:
             service_links = transform_service_links(route_links)
-
+        
         service_patterns = pd.DataFrame()
         service_pattern_to_service_links = pd.DataFrame()
         service_pattern_stops = pd.DataFrame()
@@ -119,6 +131,7 @@ class TransXChangeTransformer:
             ) = transform_service_pattern_to_service_links(  # noqa: E501
                 service_patterns, route_to_route_links, route_links
             )
+            print("service_patterns11111", service_patterns)
             # aggregate stop_sequence and geometry
             service_pattern_stops = transform_service_pattern_stops(
                 service_pattern_to_service_links, stop_points

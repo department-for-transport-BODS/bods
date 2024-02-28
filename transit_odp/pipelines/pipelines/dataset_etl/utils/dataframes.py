@@ -155,6 +155,8 @@ def df_to_service_patterns(
             revision=revision,
             service_pattern_id=record["service_pattern_id"],
             geom=record["geometry"],
+            line_name=record["line_name"],
+            description=record["description"],
         )
 
 
