@@ -57,9 +57,13 @@ def create_stop_sequence(df: pd.DataFrame):
     columns.remove("to_stop_atco")
     columns.remove("is_timing_status")
     if use_vehicle_journey_runtime:
-        last_stop["departure_time"] = last_stop["run_time_vj"].replace('', pd.NaT).combine_first(
-            last_stop["run_time"]
-        ).fillna(pd.Timedelta(0)) + last_stop["wait_time"].fillna(pd.Timedelta(0))
+        last_stop["departure_time"] = last_stop["run_time_vj"].replace(
+            "", pd.NaT
+        ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
+            "wait_time"
+        ].fillna(
+            pd.Timedelta(0)
+        )
     else:
         last_stop["departure_time"] = last_stop["run_time"].fillna(
             pd.Timedelta(0)
