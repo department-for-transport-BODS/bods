@@ -23,6 +23,8 @@ from transit_odp.timetables.dataframes import (
     serviced_organisations_to_dataframe,
     operating_profile_to_df,
     flexible_journey_patterns_to_dataframe,
+    flexible_stop_points_from_journey_details,
+    flexible_jp_from_journey_details,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -173,21 +175,13 @@ class XmlFileParser(ETLUtility):
         flexible_journey_details = self.extract_flexible_journey_details(self.file_id)
         logger.debug("Finished extracting flexible journey patterns")
 
-        # extract flexible stop points from flexible journey patterns
-        if not flexible_journey_details.empty:
-            flexible_stop_points = flexible_journey_details[
-                ["atco_code", "bus_stop_type"]
-            ].set_index("atco_code")
-            flexible_journey_patterns = (
-                flexible_journey_details.reset_index()[
-                    ["file_id", "journey_pattern_id", "service_code", "direction"]
-                ]
-                .drop_duplicates(["journey_pattern_id"])
-                .set_index(["file_id", "journey_pattern_id"])
-            )
-        else:
-            flexible_stop_points = pd.DataFrame()
-            flexible_journey_patterns = pd.DataFrame()
+        # extract flexible stop points from flexible journey patterns details
+        flexible_stop_points = flexible_stop_points_from_journey_details(
+            flexible_journey_details
+        )
+        flexible_journey_patterns = flexible_jp_from_journey_details(
+            flexible_journey_details
+        )
 
         return ExtractedData(
             services=services,
