@@ -215,7 +215,6 @@ class ETLSPSWithSyntheticStop(ExtractBaseTestCase):
     ignore_stops = ["340001671OPP"]
 
     def test_load(self):
-        pd.set_option("display.max_rows", None)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
         self.feed_parser.load(transformed)
@@ -225,3 +224,25 @@ class ETLSPSWithSyntheticStop(ExtractBaseTestCase):
 
         self.assertIn("Harpsden Turn", sps_common_name)
         self.assertNotIn("Bell Street", sps_common_name)
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLSPSWithProvisionalStop(ExtractBaseTestCase):
+    test_file = "data/test_servicepatternstops/test_extract_sps_provisional_stop.xml"
+    ignore_stops = ["111", "222"]
+
+    def test_load(self):
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        atco_codes = ["111", "222"]
+        common_names = ["FirstCommonName", "SecondCommonName"]
+        extracted_stops = extracted.provisional_stops.reset_index()
+        transformed_stop_points = transformed.stop_points.reset_index()
+        provisional_stops = transformed_stop_points[
+            transformed_stop_points["atco_code"].isin(atco_codes)
+        ]
+
+        self.assertEqual(atco_codes, extracted_stops["atco_code"].to_list())
+        self.assertEqual(common_names, extracted_stops["common_name"].to_list())
+        self.assertEqual(atco_codes, provisional_stops["atco_code"].to_list())

@@ -200,8 +200,15 @@ class TransXChangeTransformer:
                     for index in missing_stops
                 )
             )
+            provisional_stops = provisional_stops.drop(columns=["geometry", "locality"])
+            stop_points = pd.concat([stop_points, provisional_stops], axis=0)
             df_missing_stops_merged = pd.merge(
-                missing, stop_points, left_index=True, right_index=True, how="left"
+                missing,
+                stop_points,
+                left_index=True,
+                right_index=True,
+                how="left",
+                suffixes=["", ""],
             )
             # update cache with fetched stops and missing stops
             stop_point_cache = pd.concat(
