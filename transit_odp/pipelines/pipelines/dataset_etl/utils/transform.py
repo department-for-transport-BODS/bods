@@ -28,7 +28,6 @@ def create_stop_sequence(df: pd.DataFrame):
                 "from_stop_atco",
                 "departure_time",
                 "is_timing_status",
-                "journey_pattern_id",
             ]
         ]
         .iloc[[0]]
@@ -45,7 +44,6 @@ def create_stop_sequence(df: pd.DataFrame):
             "run_time",
             "wait_time",
             "run_time_vj",
-            "journey_pattern_id",
         ]
     else:
         columns = [
@@ -53,15 +51,13 @@ def create_stop_sequence(df: pd.DataFrame):
             "is_timing_status",
             "run_time",
             "wait_time",
-            "journey_pattern_id",
         ]
 
     last_stop = df[columns].rename(columns={"to_stop_atco": "stop_atco"})
     columns.remove("to_stop_atco")
     columns.remove("is_timing_status")
-    columns.remove("journey_pattern_id")
     if use_vehicle_journey_runtime:
-        last_stop["departure_time"] = last_stop["run_time_vj"].combine_first(
+        last_stop["departure_time"] = last_stop["run_time_vj"].replace('', pd.NaT).combine_first(
             last_stop["run_time"]
         ).fillna(pd.Timedelta(0)) + last_stop["wait_time"].fillna(pd.Timedelta(0))
     else:
@@ -75,7 +71,6 @@ def create_stop_sequence(df: pd.DataFrame):
     stops_atcos["departure_time"] = stops_atcos["departure_time"].apply(
         convert_to_time_field
     )
-
     stops_atcos.index.name = "order"
     return stops_atcos
 
@@ -357,6 +352,12 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         how="left",
         suffixes=("_vj", "_jp"),
     )
+
+    if "route_hash" in df_merged.columns:
+        df_merged["service_pattern_id"] = df_merged["service_code"].str.cat(
+            df_merged["route_hash"].astype(str), sep="-"
+        )
+
     return df_merged
 
 
@@ -397,8 +398,10 @@ def merge_serviced_organisations_with_operating_profile(
 
 def transform_service_patterns(journey_patterns):
     # Create list of service patterns from journey patterns
-    service_patterns = journey_patterns.reset_index().drop_duplicates(
-        ["service_code", "route_hash"]
+    service_patterns = (
+        journey_patterns.reset_index()
+        .drop_duplicates(["service_code", "route_hash"])
+        .drop("journey_pattern_id", axis=1)
     )
 
     # Route hash at the time of this comment was null for
@@ -450,7 +453,6 @@ def transform_service_pattern_to_service_links(
         "is_timing_status",
         "run_time",
         "wait_time",
-        "journey_pattern_id",
     ]
 
     if "run_time_vj" in link_columns:
@@ -465,7 +467,6 @@ def transform_service_pattern_to_service_links(
             "run_time",
             "wait_time",
             "run_time_vj",
-            "journey_pattern_id",
         ]
         drop_columns.append("run_time_vj")
     else:
@@ -479,7 +480,6 @@ def transform_service_pattern_to_service_links(
             "is_timing_status",
             "run_time",
             "wait_time",
-            "journey_pattern_id",
         ]
 
     # filter and rename columns

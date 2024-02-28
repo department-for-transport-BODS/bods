@@ -519,7 +519,6 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "admin_area_codes",
                 "geometry",
                 "localities",
-                "journey_pattern_id",
             ],
         )
         self.assertEqual(

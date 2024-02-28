@@ -143,6 +143,13 @@ class VehicleJourney(models.Model):
     journey_code = models.CharField(max_length=255, null=True, blank=True)
     direction = models.CharField(max_length=255, null=True, blank=True)
     departure_day_shift = models.BooleanField(default=False)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        on_delete=models.CASCADE,
+        related_name="service_pattern_vehicle_journey",
+        default=None,
+        null=True,
+    )
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""

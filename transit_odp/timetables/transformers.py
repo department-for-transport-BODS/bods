@@ -57,6 +57,18 @@ class TransXChangeTransformer:
         # stop_points = self.sync_admin_areas(stop_points)
         most_common_localities = get_most_common_localities(stop_points)
 
+        # Create missing route information
+        route_links = pd.DataFrame()
+        if not timing_links.empty:
+            route_links = create_route_links(timing_links, stop_points)
+
+        if (
+            not journey_patterns.empty
+            and not jp_to_jps.empty
+            and not timing_links.empty
+        ):
+            create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
+
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
         if not vehicle_journeys.empty and not journey_patterns.empty:
@@ -79,18 +91,6 @@ class TransXChangeTransformer:
                     serviced_organisations, operating_profiles
                 )
             )
-
-        # Create missing route information
-        route_links = pd.DataFrame()
-        if not timing_links.empty:
-            route_links = create_route_links(timing_links, stop_points)
-
-        if (
-            not journey_patterns.empty
-            and not jp_to_jps.empty
-            and not timing_links.empty
-        ):
-            create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
 
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:

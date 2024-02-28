@@ -94,6 +94,9 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                 },
             ]
         ).set_index("file_id")
+        vehicle_journey_expected[
+            ["route_hash", "service_pattern_id"]
+        ] = transformed.vehicle_journeys[["route_hash", "service_pattern_id"]].copy()
         self.assertTrue(
             check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
         )
@@ -187,6 +190,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             list(transformed.vehicle_journeys.columns),
             list(vehicle_journey_expected.columns),
         )
+        self.assertNotIn("service_pattern_id", transformed.vehicle_journeys.columns)
+        self.assertNotIn("route_hash", transformed.vehicle_journeys.columns)
 
     def test_load(self):
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -310,6 +315,9 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
+        vehicle_journey_expected[
+            ["route_hash", "service_pattern_id"]
+        ] = transformed.vehicle_journeys[["route_hash", "service_pattern_id"]].copy()
         self.assertTrue(
             check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
         )
@@ -426,6 +434,10 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 },
             ]
         ).set_index("file_id")
+
+        vehicle_journey_expected[
+            ["route_hash", "service_pattern_id"]
+        ] = transformed.vehicle_journeys[["route_hash", "service_pattern_id"]].copy()
 
         self.assertTrue(
             check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
