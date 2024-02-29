@@ -13,6 +13,8 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_timing_status,
     check_inbound_outbound_description,
     check_service_group_validations,
+    check_flexible_service_stop_point_ref,
+    check_flexible_service_timing_status,
     contains_date,
     has_flexible_or_standard_service,
     has_flexible_service_classification,
@@ -877,7 +879,7 @@ def test_check_flexible_service_stop_point_flexible_zone_stop_type(values, expec
                 <FlexibleService>
                     <FlexibleJourneyPattern id="jp_1">
                         <Direction>outbound</Direction>
-					    <FlexibleZones>
+					              <FlexibleZones>
                             <FlexibleStopUsage>
                                 <StopPointRef>{0}</StopPointRef>
                             </FlexibleStopUsage>
