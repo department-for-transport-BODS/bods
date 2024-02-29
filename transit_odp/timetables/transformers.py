@@ -35,8 +35,6 @@ class TransXChangeTransformer:
     def __init__(self, extracted_data: ExtractedData, stop_point_cache=None):
         self.extracted_data = extracted_data
         self.stop_point_cache = stop_point_cache
-        pd.set_option('display.max_rows', None)
-        pd.set_option('display.max_columns', None)
 
     def transform(self) -> TransformedData:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
@@ -66,8 +64,12 @@ class TransXChangeTransformer:
         if not vehicle_journeys.empty and not journey_patterns.empty:
             pd.set_option('display.max_rows', None)
             pd.set_option('display.max_columns', None)
+            print(f"vehicle_journeys---{vehicle_journeys}")
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
+            )
+            print(
+                f"vehicle_journeys_with_timing_refs---{vehicle_journeys_with_timing_refs}"
             )
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
 
@@ -82,8 +84,6 @@ class TransXChangeTransformer:
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
                 df_merged_vehicle_journeys_with_lines.reset_index(), journey_patterns
             )
-
-            # print("journey_pattern1111>>>>", journey_patterns)
 
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
@@ -217,8 +217,15 @@ class TransXChangeTransformer:
                     for index in missing_stops
                 )
             )
+            provisional_stops = provisional_stops.drop(columns=["geometry", "locality"])
+            stop_points = pd.concat([stop_points, provisional_stops], axis=0)
             df_missing_stops_merged = pd.merge(
-                missing, stop_points, left_index=True, right_index=True, how="left"
+                missing,
+                stop_points,
+                left_index=True,
+                right_index=True,
+                how="left",
+                suffixes=["", ""],
             )
             # update cache with fetched stops and missing stops
             stop_point_cache = pd.concat(

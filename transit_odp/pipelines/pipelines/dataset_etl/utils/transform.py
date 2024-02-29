@@ -319,9 +319,11 @@ def transform_line_names(line_name_list):
 def get_vehicle_journey_without_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys[
         vehicle_journeys.columns.difference(["timing_link_ref", "run_time"])
-    ].drop_duplicates()
+    ]
+    indexes = df_subset.index.names
+    df_subset = df_subset.reset_index().drop_duplicates()
     df_subset = df_subset.drop(["service_code"], axis=1)
-    return df_subset
+    return df_subset.set_index(indexes)
 
 
 def get_vehicle_journey_with_timing_refs(vehicle_journeys):
@@ -331,7 +333,11 @@ def get_vehicle_journey_with_timing_refs(vehicle_journeys):
     df_subset = df_subset.rename(
         columns={"journey_pattern_ref": "journey_pattern_id"}
     ).drop(["service_code"], axis=1)
-    return df_subset[df_subset["timing_link_ref"].notna()].drop_duplicates()
+    indexes = df_subset.index.names
+    df_subset = df_subset[df_subset["timing_link_ref"].notna()].reset_index()
+    df_subset = df_subset.drop_duplicates()
+
+    return df_subset.set_index(indexes)
 
 
 def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
