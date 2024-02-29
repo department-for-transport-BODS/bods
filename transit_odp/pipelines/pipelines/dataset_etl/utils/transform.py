@@ -321,10 +321,10 @@ def get_vehicle_journey_without_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys[
         vehicle_journeys.columns.difference(["timing_link_ref", "run_time"])
     ]
+    indexes = df_subset.index.names
     df_subset = df_subset.reset_index().drop_duplicates()
     df_subset = df_subset.drop(["service_code"], axis=1)
-    df_subset.set_index("file_id", inplace=True)
-    return df_subset
+    return df_subset.set_index(indexes)
 
 
 def get_vehicle_journey_with_timing_refs(vehicle_journeys):
