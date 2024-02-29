@@ -22,7 +22,6 @@ class Loader:
     def load_services(self):
         logger.info("Loading services into the database")
         service_objects = []
-        self.registry.services.reset_index(inplace=True)
         for index, service in self.registry.services.iterrows():
             service_objects.append(Service(**service))
 
