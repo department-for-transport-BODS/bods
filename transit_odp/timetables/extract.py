@@ -23,7 +23,7 @@ from transit_odp.timetables.dataframes import (
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
-    lines_to_df,
+    lines_to_dataframe,
     provisional_stops_to_dataframe,
     services_to_dataframe,
     stop_point_refs_to_dataframe,
@@ -316,7 +316,7 @@ class TransXChangeExtractor:
 
     def extract_lines(self):
         lines = self.doc.get_lines()
-        lines_df = lines_to_df(lines)
+        lines_df = lines_to_dataframe(lines)
 
         if not lines_df.empty:
             lines_df["file_id"] = self.file_id

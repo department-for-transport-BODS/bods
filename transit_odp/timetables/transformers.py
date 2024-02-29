@@ -35,6 +35,8 @@ class TransXChangeTransformer:
     def __init__(self, extracted_data: ExtractedData, stop_point_cache=None):
         self.extracted_data = extracted_data
         self.stop_point_cache = stop_point_cache
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
 
     def transform(self) -> TransformedData:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
@@ -68,6 +70,8 @@ class TransXChangeTransformer:
                 vehicle_journeys
             )
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
+
+            print("vehicle_journeys_without", vehicle_journeys)
 
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns

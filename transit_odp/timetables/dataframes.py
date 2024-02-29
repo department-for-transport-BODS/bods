@@ -328,7 +328,7 @@ def vehicle_journeys_to_dataframe(
 
     return pd.DataFrame(all_vechicle_journeys)
 
-def lines_to_df(lines):
+def lines_to_dataframe(lines):
     lines_list = [] 
     for line in lines:
         line_id = line["id"]
