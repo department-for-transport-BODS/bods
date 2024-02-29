@@ -37,7 +37,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
-from transit_odp.timetables.utils import filter_rows_by_journeys, get_line_description_based_on_direction
+from transit_odp.timetables.utils import filter_rows_by_journeys
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
@@ -490,61 +490,60 @@ class TransXChangeDataLoader:
         pd.set_option('display.max_columns', None)
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         service_patterns = self.transformed.service_patterns
-        service_patterns["description"] = service_patterns.apply(get_line_description_based_on_direction, axis=1)
-        # print("service_patterns:::::::::::>>>>>", service_patterns)
-        service_pattern_stops = self.transformed.service_pattern_stops
-
-        adapter.info("Bulk creating service patterns.")
-        service_pattern_objs = df_to_service_patterns(revision, service_patterns)
-        created = ServicePattern.objects.bulk_create(
-            service_pattern_objs, batch_size=BATCH_SIZE
-        )
-
-        created = pd.DataFrame(
-            (
-                {
-                    "service_pattern_id": obj.service_pattern_id,
-                    "id": obj.id,
-                    "instance": obj,
-                }
-                for obj in created
-            )
-        )
-
-        if not created.empty:
-            created = created.set_index("service_pattern_id")
-
-        service_patterns = service_patterns.join(created)
-
-        # ADD ServicePattern Associations
-
-        # Add ServicePattern m2m ServiceLink
-        # TODO - associate ServiceLinks - need explicit through table as ServiceLink
-        # can appear more than once on
-        #  the ServicePattern
-        # self.add_service_pattern_to_service_links(service_pattern_to_service_links)
-
-        # Create ServicePatternStops and add to ServicePattern
-        adapter.info("Creating service pattern stops.")
-        add_service_pattern_to_service_pattern_stops(
-            service_pattern_stops, service_patterns
-        )
-
-        # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
-        # ServicePattern
-        adapter.info("Adding localities.")
-        add_service_pattern_to_localities(service_patterns)
-
-        adapter.info("Adding administrative areas.")
-        add_service_pattern_to_admin_area(service_patterns)
-
-        # Add ServicePatterns to Service
-        adapter.info("Adding service associations.")
         if not service_patterns.empty:
-            add_service_associations(services, service_patterns)
+            service_pattern_stops = self.transformed.service_pattern_stops
 
-        adapter.info("Finished loading service patterns.")
-        return service_patterns
+            adapter.info("Bulk creating service patterns.")
+            service_pattern_objs = df_to_service_patterns(revision, service_patterns)
+            created = ServicePattern.objects.bulk_create(
+                service_pattern_objs, batch_size=BATCH_SIZE
+            )
+
+            created = pd.DataFrame(
+                (
+                    {
+                        "service_pattern_id": obj.service_pattern_id,
+                        "id": obj.id,
+                        "instance": obj,
+                    }
+                    for obj in created
+                )
+            )
+
+            if not created.empty:
+                created = created.set_index("service_pattern_id")
+
+            service_patterns = service_patterns.join(created)
+
+            # ADD ServicePattern Associations
+
+            # Add ServicePattern m2m ServiceLink
+            # TODO - associate ServiceLinks - need explicit through table as ServiceLink
+            # can appear more than once on
+            #  the ServicePattern
+            # self.add_service_pattern_to_service_links(service_pattern_to_service_links)
+
+            # Create ServicePatternStops and add to ServicePattern
+            adapter.info("Creating service pattern stops.")
+            add_service_pattern_to_service_pattern_stops(
+                service_pattern_stops, service_patterns
+            )
+
+            # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
+            # ServicePattern
+            adapter.info("Adding localities.")
+            add_service_pattern_to_localities(service_patterns)
+
+            adapter.info("Adding administrative areas.")
+            add_service_pattern_to_admin_area(service_patterns)
+
+            # Add ServicePatterns to Service
+            adapter.info("Adding service associations.")
+            if not service_patterns.empty:
+                add_service_associations(services, service_patterns)
+
+            adapter.info("Finished loading service patterns.")
+            return service_patterns
 
     def load_booking_arrangements(self, services, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from waffle import flag_is_active
 
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_naptan_stoppoint_df,
@@ -17,6 +18,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     get_vehicle_journey_with_timing_refs,
     get_vehicle_journey_without_timing_refs,
     merge_journey_pattern_with_vj_for_departure_time,
+    merge_journey_pattern_with_vj_for_lines,
     merge_vehicle_journeys_with_jp,
     merge_serviced_organisations_with_operating_profile,
     merge_lines_with_vehicle_journey,
@@ -28,6 +30,8 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     transform_service_patterns,
     transform_stop_sequence,
 )
+from transit_odp.timetables.utils import get_line_description_based_on_direction
+
 from transit_odp.transmodel.models import StopPoint
 
 
@@ -37,6 +41,9 @@ class TransXChangeTransformer:
         self.stop_point_cache = stop_point_cache
 
     def transform(self) -> TransformedData:
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
@@ -64,26 +71,25 @@ class TransXChangeTransformer:
         if not vehicle_journeys.empty and not journey_patterns.empty:
             pd.set_option('display.max_rows', None)
             pd.set_option('display.max_columns', None)
-            print(f"vehicle_journeys---{vehicle_journeys}")
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
             )
-            print(
-                f"vehicle_journeys_with_timing_refs---{vehicle_journeys_with_timing_refs}"
-            )
-            vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
 
-            print("vehicle_journeys_without", vehicle_journeys)
+            vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
 
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns
             )
+            if is_timetable_visualiser_active:
+                df_merged_vehicle_journeys_with_lines = merge_lines_with_vehicle_journey(df_merged_vehicle_journeys.reset_index(), lines)
 
-            df_merged_vehicle_journeys_with_lines = merge_lines_with_vehicle_journey(df_merged_vehicle_journeys.reset_index(), lines)
-
-            journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
-                df_merged_vehicle_journeys_with_lines.reset_index(), journey_patterns
-            )
+                journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
+                    df_merged_vehicle_journeys_with_lines.reset_index(), journey_patterns, is_timetable_visualiser_active
+                )
+            else:
+                journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
+                    vehicle_journeys.reset_index(), journey_patterns
+                )
 
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
@@ -135,7 +141,6 @@ class TransXChangeTransformer:
             ) = transform_service_pattern_to_service_links(  # noqa: E501
                 service_patterns, route_to_route_links, route_links
             )
-            print("service_patterns11111", service_patterns)
             # aggregate stop_sequence and geometry
             service_pattern_stops = transform_service_pattern_stops(
                 service_pattern_to_service_links, stop_points
@@ -143,6 +148,9 @@ class TransXChangeTransformer:
             service_patterns = transform_stop_sequence(
                 service_pattern_stops, service_patterns
             )
+            if is_timetable_visualiser_active:
+                service_patterns["description"] = service_patterns.apply(get_line_description_based_on_direction, axis=1)
+                service_patterns.drop(columns=['inbound_description', 'outbound_description'], axis=1, inplace=True)
             service_pattern_to_service_links.drop(
                 columns=drop_columns, axis=1, inplace=True
             )

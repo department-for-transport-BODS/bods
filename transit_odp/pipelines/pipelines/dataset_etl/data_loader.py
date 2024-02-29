@@ -15,6 +15,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
+
 from transit_odp.transmodel.models import (
     Service,
     ServiceLink,
@@ -172,6 +173,7 @@ class DataLoader:
     def load_service_patterns(self, services, service_patterns, service_pattern_stops):
         logger.info("[DataLoader] Starting load_service_patterns")
 
+     
         created = ServicePattern.objects.bulk_create(
             df_to_service_patterns(self.feed_parser.revision, service_patterns)
         )

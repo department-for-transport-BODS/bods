@@ -5,6 +5,7 @@ BODS transxchange models.
 import logging
 from collections import OrderedDict
 from typing import Iterator, List
+from waffle import flag_is_active
 
 import geopandas
 import pandas as pd
@@ -32,6 +33,9 @@ from transit_odp.transmodel.models import (
 ServicePatternThrough = ServicePattern.service_links.through
 logger = logging.getLogger(__name__)
 
+is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
 
 def create_stop_point_cache(revision_id):
     stops = (
@@ -151,13 +155,20 @@ def df_to_service_patterns(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[ServicePattern]:
     for record in df.reset_index().to_dict("records"):
-        yield ServicePattern(
-            revision=revision,
-            service_pattern_id=record["service_pattern_id"],
-            geom=record["geometry"],
-            line_name=record["line_name"],
-            description=record["description"],
-        )
+        if is_timetable_visualiser_active:
+            yield ServicePattern(
+                revision=revision,
+                service_pattern_id=record["service_pattern_id"],
+                geom=record["geometry"],
+                line_name=record["line_name"],
+                description=record["description"],
+            )
+        else:
+            yield ServicePattern(
+                revision=revision,
+                service_pattern_id=record["service_pattern_id"],
+                geom=record["geometry"],
+            )
 
 
 def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Service]:

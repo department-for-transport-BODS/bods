@@ -235,7 +235,7 @@ def journey_pattern_sections_to_dataframe(sections):
 
 
 def vehicle_journeys_to_dataframe(
-    standard_vehicle_journeys, flexible_vechicle_journeys
+    standard_vehicle_journeys, flexible_vehicle_journeys
 ):
     all_vechicle_journeys = []
     if standard_vehicle_journeys is not None:
@@ -311,8 +311,8 @@ def vehicle_journeys_to_dataframe(
                     }
                 )
 
-    if flexible_vechicle_journeys is not None:
-        for vehicle_journey in flexible_vechicle_journeys:
+    if flexible_vehicle_journeys is not None:
+        for vehicle_journey in flexible_vehicle_journeys:
             line_ref = vehicle_journey.get_element(["LineRef"]).text
             journey_pattern_ref = vehicle_journey.get_element(
                 ["JourneyPatternRef"]

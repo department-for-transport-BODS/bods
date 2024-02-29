@@ -354,11 +354,28 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
 
 
 def merge_journey_pattern_with_vj_for_departure_time(
+    vehicle_journeys, journey_patterns, timetable_visualiser_active=False
+):
+    index = journey_patterns.index
+    columns_to_merge = ["file_id", "journey_pattern_ref", "departure_time"]
+    if timetable_visualiser_active:
+        columns_to_merge.extend(["line_name", "outbound_description", "inbound_description"])
+
+    df_merged = pd.merge(
+        journey_patterns.reset_index(),
+        vehicle_journeys[columns_to_merge],
+        left_on=["file_id", "journey_pattern_id"],
+        right_on=["file_id", "journey_pattern_ref"],
+        how="left",
+        suffixes=("_vj", "_jp"),
+    )
+    df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
+    df_merged.set_index(index.names, inplace=True)
+    return df_merged
+
+def merge_journey_pattern_with_vj_for_lines(
     vehicle_journeys, journey_patterns
 ):
-    print("vehicle_journeys", vehicle_journeys)
-    print("journey_patterns::", journey_patterns)
-    # print("vehicle_journeysTTTTTTTTTTT1:::::>>>>>", vehicle_journeys)
     index = journey_patterns.index
     df_merged = pd.merge(
         journey_patterns.reset_index(),
@@ -370,7 +387,6 @@ def merge_journey_pattern_with_vj_for_departure_time(
     )
     df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
     df_merged.set_index(index.names, inplace=True)
-    print("journey_patternsTTTTTTTTTTT2:::::>>>>>", df_merged)
     return df_merged
 
 
