@@ -276,7 +276,11 @@ def vehicle_journeys_to_dataframe(
                     timing_link_ref = links.get_element(
                         ["JourneyPatternTimingLinkRef"]
                     ).text
-                    run_time = pd.to_timedelta(links.get_element(["RunTime"]).text)
+                    run_time_element = links.get_element_or_none(["RunTime"])
+                    if run_time_element:
+                        run_time = pd.to_timedelta(run_time_element.text)
+                    else:
+                        run_time = pd.NaT
 
                     all_vechicle_journeys.append(
                         {
