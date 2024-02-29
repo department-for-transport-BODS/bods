@@ -240,6 +240,6 @@ def get_line_description_based_on_direction(row):
         'inbound': row['inbound_description'],
         'outbound': row['outbound_description'],
         'clockwise': row['outbound_description'],
-        'antiClockwise': row['outbound_description'],
+        'antiClockwise': row['inbound_description'],
     }
-    return direction_mapping.get(row['direction'])
+    return direction_mapping.get(row['direction'], "")
