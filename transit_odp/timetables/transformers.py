@@ -114,8 +114,6 @@ class TransXChangeTransformer:
         ):
             create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
 
-        # print("journey_patterns222222", journey_patterns)
-
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:
             route_to_route_links = create_route_to_route_links(
@@ -125,8 +123,6 @@ class TransXChangeTransformer:
                 vehicle_journeys_with_timing_refs,
             )
         line_names = transform_line_names(self.extracted_data.line_names)
-
-        # print("journey_patterns33333", journey_patterns)
 
         # Transform route information into service patterns
         service_links = pd.DataFrame()
