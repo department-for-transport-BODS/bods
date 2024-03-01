@@ -1,3 +1,5 @@
+import uuid
+
 import pandas as pd
 from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import LineString
@@ -371,3 +373,21 @@ def transform_service_pattern_to_service_links(
     service_patterns.drop("route_hash", axis=1, inplace=True)
     logger.info("Finished transform_service_pattern_to_service_links")
     return service_pattern_to_service_links
+
+
+def transform_flexible_service_patterns(flexible_timing_links):
+    flexible_service_patterns = flexible_timing_links.reset_index()
+    flexible_service_patterns["service_pattern_id"] = flexible_service_patterns[
+        "service_code"
+    ].apply(lambda row: str(row) + "-" + str(uuid.uuid4()))
+    flexible_service_patterns = flexible_service_patterns[
+        [
+            "file_id",
+            "service_pattern_id",
+            "order",
+            "service_code",
+            "from_stop_atco",
+            "to_stop_atco",
+        ]
+    ].set_index(["file_id", "service_pattern_id", "order"])
+    return flexible_service_patterns
