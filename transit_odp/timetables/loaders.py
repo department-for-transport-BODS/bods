@@ -333,8 +333,7 @@ class TransXChangeDataLoader:
 
         df_to_load = merged_operating_profiles_and_journeys[
             ["id", "exceptions_operational", "exceptions_date"]
-        ]
-        df_to_load.drop_duplicates(inplace=True)
+        ].drop_duplicates()
 
         operating_dates_obj = list(
             df_to_operating_dates_exceptions(

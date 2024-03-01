@@ -80,6 +80,11 @@ def provisional_stops_to_dataframe(stops, system=None):
     for stop in stops:
         atco_code = stop.get_element(["AtcoCode"]).text
         location = stop.get_element(["Place", "Location"])
+        descriptor_common_name = stop.get_element_or_none(["Descriptor", "CommonName"])
+
+        common_name = None
+        if descriptor_common_name:
+            common_name = descriptor_common_name.text
 
         if system is None or system.lower() == GRID_LOCATION.lower():
             easting = location.get_element(["Translation", "Easting"]).text
@@ -98,10 +103,15 @@ def provisional_stops_to_dataframe(stops, system=None):
             )
         locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
         stop_points.append(
-            {"atco_code": atco_code, "geometry": geometry, "locality": locality_id}
+            {
+                "atco_code": atco_code,
+                "geometry": geometry,
+                "locality": locality_id,
+                "common_name": common_name,
+            }
         )
 
-    columns = ["atco_code", "geometry", "locality"]
+    columns = ["atco_code", "geometry", "locality", "common_name"]
     return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
 
 
@@ -266,7 +276,11 @@ def vehicle_journeys_to_dataframe(
                     timing_link_ref = links.get_element(
                         ["JourneyPatternTimingLinkRef"]
                     ).text
-                    run_time = pd.to_timedelta(links.get_element(["RunTime"]).text)
+                    run_time_element = links.get_element_or_none(["RunTime"])
+                    if run_time_element:
+                        run_time = pd.to_timedelta(run_time_element.text)
+                    else:
+                        run_time = pd.NaT
 
                     all_vechicle_journeys.append(
                         {

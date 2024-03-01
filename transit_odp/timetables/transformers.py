@@ -34,6 +34,7 @@ class TransXChangeTransformer:
     def __init__(self, extracted_data: ExtractedData, stop_point_cache=None):
         self.extracted_data = extracted_data
         self.stop_point_cache = stop_point_cache
+        pd.set_option("display.max_rows", None)
 
     def transform(self) -> TransformedData:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
@@ -200,8 +201,15 @@ class TransXChangeTransformer:
                     for index in missing_stops
                 )
             )
+            provisional_stops = provisional_stops.drop(columns=["geometry", "locality"])
+            stop_points = pd.concat([stop_points, provisional_stops], axis=0)
             df_missing_stops_merged = pd.merge(
-                missing, stop_points, left_index=True, right_index=True, how="left"
+                missing,
+                stop_points,
+                left_index=True,
+                right_index=True,
+                how="left",
+                suffixes=["", ""],
             )
             # update cache with fetched stops and missing stops
             stop_point_cache = pd.concat(
