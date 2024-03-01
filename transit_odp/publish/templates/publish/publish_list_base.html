@@ -15,7 +15,7 @@
         {% breadcrumb_url "Agent Dashboard" "agent-dashboard" host hosts.publish %}
     {% endif %}
     {% with page_title|title as bread %}
-        {% breadcrumb bread %}
+        {% breadcrumb_url bread 'feed-list' pk1=pk1 host hosts.publish %}
     {% endwith %}
 {% endblock %}
 

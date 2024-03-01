@@ -13,7 +13,6 @@ from transit_odp.data_quality.pti.constants import (
     OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
 )
-
 from transit_odp.naptan.models import StopPoint
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
@@ -311,6 +310,28 @@ def has_flexible_or_standard_service(context, services):
                 return True
             else:
                 return False
+
+
+def check_inbound_outbound_description(context, services):
+    for service in services:
+        ns = {"x": service.nsmap.get(None)}
+        standard_service_list = service.xpath(
+            "x:Service/x:StandardService", namespaces=ns
+        )
+        if standard_service_list:
+            inbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:InboundDescription", namespaces=ns
+            )
+            outbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:OutboundDescription", namespaces=ns
+            )
+            if (
+                len(inbound_description_list) == 0
+                and len(outbound_description_list) == 0
+            ):
+                return False
+
+        return True
 
 
 def has_flexible_service_classification(context, services):

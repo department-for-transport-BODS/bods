@@ -43,9 +43,7 @@
 
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-            <!--
-                MAP
-            -->
+            {% include 'publish/snippets/dataset_map.html' %}
 
             <table class="govuk-table dataset-property-table">
                 <tbody class="govuk-table__body">
@@ -69,7 +67,7 @@
                             {% if current_valid_files %}
                                 {% for file_details in current_valid_files %}
                                     <div class="stacked">
-                                        {{file_details.start_date|default:'N/A'}} - {{file_details.end_date|default:'N/A'}} <br> {{file_details.filename}}
+                                        {{file_details.start_date|default:'No Start Date'}} - {{file_details.end_date|default:'No End Date'}} <br> {{file_details.filename}}
                                     </div>
                                     {% if not forloop.last %}
                                         <br>
@@ -87,7 +85,7 @@
                                 {% if booking_arrangements %}
                                     {{ booking_arrangements }}
                                 {% else %}
-                                    {% trans 'N/A' %}
+                                    {% trans 'No currently valid files available in this dataset for this service' %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -123,4 +121,11 @@
             {% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback" %}
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_codes|join:','}}");
+    </script>
 {% endblock %}

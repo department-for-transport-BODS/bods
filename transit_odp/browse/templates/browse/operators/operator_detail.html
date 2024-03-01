@@ -14,7 +14,7 @@
     {{ block.super }}
     {% breadcrumb_url 'Operator Profiles' 'operators' %}
     {% with name=object.short_name|truncatechars:19 %}
-        {% breadcrumb name %}
+        {% breadcrumb_url name 'operator-detail' object.id host hosts.data %}
     {% endwith %}
 {% endblock %}
 

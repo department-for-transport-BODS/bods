@@ -17,7 +17,7 @@
         </a>
     </li>
     {% with name=object.name|truncatechars:19 %}
-        {% breadcrumb name %}
+        {% breadcrumb_url name 'avl-feed-detail' pk=object.id host hosts.data %}
     {% endwith %}
 {% endblock %}
 

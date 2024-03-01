@@ -15,6 +15,10 @@ from transit_odp.fares_validator.views.functions import (
     check_fare_frame_type_of_frame_ref_present_fare_price,
     check_fare_frame_type_of_frame_ref_present_fare_product,
     check_fare_product_ref,
+    check_fare_product_validable_elements,
+    check_fare_products,
+    check_fare_products_charging_type,
+    check_fare_products_type_ref,
     check_fare_structure_element,
     check_frequency_of_use,
     check_generic_parameters_for_access,
@@ -22,10 +26,6 @@ from transit_odp.fares_validator.views.functions import (
     check_lines_operator_ref_present,
     check_lines_public_code_present,
     check_payment_methods,
-    check_preassigned_fare_products,
-    check_preassigned_fare_products_charging_type,
-    check_preassigned_fare_products_type_ref,
-    check_preassigned_validable_elements,
     check_product_type,
     check_resource_frame_operator_name,
     check_resource_frame_organisation_elements,
@@ -131,19 +131,18 @@ class FaresValidator:
         self.register_function(
             "is_uk_pi_fare_price_frame_present", is_uk_pi_fare_price_frame_present
         )
+        self.register_function("check_fare_products", check_fare_products)
         self.register_function(
-            "check_preassigned_fare_products", check_preassigned_fare_products
+            "check_fare_products_type_ref",
+            check_fare_products_type_ref,
         )
         self.register_function(
-            "check_preassigned_fare_products_type_ref",
-            check_preassigned_fare_products_type_ref,
+            "check_fare_products_charging_type",
+            check_fare_products_charging_type,
         )
         self.register_function(
-            "check_preassigned_fare_products_charging_type",
-            check_preassigned_fare_products_charging_type,
-        )
-        self.register_function(
-            "check_preassigned_validable_elements", check_preassigned_validable_elements
+            "check_fare_product_validable_elements",
+            check_fare_product_validable_elements,
         )
         self.register_function(
             "check_access_right_elements", check_access_right_elements

@@ -10,7 +10,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'User management' 'users:manage' pk=user.organisation_id %}
-    {% breadcrumb 'User detail' %}
+    {% breadcrumb_url 'User detail' 'users:manage-user-detail' pk=user.organisation_id %}
 {% endblock %}
 
 

@@ -13,7 +13,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Operator Profiles' %}
+    {% breadcrumb_url 'Operator Profiles' 'operators' host hosts.data %}
 {% endblock %}
 
 {% block full_width_content %}

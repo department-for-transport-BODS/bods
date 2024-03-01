@@ -8,7 +8,7 @@
 
 {% block breadcrumb.content %}
     {{ block.super }}
-    {% breadcrumb 'Organisation management' %}
+    {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
 
 {% block full_width_content %}
