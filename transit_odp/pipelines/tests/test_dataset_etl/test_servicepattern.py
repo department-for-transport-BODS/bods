@@ -24,9 +24,8 @@ from transit_odp.pipelines.tests.test_dataset_etl.helpers import (
 )
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
-    )
+)
 from transit_odp.transmodel.models import ServicePattern
-
 
 
 class ServicePatternTestCase(TestCase):
@@ -103,30 +102,29 @@ class ServicePatternTestCase(TestCase):
                 break
 
         self.assertTrue(found)
-    
+
+
 columns_lines = [
-        "line_id",
-        "line_name",
-        "outbound_description",
-        "inbound_description",
-    ]
+    "line_id",
+    "line_name",
+    "outbound_description",
+    "inbound_description",
+]
 
 columns_service_patterns = [
-        "service_code",
-        "direction",
-        "geometry",
-        "localities",
-        "admin_area_codes",
-        "description",
-        "line_name",
-    ]
+    "service_code",
+    "direction",
+    "geometry",
+    "localities",
+    "admin_area_codes",
+    "description",
+    "line_name",
+]
+
 
 @override_flag("is_timetable_visualiser_active", active=True)
 class ETLServicePatterns(ExtractBaseTestCase):
-
-    test_file = (
-        "data/test_servicepattern/test_etl_service_pattern.xml"
-    )
+    test_file = "data/test_servicepattern/test_etl_service_pattern.xml"
 
     def test_extract_lines(self):
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -167,20 +165,24 @@ class ETLServicePatterns(ExtractBaseTestCase):
         self.assertEqual(7, service_patterns.count())
 
     def test_correct_description_based_on_direction_and_line(self):
-
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
 
         service_patterns = transformed.service_patterns
         expected_desc_line_6 = "Harrogate - Pannal Ash Circular"
         expected_desc_line_x6 = "Harrogate - Beckwith Knowle Circular"
-        
-        filtered_rows_line_6 = service_patterns[(service_patterns["direction"] == "outbound") & (service_patterns["line_name"] == "6")]
-        filtered_rows_line_x6 = service_patterns[(service_patterns["direction"] == "outbound") & (service_patterns["line_name"] == "X6")]
-        
+
+        filtered_rows_line_6 = service_patterns[
+            (service_patterns["direction"] == "outbound")
+            & (service_patterns["line_name"] == "6")
+        ]
+        filtered_rows_line_x6 = service_patterns[
+            (service_patterns["direction"] == "outbound")
+            & (service_patterns["line_name"] == "X6")
+        ]
+
         for row in filtered_rows_line_6.iterrows():
             self.assertEqual(row["description"], expected_desc_line_6)
 
         for row in filtered_rows_line_x6.iterrows():
             self.assertEqual(row["description"], expected_desc_line_x6)
-    

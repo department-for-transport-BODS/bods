@@ -132,7 +132,6 @@ class TransXChangeExtractor:
                 inplace=True,
             )
 
-
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
         booking_arrangements = self.extract_booking_arrangements()
@@ -174,7 +173,7 @@ class TransXChangeExtractor:
             modification_datetime=modification_datetime,
             import_datetime=self.start_time,
             line_count=line_count,
-            lines = lines,
+            lines=lines,
             line_names=line_names,
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,

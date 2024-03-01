@@ -486,8 +486,8 @@ class TransXChangeDataLoader:
         return service_links
 
     def load_service_patterns(self, services, revision):
-        pd.set_option('display.max_rows', None)
-        pd.set_option('display.max_columns', None)
+        pd.set_option("display.max_rows", None)
+        pd.set_option("display.max_columns", None)
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         service_patterns = self.transformed.service_patterns
         if not service_patterns.empty:

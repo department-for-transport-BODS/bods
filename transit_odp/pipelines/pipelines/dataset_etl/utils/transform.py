@@ -341,7 +341,6 @@ def get_vehicle_journey_with_timing_refs(vehicle_journeys):
 
 
 def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
-
     df_merged = pd.merge(
         vehicle_journeys,
         journey_patterns,
@@ -359,7 +358,9 @@ def merge_journey_pattern_with_vj_for_departure_time(
     index = journey_patterns.index
     columns_to_merge = ["file_id", "journey_pattern_ref", "departure_time"]
     if timetable_visualiser_active:
-        columns_to_merge.extend(["line_name", "outbound_description", "inbound_description"])
+        columns_to_merge.extend(
+            ["line_name", "outbound_description", "inbound_description"]
+        )
 
     df_merged = pd.merge(
         journey_patterns.reset_index(),
@@ -373,13 +374,21 @@ def merge_journey_pattern_with_vj_for_departure_time(
     df_merged.set_index(index.names, inplace=True)
     return df_merged
 
-def merge_journey_pattern_with_vj_for_lines(
-    vehicle_journeys, journey_patterns
-):
+
+def merge_journey_pattern_with_vj_for_lines(vehicle_journeys, journey_patterns):
     index = journey_patterns.index
     df_merged = pd.merge(
         journey_patterns.reset_index(),
-        vehicle_journeys[["file_id", "journey_pattern_ref", "departure_time", "line_name", "outbound_description", "inbound_description"]],
+        vehicle_journeys[
+            [
+                "file_id",
+                "journey_pattern_ref",
+                "departure_time",
+                "line_name",
+                "outbound_description",
+                "inbound_description",
+            ]
+        ],
         left_on=["file_id", "journey_pattern_id"],
         right_on=["file_id", "journey_pattern_ref"],
         how="left",
@@ -407,10 +416,15 @@ def merge_serviced_organisations_with_operating_profile(
 
     return df_merged
 
-def merge_lines_with_vehicle_journey(
-    vehicle_journeys, lines
-):
-    df_merged = pd.merge(vehicle_journeys, lines, left_on=['file_id', 'line_ref'], right_on=["file_id", 'line_id'], how='inner')
+
+def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
+    df_merged = pd.merge(
+        vehicle_journeys,
+        lines,
+        left_on=["file_id", "line_ref"],
+        right_on=["file_id", "line_id"],
+        how="inner",
+    )
     return df_merged
 
 

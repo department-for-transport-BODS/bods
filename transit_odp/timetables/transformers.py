@@ -78,10 +78,16 @@ class TransXChangeTransformer:
                 vehicle_journeys, journey_patterns
             )
             if is_timetable_visualiser_active:
-                df_merged_vehicle_journeys_with_lines = merge_lines_with_vehicle_journey(df_merged_vehicle_journeys.reset_index(), lines)
+                df_merged_vehicle_journeys_with_lines = (
+                    merge_lines_with_vehicle_journey(
+                        df_merged_vehicle_journeys.reset_index(), lines
+                    )
+                )
 
                 journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
-                    df_merged_vehicle_journeys_with_lines.reset_index(), journey_patterns, is_timetable_visualiser_active
+                    df_merged_vehicle_journeys_with_lines.reset_index(),
+                    journey_patterns,
+                    is_timetable_visualiser_active,
                 )
             else:
                 journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
@@ -100,14 +106,14 @@ class TransXChangeTransformer:
         route_links = pd.DataFrame()
         if not timing_links.empty:
             route_links = create_route_links(timing_links, stop_points)
-        
+
         if (
             not journey_patterns.empty
             and not jp_to_jps.empty
             and not timing_links.empty
         ):
             create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
-        
+
         # print("journey_patterns222222", journey_patterns)
 
         route_to_route_links = pd.DataFrame()
@@ -126,7 +132,7 @@ class TransXChangeTransformer:
         service_links = pd.DataFrame()
         if not route_links.empty:
             service_links = transform_service_links(route_links)
-        
+
         service_patterns = pd.DataFrame()
         service_pattern_to_service_links = pd.DataFrame()
         service_pattern_stops = pd.DataFrame()
@@ -146,8 +152,14 @@ class TransXChangeTransformer:
                 service_pattern_stops, service_patterns
             )
             if is_timetable_visualiser_active:
-                service_patterns["description"] = service_patterns.apply(get_line_description_based_on_direction, axis=1)
-                service_patterns.drop(columns=['inbound_description', 'outbound_description'], axis=1, inplace=True)
+                service_patterns["description"] = service_patterns.apply(
+                    get_line_description_based_on_direction, axis=1
+                )
+                service_patterns.drop(
+                    columns=["inbound_description", "outbound_description"],
+                    axis=1,
+                    inplace=True,
+                )
             service_pattern_to_service_links.drop(
                 columns=drop_columns, axis=1, inplace=True
             )

@@ -234,9 +234,7 @@ def journey_pattern_sections_to_dataframe(sections):
     return timing_links
 
 
-def vehicle_journeys_to_dataframe(
-    standard_vehicle_journeys, flexible_vehicle_journeys
-):
+def vehicle_journeys_to_dataframe(standard_vehicle_journeys, flexible_vehicle_journeys):
     all_vechicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
@@ -244,8 +242,12 @@ def vehicle_journeys_to_dataframe(
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
             )
-            journey_pattern_ref_element = vehicle_journey.get_element_or_none(["JourneyPatternRef"])
-            journey_pattern_ref = journey_pattern_ref_element.text if journey_pattern_ref_element else ""
+            journey_pattern_ref_element = vehicle_journey.get_element_or_none(
+                ["JourneyPatternRef"]
+            )
+            journey_pattern_ref = (
+                journey_pattern_ref_element.text if journey_pattern_ref_element else ""
+            )
             line_ref = vehicle_journey.get_element(["LineRef"]).text
             journey_code_element = vehicle_journey.get_element_or_none(
                 ["Operational", "TicketMachine", "JourneyCode"]
@@ -342,20 +344,36 @@ def vehicle_journeys_to_dataframe(
 
     return pd.DataFrame(all_vechicle_journeys)
 
+
 def lines_to_dataframe(lines):
-    lines_list = [] 
+    lines_list = []
     for line in lines:
         line_id = line["id"]
         line_name = line.get_element(["LineName"]).text
         outbound_description = line.get_element_or_none(["OutboundDescription"])
         inbound_description = line.get_element_or_none(["InboundDescription"])
 
-        outbound_description = outbound_description.get_element("Description").text if outbound_description else ""
-        inbound_description = inbound_description.get_element("Description").text if inbound_description else ""
+        outbound_description = (
+            outbound_description.get_element("Description").text
+            if outbound_description
+            else ""
+        )
+        inbound_description = (
+            inbound_description.get_element("Description").text
+            if inbound_description
+            else ""
+        )
 
-        lines_list.append({"line_id": line_id, "line_name": line_name, "outbound_description": outbound_description, 
-                      "inbound_description": inbound_description})
+        lines_list.append(
+            {
+                "line_id": line_id,
+                "line_name": line_name,
+                "outbound_description": outbound_description,
+                "inbound_description": inbound_description,
+            }
+        )
     return pd.DataFrame(lines_list)
+
 
 def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):
     flexible_operation_periods = []

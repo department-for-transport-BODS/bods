@@ -192,7 +192,7 @@ class XmlFileParser(ETLUtility):
             modification_datetime=modification_datetime,
             import_datetime=import_datetime,
             line_count=line_count,
-            lines = lines,
+            lines=lines,
             line_names=line_names,
             timing_point_count=timing_point_count,
             stop_count=len(stop_points) + len(provisional_stops),
@@ -330,7 +330,7 @@ class XmlFileParser(ETLUtility):
             )
 
         return jp_sections, timing_links
-    
+
     def extract_lines(self, file_id: int):
         lines = self.trans.get_lines()
         lines_df = lines_to_dataframe(lines)
