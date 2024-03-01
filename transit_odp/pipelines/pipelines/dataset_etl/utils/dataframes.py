@@ -154,8 +154,8 @@ def create_naptan_locality_df(data=None):
 def df_to_service_patterns(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[ServicePattern]:
-    for record in df.reset_index().to_dict("records"):
-        if is_timetable_visualiser_active:
+    if is_timetable_visualiser_active:
+        for record in df.reset_index().to_dict("records"):
             yield ServicePattern(
                 revision=revision,
                 service_pattern_id=record["service_pattern_id"],
@@ -163,11 +163,12 @@ def df_to_service_patterns(
                 line_name=record["line_name"],
                 description=record["description"],
             )
-        else:
-            yield ServicePattern(
-                revision=revision,
-                service_pattern_id=record["service_pattern_id"],
-                geom=record["geometry"],
+    else:
+        for record in df.reset_index().to_dict("records"):
+                yield ServicePattern(
+                    revision=revision,
+                    service_pattern_id=record["service_pattern_id"],
+                    geom=record["geometry"],
             )
 
 

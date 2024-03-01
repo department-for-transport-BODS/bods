@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from django.core.files import File
 from django.test import TestCase
+from waffle.testutils import override_flag
 
 from transit_odp.naptan.factories import (
     AdminAreaFactory,
@@ -21,6 +22,11 @@ from transit_odp.pipelines.tests.test_dataset_etl.helpers import (
     create_naptan_localities,
     create_naptan_stops,
 )
+from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
+    ExtractBaseTestCase,
+    )
+from transit_odp.transmodel.models import ServicePattern
+
 
 
 class ServicePatternTestCase(TestCase):
@@ -97,3 +103,84 @@ class ServicePatternTestCase(TestCase):
                 break
 
         self.assertTrue(found)
+    
+columns_lines = [
+        "line_id",
+        "line_name",
+        "outbound_description",
+        "inbound_description",
+    ]
+
+columns_service_patterns = [
+        "service_code",
+        "direction",
+        "geometry",
+        "localities",
+        "admin_area_codes",
+        "description",
+        "line_name",
+    ]
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicePatterns(ExtractBaseTestCase):
+
+    test_file = (
+        "data/test_servicepattern/test_etl_service_pattern.xml"
+    )
+
+    def test_extract_lines(self):
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        self.assertEqual(extracted.operating_profiles.shape[0], 20)
+
+        self.assertCountEqual(
+            list(extracted.lines.columns),
+            columns_lines,
+        )
+
+        self.assertEqual(extracted.operating_profiles.index.names, ["file_id"])
+
+    def test_tranform_service_patterns(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        self.assertEqual(transformed.service_patterns.shape[0], 7)
+
+        self.assertCountEqual(
+            list(transformed.service_patterns.columns),
+            columns_service_patterns,
+        )
+
+    def test_load_service_patterns(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        service_patterns = ServicePattern.objects.all()
+        # test
+
+        self.assertEqual(7, service_patterns.count())
+
+    def test_correct_description_based_on_direction_and_line(self):
+
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
+
+        service_patterns = transformed.service_patterns
+        expected_desc_line_6 = "Harrogate - Pannal Ash Circular"
+        expected_desc_line_x6 = "Harrogate - Beckwith Knowle Circular"
+        
+        filtered_rows_line_6 = service_patterns[(service_patterns["direction"] == "outbound") & (service_patterns["line_name"] == "6")]
+        filtered_rows_line_x6 = service_patterns[(service_patterns["direction"] == "outbound") & (service_patterns["line_name"] == "X6")]
+        
+        for row in filtered_rows_line_6.iterrows():
+            self.assertEqual(row["description"], expected_desc_line_6)
+
+        for row in filtered_rows_line_x6.iterrows():
+            self.assertEqual(row["description"], expected_desc_line_x6)
+    
