@@ -184,4 +184,8 @@ class CeleryAppConfig(AppConfig):
                 "task": AVL_TASKS + "task_daily_post_publishing_checks_all_feeds",
                 "schedule": crontab(minute=0, hour=18),
             },
+            "update_weca_data": {
+                "task": OTC_TASKS + "task_refresh_weca_data",
+                "schedule": crontab(minute=30, hour=23),
+            },
         }
