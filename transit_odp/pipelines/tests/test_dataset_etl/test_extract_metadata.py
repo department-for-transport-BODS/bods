@@ -513,7 +513,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
         self.assertCountEqual(
             list(transformed.service_patterns.columns),
-            ["direction", "service_code", "admin_area_codes", "geometry", "localities", "line_name", "description"],
+            ["direction", "service_code", "admin_area_codes", "geometry", "localities"],
         )
         self.assertEqual(
             transformed.service_patterns.index.names, ["file_id", "service_pattern_id"]

@@ -69,12 +69,9 @@ class TransXChangeTransformer:
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
         if not vehicle_journeys.empty and not journey_patterns.empty:
-            pd.set_option('display.max_rows', None)
-            pd.set_option('display.max_columns', None)
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
             )
-
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
 
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
