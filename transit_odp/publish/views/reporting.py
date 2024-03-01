@@ -12,14 +12,13 @@ from transit_odp.organisation.csv.consumer_feedback import ConsumerFeedbackCSV
 from transit_odp.organisation.csv.consumer_interactions import CSV_HEADERS
 from transit_odp.organisation.models import Organisation
 from transit_odp.publish.constants import INTERACTIONS_DEFINITION
-from transit_odp.users.views.mixins import OrgUserViewMixin
 
 ASSETS = Path(__file__).parents[2] / Path("organisation", "csv", "assets")
 
 FEEDBACK_DEFINITION = "feedbackreportingoperatorbreakdown.txt"
 
 
-class ConsumerFeedbackView(OrgUserViewMixin, View):
+class ConsumerFeedbackView(View):
     organisation = None
 
     def get(self, *args, **kwargs):
@@ -46,7 +45,7 @@ class ConsumerFeedbackView(OrgUserViewMixin, View):
         return response
 
 
-class ConsumerInteractionsView(OrgUserViewMixin, DetailView):
+class ConsumerInteractionsView(DetailView):
     model = Organisation
     pk_url_kwarg = "pk1"
 

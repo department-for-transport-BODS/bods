@@ -1,5 +1,8 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
+from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 from transit_odp.organisation.models import DatasetRevision
@@ -7,10 +10,6 @@ from transit_odp.transmodel.managers import (
     ServicePatternManager,
     ServicePatternStopManager,
 )
-
-from django.utils.translation import gettext_lazy as _
-from django.db.models import Q
-from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 
 class Service(models.Model):
@@ -155,7 +154,7 @@ class BookingArrangements(models.Model):
         Service, on_delete=models.CASCADE, related_name="booking_arrangements"
     )
 
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     email = models.EmailField(_("email address"), null=True, blank=True)
     phone_number = models.CharField(max_length=16, null=True, blank=True)
     web_address = models.URLField(null=True, blank=True)
