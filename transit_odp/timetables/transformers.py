@@ -122,9 +122,9 @@ class TransXChangeTransformer:
                 timing_links,
                 vehicle_journeys_with_timing_refs,
             )
-        line_names = transform_line_names(self.extracted_data.line_names)
-
-        # Transform route information into service patterns
+        line_names = transform_line_names(
+            self.extracted_data.line_names
+        )  # Transform route information into service patterns
         service_links = pd.DataFrame()
         if not route_links.empty:
             service_links = transform_service_links(route_links)
