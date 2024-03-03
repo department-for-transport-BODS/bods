@@ -157,31 +157,113 @@ def stop_point_refs_to_dataframe(stop_point_refs):
 def provisional_stops_to_dataframe(stops, system=None):
     stop_points = []
     for stop in stops:
+        flx_zone_locations = []
         atco_code = stop.get_element(["AtcoCode"]).text
-        location = stop.get_element(["Place", "Location"])
-
-        if system is None or system.lower() == GRID_LOCATION.lower():
-            easting = location.get_element(["Translation", "Easting"]).text
-            northing = location.get_element(["Translation", "Northing"]).text
-            geometry = (
-                grid_gemotry_from_str(easting, northing)
-                if easting and northing
-                else None
-            )
-
-        elif system.lower() == WSG84_LOCATION.lower():
-            latitude = location.get_element(["Translation", "Latitude"]).text
-            longitude = location.get_element(["Translation", "Longitude"]).text
-            geometry = (
-                wsg84_from_str(longitude, latitude) if latitude and longitude else None
-            )
-        locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
-        stop_points.append(
-            {"atco_code": atco_code, "geometry": geometry, "locality": locality_id}
+        stop_classification = stop.get_element(
+            ["StopClassification", "OnStreet", "Bus"]
         )
+        bus_stop_type = stop_classification.get_element(["BusStopType"]).text
+        if not bus_stop_type == "FLX":
+            location = stop.get_element(["Place", "Location"])
+            if system is None or system.lower() == GRID_LOCATION.lower():
+                if location.get_element_or_none(["Translation"]):
+                    easting = location.get_element(["Translation", "Easting"]).text
+                    northing = location.get_element(["Translation", "Northing"]).text
+                else:
+                    easting = location.get_element(["Easting"]).text
+                    northing = location.get_element(["Easting"]).text
+                geometry = (
+                    grid_gemotry_from_str(easting, northing)
+                    if easting and northing
+                    else None
+                )
 
+            elif system.lower() == WSG84_LOCATION.lower():
+                if location.get_element_or_none(["Translation"]):
+                    latitude = location.get_element(["Translation", "Latitude"]).text
+                    longitude = location.get_element(["Translation", "Longitude"]).text
+                else:
+                    latitude = location.get_element(["Latitude"]).text
+                    longitude = location.get_element(["Longitude"]).text
+                geometry = (
+                    wsg84_from_str(longitude, latitude)
+                    if latitude and longitude
+                    else None
+                )
+            locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
+            stop_points.append(
+                {"atco_code": atco_code, "geometry": geometry, "locality": locality_id}
+            )
+        else:  # for stop type FLX
+            flexible_zone_locations = stop_classification.get_element(["FlexibleZone"])
+            for flx_location in flexible_zone_locations.get_elements(["Location"]):
+                if flx_location.get_element_or_none(["Translation"]):
+                    latitude = flx_location.get_element(
+                        ["Translation", "Latitude"]
+                    ).text
+                    longitude = flx_location.get_element(
+                        ["Translation", "Longitude"]
+                    ).text
+                else:
+                    latitude = flx_location.get_element(["Latitude"]).text
+                    longitude = flx_location.get_element(["Longitude"]).text
+                geometry = (
+                    wsg84_from_str(longitude, latitude)
+                    if latitude and longitude
+                    else None
+                )
+                flx_zone_locations.append(geometry)
+            locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
+            stop_points.append(
+                {
+                    "atco_code": atco_code,
+                    "geometry": flx_zone_locations,
+                    "locality": locality_id,
+                }
+            )
     columns = ["atco_code", "geometry", "locality"]
-    return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
+    if stop_points:
+        return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
+    return pd.DataFrame()
+
+
+# def flexible_provisional_stops_to_dataframe(stops, system=None):
+#     stop_points = []
+#     flx_zone_locations = []
+#     for stop in stops:
+#         atco_code = stop.get_element(["AtcoCode"]).text
+#         bus = stop.get_element(["StopClassification", "OnStreet", "Bus"])
+#         bus_stop_type = bus.get_element(['BusStopType'])
+#         flx_zone_locations = []
+#         if bus_stop_type.text  == "FLX":
+#             flexible_zone_locations = bus.get_element(['FlexibleZone'])
+#             for location in flexible_zone_locations.get_elements(['Location']):
+#                 print(f"location: {location}")
+#                 if system is None or system.lower() == GRID_LOCATION.lower():
+#                     easting = location.get_element(["Translation", "Easting"]).text
+#                     northing = location.get_element(["Translation", "Northing"]).text
+#                     geometry = (
+#                         grid_gemotry_from_str(easting, northing)
+#                         if easting and northing
+#                         else None
+#                     )
+
+#                 elif system.lower() == WSG84_LOCATION.lower():
+#                     latitude = location.get_element(["Translation", "Latitude"]).text
+#                     longitude = location.get_element(["Translation", "Longitude"]).text
+#                     geometry = (
+#                         wsg84_from_str(longitude, latitude) if latitude and longitude else None
+#                     )
+#                 locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
+#                 flx_zone_locations.append(geometry)
+#             stop_points.append(
+#                 {"atco_code": atco_code, "geometry": flx_zone_locations, "locality": locality_id}
+#             )
+
+#     columns = ["atco_code", "geometry", "locality"]
+#     if stop_points:
+#         return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
+#     return pd.DataFrame()
 
 
 def journey_patterns_to_dataframe(services):

@@ -16,7 +16,9 @@ def transform_geometry(df: pd.DataFrame):
         if row.bus_stop_type == "flexible" and hasattr(row, "flexible_location"):
             return row.flexible_location
         else:
-            return [row.geometry]
+            return (
+                [row.geometry] if not isinstance(row.geometry, list) else row.geometry
+            )
 
     df["geometry"] = df.apply(get_geometry, axis=1)
     if "flexible_location" in df.columns:
@@ -65,16 +67,6 @@ def transform_service_pattern_stops(
     return service_pattern_stops
 
 
-def create_flexible_stop_sequence(df: pd.DataFrame):
-    df = df.reset_index()
-    stops_atcos = df[["from_stop_atco"]].rename(columns={"from_stop_atco": "stop_atco"})
-    last_stop = (
-        df[["to_stop_atco"]].iloc[[-1]].rename(columns={"to_stop_atco": "stop_atco"})
-    )
-    stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
-    return stops_atcos
-
-
 def agg_service_pattern_sequences(df: pd.DataFrame):
     geometry = None
     points = df["geometry"].values
@@ -93,14 +85,21 @@ def agg_service_pattern_sequences(df: pd.DataFrame):
 
 
 def agg_flexible_service_pattern_sequences(df: pd.DataFrame):
-    points = df["geometry"].values
-    geometry_points = [
-        [point.x, point.y]
-        for point_list in points
-        if point_list
-        for point in point_list
-        if point and pd.notna(point)
-    ]
+    def flatten_list(nested_list):
+        flattened_list = []
+        for item in nested_list:
+            if isinstance(item, list):
+                flattened_list.extend(flatten_list(item))
+            else:
+                flattened_list.append(item)
+        return flattened_list
+
+    agg_points = df["geometry"].values
+    agg_point_list = flatten_list(agg_points)
+    geometry_points = []
+
+    for point in agg_point_list:
+        geometry_points.append([point.x, point.y])
     geometry = LineString(geometry_points) if geometry_points else None
     return pd.Series(
         {

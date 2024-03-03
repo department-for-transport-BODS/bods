@@ -35,7 +35,6 @@ def create_naptan_flexible_zone_df_from_queryset(queryset):
         for obj in queryset
     )
     df = create_flexible_zone_df(flexible_zone)
-
     # perform grouping of data on naptan_id and create list of flexible zone geometry
     if not df.empty:
         df = df.groupby(["naptan_id"])["flexible_location"].agg(list).reset_index()
@@ -83,10 +82,8 @@ def create_naptan_stoppoint_df(data=None):
             "locality_id": "str",
         }
     )
-    return (
-        geopandas.GeoDataFrame(data, columns=typings.keys())
-        .astype(typings)
-        .set_index("atco_code", verify_integrity=True)
+    return geopandas.GeoDataFrame(data, columns=typings.keys()).set_index(
+        "atco_code", verify_integrity=True
     )
 
 

@@ -145,6 +145,7 @@ class TransXChangeTransformer:
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
+
             # creating flexible jp sections and jp to jps mapping
             if not flexible_journey_details.empty:
                 # creating flexible timing link
@@ -289,11 +290,26 @@ class TransXChangeTransformer:
             (flexible_stop_points["bus_stop_type"] == "flexible")
             & (~flexible_stop_points["naptan_id"].isna())
         ]
-        filtered_stop_points_naptan_id = filtered_stop_points["naptan_id"].tolist()
+
+        # get provisional flexible stop points
+        flexible_stop_point_witn_nan_id = flexible_stop_points[
+            flexible_stop_points["naptan_id"].isna()
+        ].reset_index()
+
+        if not flexible_stop_point_witn_nan_id.empty:
+            flexible_stop_point_witn_nan_id[
+                "flexible_location"
+            ] = flexible_stop_point_witn_nan_id.reset_index()["geometry"].apply(
+                lambda x: [x] if not isinstance(x, list) else x
+            )
+
+        filtered_stop_points_naptan_id_list = filtered_stop_points["naptan_id"].tolist()
         flexiblezone_qs = FlexibleZone.objects.filter(
-            naptan_stoppoint_id__in=filtered_stop_points_naptan_id
+            naptan_stoppoint_id__in=filtered_stop_points_naptan_id_list
         )
         flexible_zone_df = create_naptan_flexible_zone_df_from_queryset(flexiblezone_qs)
+
+        filtered_stop_points_naptan_id = pd.DataFrame()
         if not flexible_zone_df.empty:
             filtered_stop_points_naptan_id = filtered_stop_points.reset_index().merge(
                 flexible_zone_df.reset_index(),
@@ -304,9 +320,14 @@ class TransXChangeTransformer:
             filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
                 ["atco_code", "flexible_location"]
             ]
-            filtered_stop_points_naptan_id.set_index("atco_code", inplace=True)
-            return filtered_stop_points_naptan_id
-        return pd.DataFrame()
+        filtered_stop_points_naptan_id = pd.concat(
+            [filtered_stop_points_naptan_id, flexible_stop_point_witn_nan_id]
+        )
+        filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
+            ["atco_code", "flexible_location"]
+        ]
+        filtered_stop_points_naptan_id.set_index("atco_code", inplace=True)
+        return filtered_stop_points_naptan_id
 
     def create_flexible_timing_link(self, flexible_journey_details):
         def get_stop_sequence(group, journey_pattern_id):
@@ -317,15 +338,12 @@ class TransXChangeTransformer:
             return group.dropna(subset=["to_stop_atco"])
 
         if not flexible_journey_details.empty:
-            grouped = flexible_journey_details.reset_index().groupby(
-                "journey_pattern_id"
+            flexible_timing_links = (
+                flexible_journey_details.reset_index()
+                .groupby("journey_pattern_id")
+                .apply(lambda group: get_stop_sequence(group, group.name))
             )
-            flexible_timing_links = pd.concat(
-                [
-                    get_stop_sequence(group, journey_pattern_id)
-                    for journey_pattern_id, group in grouped
-                ]
-            )
+
             flexible_timing_links = flexible_timing_links[
                 [
                     "file_id",
@@ -338,26 +356,3 @@ class TransXChangeTransformer:
             ].set_index(["file_id", "journey_pattern_id"])
             return flexible_timing_links
         return pd.DataFrame()
-
-    def create_flexible_jps(self, flexible_journey_details):
-        flexible_jps = flexible_journey_details.reset_index()[
-            ["file_id", "journey_pattern_id", "service_code"]
-        ].drop_duplicates(["file_id", "journey_pattern_id"])
-
-        # generate unique id for flexible journey pattern id
-        flexible_jps["jp_section_ref"] = [
-            uuid.uuid4() for _ in range(len(flexible_jps))
-        ]
-        flexible_jp_to_jps = flexible_jps[
-            ["file_id", "journey_pattern_id", "jp_section_ref"]
-        ]
-        flexible_jp_to_jps["order"] = range(len(flexible_jp_to_jps))
-        flexible_jps = (
-            flexible_jps[["file_id", "jp_section_ref"]]
-            .rename(columns={"jp_section_ref": "jp_section_id"})
-            .set_index(["file_id", "jp_section_id"])
-        )
-        flexible_jp_to_jps.set_index(
-            ["file_id", "journey_pattern_id", "order"], inplace=True
-        )
-        return flexible_jps, flexible_jp_to_jps
