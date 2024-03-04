@@ -448,7 +448,7 @@ def get_operating_profiles_for_all_exceptions(
                         is_exceptions=True,
                     )
                 )
-        # Return an operating profiles when no date for holidays are found
+        # Return operating profiles when no date for holidays are found
         if not operating_profile_list:
             operating_profile_list.append(
                 get_operating_profile_with_exception(operating_profile)
