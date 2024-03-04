@@ -282,14 +282,14 @@ class TransXChangeTransformer:
 
     def sync_flexible_zone(self, flexible_stop_points):
         # get provisional flexible stop points with naptan_stoppoint_id nan
-        provisioanl_flexible_stops = flexible_stop_points[
+        provisional_flexible_stops = flexible_stop_points[
             flexible_stop_points["naptan_id"].isna()
         ].reset_index()
 
-        if not provisioanl_flexible_stops.empty:
-            provisioanl_flexible_stops[
+        if not provisional_flexible_stops.empty:
+            provisional_flexible_stops[
                 "flexible_location"
-            ] = provisioanl_flexible_stops.reset_index()["geometry"].apply(
+            ] = provisional_flexible_stops["geometry"].apply(
                 lambda row: [row] if not isinstance(row, list) else row
             )
 
@@ -318,7 +318,7 @@ class TransXChangeTransformer:
 
         # concatenate provisional flexible stops and flexible naptan stops
         filtered_stop_points_naptan_id = pd.concat(
-            [filtered_stop_points_naptan_id, provisioanl_flexible_stops]
+            [filtered_stop_points_naptan_id, provisional_flexible_stops]
         )
         filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
             ["atco_code", "flexible_location"]

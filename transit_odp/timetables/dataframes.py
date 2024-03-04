@@ -185,12 +185,17 @@ def provisional_stops_to_dataframe(stops, system=None):
         locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
         flx_zone_locations = []
         atco_code = stop.get_element(["AtcoCode"]).text
-        stop_classification = stop.get_element(
+        stop_classification = stop.get_element_or_none(
             ["StopClassification", "OnStreet", "Bus"]
         )
         location = stop.get_element(["Place", "Location"])
-        bus_stop_type = stop_classification.get_element(["BusStopType"]).text
-        if not bus_stop_type == "FLX":
+        bus_stop_type = (
+            stop_classification.get_element_or_none(["BusStopType"])
+            if stop_classification
+            else None
+        )
+        bus_stop_type_val = bus_stop_type.text if bus_stop_type else None
+        if not bus_stop_type_val == "FLX":
             geometry = get_geometry_from_location(system, location)
             stop_points.append(
                 {"atco_code": atco_code, "geometry": geometry, "locality": locality_id}
@@ -220,9 +225,7 @@ def provisional_stops_to_dataframe(stops, system=None):
                     }
                 )
     columns = ["atco_code", "geometry", "locality"]
-    if stop_points:
-        return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
-    return pd.DataFrame()
+    return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
 
 
 def journey_patterns_to_dataframe(services):

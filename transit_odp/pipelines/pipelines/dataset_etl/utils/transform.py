@@ -99,7 +99,8 @@ def agg_flexible_service_pattern_sequences(df: pd.DataFrame):
     geometry_points = []
 
     for point in agg_point_list:
-        geometry_points.append([point.x, point.y])
+        if point and pd.notna(point):
+            geometry_points.append([point.x, point.y])
     geometry = LineString(geometry_points) if geometry_points else None
     return pd.Series(
         {
