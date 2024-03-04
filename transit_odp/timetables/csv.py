@@ -365,7 +365,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         "operating_period_end_date"
     ] - pd.Timedelta(days=42)
     defer_one_year = (
-        lambda d: d if pd.isna(d) else datetime.date(d.year + 1, d.month, d.day)
+        lambda d: d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
     )
     df["effective_stale_date_from_last_modified"] = df[
         "effective_last_modified_date"
