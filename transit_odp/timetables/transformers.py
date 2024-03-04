@@ -52,7 +52,6 @@ class TransXChangeTransformer:
         flexible_stop_points = self.extracted_data.flexible_stop_points.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         flexible_journey_details = self.extracted_data.flexible_journey_details.copy()
-        flexible_stop_points.to_csv("flexible_stop_points_extract.csv")
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
         stop_points = sync_localities_and_adminareas(stop_points)
@@ -62,7 +61,6 @@ class TransXChangeTransformer:
         flexible_stop_points = flexible_stop_points.merge(
             stop_points, left_index=True, right_index=True
         )
-        flexible_stop_points.to_csv("flexible_stop_points_merged.csv")
         stop_points = stop_points.loc[
             ~stop_points.index.isin(flexible_stop_points.index)
         ]
