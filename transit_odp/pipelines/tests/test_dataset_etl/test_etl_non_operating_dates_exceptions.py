@@ -73,7 +73,7 @@ class ETLNonOperatingDatesException(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(473, df_extracted_data.shape[0])
+        self.assertEqual(481, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup

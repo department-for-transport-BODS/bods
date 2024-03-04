@@ -422,7 +422,6 @@ def transform_service_patterns(journey_patterns):
     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
         service_patterns["route_hash"].astype(str), sep="-"
     )
-
     service_patterns.set_index(["file_id", "service_pattern_id"], inplace=True)
 
     return service_patterns

@@ -178,9 +178,7 @@ class TransXChangeDataLoader:
         if not vehicle_journeys.empty:
             if not service_patterns.empty:
                 service_patterns = (
-                    service_patterns.reset_index()[
-                        ["file_id", "service_pattern_id", "id"]
-                    ]
+                    service_patterns.reset_index()[["service_pattern_id", "id"]]
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
@@ -188,7 +186,7 @@ class TransXChangeDataLoader:
                     vehicle_journeys.reset_index()
                     .merge(
                         service_patterns,
-                        on=["file_id", "service_pattern_id"],
+                        on=["service_pattern_id"],
                         how="left",
                     )
                     .reset_index()
@@ -306,8 +304,15 @@ class TransXChangeDataLoader:
                 columns=["exceptions_operational", "exceptions_date"], errors="ignore"
             )
         )
-        refined_operating_profiles_and_journeys.drop_duplicates(inplace=True)
-
+        refined_operating_profiles_and_journeys = (
+            refined_operating_profiles_and_journeys.reset_index().query(
+                "day_of_week != ''"
+            )
+        )
+        refined_operating_profiles_and_journeys.drop_duplicates(
+            subset=["vehicle_journey_code", "service_code", "file_id", "day_of_week"],
+            inplace=True,
+        )
         operating_profiles_objs = list(
             df_to_operating_profiles(refined_operating_profiles_and_journeys)
         )
@@ -357,7 +362,7 @@ class TransXChangeDataLoader:
     def load_operating_profiles_and_related_tables(self, vehicle_journeys):
         operating_profiles = self.transformed.operating_profiles
         if not operating_profiles.empty and not vehicle_journeys.empty:
-            operating_profiles.reset_index(inplace=True)
+            operating_profiles = operating_profiles.reset_index()
             vehicle_journeys = vehicle_journeys.rename(
                 columns={"service_code_vj": "service_code"}
             )

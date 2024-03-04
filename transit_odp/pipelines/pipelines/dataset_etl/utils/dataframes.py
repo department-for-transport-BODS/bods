@@ -231,6 +231,7 @@ def df_to_serviced_organisation_working_days(
 ) -> Iterator[ServicedOrganisationWorkingDays]:
     if not df.empty:
         df_to_load = df.drop(columns=columns_to_drop)
+        df_to_load = df_to_load.reset_index()
         for record in df_to_load.drop_duplicates(
             subset=columns_to_drop_duplicates
         ).itertuples(index=False):

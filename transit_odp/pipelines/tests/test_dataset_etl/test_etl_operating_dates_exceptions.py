@@ -62,7 +62,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(510, df_extracted_data.shape[0])
+        self.assertEqual(519, df_extracted_data.shape[0])
 
     def test_transform(self):
         setup_bank_holidays()
@@ -93,7 +93,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(510, df_extracted_data.shape[0])
+        self.assertEqual(519, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
@@ -258,7 +258,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(510, df_extracted_data.shape[0])
+        self.assertEqual(519, df_extracted_data.shape[0])
 
     def test_transform(self):
         setup_bank_holidays()
@@ -289,7 +289,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(510, df_extracted_data.shape[0])
+        self.assertEqual(519, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
