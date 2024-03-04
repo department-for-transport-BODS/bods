@@ -20,7 +20,7 @@ class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
 
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
@@ -56,7 +56,7 @@ class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
         # test
@@ -121,8 +121,7 @@ class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = hash(self.file_obj.file)
-
+        file_id = self.xml_file_parser.file_id
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
@@ -151,7 +150,7 @@ class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
         # test
@@ -204,8 +203,7 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = hash(self.file_obj.file)
-
+        file_id = self.xml_file_parser.file_id
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
@@ -240,7 +238,7 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
         # test
