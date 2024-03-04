@@ -231,11 +231,6 @@ class TransXChangeExtractor:
         stop_points = self.doc.get_stop_points()
         return provisional_stops_to_dataframe(stop_points, system=system)
 
-    # def extract_flexible_provisional_stops(self):
-    #     system = self.doc.get_location_system()
-    #     stop_points = self.doc.get_stop_points()
-    #     return flexible_provisional_stops_to_dataframe(stop_points, system=system)
-
     def extract_journey_patterns(self):
         services = self.doc.get_services()
         journey_patterns = journey_patterns_to_dataframe(services)

@@ -52,7 +52,7 @@ class TransXChangeTransformer:
         flexible_stop_points = self.extracted_data.flexible_stop_points.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         flexible_journey_details = self.extracted_data.flexible_journey_details.copy()
-
+        flexible_stop_points.to_csv("flexible_stop_points_extract.csv")
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
         stop_points = sync_localities_and_adminareas(stop_points)
@@ -62,6 +62,7 @@ class TransXChangeTransformer:
         flexible_stop_points = flexible_stop_points.merge(
             stop_points, left_index=True, right_index=True
         )
+        flexible_stop_points.to_csv("flexible_stop_points_merged.csv")
         stop_points = stop_points.loc[
             ~stop_points.index.isin(flexible_stop_points.index)
         ]
@@ -286,22 +287,22 @@ class TransXChangeTransformer:
         return stop_point_cache.reindex(sorted(stop_point_refs))
 
     def sync_flexible_zone(self, flexible_stop_points):
+        # get provisional flexible stop points with naptan_stoppoint_id nan
+        provisioanl_flexible_stops = flexible_stop_points[
+            flexible_stop_points["naptan_id"].isna()
+        ].reset_index()
+
+        if not provisioanl_flexible_stops.empty:
+            provisioanl_flexible_stops[
+                "flexible_location"
+            ] = provisioanl_flexible_stops.reset_index()["geometry"].apply(
+                lambda row: [row] if not isinstance(row, list) else row
+            )
+
         filtered_stop_points = flexible_stop_points[
             (flexible_stop_points["bus_stop_type"] == "flexible")
             & (~flexible_stop_points["naptan_id"].isna())
         ]
-
-        # get provisional flexible stop points
-        flexible_stop_point_witn_nan_id = flexible_stop_points[
-            flexible_stop_points["naptan_id"].isna()
-        ].reset_index()
-
-        if not flexible_stop_point_witn_nan_id.empty:
-            flexible_stop_point_witn_nan_id[
-                "flexible_location"
-            ] = flexible_stop_point_witn_nan_id.reset_index()["geometry"].apply(
-                lambda x: [x] if not isinstance(x, list) else x
-            )
 
         filtered_stop_points_naptan_id_list = filtered_stop_points["naptan_id"].tolist()
         flexiblezone_qs = FlexibleZone.objects.filter(
@@ -320,8 +321,10 @@ class TransXChangeTransformer:
             filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
                 ["atco_code", "flexible_location"]
             ]
+
+        # concatenate provisional flexible stops and flexible naptan stops
         filtered_stop_points_naptan_id = pd.concat(
-            [filtered_stop_points_naptan_id, flexible_stop_point_witn_nan_id]
+            [filtered_stop_points_naptan_id, provisioanl_flexible_stops]
         )
         filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
             ["atco_code", "flexible_location"]
