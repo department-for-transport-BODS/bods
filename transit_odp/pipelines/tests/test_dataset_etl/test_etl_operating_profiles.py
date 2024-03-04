@@ -1,4 +1,7 @@
 from dateutil import tz
+from transit_odp.pipelines.tests.test_dataset_etl.test_etl_operating_dates_exceptions import (
+    setup_bank_holidays,
+)
 
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
@@ -71,9 +74,6 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
     )
 
     def test_extract(self):
-        # setup
-        file_id = hash(self.file_obj.file)
-
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
@@ -88,7 +88,6 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
         # test
@@ -112,3 +111,83 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
         # test
 
         self.assertEqual(10, operating_profiles.count())
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLOperatingProfilesVehicleJourneysWithHolidays(ExtractBaseTestCase):
+
+    test_file = (
+        "data/test_operating_profiles/test_operating_profiles_vehicle_journeys.xml"
+    )
+
+    def test_transform(self):
+        setup_bank_holidays()
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        self.assertEqual(extracted.operating_profiles.shape[0], 50)
+        self.assertEqual(transformed.operating_profiles.shape[0], 50)
+
+        self.assertCountEqual(
+            list(extracted.operating_profiles.columns),
+            columns,
+        )
+
+        self.assertCountEqual(
+            list(transformed.operating_profiles.columns),
+            columns,
+        )
+
+    def test_load(self):
+        # setup
+        setup_bank_holidays()
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+        self.feed_parser.load(transformed)
+
+        operating_profiles = OperatingProfile.objects.all()
+
+        self.assertEqual(10, operating_profiles.count())
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLOperatingProfilesServicesWithHolidays(ExtractBaseTestCase):
+    test_file = "data/test_operating_profiles/test_operating_profiles_services.xml"
+
+    def test_transform(self):
+        # setup
+        setup_bank_holidays()
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        self.assertEqual(extracted.operating_profiles.shape[0], 32)
+        self.assertEqual(transformed.operating_profiles.shape[0], 32)
+
+        self.assertCountEqual(
+            list(extracted.operating_profiles.columns),
+            columns,
+        )
+
+        self.assertCountEqual(
+            list(transformed.operating_profiles.columns),
+            columns,
+        )
+
+    def test_load(self):
+        # setup
+        setup_bank_holidays()
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+        self.feed_parser.load(transformed)
+
+        operating_profiles = OperatingProfile.objects.all()
+
+        self.assertEqual(8, operating_profiles.count())

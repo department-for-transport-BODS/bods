@@ -434,11 +434,11 @@ def get_operating_profiles_for_all_exceptions(
                     df_bank_holidays_from_db["txc_element"] == holiday.localname,
                     "date",
                 ]
-
                 if not filtered_df.empty:
                     date = filtered_df.values[0]
                 else:
                     no_bank_holidays = True
+
             if not no_bank_holidays:
                 operating_profile_list.append(
                     get_operating_profile_with_exception(
@@ -448,6 +448,11 @@ def get_operating_profiles_for_all_exceptions(
                         is_exceptions=True,
                     )
                 )
+        # Return operating profiles when no date for holidays are found
+        if not operating_profile_list:
+            operating_profile_list.append(
+                get_operating_profile_with_exception(operating_profile)
+            )
 
     elif is_special_operation:
         if operations:
@@ -607,7 +612,7 @@ def populate_operating_profiles(operating_profiles, vehicle_journey_code, servic
                 )
             )
 
-    if not special_days_operation or not bank_holiday_operation:
+    if not special_days_operation and not bank_holiday_operation:
         operating_profile_list.extend(
             get_operating_profiles_for_all_exceptions(operating_profile_obj)
         )
@@ -641,8 +646,6 @@ def operating_profiles_to_dataframe(vehicle_journeys, services):
     operating_profile_df = pd.DataFrame(operating_profile_list)
     operating_profile_df = operating_profile_df.explode("day_of_week")
     operating_profile_df = operating_profile_df.explode("serviced_org_ref")
-    operating_profile_df.drop_duplicates(inplace=True)
-    operating_profile_df.reset_index(drop=True, inplace=True)
 
     return operating_profile_df
 

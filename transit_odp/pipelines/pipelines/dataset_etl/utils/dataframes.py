@@ -181,12 +181,15 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
 
 def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
     for record in df.to_dict("records"):
+        service_pattern_id = record.get("id_service", None)
+
         yield VehicleJourney(
             journey_code=record["journey_code"],
             start_time=record["departure_time"],
             line_ref=record["line_ref"],
             direction=record["direction"],
             departure_day_shift=record["departure_day_shift"],
+            service_pattern_id=service_pattern_id,
         )
 
 
@@ -228,6 +231,7 @@ def df_to_serviced_organisation_working_days(
 ) -> Iterator[ServicedOrganisationWorkingDays]:
     if not df.empty:
         df_to_load = df.drop(columns=columns_to_drop)
+        df_to_load = df_to_load.reset_index()
         for record in df_to_load.drop_duplicates(
             subset=columns_to_drop_duplicates
         ).itertuples(index=False):
