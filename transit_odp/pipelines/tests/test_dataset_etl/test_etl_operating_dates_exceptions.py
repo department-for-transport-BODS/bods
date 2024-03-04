@@ -166,7 +166,6 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = hash(self.file_obj.file)
         setup_bank_holidays()
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         # test
