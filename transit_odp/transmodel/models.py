@@ -51,7 +51,7 @@ class ServicePattern(models.Model):
     line_name = models.CharField(max_length=255, null=True, blank=True)
     origin = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
     stops = models.ManyToManyField(StopPoint, through="transmodel.ServicePatternStop")
     service_links = models.ManyToManyField(
