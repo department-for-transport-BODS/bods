@@ -68,16 +68,20 @@ class TransXChangeTransformer:
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
         if not vehicle_journeys.empty and not journey_patterns.empty:
-            vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(vehicle_journeys)
+            vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
+                vehicle_journeys
+            )
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
-            
-            df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns)
-            
+
+            df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
+                vehicle_journeys, journey_patterns
+            )
+
             if is_timetable_visualiser_active:
                 vehicle_journeys = merge_lines_with_vehicle_journey(
                     df_merged_vehicle_journeys.reset_index(), lines
                 )
-                
+
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
                 vehicle_journeys,
                 journey_patterns,
