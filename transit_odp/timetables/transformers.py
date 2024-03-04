@@ -50,7 +50,6 @@ class TransXChangeTransformer:
         serviced_organisations = self.extracted_data.serviced_organisations.copy()
         operating_profiles = self.extracted_data.operating_profiles.copy()
         flexible_stop_points = self.extracted_data.flexible_stop_points.copy()
-        flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         flexible_journey_details = self.extracted_data.flexible_journey_details.copy()
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
@@ -160,10 +159,7 @@ class TransXChangeTransformer:
                 # 8. create flexible service_patterns and service_patterns_stops
                 flexible_service_patterns = pd.DataFrame()
                 flexible_service_pattern_stops = pd.DataFrame()
-                if (
-                    not flexible_journey_patterns.empty
-                    and not flexible_timing_links.empty
-                ):
+                if not flexible_timing_links.empty:
                     # 1. create service_pattern_id in flexible_timing_links
                     flexible_service_patterns = transform_flexible_service_patterns(
                         flexible_timing_links

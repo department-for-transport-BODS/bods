@@ -482,16 +482,3 @@ def flexible_stop_points_from_journey_details(flexible_journey_details):
         ].set_index("atco_code")
         return flexible_stop_points
     return pd.DataFrame()
-
-
-def flexible_jp_from_journey_details(flexible_journey_details):
-    if not flexible_journey_details.empty:
-        flexible_journey_patterns = (
-            flexible_journey_details.reset_index()[
-                ["file_id", "journey_pattern_id", "service_code", "direction"]
-            ]
-            .drop_duplicates(["journey_pattern_id"])
-            .set_index(["file_id", "journey_pattern_id"])
-        )
-        return flexible_journey_patterns
-    return pd.DataFrame()

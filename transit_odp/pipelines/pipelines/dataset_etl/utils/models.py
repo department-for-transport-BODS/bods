@@ -12,7 +12,6 @@ class ExtractedData(object):
     flexible_stop_points: pd.DataFrame
     provisional_stops: pd.DataFrame
     journey_patterns: pd.DataFrame
-    flexible_journey_patterns: pd.DataFrame
     flexible_journey_details: pd.DataFrame
     jp_to_jps: pd.DataFrame
     jp_sections: pd.DataFrame

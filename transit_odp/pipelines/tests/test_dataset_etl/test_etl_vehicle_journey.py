@@ -1,5 +1,6 @@
 from dateutil import tz
 import pandas as pd
+import pytest
 
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
@@ -138,52 +139,52 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
             list(vehicle_journey_expected.columns),
         )
 
-    # TODO: need to fix the below test case as part of DQS ticket
-    # def test_transform(self):
-    #     # setup
-    #     extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-    #     file_id = self.xml_file_parser.file_id
+    @pytest.mark.skip
+    def test_transform(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
-    #     # test
-    #     transformed = self.feed_parser.transform(extracted)
+        # test
+        transformed = self.feed_parser.transform(extracted)
 
-    #     vehicle_journey_expected = pd.DataFrame(
-    #         [
-    #             {
-    #                 "file_id": file_id,
-    #                 "departure_time": None,
-    #                 "journey_pattern_ref": "UZ000CALC:53M-jp_1",
-    #                 "line_ref": "CALC:UZ000CALC:53M:53M",
-    #                 "journey_code": None,
-    #                 "vehicle_journey_code": "vj_1",
-    #                 "service_code": "UZ000CALC:53M",
-    #                 "direction": "inbound",
-    #             },
-    #         ]
-    #     ).set_index("file_id")
-    #     self.assertTrue(
-    #         check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
-    #     )
+        vehicle_journey_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "departure_time": None,
+                    "journey_pattern_ref": "UZ000CALC:53M-jp_1",
+                    "line_ref": "CALC:UZ000CALC:53M:53M",
+                    "journey_code": None,
+                    "vehicle_journey_code": "vj_1",
+                    "service_code": "UZ000CALC:53M",
+                    "direction": "inbound",
+                },
+            ]
+        ).set_index("file_id")
+        self.assertTrue(
+            check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
+        )
 
-    #     self.assertCountEqual(
-    #         list(transformed.vehicle_journeys.columns),
-    #         list(vehicle_journey_expected.columns),
-    #     )
+        self.assertCountEqual(
+            list(transformed.vehicle_journeys.columns),
+            list(vehicle_journey_expected.columns),
+        )
 
-    # TODO: need to fix the below test case as part of DQS ticket
-    # def test_load(self):
-    #     extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-    #     transformed = self.feed_parser.transform(extracted)
+    @pytest.mark.skip
+    def test_load(self):
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        transformed = self.feed_parser.transform(extracted)
 
-    #     # test
-    #     self.feed_parser.load(transformed)
+        # test
+        self.feed_parser.load(transformed)
 
-    #     vehicle_journeys = VehicleJourney.objects.all()
+        vehicle_journeys = VehicleJourney.objects.all()
 
-    #     self.assertEqual(1, vehicle_journeys.count())
-    #     for journey in vehicle_journeys:
-    #         self.assertEqual(journey.line_ref, "CALC:UZ000CALC:53M:53M")
-    #         self.assertEqual(journey.journey_code, None)
+        self.assertEqual(1, vehicle_journeys.count())
+        for journey in vehicle_journeys:
+            self.assertEqual(journey.line_ref, "CALC:UZ000CALC:53M:53M")
+            self.assertEqual(journey.journey_code, None)
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -233,57 +234,57 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
             list(vehicle_journey_expected.columns),
         )
 
-    # TODO: need to fix the below test case as part of DQS ticket
-    # def test_transform(self):
-    #     # setup
-    #     extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-    #     file_id = self.xml_file_parser.file_id
+    @pytest.mark.skip
+    def test_transform(self):
+        # setup
+        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.xml_file_parser.file_id
 
-    #     # test
-    #     transformed = self.feed_parser.transform(extracted)
+        # test
+        transformed = self.feed_parser.transform(extracted)
 
-    #     vehicle_journey_expected = pd.DataFrame(
-    #         [
-    #             {
-    #                 "file_id": file_id,
-    #                 "departure_time": "15:10:00",
-    #                 "journey_pattern_ref": "UZ000WBCT:B1081-jp_3",
-    #                 "line_ref": "ARBB:UZ000WBCT:B1081:123",
-    #                 "journey_code": "1094",
-    #                 "vehicle_journey_code": "vj_3",
-    #                 "service_code": "UZ000WBCT:B1081",
-    #                 "direction": "inbound",
-    #             },
-    #             {
-    #                 "file_id": file_id,
-    #                 "departure_time": None,
-    #                 "journey_pattern_ref": "PB0002032:467-jp_1",
-    #                 "line_ref": "ARBB:PB0002032:467:53M",
-    #                 "journey_code": None,
-    #                 "vehicle_journey_code": "vj_1",
-    #                 "service_code": "PB0002032:467",
-    #                 "direction": "outbound",
-    #             },
-    #             {
-    #                 "file_id": file_id,
-    #                 "departure_time": None,
-    #                 "journey_pattern_ref": "UZ000WOCT:216-jp_2",
-    #                 "line_ref": "ARBB:UZ000WOCT:216:53M",
-    #                 "journey_code": None,
-    #                 "vehicle_journey_code": "vj_2",
-    #                 "service_code": "UZ000WOCT:216",
-    #                 "direction": "outbound",
-    #             },
-    #         ]
-    #     ).set_index("file_id")
-    #     self.assertTrue(
-    #         check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
-    #     )
+        vehicle_journey_expected = pd.DataFrame(
+            [
+                {
+                    "file_id": file_id,
+                    "departure_time": "15:10:00",
+                    "journey_pattern_ref": "UZ000WBCT:B1081-jp_3",
+                    "line_ref": "ARBB:UZ000WBCT:B1081:123",
+                    "journey_code": "1094",
+                    "vehicle_journey_code": "vj_3",
+                    "service_code": "UZ000WBCT:B1081",
+                    "direction": "inbound",
+                },
+                {
+                    "file_id": file_id,
+                    "departure_time": None,
+                    "journey_pattern_ref": "PB0002032:467-jp_1",
+                    "line_ref": "ARBB:PB0002032:467:53M",
+                    "journey_code": None,
+                    "vehicle_journey_code": "vj_1",
+                    "service_code": "PB0002032:467",
+                    "direction": "outbound",
+                },
+                {
+                    "file_id": file_id,
+                    "departure_time": None,
+                    "journey_pattern_ref": "UZ000WOCT:216-jp_2",
+                    "line_ref": "ARBB:UZ000WOCT:216:53M",
+                    "journey_code": None,
+                    "vehicle_journey_code": "vj_2",
+                    "service_code": "UZ000WOCT:216",
+                    "direction": "outbound",
+                },
+            ]
+        ).set_index("file_id")
+        self.assertTrue(
+            check_frame_equal(transformed.vehicle_journeys, vehicle_journey_expected)
+        )
 
-    #     self.assertCountEqual(
-    #         list(transformed.vehicle_journeys.columns),
-    #         list(vehicle_journey_expected.columns),
-    #     )
+        self.assertCountEqual(
+            list(transformed.vehicle_journeys.columns),
+            list(vehicle_journey_expected.columns),
+        )
 
     def test_load(self):
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)

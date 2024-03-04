@@ -24,7 +24,6 @@ from transit_odp.timetables.dataframes import (
     operating_profile_to_df,
     flexible_journey_patterns_to_dataframe,
     flexible_stop_points_from_journey_details,
-    flexible_jp_from_journey_details,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -179,9 +178,6 @@ class XmlFileParser(ETLUtility):
         flexible_stop_points = flexible_stop_points_from_journey_details(
             flexible_journey_details
         )
-        flexible_journey_patterns = flexible_jp_from_journey_details(
-            flexible_journey_details
-        )
 
         return ExtractedData(
             services=services,
@@ -189,7 +185,6 @@ class XmlFileParser(ETLUtility):
             flexible_stop_points=flexible_stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
-            flexible_journey_patterns=flexible_journey_patterns,
             flexible_journey_details=flexible_journey_details,
             jp_to_jps=jp_to_jps,
             jp_sections=jp_sections,
