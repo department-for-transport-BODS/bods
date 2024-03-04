@@ -16,7 +16,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         extracted_timing_links = extracted.timing_links.reset_index()
@@ -110,7 +110,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = hash(self.file_obj.file)
+        file_id = self.xml_file_parser.file_id
         # test
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         extracted_timing_links = extracted.timing_links.reset_index()
