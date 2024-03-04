@@ -266,6 +266,7 @@ class OrganisationDetailView(SiteAdminViewMixin, DetailView):
             if organisation.key_contact_email is not None
             else _("Key contact not assigned"),
             "last_active": organisation.last_active,
+            "org_id": organisation.id,
             "name": organisation.name,
             "nocs": nocs,
             "licences": licences,

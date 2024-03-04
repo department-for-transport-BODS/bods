@@ -15,7 +15,27 @@
     {{ block.super }}
     {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
     {% breadcrumb_url organisation.name 'users:organisation-detail' pk=organisation.id host hosts.admin %}
-    {% breadcrumb title %}
+    {% if dataset_type == 1 %}
+        <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="{% url 'users:organisation-timetables-list' pk=organisation.id host hosts.admin %}?status=live">
+                {{ title }}
+            </a>
+        </li>
+    {% endif %}
+    {% if dataset_type == 2 %}
+        <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="{% url 'users:organisation-avl-list' pk=organisation.id host hosts.admin %}?status=live">
+                {{ title }}
+            </a>
+        </li>
+    {% endif %}
+    {% if dataset_type == 3 %}
+        <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="{% url 'users:organisation-fares-list' pk=organisation.id host hosts.admin %}?status=live">
+                {{ title }}
+            </a>
+        </li>
+    {% endif %}
 {% endblock %}
 
 {% block content %}

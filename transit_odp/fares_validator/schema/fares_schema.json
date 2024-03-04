@@ -176,28 +176,50 @@
       ]
     },
     {
-      "details": "Mandatory element 'fareProducts' or 'PreassignedFareProduct' in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
+      "details": "Mandatory element 'fareProducts' or 'PreassignedFareProduct' or 'AmountOfPriceUnitProduct' in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "FareProducts",
       "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame",
       "rules": [
         {
-          "test": "check_preassigned_fare_products(.)"
+          "test": "check_fare_products(.)"
         }
       ]
     },
     {
-      "details": "Element 'PreassignedFareProduct'children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
+      "details": "Element 'PreassignedFareProduct' children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
       "category": "FareProducts",
       "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:PreassignedFareProduct",
       "rules": [
         {
-          "test": "check_preassigned_fare_products_type_ref(.)"
+          "test": "check_fare_products_type_ref(.)"
         },
         {
-          "test": "check_preassigned_fare_products_charging_type(.)"
+          "test": "check_fare_products_charging_type(.)"
         },
         {
-          "test": "check_preassigned_validable_elements(.)"
+          "test": "check_fare_product_validable_elements(.)"
+        },
+        {
+          "test": "check_access_right_elements(.)"
+        },
+        {
+          "test": "check_product_type(.)"
+        }
+      ]
+    },
+    {
+      "details": "Element 'AmountOfPriceUnitProduct' children missing in fareProducts for FareFrame - UK_PI_FARE_PRODUCT",
+      "category": "FareProducts",
+      "context": "//x:dataObjects/x:CompositeFrame/x:frames/x:FareFrame/x:fareProducts/x:AmountOfPriceUnitProduct",
+      "rules": [
+        {
+          "test": "check_fare_products_type_ref(.)"
+        },
+        {
+          "test": "check_fare_products_charging_type(.)"
+        },
+        {
+          "test": "check_fare_product_validable_elements(.)"
         },
         {
           "test": "check_access_right_elements(.)"

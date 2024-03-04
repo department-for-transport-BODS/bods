@@ -4,8 +4,8 @@
 {% load breadcrumbs %}
 
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb 'Sign up closed' %}
+    {{ block.super }}
+    {% breadcrumb_url 'Sign up closed' 'account_signup' host host.name %}
 {% endblock %}
 
 
@@ -13,7 +13,7 @@
 
 
 {% block inner %}
-  <p class="govuk-heading">{% trans "We are sorry, but the sign up is currently closed." %}</p>
+    <p class="govuk-heading">{% trans "We are sorry, but the sign up is currently closed." %}</p>
 {% endblock %}
 
 

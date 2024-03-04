@@ -10,10 +10,10 @@
 {% endif %}
 {% if properties.name|length > 20 %}
     {% with feed_name=properties.name|slice:":19"|add:"..." %}
-        {% breadcrumb feed_name %}
+        {% breadcrumb_url feed_name 'fares:feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
     {% endwith %}
 {% else %}
     {% with feed_name=properties.name %}
-        {% breadcrumb feed_name %}
+        {% breadcrumb_url feed_name 'fares:feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
     {% endwith %}
 {% endif %}

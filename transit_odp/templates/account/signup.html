@@ -13,7 +13,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Sign in' 'account_login' %}
-    {% breadcrumb 'Create account' %}
+    {% breadcrumb_url 'Create account' 'account_signup' %}
 {% endblock %}
 
 {% block head_title %}

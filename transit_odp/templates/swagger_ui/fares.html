@@ -11,7 +11,7 @@
 {% block breadcrumb.content %}
     {{ block.super }}
     {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
-    {% breadcrumb 'Fares data API' %}
+    {% breadcrumb_url 'Fares data API' 'api:faresopenapi' host hosts.data %}
 {% endblock %}
 
 {% block content %}
@@ -42,7 +42,7 @@
                     });
                 });
             }
-            
+
         }
 
         $(document).ready(function () {
