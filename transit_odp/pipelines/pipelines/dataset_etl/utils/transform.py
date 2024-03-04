@@ -432,7 +432,7 @@ def transform_service_patterns(journey_patterns):
     # Create list of service patterns from journey patterns
     service_patterns = (
         journey_patterns.reset_index()
-        .drop_duplicates(["service_code", "route_hash"])
+        .drop_duplicates(["service_code", "route_hash", "line_name"])
         .drop("journey_pattern_id", axis=1)
     )
 
