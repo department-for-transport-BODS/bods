@@ -185,10 +185,7 @@
       <LineRef>CALC:UZ000CALC:53M:53M</LineRef>
       <JourneyPatternRef>jp_1</JourneyPatternRef>
       <FlexibleServiceTimes>
-        <ServicePeriod>
-          <StartTime>07:00:00</StartTime>
-          <EndTime>19:00:00</EndTime>
-        </ServicePeriod>
+        <AllDayService/>
       </FlexibleServiceTimes>
     </FlexibleVehicleJourney>
   </VehicleJourneys>

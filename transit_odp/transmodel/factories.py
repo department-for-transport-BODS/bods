@@ -7,7 +7,13 @@ from factory.fuzzy import FuzzyDate, FuzzyInteger, FuzzyText
 from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.factories import DatasetRevisionFactory
-from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop
+from transit_odp.transmodel.models import (
+    BankHolidays,
+    Service,
+    ServicePattern,
+    ServicePatternStop,
+    ServicedOrganisations,
+)
 from factory.django import DjangoModelFactory
 
 
@@ -97,3 +103,22 @@ class ServicePatternStopFactory(DjangoModelFactory):
         lambda n: n
     )  # note this will be global, not sequenced per service_pattern
     atco_code = factory.Sequence(lambda n: n)
+
+
+class ServicedOrganisationsFactory(DjangoModelFactory):
+    class Meta:
+        model = ServicedOrganisations
+
+    organisation_code = FuzzyText(length=5)
+    name = FuzzyText(length=12)
+
+
+class BankHolidaysFactory(DjangoModelFactory):
+    class Meta:
+        model = BankHolidays
+
+    txc_element = FuzzyText(length=255)
+    title = FuzzyText(length=255)
+    date = FuzzyDate(datetime.date.today())
+    notes = FuzzyText(length=255)
+    division = FuzzyText(length=255)

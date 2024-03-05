@@ -185,4 +185,8 @@ class CeleryAppConfig(AppConfig):
                 "task": AVL_TASKS + "task_daily_post_publishing_checks_all_feeds",
                 "schedule": crontab(minute=0, hour=18),
             },
+            "yearly_task_load_bank_holidays": {
+                "task": TIMETABLE_TASKS + "task_load_bank_holidays",
+                "schedule": crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),
+            },
         }
