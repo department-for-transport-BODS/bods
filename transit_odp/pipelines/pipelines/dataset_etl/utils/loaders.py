@@ -137,6 +137,9 @@ def add_service_pattern_to_service_pattern_stops(df, service_patterns):
                 sequence_number=record["order"],
                 naptan_stop_id=record["naptan_id"],
                 atco_code=record["stop_atco"],
+                departure_time=record["departure_time"],
+                is_timing_point=record["is_timing_status"],
+                txc_common_name=record["common_name"],
             )
 
     stops = list(_inner())

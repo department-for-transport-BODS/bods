@@ -141,6 +141,14 @@ class VehicleJourney(models.Model):
     line_ref = models.CharField(max_length=255, null=True, blank=True)
     journey_code = models.CharField(max_length=255, null=True, blank=True)
     direction = models.CharField(max_length=255, null=True, blank=True)
+    departure_day_shift = models.BooleanField(default=False)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        on_delete=models.CASCADE,
+        related_name="service_pattern_vehicle_journey",
+        default=None,
+        null=True,
+    )
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
@@ -152,7 +160,7 @@ class BookingArrangements(models.Model):
         Service, on_delete=models.CASCADE, related_name="booking_arrangements"
     )
 
-    description = models.CharField(max_length=None, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     email = models.EmailField(_("email address"), null=True, blank=True)
     phone_number = models.CharField(max_length=16, null=True, blank=True)
     web_address = models.URLField(null=True, blank=True)
@@ -237,9 +245,9 @@ class FlexibleServiceOperationPeriod(models.Model):
         related_name="flexible_service_operation_period",
     )
 
-    start_date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
 
-    end_date = models.DateField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
 
 
 class ServicedOrganisationVehicleJourney(models.Model):
@@ -269,3 +277,11 @@ class ServicedOrganisationWorkingDays(models.Model):
     )
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+
+
+class BankHolidays(models.Model):
+    txc_element = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateField()
+    notes = models.CharField(max_length=255, null=True, blank=True)
+    division = models.CharField(max_length=255, null=True, blank=True)
