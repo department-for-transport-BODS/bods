@@ -46,6 +46,7 @@ EMPTY_TIMESTAMP = None
 
 class ExtractBaseTestCase(TestCase):
     test_file: str
+    ignore_stops = []
 
     def setUp(self):
         self.cur_dir = os.path.abspath(os.path.dirname(__file__))
@@ -99,17 +100,21 @@ class ExtractBaseTestCase(TestCase):
             stoppoint_naptan = xml_toolkit.get_child_text(
                 xml_stoppointref, "x:StopPointRef"
             )
-            common_name = xml_toolkit.get_child_text(xml_stoppointref, "x:CommonName")
-            if locality_name:
-                stoppoint = StopPoint(
-                    naptan_code=stoppoint_naptan,
-                    atco_code=stoppoint_naptan,
-                    common_name=common_name,
-                    location=Point(0, 0),
-                    locality=self.get_locality(locality_name),
-                    admin_area=self.admin,
+
+            if not self.ignore_stops or stoppoint_naptan not in self.ignore_stops:
+                common_name = xml_toolkit.get_child_text(
+                    xml_stoppointref, "x:CommonName"
                 )
-                stoppoint.save()
+                if locality_name:
+                    stoppoint = StopPoint(
+                        naptan_code=stoppoint_naptan,
+                        atco_code=stoppoint_naptan,
+                        common_name=common_name,
+                        location=Point(0, 0),
+                        locality=self.get_locality(locality_name),
+                        admin_area=self.admin,
+                    )
+                    stoppoint.save()
 
     # Get or create a locality by name
     def get_locality(self, name: str):
@@ -217,13 +222,17 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
         stop_points_expected.index.name = "atco_code"
 
-        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df1 = (
+            extracted.stop_points.drop(columns=["common_name"], axis=1)
+            .sort_values("atco_code")
+            .reset_index()
+        )
         df2 = stop_points_expected.sort_values("atco_code").reset_index()
 
         self.assertTrue(check_frame_equal(df1, df2))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertCountEqual(list(extracted.stop_points.columns), [])
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertCountEqual(list(extracted.stop_points.columns), ["common_name"])
         self.assertEqual(extracted.stop_points.index.names, ["atco_code"])
 
         # assert routes
@@ -347,13 +356,17 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
         stop_points_expected.index.name = "atco_code"
 
-        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df1 = (
+            extracted.stop_points.drop(columns=["common_name"], axis=1)
+            .sort_values("atco_code")
+            .reset_index()
+        )
         df2 = stop_points_expected.sort_values("atco_code").reset_index()
 
         self.assertTrue(check_frame_equal(df1, df2))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertCountEqual(list(extracted.stop_points.columns), [])
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertCountEqual(list(extracted.stop_points.columns), ["common_name"])
         self.assertEqual(extracted.stop_points.index.names, ["atco_code"])
 
         # assert routes
@@ -407,7 +420,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 5))
+        self.assertEqual(extracted.timing_links.shape, (20, 8))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -416,6 +429,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_stop_ref",
                 "to_stop_ref",
                 "route_link_ref",
+                "is_timing_status",
+                "run_time",
+                "wait_time",
             ],
         )
         self.assertEqual(
@@ -501,7 +517,13 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
         self.assertCountEqual(
             list(transformed.service_patterns.columns),
-            ["direction", "service_code", "admin_area_codes", "geometry", "localities"],
+            [
+                "direction",
+                "service_code",
+                "admin_area_codes",
+                "geometry",
+                "localities",
+            ],
         )
         self.assertEqual(
             transformed.service_patterns.index.names, ["file_id", "service_pattern_id"]
@@ -983,6 +1005,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         timing_point_count = ""
         vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
+        flexible_operation_periods = pd.DataFrame()
+        operating_profiles = pd.DataFrame()
 
         transformed = TransformedData(
             services=services,
@@ -1003,6 +1027,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             timing_point_count=timing_point_count,
             vehicle_journeys=vehicle_journeys,
             serviced_organisations=serviced_organisations,
+            flexible_operation_periods=flexible_operation_periods,
+            operating_profiles=operating_profiles,
         )
 
         service_cache = []

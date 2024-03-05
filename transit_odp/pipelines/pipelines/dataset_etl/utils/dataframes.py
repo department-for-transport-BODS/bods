@@ -4,21 +4,29 @@ BODS transxchange models.
 """
 import logging
 from collections import OrderedDict
-from typing import Iterator
+from typing import Iterator, List
 
 import geopandas
 import pandas as pd
 from shapely.geometry import Point
+from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
     Service,
     ServiceLink,
     ServicePattern,
+    ServicedOrganisationWorkingDays,
     StopPoint,
     BookingArrangements,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
+    ServicedOrganisationVehicleJourney,
+    BankHolidays,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -199,11 +207,34 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
 
 def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
     for record in df.to_dict("records"):
+        service_pattern_id = record.get("id_service", None)
+
         yield VehicleJourney(
             journey_code=record["journey_code"],
             start_time=record["departure_time"],
             line_ref=record["line_ref"],
             direction=record["direction"],
+            departure_day_shift=record["departure_day_shift"],
+            service_pattern_id=service_pattern_id,
+        )
+
+
+def get_time_field_or_none(time_in_text):
+    time_field = None
+    if time_in_text:
+        time_field = datetime.strptime(time_in_text, "%H:%M:%S").time()
+
+    return time_field
+
+
+def df_to_flexible_service_operation_period(
+    df: pd.DataFrame,
+) -> Iterator[FlexibleServiceOperationPeriod]:
+    for record in df.to_dict("records"):
+        yield FlexibleServiceOperationPeriod(
+            vehicle_journey_id=record["id"],
+            start_time=get_time_field_or_none(record["start_time"]),
+            end_time=get_time_field_or_none(record["end_time"]),
         )
 
 
@@ -218,6 +249,59 @@ def df_to_serviced_organisations(
     for record in serviced_org_records.to_dict("records"):
         yield ServicedOrganisations(
             organisation_code=record["serviced_org_ref"], name=record["name"]
+        )
+
+
+def df_to_serviced_organisation_working_days(
+    df: pd.DataFrame, columns_to_drop: list, columns_to_drop_duplicates: list
+) -> Iterator[ServicedOrganisationWorkingDays]:
+    if not df.empty:
+        df_to_load = df.drop(columns=columns_to_drop)
+        df_to_load = df_to_load.reset_index()
+        for record in df_to_load.drop_duplicates(
+            subset=columns_to_drop_duplicates
+        ).itertuples(index=False):
+            yield ServicedOrganisationWorkingDays(
+                serviced_organisation_id=record.id,
+                start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
+                end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date(),
+            )
+
+
+def df_to_operating_profiles(df: pd.DataFrame) -> Iterator[OperatingProfile]:
+    for record in df.to_dict("records"):
+        yield OperatingProfile(
+            vehicle_journey_id=record["id"], day_of_week=record["day_of_week"]
+        )
+
+
+def df_to_serviced_org_vehicle_journey(
+    df: pd.DataFrame,
+) -> Iterator[ServicedOrganisationVehicleJourney]:
+    for record in df.to_dict("records"):
+        yield ServicedOrganisationVehicleJourney(
+            vehicle_journey_id=record["vehicle_journey_id"],
+            serviced_organisation_id=record["serviced_org_id"],
+            operating_on_working_days=record["operational_so"],
+        )
+
+
+def df_to_operating_dates_exceptions(
+    df: pd.DataFrame,
+) -> Iterator[OperatingDatesExceptions]:
+    for record in df.to_dict("records"):
+        yield OperatingDatesExceptions(
+            vehicle_journey_id=record["id"], operating_date=record["exceptions_date"]
+        )
+
+
+def df_to_non_operating_dates_exceptions(
+    df: pd.DataFrame,
+) -> Iterator[NonOperatingDatesExceptions]:
+    for record in df.to_dict("records"):
+        yield NonOperatingDatesExceptions(
+            vehicle_journey_id=record["id"],
+            non_operating_date=record["exceptions_date"],
         )
 
 
@@ -244,6 +328,14 @@ def df_to_service_pattern_service(
         yield ServicePatternThrough(
             servicepattern_id=record["id"], servicelink_id=record["service_link_id"]
         )
+
+
+def db_bank_holidays_to_df(columns: List[str]) -> pd.DataFrame:
+    db_bank_holidays = BankHolidays.objects.values(*columns)
+    df_bank_holidays_from_db = pd.DataFrame(db_bank_holidays, columns=columns)
+    df_bank_holidays_from_db.drop_duplicates(inplace=True)
+
+    return df_bank_holidays_from_db
 
 
 def get_first_and_last_expiration_dates(expiration_dates: list, start_dates: list):

@@ -7,12 +7,18 @@ from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_df_from_queryset,
+    df_to_flexible_service_operation_period,
+    df_to_non_operating_dates_exceptions,
+    df_to_operating_dates_exceptions,
     df_to_service_links,
     df_to_service_patterns,
+    df_to_serviced_organisation_working_days,
     df_to_services,
     df_to_booking_arrangements,
     df_to_vehicle_journeys,
     df_to_serviced_organisations,
+    df_to_operating_profiles,
+    df_to_serviced_org_vehicle_journey,
     get_max_date_or_none,
     get_min_date_or_none,
 )
@@ -31,13 +37,20 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
+from transit_odp.timetables.utils import filter_rows_by_journeys
 from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
     Service,
     ServiceLink,
     ServicePattern,
     BookingArrangements,
+    ServicedOrganisationWorkingDays,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
+    ServicedOrganisationVehicleJourney,
 )
 
 BATCH_SIZE = 2000
@@ -58,17 +71,35 @@ class TransXChangeDataLoader:
         services = self.load_services(revision)
         adapter.info("Finished loading services.")
 
-        adapter.info("Loading vehicle journeys.")
-        vehicle_journeys = self.load_vehicle_journeys()
-        adapter.info("Finished vehicle journeys.")
-
-        adapter.info("Loading vehicle journeys.")
-        self.load_serviced_organisation()
-        adapter.info("Finished vehicle journeys.")
-
         adapter.info("Loading service patterns.")
-        self.load_service_patterns(services, revision)
+        service_patterns = self.load_service_patterns(services, revision)
         adapter.info("Finished loading service patterns.")
+
+        adapter.info("Loading serviced organisations.")
+        serviced_organisations = self.load_serviced_organisation()
+        adapter.info("Finished serviced organisations.")
+
+        adapter.info("Loading serviced organisations working dates.")
+        self.load_serviced_organisation_working_days(serviced_organisations)
+        adapter.info("Finished serviced organisationsworking dates.")
+
+        adapter.info("Loading vehicle journeys.")
+        vehicle_journeys = self.load_vehicle_journeys(service_patterns)
+        adapter.info("Finished vehicle journeys.")
+
+        adapter.info("Loading flexible operation periods.")
+        self.load_flexible_service_operation_periods(vehicle_journeys)
+        adapter.info("Finished flexible operation periods.")
+
+        adapter.info("Loading operating profiles.")
+        self.load_operating_profiles_and_related_tables(vehicle_journeys)
+        adapter.info("Finished loading operating profiles.")
+
+        adapter.info("Loading serviced organisations vehicle journeys.")
+        self.load_serviced_organisation_vehicle_journey(
+            vehicle_journeys, serviced_organisations
+        )
+        adapter.info("Finished serviced organisations vehicle journeys.")
 
         adapter.info("Loading booking arrangements.")
         self.load_booking_arrangements(services, revision)
@@ -142,43 +173,296 @@ class TransXChangeDataLoader:
 
         return services
 
-    def load_vehicle_journeys(self):
+    def load_vehicle_journeys(self, service_patterns):
         vehicle_journeys = self.transformed.vehicle_journeys
         if not vehicle_journeys.empty:
-            vehicle_journeys.reset_index(inplace=True)
+            if not service_patterns.empty:
+                service_patterns = (
+                    service_patterns.reset_index()[["service_pattern_id", "id"]]
+                    .drop_duplicates()
+                    .rename(columns={"id": "id_service"})
+                )
+                vehicle_journeys = (
+                    vehicle_journeys.reset_index()
+                    .merge(
+                        service_patterns,
+                        on=["service_pattern_id"],
+                        how="left",
+                    )
+                    .reset_index()
+                )
+                vehicle_journeys["id_service"].fillna("", inplace=True)
+
             vehicle_journeys_objs = list(df_to_vehicle_journeys(vehicle_journeys))
             created = VehicleJourney.objects.bulk_create(
                 vehicle_journeys_objs, batch_size=BATCH_SIZE
             )
-            vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
+            vehicle_journeys["id"] = pd.Series(
+                (obj.id for obj in created), index=vehicle_journeys.index
+            )
+
+        return vehicle_journeys
+
+    def load_flexible_service_operation_periods(self, vehicle_journeys):
+        flexible_service_operation_periods = self.transformed.flexible_operation_periods
+
+        if not flexible_service_operation_periods.empty and not vehicle_journeys.empty:
+            df_merged = pd.merge(
+                flexible_service_operation_periods,
+                vehicle_journeys.reset_index()[
+                    ["file_id", "id", "vehicle_journey_code"]
+                ],
+                how="inner",
+                left_on=["file_id", "vehicle_journey_code"],
+                right_on=["file_id", "vehicle_journey_code"],
+            )
+            flexible_service_operation_period_objs = list(
+                df_to_flexible_service_operation_period(df_merged)
+            )
+
+            FlexibleServiceOperationPeriod.objects.bulk_create(
+                flexible_service_operation_period_objs, batch_size=BATCH_SIZE
+            )
 
     def load_serviced_organisation(self):
-        serviced_organisations = self.transformed.serviced_organisations
-        if not serviced_organisations.empty:
-            serviced_organisations.reset_index(inplace=True)
-            existing_serviced_orgs = ServicedOrganisations.objects.values_list(
+        df_serviced_organisations = self.transformed.serviced_organisations
+        if not df_serviced_organisations.empty:
+            df_serviced_organisations.reset_index(inplace=True)
+
+            existing_serviced_orgs = ServicedOrganisations.objects.all()
+            existing_serviced_orgs_list = existing_serviced_orgs.values_list(
                 "organisation_code", flat=True
             )
 
             serviced_org_objs = list(
                 df_to_serviced_organisations(
-                    serviced_organisations, existing_serviced_orgs
+                    df_serviced_organisations, existing_serviced_orgs_list
                 )
             )
 
             created = ServicedOrganisations.objects.bulk_create(
                 serviced_org_objs, batch_size=BATCH_SIZE
             )
-            serviced_organisations["id"] = pd.Series((obj.id for obj in created))
             created_serviced_orgs = pd.DataFrame(
                 (
                     {
                         "id": obj.id,
-                        "serviced_org_id": obj.organisation_code,
+                        "serviced_org_ref": obj.organisation_code,
                         "name": obj.name,
                     }
                     for obj in created
                 )
+            )
+
+            df_existing_serviced_orgs = pd.DataFrame(
+                existing_serviced_orgs.values(),
+                columns=["id", "organisation_code", "name"],
+            )
+            df_existing_serviced_orgs.rename(
+                columns={"organisation_code": "serviced_org_ref"}, inplace=True
+            )
+
+            df_merged_serviced_orgs = pd.concat(
+                [created_serviced_orgs, df_existing_serviced_orgs], axis=0
+            )
+            df_merged_serviced_orgs["serviced_org_ref"] = df_merged_serviced_orgs[
+                "serviced_org_ref"
+            ].astype(object)
+
+            df_merge_db_and_file_inputs = pd.merge(
+                df_serviced_organisations,
+                df_merged_serviced_orgs,
+                on="serviced_org_ref",
+                how="inner",
+                suffixes=["_file", "_db"],
+            )
+            return df_merge_db_and_file_inputs
+        else:
+            return pd.DataFrame()
+
+    def load_serviced_organisation_working_days(self, serviced_organisations):
+        columns_to_drop = [
+            "file_id",
+            "serviced_org_ref",
+            "name_file",
+            "name_db",
+            "operational",
+        ]
+        columns_to_drop_duplicates = ["id", "start_date", "end_date"]
+        serviced_organisation_working_days_objs = list(
+            df_to_serviced_organisation_working_days(
+                serviced_organisations, columns_to_drop, columns_to_drop_duplicates
+            )
+        )
+        ServicedOrganisationWorkingDays.objects.bulk_create(
+            serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
+        )
+
+    def load_operating_profiles(self, merged_operating_profiles_and_journeys):
+        refined_operating_profiles_and_journeys = (
+            merged_operating_profiles_and_journeys.drop(
+                columns=["exceptions_operational", "exceptions_date"], errors="ignore"
+            )
+        )
+        refined_operating_profiles_and_journeys = (
+            refined_operating_profiles_and_journeys.reset_index().query(
+                "day_of_week != ''"
+            )
+        )
+        refined_operating_profiles_and_journeys.drop_duplicates(
+            subset=["vehicle_journey_code", "service_code", "file_id", "day_of_week"],
+            inplace=True,
+        )
+        operating_profiles_objs = list(
+            df_to_operating_profiles(refined_operating_profiles_and_journeys)
+        )
+        OperatingProfile.objects.bulk_create(
+            operating_profiles_objs, batch_size=BATCH_SIZE
+        )
+
+    def load_operating_dates_exceptions(self, merged_operating_profiles_and_journeys):
+        merged_operating_profiles_and_journeys.drop_duplicates(inplace=True)
+        journey_mapping = (
+            merged_operating_profiles_and_journeys.groupby("vehicle_journey_code")[
+                "day_of_week"
+            ]
+            .unique()
+            .apply(list)
+            .to_dict()
+        )
+        merged_operating_profiles_and_journeys = merged_operating_profiles_and_journeys[
+            merged_operating_profiles_and_journeys.apply(
+                lambda row: filter_rows_by_journeys(row, journey_mapping), axis=1
+            )
+        ]
+
+        df_to_load = merged_operating_profiles_and_journeys[
+            ["id", "exceptions_operational", "exceptions_date"]
+        ].drop_duplicates()
+
+        operating_dates_obj = list(
+            df_to_operating_dates_exceptions(
+                df_to_load[df_to_load["exceptions_operational"] == True]
+            )
+        )
+
+        non_operating_dates_obj = list(
+            df_to_non_operating_dates_exceptions(
+                df_to_load[df_to_load["exceptions_operational"] == False]
+            )
+        )
+
+        OperatingDatesExceptions.objects.bulk_create(
+            operating_dates_obj, batch_size=BATCH_SIZE
+        )
+        NonOperatingDatesExceptions.objects.bulk_create(
+            non_operating_dates_obj, batch_size=BATCH_SIZE
+        )
+
+    def load_operating_profiles_and_related_tables(self, vehicle_journeys):
+        operating_profiles = self.transformed.operating_profiles
+        if not operating_profiles.empty and not vehicle_journeys.empty:
+            operating_profiles = operating_profiles.reset_index()
+            vehicle_journeys = vehicle_journeys.rename(
+                columns={"service_code_vj": "service_code"}
+            )
+            columns_operating_profiles = operating_profiles.columns
+
+            if "exceptions_operational" in columns_operating_profiles:
+                operating_profiles = operating_profiles[
+                    [
+                        "vehicle_journey_code",
+                        "day_of_week",
+                        "service_code",
+                        "file_id",
+                        "exceptions_operational",
+                        "exceptions_date",
+                    ]
+                ]
+            else:
+                # When SpecialOperations or BankHolidays are not mentioned
+                # exceptions_operational and exceptions_date fields are not set
+                operating_profiles = operating_profiles[
+                    ["vehicle_journey_code", "day_of_week", "service_code", "file_id"]
+                ]
+
+            merged_df = pd.merge(
+                vehicle_journeys[
+                    ["id", "vehicle_journey_code", "service_code", "file_id"]
+                ],
+                operating_profiles,
+                on=["file_id", "service_code", "vehicle_journey_code"],
+                how="inner",
+            )
+
+            self.load_operating_profiles(merged_df)
+            self.load_operating_dates_exceptions(merged_df)
+
+    def load_serviced_organisation_vehicle_journey(
+        self, vehicle_journeys, serviced_organisations
+    ):
+        operating_profiles = self.transformed.operating_profiles
+        if (
+            not vehicle_journeys.empty
+            and not serviced_organisations.empty
+            and not operating_profiles.empty
+        ):
+            df_vehicle_journeys = vehicle_journeys.rename(
+                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"}
+            )
+
+            serviced_organisations.rename(
+                columns={"id": "serviced_org_id"}, inplace=True
+            )
+            operating_profiles.reset_index(inplace=True)
+
+            operating_profiles_serviced_orgs_merged_df = pd.merge(
+                operating_profiles[
+                    [
+                        "file_id",
+                        "service_code",
+                        "vehicle_journey_code",
+                        "serviced_org_ref",
+                        "operational",
+                    ]
+                ],
+                serviced_organisations[
+                    [
+                        "file_id",
+                        "serviced_org_id",
+                        "serviced_org_ref",
+                        "operational",
+                    ]
+                ],
+                on=["file_id", "serviced_org_ref"],
+                how="inner",
+                suffixes=["_op", "_so"],
+            )
+            operating_profiles_serviced_orgs_merged_df.drop_duplicates(inplace=True)
+
+            operating_profiles_serviced_orgs_vehicle_journeys_merged_df = pd.merge(
+                operating_profiles_serviced_orgs_merged_df,
+                df_vehicle_journeys[
+                    [
+                        "file_id",
+                        "service_code",
+                        "vehicle_journey_id",
+                        "vehicle_journey_code",
+                    ]
+                ],
+                on=["file_id", "service_code", "vehicle_journey_code"],
+                how="inner",
+            )
+            operating_profiles_serviced_orgs_vehicle_journeys_merged_df.drop_duplicates(
+                inplace=True
+            )
+            serviced_org_vehicle_journey_objs = list(
+                df_to_serviced_org_vehicle_journey(
+                    operating_profiles_serviced_orgs_vehicle_journeys_merged_df
+                )
+            )
+            ServicedOrganisationVehicleJourney.objects.bulk_create(
+                serviced_org_vehicle_journey_objs, batch_size=BATCH_SIZE
             )
 
     def load_service_links(self, service_links: pd.DataFrame):
