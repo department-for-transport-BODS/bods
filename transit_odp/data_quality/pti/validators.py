@@ -19,6 +19,7 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_stop_point_ref,
     check_flexible_service_times,
     check_flexible_service_timing_status,
+    check_inbound_outbound_description,
     check_service_group_validations,
     contains_date,
     has_flexible_or_standard_service,
@@ -482,7 +483,10 @@ class PTIValidator:
             "check_flexible_service_stop_point_ref",
             check_flexible_service_stop_point_ref,
         )
-
+        self.register_function(
+            "check_inbound_outbound_description",
+            check_inbound_outbound_description,
+        )
         self.register_function("date", cast_to_date)
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)
