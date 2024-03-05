@@ -91,7 +91,6 @@ def flexible_journey_patterns_to_dataframe(services):
                                 }
                             )
 
-    print(f"flexible_journey_patterns: {flexible_journey_patterns}")
     if flexible_journey_patterns:
         columns = [
             "atco_code",

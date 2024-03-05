@@ -19,8 +19,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -54,8 +54,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -94,7 +94,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -114,8 +114,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -142,8 +142,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
     @pytest.mark.skip
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -173,7 +173,7 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
 
     @pytest.mark.skip
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -193,8 +193,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -237,8 +237,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
     @pytest.mark.skip
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -287,7 +287,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test

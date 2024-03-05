@@ -34,6 +34,7 @@ from .utils.transform import (
     transform_geometry,
     transform_flexible_stop_sequence,
     merge_vehicle_journeys_with_jp,
+    transform_flexible_service_patterns,
 )
 
 logger = get_task_logger(__name__)
@@ -53,7 +54,6 @@ class Transform(ETLUtility):
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
         provisional_stops = extracted_data.provisional_stops.copy()
         flexible_stop_points = extracted_data.flexible_stop_points.copy()
-        flexible_journey_patterns = extracted_data.flexible_journey_patterns.copy()
         flexible_journey_details = extracted_data.flexible_journey_details.copy()
 
         # Match stop_points with DB
@@ -120,6 +120,7 @@ class Transform(ETLUtility):
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
+
             # creating flexible jp sections and jp to jps mapping
             if not flexible_journey_details.empty:
                 # creating flexible timing link
@@ -135,10 +136,7 @@ class Transform(ETLUtility):
                 # 8. create flexible service_patterns and service_patterns_stops
                 flexible_service_patterns = pd.DataFrame()
                 flexible_service_pattern_stops = pd.DataFrame()
-                if (
-                    not flexible_journey_patterns.empty
-                    and not flexible_timing_links.empty
-                ):
+                if not flexible_timing_links.empty:
                     # 1. create service_pattern_id in flexible_timing_links
                     flexible_service_patterns = transform_flexible_service_patterns(
                         flexible_timing_links
@@ -185,6 +183,7 @@ class Transform(ETLUtility):
                     service_pattern_stops.dropna(
                         subset=["stop_atco", "geometry"], inplace=True
                     )
+
         return TransformedData(
             services=services,
             service_patterns=service_patterns,
