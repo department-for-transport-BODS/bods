@@ -14,6 +14,28 @@ from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
 logger = logging.getLogger(__name__)
 
 
+def get_flexible_journey_details(
+    stop_points, service_code, pattern, direction, element_name
+):
+    stop_points_details = []
+    if stop_points:
+        bus_stop_type = (
+            "flexible" if element_name == "FlexibleStopUsage" else "fixed_flexible"
+        )
+        for fixed_stop_usage in stop_points.get_elements(element_name):
+            atco_code = fixed_stop_usage.get_element("StopPointRef").text
+            stop_points_details.append(
+                {
+                    "service_code": service_code,
+                    "atco_code": atco_code,
+                    "bus_stop_type": bus_stop_type,
+                    "journey_pattern_id": pattern["id"],
+                    "direction": direction,
+                }
+            )
+    return stop_points_details
+
+
 def flexible_journey_patterns_to_dataframe(services):
     flexible_journey_patterns = []
     for service in services:
@@ -27,37 +49,25 @@ def flexible_journey_patterns_to_dataframe(services):
                     flexible_zone = pattern.get_element_or_none("FlexibleZones")
                     direction = pattern.get_element_or_none("Direction").text
                     direction = direction if direction else ""
-                    if flexible_zone:
-                        for flexistopusage in flexible_zone.get_elements(
-                            "FlexibleStopUsage"
-                        ):
-                            atco_code = flexistopusage.get_element("StopPointRef").text
-                            flexible_journey_patterns.append(
-                                {
-                                    "service_code": service_code,
-                                    "atco_code": atco_code,
-                                    "bus_stop_type": "flexible",
-                                    "journey_pattern_id": pattern["id"],
-                                    "direction": direction,
-                                }
-                            )
+                    flexible_journey_patterns.extend(
+                        get_flexible_journey_details(
+                            flexible_zone,
+                            service_code,
+                            pattern,
+                            direction,
+                            element_name="FlexibleStopUsage",
+                        )
+                    )
                     fixed_stop_points = pattern.get_element_or_none("FixedStopPoints")
-                    if fixed_stop_points:
-                        for fixed_stop_usage in fixed_stop_points.get_elements(
-                            "FixedStopUsage"
-                        ):
-                            atco_code = fixed_stop_usage.get_element(
-                                "StopPointRef"
-                            ).text
-                            flexible_journey_patterns.append(
-                                {
-                                    "service_code": service_code,
-                                    "atco_code": atco_code,
-                                    "bus_stop_type": "fixed_flexible",
-                                    "journey_pattern_id": pattern["id"],
-                                    "direction": direction,
-                                }
-                            )
+                    flexible_journey_patterns.extend(
+                        get_flexible_journey_details(
+                            fixed_stop_points,
+                            service_code,
+                            pattern,
+                            direction,
+                            element_name="FixedStopUsage",
+                        )
+                    )
                     stoppoint_in_sequence = pattern.get_element_or_none(
                         "StopPointsInSequence"
                     )
@@ -81,6 +91,7 @@ def flexible_journey_patterns_to_dataframe(services):
                                 }
                             )
 
+    print(f"flexible_journey_patterns: {flexible_journey_patterns}")
     if flexible_journey_patterns:
         columns = [
             "atco_code",

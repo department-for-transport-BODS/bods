@@ -187,8 +187,7 @@ class TransXChangeExtractor:
             flexible_journey_patterns.set_index(
                 ["file_id", "journey_pattern_id"], inplace=True
             )
-            return flexible_journey_patterns
-        return pd.DataFrame()
+        return flexible_journey_patterns
 
     def construct_geometry(self, point: Point):
         """Functionality extracted out, proxied here to not break the API"""
