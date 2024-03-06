@@ -24,7 +24,6 @@ from transit_odp.timetables.dataframes import (
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
-    lines_to_dataframe,
     provisional_stops_to_dataframe,
     services_to_dataframe,
     stop_point_refs_to_dataframe,
@@ -47,6 +46,9 @@ class TransXChangeExtractor:
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
         self.start_time = start_time
+        self.is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
 
     def extract(self) -> ExtractedData:
         """Extract data from document
@@ -71,15 +73,12 @@ class TransXChangeExtractor:
         """
         logger.debug("Extracting data")
         logger.debug(f"file_id: {self.file_id}, file_name: {self.filename}")
-        is_timetable_visualiser_active = flag_is_active(
-            "", "is_timetable_visualiser_active"
-        )
 
         schema_version = self.doc.get_transxchange_version()
 
         # Extract Services
         logger.debug("Extracting services")
-        services = self.extract_services()
+        services, lines = self.extract_services()
         logger.debug("Finished extracting services")
 
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
@@ -103,8 +102,8 @@ class TransXChangeExtractor:
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
-        lines = pd.DataFrame()
-        if is_timetable_visualiser_active:
+        # lines = pd.DataFrame()
+        if self.is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
             (
@@ -122,11 +121,6 @@ class TransXChangeExtractor:
             logger.debug("Extracting operating_profiles")
             operating_profiles = self.extract_operating_profiles()
             logger.debug("Finished extracting operating_profiles")
-
-            # Extract Lines
-            logger.debug("Extracting Lines")
-            lines = self.extract_lines()
-            logger.debug("Finished extracting lines")
         else:
             timing_links.drop(
                 columns=["is_timing_status", "run_time", "wait_time"],
@@ -198,7 +192,9 @@ class TransXChangeExtractor:
 
     def extract_services(self):
         try:
-            df = services_to_dataframe(self.doc.get_services())
+            services_df, lines_df = services_to_dataframe(
+                self.doc.get_services(), self.is_timetable_visualiser_active
+            )
         except MissingLines as err:
             message = (
                 f"Service (service_code=${err.service}) is missing "
@@ -209,9 +205,12 @@ class TransXChangeExtractor:
                 message=message,
             )
 
-        df["file_id"] = self.file_id
-        df.set_index(["file_id", "service_code"], inplace=True)
-        return df
+        services_df["file_id"] = self.file_id
+        services_df.set_index(["file_id", "service_code"], inplace=True)
+
+        lines_df["file_id"] = self.file_id
+        lines_df.set_index(["file_id"], inplace=True)
+        return services_df, lines_df
 
     def extract_stop_points(self):
         refs = self.doc.get_annotated_stop_point_refs()
@@ -314,16 +313,6 @@ class TransXChangeExtractor:
             df_operating_profiles.set_index(["file_id"], inplace=True)
 
         return df_operating_profiles
-
-    def extract_lines(self):
-        lines = self.doc.get_lines()
-        lines_df = lines_to_dataframe(lines)
-
-        if not lines_df.empty:
-            lines_df["file_id"] = self.file_id
-            lines_df.set_index(["file_id"], inplace=True)
-
-        return lines_df
 
     def extract_booking_arrangements(self):
         services = self.doc.get_services()

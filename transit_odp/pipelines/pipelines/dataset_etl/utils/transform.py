@@ -428,11 +428,11 @@ def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
     return df_merged
 
 
-def transform_service_patterns(journey_patterns):
+def transform_service_patterns(journey_patterns, drop_duplicates_columns):
     # Create list of service patterns from journey patterns
     service_patterns = (
         journey_patterns.reset_index()
-        .drop_duplicates(["service_code", "route_hash", "line_name"])
+        .drop_duplicates(drop_duplicates_columns)
         .drop("journey_pattern_id", axis=1)
     )
 
