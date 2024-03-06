@@ -55,8 +55,19 @@ class ServiceQuerySet(QuerySet):
             granted_date=F("licence__granted_date"),
         )
 
+    def add_localauthority_details(self) -> TServiceQuerySet:
+        return self.annotate(local_authority_name=F("registration__name"))
+
+    def add_traveline_region_details(self) -> TServiceQuerySet:
+        return self.annotate(traveline_region=F("registration__name"))
+
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
-        return self.add_service_code().add_operator_details().add_licence_details()
+        return (
+            self.add_service_code()
+            .add_operator_details()
+            .add_licence_details()
+            .add_localauthority_details()
+        )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation__id=organisation_id)
