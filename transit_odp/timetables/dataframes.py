@@ -317,7 +317,6 @@ def journey_pattern_section_from_journey_pattern(df: pd.DataFrame):
 
 def journey_pattern_sections_to_dataframe(sections):
     all_links = []
-    print(f"sections: {sections}")
     if sections is not None:
         for section in sections:
             id_ = section["id"]

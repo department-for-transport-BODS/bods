@@ -275,7 +275,7 @@ class XmlFileParser(ETLUtility):
 
         return journey_patterns, jp_to_jps
 
-    def extract_vehicle_journeys(self):
+    def extract_vehicle_journeys(self, file_id):
         standard_vehicle_journeys = self.trans.get_all_vehicle_journeys(
             "VehicleJourney", allow_none=True
         )

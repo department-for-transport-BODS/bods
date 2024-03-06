@@ -355,10 +355,10 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         vehicle_journey_expected = pd.DataFrame(
             [
@@ -400,8 +400,8 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = self.xml_file_parser.file_id
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.trans_xchange_extractor.file_id
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -447,7 +447,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test

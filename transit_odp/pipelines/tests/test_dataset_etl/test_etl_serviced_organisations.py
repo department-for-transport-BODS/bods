@@ -25,7 +25,7 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
     def test_extract(self):
         # test
         extracted = self.trans_xchange_extractor.extract()
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
         expected_serviced_organisation = pd.DataFrame(
             [
                 {
@@ -150,7 +150,7 @@ class ETLServicedOrganisationsWithOrgInDB(ExtractBaseTestCase):
     def test_load(self):
         # setup
         ServicedOrganisationsFactory(organisation_code="TSTCODE")
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -168,10 +168,10 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         expected_serviced_organisation = pd.DataFrame(
             [
@@ -268,8 +268,8 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = self.xml_file_parser.file_id
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.trans_xchange_extractor.file_id
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -368,7 +368,7 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
 
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -392,7 +392,7 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
 
     def test_load_operating_profiles_in_services(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -413,7 +413,7 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
 
     def test_load_operating_profiles_in_vehicle_journeys(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
