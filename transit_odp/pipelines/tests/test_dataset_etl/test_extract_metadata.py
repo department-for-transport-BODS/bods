@@ -1,7 +1,6 @@
 import os
 from datetime import date, datetime
 from unittest import skip
-from waffle.testutils import override_flag
 
 import pandas as pd
 import pytest
@@ -44,7 +43,6 @@ from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 TZ = tz.gettz("Europe/London")
 EMPTY_TIMESTAMP = None
 
-@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractBaseTestCase(TestCase):
     test_file: str
     ignore_stops = []
