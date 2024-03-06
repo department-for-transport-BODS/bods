@@ -14,7 +14,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     db_bank_holidays_to_df,
 )
 from datetime import datetime, timedelta
-
 from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)

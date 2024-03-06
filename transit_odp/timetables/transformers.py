@@ -33,14 +33,13 @@ from transit_odp.timetables.utils import get_line_description_based_on_direction
 
 from transit_odp.transmodel.models import StopPoint
 
+is_timetable_visualiser_active = flag_is_active("", "is_timetable_visualiser_active")
+
 
 class TransXChangeTransformer:
     def __init__(self, extracted_data: ExtractedData, stop_point_cache=None):
         self.extracted_data = extracted_data
         self.stop_point_cache = stop_point_cache
-        self.is_timetable_visualiser_active = flag_is_active(
-            "", "is_timetable_visualiser_active"
-        )
 
     def transform(self) -> TransformedData:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
@@ -67,8 +66,7 @@ class TransXChangeTransformer:
 
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
-        pd.set_option("display.max_rows", None)
-        pd.set_option("display.max_columns", None)
+
         if not vehicle_journeys.empty and not journey_patterns.empty:
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
@@ -78,8 +76,7 @@ class TransXChangeTransformer:
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns
             )
-
-            if self.is_timetable_visualiser_active:
+            if is_timetable_visualiser_active:
                 vehicle_journeys = merge_lines_with_vehicle_journey(
                     df_merged_vehicle_journeys.reset_index(), lines
                 )
@@ -87,7 +84,7 @@ class TransXChangeTransformer:
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
                 vehicle_journeys,
                 journey_patterns,
-                self.is_timetable_visualiser_active,
+                is_timetable_visualiser_active,
             )
 
         df_merged_serviced_organisations = pd.DataFrame()
@@ -129,7 +126,7 @@ class TransXChangeTransformer:
         service_pattern_to_service_links = pd.DataFrame()
         service_pattern_stops = pd.DataFrame()
         if not journey_patterns.empty and not route_to_route_links.empty:
-            if self.is_timetable_visualiser_active:
+            if is_timetable_visualiser_active:
                 drop_duplicates_columns_sp = ["service_code", "route_hash", "line_name"]
             else:
                 drop_duplicates_columns_sp = ["service_code", "route_hash"]
@@ -149,7 +146,7 @@ class TransXChangeTransformer:
             service_patterns = transform_stop_sequence(
                 service_pattern_stops, service_patterns
             )
-            if self.is_timetable_visualiser_active:
+            if is_timetable_visualiser_active:
                 service_patterns["description"] = service_patterns.apply(
                     get_line_description_based_on_direction, axis=1
                 )

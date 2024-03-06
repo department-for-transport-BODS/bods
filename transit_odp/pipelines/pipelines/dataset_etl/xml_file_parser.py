@@ -23,7 +23,6 @@ from transit_odp.timetables.dataframes import (
     vehicle_journeys_to_dataframe,
     serviced_organisations_to_dataframe,
     operating_profiles_to_dataframe,
-    lines_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -106,7 +105,7 @@ class XmlFileParser(ETLUtility):
 
         # Extract Services
         logger.debug("Extracting services")
-        services = self.extract_services(doc, self.file_id, filename)
+        services, lines = self.extract_services(doc, self.file_id, filename)
         logger.debug("Finished extracting services")
 
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
@@ -144,11 +143,6 @@ class XmlFileParser(ETLUtility):
         logger.debug("Extracting operating_profiles")
         operating_profiles = self.extract_operating_profiles(self.file_id)
         logger.debug("Finished operating_profiles")
-
-        # Extract Lines
-        logger.debug("Extracting Lines")
-        lines = self.extract_lines(file_id)
-        logger.debug("Finished extracting lines")
 
         # Extract BookingArrangements data
         logger.debug("Extracting booking_arrangements")
@@ -217,7 +211,7 @@ class XmlFileParser(ETLUtility):
 
     def extract_services(self, doc, file_id: int, filename):
         try:
-            df = services_to_dataframe(self.trans.get_services())
+            services_df, lines_df = services_to_dataframe(self.trans.get_services())
         except MissingLines as err:
             message = (
                 f"Service (service_code=${err.service}) is missing "
@@ -228,9 +222,12 @@ class XmlFileParser(ETLUtility):
                 message=message,
             )
 
-        df["file_id"] = file_id
-        df.set_index(["file_id", "service_code"], inplace=True)
-        return df
+        services_df["file_id"] = file_id
+        services_df.set_index(["file_id", "service_code"], inplace=True)
+
+        lines_df["file_id"] = file_id
+        lines_df.set_index(["file_id"], inplace=True)
+        return services_df, lines_df
 
     def extract_stop_points(self, doc):
         refs = self.trans.get_annotated_stop_point_refs()
@@ -333,16 +330,6 @@ class XmlFileParser(ETLUtility):
             )
 
         return jp_sections, timing_links
-
-    def extract_lines(self, file_id: int):
-        lines = self.trans.get_lines()
-        lines_df = lines_to_dataframe(lines)
-
-        if not lines_df.empty:
-            lines_df["file_id"] = file_id
-            lines_df.set_index(["file_id"], inplace=True)
-
-        return lines_df
 
     def extract_booking_arrangements(self, file_id: int):
         services = self.trans.get_services()
