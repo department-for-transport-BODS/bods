@@ -46,9 +46,6 @@ class TransXChangeExtractor:
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
         self.start_time = start_time
-        self.is_timetable_visualiser_active = flag_is_active(
-            "", "is_timetable_visualiser_active"
-        )
 
     def extract(self) -> ExtractedData:
         """Extract data from document
@@ -71,6 +68,9 @@ class TransXChangeExtractor:
         Finally, we identify the Routes by hashing together the list of
         'route_section_hash' to form 'route_hash'.
         """
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
         logger.debug("Extracting data")
         logger.debug(f"file_id: {self.file_id}, file_name: {self.filename}")
 
@@ -103,7 +103,7 @@ class TransXChangeExtractor:
         operating_profiles = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
         # lines = pd.DataFrame()
-        if self.is_timetable_visualiser_active:
+        if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
             (
@@ -194,7 +194,7 @@ class TransXChangeExtractor:
     def extract_services(self):
         try:
             services_df, lines_df = services_to_dataframe(
-                self.doc.get_services(), self.is_timetable_visualiser_active
+                self.doc.get_services()
             )
         except MissingLines as err:
             message = (

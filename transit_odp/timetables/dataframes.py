@@ -5,6 +5,7 @@
 import logging
 
 import pandas as pd
+from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_str
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -18,8 +19,11 @@ from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
+is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
 
-def services_to_dataframe(services, is_timetable_visualiser_active=False):
+def services_to_dataframe(services):
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
     lines_list = []

@@ -58,7 +58,7 @@ class TransXChangeTransformer:
             self.extracted_data.flexible_operation_periods.copy()
         )
         lines = self.extracted_data.lines.copy()
-
+        print(f"lines::::::{lines}")
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
         stop_points = sync_localities_and_adminareas(stop_points)
