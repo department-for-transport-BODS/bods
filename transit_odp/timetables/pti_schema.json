@@ -674,10 +674,10 @@
       "service_type": "FlexibleService",
       "reference": "10",
       "number": 124,
-      "context": "//x:VehicleJourneys/x:FlexibleVehicleJourney",
+      "context": "//x:VehicleJourneys",
       "rules": [
         {
-          "test": "count(x:FlexibleServiceTimes) > 0"
+          "test": "check_flexible_service_times(.)"
         }
       ]
     },

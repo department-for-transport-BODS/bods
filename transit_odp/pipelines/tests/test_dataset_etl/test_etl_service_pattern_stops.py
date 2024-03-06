@@ -18,7 +18,6 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
         # setup
         file_id = self.xml_file_parser.file_id
         # test
-        pd.set_option("display.max_rows", None)
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         extracted_timing_links = extracted.timing_links.reset_index()
         extracted_vehicle_journeys = extracted.vehicle_journeys.reset_index()

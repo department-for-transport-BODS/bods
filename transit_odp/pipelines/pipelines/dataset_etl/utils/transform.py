@@ -22,9 +22,14 @@ def convert_to_time_field(time_delta_value):
 def create_stop_sequence(df: pd.DataFrame):
     df = df.reset_index().sort_values("order")
     columns = df.columns
-
     stops_atcos = (
-        df[["from_stop_atco", "departure_time", "is_timing_status"]]
+        df[
+            [
+                "from_stop_atco",
+                "departure_time",
+                "is_timing_status",
+            ]
+        ]
         .iloc[[0]]
         .rename(columns={"from_stop_atco": "stop_atco"})
     )
@@ -41,28 +46,35 @@ def create_stop_sequence(df: pd.DataFrame):
             "run_time_vj",
         ]
     else:
-        columns = ["to_stop_atco", "is_timing_status", "run_time", "wait_time"]
+        columns = [
+            "to_stop_atco",
+            "is_timing_status",
+            "run_time",
+            "wait_time",
+        ]
 
     last_stop = df[columns].rename(columns={"to_stop_atco": "stop_atco"})
     columns.remove("to_stop_atco")
     columns.remove("is_timing_status")
     if use_vehicle_journey_runtime:
-        last_stop["departure_time"] = last_stop["run_time_vj"].combine_first(
-            last_stop["run_time"]
-        ).fillna(pd.Timedelta(0)) + last_stop["wait_time"].fillna(pd.Timedelta(0))
+        last_stop["departure_time"] = last_stop["run_time_vj"].replace(
+            "", pd.NaT
+        ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
+            "wait_time"
+        ].fillna(
+            pd.Timedelta(0)
+        )
     else:
         last_stop["departure_time"] = last_stop["run_time"].fillna(
             pd.Timedelta(0)
         ) + last_stop["wait_time"].fillna(pd.Timedelta(0))
 
     last_stop.drop(columns=columns, axis=1, inplace=True)
-
     stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
     stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
     stops_atcos["departure_time"] = stops_atcos["departure_time"].apply(
         convert_to_time_field
     )
-
     stops_atcos.index.name = "order"
     return stops_atcos
 
@@ -349,6 +361,12 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
         how="left",
         suffixes=("_vj", "_jp"),
     )
+
+    if "route_hash" in df_merged.columns:
+        df_merged["service_pattern_id"] = df_merged["service_code"].str.cat(
+            df_merged["route_hash"].astype(str), sep="-"
+        )
+
     return df_merged
 
 
@@ -444,7 +462,6 @@ def transform_service_patterns(journey_patterns, drop_duplicates_columns):
     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
         service_patterns["route_hash"].astype(str), sep="-"
     )
-
     service_patterns.set_index(["file_id", "service_pattern_id"], inplace=True)
 
     return service_patterns
@@ -480,7 +497,12 @@ def transform_service_pattern_to_service_links(
         service_pattern_to_service_links["wait_time"] = pd.NaT
         return service_pattern_to_service_links, []
 
-    drop_columns = ["departure_time", "is_timing_status", "run_time", "wait_time"]
+    drop_columns = [
+        "departure_time",
+        "is_timing_status",
+        "run_time",
+        "wait_time",
+    ]
 
     if "run_time_vj" in link_columns:
         link_columns = [

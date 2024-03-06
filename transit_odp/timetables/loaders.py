@@ -71,13 +71,9 @@ class TransXChangeDataLoader:
         services = self.load_services(revision)
         adapter.info("Finished loading services.")
 
-        adapter.info("Loading vehicle journeys.")
-        vehicle_journeys = self.load_vehicle_journeys()
-        adapter.info("Finished vehicle journeys.")
-
-        adapter.info("Loading flexible operation periods.")
-        self.load_flexible_service_operation_periods(vehicle_journeys)
-        adapter.info("Finished flexible operation periods.")
+        adapter.info("Loading service patterns.")
+        service_patterns = self.load_service_patterns(services, revision)
+        adapter.info("Finished loading service patterns.")
 
         adapter.info("Loading serviced organisations.")
         serviced_organisations = self.load_serviced_organisation()
@@ -86,6 +82,14 @@ class TransXChangeDataLoader:
         adapter.info("Loading serviced organisations working dates.")
         self.load_serviced_organisation_working_days(serviced_organisations)
         adapter.info("Finished serviced organisationsworking dates.")
+
+        adapter.info("Loading vehicle journeys.")
+        vehicle_journeys = self.load_vehicle_journeys(service_patterns)
+        adapter.info("Finished vehicle journeys.")
+
+        adapter.info("Loading flexible operation periods.")
+        self.load_flexible_service_operation_periods(vehicle_journeys)
+        adapter.info("Finished flexible operation periods.")
 
         adapter.info("Loading operating profiles.")
         self.load_operating_profiles_and_related_tables(vehicle_journeys)
@@ -96,10 +100,6 @@ class TransXChangeDataLoader:
             vehicle_journeys, serviced_organisations
         )
         adapter.info("Finished serviced organisations vehicle journeys.")
-
-        adapter.info("Loading service patterns.")
-        self.load_service_patterns(services, revision)
-        adapter.info("Finished loading service patterns.")
 
         adapter.info("Loading booking arrangements.")
         self.load_booking_arrangements(services, revision)
@@ -173,15 +173,33 @@ class TransXChangeDataLoader:
 
         return services
 
-    def load_vehicle_journeys(self):
+    def load_vehicle_journeys(self, service_patterns):
         vehicle_journeys = self.transformed.vehicle_journeys
         if not vehicle_journeys.empty:
-            vehicle_journeys.reset_index(inplace=True)
+            if not service_patterns.empty:
+                service_patterns = (
+                    service_patterns.reset_index()[["service_pattern_id", "id"]]
+                    .drop_duplicates()
+                    .rename(columns={"id": "id_service"})
+                )
+                vehicle_journeys = (
+                    vehicle_journeys.reset_index()
+                    .merge(
+                        service_patterns,
+                        on=["service_pattern_id"],
+                        how="left",
+                    )
+                    .reset_index()
+                )
+                vehicle_journeys["id_service"].fillna("", inplace=True)
+
             vehicle_journeys_objs = list(df_to_vehicle_journeys(vehicle_journeys))
             created = VehicleJourney.objects.bulk_create(
                 vehicle_journeys_objs, batch_size=BATCH_SIZE
             )
-            vehicle_journeys["id"] = pd.Series((obj.id for obj in created))
+            vehicle_journeys["id"] = pd.Series(
+                (obj.id for obj in created), index=vehicle_journeys.index
+            )
 
         return vehicle_journeys
 
@@ -191,7 +209,9 @@ class TransXChangeDataLoader:
         if not flexible_service_operation_periods.empty and not vehicle_journeys.empty:
             df_merged = pd.merge(
                 flexible_service_operation_periods,
-                vehicle_journeys[["file_id", "id", "vehicle_journey_code"]],
+                vehicle_journeys.reset_index()[
+                    ["file_id", "id", "vehicle_journey_code"]
+                ],
                 how="inner",
                 left_on=["file_id", "vehicle_journey_code"],
                 right_on=["file_id", "vehicle_journey_code"],
@@ -284,8 +304,15 @@ class TransXChangeDataLoader:
                 columns=["exceptions_operational", "exceptions_date"], errors="ignore"
             )
         )
-        refined_operating_profiles_and_journeys.drop_duplicates(inplace=True)
-
+        refined_operating_profiles_and_journeys = (
+            refined_operating_profiles_and_journeys.reset_index().query(
+                "day_of_week != ''"
+            )
+        )
+        refined_operating_profiles_and_journeys.drop_duplicates(
+            subset=["vehicle_journey_code", "service_code", "file_id", "day_of_week"],
+            inplace=True,
+        )
         operating_profiles_objs = list(
             df_to_operating_profiles(refined_operating_profiles_and_journeys)
         )
@@ -335,7 +362,7 @@ class TransXChangeDataLoader:
     def load_operating_profiles_and_related_tables(self, vehicle_journeys):
         operating_profiles = self.transformed.operating_profiles
         if not operating_profiles.empty and not vehicle_journeys.empty:
-            operating_profiles.reset_index(inplace=True)
+            operating_profiles = operating_profiles.reset_index()
             vehicle_journeys = vehicle_journeys.rename(
                 columns={"service_code_vj": "service_code"}
             )
@@ -380,9 +407,8 @@ class TransXChangeDataLoader:
             and not serviced_organisations.empty
             and not operating_profiles.empty
         ):
-            vehicle_journeys.rename(
-                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"},
-                inplace=True,
+            df_vehicle_journeys = vehicle_journeys.rename(
+                columns={"id": "vehicle_journey_id", "service_code_vj": "service_code"}
             )
 
             serviced_organisations.rename(
@@ -416,7 +442,7 @@ class TransXChangeDataLoader:
 
             operating_profiles_serviced_orgs_vehicle_journeys_merged_df = pd.merge(
                 operating_profiles_serviced_orgs_merged_df,
-                vehicle_journeys[
+                df_vehicle_journeys[
                     [
                         "file_id",
                         "service_code",
