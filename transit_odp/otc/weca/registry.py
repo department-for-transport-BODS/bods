@@ -1,8 +1,9 @@
 from logging import getLogger
 
 import pandas as pd
+import numpy as np
 
-from transit_odp.otc.models import Service
+from transit_odp.otc.models import Service, Licence
 from transit_odp.otc.weca.client import APIResponse, WecaClient
 
 logger = getLogger(__name__)
@@ -71,12 +72,20 @@ class Registry:
         services_list = [service.model_dump() for service in self.data]
         self.services = pd.DataFrame(services_list)
 
+    def map_otc_licences(self) -> None:
+        licence_df = pd.DataFrame.from_records(Licence.objects.values("id", 'number'))
+        self.services = pd.merge(self.services, licence_df, left_on="licence", right_on="number", how="left")
+        self.services.drop(['id_x', 'number', 'licence'], inplace=True, axis=1)
+        self.services.rename(columns={"id_y" : "licence_id"}, inplace=True)
+        self.services.licence_id.replace({np.nan: None}, inplace=True)
+
     def process_services(self) -> None:
         """
         Fetch records from the weca api, and implement following
         1. Remove duplicate services and service name combination
         2. Merge the services based on service name seprated by pipe
         3. Ignore the services which belongs to OTC
+        4. Map licence to the ones present in database
         """
         self.fetch_all_records()
         self.convert_services_to_df()
@@ -89,3 +98,5 @@ class Registry:
             self.merge_service_numbers()
             logger.info("Ignoring OTC services present in WECA records.")
             self.ignore_otc_services()
+            logger.info("Map licences to database")
+            self.map_otc_licences()

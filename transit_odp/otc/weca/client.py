@@ -32,6 +32,7 @@ class DataModel(BaseModel):
     id: int
     registration_number: str = Field(alias="fullserialnumbe_trationrations")
     variation_number: int = Field(default=0)
+    licence: str = Field(alias="fullserialnumbe_trationrations")
     service_number: str = Field(alias="servicenumbers_icespt7a")
     start_point: str = Field(alias="startpoint_espt")
     finish_point: str = Field(alias="endpoint_sp")
@@ -50,6 +51,15 @@ class DataModel(BaseModel):
         parts = value.split("/")
         if len(parts) >= 2:
             return "/".join(parts[:2])
+        else:
+            return value
+    
+    @validator("licence")
+    def extract_licence(cls, value):
+        # Split the registration number by slashes and take the first parts
+        parts = value.split("/")
+        if len(parts) >= 1:
+            return parts[0]
         else:
             return value
 
