@@ -13,7 +13,6 @@ from transit_odp.data_quality.pti.constants import (
     OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
 )
-
 from transit_odp.naptan.models import StopPoint
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
@@ -313,6 +312,28 @@ def has_flexible_or_standard_service(context, services):
                 return False
 
 
+def check_inbound_outbound_description(context, services):
+    for service in services:
+        ns = {"x": service.nsmap.get(None)}
+        standard_service_list = service.xpath(
+            "x:Service/x:StandardService", namespaces=ns
+        )
+        if standard_service_list:
+            inbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:InboundDescription", namespaces=ns
+            )
+            outbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:OutboundDescription", namespaces=ns
+            )
+            if (
+                len(inbound_description_list) == 0
+                and len(outbound_description_list) == 0
+            ):
+                return False
+
+        return True
+
+
 def has_flexible_service_classification(context, services):
     """
     Check when file has detected a flexible service (includes
@@ -408,3 +429,23 @@ def get_stop_point_ref_list(stop_points, ns):
                 )
 
     return stop_point_ref_list
+
+
+def check_flexible_service_times(context, vehiclejourneys):
+    """
+    Check when FlexibleVehicleJourney is present, that FlexibleServiceTimes
+    is also present at least once. If not present at all, then return False.
+    """
+    ns = {"x": vehiclejourneys[0].nsmap.get(None)}
+    flexible_vehiclejourneys = vehiclejourneys[0].xpath(
+        "x:FlexibleVehicleJourney", namespaces=ns
+    )
+    if flexible_vehiclejourneys:
+        for flexible_journey in flexible_vehiclejourneys:
+            flexible_service_times = flexible_journey.xpath(
+                "x:FlexibleServiceTimes", namespaces=ns
+            )
+            if len(flexible_service_times) == 0:
+                return False
+
+            return True

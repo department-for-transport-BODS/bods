@@ -1,11 +1,12 @@
 import os
 from typing import Final
-from ddtrace import patch_all
+
+import environ
 from celery import Celery
 from celery.schedules import crontab
+from ddtrace import patch_all
 from django.apps import AppConfig, apps
 from django.conf import settings
-import environ
 
 patch_all()
 env = environ.Env()
@@ -120,7 +121,7 @@ class CeleryAppConfig(AppConfig):
             },
             "log_stuck_tasks": {
                 "task": TIMETABLE_TASKS + "task_log_stuck_revisions",
-                "schedule": crontab(minute=0, hour=18),
+                "schedule": crontab(minute=0, hour="*"),
             },
             "create_daily_api_stats": {
                 "task": ADMIN_TASKS + "task_create_daily_api_stats",
@@ -187,5 +188,9 @@ class CeleryAppConfig(AppConfig):
             "update_weca_data": {
                 "task": OTC_TASKS + "task_refresh_weca_data",
                 "schedule": crontab(minute=30, hour=23),
+            },
+            "yearly_task_load_bank_holidays": {
+                "task": TIMETABLE_TASKS + "task_load_bank_holidays",
+                "schedule": crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),
             },
         }
