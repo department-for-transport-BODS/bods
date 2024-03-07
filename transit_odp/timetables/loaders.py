@@ -512,8 +512,6 @@ class TransXChangeDataLoader:
         return service_links
 
     def load_service_patterns(self, services, revision):
-        pd.set_option("display.max_rows", 500)
-        pd.set_option("display.max_columns", 500)
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         service_patterns = self.transformed.service_patterns
         service_pattern_stops = self.transformed.service_pattern_stops
@@ -538,11 +536,10 @@ class TransXChangeDataLoader:
         if not created.empty:
             created = created.set_index("service_pattern_id")
 
-        print(f"createddf:::::::::::::{created.index.names}")
-        print(f"service patterns df:::::::::::{service_patterns.index.names}")
-        service_patterns = service_patterns.join(
-            created, on="service_pattern_id", how="inner"
-        )
+        if not service_patterns.empty:
+            service_patterns = service_patterns.join(
+                created, on="service_pattern_id", how="inner"
+            )
 
         # ADD ServicePattern Associations
 

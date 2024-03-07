@@ -710,7 +710,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         revision = self.revision
         self.assertEqual(3, revision.services.count())
         self.assertEqual(12, revision.service_patterns.count())
-        self.assertEqual(63, ServicePatternStop.objects.count())
+        self.assertEqual(55, ServicePatternStop.objects.count())
 
         # Note Localities and AdminArea have not yet been 'rolled up' on the
         # feed at this point but still should have been be created

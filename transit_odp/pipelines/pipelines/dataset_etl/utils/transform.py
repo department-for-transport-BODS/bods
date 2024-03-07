@@ -389,7 +389,7 @@ def merge_journey_pattern_with_vj_for_departure_time(
     )
     df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
     df_merged.set_index(index.names, inplace=True)
-    df_merged.dropna(subset=["departure_time", "line_name"], inplace=True)
+    df_merged.dropna(subset=["departure_time", "line_name"], how="all", inplace=True)
     return df_merged
 
 
@@ -459,12 +459,6 @@ def transform_service_patterns(journey_patterns, drop_duplicates_columns):
     service_patterns.dropna(subset=["route_hash"], inplace=True)
     # Create an id column for service_patterns. Note using the route_hash
     # won't result in the prettiest id
-    # if "line_name" in drop_duplicates_columns:
-    #     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
-    #         [service_patterns["route_hash"].astype(str), service_patterns["line_name"].astype(str)],
-    #         sep="-"
-    #     )
-    # else:
     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
         service_patterns["route_hash"].astype(str), sep="-"
     )

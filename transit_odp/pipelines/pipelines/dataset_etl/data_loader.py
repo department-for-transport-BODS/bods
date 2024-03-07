@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from celery.utils.log import get_task_logger
 from django.db.models import Q
+from collections import namedtuple
+
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines import exceptions
@@ -188,8 +190,10 @@ class DataLoader:
             )
         ).set_index("service_pattern_id")
 
-        service_patterns = service_patterns.join(created)
-
+        if not service_patterns.empty:
+            service_patterns = service_patterns.join(
+                created, on="service_pattern_id", how="inner"
+            )
         # ADD ServicePattern Associations
 
         # Add ServicePattern m2m ServiceLink
@@ -205,10 +209,12 @@ class DataLoader:
 
         # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
         # ServicePattern
-        self.add_service_pattern_to_localities_and_admin_area(service_patterns)
+        self.add_service_pattern_to_localities(service_patterns)
+        self.add_service_pattern_to_admin_area(service_patterns)
 
         # Add ServicePatterns to Service
-        self.add_service_associations(services, service_patterns)
+        if not service_patterns.empty:
+            self.add_service_associations(services, service_patterns)
 
         logger.info("[DataLoader] Finished load_service_patterns")
         return service_patterns
@@ -230,8 +236,57 @@ class DataLoader:
             right_on=["file_id", "service_code"],
             suffixes=["_service", "_service_pattern"],
         )
+        service_to_service_patterns.drop_duplicates(inplace=True)
 
         return through_model.objects.bulk_create(_inner(service_to_service_patterns))
+
+    @classmethod
+    def add_service_pattern_to_localities(cls, df: pd.DataFrame):
+        """Creates links between ServicePattern objects and Localitys.
+
+        Args:
+            dataframe: Pandas DataFrame containing an `id` and `localities`.
+
+        Returns:
+            None
+
+        """
+        logger.info("Adding service pattern to localities.")
+        Locality = namedtuple("Locality", "servicepattern_id,locality_id")
+        LocalityThrough = ServicePattern.localities.through
+        localities = []
+        for record in df.to_dict("records"):
+            for locality_id in record["localities"]:
+                if locality_id and locality_id != "None":
+                    localities.append(Locality(record["id"], locality_id))
+
+        localities = set(localities)
+        localities = [LocalityThrough(**locality._asdict()) for locality in localities]
+        LocalityThrough.objects.bulk_create(localities)
+
+    def add_service_pattern_to_admin_area(cls, df: pd.DataFrame):
+        """Creates links between ServicePattern objects and AdminAreas.
+
+        Args:
+            dataframe: Pandas DataFrame containing an `id` and `admin_area_codes`.
+
+        Returns:
+            None
+
+        """
+
+        logger.info("Adding service pattern to admin areas.")
+        AdminArea = namedtuple("AdminArea", "servicepattern_id,adminarea_id")
+        AdminAreaThrough = ServicePattern.admin_areas.through
+        areas = []
+        for record in df.to_dict("records"):
+            for area_id in record["admin_area_codes"]:
+                if area_id:
+                    areas.append(AdminArea(record["id"], area_id))
+
+        areas = set(areas)
+        areas = [AdminAreaThrough(**area._asdict()) for area in areas]
+        AdminAreaThrough.objects.bulk_create(areas)
 
     @classmethod
     def add_service_pattern_to_localities_and_admin_area(cls, df: pd.DataFrame):
