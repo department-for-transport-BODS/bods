@@ -166,12 +166,23 @@ class TransXChangeExtractor:
             flexible_journey_details
         )
 
+        flexible_journey_patterns = pd.DataFrame()
+        if not flexible_journey_details.empty:
+            flexible_journey_patterns = (
+                flexible_journey_details.reset_index()[
+                    ["file_id", "journey_pattern_id", "service_code", "direction"]
+                ]
+                .drop_duplicates(["file_id", "journey_pattern_id"])
+                .set_index(["file_id", "journey_pattern_id"])
+            )
+
         return ExtractedData(
             services=services,
             stop_points=stop_points,
             flexible_stop_points=flexible_stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
+            flexible_journey_patterns=flexible_journey_patterns,
             flexible_journey_details=flexible_journey_details,
             jp_to_jps=jp_to_jps,
             jp_sections=jp_sections,
@@ -390,6 +401,9 @@ class TransXChangeZipExtractor:
             ),
             journey_patterns=concat_and_dedupe(
                 (extract.journey_patterns for extract in extracts)
+            ),
+            flexible_journey_patterns=concat_and_dedupe(
+                (extract.flexible_journey_patterns for extract in extracts)
             ),
             flexible_journey_details=concat_and_dedupe(
                 (extract.flexible_journey_details for extract in extracts)

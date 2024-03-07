@@ -13,6 +13,7 @@ from django.test import TestCase
 from unittest.mock import patch, MagicMock
 
 
+from waffle.testutils import override_flag
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
 from transit_odp.organisation.constants import FeedStatus
@@ -23,7 +24,9 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
-from transit_odp.pipelines.pipelines.dataset_etl.transform import Transform
+from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
+    agg_service_pattern_sequences,
+)
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -135,6 +138,7 @@ class ExtractBaseTestCase(TestCase):
 
 
 @ddt
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractMetadataTestCase(ExtractBaseTestCase):
     test_file = "data/test_extract_metadata.xml"
 
@@ -286,7 +290,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 5))
+        self.assertEqual(extracted.timing_links.shape, (20, 8))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -295,6 +299,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_stop_ref",
                 "to_stop_ref",
                 "route_link_ref",
+                "is_timing_status",
+                "run_time",
+                "wait_time",
             ],
         )
         self.assertEqual(
@@ -829,7 +836,7 @@ class ExtractUtilitiesTestCase(TestCase):
 
         # Test
         actual = inputs.groupby(["file_id", "service_pattern_id"]).apply(
-            Transform.agg_service_pattern_sequences
+            agg_service_pattern_sequences
         )
 
         # Assert

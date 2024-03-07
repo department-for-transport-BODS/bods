@@ -561,7 +561,6 @@ def transform_flexible_service_pattern_to_service_links(flexible_service_pattern
     logger.info("Starting transform_flexible_service_pattern_to_service_links")
     drop_columns = ["departure_time", "is_timing_status", "run_time", "wait_time"]
     link_columns = flexible_service_patterns.columns
-    print(f"link_columns: {link_columns}")
     service_pattern_to_service_links = flexible_service_patterns.reset_index()
     service_pattern_to_service_links["departure_time"] = None
     service_pattern_to_service_links["is_timing_status"] = False

@@ -44,6 +44,7 @@ class TransXChangeTransformer:
     def transform(self) -> TransformedData:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
+        flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
         jp_sections = self.extracted_data.jp_sections.copy()
         timing_links = self.extracted_data.timing_links.copy()
@@ -86,17 +87,20 @@ class TransXChangeTransformer:
 
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
-        if not vehicle_journeys.empty and not journey_patterns.empty:
+        merged_journey_patterns = pd.concat(
+            [journey_patterns, flexible_journey_patterns]
+        )
+        if not vehicle_journeys.empty and not merged_journey_patterns.empty:
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
             )
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
 
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
-                vehicle_journeys, journey_patterns
+                vehicle_journeys, merged_journey_patterns
             )
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
-                vehicle_journeys.reset_index(), journey_patterns
+                vehicle_journeys.reset_index(), merged_journey_patterns
             )
 
         df_merged_serviced_organisations = pd.DataFrame()
