@@ -144,8 +144,6 @@ class ETLServicePatterns(ExtractBaseTestCase):
         # test
         transformed = self.feed_parser.transform(extracted)
 
-        print(f"transformed_service_patterns{transformed.service_patterns}")
-
         self.assertEqual(transformed.service_patterns.shape[0], 7)
 
         self.assertCountEqual(
@@ -154,8 +152,6 @@ class ETLServicePatterns(ExtractBaseTestCase):
         )
 
     def test_load_service_patterns(self):
-        pd.set_option("display.max_rows", None)  # Set to None for unlimited rows
-        pd.set_option("display.max_columns", None)
         # setup
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
