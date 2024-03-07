@@ -161,11 +161,11 @@
       "category": "Services and Lines",
       "service_type": "StandardService",
       "reference": "5.5.4",
-      "context": "//x:Line",
+      "context": "//x:Services",
       "number": 25,
       "rules": [
         {
-          "test": "count(x:OutboundDescription) = 1 or count(x:InboundDescription) = 1"
+          "test": "check_inbound_outbound_description(.)"
         }
       ]
     },
@@ -674,10 +674,10 @@
       "service_type": "FlexibleService",
       "reference": "10",
       "number": 124,
-      "context": "//x:VehicleJourneys/x:FlexibleVehicleJourney",
+      "context": "//x:VehicleJourneys",
       "rules": [
         {
-          "test": "count(x:FlexibleServiceTimes) > 0"
+          "test": "check_flexible_service_times(.)"
         }
       ]
     },
