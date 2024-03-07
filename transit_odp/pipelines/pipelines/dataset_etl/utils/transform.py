@@ -393,30 +393,6 @@ def merge_journey_pattern_with_vj_for_departure_time(
     return df_merged
 
 
-def merge_journey_pattern_with_vj_for_lines(vehicle_journeys, journey_patterns):
-    index = journey_patterns.index
-    df_merged = pd.merge(
-        journey_patterns.reset_index(),
-        vehicle_journeys[
-            [
-                "file_id",
-                "journey_pattern_ref",
-                "departure_time",
-                "line_name",
-                "outbound_description",
-                "inbound_description",
-            ]
-        ],
-        left_on=["file_id", "journey_pattern_id"],
-        right_on=["file_id", "journey_pattern_ref"],
-        how="left",
-        suffixes=("_vj", "_jp"),
-    )
-    df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
-    df_merged.set_index(index.names, inplace=True)
-    return df_merged
-
-
 def merge_serviced_organisations_with_operating_profile(
     serviced_organisations, operating_profiles
 ):
