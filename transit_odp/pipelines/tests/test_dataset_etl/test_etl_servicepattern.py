@@ -129,14 +129,13 @@ class ETLServicePatterns(ExtractBaseTestCase):
     def test_extract_lines(self):
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
 
-        self.assertEqual(extracted.operating_profiles.shape[0], 20)
+        self.assertEqual(extracted.lines.shape[0], 2)
 
         self.assertCountEqual(
             list(extracted.lines.columns),
             columns_lines,
         )
-
-        self.assertEqual(extracted.operating_profiles.index.names, ["file_id"])
+        self.assertEqual(extracted.lines.index.names, ["file_id"])
 
     def test_tranform_service_patterns(self):
         # setup
@@ -144,6 +143,8 @@ class ETLServicePatterns(ExtractBaseTestCase):
 
         # test
         transformed = self.feed_parser.transform(extracted)
+
+        print(f"transformed_service_patterns{transformed.service_patterns}")
 
         self.assertEqual(transformed.service_patterns.shape[0], 7)
 
@@ -153,6 +154,8 @@ class ETLServicePatterns(ExtractBaseTestCase):
         )
 
     def test_load_service_patterns(self):
+        pd.set_option("display.max_rows", None)  # Set to None for unlimited rows
+        pd.set_option("display.max_columns", None)
         # setup
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
         transformed = self.feed_parser.transform(extracted)
@@ -181,8 +184,10 @@ class ETLServicePatterns(ExtractBaseTestCase):
             & (service_patterns["line_name"] == "X6")
         ]
 
-        for row in filtered_rows_line_6.iterrows():
+        # Check description for line 6
+        for index, row in filtered_rows_line_6.iterrows():
             self.assertEqual(row["description"], expected_desc_line_6)
 
-        for row in filtered_rows_line_x6.iterrows():
+        # Check description for line X6
+        for index, row in filtered_rows_line_x6.iterrows():
             self.assertEqual(row["description"], expected_desc_line_x6)

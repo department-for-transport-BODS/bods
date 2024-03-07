@@ -19,14 +19,14 @@ from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
-is_timetable_visualiser_active = flag_is_active(
-            "", "is_timetable_visualiser_active"
-        )
 
 def services_to_dataframe(services):
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
     lines_list = []
+    is_timetable_visualiser_active = flag_is_active(
+        "", "is_timetable_visualiser_active"
+    )
     for service in services:
         service_code = service.get_element("ServiceCode").text
         start_date = service.get_element(["OperatingPeriod", "StartDate"]).text
@@ -36,11 +36,13 @@ def services_to_dataframe(services):
             end_date = end_date.text
         if is_timetable_visualiser_active:
             lines = service.get_elements(["Lines", "Line"])
-            line_names = [line.get_element(["LineName"]).text for line in lines]
+            line_names = [
+                line_name.get_element(["LineName"]).text for line_name in lines
+            ]
             lines_list.extend(populate_lines(lines))
         else:
             line_names = service.get_elements(["Lines", "Line", "LineName"])
-            line_names = [node.text for node in line_names]
+            line_names = [line_name.text for line_name in line_names]
         if len(line_names) < 1:
             raise MissingLines(service=service_code)
 

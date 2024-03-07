@@ -11,7 +11,7 @@ from django.contrib.gis.geos import Point
 from django.core.files import File
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
-
+from waffle.testutils import override_flag
 
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
@@ -43,6 +43,8 @@ from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 TZ = tz.gettz("Europe/London")
 EMPTY_TIMESTAMP = None
 
+
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractBaseTestCase(TestCase):
     test_file: str
     ignore_stops = []
@@ -283,7 +285,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 5))
+        self.assertEqual(extracted.timing_links.shape, (20, 8))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -292,6 +294,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_stop_ref",
                 "to_stop_ref",
                 "route_link_ref",
+                "is_timing_status",
+                "run_time",
+                "wait_time",
             ],
         )
         self.assertEqual(
@@ -517,6 +522,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "admin_area_codes",
                 "geometry",
                 "localities",
+                "line_name",
+                "description",
             ],
         )
         self.assertEqual(
@@ -764,6 +771,7 @@ class ExtractTxcNoRoutesTestCase(ExtractBaseTestCase):
         self.assertEqual("", result.bounding_box)
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractUtilitiesTestCase(TestCase):
     """TestCases for utility methods
 
@@ -831,6 +839,7 @@ class ExtractUtilitiesTestCase(TestCase):
 
 
 @ddt
+@override_flag("is_timetable_visualiser_active", active=True)
 class ETLBookingArrangements(ExtractBaseTestCase):
     """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
 
