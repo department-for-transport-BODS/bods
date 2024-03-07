@@ -193,9 +193,7 @@ class TransXChangeExtractor:
 
     def extract_services(self):
         try:
-            services_df, lines_df = services_to_dataframe(
-                self.doc.get_services()
-            )
+            services_df, lines_df = services_to_dataframe(self.doc.get_services())
         except MissingLines as err:
             message = (
                 f"Service (service_code=${err.service}) is missing "
