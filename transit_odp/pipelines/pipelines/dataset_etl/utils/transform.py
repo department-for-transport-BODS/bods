@@ -378,7 +378,7 @@ def merge_journey_pattern_with_vj_for_departure_time(
         columns_to_merge.extend(
             ["line_name", "outbound_description", "inbound_description"]
         )
-    
+
     df_merged = pd.merge(
         journey_patterns.reset_index(),
         vehicle_journeys[columns_to_merge],
@@ -459,15 +459,15 @@ def transform_service_patterns(journey_patterns, drop_duplicates_columns):
     service_patterns.dropna(subset=["route_hash"], inplace=True)
     # Create an id column for service_patterns. Note using the route_hash
     # won't result in the prettiest id
-    if "line_name" in drop_duplicates_columns:
-        service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
-            [service_patterns["route_hash"].astype(str), service_patterns["line_name"].astype(str)],
-            sep="-"
-        )
-    else:
-        service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
+    # if "line_name" in drop_duplicates_columns:
+    #     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
+    #         [service_patterns["route_hash"].astype(str), service_patterns["line_name"].astype(str)],
+    #         sep="-"
+    #     )
+    # else:
+    service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
         service_patterns["route_hash"].astype(str), sep="-"
-        )
+    )
     service_patterns.set_index(["file_id", "service_pattern_id"], inplace=True)
 
     return service_patterns

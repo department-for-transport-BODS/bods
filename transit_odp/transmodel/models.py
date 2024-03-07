@@ -68,8 +68,8 @@ class ServicePattern(models.Model):
     objects = ServicePatternManager()
 
     class Meta:
-        ordering = ("revision", "service_pattern_id")
-        unique_together = ("revision", "service_pattern_id")
+        ordering = ("revision", "service_pattern_id", "line_name")
+        unique_together = ("revision", "service_pattern_id", "line_name")
 
     def __str__(self):
         return f"{self.id}, {self.origin}, {self.destination}"
