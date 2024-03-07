@@ -159,9 +159,11 @@ class ETLServicePatterns(ExtractBaseTestCase):
         self.feed_parser.load(transformed)
 
         service_patterns = ServicePattern.objects.all()
+        service_service_patterns_through = ServicePattern.services.through.objects.all()
         # test
 
         self.assertEqual(7, service_patterns.count())
+        self.assertEqual(7, service_service_patterns_through.count())
 
     def test_correct_description_based_on_direction_and_line(self):
         extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
