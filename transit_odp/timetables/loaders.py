@@ -236,7 +236,6 @@ class TransXChangeDataLoader:
             existing_serviced_orgs_list = [
                 "".join(serviced_org) for serviced_org in existing_serviced_orgs_list
             ]
-            print(f"existing_serviced_orgs_list: {existing_serviced_orgs_list}")
 
             serviced_org_objs = list(
                 df_to_serviced_organisations(
@@ -280,8 +279,7 @@ class TransXChangeDataLoader:
                 how="inner",
                 suffixes=["_file", "_db"],
             )
-            print("df_merge_db_and_file_inputs")
-            print(df_merge_db_and_file_inputs.columns)
+
             return df_merge_db_and_file_inputs
         else:
             return pd.DataFrame()

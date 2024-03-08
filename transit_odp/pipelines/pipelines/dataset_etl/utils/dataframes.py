@@ -212,10 +212,11 @@ def df_to_flexible_service_operation_period(
             end_time=get_time_field_or_none(record["end_time"]),
         )
 
-
 def df_to_serviced_organisations(
     df: pd.DataFrame, existing_serviced_orgs_list: List[str]
 ) -> Iterator[ServicedOrganisations]:
+
+    """Compare the serviced organisation present in the DB with the uploaded file"""
 
     unique_org_codes = df.drop_duplicates(
         subset=["serviced_org_ref", "name"], keep="first"
