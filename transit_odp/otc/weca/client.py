@@ -53,7 +53,7 @@ class DataModel(BaseModel):
             return "/".join(parts[:2])
         else:
             return value
-    
+
     @validator("licence")
     def extract_licence(cls, value):
         # Split the registration number by slashes and take the first parts
