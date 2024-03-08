@@ -231,8 +231,11 @@ class TransXChangeDataLoader:
 
             existing_serviced_orgs = ServicedOrganisations.objects.all()
             existing_serviced_orgs_list = existing_serviced_orgs.values_list(
-                "name", "organisation_code")
-            existing_serviced_orgs_list = ["".join(serviced_org) for serviced_org in existing_serviced_orgs_list]
+                "name", "organisation_code"
+            )
+            existing_serviced_orgs_list = [
+                "".join(serviced_org) for serviced_org in existing_serviced_orgs_list
+            ]
             print(f"existing_serviced_orgs_list: {existing_serviced_orgs_list}")
 
             serviced_org_objs = list(
