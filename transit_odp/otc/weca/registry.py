@@ -74,12 +74,17 @@ class Registry:
 
     def map_otc_licences(self) -> None:
         licence_df = pd.DataFrame.from_records(Licence.objects.values("id", "number"))
-        self.services = pd.merge(
-            self.services, licence_df, left_on="licence", right_on="number", how="left"
-        )
-        self.services.drop(["id_x", "number", "licence"], inplace=True, axis=1)
-        self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
-        self.services.licence_id.replace({np.nan: None}, inplace=True)
+        if not licence_df.empty:
+            self.services = pd.merge(
+                self.services,
+                licence_df,
+                left_on="licence",
+                right_on="number",
+                how="left",
+            )
+            self.services.drop(["id_x", "number", "licence"], inplace=True, axis=1)
+            self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
+            self.services.licence_id.replace({np.nan: None}, inplace=True)
 
     def process_services(self) -> None:
         """

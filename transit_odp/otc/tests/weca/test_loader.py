@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 def get_weca_response():
     weca_data = APIResponse(**get_weca_data())
     services_list = [service.model_dump() for service in weca_data.data]
-    return pd.DataFrame(services_list)
+    return pd.DataFrame(services_list).drop(["licence"], axis=1)
 
 
 class MockRegistry:
