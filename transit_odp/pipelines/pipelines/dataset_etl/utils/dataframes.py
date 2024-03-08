@@ -213,12 +213,23 @@ def df_to_flexible_service_operation_period(
 
 
 def df_to_serviced_organisations(
-    df: pd.DataFrame, existing_serviced_orgs
+    df: pd.DataFrame, existing_serviced_orgs: pd.DataFrame
 ) -> Iterator[ServicedOrganisations]:
-    unique_org_codes = df.drop_duplicates(subset="serviced_org_ref", keep="first")
+    print("My print line")
+    print(f"existing_serviced_orgs: {existing_serviced_orgs}")
+    
+    unique_org_codes = df.drop_duplicates(subset=["serviced_org_ref", "name"], keep="first")
+    serviced_org_records = unique_org_codes.merge(existing_serviced_orgs, on=['name', 'serviced_org_ref'], how='left', indicator=True)\
+            .loc[lambda x: x['_merge'] == 'left_only'].drop(columns=['_merge'])
+
+    '''
     serviced_org_records = unique_org_codes[
-        ~unique_org_codes["serviced_org_ref"].isin(existing_serviced_orgs)
+        ~( 
+            (unique_org_codes["name"] == existing_serviced_orgs["name"])
+        )
     ]
+    '''
+    print(serviced_org_records)
 
     for record in serviced_org_records.to_dict("records"):
         yield ServicedOrganisations(

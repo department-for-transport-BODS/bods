@@ -264,11 +264,9 @@ class ServicedOrganisationVehicleJourney(models.Model):
 
 class ServicedOrganisations(models.Model):
     organisation_code = models.CharField(
-        max_length=255, null=True, blank=True, unique=True
+        max_length=255, null=True, blank=True
     )
     name = models.CharField(max_length=255, null=True, blank=True)
-
-
 class ServicedOrganisationWorkingDays(models.Model):
     serviced_organisation = models.ForeignKey(
         ServicedOrganisations,

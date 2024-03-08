@@ -231,12 +231,20 @@ class TransXChangeDataLoader:
 
             existing_serviced_orgs = ServicedOrganisations.objects.all()
             existing_serviced_orgs_list = existing_serviced_orgs.values_list(
-                "organisation_code", flat=True
+                "name", "organisation_code")
+            existing_serviced_orgs_list = ["".join(serviced_org) for serviced_org in existing_serviced_orgs_list]
+            print(f"existing_serviced_orgs_list: {existing_serviced_orgs_list}")
+
+            
+            df_existing_serviced_orgs = pd.DataFrame(list(existing_serviced_orgs_list),
+                                                     columns=["name", "serviced_org_ref"])
+            df_existing_serviced_orgs.rename(
+                columns={"organisation_code": "serviced_org_ref"}, inplace=True
             )
 
             serviced_org_objs = list(
                 df_to_serviced_organisations(
-                    df_serviced_organisations, existing_serviced_orgs_list
+                    df_serviced_organisations, df_existing_serviced_orgs
                 )
             )
 
@@ -272,10 +280,12 @@ class TransXChangeDataLoader:
             df_merge_db_and_file_inputs = pd.merge(
                 df_serviced_organisations,
                 df_merged_serviced_orgs,
-                on="serviced_org_ref",
+                on=["serviced_org_ref", "name"],
                 how="inner",
                 suffixes=["_file", "_db"],
             )
+            print("df_merge_db_and_file_inputs")
+            print(df_merge_db_and_file_inputs.columns)
             return df_merge_db_and_file_inputs
         else:
             return pd.DataFrame()
@@ -284,8 +294,6 @@ class TransXChangeDataLoader:
         columns_to_drop = [
             "file_id",
             "serviced_org_ref",
-            "name_file",
-            "name_db",
             "operational",
         ]
         columns_to_drop_duplicates = ["id", "start_date", "end_date"]
