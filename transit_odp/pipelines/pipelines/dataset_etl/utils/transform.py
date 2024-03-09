@@ -13,17 +13,9 @@ logger = get_task_logger(__name__)
 
 
 def transform_geometry(df: pd.DataFrame):
-    def get_geometry(row):
-        if row.bus_stop_type == "flexible" and hasattr(row, "flexible_location"):
-            return row.flexible_location
-        else:
-            return (
-                [row.geometry] if not isinstance(row.geometry, list) else row.geometry
-            )
-
-    df["geometry"] = df.apply(get_geometry, axis=1)
-    if "flexible_location" in df.columns:
-        df.drop(["flexible_location"], axis=1, inplace=True)
+    df["flexible_location"] = df["flexible_location"].fillna(df["geometry"])
+    df.drop(["geometry"], axis=1, inplace=True)
+    df.rename(columns={"flexible_location": "geometry"}, inplace=True)
     return df
 
 
@@ -186,7 +178,9 @@ def transform_flexible_stop_sequence(service_pattern_stops, service_patterns):
     )
     service_patterns = service_patterns.join(sequence)
     service_patterns = service_patterns.where(service_patterns.notnull(), None)
-
+    service_patterns.reset_index(inplace=True)
+    service_patterns.drop_duplicates(["file_id", "service_pattern_id"], inplace=True)
+    service_patterns.set_index(["file_id", "service_pattern_id", "order"], inplace=True)
     return service_patterns
 
 
@@ -303,6 +297,20 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
         return pd.DataFrame()
 
     return routes
+
+
+def create_flexible_routes(flexible_journey_patterns):
+    df = flexible_journey_patterns.reset_index()
+    grouped_df = (
+        df.groupby(["file_id", "journey_pattern_id"])
+        .apply(lambda x: pd.Series({"route_hash": uuid.uuid4()}))
+        .reset_index()
+    )
+    merged_df = pd.merge(
+        df, grouped_df, on=["file_id", "journey_pattern_id"], how="left"
+    )
+    merged_df.set_index(["file_id", "journey_pattern_id"], inplace=True)
+    return merged_df
 
 
 def create_hash(s: pd.Series):
@@ -560,7 +568,6 @@ def transform_service_pattern_to_service_links(
 def transform_flexible_service_pattern_to_service_links(flexible_service_patterns):
     logger.info("Starting transform_flexible_service_pattern_to_service_links")
     drop_columns = ["departure_time", "is_timing_status", "run_time", "wait_time"]
-    link_columns = flexible_service_patterns.columns
     service_pattern_to_service_links = flexible_service_patterns.reset_index()
     service_pattern_to_service_links["departure_time"] = None
     service_pattern_to_service_links["is_timing_status"] = False
@@ -576,7 +583,7 @@ def transform_flexible_service_patterns(flexible_timing_links):
     flexible_service_patterns = flexible_timing_links.reset_index()
     flexible_service_patterns["service_pattern_id"] = flexible_service_patterns[
         "service_code"
-    ].apply(lambda row: str(row) + "-" + str(uuid.uuid4()))
+    ].str.cat(flexible_service_patterns["route_hash"].astype(str), sep="-")
     flexible_service_patterns = flexible_service_patterns[
         [
             "file_id",
@@ -586,5 +593,18 @@ def transform_flexible_service_patterns(flexible_timing_links):
             "from_stop_atco",
             "to_stop_atco",
         ]
-    ].set_index(["file_id", "service_pattern_id", "order"])
+    ]
+    flexible_service_patterns.set_index(
+        ["file_id", "service_pattern_id", "order"], inplace=True
+    )
     return flexible_service_patterns
+
+
+def merge_flexible_jd_with_jp(flexible_journey_details, flexible_journey_patterns):
+    jouenry_details = flexible_journey_details.reset_index()
+    journey_patterns = flexible_journey_patterns.reset_index()
+    journey_patterns = journey_patterns[["file_id", "journey_pattern_id", "route_hash"]]
+    jouenry_details = jouenry_details.merge(
+        journey_patterns, how="left", on=["file_id", "journey_pattern_id"]
+    )
+    return jouenry_details

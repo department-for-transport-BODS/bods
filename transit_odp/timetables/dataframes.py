@@ -365,10 +365,8 @@ def journey_pattern_sections_to_dataframe(sections):
     return timing_links
 
 
-def vehicle_journeys_to_dataframe(
-    standard_vehicle_journeys, flexible_vechicle_journeys
-):
-    all_vechicle_journeys = []
+def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
+    all_vehicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
             departure_time = vehicle_journey.get_element(["DepartureTime"]).text
@@ -413,7 +411,7 @@ def vehicle_journeys_to_dataframe(
                     else:
                         run_time = pd.NaT
 
-                    all_vechicle_journeys.append(
+                    all_vehicle_journeys.append(
                         {
                             "service_code": service_ref,
                             "departure_time": departure_time,
@@ -430,7 +428,7 @@ def vehicle_journeys_to_dataframe(
                     )
 
             else:
-                all_vechicle_journeys.append(
+                all_vehicle_journeys.append(
                     {
                         "service_code": service_ref,
                         "departure_time": departure_time,
@@ -446,6 +444,11 @@ def vehicle_journeys_to_dataframe(
                     }
                 )
 
+    return pd.DataFrame(all_vehicle_journeys)
+
+
+def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
+    all_vehicle_journeys = []
     if flexible_vechicle_journeys is not None:
         for vehicle_journey in flexible_vechicle_journeys:
             line_ref = vehicle_journey.get_element(["LineRef"]).text
@@ -457,7 +460,7 @@ def vehicle_journeys_to_dataframe(
             ).text
             service_ref = vehicle_journey.get_element(["ServiceRef"]).text
 
-            all_vechicle_journeys.append(
+            all_vehicle_journeys.append(
                 {
                     "service_code": service_ref,
                     "departure_time": None,
@@ -471,7 +474,7 @@ def vehicle_journeys_to_dataframe(
                 }
             )
 
-    return pd.DataFrame(all_vechicle_journeys)
+    return pd.DataFrame(all_vehicle_journeys)
 
 
 def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):

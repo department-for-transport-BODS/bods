@@ -129,7 +129,7 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
         extracted = self.trans_xchange_extractor.extract()
         file_id = self.trans_xchange_extractor.file_id
 
-        vehicle_journey_expected = pd.DataFrame(
+        flexible_vehicle_journey_expected = pd.DataFrame(
             [
                 {
                     "file_id": file_id,
@@ -145,9 +145,15 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
                 }
             ]
         ).set_index("file_id")
+        vehicle_journey_expected = pd.DataFrame()
 
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
+        )
+        self.assertTrue(
+            check_frame_equal(
+                extracted.flexible_vehicle_journeys, flexible_vehicle_journey_expected
+            )
         )
 
         self.assertCountEqual(
@@ -230,6 +236,11 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
                 },
+            ]
+        ).set_index("file_id")
+
+        flexible_vehicle_journey_expected = pd.DataFrame(
+            [
                 {
                     "file_id": file_id,
                     "service_code": "PB0002032:467",
@@ -259,6 +270,11 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
 
         self.assertTrue(
             check_frame_equal(extracted.vehicle_journeys, vehicle_journey_expected)
+        )
+        self.assertTrue(
+            check_frame_equal(
+                extracted.flexible_vehicle_journeys, flexible_vehicle_journey_expected
+            )
         )
 
         self.assertCountEqual(

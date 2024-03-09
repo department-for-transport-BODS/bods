@@ -119,6 +119,16 @@ class ExtractBaseTestCase(TestCase):
                     )
                     stoppoint.save()
 
+        xml_provisional_stoppointrefs = xml_toolkit.get_elements(
+            self.doc.getroot(), "/x:TransXChange/x:StopPoints/x:StopPoint"
+        )
+        # insert locality for provisional stops
+        for provisional_stop in xml_provisional_stoppointrefs:
+            locality_ref = xml_toolkit.get_child_text(
+                provisional_stop, "x:Place/x:NptgLocalityRef"
+            )
+            self.get_locality(name=locality_ref)
+
     # Get or create a locality by name
     def get_locality(self, name: str):
         try:

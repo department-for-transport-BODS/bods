@@ -14,6 +14,7 @@ class ExtractedData(object):
     journey_patterns: pd.DataFrame
     flexible_journey_patterns: pd.DataFrame
     flexible_journey_details: pd.DataFrame
+    flexible_vehicle_journeys: pd.DataFrame
     jp_to_jps: pd.DataFrame
     jp_sections: pd.DataFrame
     timing_links: pd.DataFrame

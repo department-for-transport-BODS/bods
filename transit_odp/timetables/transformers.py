@@ -32,6 +32,8 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     transform_flexible_stop_sequence,
     transform_flexible_service_patterns,
     transform_flexible_service_pattern_to_service_links,
+    create_flexible_routes,
+    merge_flexible_jd_with_jp,
 )
 from transit_odp.transmodel.models import StopPoint, FlexibleZone
 
@@ -45,6 +47,7 @@ class TransXChangeTransformer:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
+        flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
         jp_sections = self.extracted_data.jp_sections.copy()
         timing_links = self.extracted_data.timing_links.copy()
@@ -87,20 +90,18 @@ class TransXChangeTransformer:
 
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
-        merged_journey_patterns = pd.concat(
-            [journey_patterns, flexible_journey_patterns]
-        )
-        if not vehicle_journeys.empty and not merged_journey_patterns.empty:
+
+        if not vehicle_journeys.empty and not journey_patterns.empty:
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
             )
             vehicle_journeys = get_vehicle_journey_without_timing_refs(vehicle_journeys)
 
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
-                vehicle_journeys, merged_journey_patterns
+                vehicle_journeys, journey_patterns
             )
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
-                vehicle_journeys.reset_index(), merged_journey_patterns
+                vehicle_journeys.reset_index(), journey_patterns
             )
 
         df_merged_serviced_organisations = pd.DataFrame()
@@ -156,9 +157,10 @@ class TransXChangeTransformer:
 
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
-            # 2. extract flexible zone data
+            # sync flexible stops with flexible zone
             flexible_zone = self.sync_flexible_zone(flexible_stop_points)
-            # 3. merge the flexible stop points and flexible zone to get the required geometry
+
+            # merge the flexible stop points and flexible zone to get the required geometry
             flexible_stop_points_with_geometry = (
                 (
                     flexible_stop_points.merge(
@@ -171,72 +173,104 @@ class TransXChangeTransformer:
                 if not flexible_zone.empty
                 else flexible_stop_points
             )
+            # get the required geometry for flexible stops
             flexible_stop_points_with_geometry = transform_geometry(
                 flexible_stop_points_with_geometry
             )
-
-            # creating flexible jp sections and jp to jps mapping
-            if not flexible_journey_details.empty:
-                # creating flexible timing link
-                flexible_timing_links = self.create_flexible_timing_link(
-                    flexible_journey_details
+            if not flexible_journey_patterns.empty:
+                # create unique route hash for flexible jp
+                flexible_journey_patterns = create_flexible_routes(
+                    flexible_journey_patterns
                 )
 
-                # 7. create flexible service link
-                if not flexible_timing_links.empty:
-                    flexible_service_links = transform_service_links(
-                        flexible_timing_links
+                df_merged_flexible_vehicle_journeys = pd.DataFrame()
+
+                if not flexible_vehicle_journeys.empty:
+                    flexible_vehicle_journeys.drop(
+                        columns=["service_code"], axis=1, inplace=True
                     )
-                # 8. create flexible service_patterns and service_patterns_stops
-                flexible_service_patterns = pd.DataFrame()
-                flexible_service_pattern_stops = pd.DataFrame()
-                if not flexible_timing_links.empty:
-                    # 1. create service_pattern_id in flexible_timing_links
-                    flexible_service_patterns = transform_flexible_service_patterns(
-                        flexible_timing_links
+                    flexible_vehicle_journeys.reset_index().set_index(
+                        ["file_id", "journey_pattern_ref"], inplace=True
+                    )
+                    df_merged_flexible_vehicle_journeys = (
+                        merge_vehicle_journeys_with_jp(
+                            flexible_vehicle_journeys, flexible_journey_patterns
+                        )
                     )
 
-                    (
-                        flexible_service_pattern_to_service_links,
-                        drop_columns,
-                    ) = transform_flexible_service_pattern_to_service_links(
-                        flexible_service_patterns
+                if not flexible_journey_details.empty:
+                    flexible_journey_details = merge_flexible_jd_with_jp(
+                        flexible_journey_details, flexible_journey_patterns
+                    )
+                    # create flexible timing link
+                    flexible_timing_links = self.create_flexible_timing_link(
+                        flexible_journey_details
                     )
 
-                    flexible_service_pattern_stops = transform_service_pattern_stops(
-                        flexible_service_pattern_to_service_links,
-                        flexible_stop_points_with_geometry,
-                    )
+                    # create flexible service link
+                    if not flexible_timing_links.empty:
+                        flexible_service_links = transform_service_links(
+                            flexible_timing_links
+                        )
 
-                    flexible_service_patterns = transform_flexible_stop_sequence(
-                        flexible_service_pattern_stops, flexible_service_patterns
-                    )
+                        flexible_service_patterns = pd.DataFrame()
+                        flexible_service_pattern_stops = pd.DataFrame()
+                        # create flexible service_patterns and service_patterns_stops/
+                        flexible_service_patterns = transform_flexible_service_patterns(
+                            flexible_timing_links
+                        )
 
-                    flexible_service_pattern_to_service_links.drop(
-                        columns=drop_columns, axis=1, inplace=True
-                    )
-
-                    # merge the required dataframes for standard and flexible
-                    service_links = pd.concat([service_links, flexible_service_links])
-                    service_pattern_to_service_links = pd.concat(
-                        [
-                            service_pattern_to_service_links,
+                        (
                             flexible_service_pattern_to_service_links,
-                        ]
-                    )
-                    service_patterns = pd.concat(
-                        [service_patterns, flexible_service_patterns]
-                    )
-                    service_pattern_stops = pd.concat(
-                        [
-                            service_pattern_stops,
-                            flexible_service_pattern_stops,
-                        ]
-                    )
-                    service_pattern_stops.dropna(
-                        subset=["stop_atco", "geometry"], inplace=True
-                    )
+                            drop_columns,
+                        ) = transform_flexible_service_pattern_to_service_links(
+                            flexible_service_patterns
+                        )
 
+                        flexible_service_pattern_stops = (
+                            transform_service_pattern_stops(
+                                flexible_service_pattern_to_service_links,
+                                flexible_stop_points_with_geometry,
+                            )
+                        )
+
+                        flexible_service_patterns = transform_flexible_stop_sequence(
+                            flexible_service_pattern_stops, flexible_service_patterns
+                        )
+
+                        flexible_service_pattern_to_service_links.drop(
+                            columns=drop_columns, axis=1, inplace=True
+                        )
+
+                        # merge the required dataframes for standard and flexible
+                        service_links = pd.concat(
+                            [service_links, flexible_service_links]
+                        )
+                        service_pattern_to_service_links = pd.concat(
+                            [
+                                service_pattern_to_service_links,
+                                flexible_service_pattern_to_service_links,
+                            ]
+                        )
+                        service_patterns = pd.concat(
+                            [service_patterns, flexible_service_patterns]
+                        )
+                        service_pattern_stops = pd.concat(
+                            [
+                                service_pattern_stops,
+                                flexible_service_pattern_stops,
+                            ]
+                        )
+                        service_pattern_stops.dropna(
+                            subset=["stop_atco", "geometry"], inplace=True
+                        )
+
+                        df_merged_vehicle_journeys = pd.concat(
+                            [
+                                df_merged_flexible_vehicle_journeys,
+                                df_merged_vehicle_journeys,
+                            ]
+                        )
         return TransformedData(
             services=services,
             service_patterns=service_patterns,
@@ -393,6 +427,7 @@ class TransXChangeTransformer:
                     "to_stop_atco",
                     "journey_pattern_id",
                     "service_code",
+                    "route_hash",
                 ]
             ].set_index(["file_id", "journey_pattern_id"])
             return flexible_timing_links

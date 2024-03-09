@@ -29,6 +29,7 @@ def test_transform_geometry():
     )
 
     df = transform_geometry(input_dataframe)
-    df_fixed_flexible = df[df["bus_stop_type"] == "fixed_flexible"]
     assert len(df) == 3
-    assert isinstance(df_fixed_flexible.iloc[0]["geometry"], list)
+    for column in df.columns:
+        assert column in ["bus_stop_type", "geometry"]
+        assert column not in ["flexible_location"]
