@@ -225,6 +225,9 @@ class TransXChangeDataLoader:
             )
 
     def load_serviced_organisation(self):
+
+        """Load the serviced organistion in the database"""
+
         df_serviced_organisations = self.transformed.serviced_organisations
         if not df_serviced_organisations.empty:
             df_serviced_organisations.reset_index(inplace=True)
