@@ -1,9 +1,11 @@
 import datetime
+import random
 from typing import List
 
 import factory
 import factory.fuzzy
 from django.utils import timezone
+from factory.django import DjangoModelFactory
 
 from transit_odp.otc.constants import (
     LicenceDescription,
@@ -12,11 +14,11 @@ from transit_odp.otc.constants import (
     TrafficAreas,
 )
 from transit_odp.otc.dataclasses import Licence, Operator, Registration, Service
-from transit_odp.otc.models import Licence as LicenceModel, UILta
+from transit_odp.otc.models import Licence as LicenceModel
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
-from factory.django import DjangoModelFactory
+from transit_odp.otc.models import UILta
 
 TODAY = datetime.date.today()
 NOW = timezone.now()
@@ -127,6 +129,31 @@ class ServiceFactory(factory.Factory):
     subsidies_description = factory.fuzzy.FuzzyChoice(SubsidiesDescription.values)
     subsidies_details = factory.Faker("sentence")
     last_modified = factory.fuzzy.FuzzyDateTime(start_dt=RECENT)
+
+
+class CustomRegistrationNumberFaker(factory.Faker):
+    @classmethod
+    def registration_number(self):
+        prefix = "PH"
+        number1 = str(random.randint(0, 9999999)).zfill(7)
+        separator = "/"
+        number2 = str(random.randint(0, 9999999)).zfill(8)
+        return f"{prefix}{number1}{separator}{number2}"
+
+
+class WecaServiceFactory(DjangoModelFactory, factory.Factory):
+    class Meta:
+        model = ServiceModel
+
+    registration_number = CustomRegistrationNumberFaker.registration_number()
+    variation_number = 0
+    service_number = factory.Sequence(lambda n: str(n))
+    start_point = factory.Faker("street_name")
+    finish_point = factory.Faker("street_name")
+    via = factory.Faker("sentence")
+    effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
+    api_type = "WECA"
+    atco_code = f"{factory.fuzzy.FuzzyInteger(high=999, low=100)}"
 
 
 class UILtaFactory(factory.django.DjangoModelFactory):

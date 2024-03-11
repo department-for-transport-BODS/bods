@@ -1,0 +1,168 @@
+{
+  "fields": [
+    {
+      "id": "servicespt7_pk",
+      "name": "ID:c1) Services",
+      "desc": "Unique record identifier",
+      "datatype": "BIGSERIAL"
+    },
+    {
+      "id": "fullserialnumbe_trationrations",
+      "name": "Serial Number",
+      "desc": "{b1.0) new registrations.serial number} ||\n chr(47) ||\n coalesce(\n  max(\n    {b2.0) change or cancellation registration.variation number}\n  ),\n  0\n)",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "operatorname_torspt7a",
+      "name": "Operator Name",
+      "desc": "Name in which the PSV operator’s licence or community bus permit is held",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "tradingas_rspt",
+      "name": "Trading As",
+      "desc": "",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "servicenumbers_icespt7a",
+      "name": "Service numbers or names",
+      "desc": "",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "startpoint_espt",
+      "name": "Full address of service start point and NaPTAN",
+      "desc": "",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "endpoint_sp",
+      "name": "Full address of service finish point and NaPTAN",
+      "desc": "",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "via_services_pt7atfu9e78z39yqc",
+      "name": "Main points served on route (via)",
+      "desc": "",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "type_slvi",
+      "name": "Type Of Service",
+      "desc": "\ncase\nwhen {c1) services.flexible bus service?} then 'Flexible'\nelse substring(\n{c1) services.type of service}\nfrom\n4\n)\nend",
+      "datatype": "VARCHAR"
+    },
+    {
+      "id": "proposedstartda_rviceslvicespt",
+      "name": "Proposed Start Date",
+      "desc": "coalesce({most recent start date from change registration.most recent start date}, {c1) services.proposed start date})",
+      "datatype": "TIMESTAMP"
+    },
+    {
+      "id": "enddate_sp",
+      "name": "Proposed End Date (if applicable)",
+      "desc": "",
+      "datatype": "TIMESTAMP"
+    },
+    {
+      "id": "qualifyingepser_rviceslvicespt",
+      "name": "Qualifying EP Services",
+      "desc": "substring(\n{c1) services.qualifying ep service(s)}\nfrom\n4\n)",
+      "datatype": "VARCHAR"
+    }
+  ],
+  "data": [
+    {
+      "id": 554,
+      "servicespt7_pk": "554",
+      "fullserialnumbe_trationrations": "PH0006633/01010001/5",
+      "operatorname_torspt7a": "Bath Bus Company Limited",
+      "tradingas_rspt": "BATH BUS COMPANY & CITY SIGHTSEEING, Navigatours",
+      "servicenumbers_icespt7a": "Excursion",
+      "startpoint_espt": "BATH High Street",
+      "endpoint_sp": "CIRCULAR",
+      "via_services_pt7atfu9e78z39yqc": "QUEEN SQUARE",
+      "type_slvi": "Excursion or Tour",
+      "proposedstartda_rviceslvicespt": "05 Sep 2010",
+      "enddate_sp": "",
+      "qualifyingepser_rviceslvicespt": "Yes"
+    },
+    {
+      "id": 552,
+      "servicespt7_pk": "552",
+      "fullserialnumbe_trationrations": "PH0006347/01010016/0",
+      "operatorname_torspt7a": "John Letts",
+      "tradingas_rspt": "The Big Red Bus",
+      "servicenumbers_icespt7a": "Arctangent Shuttle",
+      "startpoint_espt": "Bristol, Temple Meads Train Station",
+      "endpoint_sp": "Fernhill Farm",
+      "via_services_pt7atfu9e78z39yqc": "Bristol Airport",
+      "type_slvi": "Limited Stops",
+      "proposedstartda_rviceslvicespt": "20 Aug 2015",
+      "enddate_sp": "",
+      "qualifyingepser_rviceslvicespt": "No"
+    },
+    {
+      "id": 524,
+      "servicespt7_pk": "524",
+      "fullserialnumbe_trationrations": "PH0004893/01010031/6",
+      "operatorname_torspt7a": "J N Baker Ltd",
+      "tradingas_rspt": "Bakers Dolphin Coach Travel",
+      "servicenumbers_icespt7a": "Churchill W",
+      "startpoint_espt": "Weston-super-Mare, Bristol House",
+      "endpoint_sp": "Churchill Community School",
+      "via_services_pt7atfu9e78z39yqc": "Worle",
+      "type_slvi": "School or works service",
+      "proposedstartda_rviceslvicespt": "05 Jan 2022",
+      "enddate_sp": "",
+      "qualifyingepser_rviceslvicespt": "No"
+    },
+    {
+      "id": 602,
+      "servicespt7_pk": "602",
+      "fullserialnumbe_trationrations": "PH0004893/01010031/6",
+      "operatorname_torspt7a": "J N Baker Ltd",
+      "tradingas_rspt": "Bakers Dolphin Coach Travel",
+      "servicenumbers_icespt7a": "Churchill W",
+      "startpoint_espt": "Weston-super-Mare, Holm Road",
+      "endpoint_sp": "Churchill Community School",
+      "via_services_pt7atfu9e78z39yqc": "Hutton, Locking",
+      "type_slvi": "School or works service",
+      "proposedstartda_rviceslvicespt": "05 Jan 2022",
+      "enddate_sp": "",
+      "qualifyingepser_rviceslvicespt": "No"
+    },
+    {
+      "id": 601,
+      "servicespt7_pk": "601",
+      "fullserialnumbe_trationrations": "PH0004893/01010031/6",
+      "operatorname_torspt7a": "J N Baker Ltd",
+      "tradingas_rspt": "Bakers Dolphin Coach Travel",
+      "servicenumbers_icespt7a": "Churchill W",
+      "startpoint_espt": "Weston-super-Mare, Beechmont Close",
+      "endpoint_sp": "Churchill Community School",
+      "via_services_pt7atfu9e78z39yqc": "Locking",
+      "type_slvi": "School or works service",
+      "proposedstartda_rviceslvicespt": "05 Jan 2022",
+      "enddate_sp": "",
+      "qualifyingepser_rviceslvicespt": "No"
+    },
+    {
+      "id": 600,
+      "servicespt7_pk": "600",
+      "fullserialnumbe_trationrations": "PH0004893/01010031/6",
+      "operatorname_torspt7a": "J N Baker Ltd",
+      "tradingas_rspt": "Bakers Dolphin Coach Travel",
+      "servicenumbers_icespt7a": "Churchill W",
+      "startpoint_espt": "Weston-super-Mare, Weston College",
+      "endpoint_sp": "Churchill Community School",
+      "via_services_pt7atfu9e78z39yqc": "Milton, Locking",
+      "type_slvi": "School or works service",
+      "proposedstartda_rviceslvicespt": "05 Jan 2022",
+      "enddate_sp": "",
+      "qualifyingepser_rviceslvicespt": "No"
+    }
+  ]
+}
