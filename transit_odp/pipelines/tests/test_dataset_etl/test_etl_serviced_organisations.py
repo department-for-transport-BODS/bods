@@ -120,7 +120,7 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
-        self.assertEqual(14, transformed.serviced_organisations.shape[0])
+        self.assertEqual(22, transformed.serviced_organisations.shape[0])
 
         self.assertCountEqual(
             list(transformed.serviced_organisations.columns),
@@ -137,10 +137,11 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
         serviced_orgs = ServicedOrganisations.objects.all()
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
-        self.assertEqual(1, serviced_orgs.count())
-        self.assertEqual(7, serviced_org_working_days.count())
-        for serviced_org in serviced_orgs:
-            self.assertEqual(serviced_org.name, "NYCC Schools")
+        self.assertEqual(2, serviced_orgs.count())
+        self.assertEqual(11, serviced_org_working_days.count())
+
+        serviced_org_names = [serviced_org.name for serviced_org in serviced_orgs]
+        self.assertEqual(serviced_org_names, ["NYCC Schools", "NYCC SCHOOLS"])
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
