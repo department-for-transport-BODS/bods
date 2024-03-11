@@ -77,8 +77,38 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
                     "start_date": "2023-06-04",
                     "end_date": "2023-07-25",
                 },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-02-03",
+                    "end_date": "2023-03-10",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-03-19",
+                    "end_date": "2023-03-31",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-04-16",
+                    "end_date": "2023-05-26",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-06-04",
+                    "end_date": "2023-07-25",
+                },
             ]
         ).set_index("file_id")
+
+        print(extracted.serviced_organisations)
 
         self.assertTrue(
             check_frame_equal(
@@ -159,7 +189,7 @@ class ETLServicedOrganisationsWithOrgInDB(ExtractBaseTestCase):
         serviced_orgs = ServicedOrganisations.objects.all()
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
-        self.assertEqual(2, serviced_orgs.count())
+        self.assertEqual(3, serviced_orgs.count())
         self.assertEqual(14, serviced_org_working_days.count())
 
 
@@ -424,4 +454,4 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
         )
 
         # test
-        self.assertEqual(40, serviced_orgs_vehicle_journeys.count())
+        self.assertEqual(80, serviced_orgs_vehicle_journeys.count())
