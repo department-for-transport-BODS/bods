@@ -50,11 +50,14 @@ class Operator(models.Model):
 
 
 class Service(models.Model):
+    # Operator made nullable for weca services import, we don't have operator details
     operator = models.ForeignKey(
-        Operator, related_name="services", on_delete=models.CASCADE
+        Operator, related_name="services", on_delete=models.CASCADE, null=True
     )
+    # Licence made nullable for weca import, we are not able to create new licences
+    # in case licence is not available in database (Which is rarest of rare) we will leave it null
     licence = models.ForeignKey(
-        Licence, related_name="services", on_delete=models.CASCADE
+        Licence, related_name="services", on_delete=models.CASCADE, null=True
     )
     registration_number = models.CharField(max_length=20, blank=False, null=False)
     variation_number = models.IntegerField(blank=False, null=False)
@@ -82,6 +85,8 @@ class Service(models.Model):
     )
     subsidies_details = models.TextField(blank=True, null=False)
     last_modified = models.DateTimeField(null=True)
+    api_type = models.TextField(blank=True, null=True, db_index=True)
+    atco_code = models.TextField(blank=True, null=True)
 
     objects = ServiceManager()
 
