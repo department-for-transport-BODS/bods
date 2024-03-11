@@ -10,13 +10,16 @@ from django.db.models import (
     F,
     QuerySet,
     Subquery,
+    OuterRef,
     Value,
 )
+
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
-
+from transit_odp.common.querysets import GroupConcat
+from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     SeasonalService,
@@ -58,8 +61,37 @@ class ServiceQuerySet(QuerySet):
             granted_date=F("licence__granted_date"),
         )
 
+    def add_UI_LTA(self) -> TServiceQuerySet:
+        return self.annotate(
+            local_authority_ui_lta=GroupConcat(
+                F("registration__ui_lta__name"), delimiter="|"
+            )
+        )
+
+    def add_localauthority_details(self) -> TServiceQuerySet:
+        return self.annotate(
+            local_authority_name=GroupConcat(F("registration__name"), delimiter="|")
+        )
+
+    def add_traveline_region_details(self) -> TServiceQuerySet:
+        return self.annotate(
+            traveline_region=GroupConcat(
+                AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
+                    "traveline_region_id"
+                ),
+                delimiter="|",
+            )
+        )
+
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
-        return self.add_service_code().add_operator_details().add_licence_details()
+        return (
+            self.add_service_code()
+            .add_operator_details()
+            .add_licence_details()
+            .add_localauthority_details()
+            .add_traveline_region_details()
+            .add_UI_LTA()
+        )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation__id=organisation_id)
