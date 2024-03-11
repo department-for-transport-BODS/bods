@@ -131,4 +131,19 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
 
+        serviced_org_working_days = {
+            "School X": [
+                {"start_date": "20/01/2022", "end_date": "20/03/2022"},
+                {"start_date": "20/01/2022", "end_date": "20/03/2022"},
+            ],
+            "School Y": [{"start_date": "21/01/2022", "end_date": "21/03/2022"}],
+            "School Z": [
+                {"start_date": "22/01/2022", "end_date": "22/03/2022"},
+                {"start_date": "22/01/2022", "end_date": "22/03/2022"},
+                {"start_date": "22/01/2022", "end_date": "22/03/2022"},
+            ],
+        }
+
+        kwargs["working_days"] = serviced_org_working_days
+
         return kwargs

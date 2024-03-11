@@ -4,18 +4,19 @@
     </h2>
 
     <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-        {% for _ in "123" %}
+        {% for key, days in working_days.items %}
         <div class="govuk-accordion__section">
             <div class="govuk-accordion__section-header">
               <h3 class="govuk-accordion__section-heading">
                 <span class="govuk-accordion__section-button govuk-!-padding-bottom-0" id="accordion-default-heading-{{ forloop.counter }}">
-                  School {{ forloop.counter }}
+                  {{ key }}
                 </span>
               </h3>
             </div>
             <div id="accordion-default-content-{{ forloop.counter }}" class="govuk-accordion__section-content govuk-!-padding-left-7 govuk-!-padding-top-0 govuk-!-padding-bottom-3">
-              <p class="govuk-body">20/01/2023 - 20/03/2023</p>
-              <p class="govuk-body">20/01/2023 - 20/03/2023</p>
+            {% for day in days %}  
+              <span class="govuk-body">{{ day.start_date }} - {{ day.end_date }}<br/></span>
+            {% endfor %}  
             </div>
           </div>
         {% endfor %}
