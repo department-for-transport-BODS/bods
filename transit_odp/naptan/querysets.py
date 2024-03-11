@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import Count, F
+from django.db.models import Count, F, Case, When, Value, BooleanField
+from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 
 
 class AdminAreaQuerySet(models.QuerySet):
@@ -26,6 +27,17 @@ class AdminAreaQuerySet(models.QuerySet):
         """
         return self.annotate(
             published_dataset_count=Count("revisions__live_revision_dataset")
+        )
+
+    def add_is_english_region(self):
+        return self.annotate(
+            is_english_region=Case(
+                When(
+                    traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS, then=Value(True)
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
         )
 
 

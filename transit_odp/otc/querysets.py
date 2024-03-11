@@ -1,5 +1,7 @@
 from datetime import timedelta
 from typing import TypeVar
+import pandas as pd
+from pandas import DataFrame, Series
 
 from django.db.models import (
     CharField,
@@ -29,6 +31,7 @@ from transit_odp.otc.constants import (
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
 )
+from transit_odp.naptan.models import AdminArea
 
 TServiceQuerySet = TypeVar("TServiceQuerySet", bound="ServiceQuerySet")
 
@@ -170,6 +173,8 @@ class ServiceQuerySet(QuerySet):
             if x.registration_numbers.values("id")
         ]
 
+        total_weca_in_scope = self.get_weca_services_in_scope(lta_list[0].ui_lta)
+
         if services_subquery_list:
             final_subquery = None
             for service_queryset in services_subquery_list:
@@ -211,9 +216,35 @@ class ServiceQuerySet(QuerySet):
                     )
                     .distinct("licence__number", "registration_number")
                 ).count()
-            return all_in_scope_in_season_services_count
+
+            if not all_in_scope_in_season_services_count and total_weca_in_scope:
+                return total_weca_in_scope
+            return all_in_scope_in_season_services_count + total_weca_in_scope
+        elif total_weca_in_scope > 0:
+            return total_weca_in_scope
         else:
             return None
+
+    def get_weca_services_in_scope(self, ui_lta):
+        """
+        For Weca type, services will be in scope if those belongs to
+        English region ("EA", "EM", "NE", "NW", "SE", "SW", "WM", "Y")
+        And are not marked out of scope from dft admin portal
+        All other services will be out of scope
+        """
+        admin_areas = DataFrame.from_records(
+            AdminArea.objects.filter(ui_lta_id=ui_lta.id)
+            .add_is_english_region()
+            .values("atco_code", "traveline_region_id", "is_english_region")
+        )
+        services_df = DataFrame.from_records(
+            self.filter(
+                api_type="WECA", atco_code__in=list(admin_areas["atco_code"])
+            ).values("id", "registration_number", "atco_code")
+        )
+        df = pd.merge(services_df, admin_areas, on="atco_code", how="left")
+        total_in_scope = df["is_english_region"].value_counts().get("Yes", 0)
+        return total_in_scope
 
     def get_operator_id(self, service_id: int):
         from transit_odp.otc.models import Operator as OTCOperator

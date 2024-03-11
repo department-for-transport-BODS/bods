@@ -14,6 +14,7 @@ from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.naptan.models import AdminArea
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
     get_requires_attention_data_lta,
@@ -23,6 +24,8 @@ from transit_odp.publish.requires_attention import (
 
 from datetime import timedelta
 from transit_odp.browse.lta_column_headers import header_accessor_data
+from transit_odp.naptan.models import AdminArea
+from transit_odp.otc.constants import API_TYPE_WECA
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -39,6 +42,12 @@ def create_columns(header_accessor_list):
     return columns
 
 
+def get_weca_services_register_numbers(ui_lta):
+    return OTCService.objects.filter(
+        atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta).values("atco_code")
+    ).values("id")
+
+
 def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
@@ -48,6 +57,10 @@ def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+
+    if len(lta_list) > 0:
+        weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
+        services_subquery_list = services_subquery_list + [weca_services_list]
 
     if services_subquery_list:
         final_subquery = None
@@ -76,6 +89,11 @@ def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+
+    if len(lta_list) > 0:
+        weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
+        services_subquery_list = services_subquery_list + [weca_services_list]
+
     if services_subquery_list:
         final_subquery = None
         for service_queryset in services_subquery_list:
@@ -106,6 +124,10 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
         if x.registration_numbers.values("id")
     ]
 
+    if len(lta_list) > 0:
+        weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
+        services_subquery_list = services_subquery_list + [weca_services_list]
+
     if services_subquery_list:
         final_subquery = None
         for service_queryset in services_subquery_list:
@@ -125,6 +147,13 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
         }
     else:
         return {}
+
+
+def get_all_naptan_atco_map():
+    return {
+        admin_area.atco_code: admin_area.is_english_region
+        for admin_area in AdminArea.objects.add_is_english_region().all()
+    }
 
 
 class LocalAuthorityView(BaseListView):
@@ -304,14 +333,14 @@ class LTACSV(CSVBuilder):
         service: Optional[OTCService],
         file_attribute: Optional[TXCFileAttributes],
         seasonal_service: Optional[SeasonalService],
-        exemption: Optional[ServiceCodeExemption],
+        exempted: Optional[bool],
         staleness_status: Optional[str],
         require_attention: str,
     ) -> None:
         self._object_list.append(
             {
                 "require_attention": require_attention,
-                "scope_status": exemption and exemption.registration_number,
+                "scope_status": exempted,
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service and service.service_number,
@@ -381,6 +410,7 @@ class LTACSV(CSVBuilder):
         txcfa_map = get_txc_map_lta(lta_list)
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
+        naptan_atco_code_map = get_all_naptan_atco_map()
         services_code = set(otc_map)
         services_code = sorted(services_code)
 
@@ -389,6 +419,7 @@ class LTACSV(CSVBuilder):
             file_attribute = txcfa_map.get(service_code)
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
+            is_english_region = naptan_atco_code_map.get(service.atco_code, False)
 
             staleness_status = "Up to date"
             if file_attribute is None:
@@ -403,11 +434,20 @@ class LTACSV(CSVBuilder):
                 )
             else:
                 require_attention = "No"
+
+            exempted = False
+            if service.api_type == API_TYPE_WECA and not (
+                not (exemption and exemption.registration_code) and is_english_region
+            ):
+                exempted = True
+            elif not service.api_type and (exemption and exemption.registration_code):
+                exempted = True
+
             self._update_data(
                 service,
                 file_attribute,
                 seasonal_service,
-                exemption,
+                exempted,
                 staleness_status,
                 require_attention,
             )
