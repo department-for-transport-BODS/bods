@@ -444,7 +444,7 @@ def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
 
 def transform_service_patterns(
     journey_patterns: pd.DataFrame, drop_duplicates_columns: list
-) -> pd.Dataframe:
+) -> pd.DataFrame:
     """
     Transform journey patterns into service patterns.
     Note:

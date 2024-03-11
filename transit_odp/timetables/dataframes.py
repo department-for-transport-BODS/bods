@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 logger = logging.getLogger(__name__)
 
 
-def services_to_dataframe(services: list) -> pd.Dataframe:
+def services_to_dataframe(services: list) -> pd.DataFrame:
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
     lines_list = []
