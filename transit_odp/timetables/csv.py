@@ -1,6 +1,5 @@
 import datetime
 from collections import OrderedDict
-
 from typing import Optional
 
 import numpy as np

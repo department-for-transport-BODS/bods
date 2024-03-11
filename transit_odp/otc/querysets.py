@@ -10,16 +10,15 @@ from django.db.models import (
     QuerySet,
     Subquery,
     Value,
-    Case,
-    When,
+    OuterRef,
     Count,
-    BooleanField,
 )
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from pandas import DataFrame, Series
+from transit_odp.common.querysets import GroupConcat
 
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
