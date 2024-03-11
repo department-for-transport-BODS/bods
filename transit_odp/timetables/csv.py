@@ -1,5 +1,7 @@
 import datetime
 from collections import OrderedDict
+import logging
+from math import nan
 from typing import Optional
 
 import numpy as np
@@ -7,6 +9,7 @@ import pandas as pd
 from pandas import Series
 
 from transit_odp.common.collections import Column
+from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
     Organisation,
@@ -14,6 +17,7 @@ from transit_odp.organisation.models import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.models import Service as OTCService
 
 TXC_COLUMNS = (
@@ -52,6 +56,10 @@ OTC_COLUMNS = (
     "effective_date",
     "received_date",
     "service_type_other_details",
+    "traveline_region",
+    "local_authority_name",
+    "local_authority_ui_lta",
+    "api_type",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -304,6 +312,27 @@ def add_operator_name(row: Series) -> str:
         return row["organisation_name"]
 
 
+def scope_status(row, exempted_reg_numbers):
+    exempted = row["registration_number"] in exempted_reg_numbers
+    scope = "Out of Scope"
+    traveline_regions = row["traveline_region"].split("|")
+
+    if row["api_type"] and exempted:
+        scope = "In Scope"
+
+    for traveline_region in traveline_regions:
+        if (
+            row["api_type"] == API_TYPE_WECA
+            and exempted
+            and (traveline_region in ENGLISH_TRAVELINE_REGIONS)
+        ):
+            scope = "In Scope"
+            break
+
+    row["scope_status"] = scope
+    return row
+
+
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
     exists_in_bods = np.invert(pd.isna(df["dataset_id"]))
     exists_in_otc = np.invert(pd.isna(df["otc_licence_number"]))
@@ -316,9 +345,8 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
     df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
-    df["scope_status"] = np.where(
-        registration_number_exempted, "Out of Scope", "In Scope"
-    )
+    df["traveline_region"] = df["traveline_region"].astype(str)
+    df = df.apply(scope_status, args=[registration_number_exempted], axis=1)
     return df
 
 

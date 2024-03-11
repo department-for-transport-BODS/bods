@@ -10,6 +10,10 @@ from django.db.models import (
     QuerySet,
     Subquery,
     Value,
+    Case,
+    When,
+    Count,
+    BooleanField,
 )
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
