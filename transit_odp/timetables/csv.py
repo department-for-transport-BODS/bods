@@ -52,9 +52,6 @@ OTC_COLUMNS = (
     "effective_date",
     "received_date",
     "service_type_other_details",
-    "traveline_region",
-    "local_authority_name",
-    "local_authority_ui_lta",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -290,18 +287,6 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
-        "traveline_region": Column(
-            "OTC:Traveline Region",
-            "The Traveline Region details element as extracted from the OTC database.",
-        ),
-        "local_authority_name": Column(
-            "OTC:Local Authority",
-            "The Local Authority element as extracted from the OTC database.",
-        ),
-        "local_authority_ui_lta": Column(
-            "OTC:UI LTA",
-            "The UI LTA element as extracted from the OTC database.",
-        ),
     }
 )
 
@@ -334,26 +319,6 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
     df["scope_status"] = np.where(
         registration_number_exempted, "Out of Scope", "In Scope"
     )
-
-    traline_scope = df["traveline_region"].isin(
-        ["EA", "EM", "NE", "NW", "SE", "SW", "WM", "Y"]
-    )
-
-    if not traline_scope.empty:
-        """
-        If service belongs to a UI LTA that is in an English Traveline Region: EA, EM, NE, NW, SE, SW, WM, Y
-        Then in scope unless already out of scope from DfT admin portal (Need to add this condition)
-        """
-        df["scope_status"] = np.where(
-            traline_scope,
-            "In Scope",
-            "Out of Scope",
-        )
-        ui_lta_scope = df["traveline_region"].isin(["Null", "S", "W", "L"])
-        """
-            If service does not belong to a UI LTA that is in an English Traveline Region: Null, S, W, L
-            Then out of scope.
-        """
     return df
 
 
