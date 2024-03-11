@@ -2,6 +2,7 @@
 A collection of utility functions for converting pandas dataframes to and from
 BODS transxchange models.
 """
+
 import logging
 from collections import OrderedDict
 from typing import Iterator, List
@@ -223,11 +224,19 @@ def df_to_flexible_service_operation_period(
 
 
 def df_to_serviced_organisations(
-    df: pd.DataFrame, existing_serviced_orgs
+    df: pd.DataFrame, existing_serviced_orgs_list: List[str]
 ) -> Iterator[ServicedOrganisations]:
-    unique_org_codes = df.drop_duplicates(subset="serviced_org_ref", keep="first")
+    """Compare the serviced organisation present in the database with the
+    uploaded file based on name and org code"""
+
+    unique_org_codes = df.drop_duplicates(
+        subset=["serviced_org_ref", "name"], keep="first"
+    )
+    unique_org_codes["serviced_org_ref_name"] = df[["name", "serviced_org_ref"]].agg(
+        "".join, axis=1
+    )
     serviced_org_records = unique_org_codes[
-        ~unique_org_codes["serviced_org_ref"].isin(existing_serviced_orgs)
+        ~unique_org_codes["serviced_org_ref_name"].isin(existing_serviced_orgs_list)
     ]
 
     for record in serviced_org_records.to_dict("records"):
