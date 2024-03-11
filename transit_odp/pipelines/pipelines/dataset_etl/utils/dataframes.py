@@ -34,8 +34,6 @@ from transit_odp.transmodel.models import (
 ServicePatternThrough = ServicePattern.service_links.through
 logger = logging.getLogger(__name__)
 
-is_timetable_visualiser_active = flag_is_active("", "is_timetable_visualiser_active")
-
 
 def create_stop_point_cache(revision_id):
     stops = (
