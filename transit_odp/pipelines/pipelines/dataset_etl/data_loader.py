@@ -177,7 +177,7 @@ class DataLoader:
         services: pd.DataFrame,
         service_patterns: pd.DataFrame,
         service_pattern_stops: pd.DataFrame,
-    ) -> pd.Dataframe:
+    ) -> pd.DataFrame:
         """[DataLoader] Load ServicePattern objects
         Create ServicePattern Associations
         Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to ServicePattern
