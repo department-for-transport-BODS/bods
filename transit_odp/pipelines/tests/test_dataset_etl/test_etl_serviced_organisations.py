@@ -108,8 +108,6 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
-        print(extracted.serviced_organisations)
-
         self.assertTrue(
             check_frame_equal(
                 extracted.serviced_organisations, expected_serviced_organisation
