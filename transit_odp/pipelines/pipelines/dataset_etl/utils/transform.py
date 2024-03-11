@@ -372,6 +372,21 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
 def merge_journey_pattern_with_vj_for_departure_time(
     vehicle_journeys, journey_patterns, timetable_visualiser_active=False
 ):
+    """
+    Merge journey patterns with vehicle journeys based on departure time.
+
+    Parameters:
+    - vehicle_journeys: DataFrame containing vehicle journey data.
+    - journey_patterns: DataFrame containing journey pattern data.
+    - timetable_visualiser_active (bool): Flag indicating if timetable visualizer is active.
+
+    Returns:
+    - DataFrame: Merged DataFrame containing journey pattern and vehicle journey data.
+
+    Note:
+    - DataFrames are expected to have columns 'file_id', 'journey_pattern_id', and 'departure_time'.
+    - If `timetable_visualiser_active` is True, additional columns 'line_name', 'outbound_description', and 'inbound_description' are expected.
+    """
     index = journey_patterns.index
     columns_to_merge = ["file_id", "journey_pattern_ref", "departure_time"]
     if timetable_visualiser_active:
@@ -412,6 +427,11 @@ def merge_serviced_organisations_with_operating_profile(
 
 
 def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
+    """
+    Merge vehicle journeys with lines.
+    Note:
+    - DataFrames are expected to have columns 'file_id' and 'line_ref'.
+    """
     df_merged = pd.merge(
         vehicle_journeys,
         lines,
@@ -422,19 +442,24 @@ def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
     return df_merged
 
 
-def transform_service_patterns(journey_patterns, drop_duplicates_columns):
-    # Create list of service patterns from journey patterns
+def transform_service_patterns(
+    journey_patterns: pd.DataFrame, drop_duplicates_columns: list
+) -> pd.Dataframe:
+    """
+    Transform journey patterns into service patterns.
+    Note:
+    - DataFrame is expected to have columns 'route_hash', 'service_code', and 'file_id'.
+    - Route hash at the time of this comment was null for flexible services
+    - The 'route_hash' column should not contain NaN values.
+    - The 'service_pattern_id' is created by concatenating 'service_code' and 'route_hash'.
+    """
     service_patterns = (
         journey_patterns.reset_index()
         .drop_duplicates(drop_duplicates_columns)
         .drop("journey_pattern_id", axis=1)
     )
 
-    # Route hash at the time of this comment was null for
-    # flexible services
     service_patterns.dropna(subset=["route_hash"], inplace=True)
-    # Create an id column for service_patterns. Note using the route_hash
-    # won't result in the prettiest id
     service_patterns["service_pattern_id"] = service_patterns["service_code"].str.cat(
         service_patterns["route_hash"].astype(str), sep="-"
     )

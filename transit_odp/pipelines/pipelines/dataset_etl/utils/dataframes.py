@@ -153,6 +153,11 @@ def create_naptan_locality_df(data=None):
 def df_to_service_patterns(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[ServicePattern]:
+    """
+    Convert a pandas DataFrame to an iterator of ServicePattern objects.
+    DataFrame is expected to have columns 'service_pattern_id' and 'geometry'.
+    Additional columns 'line_name' and 'description' are optional.
+    """
     for record in df.reset_index().to_dict("records"):
         yield ServicePattern(
             revision=revision,

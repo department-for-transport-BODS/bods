@@ -1,6 +1,7 @@
 """ loaders.py utility functions for loading data into the BODS database."""
 import logging
 from collections import namedtuple
+import pandas as pd
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop
@@ -10,7 +11,13 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 2000
 
 
-def add_service_associations(services, service_patterns):
+def add_service_associations(
+    services: pd.DataFrame, service_patterns: pd.DataFrame
+) -> list:
+    """
+    Add associations between services and service patterns.
+    DataFrames are expected to have columns 'id_service' and 'id_service_pattern'.
+    """
     through_model = Service.service_patterns.through
 
     def _inner(df):

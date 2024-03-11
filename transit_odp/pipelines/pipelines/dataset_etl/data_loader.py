@@ -172,7 +172,16 @@ class DataLoader:
         logger.info("[DataLoader] Finished load_service_links")
         return service_links
 
-    def load_service_patterns(self, services, service_patterns, service_pattern_stops):
+    def load_service_patterns(
+        self,
+        services: pd.DataFrame,
+        service_patterns: pd.DataFrame,
+        service_pattern_stops: pd.DataFrame,
+    ) -> pd.Dataframe:
+        """[DataLoader] Load ServicePattern objects
+        Create ServicePattern Associations
+        Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to ServicePattern
+        """
         logger.info("[DataLoader] Starting load_service_patterns")
 
         created = ServicePattern.objects.bulk_create(

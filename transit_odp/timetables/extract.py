@@ -191,7 +191,7 @@ class TransXChangeExtractor:
         """Functionality extracted out, proxied here to not break the API"""
         return extract_timestamp(timestamp, default, *args, **kwargs)
 
-    def extract_services(self):
+    def extract_services(self) -> pd.DataFrame:
         try:
             services_df, lines_df = services_to_dataframe(self.doc.get_services())
         except MissingLines as err:

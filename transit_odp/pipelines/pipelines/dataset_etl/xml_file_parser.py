@@ -209,7 +209,10 @@ class XmlFileParser(ETLUtility):
         """Functionality extracted out, proxied here to not break the API"""
         return extract_timestamp(timestamp, default, *args, **kwargs)
 
-    def extract_services(self, doc, file_id: int, filename):
+    def extract_services(self, doc, file_id: int, filename) -> pd.DataFrame:
+        """
+        Extracts services and lines from a TxC xml document.
+        """
         try:
             services_df, lines_df = services_to_dataframe(self.trans.get_services())
         except MissingLines as err:

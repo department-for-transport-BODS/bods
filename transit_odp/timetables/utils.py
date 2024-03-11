@@ -1,7 +1,7 @@
 import logging
 import csv
 from io import StringIO
-
+import pandas as pd
 
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
@@ -226,7 +226,7 @@ def filter_rows_by_journeys(row, journey_mapping):
         return False
 
 
-def get_line_description_based_on_direction(row):
+def get_line_description_based_on_direction(row: pd.Series) -> str:
     direction_mapping = {
         "inbound": row["inbound_description"],
         "outbound": row["outbound_description"],

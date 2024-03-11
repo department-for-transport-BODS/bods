@@ -15,12 +15,11 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     db_bank_holidays_to_df,
 )
 from datetime import datetime, timedelta
-from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
 
-def services_to_dataframe(services):
+def services_to_dataframe(services: list) -> pd.Dataframe:
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
     lines_list = []
@@ -246,7 +245,9 @@ def journey_pattern_sections_to_dataframe(sections):
     return timing_links
 
 
-def vehicle_journeys_to_dataframe(standard_vehicle_journeys, flexible_vehicle_journeys):
+def vehicle_journeys_to_dataframe(
+    standard_vehicle_journeys: pd.DataFrame, flexible_vehicle_journeys: pd.DataFrame
+) -> pd.DataFrame:
     all_vehicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
@@ -356,7 +357,7 @@ def vehicle_journeys_to_dataframe(standard_vehicle_journeys, flexible_vehicle_jo
     return pd.DataFrame(all_vehicle_journeys)
 
 
-def populate_lines(lines):
+def populate_lines(lines: list) -> list:
     lines_list = []
     for line in lines:
         line_id = line["id"]
