@@ -68,17 +68,17 @@ class TransXChangeExtractor:
         Finally, we identify the Routes by hashing together the list of
         'route_section_hash' to form 'route_hash'.
         """
-        logger.debug("Extracting data")
-        logger.debug(f"file_id: {self.file_id}, file_name: {self.filename}")
         is_timetable_visualiser_active = flag_is_active(
             "", "is_timetable_visualiser_active"
         )
+        logger.debug("Extracting data")
+        logger.debug(f"file_id: {self.file_id}, file_name: {self.filename}")
 
         schema_version = self.doc.get_transxchange_version()
 
         # Extract Services
         logger.debug("Extracting services")
-        services = self.extract_services()
+        services, lines = self.extract_services()
         logger.debug("Finished extracting services")
 
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
@@ -102,6 +102,7 @@ class TransXChangeExtractor:
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
+        # lines = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
@@ -169,6 +170,7 @@ class TransXChangeExtractor:
             modification_datetime=modification_datetime,
             import_datetime=self.start_time,
             line_count=line_count,
+            lines=lines,
             line_names=line_names,
             stop_count=len(stop_points) + len(provisional_stops),
             timing_point_count=timing_point_count,
@@ -189,9 +191,9 @@ class TransXChangeExtractor:
         """Functionality extracted out, proxied here to not break the API"""
         return extract_timestamp(timestamp, default, *args, **kwargs)
 
-    def extract_services(self):
+    def extract_services(self) -> pd.DataFrame:
         try:
-            df = services_to_dataframe(self.doc.get_services())
+            services_df, lines_df = services_to_dataframe(self.doc.get_services())
         except MissingLines as err:
             message = (
                 f"Service (service_code=${err.service}) is missing "
@@ -202,9 +204,12 @@ class TransXChangeExtractor:
                 message=message,
             )
 
-        df["file_id"] = self.file_id
-        df.set_index(["file_id", "service_code"], inplace=True)
-        return df
+        services_df["file_id"] = self.file_id
+        services_df.set_index(["file_id", "service_code"], inplace=True)
+
+        lines_df["file_id"] = self.file_id
+        lines_df.set_index(["file_id"], inplace=True)
+        return services_df, lines_df
 
     def extract_stop_points(self):
         refs = self.doc.get_annotated_stop_point_refs()
@@ -402,4 +407,5 @@ class TransXChangeZipExtractor:
             flexible_operation_periods=pd.concat(
                 (extract.flexible_operation_periods for extract in extracts)
             ),
+            lines=pd.concat(extract.lines for extract in extracts),
         )
