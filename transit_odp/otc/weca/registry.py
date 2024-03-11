@@ -69,10 +69,18 @@ class Registry:
         ]
 
     def convert_services_to_df(self) -> None:
+        """
+        Make dataframe from the services pydentic model
+        """
         services_list = [service.model_dump() for service in self.data]
         self.services = pd.DataFrame(services_list)
 
     def map_otc_licences(self) -> None:
+        """
+        Map the licences with the services, so that WECA services will have OTC_LICENCE link
+        Unlike OTC, we will not create licences if they are missing in database table,
+        We will leave licence_id field blank
+        """
         licence_df = pd.DataFrame.from_records(Licence.objects.values("id", "number"))
         if not licence_df.empty:
             self.services = pd.merge(
