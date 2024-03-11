@@ -541,7 +541,10 @@ class TransXChangeDataLoader:
         if not created.empty:
             created = created.set_index("service_pattern_id")
 
-        service_patterns = service_patterns.join(created)
+        if not service_patterns.empty:
+            service_patterns = service_patterns.join(
+                created, on="service_pattern_id", how="inner"
+            )
 
         # ADD ServicePattern Associations
 

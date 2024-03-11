@@ -3,7 +3,6 @@ from celery.utils.log import get_task_logger
 from django.contrib.gis.geos import LineString
 
 from transit_odp.naptan.models import Locality
-from datetime import datetime
 
 from .dataframes import create_naptan_locality_df
 
@@ -236,7 +235,6 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
         .groupby(["file_id", "journey_pattern_id"])
         .apply(lambda df: create_hash(df.sort_values("order")["route_section_hash"]))
     )
-
     # Create Routes from journey_patterns with unique route_hash
     routes = (
         journey_patterns.reset_index()[["file_id", "route_hash"]]
@@ -372,12 +370,18 @@ def merge_vehicle_journeys_with_jp(vehicle_journeys, journey_patterns):
 
 
 def merge_journey_pattern_with_vj_for_departure_time(
-    vehicle_journeys, journey_patterns
+    vehicle_journeys, journey_patterns, timetable_visualiser_active=False
 ):
     index = journey_patterns.index
+    columns_to_merge = ["file_id", "journey_pattern_ref", "departure_time"]
+    if timetable_visualiser_active:
+        columns_to_merge.extend(
+            ["line_name", "outbound_description", "inbound_description"]
+        )
+
     df_merged = pd.merge(
         journey_patterns.reset_index(),
-        vehicle_journeys[["file_id", "journey_pattern_ref", "departure_time"]],
+        vehicle_journeys[columns_to_merge],
         left_on=["file_id", "journey_pattern_id"],
         right_on=["file_id", "journey_pattern_ref"],
         how="left",
@@ -385,6 +389,7 @@ def merge_journey_pattern_with_vj_for_departure_time(
     )
     df_merged = df_merged.drop(columns=["journey_pattern_ref"], axis=1)
     df_merged.set_index(index.names, inplace=True)
+    df_merged.dropna(subset=["departure_time", "line_name"], how="all", inplace=True)
     return df_merged
 
 
@@ -406,11 +411,22 @@ def merge_serviced_organisations_with_operating_profile(
     return df_merged
 
 
-def transform_service_patterns(journey_patterns):
+def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
+    df_merged = pd.merge(
+        vehicle_journeys,
+        lines,
+        left_on=["file_id", "line_ref"],
+        right_on=["file_id", "line_id"],
+        how="inner",
+    )
+    return df_merged
+
+
+def transform_service_patterns(journey_patterns, drop_duplicates_columns):
     # Create list of service patterns from journey patterns
     service_patterns = (
         journey_patterns.reset_index()
-        .drop_duplicates(["service_code", "route_hash"])
+        .drop_duplicates(drop_duplicates_columns)
         .drop("journey_pattern_id", axis=1)
     )
 
