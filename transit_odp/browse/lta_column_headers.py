@@ -41,7 +41,7 @@ header_accessor_data = [
     (
         "Scope Status",
         lambda otc_service: "Out of Scope"
-        if otc_service.get("scope_status")
+        if otc_service.get("scope_status", False)
         else "In Scope",
     ),
     (
@@ -102,4 +102,5 @@ header_accessor_data = [
         lambda otc_service: otc_service.get("otc_registration_number"),
     ),
     ("OTC:Service Number", lambda otc_service: otc_service.get("otc_service_number")),
+    ("Traveline Region", lambda otc_service: otc_service.get("traveline_region", "")),
 ]

@@ -74,7 +74,8 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
         weca_services_list = OTCService.objects.filter(
             atco_code__in=AdminArea.objects.filter(ui_lta=lta_list[0].ui_lta).values(
                 "atco_code"
-            )
+            ),
+            licence_id__isnull=False,
         ).values("id")
 
         services_subquery_list = services_subquery_list + [weca_services_list]
