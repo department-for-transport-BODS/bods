@@ -26,6 +26,7 @@ def add_service_associations(services, service_patterns):
         right_on=["file_id", "service_code"],
         suffixes=["_service", "_service_pattern"],
     )
+    service_to_service_patterns.drop_duplicates(inplace=True)
 
     return through_model.objects.bulk_create(_inner(service_to_service_patterns))
 
