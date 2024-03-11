@@ -34,6 +34,10 @@ logger = logging.getLogger(__name__)
 
 
 def create_naptan_flexible_zone_df_from_queryset(queryset):
+    """
+    Converts the naptan flexible zone table query set to pandas dataframe object
+    and converts the flexible location geometry to list for same naptan stop points
+    """
     flexible_zone = (
         {
             "naptan_id": obj.naptan_stoppoint_id,
@@ -50,6 +54,9 @@ def create_naptan_flexible_zone_df_from_queryset(queryset):
 
 
 def create_flexible_zone_df(data=None):
+    """
+    Converts the list of object to geopandas dataframe
+    """
     typings = OrderedDict(
         {
             "naptan_id": "object",

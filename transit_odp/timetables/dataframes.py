@@ -23,6 +23,10 @@ logger = logging.getLogger(__name__)
 def get_flexible_journey_details(
     stop_points, service_code, pattern, direction, element_name
 ):
+    """
+    This function converts the FixedStopUsage and FlexibleStopUsage xml tag data to
+    required dataframe
+    """
     stop_points_details = []
     if stop_points:
         bus_stop_type = (
@@ -43,6 +47,10 @@ def get_flexible_journey_details(
 
 
 def flexible_journey_patterns_to_dataframe(services):
+    """
+    This function iterates over FlexibleService xml tag and converts FlexibleJourneyPattern
+    to pandas dataframe
+    """
     flexible_journey_patterns = []
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
@@ -174,6 +182,9 @@ def stop_point_refs_to_dataframe(stop_point_refs):
 
 
 def get_geometry_from_location(system, location):
+    """
+    This function calculates the geometry from the Location xml tag
+    """
     if system is None or system.lower() == GRID_LOCATION.lower():
         if location.get_element_or_none(["Translation"]):
             easting = location.get_element(["Translation", "Easting"]).text
@@ -199,6 +210,9 @@ def get_geometry_from_location(system, location):
 
 
 def provisional_stops_to_dataframe(stops, system=None):
+    """
+    This function returns the stoppoint detials like atco_code, geometry, location and comman name
+    """
     stop_points = []
     for stop in stops:
         locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
@@ -366,6 +380,9 @@ def journey_pattern_sections_to_dataframe(sections):
 
 
 def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
+    """
+    This function returns the vehicle journey dataframe from VehicleJourney xml tag
+    """
     all_vehicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
@@ -448,6 +465,9 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
 
 
 def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
+    """
+    This function returns the flexible vehicle journey dataframe from FlexibleVehicleJourney xml tag
+    """
     all_vehicle_journeys = []
     if flexible_vechicle_journeys is not None:
         for vehicle_journey in flexible_vechicle_journeys:
@@ -866,6 +886,9 @@ def booking_arrangements_to_dataframe(services):
 
 
 def flexible_stop_points_from_journey_details(flexible_journey_details):
+    """
+    This function retrieves the stop points from flexible journey details dataframe
+    """
     if not flexible_journey_details.empty:
         flexible_stop_points = flexible_journey_details[
             ["atco_code", "bus_stop_type"]

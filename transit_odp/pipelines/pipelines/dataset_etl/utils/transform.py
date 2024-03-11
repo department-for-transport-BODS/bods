@@ -13,6 +13,10 @@ logger = get_task_logger(__name__)
 
 
 def transform_geometry(df: pd.DataFrame):
+    """
+    This function fills the empty flexible_location with geometry column and rename
+    the column name flexible_location to geometry
+    """
     df["flexible_location"] = df["flexible_location"].fillna(df["geometry"])
     df.drop(["geometry"], axis=1, inplace=True)
     df.rename(columns={"flexible_location": "geometry"}, inplace=True)
@@ -132,6 +136,11 @@ def agg_service_pattern_sequences(df: pd.DataFrame):
 
 
 def agg_flexible_service_pattern_sequences(df: pd.DataFrame):
+    """
+    This function converts each shapely.geometry Point to list of points
+    and create a LineString object from list of points
+    """
+
     def flatten_list(nested_list):
         flattened_list = []
         for item in nested_list:
@@ -171,6 +180,9 @@ def transform_stop_sequence(service_pattern_stops, service_patterns):
 
 
 def transform_flexible_stop_sequence(service_pattern_stops, service_patterns):
+    """
+    This function returns the linestring objects for each service pattern id
+    """
     sequence = (
         service_pattern_stops.reset_index()
         .groupby(["file_id", "service_pattern_id"])
@@ -300,6 +312,9 @@ def create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links):
 
 
 def create_flexible_routes(flexible_journey_patterns):
+    """
+    This function create a unique identifier for each journey pattern
+    """
     df = flexible_journey_patterns.reset_index()
     grouped_df = (
         df.groupby(["file_id", "journey_pattern_id"])
@@ -566,6 +581,10 @@ def transform_service_pattern_to_service_links(
 
 
 def transform_flexible_service_pattern_to_service_links(flexible_service_patterns):
+    """
+    this function creates a set of columns departure_time, departure_time, run_time, wait_time
+    with default values for flexible stops
+    """
     logger.info("Starting transform_flexible_service_pattern_to_service_links")
     drop_columns = ["departure_time", "is_timing_status", "run_time", "wait_time"]
     service_pattern_to_service_links = flexible_service_patterns.reset_index()
@@ -580,6 +599,10 @@ def transform_flexible_service_pattern_to_service_links(flexible_service_pattern
 
 
 def transform_flexible_service_patterns(flexible_timing_links):
+    """
+    This function creates a column service_pattern_id which is a combination of
+    service_pattern_id and service_code
+    """
     flexible_service_patterns = flexible_timing_links.reset_index()
     flexible_service_patterns["service_pattern_id"] = flexible_service_patterns[
         "service_code"
@@ -601,6 +624,10 @@ def transform_flexible_service_patterns(flexible_timing_links):
 
 
 def merge_flexible_jd_with_jp(flexible_journey_details, flexible_journey_patterns):
+    """
+    This function merge the flexible_journey_details and flexible_journey_patterns
+    so the resulting dataframe will have the route_hash column
+    """
     jouenry_details = flexible_journey_details.reset_index()
     journey_patterns = flexible_journey_patterns.reset_index()
     journey_patterns = journey_patterns[["file_id", "journey_pattern_id", "route_hash"]]

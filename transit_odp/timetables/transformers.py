@@ -359,6 +359,11 @@ class TransXChangeTransformer:
         return stop_point_cache.reindex(sorted(stop_point_refs))
 
     def sync_flexible_zone(self, flexible_stop_points):
+        """
+        This function performs below operations
+        1. extract the flexible zone for stops with bus_stop_type = 'flexible'
+        2. merge the provisional flexible stops with the extracted flexbile zone dataset
+        """
         # get provisional flexible stop points with naptan_stoppoint_id nan
         provisional_flexible_stops = flexible_stop_points[
             flexible_stop_points["naptan_id"].isna()
@@ -405,6 +410,10 @@ class TransXChangeTransformer:
         return filtered_stop_points_naptan_id
 
     def create_flexible_timing_link(self, flexible_journey_details):
+        """
+        This function transform the flexible journery details to get the sequence of stops
+        """
+
         def get_stop_sequence(group, journey_pattern_id):
             group["order"] = range(len(group))
             group["journey_pattern_id"] = journey_pattern_id

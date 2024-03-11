@@ -210,6 +210,9 @@ class TransXChangeExtractor:
         )
 
     def extract_flexible_journey_details(self):
+        """
+        This function extracts the flexible journey patterns
+        """
         services = self.doc.get_services()
         flexible_journey_patterns = flexible_journey_patterns_to_dataframe(services)
         if not flexible_journey_patterns.empty:
@@ -271,6 +274,10 @@ class TransXChangeExtractor:
         return journey_patterns, jp_to_jps
 
     def extract_vehicle_journeys(self):
+        """
+        This function extract the standard vehicle journey, flexible vehicle journey
+        and flexible operation period dataframes
+        """
         standard_vehicle_journeys = self.doc.get_all_vehicle_journeys(
             "VehicleJourney", allow_none=True
         )
