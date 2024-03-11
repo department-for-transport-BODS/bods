@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, F, Case, When, Value, CharField
+from django.db.models import Count, F, Case, When, Value, BooleanField
 from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 
 
@@ -33,10 +33,10 @@ class AdminAreaQuerySet(models.QuerySet):
         return self.annotate(
             is_english_region=Case(
                 When(
-                    traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS, then=Value("Yes")
+                    traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS, then=Value(True)
                 ),
-                default=Value("No"),
-                output_field=CharField(),
+                default=Value(False),
+                output_field=BooleanField(),
             )
         )
 

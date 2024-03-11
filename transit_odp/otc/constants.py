@@ -34,3 +34,4 @@ class SubsidiesDescription(TextChoices):
 
 SCHOOL_OR_WORKS = "School or Works"
 FLEXIBLE_REG = "Flexible Registration"
+API_TYPE_WECA = "WECA"

@@ -25,6 +25,7 @@ from transit_odp.publish.requires_attention import (
 from datetime import timedelta
 from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.naptan.models import AdminArea
+from transit_odp.otc.constants import API_TYPE_WECA
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -135,7 +136,7 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
             else:
                 final_subquery = final_subquery | service_queryset
         final_subquery = final_subquery.distinct()
-        
+
         return {
             service.registration_number.replace("/", ":"): service
             for service in ServiceCodeExemption.objects.add_registration_number().filter(
@@ -418,7 +419,7 @@ class LTACSV(CSVBuilder):
             file_attribute = txcfa_map.get(service_code)
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
-            is_english_region = naptan_atco_code_map.get(service.atco_code, "No")
+            is_english_region = naptan_atco_code_map.get(service.atco_code, False)
 
             staleness_status = "Up to date"
             if file_attribute is None:
@@ -434,10 +435,9 @@ class LTACSV(CSVBuilder):
             else:
                 require_attention = "No"
 
-            exempted = None
-            if service.api_type == "WECA" and not (
-                not (exemption and exemption.registration_code)
-                and is_english_region == "Yes"
+            exempted = False
+            if service.api_type == API_TYPE_WECA and not (
+                not (exemption and exemption.registration_code) and is_english_region
             ):
                 exempted = True
             elif not service.api_type and (exemption and exemption.registration_code):

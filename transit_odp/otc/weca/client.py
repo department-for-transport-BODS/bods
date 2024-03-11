@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 
 from pydantic import Field, validator
 from pydantic.main import BaseModel
+from transit_odp.otc.constants import API_TYPE_WECA
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class DataModel(BaseModel):
     finish_point: str = Field(alias="endpoint_sp")
     via: str = Field(alias="via_services_pt7atfu9e78z39yqc")
     effective_date: date = Field(alias="proposedstartda_rviceslvicespt")
-    api_type: str = Field(default="WECA")
+    api_type: str = Field(default=API_TYPE_WECA)
     atco_code: Optional[str] = Field(alias="fullserialnumbe_trationrations")
 
     @validator("effective_date", pre=True)
