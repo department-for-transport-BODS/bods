@@ -12,11 +12,11 @@ from django.db.models import (
     Subquery,
     Value,
 )
+
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
-
 from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     SeasonalService,
@@ -62,7 +62,11 @@ class ServiceQuerySet(QuerySet):
         )
 
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
-        return self.add_service_code().add_operator_details().add_licence_details()
+        return (
+            self.add_service_code()
+            .add_operator_details()
+            .add_licence_details()
+        )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation__id=organisation_id)

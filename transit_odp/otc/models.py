@@ -50,9 +50,12 @@ class Operator(models.Model):
 
 
 class Service(models.Model):
+    # Operator made nullable for weca services import, we don't have operator details
     operator = models.ForeignKey(
         Operator, related_name="services", on_delete=models.CASCADE, null=True
     )
+    # Licence made nullable for weca import, we are not able to create new licences
+    # in case licence is not available in database (Which is rarest of rare) we will leave it null
     licence = models.ForeignKey(
         Licence, related_name="services", on_delete=models.CASCADE, null=True
     )

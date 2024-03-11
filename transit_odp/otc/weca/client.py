@@ -84,6 +84,10 @@ class APIResponse(BaseModel):
 
 class WecaClient:
     def _make_request(self, timeout: int = 30, **kwargs) -> APIResponse:
+        """
+        Send Request to WECA API Endpoint
+        Response will be returned in the JSON format
+        """
         url = settings.WECA_API_URL
 
         params = {
@@ -135,9 +139,16 @@ class WecaClient:
         return self.default_response()
 
     def default_response(self):
+        """
+        Create default return response for placeholder purpose
+        """
         response = {"fields": [], "data": []}
         return APIResponse(**response)
 
     def fetch_weca_services(self) -> APIResponse:
+        """
+        Fetch method for sending request to WECA
+        Return Pydentic model response
+        """
         response = self._make_request()
         return response
