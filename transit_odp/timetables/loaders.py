@@ -225,14 +225,20 @@ class TransXChangeDataLoader:
             )
 
     def load_serviced_organisation(self):
+
+        """Load the serviced organistion in the database"""
+
         df_serviced_organisations = self.transformed.serviced_organisations
         if not df_serviced_organisations.empty:
             df_serviced_organisations.reset_index(inplace=True)
 
             existing_serviced_orgs = ServicedOrganisations.objects.all()
             existing_serviced_orgs_list = existing_serviced_orgs.values_list(
-                "organisation_code", flat=True
+                "name", "organisation_code"
             )
+            existing_serviced_orgs_list = [
+                "".join(serviced_org) for serviced_org in existing_serviced_orgs_list
+            ]
 
             serviced_org_objs = list(
                 df_to_serviced_organisations(
@@ -272,10 +278,11 @@ class TransXChangeDataLoader:
             df_merge_db_and_file_inputs = pd.merge(
                 df_serviced_organisations,
                 df_merged_serviced_orgs,
-                on="serviced_org_ref",
+                on=["serviced_org_ref", "name"],
                 how="inner",
                 suffixes=["_file", "_db"],
             )
+
             return df_merge_db_and_file_inputs
         else:
             return pd.DataFrame()
@@ -284,8 +291,6 @@ class TransXChangeDataLoader:
         columns_to_drop = [
             "file_id",
             "serviced_org_ref",
-            "name_file",
-            "name_db",
             "operational",
         ]
         columns_to_drop_duplicates = ["id", "start_date", "end_date"]
