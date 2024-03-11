@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import TypeVar
 import pandas as pd
-from pandas import DataFrame, Series
+from pandas import DataFrame
 
 from django.db.models import (
     CharField,
@@ -12,14 +12,19 @@ from django.db.models import (
     Subquery,
     OuterRef,
     Value,
+    Case,
+    When,
+    Count,
+    BooleanField,
 )
 
-from django.db.models.aggregates import Count
+
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from transit_odp.common.querysets import GroupConcat
 from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     SeasonalService,
@@ -31,7 +36,7 @@ from transit_odp.otc.constants import (
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
 )
-from transit_odp.naptan.models import AdminArea
+
 
 TServiceQuerySet = TypeVar("TServiceQuerySet", bound="ServiceQuerySet")
 
