@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
-from transit_odp.naptan.models import AdminArea, Locality, StopPoint, FlexibleZone
+from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.managers import (
     ServicePatternManager,

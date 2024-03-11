@@ -35,7 +35,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_flexible_routes,
     merge_flexible_jd_with_jp,
 )
-from transit_odp.transmodel.models import StopPoint, FlexibleZone
+from transit_odp.naptan.models import StopPoint, FlexibleZone
 
 
 class TransXChangeTransformer:
@@ -403,10 +403,11 @@ class TransXChangeTransformer:
         filtered_stop_points_naptan_id = pd.concat(
             [filtered_stop_points_naptan_id, provisional_flexible_stops]
         )
-        filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
-            ["atco_code", "flexible_location"]
-        ]
-        filtered_stop_points_naptan_id.set_index("atco_code", inplace=True)
+        if not filtered_stop_points_naptan_id.empty:
+            filtered_stop_points_naptan_id = filtered_stop_points_naptan_id[
+                ["atco_code", "flexible_location"]
+            ]
+            filtered_stop_points_naptan_id.set_index("atco_code", inplace=True)
         return filtered_stop_points_naptan_id
 
     def create_flexible_timing_link(self, flexible_journey_details):

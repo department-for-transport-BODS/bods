@@ -17,7 +17,10 @@ def transform_geometry(df: pd.DataFrame):
     This function fills the empty flexible_location with geometry column and rename
     the column name flexible_location to geometry
     """
-    df["flexible_location"] = df["flexible_location"].fillna(df["geometry"])
+    if "flexible_location" in df.columns:
+        df["flexible_location"] = df["flexible_location"].fillna(df["geometry"])
+    else:
+        df["flexible_location"] = df["geometry"]
     df.drop(["geometry"], axis=1, inplace=True)
     df.rename(columns={"flexible_location": "geometry"}, inplace=True)
     return df

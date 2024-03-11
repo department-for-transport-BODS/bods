@@ -396,6 +396,9 @@ class TransXChangeZipExtractor:
             raise exceptions.PipelineException from e
 
     def extract_files(self, z: zipfile.ZipFile):
+        """
+        This function extracts the timetable data and iterates over xml file in a single zip file.
+        """
         extracts = []
         filenames = [info.filename for info in z.infolist() if not info.is_dir()]
         file_count = len(filenames)

@@ -9,7 +9,11 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from waffle.testutils import override_flag
 
-from transit_odp.transmodel.models import FlexibleServiceOperationPeriod
+from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
+    ServicePattern,
+    ServicePatternStop,
+)
 
 TZ = tz.gettz("Europe/London")
 
@@ -283,8 +287,13 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
         flexible_service_operation_periods = (
             FlexibleServiceOperationPeriod.objects.all()
         )
+        service_pattern_count = ServicePattern.objects.all().count()
+        service_pattern_stops_count = ServicePatternStop.objects.all().count()
 
         self.assertEqual(2, flexible_service_operation_periods.count())
+        self.assertEqual(service_pattern_stops_count, 2)
+        self.assertEqual(service_pattern_count, 2)
+
         for operation_period in flexible_service_operation_periods:
             self.assertIn(
                 operation_period.start_time,

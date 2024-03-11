@@ -6,7 +6,11 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
-from transit_odp.transmodel.models import VehicleJourney
+from transit_odp.transmodel.models import (
+    VehicleJourney,
+    ServicePattern,
+    ServicePatternStop,
+)
 
 from waffle.testutils import override_flag
 
@@ -349,6 +353,11 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
         self.feed_parser.load(transformed)
 
         vehicle_journeys = VehicleJourney.objects.all()
+        service_pattern_count = ServicePattern.objects.all().count()
+        service_pattern_stops_count = ServicePatternStop.objects.all().count()
+
+        self.assertEqual(service_pattern_stops_count, 2)
+        self.assertEqual(service_pattern_count, 2)
 
         self.assertEqual(3, vehicle_journeys.count())
         for journey in vehicle_journeys:
