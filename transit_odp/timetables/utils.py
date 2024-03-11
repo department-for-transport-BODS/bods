@@ -1,7 +1,7 @@
 import logging
 import csv
 from io import StringIO
-
+import pandas as pd
 
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
@@ -224,3 +224,13 @@ def filter_rows_by_journeys(row, journey_mapping):
         return day_of_week in journey_mapping[row["vehicle_journey_code"]]
     else:
         return False
+
+
+def get_line_description_based_on_direction(row: pd.Series) -> str:
+    direction_mapping = {
+        "inbound": row["inbound_description"],
+        "outbound": row["outbound_description"],
+        "clockwise": row["outbound_description"],
+        "antiClockwise": row["inbound_description"],
+    }
+    return direction_mapping.get(row["direction"], "")

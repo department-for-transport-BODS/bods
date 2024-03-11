@@ -44,6 +44,32 @@
         </DateRange>
       </WorkingDays>
     </ServicedOrganisation>
+    <ServicedOrganisation CreationDateTime="2022-12-07T11:35:15" Modification="new" RevisionNumber="0">
+      <OrganisationCode>NYCCSC</OrganisationCode>
+      <Name>NYCC SCHOOLS</Name>
+      <WorkingDays>
+        <DateRange>
+          <StartDate>2023-02-03</StartDate>
+          <EndDate>2023-03-10</EndDate>
+          <Description>NYCC SCHOOLS</Description>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-03-19</StartDate>
+          <EndDate>2023-03-31</EndDate>
+          <Description>NYCC SCHOOLS</Description>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-04-16</StartDate>
+          <EndDate>2023-05-26</EndDate>
+          <Description>NYCC SCHOOLS</Description>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-06-04</StartDate>
+          <EndDate>2023-07-25</EndDate>
+          <Description>NYCC SCHOOLS</Description>
+        </DateRange>
+      </WorkingDays>
+    </ServicedOrganisation>
   </ServicedOrganisations>
   <StopPoints>
     <AnnotatedStopPointRef CreationDateTime="2022-12-07T11:35:14" Modification="new" RevisionNumber="0">
