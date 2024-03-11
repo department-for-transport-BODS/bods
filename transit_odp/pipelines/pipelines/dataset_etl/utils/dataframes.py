@@ -212,10 +212,10 @@ def df_to_flexible_service_operation_period(
             end_time=get_time_field_or_none(record["end_time"]),
         )
 
+
 def df_to_serviced_organisations(
     df: pd.DataFrame, existing_serviced_orgs_list: List[str]
 ) -> Iterator[ServicedOrganisations]:
-
     """Compare the serviced organisation present in the database with the
     uploaded file based on name and org code"""
 
