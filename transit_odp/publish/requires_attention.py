@@ -5,6 +5,7 @@ from django.utils.timezone import now
 
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.naptan.models import AdminArea
 from datetime import timedelta
 
 
@@ -68,6 +69,18 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
         for x in lta_list
         if x.registration_numbers.values("id")
     ]
+
+    if len(lta_list) > 0:
+        weca_services_list = OTCService.objects.filter(
+            atco_code__in=AdminArea.objects.filter(ui_lta=lta_list[0].ui_lta).values(
+                "atco_code"
+            ),
+            licence_id__isnull=False,
+        ).values("id")
+
+        if weca_services_list:
+            services_subquery_list.append(weca_services_list)
+
     if services_subquery_list:
         final_subquery = None
         for service_queryset in services_subquery_list:

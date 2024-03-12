@@ -7,6 +7,7 @@ from transit_odp.otc.tests.conftest import get_weca_data
 from transit_odp.otc.weca.client import APIResponse
 from transit_odp.otc.weca.loaders import Loader
 from transit_odp.otc.weca.registry import Registry
+from transit_odp.otc.constants import API_TYPE_WECA
 
 pytestmark = pytest.mark.django_db
 
@@ -34,9 +35,9 @@ def test_delete_services():
     WecaServiceFactory.create_batch(total)
 
     loader = Loader(Registry())
-    total_services = Service.objects.filter(api_type="WECA").count()
+    total_services = Service.objects.filter(api_type=API_TYPE_WECA).count()
     loader.delete_services()
-    total_after_delete = Service.objects.filter(api_type="WECA").count()
+    total_after_delete = Service.objects.filter(api_type=API_TYPE_WECA).count()
 
     assert total_services == total
     assert total_after_delete == 0
@@ -47,7 +48,7 @@ def test_load_services_method():
     loader = Loader(MockRegistry(get_weca_response()))
     loader.load_services()
 
-    total_services = Service.objects.filter(api_type="WECA").count()
+    total_services = Service.objects.filter(api_type=API_TYPE_WECA).count()
     assert total_services == 5
 
 
@@ -56,7 +57,7 @@ def test_load_method_with_Response():
     loader = Loader(MockRegistry(get_weca_response()))
     loader.load()
 
-    total_services = Service.objects.filter(api_type="WECA").count()
+    total_services = Service.objects.filter(api_type=API_TYPE_WECA).count()
     assert total_services == 5
 
 
@@ -65,7 +66,7 @@ def test_load_method_blank_Response():
     loader = Loader(MockRegistry(pd.DataFrame()))
     loader.load()
 
-    total_services = Service.objects.filter(api_type="WECA").count()
+    total_services = Service.objects.filter(api_type=API_TYPE_WECA).count()
     assert total_services == 0
 
 
@@ -78,5 +79,5 @@ def test_load_method_blank_Response_preexisting_services():
     loader = Loader(MockRegistry(pd.DataFrame()))
     loader.load()
 
-    total_services = Service.objects.filter(api_type="WECA").count()
+    total_services = Service.objects.filter(api_type=API_TYPE_WECA).count()
     assert total_services == 5

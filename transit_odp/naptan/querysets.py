@@ -1,5 +1,7 @@
 from django.db import models
-from django.db.models import Count, F
+from django.db.models import BooleanField, Case, Count, F, Value, When
+
+from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 
 
 class AdminAreaQuerySet(models.QuerySet):
@@ -26,6 +28,21 @@ class AdminAreaQuerySet(models.QuerySet):
         """
         return self.annotate(
             published_dataset_count=Count("revisions__live_revision_dataset")
+        )
+
+    def add_is_english_region(self):
+        """Annotate queryset with the check for english region,
+        If service belongs to Engligh region, it will be considered
+        In-Scope else out of scope
+        """
+        return self.annotate(
+            is_english_region=Case(
+                When(
+                    traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS, then=Value(True)
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
         )
 
 
