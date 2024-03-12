@@ -2,16 +2,26 @@ from datetime import timedelta
 from typing import Dict, Optional
 
 from django.db.models import Subquery
-
 from django.db.models.functions import Trim
 from django.http import HttpResponse
 from django.views import View
 
+from transit_odp.browse.common import (
+    get_all_naptan_atco_map,
+    get_lta_traveline_region_map,
+    get_service_traveline_regions,
+    get_service_ui_ltas,
+    get_weca_services_register_numbers,
+    get_weca_traveline_region_map,
+    ui_ltas_string,
+)
+from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
@@ -19,19 +29,6 @@ from transit_odp.publish.requires_attention import (
     get_requires_attention_data_lta,
     get_txc_map_lta,
     is_stale,
-)
-
-from datetime import timedelta
-from transit_odp.browse.lta_column_headers import header_accessor_data
-from transit_odp.otc.constants import API_TYPE_WECA
-from transit_odp.browse.common import (
-    get_all_naptan_atco_map,
-    get_lta_traveline_region_map,
-    get_weca_traveline_region_map,
-    get_weca_services_register_numbers,
-    get_service_ui_ltas,
-    get_service_traveline_regions,
-    ui_ltas_string,
 )
 
 STALENESS_STATUS = [
@@ -415,6 +412,8 @@ class LTACSV(CSVBuilder):
         traveline_region_map_weca = get_weca_traveline_region_map(ui_lta)
         services_code = set(otc_map)
         services_code = sorted(services_code)
+        otc_service_traveline_region = {}
+        otc_service_ui_ltas = {}
 
         for service_code in services_code:
             service = otc_map.get(service_code)
@@ -425,8 +424,18 @@ class LTACSV(CSVBuilder):
 
             if not service.api_type:
                 ui_ltas = get_service_ui_ltas(service)
-                ui_ltas_name = ui_ltas_string(ui_ltas)
-                traveline_region = get_service_traveline_regions(ui_ltas)
+
+                ui_ltas_dict_key = tuple(ui_ltas)
+                if ui_ltas_dict_key not in otc_service_traveline_region:
+                    otc_service_traveline_region[
+                        ui_ltas_dict_key
+                    ] = get_service_traveline_regions(ui_ltas)
+
+                if ui_ltas_dict_key not in otc_service_ui_ltas:
+                    otc_service_ui_ltas[ui_ltas_dict_key] = ui_ltas_string(ui_ltas)
+
+                ui_ltas_name = otc_service_ui_ltas[ui_ltas_dict_key]
+                traveline_region = otc_service_traveline_region[ui_ltas_dict_key]
 
             traveline_region = (
                 traveline_region_map_weca[service.atco_code]
