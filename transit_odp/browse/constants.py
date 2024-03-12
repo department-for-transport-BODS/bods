@@ -321,7 +321,7 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
         "local_authority_ui_lta": Column(
             "OTC:UI LTA",
             "The UI LTA element as extracted from the OTC database.",
-        )
+        ),
     }
 )
 
