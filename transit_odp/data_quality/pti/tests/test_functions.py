@@ -10,11 +10,10 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
     check_flexible_service_stop_point_ref,
+    check_flexible_service_times,
     check_flexible_service_timing_status,
     check_inbound_outbound_description,
     check_service_group_validations,
-    check_flexible_service_stop_point_ref,
-    check_flexible_service_timing_status,
     contains_date,
     has_flexible_or_standard_service,
     has_flexible_service_classification,
@@ -736,6 +735,92 @@ def test_has_flexible_service_classification(
     assert actual == expected
 
 
+def test_check_flexible_service_times():
+    vehicle_journeys = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <VehicleJourneys>
+            <VehicleJourney>
+                <OperatorRef>tkt_oid</OperatorRef>
+                <Operational>
+                    <TicketMachine>
+                    <JourneyCode>1094</JourneyCode>
+                    </TicketMachine>
+                </Operational>
+                <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+                <ServiceRef>PB0002032:468</ServiceRef>
+                <LineRef>CALC:PB0002032:468:550</LineRef>
+                <JourneyPatternRef>jp_1</JourneyPatternRef>
+                <FlexibleServiceTimes>
+                    <ServicePeriod>
+                        <StartTime>07:00:00</StartTime>
+                        <EndTime>19:00:00</EndTime>
+                    </ServicePeriod>
+                </FlexibleServiceTimes>
+                <DepartureTime>15:10:00</DepartureTime>
+            </VehicleJourney>
+            <FlexibleVehicleJourney>
+                <DestinationDisplay>Flexible</DestinationDisplay>
+                <Direction>outbound</Direction>
+                <Description>Monday to Friday service around Market Rasen</Description>
+                <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+                <ServiceRef>PB0002032:467</ServiceRef>
+                <LineRef>ARBB:PB0002032:467:53M</LineRef>
+                <JourneyPatternRef>jp_1</JourneyPatternRef>
+                <FlexibleServiceTimes>
+                    <ServicePeriod>
+                        <StartTime>07:00:00</StartTime>
+                        <EndTime>19:00:00</EndTime>
+                    </ServicePeriod>
+                </FlexibleServiceTimes>
+            </FlexibleVehicleJourney>
+        </VehicleJourneys>
+    </TransXChange>
+    """
+
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    doc = etree.fromstring(vehicle_journeys)
+    elements = doc.xpath("//x:VehicleJourneys", namespaces=NAMESPACE)
+    actual = check_flexible_service_times("", elements)
+    assert actual == True
+
+
+def test_check_no_flexible_service_times():
+    vehicle_journeys = """
+    <TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2021-09-29T17:02:03" ModificationDateTime="2023-07-11T13:44:47" Modification="revise" RevisionNumber="130" FileName="552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+        <VehicleJourneys>
+            <VehicleJourney>
+                <OperatorRef>tkt_oid</OperatorRef>
+                <Operational>
+                    <TicketMachine>
+                    <JourneyCode>1094</JourneyCode>
+                    </TicketMachine>
+                </Operational>
+                <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+                <ServiceRef>PB0002032:468</ServiceRef>
+                <LineRef>CALC:PB0002032:468:550</LineRef>
+                <JourneyPatternRef>jp_1</JourneyPatternRef>
+                <DepartureTime>15:10:00</DepartureTime>
+            </VehicleJourney>
+            <FlexibleVehicleJourney>
+                <DestinationDisplay>Flexible</DestinationDisplay>
+                <Direction>outbound</Direction>
+                <Description>Monday to Friday service around Market Rasen</Description>
+                <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+                <ServiceRef>PB0002032:467</ServiceRef>
+                <LineRef>ARBB:PB0002032:467:53M</LineRef>
+                <JourneyPatternRef>jp_1</JourneyPatternRef>
+            </FlexibleVehicleJourney>
+        </VehicleJourneys>
+    </TransXChange>
+    """
+
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    doc = etree.fromstring(vehicle_journeys)
+    elements = doc.xpath("//x:VehicleJourneys", namespaces=NAMESPACE)
+    actual = check_flexible_service_times("", elements)
+    assert actual == False
+
+
 @pytest.mark.parametrize(
     ("values", "expected"),
     [
@@ -879,7 +964,7 @@ def test_check_flexible_service_stop_point_flexible_zone_stop_type(values, expec
                 <FlexibleService>
                     <FlexibleJourneyPattern id="jp_1">
                         <Direction>outbound</Direction>
-					              <FlexibleZones>
+					    <FlexibleZones>
                             <FlexibleStopUsage>
                                 <StopPointRef>{0}</StopPointRef>
                             </FlexibleStopUsage>

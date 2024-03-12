@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import uuid
+from waffle import flag_is_active
 
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_naptan_stoppoint_df,
@@ -21,6 +21,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     merge_journey_pattern_with_vj_for_departure_time,
     merge_vehicle_journeys_with_jp,
     merge_serviced_organisations_with_operating_profile,
+    merge_lines_with_vehicle_journey,
     sync_localities_and_adminareas,
     transform_line_names,
     transform_service_links,
@@ -36,6 +37,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     merge_flexible_jd_with_jp,
 )
 from transit_odp.naptan.models import StopPoint, FlexibleZone
+from transit_odp.timetables.utils import get_line_description_based_on_direction
 
 
 class TransXChangeTransformer:
@@ -62,7 +64,10 @@ class TransXChangeTransformer:
         df_flexible_operation_periods = (
             self.extracted_data.flexible_operation_periods.copy()
         )
-
+        lines = self.extracted_data.lines.copy()
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
         # Match stop_points with DB
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
         stop_points = sync_localities_and_adminareas(stop_points)
@@ -100,8 +105,15 @@ class TransXChangeTransformer:
             df_merged_vehicle_journeys = merge_vehicle_journeys_with_jp(
                 vehicle_journeys, journey_patterns
             )
+            if is_timetable_visualiser_active:
+                vehicle_journeys = merge_lines_with_vehicle_journey(
+                    df_merged_vehicle_journeys.reset_index(), lines
+                )
+
             journey_patterns = merge_journey_pattern_with_vj_for_departure_time(
-                vehicle_journeys.reset_index(), journey_patterns
+                vehicle_journeys,
+                journey_patterns,
+                is_timetable_visualiser_active,
             )
 
         df_merged_serviced_organisations = pd.DataFrame()
@@ -120,10 +132,9 @@ class TransXChangeTransformer:
                 timing_links,
                 vehicle_journeys_with_timing_refs,
             )
-
-        line_names = transform_line_names(self.extracted_data.line_names)
-
-        # Transform route information into service patterns
+        line_names = transform_line_names(
+            self.extracted_data.line_names
+        )  # Transform route information into service patterns
         service_links = pd.DataFrame()
         if not route_links.empty:
             service_links = transform_service_links(route_links)
@@ -132,7 +143,13 @@ class TransXChangeTransformer:
         service_pattern_to_service_links = pd.DataFrame()
         service_pattern_stops = pd.DataFrame()
         if not journey_patterns.empty and not route_to_route_links.empty:
-            service_patterns = transform_service_patterns(journey_patterns)
+            if is_timetable_visualiser_active:
+                drop_duplicates_columns_sp = ["service_code", "route_hash", "line_name"]
+            else:
+                drop_duplicates_columns_sp = ["service_code", "route_hash"]
+            service_patterns = transform_service_patterns(
+                journey_patterns, drop_duplicates_columns_sp
+            )
             (
                 service_pattern_to_service_links,
                 drop_columns,
@@ -147,6 +164,15 @@ class TransXChangeTransformer:
             service_patterns = transform_stop_sequence(
                 service_pattern_stops, service_patterns
             )
+            if is_timetable_visualiser_active:
+                service_patterns["description"] = service_patterns.apply(
+                    get_line_description_based_on_direction, axis=1
+                )
+                service_patterns.drop(
+                    columns=["inbound_description", "outbound_description"],
+                    axis=1,
+                    inplace=True,
+                )
             service_pattern_to_service_links.drop(
                 columns=drop_columns, axis=1, inplace=True
             )

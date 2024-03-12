@@ -108,7 +108,7 @@ class XmlFileParser(ETLUtility):
 
         # Extract Services
         logger.debug("Extracting services")
-        services = self.extract_services(doc, self.file_id, filename)
+        services, lines = self.extract_services(doc, self.file_id, filename)
         logger.debug("Finished extracting services")
 
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
@@ -214,6 +214,7 @@ class XmlFileParser(ETLUtility):
             modification_datetime=modification_datetime,
             import_datetime=import_datetime,
             line_count=line_count,
+            lines=lines,
             line_names=line_names,
             timing_point_count=timing_point_count,
             stop_count=len(stop_points) + len(provisional_stops),
@@ -244,9 +245,12 @@ class XmlFileParser(ETLUtility):
         """Functionality extracted out, proxied here to not break the API"""
         return extract_timestamp(timestamp, default, *args, **kwargs)
 
-    def extract_services(self, doc, file_id: int, filename):
+    def extract_services(self, doc, file_id: int, filename) -> pd.DataFrame:
+        """
+        Extracts services and lines from a TxC xml document.
+        """
         try:
-            df = services_to_dataframe(self.trans.get_services())
+            services_df, lines_df = services_to_dataframe(self.trans.get_services())
         except MissingLines as err:
             message = (
                 f"Service (service_code=${err.service}) is missing "
@@ -257,9 +261,12 @@ class XmlFileParser(ETLUtility):
                 message=message,
             )
 
-        df["file_id"] = file_id
-        df.set_index(["file_id", "service_code"], inplace=True)
-        return df
+        services_df["file_id"] = file_id
+        services_df.set_index(["file_id", "service_code"], inplace=True)
+
+        lines_df["file_id"] = file_id
+        lines_df.set_index(["file_id"], inplace=True)
+        return services_df, lines_df
 
     def extract_stop_points(self, doc):
         refs = self.trans.get_annotated_stop_point_refs()

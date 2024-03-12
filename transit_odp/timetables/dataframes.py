@@ -5,6 +5,7 @@
 import logging
 
 import pandas as pd
+from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_str
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -14,8 +15,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     db_bank_holidays_to_df,
 )
 from datetime import datetime, timedelta
-
-from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
@@ -126,9 +125,13 @@ def flexible_journey_patterns_to_dataframe(services):
     return pd.DataFrame()
 
 
-def services_to_dataframe(services):
+def services_to_dataframe(services: list) -> pd.DataFrame:
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
+    lines_list = []
+    is_timetable_visualiser_active = flag_is_active(
+        "", "is_timetable_visualiser_active"
+    )
     for service in services:
         service_code = service.get_element("ServiceCode").text
         start_date = service.get_element(["OperatingPeriod", "StartDate"]).text
@@ -136,8 +139,15 @@ def services_to_dataframe(services):
         flexible_service = service.get_element_or_none(["FlexibleService"])
         if end_date:
             end_date = end_date.text
-        line_names = service.get_elements(["Lines", "Line", "LineName"])
-
+        if is_timetable_visualiser_active:
+            lines = service.get_elements(["Lines", "Line"])
+            line_names = [
+                line_name.get_element(["LineName"]).text for line_name in lines
+            ]
+            lines_list.extend(populate_lines(lines))
+        else:
+            line_names = service.get_elements(["Lines", "Line", "LineName"])
+            line_names = [line_name.text for line_name in line_names]
         if len(line_names) < 1:
             raise MissingLines(service=service_code)
 
@@ -157,16 +167,17 @@ def services_to_dataframe(services):
                 "service_code": service_code,
                 "start_date": start_datetime,
                 "end_date": end_datetime,
-                "line_names": [node.text for node in line_names],
+                "line_names": line_names,
                 "service_type": service_type,
             }
         )
 
     columns = ["service_code", "start_date", "end_date", "line_names", "service_type"]
     service_df = pd.DataFrame(items, columns=columns)
+    lines_df = pd.DataFrame(lines_list)
     for datetime_column_name in ["start_date", "end_date"]:
         service_df[datetime_column_name].fillna(pd.to_datetime("NaT"), inplace=True)
-    return service_df
+    return service_df, lines_df
 
 
 def stop_point_refs_to_dataframe(stop_point_refs):
@@ -390,9 +401,12 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
             )
-            journey_pattern_ref = ""
-            if journey_pattern_ref_element:
-                journey_pattern_ref = journey_pattern_ref_element.text
+            journey_pattern_ref_element = vehicle_journey.get_element_or_none(
+                ["JourneyPatternRef"]
+            )
+            journey_pattern_ref = (
+                journey_pattern_ref_element.text if journey_pattern_ref_element else ""
+            )
             line_ref = vehicle_journey.get_element(["LineRef"]).text
             journey_code_element = vehicle_journey.get_element_or_none(
                 ["Operational", "TicketMachine", "JourneyCode"]
@@ -432,6 +446,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         {
                             "service_code": service_ref,
                             "departure_time": departure_time,
+                            "jp_ref": journey_pattern_ref,
                             "journey_pattern_ref": "-".join(
                                 [service_ref, journey_pattern_ref]
                             ),
@@ -493,8 +508,37 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
                     "departure_day_shift": False,
                 }
             )
-
     return pd.DataFrame(all_vehicle_journeys)
+
+
+def populate_lines(lines: list) -> list:
+    lines_list = []
+    for line in lines:
+        line_id = line["id"]
+        line_name = line.get_element(["LineName"]).text
+        outbound_description = line.get_element_or_none(["OutboundDescription"])
+        inbound_description = line.get_element_or_none(["InboundDescription"])
+
+        outbound_description = (
+            outbound_description.get_element("Description").text
+            if outbound_description
+            else ""
+        )
+        inbound_description = (
+            inbound_description.get_element("Description").text
+            if inbound_description
+            else ""
+        )
+
+        lines_list.append(
+            {
+                "line_id": line_id,
+                "line_name": line_name,
+                "outbound_description": outbound_description,
+                "inbound_description": inbound_description,
+            }
+        )
+    return lines_list
 
 
 def flexible_operation_period_to_dataframe(flexible_vechicle_journeys):

@@ -6,7 +6,7 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_etl_operating_dates_excep
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
 )
-from transit_odp.pipelines.tests.utils import check_frame_equal
+
 from transit_odp.transmodel.models import OperatingProfile
 from waffle.testutils import override_flag
 
@@ -77,7 +77,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
         # test
         extracted = self.trans_xchange_extractor.extract()
 
-        self.assertEqual(extracted.operating_profiles.shape[0], 20)
+        self.assertEqual(extracted.operating_profiles.shape[0], 474)
 
         self.assertCountEqual(
             list(extracted.operating_profiles.columns),
@@ -93,7 +93,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
         # test
         transformed = self.feed_parser.transform(extracted)
 
-        self.assertEqual(transformed.operating_profiles.shape[0], 20)
+        self.assertEqual(transformed.operating_profiles.shape[0], 474)
 
         self.assertCountEqual(
             list(transformed.operating_profiles.columns),
@@ -110,7 +110,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
         operating_profiles = OperatingProfile.objects.all()
         # test
 
-        self.assertEqual(10, operating_profiles.count())
+        self.assertEqual(237, operating_profiles.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -126,8 +126,8 @@ class ETLOperatingProfilesVehicleJourneysWithHolidays(ExtractBaseTestCase):
         # test
         transformed = self.feed_parser.transform(extracted)
 
-        self.assertEqual(extracted.operating_profiles.shape[0], 50)
-        self.assertEqual(transformed.operating_profiles.shape[0], 50)
+        self.assertEqual(extracted.operating_profiles.shape[0], 1163)
+        self.assertEqual(transformed.operating_profiles.shape[0], 1163)
 
         self.assertCountEqual(
             list(extracted.operating_profiles.columns),
@@ -150,7 +150,7 @@ class ETLOperatingProfilesVehicleJourneysWithHolidays(ExtractBaseTestCase):
 
         operating_profiles = OperatingProfile.objects.all()
 
-        self.assertEqual(10, operating_profiles.count())
+        self.assertEqual(237, operating_profiles.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)

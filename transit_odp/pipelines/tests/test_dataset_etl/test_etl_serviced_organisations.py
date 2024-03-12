@@ -77,6 +77,34 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
                     "start_date": "2023-06-04",
                     "end_date": "2023-07-25",
                 },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-02-03",
+                    "end_date": "2023-03-10",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-03-19",
+                    "end_date": "2023-03-31",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-04-16",
+                    "end_date": "2023-05-26",
+                },
+                {
+                    "file_id": file_id,
+                    "serviced_org_ref": "NYCCSC",
+                    "name": "NYCC SCHOOLS",
+                    "start_date": "2023-06-04",
+                    "end_date": "2023-07-25",
+                },
             ]
         ).set_index("file_id")
 
@@ -120,7 +148,7 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
             ]
         ).set_index("file_id")
 
-        self.assertEqual(14, transformed.serviced_organisations.shape[0])
+        self.assertEqual(22, transformed.serviced_organisations.shape[0])
 
         self.assertCountEqual(
             list(transformed.serviced_organisations.columns),
@@ -137,10 +165,11 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
         serviced_orgs = ServicedOrganisations.objects.all()
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
-        self.assertEqual(1, serviced_orgs.count())
-        self.assertEqual(7, serviced_org_working_days.count())
-        for serviced_org in serviced_orgs:
-            self.assertEqual(serviced_org.name, "NYCC Schools")
+        self.assertEqual(2, serviced_orgs.count())
+        self.assertEqual(11, serviced_org_working_days.count())
+
+        serviced_org_names = [serviced_org.name for serviced_org in serviced_orgs]
+        self.assertEqual(serviced_org_names, ["NYCC Schools", "NYCC SCHOOLS"])
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -158,7 +187,7 @@ class ETLServicedOrganisationsWithOrgInDB(ExtractBaseTestCase):
         serviced_orgs = ServicedOrganisations.objects.all()
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
-        self.assertEqual(2, serviced_orgs.count())
+        self.assertEqual(3, serviced_orgs.count())
         self.assertEqual(14, serviced_org_working_days.count())
 
 
@@ -423,4 +452,4 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
         )
 
         # test
-        self.assertEqual(40, serviced_orgs_vehicle_journeys.count())
+        self.assertEqual(80, serviced_orgs_vehicle_journeys.count())
