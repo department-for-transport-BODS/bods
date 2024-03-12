@@ -273,7 +273,7 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Variation Number",
             "The variation number element as extracted from the OTC database.",
         ),
-        "service_number": Column(
+        "service_numbers": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),

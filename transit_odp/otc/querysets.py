@@ -73,6 +73,11 @@ class ServiceQuerySet(QuerySet):
             )
         )
 
+    def add_service_number(self) -> TServiceQuerySet:
+        return self.annotate(
+            service_numbers=GroupConcat(F("service_number"), delimiter="|")
+        )
+
     def add_localauthority_details(self) -> TServiceQuerySet:
         return self.annotate(
             local_authority_name=GroupConcat(F("registration__name"), delimiter="|")
@@ -96,6 +101,7 @@ class ServiceQuerySet(QuerySet):
             .add_localauthority_details()
             .add_traveline_region_details()
             .add_UI_LTA()
+            .add_service_number()
         )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
