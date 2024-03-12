@@ -1,7 +1,6 @@
 import datetime
 from collections import OrderedDict
-import logging
-from math import nan
+
 from typing import Optional
 
 import numpy as np
@@ -9,7 +8,10 @@ import pandas as pd
 from pandas import Series
 
 from transit_odp.common.collections import Column
-from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
+from transit_odp.organisation.constants import (
+    ENGLISH_TRAVELINE_REGIONS,
+    TravelineRegions,
+)
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
     Organisation,
@@ -17,7 +19,6 @@ from transit_odp.organisation.models import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
-from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.models import Service as OTCService
 
 TXC_COLUMNS = (
@@ -313,6 +314,18 @@ def add_operator_name(row: Series) -> str:
 
 
 def scope_status(row, exempted_reg_numbers):
+    """
+    Column “Scope” for a service
+       A service should be deemed “in scope” if:
+       Registered with OTC or WECA and has not been marked out of scope by the DVSA.
+       If at least one of the Traveline Region values for that row is mapped to England.
+    Args:
+        row (df): Dataframe row
+        exempted_reg_numbers (array): array of dataframe with registration number
+
+    Returns:
+        df: df
+    """
     exempted = row["registration_number"] in exempted_reg_numbers
     row["scope_status"] = "Out of Scope"
     traveline_regions = row["traveline_region"].split("|")
@@ -322,7 +335,55 @@ def scope_status(row, exempted_reg_numbers):
     return row
 
 
+def traveline_regions(row, traveline_regions_dict):
+    """
+    Traveline region need to mapped with Value metioned in TravelineRegions
+
+    Args:
+        row (df): df row
+        traveline_regions_dict (dict): Dictionary of tavelineregion key value map
+
+    Returns:
+        df: modified row of df
+    """
+    traveline_regions = row["traveline_region"].split("|")
+    travelines = [
+        traveline_regions_dict.get(region, region)
+        for region in traveline_regions
+        if region != "None"
+    ]
+    if travelines:
+        row["traveline_region"] = "|".join(map(str, travelines))
+    return row
+
+
+def add_traveline_regions(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Traveline Regions short form is fetched from DB and
+    it need to be replaced by label assigned in TravelineRegions
+
+    Args:
+        row (df): Merged df
+
+    Returns:
+        df: modified row of df
+    """
+    traveline_regions_dict = {
+        region_code: pretty_name_region_code
+        for region_code, pretty_name_region_code in TravelineRegions.choices
+    }
+    return df.apply(traveline_regions, args=[traveline_regions_dict], axis=1)
+
+
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Status columns of published, otc and scopes will be modified
+
+    Args:
+        df (pd.DataFrame): Merged df
+
+    Returns:
+        pd.DataFrame: Modified df
+    """
     exists_in_bods = np.invert(pd.isna(df["dataset_id"]))
     exists_in_otc = np.invert(pd.isna(df["otc_licence_number"]))
     exempted_reg_numbers = (
@@ -334,7 +395,7 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
     df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
-    df["traveline_region"] = df["traveline_region"].astype(str)
+    df["traveline_region"] = df["traveline_region"].fillna("").astype(str)
     df = df.apply(scope_status, args=[registration_number_exempted], axis=1)
     return df
 
@@ -508,6 +569,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
     merged = add_requires_attention_column(merged, today)
+    merged = add_traveline_regions(merged)
 
     rename_map = {
         old_name: column_tuple.field_name

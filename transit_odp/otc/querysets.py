@@ -64,24 +64,25 @@ class ServiceQuerySet(QuerySet):
             granted_date=F("licence__granted_date"),
         )
 
-    def add_UI_LTA(self) -> TServiceQuerySet:
-        return self.annotate(
-            local_authority_ui_lta=GroupConcat(
-                F("registration__ui_lta__name"), delimiter="|"
-            )
-        )
-
-    def add_service_number(self) -> TServiceQuerySet:
-        return self.annotate(
-            service_numbers=GroupConcat(F("service_number"), delimiter="|")
-        )
-
     def add_localauthority_details(self) -> TServiceQuerySet:
+        """
+        Local authority name should be displayed with | seperation if multiple.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
         return self.annotate(
             local_authority_name=GroupConcat(F("registration__name"), delimiter="|")
         )
 
     def add_traveline_region_details(self) -> TServiceQuerySet:
+        """
+        Traveline Region that the UI LTA maps to via the admin area table by joining atco code
+        If Traveline Region value is multiple in the row for this service code it should sperated with |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
         return self.annotate(
             traveline_region=GroupConcat(
                 AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
@@ -89,6 +90,33 @@ class ServiceQuerySet(QuerySet):
                 ),
                 delimiter="|",
             )
+        )
+
+    def add_UI_LTA(self) -> TServiceQuerySet:
+        """
+        This column is populated with the UI LTA(s) the service code belongs to
+        via the relationship between the service and the OTC localAuthority or
+        the service and the ATCO which is mapped to the UI LTA entity.
+        And if the service belongs to more than one UI LTA, then separate these with a |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            local_authority_ui_lta=GroupConcat(
+                F("registration__ui_lta__name"), delimiter="|"
+            )
+        )
+
+    def add_service_number(self) -> TServiceQuerySet:
+        """
+        There may be multiple rows for the service, and each row has it's own service number,
+        then This will appear in the report as with | seperator.
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            service_numbers=GroupConcat(F("service_number"), delimiter="|")
         )
 
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
