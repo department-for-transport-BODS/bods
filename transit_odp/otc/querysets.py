@@ -1,8 +1,7 @@
 from datetime import timedelta
 from typing import TypeVar
-import pandas as pd
-from pandas import DataFrame, Series
 
+import pandas as pd
 from django.db.models import (
     CharField,
     DateField,
@@ -12,11 +11,14 @@ from django.db.models import (
     Subquery,
     Value,
 )
-
 from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from pandas import DataFrame, Series
+
+from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     SeasonalService,
@@ -24,14 +26,11 @@ from transit_odp.organisation.models import (
     TXCFileAttributes,
 )
 from transit_odp.otc.constants import (
+    API_TYPE_WECA,
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
 )
-from transit_odp.naptan.models import AdminArea
-from transit_odp.otc.constants import API_TYPE_WECA
-from transit_odp.naptan.models import AdminArea
-from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 
 TServiceQuerySet = TypeVar("TServiceQuerySet", bound="ServiceQuerySet")
 
@@ -137,12 +136,19 @@ class ServiceQuerySet(QuerySet):
         )
 
     def get_weca_services_register_numbers(self, ui_lta):
+        """
+        Get the WECA services for a given ui lta
+        """
         return self.filter(
             atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta).values("atco_code"),
             licence_id__isnull=False,
         ).values("id")
 
     def get_weca_otc_traveline_region_exemption(self, ui_lta):
+        """
+        Get OTC and WECA registration_number subquery, which are exempted
+        because those are not present in english traveline region
+        """
         weca_registrations = [
             self.filter(
                 atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta)
