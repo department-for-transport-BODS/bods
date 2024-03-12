@@ -36,7 +36,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
     def test_extract(self):
         setup_bank_holidays()
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         df_extracted_data = extracted.operating_profiles
 
@@ -66,7 +66,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
 
     def test_transform(self):
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         # test
         transformed = self.feed_parser.transform(extracted)
 
@@ -99,7 +99,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
         # setup
         setup_bank_holidays()
 
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -135,7 +135,7 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
     def test_extract(self):
         setup_bank_holidays()
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         df_extracted_data = extracted.operating_profiles
 
@@ -167,7 +167,7 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
     def test_transform(self):
         # setup
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         # test
         transformed = self.feed_parser.transform(extracted)
 
@@ -202,7 +202,7 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
         # setup
         setup_bank_holidays()
 
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -231,7 +231,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
     def test_extract(self):
         setup_bank_holidays()
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         df_extracted_data = extracted.operating_profiles
 
@@ -261,7 +261,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
 
     def test_transform(self):
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         # test
         transformed = self.feed_parser.transform(extracted)
 
@@ -294,7 +294,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
         # setup
         setup_bank_holidays()
 
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
