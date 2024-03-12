@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import TypeVar
 
-import pandas as pd
 from django.db.models import (
     CharField,
     DateField,
