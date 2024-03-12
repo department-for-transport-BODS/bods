@@ -19,6 +19,7 @@ class ExtractedData(object):
     serviced_organisations: pd.DataFrame
     operating_profiles: pd.DataFrame
     flexible_operation_periods: pd.DataFrame
+    lines: pd.DataFrame
 
     routes: pd.DataFrame
     route_to_route_links: pd.DataFrame
