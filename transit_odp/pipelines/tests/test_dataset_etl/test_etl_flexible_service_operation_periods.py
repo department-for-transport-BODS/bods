@@ -9,7 +9,11 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from waffle.testutils import override_flag
 
-from transit_odp.transmodel.models import FlexibleServiceOperationPeriod
+from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
+    ServicePattern,
+    ServicePatternStop,
+)
 
 TZ = tz.gettz("Europe/London")
 
@@ -20,10 +24,10 @@ class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         expected_flexible_service_operation_period = pd.DataFrame(
             [
@@ -56,8 +60,8 @@ class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = self.xml_file_parser.file_id
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.trans_xchange_extractor.file_id
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -92,7 +96,7 @@ class ExtractFlexibleOperationPeriods(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -121,9 +125,9 @@ class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         expected_flexible_service_operation_period = pd.DataFrame(
             [
@@ -150,8 +154,8 @@ class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = self.xml_file_parser.file_id
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.trans_xchange_extractor.file_id
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -180,7 +184,7 @@ class ExtractFlexibleOperationPeriodsForAllDayService(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -203,9 +207,9 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         expected_flexible_service_operation_period = pd.DataFrame(
             [
@@ -238,8 +242,8 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        file_id = self.xml_file_parser.file_id
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        file_id = self.trans_xchange_extractor.file_id
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -274,7 +278,7 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -283,8 +287,13 @@ class ExtractFlexibleOperationPeriodsWithStandardService(ExtractBaseTestCase):
         flexible_service_operation_periods = (
             FlexibleServiceOperationPeriod.objects.all()
         )
+        service_pattern_count = ServicePattern.objects.all().count()
+        service_pattern_stops_count = ServicePatternStop.objects.all().count()
 
         self.assertEqual(2, flexible_service_operation_periods.count())
+        self.assertEqual(service_pattern_stops_count, 2)
+        self.assertEqual(service_pattern_count, 2)
+
         for operation_period in flexible_service_operation_periods:
             self.assertIn(
                 operation_period.start_time,

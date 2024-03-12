@@ -35,6 +35,41 @@ ServicePatternThrough = ServicePattern.service_links.through
 logger = logging.getLogger(__name__)
 
 
+def create_naptan_flexible_zone_df_from_queryset(queryset):
+    """
+    Converts the naptan flexible zone table query set to pandas dataframe object
+    and converts the flexible location geometry to list for same naptan stop points
+    """
+    flexible_zone = (
+        {
+            "naptan_id": obj.naptan_stoppoint_id,
+            "flexible_location": Point(obj.location.x, obj.location.y),
+            "sequence_number": obj.sequence_number,
+        }
+        for obj in queryset
+    )
+    df = create_flexible_zone_df(flexible_zone)
+    # perform grouping of data on naptan_id and create list of flexible zone geometry
+    if not df.empty:
+        df = df.groupby(["naptan_id"])["flexible_location"].agg(list).reset_index()
+    return df
+
+
+def create_flexible_zone_df(data=None):
+    """
+    Converts the list of object to geopandas dataframe
+    """
+    typings = OrderedDict(
+        {
+            "naptan_id": "object",
+            "flexible_location": "geometry",
+            "sequence_number": "int",
+        }
+    )
+    df = geopandas.GeoDataFrame(data, columns=typings.keys()).astype(typings)
+    return df
+
+
 def create_stop_point_cache(revision_id):
     stops = (
         StopPoint.objects.filter(
@@ -64,10 +99,8 @@ def create_naptan_stoppoint_df(data=None):
             "locality_id": "str",
         }
     )
-    return (
-        geopandas.GeoDataFrame(data, columns=typings.keys())
-        .astype(typings)
-        .set_index("atco_code", verify_integrity=True)
+    return geopandas.GeoDataFrame(data, columns=typings.keys()).set_index(
+        "atco_code", verify_integrity=True
     )
 
 
