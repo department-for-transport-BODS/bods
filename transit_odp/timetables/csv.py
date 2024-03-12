@@ -354,10 +354,6 @@ def add_seasonal_status(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     return annotated_df
 
 
-def defer_one_year(d):
-    return d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
-
-
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
@@ -368,6 +364,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     df["effective_stale_date_from_end_date"] = df[
         "operating_period_end_date"
     ] - pd.Timedelta(days=42)
+    defer_one_year = lambda d: d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
 
     df["effective_stale_date_from_last_modified"] = df[
         "effective_last_modified_date"
@@ -404,7 +401,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     forty_two_days_from_today = today + np.timedelta64(42, "D")
 
     staleness_42_day_look_ahead = (
-        (staleness_otc is False)
+        (staleness_otc == False)
         & pd.notna(df["operating_period_end_date"])
         & (df["operating_period_end_date"] < forty_two_days_from_today)
     )
@@ -414,8 +411,8 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     effective_stale_date_from_last_modified = last_modified_date - 365 days (or 1 year)
     """
     staleness_12_months = (
-        (staleness_otc is False)
-        & (staleness_42_day_look_ahead is False)
+        (staleness_otc == False)
+        & (staleness_42_day_look_ahead == False)
         & (
             pd.to_datetime(df["last_modified_date"]).values.astype("datetime64")
             + np.timedelta64(365, "D")

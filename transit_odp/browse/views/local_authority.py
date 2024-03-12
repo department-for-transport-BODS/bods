@@ -434,9 +434,9 @@ class LTACSV(CSVBuilder):
                 else traveline_region
             )
 
-            ui_lta_name = (ui_lta.name
-                if service.api_type == API_TYPE_WECA
-                else ui_ltas_name)
+            ui_lta_name = (
+                ui_lta.name if service.api_type == API_TYPE_WECA else ui_ltas_name
+            )
 
             staleness_status = "Up to date"
             if file_attribute is None:
@@ -468,7 +468,7 @@ class LTACSV(CSVBuilder):
                 staleness_status,
                 require_attention,
                 traveline_region,
-                ui_lta_name
+                ui_lta_name,
             )
 
     def get_queryset(self):
