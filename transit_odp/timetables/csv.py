@@ -47,7 +47,7 @@ OTC_COLUMNS = (
     "registration_number",
     "service_type_description",
     "variation_number",
-    "service_number",
+    "service_numbers",
     "start_point",
     "finish_point",
     "via",
@@ -258,7 +258,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Variation Number",
             "The variation number element as extracted from the OTC database.",
         ),
-        "service_number": Column(
+        "service_numbers": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),
@@ -314,22 +314,11 @@ def add_operator_name(row: Series) -> str:
 
 def scope_status(row, exempted_reg_numbers):
     exempted = row["registration_number"] in exempted_reg_numbers
-    scope = "Out of Scope"
+    row["scope_status"] = "Out of Scope"
     traveline_regions = row["traveline_region"].split("|")
-
-    if row["api_type"] and exempted:
-        scope = "In Scope"
-
-    for traveline_region in traveline_regions:
-        if (
-            row["api_type"] == API_TYPE_WECA
-            and exempted
-            and (traveline_region in ENGLISH_TRAVELINE_REGIONS)
-        ):
-            scope = "In Scope"
-            break
-
-    row["scope_status"] = scope
+    intesect = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
+    if not exempted and intesect:
+        row["scope_status"] = "In Scope"
     return row
 
 
@@ -525,6 +514,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         for old_name, column_tuple in TIMETABLE_COLUMN_MAP.items()
     }
     merged = merged[TIMETABLE_COLUMN_MAP.keys()].rename(columns=rename_map)
+    merged.to_csv("merged.csv")
     return merged
 
 
