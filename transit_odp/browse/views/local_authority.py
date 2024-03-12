@@ -58,7 +58,8 @@ def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
 
     if len(lta_list) > 0:
         weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
-        services_subquery_list = services_subquery_list + [weca_services_list]
+        if weca_services_list:
+            services_subquery_list.append(weca_services_list)
 
     if services_subquery_list:
         final_subquery = None
@@ -92,7 +93,8 @@ def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
 
     if len(lta_list) > 0:
         weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
-        services_subquery_list = services_subquery_list + [weca_services_list]
+        if weca_services_list:
+            services_subquery_list.append(weca_services_list)
 
     if services_subquery_list:
         final_subquery = None
@@ -126,7 +128,8 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
 
     if len(lta_list) > 0:
         weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
-        services_subquery_list = services_subquery_list + [weca_services_list]
+        if weca_services_list:
+            services_subquery_list.append(weca_services_list)
 
     if services_subquery_list:
         final_subquery = None

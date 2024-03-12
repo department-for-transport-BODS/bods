@@ -78,7 +78,8 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
             licence_id__isnull=False,
         ).values("id")
 
-        services_subquery_list = services_subquery_list + [weca_services_list]
+        if weca_services_list:
+            services_subquery_list.append(weca_services_list)
 
     if services_subquery_list:
         final_subquery = None
