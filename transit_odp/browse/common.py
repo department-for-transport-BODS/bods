@@ -45,3 +45,34 @@ def get_weca_services_register_numbers(ui_lta):
         atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta).values("atco_code"),
         licence_id__isnull=False,
     ).values("id")
+
+
+def get_service_ui_ltas(service):
+    """
+    Get a list of UI Ltas for a OTC service
+    """
+    service_registrations = service.registration.all()
+    ui_ltas_list = []
+    for lta in service_registrations:
+        if lta.ui_lta:
+            ui_ltas_list.append(lta.ui_lta)
+    return ui_ltas_list
+
+
+def ui_ltas_string(ui_ltas):
+    """
+    Create a string of ui lta names seprated by pipe "|"
+    """
+    return "|".join([ui_lta.name for ui_lta in ui_ltas])
+
+
+def get_service_traveline_regions(ui_ltas):
+    """
+    Create a string of traveline regions for UI LTAS
+    """
+    return "|".join(
+        [
+            str(TravelineRegions(admin_area.traveline_region_id).label)
+            for admin_area in AdminArea.objects.filter(ui_lta__in=ui_ltas).all()
+        ]
+    )

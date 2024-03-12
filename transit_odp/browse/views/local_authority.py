@@ -29,6 +29,9 @@ from transit_odp.browse.common import (
     get_lta_traveline_region_map,
     get_weca_traveline_region_map,
     get_weca_services_register_numbers,
+    get_service_ui_ltas,
+    get_service_traveline_regions,
+    ui_ltas_string,
 )
 
 STALENESS_STATUS = [
@@ -71,7 +74,9 @@ def get_all_otc_map_lta(lta_list) -> Dict[str, OTCService]:
 
         return {
             service.registration_number.replace("/", ":"): service
-            for service in OTCService.objects.get_all_otc_data_for_lta(final_subquery)
+            for service in OTCService.objects.prefetch_related(
+                "registration"
+            ).get_all_otc_data_for_lta(final_subquery)
         }
     else:
         return {}
@@ -328,6 +333,7 @@ class LTACSV(CSVBuilder):
         staleness_status: Optional[str],
         require_attention: str,
         traveline_region: str,
+        ui_lta_name: str,
     ) -> None:
         self._object_list.append(
             {
@@ -372,6 +378,7 @@ class LTACSV(CSVBuilder):
                 "national_operator_code": file_attribute
                 and file_attribute.national_operator_code,
                 "traveline_region": traveline_region,
+                "ui_lta_name": ui_lta_name,
             }
         )
 
@@ -399,13 +406,13 @@ class LTACSV(CSVBuilder):
         doesn't ie. not live in BODS at all, or live but meeting new
         Staleness conditions.
         """
+        ui_lta = lta_list[0].ui_lta
         otc_map = get_all_otc_map_lta(lta_list)
         txcfa_map = get_txc_map_lta(lta_list)
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
         naptan_atco_code_map = get_all_naptan_atco_map()
-        traveline_region_lta = get_lta_traveline_region_map(lta_list[0].ui_lta)
-        traveline_region_map_weca = get_weca_traveline_region_map(lta_list[0].ui_lta)
+        traveline_region_map_weca = get_weca_traveline_region_map(ui_lta)
         services_code = set(otc_map)
         services_code = sorted(services_code)
 
@@ -415,11 +422,21 @@ class LTACSV(CSVBuilder):
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
             is_english_region = naptan_atco_code_map.get(service.atco_code, False)
+
+            if not service.api_type:
+                ui_ltas = get_service_ui_ltas(service)
+                ui_ltas_name = ui_ltas_string(ui_ltas)
+                traveline_region = get_service_traveline_regions(ui_ltas)
+
             traveline_region = (
                 traveline_region_map_weca[service.atco_code]
                 if service.api_type == API_TYPE_WECA
-                else traveline_region_lta
+                else traveline_region
             )
+
+            ui_lta_name = (ui_lta.name
+                if service.api_type == API_TYPE_WECA
+                else ui_ltas_name)
 
             staleness_status = "Up to date"
             if file_attribute is None:
@@ -451,6 +468,7 @@ class LTACSV(CSVBuilder):
                 staleness_status,
                 require_attention,
                 traveline_region,
+                ui_lta_name
             )
 
     def get_queryset(self):

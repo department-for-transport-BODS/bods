@@ -157,7 +157,7 @@ class ServiceQuerySet(QuerySet):
         ).count()
         if admin_area_in_scope == 0:
             weca_registrations = weca_registrations + [
-                self.filter(api_type__isnull=True).values("registration_numbers")
+                self.filter(api_type__isnull=True).values("registration_number")
             ]
 
         final_subquery = None
