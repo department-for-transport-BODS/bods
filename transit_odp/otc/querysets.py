@@ -188,7 +188,9 @@ class ServiceQuerySet(QuerySet):
             weca_services_list = self.get_weca_services_register_numbers(
                 lta_list[0].ui_lta
             )
-            services_subquery_list = services_subquery_list + [weca_services_list]
+
+            if weca_services_list:
+                services_subquery_list.append(weca_services_list)
 
         if services_subquery_list:
             final_subquery = None
@@ -336,7 +338,8 @@ class ServiceQuerySet(QuerySet):
             weca_services_list = self.get_weca_services_register_numbers(
                 lta_list[0].ui_lta
             )
-            services_subquery_list = services_subquery_list + [weca_services_list]
+            if weca_services_list:
+                services_subquery_list.append(weca_services_list)
 
         if services_subquery_list:
             final_subquery = None
