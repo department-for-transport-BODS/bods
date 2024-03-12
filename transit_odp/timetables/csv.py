@@ -1,7 +1,5 @@
 import datetime
 from collections import OrderedDict
-
-
 from typing import Optional
 
 import numpy as np
@@ -9,10 +7,6 @@ import pandas as pd
 from pandas import Series
 
 from transit_odp.common.collections import Column
-from transit_odp.organisation.constants import (
-    ENGLISH_TRAVELINE_REGIONS,
-    TravelineRegions,
-)
 from transit_odp.organisation.constants import (
     ENGLISH_TRAVELINE_REGIONS,
     TravelineRegions,
@@ -65,7 +59,6 @@ OTC_COLUMNS = (
     "traveline_region",
     "local_authority_name",
     "local_authority_ui_lta",
-    "api_type",
     "api_type",
 )
 
@@ -266,7 +259,6 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The variation number element as extracted from the OTC database.",
         ),
         "service_numbers": Column(
-        "service_numbers": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),
@@ -318,68 +310,6 @@ def add_operator_name(row: Series) -> str:
             return operator_name
     else:
         return row["organisation_name"]
-
-
-def scope_status(row, exempted_reg_numbers):
-    """
-    Column “Scope” for a service
-       A service should be deemed “in scope” if:
-       Registered with OTC or WECA and has not been marked out of scope by the DVSA.
-       If at least one of the Traveline Region values for that row is mapped to England.
-    Args:
-        row (df): Dataframe row
-        exempted_reg_numbers (array): array of dataframe with registration number
-
-    Returns:
-        df: df
-    """
-    exempted = row["registration_number"] in exempted_reg_numbers
-    row["scope_status"] = "Out of Scope"
-    traveline_regions = row["traveline_region"].split("|")
-    intesect = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
-    if not exempted and intesect:
-        row["scope_status"] = "In Scope"
-    return row
-
-
-def traveline_regions(row, traveline_regions_dict):
-    """
-    Traveline region need to mapped with Value metioned in TravelineRegions
-
-    Args:
-        row (df): df row
-        traveline_regions_dict (dict): Dictionary of tavelineregion key value map
-
-    Returns:
-        df: modified row of df
-    """
-    traveline_regions = row["traveline_region"].split("|")
-    travelines = [
-        traveline_regions_dict.get(region, region)
-        for region in traveline_regions
-        if region != "None"
-    ]
-    if travelines:
-        row["traveline_region"] = "|".join(map(str, travelines))
-    return row
-
-
-def add_traveline_regions(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Traveline Regions short form is fetched from DB and
-    it need to be replaced by label assigned in TravelineRegions
-
-    Args:
-        row (df): Merged df
-
-    Returns:
-        df: modified row of df
-    """
-    traveline_regions_dict = {
-        region_code: pretty_name_region_code
-        for region_code, pretty_name_region_code in TravelineRegions.choices
-    }
-    return df.apply(traveline_regions, args=[traveline_regions_dict], axis=1)
 
 
 def scope_status(row, exempted_reg_numbers):
@@ -501,6 +431,10 @@ def add_seasonal_status(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     return annotated_df
 
 
+def defer_one_year(d):
+    return d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
+
+
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
@@ -547,7 +481,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     forty_two_days_from_today = today + np.timedelta64(42, "D")
 
     staleness_42_day_look_ahead = (
-        (staleness_otc == False)
+        (staleness_otc is False)
         & pd.notna(df["operating_period_end_date"])
         & (df["operating_period_end_date"] < forty_two_days_from_today)
     )
@@ -557,8 +491,8 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     effective_stale_date_from_last_modified = last_modified_date - 365 days (or 1 year)
     """
     staleness_12_months = (
-        (staleness_otc == False)
-        & (staleness_42_day_look_ahead == False)
+        (staleness_otc is False)
+        & (staleness_42_day_look_ahead is False)
         & (
             pd.to_datetime(df["last_modified_date"]).values.astype("datetime64")
             + np.timedelta64(365, "D")
