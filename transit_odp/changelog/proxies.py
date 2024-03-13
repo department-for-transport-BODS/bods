@@ -15,7 +15,8 @@ class ConsumerKnownIssues(KnownIssues):
     objects = ConsumerKnownIssueManager()
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, category=ConsumerIssue, **kwargs)
+        kwargs.update({"category": ConsumerIssue})
+        super().__init__(**kwargs)
 
 
 class PublisherKnownIssues(KnownIssues):
@@ -27,4 +28,5 @@ class PublisherKnownIssues(KnownIssues):
     objects = PublisherKnownIssueManager()
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, category=PublisherIssue, **kwargs)
+        kwargs.update({"category": PublisherIssue})
+        super().__init__(**kwargs)
