@@ -54,7 +54,7 @@ class DataModel(BaseModel):
             return "/".join(parts[:2])
         else:
             return value
-        
+
     @validator("variation_number")
     def trim_variation_number(cls, value):
         # Split the variation number by slashes and take the third part
