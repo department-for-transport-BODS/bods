@@ -20,8 +20,11 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     stop_point_refs_to_dataframe,
     booking_arrangements_to_dataframe,
-    vehicle_journeys_to_dataframe,
+    standard_vehicle_journeys_to_dataframe,
+    flexible_vehicle_journeys_to_dataframe,
     serviced_organisations_to_dataframe,
+    flexible_journey_patterns_to_dataframe,
+    flexible_stop_points_from_journey_details,
     operating_profiles_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
@@ -129,9 +132,11 @@ class XmlFileParser(ETLUtility):
 
         # Extract VehicleJourneys
         logger.debug("Extracting vehicle_journeys")
-        vehicle_journeys, flexible_operation_periods = self.extract_vehicle_journeys(
-            self.file_id
-        )
+        (
+            vehicle_journeys,
+            flexible_vehicle_journeys,
+            flexible_operation_periods,
+        ) = self.extract_vehicle_journeys(self.file_id)
         logger.debug("Finished extracting vehicle_journeys")
 
         # Extract ServicedOrganisations
@@ -172,11 +177,31 @@ class XmlFileParser(ETLUtility):
             columns=["file_id", "route_link_ref", "from_stop_ref", "to_stop_ref"]
         ).set_index(["file_id", "route_link_ref"])
 
+        # extract flexible journey patterns
+        logger.debug("Extracting flexible journey patterns")
+        flexible_journey_details = self.extract_flexible_journey_details(self.file_id)
+        logger.debug("Finished extracting flexible journey patterns")
+
+        # extract flexible stop points from flexible journey patterns details
+        flexible_stop_points = flexible_stop_points_from_journey_details(
+            flexible_journey_details
+        )
+
+        flexible_journey_patterns = pd.DataFrame()
+        if not flexible_journey_details.empty:
+            flexible_journey_patterns = flexible_journey_details.reset_index()[
+                ["file_id", "journey_pattern_id", "service_code", "direction"]
+            ].set_index(["file_id", "journey_pattern_id"])
+
         return ExtractedData(
             services=services,
             stop_points=stop_points,
+            flexible_stop_points=flexible_stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
+            flexible_journey_patterns=flexible_journey_patterns,
+            flexible_journey_details=flexible_journey_details,
+            flexible_vehicle_journeys=flexible_vehicle_journeys,
             jp_to_jps=jp_to_jps,
             jp_sections=jp_sections,
             booking_arrangements=booking_arrangements,
@@ -198,6 +223,17 @@ class XmlFileParser(ETLUtility):
             operating_profiles=operating_profiles,
             flexible_operation_periods=flexible_operation_periods,
         )
+
+    def extract_flexible_journey_details(self, file_id):
+        services = self.trans.get_services()
+        flexible_journey_patterns = flexible_journey_patterns_to_dataframe(services)
+        if not flexible_journey_patterns.empty:
+            flexible_journey_patterns["file_id"] = file_id
+            flexible_journey_patterns.set_index(
+                ["file_id", "journey_pattern_id"], inplace=True
+            )
+            return flexible_journey_patterns
+        return pd.DataFrame()
 
     def construct_geometry(self, point: Point):
         """Functionality extracted out, proxied here to not break the API"""
@@ -257,7 +293,7 @@ class XmlFileParser(ETLUtility):
 
         return journey_patterns, jp_to_jps
 
-    def extract_vehicle_journeys(self, file_id: int):
+    def extract_vehicle_journeys(self, file_id):
         standard_vehicle_journeys = self.trans.get_all_vehicle_journeys(
             "VehicleJourney", allow_none=True
         )
@@ -265,23 +301,35 @@ class XmlFileParser(ETLUtility):
             "FlexibleVehicleJourney", allow_none=True
         )
 
-        df_vehicle_journeys = vehicle_journeys_to_dataframe(
-            standard_vehicle_journeys, flexible_vehicle_journeys
+        df_standard_vehicle_journeys = standard_vehicle_journeys_to_dataframe(
+            standard_vehicle_journeys
+        )
+
+        df_flexible_vehicle_journeys = flexible_vehicle_journeys_to_dataframe(
+            flexible_vehicle_journeys
         )
 
         df_flexible_operation_period = flexible_operation_period_to_dataframe(
             flexible_vehicle_journeys
         )
 
-        if not df_vehicle_journeys.empty:
-            df_vehicle_journeys["file_id"] = file_id
-            df_vehicle_journeys.set_index(["file_id"], inplace=True)
+        if not df_standard_vehicle_journeys.empty:
+            df_standard_vehicle_journeys["file_id"] = file_id
+            df_standard_vehicle_journeys.set_index(["file_id"], inplace=True)
+
+        if not df_flexible_vehicle_journeys.empty:
+            df_flexible_vehicle_journeys["file_id"] = file_id
+            df_flexible_vehicle_journeys.set_index(["file_id"], inplace=True)
 
         if not df_flexible_operation_period.empty:
             df_flexible_operation_period["file_id"] = file_id
             df_flexible_operation_period.set_index(["file_id"], inplace=True)
 
-        return df_vehicle_journeys, df_flexible_operation_period
+        return (
+            df_standard_vehicle_journeys,
+            df_flexible_vehicle_journeys,
+            df_flexible_operation_period,
+        )
 
     def extract_serviced_organisations(self, file_id: int):
         serviced_organisations = self.trans.get_all_serviced_organisations(

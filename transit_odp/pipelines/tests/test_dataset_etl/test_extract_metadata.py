@@ -13,6 +13,7 @@ from django.test import TestCase
 from unittest.mock import patch, MagicMock
 from waffle.testutils import override_flag
 
+from waffle.testutils import override_flag
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
 from transit_odp.organisation.constants import FeedStatus
@@ -23,7 +24,9 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
-from transit_odp.pipelines.pipelines.dataset_etl.transform import Transform
+from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
+    agg_service_pattern_sequences,
+)
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -74,6 +77,8 @@ class ExtractBaseTestCase(TestCase):
         self.file_obj = File(os.path.join(self.cur_dir, self.test_file))
         self.doc, result = xml_toolkit.parse_xml_file(self.file_obj.file)
 
+        self.trans_xchange_extractor = TransXChangeExtractor(self.file_obj, self.now)
+
         # Create bogus admin area
         self.admin = AdminAreaFactory(
             name="admin1",
@@ -115,6 +120,16 @@ class ExtractBaseTestCase(TestCase):
                     )
                     stoppoint.save()
 
+        xml_provisional_stoppointrefs = xml_toolkit.get_elements(
+            self.doc.getroot(), "/x:TransXChange/x:StopPoints/x:StopPoint"
+        )
+        # insert locality for provisional stops
+        for provisional_stop in xml_provisional_stoppointrefs:
+            locality_ref = xml_toolkit.get_child_text(
+                provisional_stop, "x:Place/x:NptgLocalityRef"
+            )
+            self.get_locality(name=locality_ref)
+
     # Get or create a locality by name
     def get_locality(self, name: str):
         try:
@@ -134,6 +149,7 @@ class ExtractBaseTestCase(TestCase):
 
 
 @ddt
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractMetadataTestCase(ExtractBaseTestCase):
     test_file = "data/test_extract_metadata.xml"
 
@@ -308,8 +324,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # assert
         services_expected = pd.DataFrame(
@@ -442,8 +458,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
         Locality.objects.add_district_name()
 
         # test
@@ -504,6 +520,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         stop_points_expected = stop_points.merge(
             localities, how="left", left_on="locality_id", right_index=True
         )
+        stop_points_expected["naptan_id"] = stop_points_expected["naptan_id"].astype(
+            object
+        )
         self.assertTrue(
             check_frame_equal(transformed.stop_points, stop_points_expected)
         )
@@ -550,7 +569,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
     @pytest.mark.skip
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -603,7 +622,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_load_services(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
 
         indata = pd.DataFrame(
             [
@@ -676,7 +695,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         be multiple route_link_refs with the same stop pair
         """
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # Test
@@ -693,7 +712,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_load_service_patterns(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         data_loader = self.feed_parser.data_loader
@@ -742,7 +761,7 @@ class ExtractTxcNoRoutesTestCase(ExtractBaseTestCase):
     @pytest.mark.skip
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -831,7 +850,7 @@ class ExtractUtilitiesTestCase(TestCase):
 
         # Test
         actual = inputs.groupby(["file_id", "service_pattern_id"]).apply(
-            Transform.agg_service_pattern_sequences
+            agg_service_pattern_sequences
         )
 
         # Assert
@@ -847,8 +866,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # assert
         booking_arrangements_expected = pd.DataFrame(
@@ -883,8 +902,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -919,7 +938,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -1063,8 +1082,8 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # assert
         booking_arrangements_expected = pd.DataFrame(
@@ -1109,8 +1128,8 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -1156,7 +1175,7 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test

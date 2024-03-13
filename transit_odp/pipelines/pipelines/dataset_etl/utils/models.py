@@ -9,8 +9,12 @@ import pandas as pd
 class ExtractedData(object):
     services: pd.DataFrame
     stop_points: pd.DataFrame
+    flexible_stop_points: pd.DataFrame
     provisional_stops: pd.DataFrame
     journey_patterns: pd.DataFrame
+    flexible_journey_patterns: pd.DataFrame
+    flexible_journey_details: pd.DataFrame
+    flexible_vehicle_journeys: pd.DataFrame
     jp_to_jps: pd.DataFrame
     jp_sections: pd.DataFrame
     timing_links: pd.DataFrame

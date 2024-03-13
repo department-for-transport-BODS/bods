@@ -2,6 +2,7 @@ from logging import getLogger
 
 from transit_odp.otc.models import Service
 from transit_odp.otc.weca.registry import Registry
+from transit_odp.otc.constants import API_TYPE_WECA
 
 logger = getLogger(__name__)
 
@@ -39,4 +40,4 @@ class Loader:
         """
         Remove all the services with api_type WECA to reload all services
         """
-        Service.objects.filter(api_type="WECA").delete()
+        Service.objects.filter(api_type=API_TYPE_WECA).delete()

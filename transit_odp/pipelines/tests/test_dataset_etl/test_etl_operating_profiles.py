@@ -29,7 +29,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         self.assertEqual(extracted.operating_profiles.shape[0], 8)
 
@@ -42,7 +42,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -56,7 +56,7 @@ class ETLOperatingProfilesServices(ExtractBaseTestCase):
 
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -75,7 +75,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         self.assertEqual(extracted.operating_profiles.shape[0], 474)
 
@@ -88,7 +88,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -102,7 +102,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
 
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -121,7 +121,7 @@ class ETLOperatingProfilesVehicleJourneysWithHolidays(ExtractBaseTestCase):
 
     def test_transform(self):
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -142,7 +142,7 @@ class ETLOperatingProfilesVehicleJourneysWithHolidays(ExtractBaseTestCase):
     def test_load(self):
         # setup
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -160,7 +160,7 @@ class ETLOperatingProfilesServicesWithHolidays(ExtractBaseTestCase):
     def test_transform(self):
         # setup
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -181,7 +181,7 @@ class ETLOperatingProfilesServicesWithHolidays(ExtractBaseTestCase):
     def test_load(self):
         # setup
         setup_bank_holidays()
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
