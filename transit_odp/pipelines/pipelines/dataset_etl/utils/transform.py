@@ -35,8 +35,13 @@ def convert_to_time_field(time_delta_value):
 
 
 def create_stop_sequence(df: pd.DataFrame):
+    """Generate sequence of stops ordered as per their sequence for a route.
+    Additional fields are included so that these fields can be stored
+    into ServicePatternStop model
+    """
     df = df.reset_index().sort_values("order")
     columns = df.columns
+    # Extract the first stop
     stops_atcos = (
         df[
             [
@@ -48,9 +53,17 @@ def create_stop_sequence(df: pd.DataFrame):
         .iloc[[0]]
         .rename(columns={"from_stop_atco": "stop_atco"})
     )
-    stops_atcos["is_timing_status"] = True
-    stops_atcos["departure_time"] = pd.to_timedelta(stops_atcos["departure_time"])
+    is_flexible_departure_time = False
+    # Departure time for flexible stops is null
+    if stops_atcos["departure_time"].isna().any():
+        is_flexible_departure_time = True
+    else:
+        stops_atcos["is_timing_status"] = True
+        stops_atcos["departure_time"] = pd.to_timedelta(stops_atcos["departure_time"])
+
     use_vehicle_journey_runtime = False
+    # run_time_vj is set only when run_time is found in VehicleJourney element
+    # and hence needs to be conditionally removed to avoid exceptions in dataframes
     if "run_time_vj" in columns:
         use_vehicle_journey_runtime = True
         columns = [
@@ -67,11 +80,12 @@ def create_stop_sequence(df: pd.DataFrame):
             "run_time",
             "wait_time",
         ]
-
+    # Extract all remaining stop to be placed below the principal stop
     last_stop = df[columns].rename(columns={"to_stop_atco": "stop_atco"})
     columns.remove("to_stop_atco")
     columns.remove("is_timing_status")
-    if use_vehicle_journey_runtime:
+    # Calculate departure time for standard stops where run_time is found in VehicleJourney
+    if use_vehicle_journey_runtime and not is_flexible_departure_time:
         last_stop["departure_time"] = last_stop["run_time_vj"].replace(
             "", pd.NaT
         ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
@@ -79,17 +93,22 @@ def create_stop_sequence(df: pd.DataFrame):
         ].fillna(
             pd.Timedelta(0)
         )
-    else:
+    # Calculate departure time for standard stops where run_time is NOT found in VehicleJourney
+    elif not is_flexible_departure_time:
         last_stop["departure_time"] = last_stop["run_time"].fillna(
             pd.Timedelta(0)
         ) + last_stop["wait_time"].fillna(pd.Timedelta(0))
+    # Calculate departure time for flexible stops
+    else:
+        last_stop["departure_time"] = None
 
     last_stop.drop(columns=columns, axis=1, inplace=True)
     stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
-    stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
-    stops_atcos["departure_time"] = stops_atcos["departure_time"].apply(
-        convert_to_time_field
-    )
+    if not is_flexible_departure_time:
+        stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
+        stops_atcos["departure_time"] = stops_atcos["departure_time"].apply(
+            convert_to_time_field
+        )
     stops_atcos.index.name = "order"
     return stops_atcos
 
