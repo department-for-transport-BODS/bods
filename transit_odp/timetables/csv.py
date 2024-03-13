@@ -325,11 +325,12 @@ def scope_status(row, exempted_reg_numbers):
     Returns:
         df: df
     """
-    exempted = row["registration_number"] in exempted_reg_numbers
-    row["scope_status"] = "Out of Scope"
+    is_exempted = row["registration_number"] in exempted_reg_numbers
     traveline_regions = row["traveline_region"].split("|")
-    intesect = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
-    if not exempted and intesect:
+    isin_weca_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
+
+    row["scope_status"] = "Out of Scope"
+    if not is_exempted or isin_weca_region:
         row["scope_status"] = "In Scope"
     return row
 
@@ -390,12 +391,10 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
         .values_list("registration_number", flat=True)
         .all()
     )
-    registration_number_exempted = df["registration_number"].isin(exempted_reg_numbers)
-
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
     df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
     df["traveline_region"] = df["traveline_region"].fillna("").astype(str)
-    df = df.apply(scope_status, args=[registration_number_exempted], axis=1)
+    df = df.apply(scope_status, args=[exempted_reg_numbers], axis=1)
     return df
 
 
