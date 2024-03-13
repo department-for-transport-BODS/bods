@@ -34,7 +34,7 @@ def convert_to_time_field(time_delta_value):
     return time_delta_value.strftime("%H:%M:%S")
 
 
-def create_stop_sequence(df: pd.DataFrame):
+def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     """Generate sequence of stops ordered as per their sequence for a route.
     Additional fields are included so that these fields can be stored
     into ServicePatternStop model
