@@ -7,6 +7,10 @@ import pandas as pd
 from pandas import Series
 
 from transit_odp.common.collections import Column
+from transit_odp.organisation.constants import (
+    ENGLISH_TRAVELINE_REGIONS,
+    TravelineRegions,
+)
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
     Organisation,
@@ -43,7 +47,7 @@ OTC_COLUMNS = (
     "registration_number",
     "service_type_description",
     "variation_number",
-    "service_number",
+    "service_numbers",
     "start_point",
     "finish_point",
     "via",
@@ -52,6 +56,9 @@ OTC_COLUMNS = (
     "effective_date",
     "received_date",
     "service_type_other_details",
+    "traveline_region",
+    "local_authority_ui_lta",
+    "api_type",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -250,7 +257,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Variation Number",
             "The variation number element as extracted from the OTC database.",
         ),
-        "service_number": Column(
+        "service_numbers": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),
@@ -287,6 +294,14 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
+        "traveline_region": Column(
+            "Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
+        ),
     }
 )
 
@@ -304,7 +319,83 @@ def add_operator_name(row: Series) -> str:
         return row["organisation_name"]
 
 
+def scope_status(row, exempted_reg_numbers):
+    """
+    Column “Scope” for a service
+       A service should be deemed “in scope” if:
+       Registered with OTC or WECA and has not been marked out of scope by the DVSA.
+       If at least one of the Traveline Region values for that row is mapped to England.
+    Args:
+        row (df): Dataframe row
+        exempted_reg_numbers (array): array of dataframe with registration number
+
+    Returns:
+        df: df
+    """
+    is_exempted = row["registration_number"] in exempted_reg_numbers
+    traveline_regions = row["traveline_region"].split("|")
+    isin_weca_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
+
+    row["scope_status"] = "Out of Scope"
+
+    if not is_exempted:
+        row["scope_status"] = "In Scope"
+
+    if not is_exempted and isin_weca_region:
+        row["scope_status"] = "In Scope"
+
+    return row
+
+
+def traveline_regions(row, traveline_regions_dict):
+    """
+    Traveline region need to mapped with Value metioned in TravelineRegions
+
+    Args:
+        row (df): df row
+        traveline_regions_dict (dict): Dictionary of tavelineregion key value map
+
+    Returns:
+        df: modified row of df
+    """
+    traveline_regions = row["traveline_region"].split("|")
+    travelines = [
+        traveline_regions_dict.get(region, region)
+        for region in traveline_regions
+        if region != "None"
+    ]
+    if travelines:
+        row["traveline_region"] = "|".join(map(str, travelines))
+    return row
+
+
+def add_traveline_regions(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Traveline Regions short form is fetched from DB and
+    it need to be replaced by label assigned in TravelineRegions
+
+    Args:
+        row (df): Merged df
+
+    Returns:
+        df: modified row of df
+    """
+    traveline_regions_dict = {
+        region_code: pretty_name_region_code
+        for region_code, pretty_name_region_code in TravelineRegions.choices
+    }
+    return df.apply(traveline_regions, args=[traveline_regions_dict], axis=1)
+
+
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Status columns of published, otc and scopes will be modified
+
+    Args:
+        df (pd.DataFrame): Merged df
+
+    Returns:
+        pd.DataFrame: Modified df
+    """
     exists_in_bods = np.invert(pd.isna(df["dataset_id"]))
     exists_in_otc = np.invert(pd.isna(df["otc_licence_number"]))
     exempted_reg_numbers = (
@@ -312,13 +403,10 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
         .values_list("registration_number", flat=True)
         .all()
     )
-    registration_number_exempted = df["registration_number"].isin(exempted_reg_numbers)
-
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
     df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
-    df["scope_status"] = np.where(
-        registration_number_exempted, "Out of Scope", "In Scope"
-    )
+    df["traveline_region"] = df["traveline_region"].fillna("").astype(str)
+    df = df.apply(scope_status, args=[exempted_reg_numbers], axis=1)
     return df
 
 
@@ -354,6 +442,10 @@ def add_seasonal_status(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     return annotated_df
 
 
+def defer_one_year(d):
+    return d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
+
+
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
@@ -364,7 +456,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     df["effective_stale_date_from_end_date"] = df[
         "operating_period_end_date"
     ] - pd.Timedelta(days=42)
-    defer_one_year = lambda d: d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
+
     df["effective_stale_date_from_last_modified"] = df[
         "effective_last_modified_date"
     ].apply(defer_one_year)
@@ -491,12 +583,14 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
     merged = add_requires_attention_column(merged, today)
+    merged = add_traveline_regions(merged)
 
     rename_map = {
         old_name: column_tuple.field_name
         for old_name, column_tuple in TIMETABLE_COLUMN_MAP.items()
     }
     merged = merged[TIMETABLE_COLUMN_MAP.keys()].rename(columns=rename_map)
+    merged.to_csv("weca_merged.csv")
     return merged
 
 

@@ -1,22 +1,24 @@
 from datetime import timedelta
 from typing import TypeVar
 
-import pandas as pd
 from django.db.models import (
+    Case,
     CharField,
+    Count,
     DateField,
     ExpressionWrapper,
     F,
+    OuterRef,
     QuerySet,
     Subquery,
     Value,
+    When,
 )
-from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
-from pandas import DataFrame, Series
 
+from transit_odp.common.querysets import GroupConcat
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 from transit_odp.organisation.models import Licence as BODSLicence
@@ -60,8 +62,149 @@ class ServiceQuerySet(QuerySet):
             granted_date=F("licence__granted_date"),
         )
 
+    def add_traveline_region_weca(self) -> TServiceQuerySet:
+        """
+        Traveline Region that the UI LTA maps to via the admin area table
+        by joining atco code. If Traveline Region value is multiple in the row
+        for this service code it should sperated with |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            traveline_region_weca=GroupConcat(
+                AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
+                    "traveline_region_id"
+                ),
+                delimiter="|",
+                distinct=True,
+            )
+        )
+
+    def add_traveline_region_otc(self) -> TServiceQuerySet:
+        """
+        Traveline Region that the UI LTA maps to via LocalAuthority table
+        by joining ui lta table and then admin area table via ui lta and
+        get the traveline_region_id.If Traveline Region value is multiple
+        in the row for this service code it should sperated with |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            traveline_region_otc=GroupConcat(
+                "registration__ui_lta__naptan_ui_lta_records__traveline_region_id",
+                delimiter="|",
+                distinct=True,
+            )
+        )
+
+    def add_traveline_region_details(self):
+        """Fetch traveline reason id for WECA and OTC
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            traveline_region=Case(
+                When(
+                    Q(api_type=API_TYPE_WECA),
+                    then=F("traveline_region_weca"),
+                ),
+                default=F("traveline_region_otc"),
+                output_field=CharField(),
+            )
+        )
+
+    def add_ui_lta_otc(self) -> TServiceQuerySet:
+        """
+        Local authority name should be displayed with | seperation if multiple.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            ui_lta_otc=GroupConcat(
+                F("registration__ui_lta__name"), delimiter="|", distinct=True
+            )
+        )
+
+    def add_ui_lta_weca(self) -> TServiceQuerySet:
+        """
+        This column is populated with the UI LTA(s) the service code belongs to
+        via the relationship between the service and the Admin Area with the ATCO
+        which is mapped to the UI LTA entity. And if the service belongs to more
+        than one UI LTA, then separate these with a |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            ui_lta_weca=GroupConcat(
+                AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
+                    "ui_lta__name"
+                ),
+                delimiter="|",
+                distinct=True,
+            )
+        )
+
+    def add_ui_lta(self):
+        """
+        This column is populated with the UI LTA(s) the service code belongs to
+        via the relationship between the service and the Admin Area with the ATCO
+        which is mapped to the UI LTA entity. And if the service belongs to more
+        than one UI LTA, then separate these with a |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            local_authority_ui_lta=Case(
+                When(
+                    Q(api_type=API_TYPE_WECA),
+                    then=F("ui_lta_weca"),
+                ),
+                default=F("ui_lta_otc"),
+                output_field=CharField(),
+            )
+        )
+
+    def add_service_number(self) -> TServiceQuerySet:
+        """
+        There may be multiple rows for the service, and each row has it's
+        own service number, then This will appear in the report as with | seperator.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            service_numbers=GroupConcat(
+                F("service_number"), delimiter="|", distinct=True
+            )
+        )
+
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
-        return self.add_service_code().add_operator_details().add_licence_details()
+        """
+        This will fetch oprator details travline region ui lta and service number from
+        OTC service table.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+
+        return (
+            self.add_service_code()
+            .add_operator_details()
+            .add_licence_details()
+            .add_traveline_region_weca()
+            .add_traveline_region_otc()
+            .add_traveline_region_details()
+            .add_ui_lta_otc()
+            .add_ui_lta_weca()
+            .add_ui_lta()
+            .add_service_number()
+        )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation__id=organisation_id)
