@@ -314,10 +314,6 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Traveline Region",
             "The Traveline Region details element as extracted from the OTC database.",
         ),
-        "local_authority_name": Column(
-            "OTC:Local Authority",
-            "The Local Authority element as extracted from the OTC database.",
-        ),
         "local_authority_ui_lta": Column(
             "OTC:UI LTA",
             "The UI LTA element as extracted from the OTC database.",

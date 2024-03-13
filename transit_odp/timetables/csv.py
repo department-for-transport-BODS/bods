@@ -57,7 +57,6 @@ OTC_COLUMNS = (
     "received_date",
     "service_type_other_details",
     "traveline_region",
-    "local_authority_name",
     "local_authority_ui_lta",
     "api_type",
 )
@@ -295,6 +294,14 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
+        "traveline_region": Column(
+            "OTC:Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "OTC:UI LTA",
+            "The UI LTA element as extracted from the OTC database.",
+        ),
     }
 )
 
@@ -330,8 +337,10 @@ def scope_status(row, exempted_reg_numbers):
     isin_weca_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
 
     row["scope_status"] = "Out of Scope"
-    if not is_exempted or isin_weca_region:
+
+    if not is_exempted and isin_weca_region:
         row["scope_status"] = "In Scope"
+
     return row
 
 
@@ -480,7 +489,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     forty_two_days_from_today = today + np.timedelta64(42, "D")
 
     staleness_42_day_look_ahead = (
-        (staleness_otc is False)
+        (staleness_otc == False)
         & pd.notna(df["operating_period_end_date"])
         & (df["operating_period_end_date"] < forty_two_days_from_today)
     )
@@ -490,8 +499,8 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     effective_stale_date_from_last_modified = last_modified_date - 365 days (or 1 year)
     """
     staleness_12_months = (
-        (staleness_otc is False)
-        & (staleness_42_day_look_ahead is False)
+        (staleness_otc == False)
+        & (staleness_42_day_look_ahead == False)
         & (
             pd.to_datetime(df["last_modified_date"]).values.astype("datetime64")
             + np.timedelta64(365, "D")
