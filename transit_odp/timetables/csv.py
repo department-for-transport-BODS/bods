@@ -338,6 +338,9 @@ def scope_status(row, exempted_reg_numbers):
 
     row["scope_status"] = "Out of Scope"
 
+    if not is_exempted:
+        row["scope_status"] = "In Scope"
+
     if not is_exempted and isin_weca_region:
         row["scope_status"] = "In Scope"
 
