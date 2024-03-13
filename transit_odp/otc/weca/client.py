@@ -60,9 +60,9 @@ class DataModel(BaseModel):
         # Split the variation number by slashes and take the third part
         parts = value.split("/")
         if len(parts) == 3:
-            return int(parts[2])
+            return parts[2]
         else:
-            return 0
+            return "0"
 
     @validator("licence")
     def extract_licence(cls, value):
