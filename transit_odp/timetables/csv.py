@@ -295,12 +295,12 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC database.",
         ),
         "traveline_region": Column(
-            "OTC:Traveline Region",
+            "Traveline Region",
             "The Traveline Region details element as extracted from the OTC database.",
         ),
         "local_authority_ui_lta": Column(
-            "OTC:UI LTA",
-            "The UI LTA element as extracted from the OTC database.",
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
         ),
     }
 )
@@ -590,6 +590,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
         for old_name, column_tuple in TIMETABLE_COLUMN_MAP.items()
     }
     merged = merged[TIMETABLE_COLUMN_MAP.keys()].rename(columns=rename_map)
+    merged.to_csv("weca_merged.csv")
     return merged
 
 
