@@ -103,5 +103,8 @@ header_accessor_data = [
     ),
     ("OTC:Service Number", lambda otc_service: otc_service.get("otc_service_number")),
     ("Traveline Region", lambda otc_service: otc_service.get("traveline_region", "")),
-    ("Local Transport Authority", lambda otc_service: otc_service.get("ui_lta_name", "")),
+    (
+        "Local Transport Authority",
+        lambda otc_service: otc_service.get("ui_lta_name", ""),
+    ),
 ]
