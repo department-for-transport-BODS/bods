@@ -418,6 +418,50 @@ def get_vehicle_journey_without_timing_refs(vehicle_journeys):
     return df_subset.set_index(indexes)
 
 
+def filter_operating_profiles(
+    operating_profiles: pd.DataFrame, services: pd.DataFrame
+) -> pd.DataFrame:
+    """Remove records from operating profiles where the date falls outside
+    operating period start and end date
+    """
+    if not operating_profiles.empty and not services.empty:
+        service_columns = ["file_id", "service_code", "start_date", "end_date"]
+        indexes = operating_profiles.index.names
+        df_merged = pd.merge(
+            operating_profiles.reset_index(),
+            services.reset_index()[service_columns],
+            left_on=["file_id", "service_code"],
+            right_on=["file_id", "service_code"],
+        )
+
+        df_merged["end_date"] = df_merged["end_date"].fillna(pd.Timestamp.max)
+
+        df_merged["start_date"] = pd.to_datetime(
+            df_merged["start_date"]
+        ).dt.tz_localize(None)
+        df_merged["end_date"] = pd.to_datetime(df_merged["end_date"]).dt.tz_localize(
+            None
+        )
+        df_merged["compare_exceptions_date"] = pd.to_datetime(
+            df_merged["exceptions_date"]
+        )
+
+        filtered_df = df_merged[
+            (
+                (df_merged["exceptions_date"].isna())
+                | (
+                    (df_merged["start_date"] <= df_merged["compare_exceptions_date"])
+                    & (df_merged["end_date"] >= df_merged["compare_exceptions_date"])
+                )
+            )
+        ]
+        filtered_df = filtered_df.drop(
+            ["start_date", "end_date", "compare_exceptions_date"], axis=1
+        ).set_index(indexes)
+        return filtered_df
+    return operating_profiles
+
+
 def get_vehicle_journey_with_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys.loc[
         :, ["journey_pattern_ref", "service_code", "timing_link_ref", "run_time"]
