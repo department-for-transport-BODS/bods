@@ -8,7 +8,7 @@ from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
     PTIValidationResultFactory,
 )
-from transit_odp.naptan.factories import AdminAreaUILTAFactory
+from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.factories import (
     DatasetFactory,
@@ -107,7 +107,7 @@ def test_service_in_bods_but_not_in_otc():
         ui_lta=ui_lta,
         registration_numbers=services,
     )
-    AdminAreaUILTAFactory(traveline_region_id="SE", ui_lta=ui_lta)
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[:5].iterrows():
@@ -147,7 +147,7 @@ def test_service_in_bods_and_otc():
         ui_lta=ui_lta,
         registration_numbers=services,
     )
-    AdminAreaUILTAFactory(traveline_region_id="SE", ui_lta=ui_lta)
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df.iterrows():
@@ -235,7 +235,7 @@ def test_service_in_otc_and_not_in_bods():
         ui_lta=ui_lta,
         registration_numbers=[service],
     )
-    AdminAreaUILTAFactory(traveline_region_id="SE", ui_lta=ui_lta)
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
 
