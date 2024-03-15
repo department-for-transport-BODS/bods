@@ -1,7 +1,10 @@
-from transit_odp.naptan.models import AdminArea
-from transit_odp.otc.models import Service
-from transit_odp.organisation.constants import TravelineRegions
 from typing import Dict
+
+import pandas as pd
+
+from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import TravelineRegions
+from transit_odp.otc.models import Service
 
 
 def get_all_naptan_atco_map() -> Dict[str, str]:
@@ -9,10 +12,11 @@ def get_all_naptan_atco_map() -> Dict[str, str]:
     Return a dictionary with key as atco code and value (bool) if services is in english region,
     Services in engligh regions are considered as in scope
     """
-    return {
-        admin_area.atco_code: admin_area.is_english_region
-        for admin_area in AdminArea.objects.add_is_english_region().all()
-    }
+    return pd.DataFrame.from_records(
+        AdminArea.objects.add_is_english_region().values(
+            "atco_code", "is_english_region", "ui_lta_id"
+        )
+    )
 
 
 def get_lta_traveline_region_map(ui_lta) -> str:
@@ -73,6 +77,9 @@ def get_service_traveline_regions(ui_ltas):
     return "|".join(
         [
             str(TravelineRegions(admin_area.traveline_region_id).label)
-            for admin_area in AdminArea.objects.filter(ui_lta__in=ui_ltas).all()
+            for admin_area in AdminArea.objects.filter(ui_lta__in=ui_ltas)
+            .order_by("traveline_region_id")
+            .distinct("traveline_region_id")
+            .all()
         ]
     )

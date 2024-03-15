@@ -1,6 +1,7 @@
 from datetime import timedelta
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Tuple
 
+import pandas as pd
 from django.db.models import Subquery
 from django.db.models.functions import Trim
 from django.http import HttpResponse
@@ -24,6 +25,7 @@ from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExe
 from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.otc.models import UILta
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
     get_requires_attention_data_lta,
@@ -385,6 +387,10 @@ class LTACSV(CSVBuilder):
     def __init__(self, combined_authorities):
         self._combined_authorities = combined_authorities
         self._object_list = []
+        self.otc_service_traveline_region = {}
+        self.otc_service_ui_ltas = {}
+        self.weca_traveline_region_status = {}
+        self.otc_traveline_region_status = {}
 
     def modify_dataset_line_name(self, line_names: list) -> str:
         return " ".join(line_name for line_name in line_names)
@@ -397,6 +403,97 @@ class LTACSV(CSVBuilder):
         if exemption or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
         return "Yes"
+
+    def get_otc_service_traveline_region(
+        self, ui_ltas: List[UILta], ui_ltas_dict_key: Tuple[UILta]
+    ) -> str:
+        """Returns a pipe "|" seprate list of all the traveline regions
+        the UI LTAs belongs to, Dict will be prepared for the values
+
+        Args:
+            ui_ltas (List[UILta]): List of UI LTAs
+            ui_ltas_dict_key (Tuple[UILta]): Tuple of UI LTAs to be used
+            as key for the dictionary
+
+        Returns:
+            str: pipe "|" seprated string of UI LTA's
+        """
+        if ui_ltas_dict_key not in self.otc_service_traveline_region:
+            self.otc_service_traveline_region[
+                ui_ltas_dict_key
+            ] = get_service_traveline_regions(ui_ltas)
+        return self.otc_service_traveline_region[ui_ltas_dict_key]
+
+    def get_otc_ui_lta(
+        self, ui_ltas: List[UILta], ui_ltas_dict_key: Tuple[UILta]
+    ) -> str:
+        """Return a pipe "|" seprate string of the UI LTA names for the service
+        dictionary of the ui ltas will be maintained in order to minimize the
+        manipulations
+
+        Args:
+            ui_ltas (List[UILta]): List of UI LTAs the service belongs to
+            ui_ltas_dict_key (Tuple[UILta]): Tuple of UI LTAs to make key in dict
+
+        Returns:
+            str: Pipe "|" seprated list of UI LTAs
+        """
+        if ui_ltas_dict_key not in self.otc_service_ui_ltas:
+            self.otc_service_ui_ltas[ui_ltas_dict_key] = ui_ltas_string(ui_ltas)
+        return self.otc_service_ui_ltas[ui_ltas_dict_key]
+
+    def get_is_english_region_otc(
+        self,
+        ui_ltas: List[UILta],
+        ui_ltas_dict_key: Tuple[UILta],
+        naptan_adminarea_df: pd.DataFrame,
+    ) -> bool:
+        """Find if the annotated key is_english_region for naptan admin area is True or False for
+        any of the UI LTAs this service belongs to
+
+        Args:
+            ui_ltas (List[UILta]): List of UI LTAs the service belongs to
+            ui_ltas_dict_key (Tuple[UILta]): Tuple value of UI LTAs for keys
+            naptan_adminarea_df (pd.DataFrame): Dataframe for the admin area values
+
+        Returns:
+            bool: Returns True is the atco code passed belongs to an enlish region
+        """
+        if ui_ltas_dict_key not in self.otc_traveline_region_status:
+            self.otc_traveline_region_status[ui_ltas_dict_key] = (
+                (
+                    naptan_adminarea_df[
+                        naptan_adminarea_df["ui_lta_id"].isin(
+                            [ui_lta.id for ui_lta in ui_ltas]
+                        )
+                    ]
+                )["is_english_region"]
+            ).any()
+        return self.otc_traveline_region_status[ui_ltas_dict_key]
+
+    def get_is_english_region_weca(
+        self, atco_code: str, naptan_adminarea_df: pd.DataFrame
+    ) -> bool:
+        """Find if the annotated key is_english_region is True or False for
+        The provided atco code
+        For weca services if atco code belongs to an Naptan Admin area
+        Such services will be considered in english region.
+
+        Args:
+            atco_code (str): Atco code to be checked
+            naptan_adminarea_df (pd.DataFrame): Naptan admin areas list
+
+        Returns:
+            bool: Returns True is the atco code passed belongs to an enlish region
+        """
+        if atco_code not in self.weca_traveline_region_status:
+            self.weca_traveline_region_status[atco_code] = (
+                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
+                    "is_english_region"
+                ]
+                == True
+            ).any()
+        return self.weca_traveline_region_status[atco_code]
 
     def get_otc_service_bods_data(self, lta_list) -> None:
         """
@@ -411,34 +508,32 @@ class LTACSV(CSVBuilder):
         txcfa_map = get_txc_map_lta(lta_list)
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
-        naptan_atco_code_map = get_all_naptan_atco_map()
+        naptan_adminarea_df = get_all_naptan_atco_map()
         traveline_region_map_weca = get_weca_traveline_region_map(ui_lta)
         services_code = set(otc_map)
         services_code = sorted(services_code)
-        otc_service_traveline_region = {}
-        otc_service_ui_ltas = {}
 
         for service_code in services_code:
             service = otc_map.get(service_code)
             file_attribute = txcfa_map.get(service_code)
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
-            is_english_region = naptan_atco_code_map.get(service.atco_code, False)
+            is_english_region = True
 
-            if not service.api_type:
+            if service.api_type == API_TYPE_WECA:
+                is_english_region = self.get_is_english_region_weca(
+                    service.atco_code, naptan_adminarea_df
+                )
+            else:
                 ui_ltas = get_service_ui_ltas(service)
-
                 ui_ltas_dict_key = tuple(ui_ltas)
-                if ui_ltas_dict_key not in otc_service_traveline_region:
-                    otc_service_traveline_region[
-                        ui_ltas_dict_key
-                    ] = get_service_traveline_regions(ui_ltas)
-
-                if ui_ltas_dict_key not in otc_service_ui_ltas:
-                    otc_service_ui_ltas[ui_ltas_dict_key] = ui_ltas_string(ui_ltas)
-
-                ui_ltas_name = otc_service_ui_ltas[ui_ltas_dict_key]
-                traveline_region = otc_service_traveline_region[ui_ltas_dict_key]
+                is_english_region = self.get_is_english_region_otc(
+                    ui_ltas, ui_ltas_dict_key, naptan_adminarea_df
+                )
+                ui_ltas_name = self.get_otc_ui_lta(ui_ltas, ui_ltas_dict_key)
+                traveline_region = self.get_otc_service_traveline_region(
+                    ui_ltas, ui_ltas_dict_key
+                )
 
             traveline_region = (
                 traveline_region_map_weca[service.atco_code]
@@ -465,11 +560,9 @@ class LTACSV(CSVBuilder):
                 require_attention = "No"
 
             exempted = False
-            if service.api_type == API_TYPE_WECA and not (
+            if not (
                 not (exemption and exemption.registration_code) and is_english_region
             ):
-                exempted = True
-            elif not service.api_type and (exemption and exemption.registration_code):
                 exempted = True
 
             self._update_data(
