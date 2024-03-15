@@ -459,17 +459,16 @@ class LTACSV(CSVBuilder):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                not naptan_adminarea_df.empty
-                and (
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["ui_lta_id"].isin(
-                                [ui_lta.id for ui_lta in ui_ltas]
-                            )
-                        ]
-                    )["is_english_region"]
-                ).any()
+            self.otc_traveline_region_status[
+                ui_ltas_dict_key
+            ] = not naptan_adminarea_df.empty and any(
+                (
+                    naptan_adminarea_df[
+                        naptan_adminarea_df["ui_lta_id"].isin(
+                            [ui_lta.id for ui_lta in ui_ltas]
+                        )
+                    ]
+                )["is_english_region"]
             )
         return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -489,16 +488,12 @@ class LTACSV(CSVBuilder):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[atco_code] = (
-                not naptan_adminarea_df.empty
-                and (
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["atco_code"] == atco_code
-                        ]
-                    )["is_english_region"]
-                    == True
-                ).any()
+            self.weca_traveline_region_status[
+                atco_code
+            ] = not naptan_adminarea_df.empty and any(
+                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
+                    "is_english_region"
+                ]
             )
         return self.weca_traveline_region_status[atco_code]
 
