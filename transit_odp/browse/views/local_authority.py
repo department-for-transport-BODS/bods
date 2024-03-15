@@ -461,14 +461,17 @@ class LTACSV(CSVBuilder):
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
             self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                (
-                    naptan_adminarea_df[
-                        naptan_adminarea_df["ui_lta_id"].isin(
-                            [ui_lta.id for ui_lta in ui_ltas]
-                        )
-                    ]
-                )["is_english_region"]
-            ).any()
+                not naptan_adminarea_df.empty
+                and (
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
+                ).any()
+            )
         return self.otc_traveline_region_status[ui_ltas_dict_key]
 
     def get_is_english_region_weca(
@@ -488,11 +491,16 @@ class LTACSV(CSVBuilder):
         """
         if atco_code not in self.weca_traveline_region_status:
             self.weca_traveline_region_status[atco_code] = (
-                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
-                    "is_english_region"
-                ]
-                == True
-            ).any()
+                not naptan_adminarea_df.empty
+                and (
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
+                    == True
+                ).any()
+            )
         return self.weca_traveline_region_status[atco_code]
 
     def get_otc_service_bods_data(self, lta_list) -> None:
