@@ -340,7 +340,7 @@ def scope_status(row, exempted_reg_numbers):
     if not is_exempted:
         row["scope_status"] = "In Scope"
 
-    if isin_english_region:
+    if not is_exempted and isin_english_region:
         row["scope_status"] = "In Scope"
 
     return row
