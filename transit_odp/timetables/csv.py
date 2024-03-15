@@ -322,9 +322,9 @@ def add_operator_name(row: Series) -> str:
 def scope_status(row, exempted_reg_numbers):
     """
     Column “Scope” for a service
-       A service should be deemed “in scope” if:
-       Registered with OTC or WECA and has not been marked out of scope by the DVSA.
-       If at least one of the Traveline Region values for that row is mapped to England.
+    A service should be deemed “in scope” if:
+    Registered with OTC or WECA and has not been marked out of scope by the DVSA.
+    If at least one of the Traveline Region values for that row is mapped to England.
     Args:
         row (df): Dataframe row
         exempted_reg_numbers (array): array of dataframe with registration number
@@ -334,14 +334,13 @@ def scope_status(row, exempted_reg_numbers):
     """
     is_exempted = row["registration_number"] in exempted_reg_numbers
     traveline_regions = row["traveline_region"].split("|")
-    isin_weca_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
+    isin_english_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
 
     row["scope_status"] = "Out of Scope"
-
     if not is_exempted:
         row["scope_status"] = "In Scope"
 
-    if not is_exempted and isin_weca_region:
+    if not is_exempted and isin_english_region:
         row["scope_status"] = "In Scope"
 
     return row
