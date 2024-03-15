@@ -7,9 +7,9 @@ from transit_odp.organisation.constants import TravelineRegions
 from transit_odp.otc.models import Service
 
 
-def get_all_naptan_atco_map() -> Dict[str, str]:
+def get_all_naptan_atco_df() -> pd.DataFrame:
     """
-    Return a dictionary with key as atco code and value (bool) if services is in english region,
+    Return a dataframe with is_english_region value (bool) if services is in english region,
     Services in engligh regions are considered as in scope
     """
     return pd.DataFrame.from_records(
@@ -78,8 +78,8 @@ def get_service_traveline_regions(ui_ltas):
         [
             str(TravelineRegions(admin_area.traveline_region_id).label)
             for admin_area in AdminArea.objects.filter(ui_lta__in=ui_ltas)
-            .order_by("traveline_region_id")
             .distinct("traveline_region_id")
+            .order_by("traveline_region_id")
             .all()
         ]
     )

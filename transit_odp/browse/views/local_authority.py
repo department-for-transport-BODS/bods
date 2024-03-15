@@ -8,8 +8,7 @@ from django.http import HttpResponse
 from django.views import View
 
 from transit_odp.browse.common import (
-    get_all_naptan_atco_map,
-    get_lta_traveline_region_map,
+    get_all_naptan_atco_df,
     get_service_traveline_regions,
     get_service_ui_ltas,
     get_weca_services_register_numbers,
@@ -397,10 +396,10 @@ class LTACSV(CSVBuilder):
 
     def _get_require_attention(
         self,
-        exemption: Optional[ServiceCodeExemption],
+        exempted: Optional[bool],
         seasonal_service: Optional[SeasonalService],
     ) -> str:
-        if exemption or (seasonal_service and not seasonal_service.seasonal_status):
+        if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
         return "Yes"
 
@@ -516,7 +515,7 @@ class LTACSV(CSVBuilder):
         txcfa_map = get_txc_map_lta(lta_list)
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
-        naptan_adminarea_df = get_all_naptan_atco_map()
+        naptan_adminarea_df = get_all_naptan_atco_df()
         traveline_region_map_weca = get_weca_traveline_region_map(ui_lta)
         services_code = set(otc_map)
         services_code = sorted(services_code)
@@ -552,25 +551,25 @@ class LTACSV(CSVBuilder):
                 ui_lta.name if service.api_type == API_TYPE_WECA else ui_ltas_name
             )
 
-            staleness_status = "Up to date"
-            if file_attribute is None:
-                require_attention = self._get_require_attention(
-                    exemption, seasonal_service
-                )
-            elif service and is_stale(service, file_attribute):
-                rad = evaluate_staleness(service, file_attribute)
-                staleness_status = STALENESS_STATUS[rad.index(True)]
-                require_attention = self._get_require_attention(
-                    exemption, seasonal_service
-                )
-            else:
-                require_attention = "No"
-
             exempted = False
             if not (
                 not (exemption and exemption.registration_code) and is_english_region
             ):
                 exempted = True
+
+            staleness_status = "Up to date"
+            if file_attribute is None:
+                require_attention = self._get_require_attention(
+                    exempted, seasonal_service
+                )
+            elif service and is_stale(service, file_attribute):
+                rad = evaluate_staleness(service, file_attribute)
+                staleness_status = STALENESS_STATUS[rad.index(True)]
+                require_attention = self._get_require_attention(
+                    exempted, seasonal_service
+                )
+            else:
+                require_attention = "No"
 
             self._update_data(
                 service,
