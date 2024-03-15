@@ -19,6 +19,112 @@ from datetime import datetime, timedelta
 logger = logging.getLogger(__name__)
 
 
+def get_flexible_journey_details(
+    stop_points, service_code, pattern, direction, element_name
+):
+    """
+    This function converts the FixedStopUsage and FlexibleStopUsage xml tag data to
+    required dataframe
+    """
+    stop_points_details = []
+    if stop_points:
+        bus_stop_type = (
+            "flexible" if element_name == "FlexibleStopUsage" else "fixed_flexible"
+        )
+        for fixed_stop_usage in stop_points.get_elements(element_name):
+            atco_code = fixed_stop_usage.get_element("StopPointRef").text
+            stop_points_details.append(
+                {
+                    "service_code": service_code,
+                    "atco_code": atco_code,
+                    "bus_stop_type": bus_stop_type,
+                    "journey_pattern_id": pattern["id"],
+                    "direction": direction,
+                }
+            )
+    return stop_points_details
+
+
+def flexible_journey_patterns_to_dataframe(services):
+    """
+    This function iterates over FlexibleService xml tag and converts FlexibleJourneyPattern
+    to pandas dataframe
+    """
+    flexible_journey_patterns = []
+    for service in services:
+        service_code = service.get_element(["ServiceCode"]).text
+        flexible_services = service.get_elements_or_none(["FlexibleService"])
+        if flexible_services:
+            for flexible_service in flexible_services:
+                for pattern in flexible_service.get_elements(
+                    ["FlexibleJourneyPattern"]
+                ):
+                    flexible_zone = pattern.get_element_or_none("FlexibleZones")
+                    direction = pattern.get_element_or_none("Direction").text
+                    direction = direction if direction else ""
+                    flexible_journey_patterns.extend(
+                        get_flexible_journey_details(
+                            flexible_zone,
+                            service_code,
+                            pattern,
+                            direction,
+                            element_name="FlexibleStopUsage",
+                        )
+                    )
+                    fixed_stop_points = pattern.get_element_or_none("FixedStopPoints")
+                    flexible_journey_patterns.extend(
+                        get_flexible_journey_details(
+                            fixed_stop_points,
+                            service_code,
+                            pattern,
+                            direction,
+                            element_name="FixedStopUsage",
+                        )
+                    )
+                    stoppoint_in_sequence = pattern.get_element_or_none(
+                        "StopPointsInSequence"
+                    )
+                    if stoppoint_in_sequence:
+                        for children in stoppoint_in_sequence.children:
+                            bus_stop_type = (
+                                "fixed_flexible"
+                                if children.localname == "FixedStopUsage"
+                                else "flexible"
+                            )
+                            atco_code = children.get_element_or_none(
+                                "StopPointRef"
+                            ).text
+                            flexible_journey_patterns.append(
+                                {
+                                    "service_code": service_code,
+                                    "atco_code": atco_code,
+                                    "bus_stop_type": bus_stop_type,
+                                    "journey_pattern_id": pattern["id"],
+                                    "direction": direction,
+                                }
+                            )
+
+    if flexible_journey_patterns:
+        columns = [
+            "atco_code",
+            "bus_stop_type",
+            "journey_pattern_id",
+            "service_code",
+            "direction",
+        ]
+        flexible_journey_patterns_df = pd.DataFrame(
+            flexible_journey_patterns, columns=columns
+        )
+        flexible_journey_patterns_df[
+            "journey_pattern_id"
+        ] = flexible_journey_patterns_df["service_code"].str.cat(
+            flexible_journey_patterns_df["journey_pattern_id"], sep="-"
+        )
+        return flexible_journey_patterns_df
+
+    return pd.DataFrame()
+
+
 def services_to_dataframe(services: list) -> pd.DataFrame:
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
@@ -86,42 +192,94 @@ def stop_point_refs_to_dataframe(stop_point_refs):
     )
 
 
+def get_geometry_from_location(system, location):
+    """
+    This function calculates the geometry from the Location xml tag
+    """
+    if system is None or system.lower() == GRID_LOCATION.lower():
+        if location.get_element_or_none(["Translation"]):
+            easting = location.get_element(["Translation", "Easting"]).text
+            northing = location.get_element(["Translation", "Northing"]).text
+        else:
+            easting = location.get_element(["Easting"]).text
+            northing = location.get_element(["Easting"]).text
+        geometry = (
+            grid_gemotry_from_str(easting, northing) if easting and northing else None
+        )
+
+    elif system.lower() == WSG84_LOCATION.lower():
+        if location.get_element_or_none(["Translation"]):
+            latitude = location.get_element(["Translation", "Latitude"]).text
+            longitude = location.get_element(["Translation", "Longitude"]).text
+        else:
+            latitude = location.get_element(["Latitude"]).text
+            longitude = location.get_element(["Longitude"]).text
+        geometry = (
+            wsg84_from_str(longitude, latitude) if latitude and longitude else None
+        )
+    return geometry
+
+
 def provisional_stops_to_dataframe(stops, system=None):
+    """
+    This function returns the stoppoint detials like atco_code, geometry, location and comman name
+    """
     stop_points = []
     for stop in stops:
+        locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
+        flx_zone_locations = []
         atco_code = stop.get_element(["AtcoCode"]).text
+        stop_classification = stop.get_element_or_none(
+            ["StopClassification", "OnStreet", "Bus"]
+        )
         location = stop.get_element(["Place", "Location"])
+        bus_stop_type = (
+            stop_classification.get_element_or_none(["BusStopType"])
+            if stop_classification
+            else None
+        )
+        bus_stop_type_val = bus_stop_type.text if bus_stop_type else None
         descriptor_common_name = stop.get_element_or_none(["Descriptor", "CommonName"])
-
         common_name = None
         if descriptor_common_name:
             common_name = descriptor_common_name.text
 
-        if system is None or system.lower() == GRID_LOCATION.lower():
-            easting = location.get_element(["Translation", "Easting"]).text
-            northing = location.get_element(["Translation", "Northing"]).text
-            geometry = (
-                grid_gemotry_from_str(easting, northing)
-                if easting and northing
-                else None
+        if not bus_stop_type_val == "FLX":
+            geometry = get_geometry_from_location(system, location)
+            stop_points.append(
+                {
+                    "atco_code": atco_code,
+                    "geometry": geometry,
+                    "locality": locality_id,
+                    "common_name": common_name,
+                }
             )
-
-        elif system.lower() == WSG84_LOCATION.lower():
-            latitude = location.get_element(["Translation", "Latitude"]).text
-            longitude = location.get_element(["Translation", "Longitude"]).text
-            geometry = (
-                wsg84_from_str(longitude, latitude) if latitude and longitude else None
+        else:  # for stop type FLX
+            flexible_zone_locations = stop_classification.get_elements_or_none(
+                ["FlexibleZone", "Location"]
             )
-        locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
-        stop_points.append(
-            {
-                "atco_code": atco_code,
-                "geometry": geometry,
-                "locality": locality_id,
-                "common_name": common_name,
-            }
-        )
-
+            if flexible_zone_locations:
+                for flx_location in flexible_zone_locations:
+                    geometry = get_geometry_from_location(system, flx_location)
+                    flx_zone_locations.append(geometry)
+                stop_points.append(
+                    {
+                        "atco_code": atco_code,
+                        "geometry": flx_zone_locations,
+                        "locality": locality_id,
+                        "common_name": common_name,
+                    }
+                )
+            else:
+                geometry = get_geometry_from_location(system, location)
+                stop_points.append(
+                    {
+                        "atco_code": atco_code,
+                        "geometry": geometry,
+                        "locality": locality_id,
+                        "common_name": common_name,
+                    }
+                )
     columns = ["atco_code", "geometry", "locality", "common_name"]
     return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
 
@@ -131,7 +289,6 @@ def journey_patterns_to_dataframe(services):
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
         standard_service = service.get_element_or_none(["StandardService"])
-        flexible_service = service.get_element_or_none(["FlexibleService"])
 
         if standard_service:
             for pattern in standard_service.get_elements(["JourneyPattern"]):
@@ -143,18 +300,6 @@ def journey_patterns_to_dataframe(services):
                         "journey_pattern_id": pattern["id"],
                         "direction": direction.text if direction is not None else "",
                         "jp_section_refs": [ref.text for ref in section_refs],
-                    }
-                )
-
-        if flexible_service:
-            for pattern in flexible_service.get_elements(["FlexibleJourneyPattern"]):
-                direction = pattern.get_element_or_none(["Direction"])
-                all_items.append(
-                    {
-                        "service_code": service_code,
-                        "journey_pattern_id": pattern["id"],
-                        "direction": direction.text if direction is not None else "",
-                        "jp_section_refs": [],
                     }
                 )
 
@@ -245,9 +390,10 @@ def journey_pattern_sections_to_dataframe(sections):
     return timing_links
 
 
-def vehicle_journeys_to_dataframe(
-    standard_vehicle_journeys: pd.DataFrame, flexible_vehicle_journeys: pd.DataFrame
-) -> pd.DataFrame:
+def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
+    """
+    This function returns the vehicle journey dataframe from VehicleJourney xml tag
+    """
     all_vehicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
@@ -330,8 +476,16 @@ def vehicle_journeys_to_dataframe(
                     }
                 )
 
-    if flexible_vehicle_journeys is not None:
-        for vehicle_journey in flexible_vehicle_journeys:
+    return pd.DataFrame(all_vehicle_journeys)
+
+
+def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
+    """
+    This function returns the flexible vehicle journey dataframe from FlexibleVehicleJourney xml tag
+    """
+    all_vehicle_journeys = []
+    if flexible_vechicle_journeys is not None:
+        for vehicle_journey in flexible_vechicle_journeys:
             line_ref = vehicle_journey.get_element(["LineRef"]).text
             journey_pattern_ref = vehicle_journey.get_element(
                 ["JourneyPatternRef"]
@@ -775,3 +929,15 @@ def booking_arrangements_to_dataframe(services):
         ]
         return pd.DataFrame(booking_arrangements_df, columns=columns)
     return booking_arrangements_df
+
+
+def flexible_stop_points_from_journey_details(flexible_journey_details):
+    """
+    This function retrieves the stop points from flexible journey details dataframe
+    """
+    if not flexible_journey_details.empty:
+        flexible_stop_points = flexible_journey_details[
+            ["atco_code", "bus_stop_type"]
+        ].set_index("atco_code")
+        return flexible_stop_points
+    return pd.DataFrame()

@@ -16,9 +16,9 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         extracted_timing_links = extracted.timing_links.reset_index()
         extracted_vehicle_journeys = extracted.vehicle_journeys.reset_index()
 
@@ -63,7 +63,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -91,7 +91,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -110,9 +110,9 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
     def test_extract(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         extracted_timing_links = extracted.timing_links.reset_index()
         extracted_vehicle_journeys = extracted.vehicle_journeys.reset_index()
 
@@ -169,7 +169,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -197,7 +197,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -214,7 +214,7 @@ class ETLSPSWithSyntheticStop(ExtractBaseTestCase):
     ignore_stops = ["340001671OPP"]
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
         self.feed_parser.load(transformed)
         sps_common_name = ServicePatternStop.objects.values_list(
@@ -231,7 +231,7 @@ class ETLSPSWithProvisionalStop(ExtractBaseTestCase):
     ignore_stops = ["111", "222"]
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         atco_codes = ["111", "222"]

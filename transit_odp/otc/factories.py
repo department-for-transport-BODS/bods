@@ -19,6 +19,7 @@ from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
 from transit_odp.otc.models import UILta
+from transit_odp.otc.constants import API_TYPE_WECA
 
 TODAY = datetime.date.today()
 NOW = timezone.now()
@@ -152,7 +153,7 @@ class WecaServiceFactory(DjangoModelFactory, factory.Factory):
     finish_point = factory.Faker("street_name")
     via = factory.Faker("sentence")
     effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
-    api_type = "WECA"
+    api_type = API_TYPE_WECA
     atco_code = f"{factory.fuzzy.FuzzyInteger(high=999, low=100)}"
 
 

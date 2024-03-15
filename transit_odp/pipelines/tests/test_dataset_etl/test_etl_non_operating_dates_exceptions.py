@@ -40,7 +40,7 @@ class ETLNonOperatingDatesException(ExtractBaseTestCase):
     def test_extract(self):
         setup_bank_holidays()
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         df_extracted_data = extracted.operating_profiles
 
@@ -79,7 +79,7 @@ class ETLNonOperatingDatesException(ExtractBaseTestCase):
         # setup
         setup_bank_holidays()
 
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -104,7 +104,7 @@ class ETLNonOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
     def test_extract(self):
         setup_bank_holidays()
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         df_extracted_data = extracted.operating_profiles
 
@@ -133,7 +133,7 @@ class ETLNonOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
         # setup
         setup_bank_holidays()
 
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -156,7 +156,7 @@ class ETLNonOperatingDatesExceptionsInOpProfile(ExtractBaseTestCase):
     def test_extract(self):
         setup_bank_holidays()
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         df_extracted_data = extracted.operating_profiles
 
@@ -176,7 +176,7 @@ class ETLNonOperatingDatesExceptionsInOpProfile(ExtractBaseTestCase):
     def test_load(self):
         setup_bank_holidays()
 
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)

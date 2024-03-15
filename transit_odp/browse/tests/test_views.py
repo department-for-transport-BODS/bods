@@ -74,6 +74,7 @@ from transit_odp.users.factories import (
     AgentUserInviteFactory,
     UserFactory,
 )
+from transit_odp.naptan.factories import AdminAreaUILTAFactory
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
 
@@ -107,6 +108,8 @@ def get_lta_complaint_data_queryset():
         ui_lta=ui_lta,
         registration_numbers=service,
     )
+
+    AdminAreaUILTAFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     today = timezone.now().date()
     month = timezone.now().date() + datetime.timedelta(weeks=4)
