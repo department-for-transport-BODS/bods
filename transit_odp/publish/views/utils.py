@@ -48,12 +48,26 @@ def get_revision_details(dataset_id):
     return revision_details
 
 
-def get_service_codes_dict(revision_id, line, noc, licence_no):
+def get_service_codes_dict(revision_id, line, noc, licence_no, service_code):
+    """
+    Retrieve a set of service codes associated with a specific line and attributes.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        line (str): The name of the line.
+        noc (str): The national operator code.
+        licence_no (str): The license number.
+        service_code (str): The service code.
+
+    Returns:
+        set: A set of service codes associated with the provided parameters.
+    """
     service_codes_list = []
     txc_file_attributes = (
         TXCFileAttributes.objects.filter(revision_id=revision_id)
         .filter(national_operator_code=noc)
         .filter(licence_number=licence_no)
+        .filter(service_code=service_code)
     )
 
     for file_attribute in txc_file_attributes:

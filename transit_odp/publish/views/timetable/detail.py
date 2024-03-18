@@ -96,9 +96,16 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         )
 
     def get_context_data(self, **kwargs):
+        """
+        Get the context data for the view.
+
+        This method retrieves various contextual data based on the request parameters
+        and the object's attributes.
+        """
         line = self.request.GET.get("line")
         noc = self.request.GET.get("noc")
         licence_no = self.request.GET.get("l")
+        service_code = self.request.GET.get("service_code")
         kwargs = super().get_context_data(**kwargs)
 
         dataset = self.object
@@ -107,7 +114,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["pk1"] = self.kwargs["pk1"]
         kwargs["line_name"] = line
         kwargs["service_codes"] = get_service_codes_dict(
-            live_revision.id, line, noc, licence_no
+            live_revision.id, line, noc, licence_no, service_code
         )
         kwargs["service_type"] = get_service_type(
             live_revision.id, kwargs["service_codes"], kwargs["line_name"]

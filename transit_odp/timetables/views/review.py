@@ -159,10 +159,17 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         return super().get_queryset()
 
     def get_context_data(self, **kwargs):
+        """
+        Get the context data for the view.
+
+        This method retrieves various contextual data based on the request parameters
+        and the object's attributes.
+        """
         line = self.request.GET.get("line")
         revision_id = self.request.GET.get("revision_id")
         noc = self.request.GET.get("noc")
         licence_no = self.request.GET.get("l")
+        service_code = self.request.GET.get("service_code")
         context = super().get_context_data(**kwargs)
         dataset = self.object
         revision = get_revision_details(dataset.id)
@@ -175,7 +182,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
             }
         )
         context["service_codes"] = get_service_codes_dict(
-            revision[0], line, noc, licence_no
+            revision[0], line, noc, licence_no, service_code
         )
         context["service_type"] = get_service_type(
             revision[0], context["service_codes"], context["line_name"]
