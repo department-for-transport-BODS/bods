@@ -524,7 +524,7 @@ def merge_lines_with_vehicle_journey(vehicle_journeys, lines):
 
 
 def transform_service_patterns(
-    journey_patterns: pd.DataFrame, drop_duplicates_columns: list
+    journey_patterns: pd.DataFrame
 ) -> pd.DataFrame:
     """
     Transform journey patterns into service patterns.
@@ -536,7 +536,6 @@ def transform_service_patterns(
     """
     service_patterns = (
         journey_patterns.reset_index()
-        .drop_duplicates(drop_duplicates_columns)
         .drop("journey_pattern_id", axis=1)
     )
 
@@ -617,9 +616,7 @@ def transform_service_pattern_to_service_links(
     service_pattern_to_service_links = service_pattern_to_service_links[
         link_columns
     ].set_index(["file_id", "service_pattern_id", "order"])
-
-    # no longer need route_hash
-    service_patterns.drop("route_hash", axis=1, inplace=True)
+    
     logger.info("Finished transform_service_pattern_to_service_links")
     return service_pattern_to_service_links, drop_columns
 

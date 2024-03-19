@@ -148,7 +148,7 @@ class TransXChangeTransformer:
             else:
                 drop_duplicates_columns_sp = ["service_code", "route_hash"]
             service_patterns = transform_service_patterns(
-                journey_patterns, drop_duplicates_columns_sp
+                journey_patterns
             )
             (
                 service_pattern_to_service_links,
@@ -156,6 +156,8 @@ class TransXChangeTransformer:
             ) = transform_service_pattern_to_service_links(  # noqa: E501
                 service_patterns, route_to_route_links, route_links
             )
+            service_patterns = service_patterns.drop_duplicates(drop_duplicates_columns_sp)
+            service_patterns.drop("route_hash", axis=1, inplace=True)
             # aggregate stop_sequence and geometry
             service_pattern_stops = transform_service_pattern_stops(
                 service_pattern_to_service_links, stop_points
