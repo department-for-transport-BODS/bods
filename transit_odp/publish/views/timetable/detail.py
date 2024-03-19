@@ -10,7 +10,6 @@ from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.utils import (
     get_current_files,
     get_distinct_dataset_txc_attributes,
-    get_service_codes_dict,
     get_service_type,
     get_valid_files,
 )
@@ -103,8 +102,8 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         and the object's attributes.
         """
         line = self.request.GET.get("line")
-        noc = self.request.GET.get("noc")
-        licence_no = self.request.GET.get("l")
+        # noc = self.request.GET.get("noc")
+        # licence_no = self.request.GET.get("l")
         service_code = self.request.GET.get("service_code")
         kwargs = super().get_context_data(**kwargs)
 
@@ -113,14 +112,12 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
         kwargs["line_name"] = line
-        kwargs["service_codes"] = get_service_codes_dict(
-            live_revision.id, line, noc, licence_no, service_code
-        )
+        kwargs["service_code"] = service_code
         kwargs["service_type"] = get_service_type(
-            live_revision.id, kwargs["service_codes"], kwargs["line_name"]
+            live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
         kwargs["current_valid_files"] = get_current_files(
-            live_revision.id, kwargs["service_codes"], kwargs["line_name"]
+            live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
@@ -131,7 +128,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             booking_arrangements_info = get_valid_files(
                 live_revision.id,
                 kwargs["current_valid_files"],
-                kwargs["service_codes"],
+                kwargs["service_code"],
                 kwargs["line_name"],
             )
             if booking_arrangements_info:

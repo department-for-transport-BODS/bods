@@ -27,7 +27,7 @@
                                 {% for line_name, service_codes in line_names_dict.items %}
                                     {% for service_code in service_codes %}
                                         <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
-                                            <a class="govuk-link" href="{% url 'revision-line-detail' pk1=pk1 pk=pk host hosts.publish %}?line={{ line_name }}&revision_id={{ object.id }}&noc={{noc}}&l={{licence_number}}&service_code={{service_code}}">{{ line_name }} - {{service_code}}</a>
+                                            <a class="govuk-link" href="{% url 'revision-line-detail' pk1=pk1 pk=pk host hosts.publish %}?line={{ line_name }}&revision_id={{ object.id }}&service_code={{service_code}}">{{ line_name }} - {{service_code}}</a>
                                         </p>
                                     {% endfor %}
                                 {% endfor %}
