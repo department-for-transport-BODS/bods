@@ -20,7 +20,9 @@ from transit_odp.otc.factories import (
     LicenceModelFactory,
     LocalAuthorityFactory,
     ServiceModelFactory,
+    UILtaFactory,
 )
+from transit_odp.naptan.factories import AdminAreaFactory
 
 pytestmark = pytest.mark.django_db
 FAKER = faker.Faker()
@@ -473,9 +475,13 @@ def test_lta_csv_output():
         end=datetime.datetime(2024, 2, 24),
     )
 
+    ui_lta = UILtaFactory(name="UI_LTA")
+
     local_authority_1 = LocalAuthorityFactory(
-        id="1", name="first_LTA", registration_numbers=services_list_1
+        id="1", name="first_LTA", registration_numbers=services_list_1, ui_lta=ui_lta
     )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     lta_codes_csv = LTACSV([local_authority_1])
     csv_string = lta_codes_csv.to_string()
@@ -987,9 +993,13 @@ def test_seasonal_status_lta_csv_output():
         end=datetime.datetime(2024, 2, 28),
     )
 
+    ui_lta = UILtaFactory(name="UI_LTA")
+
     local_authority_1 = LocalAuthorityFactory(
-        id="1", name="first_LTA", registration_numbers=services_list_1
+        id="1", name="first_LTA", registration_numbers=services_list_1, ui_lta=ui_lta
     )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     lta_codes_csv = LTACSV([local_authority_1])
     csv_string = lta_codes_csv.to_string()
