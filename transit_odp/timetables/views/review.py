@@ -166,8 +166,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         """
         line = self.request.GET.get("line")
         revision_id = self.request.GET.get("revision_id")
-        # noc = self.request.GET.get("noc")
-        # licence_no = self.request.GET.get("l")
         service_code = self.request.GET.get("service_code")
         context = super().get_context_data(**kwargs)
         dataset = self.object

@@ -509,3 +509,106 @@ def test_is_members_scheduled_point_ref_present_in_fare_frame(
     fare_frames = get_lxml_element(xml)
     result = is_members_scheduled_point_ref_present_in_fare_frame("", fare_frames)
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    (
+        "fare_zone_members_present",
+        "expected",
+    ),
+    [
+        (True, None),
+        (
+            False,
+            [
+                "violation",
+                "23",
+                "Element 'members' is missing within the element 'FareZone'",
+            ],
+        ),
+    ],
+)
+def test_multiple_members_in_fare_frame(
+    fare_zone_members_present,
+    expected,
+):
+    fare_frames = """<PublicationDelivery version="1.1" xsi:schemaLocation="http://www.netex.org.uk/netex http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd" xmlns="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <FareFrame id="epd:UK:NADS:FareFrame_UK_PI_FARE_NETWORK:NADS:PH1108688:23:1A:op" version="1.0" dataSourceRef="data_source" responsibilitySetRef="network_data">
+  <TypeOfFrameRef ref="fxc:UK:DFT:TypeOfFrame_UK_PI_NETWORK:FXCP" version="fxc:v1.0" />
+    {0}
+  </FareFrame>
+  </PublicationDelivery>"""
+
+    fare_zones_with_all_members = """
+    <fareZones>
+        <FareZone id="fs@1@boarding" version="1.0">
+            <Name>Newbury Wharf</Name>
+            <members>
+            <ScheduledStopPointRef ref="atco:030059120002" version="any">Newbury Wharf</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030058420001" version="any">Park Way</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030058430001" version="any">Park Way (London Road)</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030053010001" version="any">St Marys Church</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030054250002" version="any">Newport Road</ScheduledStopPointRef>
+            </members>
+        </FareZone>
+        <FareZone id="fs@058@boarding" version="1.0">
+            <Name>Skylings</Name>
+            <members>
+            <ScheduledStopPointRef ref="atco:030055300002" version="any">Skyllings</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030055820002" version="any">Swan Inn</ScheduledStopPointRef>
+            </members>
+        </FareZone>
+        <FareZone id="fs@737@boarding" version="1.0">
+            <Name>West Berks Community Hospital</Name>
+            <members>
+            <ScheduledStopPointRef ref="atco:030057870001" version="any">West Berkshire Community Hospital</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030055360001" version="any">Southdown Road</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030057370001" version="any">Pound Lane</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030058110001" version="any">Winston Way</ScheduledStopPointRef>
+            </members>
+        </FareZone>
+    </fareZones>
+    """
+
+    fare_zones_with_some_members = """
+    <fareZones>
+        <FareZone id="fs@1@boarding" version="1.0">
+            <Name>Newbury Wharf</Name>
+            <members>
+            <ScheduledStopPointRef ref="atco:030059120002" version="any">Newbury Wharf</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030058420001" version="any">Park Way</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030058430001" version="any">Park Way (London Road)</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030053010001" version="any">St Marys Church</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030054250002" version="any">Newport Road</ScheduledStopPointRef>
+            </members>
+        </FareZone>
+        <FareZone id="fs@058@boarding" version="1.0">
+            <Name>Skylings</Name>
+            <members>
+            <ScheduledStopPointRef ref="atco:030055300002" version="any">Skyllings</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030055820002" version="any">Swan Inn</ScheduledStopPointRef>
+            </members>
+        </FareZone>
+        <FareZone id="fs@662@boarding" version="1.0">
+            <Name>Hambridge Road</Name>
+        </FareZone>
+        <FareZone id="fs@737@boarding" version="1.0">
+            <Name>West Berks Community Hospital</Name>
+            <members>
+            <ScheduledStopPointRef ref="atco:030057870001" version="any">West Berkshire Community Hospital</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030055360001" version="any">Southdown Road</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030057370001" version="any">Pound Lane</ScheduledStopPointRef>
+            <ScheduledStopPointRef ref="atco:030058110001" version="any">Winston Way</ScheduledStopPointRef>
+            </members>
+        </FareZone>
+    </fareZones>
+    """
+
+    if fare_zone_members_present:
+        xml = fare_frames.format(fare_zones_with_all_members)
+    else:
+        xml = fare_frames.format(fare_zones_with_some_members)
+
+    fare_frames = get_lxml_element(xml)
+    result = is_members_scheduled_point_ref_present_in_fare_frame("", fare_frames)
+    assert result == expected

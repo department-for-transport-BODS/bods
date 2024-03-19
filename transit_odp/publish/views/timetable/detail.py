@@ -102,8 +102,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         and the object's attributes.
         """
         line = self.request.GET.get("line")
-        # noc = self.request.GET.get("noc")
-        # licence_no = self.request.GET.get("l")
         service_code = self.request.GET.get("service_code")
         kwargs = super().get_context_data(**kwargs)
 

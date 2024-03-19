@@ -48,39 +48,8 @@ def get_revision_details(dataset_id):
     return revision_details
 
 
-# def get_service_codes_dict(revision_id, line, noc, licence_no, service_code):
-#     """
-#     Retrieve a set of service codes associated with a specific line and attributes.
-
-#     Parameters:
-#         revision_id (int): The ID of the revision.
-#         line (str): The name of the line.
-#         noc (str): The national operator code.
-#         licence_no (str): The license number.
-#         service_code (str): The service code.
-
-#     Returns:
-#         set: A set of service codes associated with the provided parameters.
-#     """
-#     service_codes_list = []
-#     txc_file_attributes = (
-#         TXCFileAttributes.objects.filter(revision_id=revision_id)
-#         .filter(national_operator_code=noc)
-#         .filter(licence_number=licence_no)
-#         .filter(service_code=service_code)
-#     )
-
-#     for file_attribute in txc_file_attributes:
-#         for line_name in file_attribute.line_names:
-#             if line_name == line:
-#                 service_codes_list.append(file_attribute.service_code)
-
-#     return set(service_codes_list)
-
-
 def get_service_type(revision_id, service_code, line_name):
     all_service_types_list = []
-    # for service_code in service_codes:
     service_types_qs = (
         Service.objects.filter(
             revision=revision_id,
@@ -104,7 +73,6 @@ def get_current_files(revision_id, service_code, line_name):
     valid_file_names = []
     today = datetime.now().date()
 
-    # for service_code in service_codes:
     highest_revision_number = TXCFileAttributes.objects.filter(
         revision=revision_id,
         service_code=service_code,
@@ -204,7 +172,6 @@ def get_valid_files(revision_id, valid_files, service_code, line_name):
         return get_single_booking_arrangements_file(revision_id, service_code)
     elif len(valid_files) > 1:
         booking_arrangements_qs = None
-        # for service_code in service_codes:
         most_recent_modification_datetime = get_most_recent_modification_datetime(
             revision_id, service_code, line_name
         )
