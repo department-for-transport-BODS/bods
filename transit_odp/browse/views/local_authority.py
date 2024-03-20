@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.views import View
 
 from transit_odp.browse.common import (
+    LTACsvHelper,
     get_all_naptan_atco_df,
     get_service_traveline_regions,
     get_weca_services_register_numbers,
@@ -30,7 +31,6 @@ from transit_odp.publish.requires_attention import (
     get_txc_map_lta,
     is_stale,
 )
-from transit_odp.browse.common import LTACsvHelper
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -527,7 +527,7 @@ class LTACSV(CSVBuilder, LTACsvHelper):
                     service.atco_code, naptan_adminarea_df
                 )
                 ui_lta_name = ui_lta.name
-                traveline_region = traveline_region_map_weca[service.atco_code]
+                traveline_region = traveline_region_map_weca.get(service.atco_code, "")
             else:
                 (
                     is_english_region,

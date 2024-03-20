@@ -1,6 +1,11 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
+from transit_odp.browse.common import (
+    LTACsvHelper,
+    get_all_naptan_atco_df,
+    get_all_weca_traveline_region_map,
+)
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
@@ -10,11 +15,6 @@ from transit_odp.publish.requires_attention import (
     evaluate_staleness,
     get_txc_map,
     is_stale,
-)
-from transit_odp.browse.common import (
-    LTACsvHelper,
-    get_all_naptan_atco_df,
-    get_all_weca_traveline_region_map,
 )
 
 STALENESS_STATUS = [
@@ -295,7 +295,9 @@ class ServiceCodesCSV(CSVBuilder, LTACsvHelper):
                     is_english_region = self.get_is_english_region_weca(
                         service.atco_code, naptan_adminarea_df
                     )
-                    traveline_region = traveline_region_map_weca[service.atco_code]
+                    traveline_region = traveline_region_map_weca.get(
+                        service.atco_code, {"ui_lta_name": "", "region": ""}
+                    )
                     ui_lta_name = traveline_region["ui_lta_name"]
                     traveline_region = traveline_region["region"]
                 else:
@@ -324,6 +326,7 @@ class ServiceCodesCSV(CSVBuilder, LTACsvHelper):
                 )
             else:
                 require_attention = "No"
+
             self._update_data(
                 service,
                 file_attribute,
