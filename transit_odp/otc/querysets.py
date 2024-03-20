@@ -363,13 +363,23 @@ class ServiceQuerySet(QuerySet):
             ).values("registration_number")
         ]
 
-        admin_area_in_scope = AdminArea.objects.filter(
-            ui_lta=ui_lta, traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
-        ).count()
-        if admin_area_in_scope == 0:
-            weca_registrations = weca_registrations + [
-                self.filter(api_type__isnull=True).values("registration_number")
-            ]
+        # OTC registrations which doesn't have any UI LTA in english region
+        weca_registrations.append(
+            (
+                self.filter(registration__ui_lta__in=[ui_lta])
+                .filter(api_type__isnull=True)
+                .exclude(
+                    registration_number__in=Subquery(
+                        self.filter(registration__ui_lta__in=[ui_lta])
+                        .filter(
+                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
+                        )
+                        .values("registration_number")
+                    )
+                )
+                .values("registration_number")
+            )
+        )
 
         return self.merge_weca_otc_queries(weca_registrations)
 

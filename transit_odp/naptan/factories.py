@@ -28,15 +28,6 @@ class AdminAreaFactory(DjangoModelFactory):
     atco_code = factory.Sequence(lambda n: n)  # unique atco code
     name = factory.Faker("street_name")
     traveline_region_id = factory.Faker("pystr", min_chars=12, max_chars=12)
-
-
-class AdminAreaUILTAFactory(DjangoModelFactory):
-    class Meta:
-        model = AdminArea
-
-    atco_code = factory.Sequence(lambda n: n)  # unique atco code
-    name = factory.Faker("street_name")
-    traveline_region_id = factory.Faker("pystr", min_chars=12, max_chars=12)
     ui_lta = factory.SubFactory(UILtaFactory)
 
 
