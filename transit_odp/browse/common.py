@@ -67,7 +67,7 @@ def ui_ltas_string(ui_ltas):
     """
     Create a string of ui lta names seprated by pipe "|"
     """
-    return "|".join([ui_lta.name for ui_lta in ui_ltas])
+    return "|".join(set([ui_lta.name for ui_lta in ui_ltas]))
 
 
 def get_service_traveline_regions(ui_ltas):
