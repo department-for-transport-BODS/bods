@@ -1084,12 +1084,21 @@ class TestOperatorDetailView:
         )
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
+        services = []
         for code in all_service_codes:
-            ServiceModelFactory(
-                licence=otc_lic1,
-                registration_number=code.replace(":", "/"),
-                effective_date=datetime.date(year=2020, month=1, day=1),
+            services.append(
+                ServiceModelFactory(
+                    licence=otc_lic1,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=datetime.date(year=2020, month=1, day=1),
+                )
             )
+
+        ui_lta = UILtaFactory(name="UI_LTA")
+        local_authority_1 = LocalAuthorityFactory(
+            id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+        )
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
         request = request_factory.get("/operators/")
         request.user = UserFactory()
@@ -1159,12 +1168,21 @@ class TestOperatorDetailView:
         )
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
+        services = []
         for code in all_service_codes:
-            ServiceModelFactory(
-                licence=otc_lic1,
-                registration_number=code.replace(":", "/"),
-                effective_date=datetime.date(year=2020, month=1, day=1),
+            services.append(
+                ServiceModelFactory(
+                    licence=otc_lic1,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=datetime.date(year=2020, month=1, day=1),
+                )
             )
+
+        ui_lta = UILtaFactory(name="UI_LTA")
+        local_authority_1 = LocalAuthorityFactory(
+            id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+        )
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
         response = OperatorDetailView.as_view()(request, pk=org.id)
         assert response.status_code == 200

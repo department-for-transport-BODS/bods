@@ -40,7 +40,12 @@ from transit_odp.organisation.factories import (
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision
-from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
+from transit_odp.otc.factories import (
+    LicenceModelFactory,
+    LocalAuthorityFactory,
+    ServiceModelFactory,
+    UILtaFactory,
+)
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.publish.forms import FeedUploadForm
 from transit_odp.publish.tasks import task_generate_consumer_interaction_stats
@@ -1113,12 +1118,21 @@ class TestPublishView:
         # Create OTC services to match each TXCFileAttribute object,
         # plus 3 more that are unmatched
         otc_lic1 = LicenceModelFactory(number=licence_number)
+        services = []
         for code in all_service_codes:
-            ServiceModelFactory(
-                licence=otc_lic1,
-                registration_number=code.replace(":", "/"),
-                effective_date=date(year=2020, month=1, day=1),
+            services.append(
+                ServiceModelFactory(
+                    licence=otc_lic1,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=date(year=2020, month=1, day=1),
+                )
             )
+
+        ui_lta = UILtaFactory(name="UI_LTA")
+        local_authority_1 = LocalAuthorityFactory(
+            id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+        )
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
         client.force_login(user=user)
         url = reverse("feed-list", host=host, kwargs={"pk1": org1.id})
@@ -1791,10 +1805,19 @@ def test_require_attention_empty_search_box(publish_client):
         modification_datetime=now(),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1, registration_number=code.replace(":", "/")
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1, registration_number=code.replace(":", "/")
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -1840,10 +1863,19 @@ def test_require_attention_field_in_search_box(publish_client):
         modification_datetime=now(),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1, registration_number=code.replace(":", "/")
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1, registration_number=code.replace(":", "/")
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -1878,10 +1910,19 @@ def test_require_attention_search_no_results(publish_client):
         modification_datetime=now(),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1, registration_number=code.replace(":", "/")
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1, registration_number=code.replace(":", "/")
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -1918,9 +1959,12 @@ def test_require_attention_seasonal_services(publish_client):
         service_code=all_service_codes[1],
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1, registration_number=code.replace(":", "/")
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1, registration_number=code.replace(":", "/")
+            )
         )
 
     # Create Seasonal Services - one in season, one out of season
@@ -1936,6 +1980,12 @@ def test_require_attention_seasonal_services(publish_client):
         end=two_months,
         registration_code=int(all_service_codes[3][-1:]),
     )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -1988,10 +2038,19 @@ def test_require_attention_stale_otc_effective_date(publish_client):
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1, registration_number=code.replace(":", "/")
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1, registration_number=code.replace(":", "/")
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -2043,12 +2102,21 @@ def test_require_attention_stale_end_date(publish_client):
         modification_datetime=now() - timedelta(weeks=100),
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1,
-            registration_number=code.replace(":", "/"),
-            effective_date=date(year=2020, month=1, day=1),
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=date(year=2020, month=1, day=1),
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -2101,12 +2169,21 @@ def test_require_attention_stale_last_modified_date(publish_client):
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1,
-            registration_number=code.replace(":", "/"),
-            effective_date=date(year=2020, month=1, day=1),
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=date(year=2020, month=1, day=1),
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -2191,12 +2268,21 @@ def test_require_attention_all_variations(publish_client):
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1,
-            registration_number=code.replace(":", "/"),
-            effective_date=date(year=2020, month=1, day=1),
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=date(year=2020, month=1, day=1),
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})
@@ -2252,12 +2338,21 @@ def test_require_attention_compliant(publish_client):
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
     for code in all_service_codes:
-        ServiceModelFactory(
-            licence=otc_lic1,
-            registration_number=code.replace(":", "/"),
-            effective_date=date(year=2020, month=1, day=1),
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=date(year=2020, month=1, day=1),
+            )
         )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     publish_client.force_login(user=user)
     url = reverse("requires-attention", host=host, kwargs={"pk1": org1.id})

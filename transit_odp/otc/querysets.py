@@ -33,6 +33,7 @@ from transit_odp.otc.constants import (
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
 )
+from transit_odp.organisation.models import Licence as OrganisationLicence
 
 TServiceQuerySet = TypeVar("TServiceQuerySet", bound="ServiceQuerySet")
 
@@ -267,6 +268,10 @@ class ServiceQuerySet(QuerySet):
             .values("registration_number")
         )
 
+        traveline_region_subquery = Subquery(
+            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+        )
+
         return (
             self.filter(
                 licence__number__in=Subquery(licences_subquery.values("number"))
@@ -274,9 +279,66 @@ class ServiceQuerySet(QuerySet):
             .add_service_code()
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
+            .exclude(registration_number__in=traveline_region_subquery)
             .order_by("licence__number", "registration_number", "service_number")
             .distinct("licence__number", "registration_number")
         )
+
+    def get_org_weca_otc_traveline_region_exemption(self, organisation_id: int):
+        """Return registration numbers to be exempted based on traveline_region_id
+        Which are not in england
+
+        Args:
+            organisation_id (int): Organisation to filter services for
+        """
+        organisation_licences = OrganisationLicence.objects.filter(
+            organisation_id=organisation_id
+        ).values("number")
+        weca_registrations = [
+            (
+                self.filter(
+                    licence__number__in=organisation_licences,
+                    api_type=API_TYPE_WECA,
+                )
+                .exclude(
+                    atco_code__in=AdminArea.objects.filter(
+                        traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
+                    ).values("atco_code")
+                )
+                .values("registration_number")
+            )
+        ]
+
+        # OTC registrations which doesn't have any UI LTA in english region
+        weca_registrations.append(
+            (
+                self.filter(licence__number__in=organisation_licences)
+                .filter(api_type__isnull=True)
+                .exclude(
+                    registration_number__in=Subquery(
+                        self.filter(licence__number__in=organisation_licences)
+                        .filter(
+                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
+                        )
+                        .values("registration_number")
+                    )
+                )
+                .values("registration_number")
+            )
+        )
+
+        return self.merge_weca_otc_queries(weca_registrations)
+
+    def merge_weca_otc_queries(self, registrations):
+        final_subquery = None
+        for service_queryset in registrations:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+
+        final_subquery = final_subquery.distinct()
+        return final_subquery
 
     def get_weca_services_register_numbers(self, ui_lta):
         """
@@ -309,15 +371,7 @@ class ServiceQuerySet(QuerySet):
                 self.filter(api_type__isnull=True).values("registration_number")
             ]
 
-        final_subquery = None
-        for service_queryset in weca_registrations:
-            if final_subquery is None:
-                final_subquery = service_queryset
-            else:
-                final_subquery = final_subquery | service_queryset
-
-        final_subquery = final_subquery.distinct()
-        return final_subquery
+        return self.merge_weca_otc_queries(weca_registrations)
 
     def get_in_scope_in_season_lta_services(self, lta_list):
         now = timezone.now()
@@ -336,14 +390,7 @@ class ServiceQuerySet(QuerySet):
                 services_subquery_list.append(weca_services_list)
 
         if services_subquery_list:
-            final_subquery = None
-            for service_queryset in services_subquery_list:
-                if final_subquery is None:
-                    final_subquery = service_queryset
-                else:
-                    final_subquery = final_subquery | service_queryset
-            final_subquery = final_subquery.distinct()
-
+            final_subquery = self.merge_weca_otc_queries(services_subquery_list)
             if len(final_subquery) > 0:
                 seasonal_services_subquery = Subquery(
                     SeasonalService.objects.filter(
@@ -460,10 +507,15 @@ class ServiceQuerySet(QuerySet):
             .values("registration_number")
         )
 
+        traveline_region_subquery = Subquery(
+            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+        )
+
         return (
             self.get_all_otc_data_for_organisation(organisation_id)
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
+            .exclude(registration_number__in=traveline_region_subquery)
             .order_by("licence__number", "registration_number", "service_number")
             .distinct("licence__number", "registration_number")
         )
@@ -485,13 +537,7 @@ class ServiceQuerySet(QuerySet):
                 services_subquery_list.append(weca_services_list)
 
         if services_subquery_list:
-            final_subquery = None
-            for service_queryset in services_subquery_list:
-                if final_subquery is None:
-                    final_subquery = service_queryset
-                else:
-                    final_subquery = final_subquery | service_queryset
-            final_subquery = final_subquery.distinct()
+            final_subquery = self.merge_weca_otc_queries(services_subquery_list)
 
             # seasonal services that are out of season
             seasonal_services_subquery = Subquery(
