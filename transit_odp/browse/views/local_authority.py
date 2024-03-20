@@ -519,7 +519,6 @@ class LTACSV(CSVBuilder, LTACsvHelper):
             file_attribute = txcfa_map.get(service_code)
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
-            is_english_region = False
 
             if service.api_type == API_TYPE_WECA:
                 is_english_region = self.get_is_english_region_weca(
