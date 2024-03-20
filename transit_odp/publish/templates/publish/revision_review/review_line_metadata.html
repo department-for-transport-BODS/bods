@@ -56,13 +56,9 @@
                         <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number(s)' %}</th>
+                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number' %}</th>
                         <td class="govuk-table__cell dont-break-out" colspan="2">
-                            {% for service_code in service_codes %}
-                                <div class="stacked">
-                                    {{ service_code }}
-                                </div>
-                            {% endfor %}
+                            {{ service_code }}
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
@@ -129,6 +125,6 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        BODSFrontend.initMap("{{ api_root }}", {{ revision_id }}, "{{line_name}}", "{{service_codes|join:','}}");
+        BODSFrontend.initMap("{{ api_root }}", {{ revision_id }}, "{{line_name}}", "{{service_code}}");
     </script>
 {% endblock %}
