@@ -11,6 +11,7 @@ from transit_odp.browse.common import (
     get_all_naptan_atco_df,
     get_weca_services_register_numbers,
     get_weca_traveline_region_map,
+    ui_ltas_string,
 )
 from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.browse.views.base_views import BaseListView
