@@ -49,6 +49,24 @@ def get_revision_details(dataset_id):
 
 
 def get_service_type(revision_id, service_code, line_name):
+    """
+    Determine the service type based on the provided parameters.
+
+    This method queries the database to retrieve service types for a given revision,
+    service code, and line name. It then analyzes the retrieved service types to determine
+    the overall service type.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        service_code (str): The service code.
+        line_name (str): The name of the line.
+
+    Returns:
+        str: The determined service type, which can be one of the following:
+            - "Standard" if all retrieved service types are "standard".
+            - "Flexible" if all retrieved service types are "flexible".
+            - "Flexible/Standard" if both "standard" and "flexible" service types are present.
+    """
     all_service_types_list = []
     service_types_qs = (
         Service.objects.filter(
@@ -70,6 +88,22 @@ def get_service_type(revision_id, service_code, line_name):
 
 
 def get_current_files(revision_id, service_code, line_name):
+    """
+    Get the list of current valid files for a given revision, service code, and line name.
+
+    This method retrieves the filenames of the current valid files for a specific revision,
+    service code, and line name, considering the operating period start and end dates.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        service_code (str): The service code.
+        line_name (str): The name of the line.
+
+    Returns:
+        list: A list of dictionaries, each containing information about a valid file, including:
+            - "filename": The name of the file.
+            - "start_date": The start date of the file's operating period.
+            - "end_date": The end date of the file's operating period, if available."""
     valid_file_names = []
     today = datetime.now().date()
 
@@ -131,6 +165,20 @@ def get_current_files(revision_id, service_code, line_name):
 
 
 def get_most_recent_modification_datetime(revision_id, service_code, line_name):
+    """
+    Get the most recent modification datetime for a given revision, service code, and line name.
+
+    This function retrieves the maximum modification datetime among all TXC file attributes
+    matching the provided revision ID, service code, and line name.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        service_code (str): The service code.
+        line_name (str): The name of the line.
+
+    Returns:
+        datetime: The most recent modification datetime, or None if no matching records are found.
+    """
     return TXCFileAttributes.objects.filter(
         revision_id=revision_id,
         service_code=service_code,
@@ -143,6 +191,23 @@ def get_most_recent_modification_datetime(revision_id, service_code, line_name):
 def get_lastest_operating_period_start_date(
     revision_id, service_code, line_name, recent_modification_datetime
 ):
+    """
+    Get the latest operating period start date for a given revision, service code,
+    line name, and recent modification datetime.
+
+    This method retrieves the maximum start date of the operating period among all TXC
+    file attributes matching the provided parameters and having the specified recent
+    modification datetime.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        service_code (str): The service code.
+        line_name (str): The name of the line.
+        recent_modification_datetime (datetime): The most recent modification datetime.
+
+    Returns:
+        datetime: The latest operating period start date, or None if no matching records are found.
+    """
     return TXCFileAttributes.objects.filter(
         revision_id=revision_id,
         service_code=service_code,
@@ -152,6 +217,21 @@ def get_lastest_operating_period_start_date(
 
 
 def get_single_booking_arrangements_file(revision_id, service_code):
+    """
+    Retrieve the booking arrangements details from a single booking arrangements file
+    for a given revision ID and service code.
+
+    This function attempts to retrieve service IDs corresponding to the provided revision ID
+    and service code. If no matching service IDs are found, it returns None. Otherwise, it
+    queries the booking arrangements associated with the retrieved service IDs and returns
+    a distinct set of booking arrangements details.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        service_code (str): The service code.
+
+    Returns:
+        QuerySet or None"""
     try:
         service_ids = (
             Service.objects.filter(revision=revision_id)
@@ -168,6 +248,24 @@ def get_single_booking_arrangements_file(revision_id, service_code):
 
 
 def get_valid_files(revision_id, valid_files, service_code, line_name):
+    """
+    Get the valid booking arrangements files based on the provided parameters.
+
+    This method determines the valid booking arrangements file(s) for a given revision,
+    service code, line name, and list of valid files. It considers various factors such
+    as the number of valid files, the most recent modification datetime, and the operating
+    period start date to determine the appropriate booking arrangements file(s) to return.
+
+    Parameters:
+        revision_id (int): The ID of the revision.
+        valid_files (list): A list of valid files containing information about each file,
+            including the filename, start date, and end date.
+        service_code (str): The service code.
+        line_name (str): The name of the line.
+
+    Returns:
+        QuerySet or None:
+    """
     if len(valid_files) == 1:
         return get_single_booking_arrangements_file(revision_id, service_code)
     elif len(valid_files) > 1:
