@@ -4,6 +4,7 @@ from transit_odp.organisation.constants import TravelineRegions
 from typing import Dict, List, Tuple
 import pandas as pd
 
+
 def get_all_naptan_atco_df() -> pd.DataFrame:
     """
     Return a dataframe with is_english_region value (bool) if services is in english region,
