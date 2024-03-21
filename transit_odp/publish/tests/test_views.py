@@ -1,9 +1,9 @@
 import csv
-from pathlib import Path
 import io
 import math
 import zipfile
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import factory
 import pytest
@@ -1129,7 +1129,7 @@ class TestPublishView:
             )
 
         ui_lta = UILtaFactory(name="UI_LTA")
-        local_authority_1 = LocalAuthorityFactory(
+        LocalAuthorityFactory(
             id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
         )
         AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -1814,7 +1814,7 @@ def test_require_attention_empty_search_box(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -1872,7 +1872,7 @@ def test_require_attention_field_in_search_box(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -1919,7 +1919,7 @@ def test_require_attention_search_no_results(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -1982,7 +1982,7 @@ def test_require_attention_seasonal_services(publish_client):
     )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -2047,7 +2047,7 @@ def test_require_attention_stale_otc_effective_date(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -2113,7 +2113,7 @@ def test_require_attention_stale_end_date(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -2180,7 +2180,7 @@ def test_require_attention_stale_last_modified_date(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -2279,7 +2279,7 @@ def test_require_attention_all_variations(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
@@ -2349,7 +2349,7 @@ def test_require_attention_compliant(publish_client):
         )
 
     ui_lta = UILtaFactory(name="UI_LTA")
-    local_authority_1 = LocalAuthorityFactory(
+    LocalAuthorityFactory(
         id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)

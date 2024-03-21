@@ -22,6 +22,7 @@ from transit_odp.common.querysets import GroupConcat
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 from transit_odp.organisation.models import Licence as BODSLicence
+from transit_odp.organisation.models import Licence as OrganisationLicence
 from transit_odp.organisation.models import (
     SeasonalService,
     ServiceCodeExemption,
@@ -33,7 +34,6 @@ from transit_odp.otc.constants import (
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
 )
-from transit_odp.organisation.models import Licence as OrganisationLicence
 
 TServiceQuerySet = TypeVar("TServiceQuerySet", bound="ServiceQuerySet")
 
@@ -329,7 +329,15 @@ class ServiceQuerySet(QuerySet):
 
         return self.merge_weca_otc_queries(weca_registrations)
 
-    def merge_weca_otc_queries(self, registrations):
+    def merge_weca_otc_queries(self, registrations) -> TServiceQuerySet:
+        """Combine the different querysets and return the
+        final unique services to use service
+
+        Args:
+            registrations (TServiceQuerySet): List of querysets
+        Returns:
+            TServiceQuerySet: Queryset with list of distinct services
+        """
         final_subquery = None
         for service_queryset in registrations:
             if final_subquery is None:

@@ -57,7 +57,7 @@ def get_all_weca_traveline_region_map() -> Dict[str, Dict[str, str]]:
 
 def get_traveline_region_from_id(id: str) -> str:
     """Return Region name if present in the enum field
-    Else return everything as it is
+    Else return id as it is
 
     Args:
         id (str): Traveline Region Key
