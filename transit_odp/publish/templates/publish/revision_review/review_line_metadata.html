@@ -23,7 +23,7 @@
         {% breadcrumb_url feed_name 'revision-publish' pk1=pk1 pk=pk host hosts.publish %}
     {% endif %}
     <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'revision-line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}">
+        <a class="govuk-breadcrumbs__link" href="{% url 'revision-line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}&revision_id={{ revision_id }}&service={{ service_code }}">
             {{ line_name }}
         </a>
     </li>
