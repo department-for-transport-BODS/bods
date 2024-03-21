@@ -1,6 +1,5 @@
 {% load i18n %}
-{% load relative_url %}
-
+{% load query_transform %} 
 
 <table class="govuk-table govuk-table--small-text-until-tablet">
   <caption class="govuk-table__caption govuk-table__caption--m">{% trans journey_name %}</caption>
@@ -32,9 +31,9 @@
   <div class="govuk-grid-column-one-half">
     <p class="govuk-body">            
       {% if show_all %}
-      <a href="{% relative_url2 request.path  params 'showAllOutbound' False %}" class="govuk-link govuk-link--no-underline">See less </a>      
+      <a href="{% query_transform_kv 'showAllOutbound' False %}" class="govuk-link govuk-link--no-underline">See less </a>      
       {% else %}
-      <a href="{% relative_url2 request.path  params 'showAllOutbound' True %}" class="govuk-link govuk-link--no-underline">See more </a>
+      <a href="{% query_transform_kv 'showAllOutbound' True %}" class="govuk-link govuk-link--no-underline">See more </a>
       {% endif %}
     </p>
   </div>
@@ -46,7 +45,7 @@
       {% if curr_page != 1 %}
       <div class="govuk-pagination__prev">
         <a class=" govuk-link govuk-pagination__link" rel="prev"
-        href="{% relative_url2 request.path params page_param curr_page|add:'-1' %}" >
+        href="{% query_transform_kv page_param curr_page|add:'-1' %}" >
           <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg"
             height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
             <path
@@ -62,7 +61,7 @@
       {% if curr_page != ttl_page %}
       <div class="govuk-pagination__next govuk-!-text-align-right">
         <a class="govuk-link govuk-pagination__link" rel="next"
-        href="{% relative_url2 request.path params page_param curr_page|add:'1' %}" >
+        href="{% query_transform_kv page_param curr_page|add:'1' %}" >
           <span class="govuk-pagination__link-title">
             Next <br /> {{curr_page|add:"1" }}/{{ttl_page}}<span class="govuk-visually-hidden"> page</span>
           </span>

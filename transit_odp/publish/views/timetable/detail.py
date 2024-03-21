@@ -17,6 +17,7 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 import urllib.parse
 from datetime import datetime
 
+
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     template_name = "publish/dataset_detail/index.html"
     model = Dataset
