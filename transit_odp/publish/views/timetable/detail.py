@@ -14,7 +14,8 @@ from transit_odp.publish.views.utils import (
     get_valid_files,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
-
+import urllib.parse
+from datetime import datetime
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     template_name = "publish/dataset_detail/index.html"
@@ -103,10 +104,22 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         """
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service_code")
+        noc = self.request.GET.get("noc")
+        licence_no = self.request.GET.get("l")
+        show_all_outbound_param = self.request.GET.get("showAllOutbound", "false")
+        show_all_inbound_param = self.request.GET.get("showAllInbound", "false")
+
+        show_all_outbound = show_all_outbound_param.lower() == "true"
+        show_all_inbound = show_all_inbound_param.lower() == "true"
+        outbound_curr_page_param = int(self.request.GET.get("outboundPage", "1"))
+        inbound_curr_page_param = int(self.request.GET.get("inboundPage", "1"))
+
         kwargs = super().get_context_data(**kwargs)
 
         dataset = self.object
         live_revision = dataset.live_revision
+        # datetime.now().strftime("%Y-%M-%d")"2013-01-08"
+        kwargs["curr_date"] = datetime.now().strftime("%Y-%m-%d")  # "2013-01-08"
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
         kwargs["line_name"] = line
@@ -118,6 +131,54 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+
+        kwargs["outbound_journey_name"] = "Outbound - Norwich to Watton"
+        stop_timings = list(range(1000, 1010, 1))
+        kwargs["outbound_journey_stops"] = stop_timings
+
+        kwargs["outbound_journey_bus_stops"] = [
+            {"Oxford Circus Station": stop_timings},
+            {"King's Cross St. Pancras Station": stop_timings},
+            {"Victoria Station": stop_timings},
+            {"Waterloo Station": stop_timings},
+            {"Marble Arch": stop_timings},
+            {"Trafalgar Square": stop_timings},
+            {"Piccadilly Circus": stop_timings},
+            {"Euston Station": stop_timings},
+            {"Paddington Station": stop_timings},
+            {"Liverpool Street Station": stop_timings},
+            {"Whitechapel Station": stop_timings},
+            {"London Bridge": stop_timings},
+            {"Aldgate East Station": stop_timings},
+            {"Stratford Station": stop_timings},
+            {"Elephant & Castle Station": stop_timings},
+            {"Brixton Station": stop_timings},
+            {"Clapham Junction Station": stop_timings},
+            {"Hammersmith Bus Station": stop_timings},
+            {
+                "Notting Hill Gate": stop_timings,
+            },
+            {"Camden Town Station": stop_timings},
+        ]
+
+        if not show_all_outbound:
+            kwargs["outbound_journey_bus_stops"] = kwargs["outbound_journey_bus_stops"][
+                :10
+            ]
+
+        kwargs["inbound_journey_name"] = "Inbound - Watton to Norwich"
+        stop_timings = list(range(1000, 1010, 1))
+        kwargs["inbound_journey_stops"] = stop_timings
+        kwargs["inbound_journey_bus_stops"] = kwargs["outbound_journey_bus_stops"]
+
+        kwargs["show_all_outbound"] = show_all_outbound
+        kwargs["show_all_inbound"] = show_all_inbound
+        kwargs["outbound_ttl_page"] = 3
+        kwargs["outbound_curr_page"] = outbound_curr_page_param
+        kwargs["inbound_ttl_page"] = 3
+        kwargs["inbound_curr_page"] = inbound_curr_page_param
+
+        # Current page, Total page
 
         if (
             kwargs["service_type"] == "Flexible"
