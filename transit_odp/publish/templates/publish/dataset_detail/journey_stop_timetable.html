@@ -1,0 +1,82 @@
+{% load i18n %}
+{% load relative_url %}
+
+
+<table class="govuk-table govuk-table--small-text-until-tablet">
+  <caption class="govuk-table__caption govuk-table__caption--m">{% trans journey_name %}</caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header ">Stop</th>
+      {% for elem in journey_stops %}
+      <th scope="col" class="govuk-table__header ">{{elem}}</th>
+      {% endfor %}
+      <!-- <th scope="row" class="govuk-table__header">{% trans 'Text' %}</th> -->
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for elem in data %}
+    <tr class="govuk-table__row">
+      {% for stop_name, timings in elem.items %}
+      <td class="govuk-table__cell">{{stop_name}}</td>
+      {% for timing in timings %}
+      <td class="govuk-table__cell">{{timing}}</td>
+      {% endfor %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% with params=request.GET.urlencode %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <p class="govuk-body">            
+      {% if show_all %}
+      <a href="{% relative_url2 request.path  params 'showAllOutbound' False %}" class="govuk-link govuk-link--no-underline">See less </a>      
+      {% else %}
+      <a href="{% relative_url2 request.path  params 'showAllOutbound' True %}" class="govuk-link govuk-link--no-underline">See more </a>
+      {% endif %}
+    </p>
+  </div>
+
+  {% if ttl_page > 0 %}  
+  <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+    <nav class=" govuk-pagination govuk-!-width-full govuk-!-text-align-right" style="justify-content: end;" role="navigation"
+      aria-label="Pagination">
+      {% if curr_page != 1 %}
+      <div class="govuk-pagination__prev">
+        <a class=" govuk-link govuk-pagination__link" rel="prev"
+        href="{% relative_url2 request.path params page_param curr_page|add:'-1' %}" >
+          <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg"
+            height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path
+              d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z">
+            </path>
+          </svg>
+          <span class="govuk-pagination__link-title">
+            Previous <br/> {{ curr_page|add:"-1" }} / {{ttl_page}} <span class="govuk-visually-hidden"> page</span>
+          </span>
+        </a>
+      </div>
+      {% endif %}
+      {% if curr_page != ttl_page %}
+      <div class="govuk-pagination__next govuk-!-text-align-right">
+        <a class="govuk-link govuk-pagination__link" rel="next"
+        href="{% relative_url2 request.path params page_param curr_page|add:'1' %}" >
+          <span class="govuk-pagination__link-title">
+            Next <br /> {{curr_page|add:"1" }}/{{ttl_page}}<span class="govuk-visually-hidden"> page</span>
+          </span>
+          <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg"
+            height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path
+              d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z">
+            </path>
+          </svg>
+        </a>
+      </div>
+      {% endif %}
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endwith %}

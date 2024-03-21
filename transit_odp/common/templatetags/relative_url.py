@@ -1,4 +1,6 @@
 from django import template
+import urllib.parse
+from urllib.parse import parse_qsl
 
 register = template.Library()
 
@@ -15,4 +17,17 @@ def relative_url(value, field_name, urlencode=None):
         )
         encoded_querystring = "&".join(filtered_querystring)
         url = "{}&{}".format(url, encoded_querystring)
+    return url
+
+
+# See https://simpleisbetterthancomplex.com/
+# snippet/2016/08/22/dealing-with-querystring-parameters.html
+@register.simple_tag
+def relative_url2(base_url, querystring, key=None, value=None):
+
+    queryParams = dict(parse_qsl(querystring))
+    if key:
+        queryParams[key] = value
+    qs = urllib.parse.urlencode(queryParams)
+    url = "{}?{}".format(base_url, qs)
     return url
