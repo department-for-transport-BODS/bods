@@ -1,8 +1,10 @@
-from transit_odp.naptan.models import AdminArea
-from transit_odp.otc.models import Service, UILta
-from transit_odp.organisation.constants import TravelineRegions
 from typing import Dict, List, Tuple
+
 import pandas as pd
+
+from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import TravelineRegions
+from transit_odp.otc.models import Service, UILta
 
 
 def get_all_naptan_atco_df() -> pd.DataFrame:
@@ -54,9 +56,18 @@ def get_all_weca_traveline_region_map() -> Dict[str, Dict[str, str]]:
 
 
 def get_traveline_region_from_id(id: str) -> str:
+    """Return Region name if present in the enum field
+    Else return everything as it is
+
+    Args:
+        id (str): Traveline Region Key
+
+    Returns:
+        str: Region name
+    """
     try:
         return TravelineRegions(id).label
-    except:
+    except Exception:
         return id
 
 
@@ -105,6 +116,10 @@ def get_service_traveline_regions(ui_ltas):
 
 
 class LTACsvHelper:
+    """Class with methods to compute LTA related information,
+    Used in both LTA completeness report and Operator compleness report
+    """
+
     def __init__(self) -> None:
         self.otc_service_traveline_region = {}
         self.otc_service_ui_ltas = {}
@@ -205,7 +220,21 @@ class LTACsvHelper:
             )
         return self.weca_traveline_region_status.get(atco_code, "")
 
-    def get_otc_service_details(self, service, naptan_adminarea_df):
+    def get_otc_service_details(
+        self, service: Service, naptan_adminarea_df: pd.DataFrame
+    ) -> Tuple:
+        """Get otc service details, UI LTA names, Traveline Regions,
+        and is the service belongs to english
+
+        Args:
+            service (Service): Service to get details from
+            naptan_adminarea_df (pd.DataFrame): naptan dataframe with the details
+
+        Returns:
+            Tuple:  is_english_region: str
+                    ui_lta_name:str
+                    traveline_region: str
+        """
         ui_ltas = get_service_ui_ltas(service)
         ui_ltas_dict_key = tuple(ui_ltas)
         is_english_region = self.get_is_english_region_otc(
