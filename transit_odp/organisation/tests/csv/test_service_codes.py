@@ -752,6 +752,10 @@ def test_csv_output():
 
 @freeze_time("2023-02-24")
 def test_weca_csv_output():
+    """Test Operator report for weca season services
+    For Require Attention No/Yes, In Season Yes/No
+    Match the CSV row outputs
+    """
     licence_number = "PD0000099"
     num_otc_services = 10
     service_code_prefix = "1101000"
@@ -1330,6 +1334,9 @@ def test_weca_csv_output():
 
 @freeze_time("2023-02-28")
 def test_weca_seasonal_status_csv_output():
+    """Test Operator report for weca season services
+    Match the CSV row outputs
+    """
     licence_number = "PD0001111"
     num_otc_services = 10
     service_code_prefix = "1101000"
