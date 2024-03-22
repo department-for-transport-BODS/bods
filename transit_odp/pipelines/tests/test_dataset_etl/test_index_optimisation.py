@@ -84,7 +84,7 @@ class IndexOptimisationTestCase(TestCase):
         self.assertEqual(3, revision.localities.count())
         self.assertEqual(4, revision.service_patterns.count())
         self.assertEqual(
-            24,
+            21,
             ServicePatternStop.objects.filter(
                 service_pattern__revision=revision
             ).count(),
@@ -136,7 +136,7 @@ class IndexOptimisationTestCase(TestCase):
         self.assertEqual(3, revision.localities.count())
         self.assertEqual(4, revision.service_patterns.count())
         self.assertEqual(
-            48,
+            42,
             ServicePatternStop.objects.filter(
                 service_pattern__revision=revision
             ).count(),
@@ -184,7 +184,7 @@ class IndexOptimisationTestCase(TestCase):
         self.assertEqual(3, revision.localities.count())
         self.assertEqual(4, revision.service_patterns.count())
         self.assertEqual(
-            48,
+            42,
             ServicePatternStop.objects.filter(
                 service_pattern__revision=revision
             ).count(),
@@ -228,7 +228,7 @@ class IndexOptimisationTestCase(TestCase):
         self.assertEqual(1, revision.admin_areas.count())
         self.assertEqual(1, revision.services.count())
         self.assertEqual(
-            193,
+            25,
             ServicePatternStop.objects.filter(
                 service_pattern__revision=revision
             ).count(),
@@ -278,7 +278,7 @@ class IndexOptimisationTestCase(TestCase):
         self.assertEqual(1, revision.admin_areas.count())
         self.assertEqual(1, revision.services.count())
         self.assertEqual(
-            193,
+            25,
             ServicePatternStop.objects.filter(
                 service_pattern__revision=revision
             ).count(),
