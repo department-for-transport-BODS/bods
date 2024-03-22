@@ -25,15 +25,14 @@
     {% endfor %}
   </tbody>
 </table>
-{% with params=request.GET.urlencode %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <p class="govuk-body">            
       {% if show_all %}
-      <a href="{% query_transform_kv 'showAllOutbound' False %}" class="govuk-link govuk-link--no-underline">See less </a>      
+      <a href="{% query_transform_kv show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
       {% else %}
-      <a href="{% query_transform_kv 'showAllOutbound' True %}" class="govuk-link govuk-link--no-underline">See more </a>
+      <a href="{% query_transform_kv show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
       {% endif %}
     </p>
   </div>
@@ -78,4 +77,3 @@
   </div>
   {% endif %}
 </div>
-{% endwith %}
