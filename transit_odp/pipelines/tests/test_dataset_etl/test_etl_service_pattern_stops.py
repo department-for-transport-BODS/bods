@@ -79,15 +79,24 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
         departure_time_1 = transformed_service_pattern_stops[condition_departure_time_1]
         departure_time_2 = transformed_service_pattern_stops[condition_departure_time_2]
 
+        vj_data = transformed_service_pattern_stops[
+            transformed_service_pattern_stops["vehicle_journey_code"] == "VJ91"
+        ]
+        count_stops = vj_data.shape[0]
+
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            73,
+            1385,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
         )
         self.assertIn("18:15:00", departure_time_1["departure_time"].to_list())
         self.assertEqual(["07:15:00"], departure_time_2["departure_time"].to_list())
+
+        self.assertEqual(60, count_stops)
+        self.assertEqual("07:35:00", vj_data.iloc[0]["departure_time"])
+        self.assertEqual("08:25:00", vj_data.iloc[count_stops - 1]["departure_time"])
 
     def test_load(self):
         # setup
@@ -99,7 +108,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
         sp_stops = ServicePatternStop.objects.all()
         # test
 
-        self.assertEqual(376, sp_stops.count())
+        self.assertEqual(7680, sp_stops.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -187,13 +196,17 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            47,
+            341,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
         )
         self.assertIn("19:12:00", departure_time_1["departure_time"].to_list())
-        self.assertEqual(["08:40:00"], departure_time_2["departure_time"].to_list())
+        self.assertTrue(
+            set(["08:40:00", "10:40:00", "11:40:00", "18:40:00"]).issubset(
+                departure_time_2["departure_time"].to_list()
+            )
+        )
 
     def test_load(self):
         # setup
@@ -205,7 +218,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
         sp_stops = ServicePatternStop.objects.all()
         # test
 
-        self.assertEqual(169, sp_stops.count())
+        self.assertEqual(1243, sp_stops.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)

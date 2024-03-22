@@ -101,6 +101,10 @@ class TransXChangeDataLoader:
         )
         adapter.info("Finished serviced organisations vehicle journeys.")
 
+        adapter.info("Loading service pattern stops.")
+        self.load_service_patterns_stops(service_patterns, vehicle_journeys, revision)
+        adapter.info("Finished service pattern stops.")
+
         adapter.info("Loading booking arrangements.")
         self.load_booking_arrangements(services, revision)
         adapter.info("Finished loading booking arrangements.")
@@ -519,7 +523,6 @@ class TransXChangeDataLoader:
     def load_service_patterns(self, services, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)
         service_patterns = self.transformed.service_patterns
-        service_pattern_stops = self.transformed.service_pattern_stops
 
         adapter.info("Bulk creating service patterns.")
         service_pattern_objs = df_to_service_patterns(revision, service_patterns)
@@ -546,20 +549,6 @@ class TransXChangeDataLoader:
                 created, on="service_pattern_id", how="inner"
             )
 
-        # ADD ServicePattern Associations
-
-        # Add ServicePattern m2m ServiceLink
-        # TODO - associate ServiceLinks - need explicit through table as ServiceLink
-        # can appear more than once on
-        #  the ServicePattern
-        # self.add_service_pattern_to_service_links(service_pattern_to_service_links)
-
-        # Create ServicePatternStops and add to ServicePattern
-        adapter.info("Creating service pattern stops.")
-        add_service_pattern_to_service_pattern_stops(
-            service_pattern_stops, service_patterns
-        )
-
         # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
         # ServicePattern
         adapter.info("Adding localities.")
@@ -573,8 +562,45 @@ class TransXChangeDataLoader:
         if not service_patterns.empty:
             add_service_associations(services, service_patterns)
 
-        adapter.info("Finished loading service patterns.")
+        adapter.info("Finished loading service pattern")
         return service_patterns
+
+    def load_service_patterns_stops(
+        self,
+        service_patterns: pd.DataFrame,
+        vehicle_journeys: pd.DataFrame,
+        revision: pd.DataFrame,
+    ):
+        """Merge vehicle journeys if present to map the foreign key and load service pattern stops data."""
+        # ADD ServicePattern Associations
+
+        # Add ServicePattern m2m ServiceLink
+        # TODO - associate ServiceLinks - need explicit through table as ServiceLink
+        # can appear more than once on
+        #  the ServicePattern
+        # self.add_service_pattern_to_service_links(service_pattern_to_service_links)
+
+        # Create ServicePatternStops and add to ServicePattern
+        adapter = get_dataset_adapter_from_revision(logger, revision=revision)
+        adapter.info("Creating service pattern stops.")
+        service_pattern_stops = self.transformed.service_pattern_stops
+        if (
+            not vehicle_journeys.empty
+            and "journey_pattern_ref" in vehicle_journeys.columns
+        ):
+            service_pattern_stops = service_pattern_stops.merge(
+                vehicle_journeys.reset_index()[
+                    ["file_id", "journey_pattern_ref", "vehicle_journey_code", "id"]
+                ],
+                left_on=["file_id", "journey_pattern_id", "vehicle_journey_code"],
+                right_on=["file_id", "journey_pattern_ref", "vehicle_journey_code"],
+            )
+
+        add_service_pattern_to_service_pattern_stops(
+            service_pattern_stops, service_patterns
+        )
+
+        adapter.info("Finished loading service pattern stops.")
 
     def load_booking_arrangements(self, services, revision):
         adapter = get_dataset_adapter_from_revision(logger, revision=revision)

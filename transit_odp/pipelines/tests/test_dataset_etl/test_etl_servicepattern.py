@@ -84,11 +84,10 @@ class ServicePatternTestCase(TestCase):
                 self.cur_dir, "data/test_servicepattern/expected_servicepattern.csv"
             )
         )
-        df_stop_sequence = df_expected[["atco_code"]]
+        df_stop_sequence = df_expected[["stop_atco"]]
 
         # We have only one service
         service = revision.services.all()[0]
-
         # Check that one of the service patterns matches our expected data
         found = False
         for service_pattern in service.service_patterns.all():
@@ -119,6 +118,8 @@ columns_service_patterns = [
     "admin_area_codes",
     "description",
     "line_name",
+    "journey_code",
+    "vehicle_journey_code",
 ]
 
 
