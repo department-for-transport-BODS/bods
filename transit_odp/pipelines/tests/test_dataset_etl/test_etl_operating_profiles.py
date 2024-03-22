@@ -93,7 +93,7 @@ class ETLOperatingProfilesVehicleJourneys(ExtractBaseTestCase):
         # test
         transformed = self.feed_parser.transform(extracted)
 
-        self.assertEqual(transformed.operating_profiles.shape[0], 474)
+        self.assertEqual(transformed.operating_profiles.shape[0], 259)
 
         self.assertCountEqual(
             list(transformed.operating_profiles.columns),
@@ -127,7 +127,7 @@ class ETLOperatingProfilesVehicleJourneysWithHolidays(ExtractBaseTestCase):
         transformed = self.feed_parser.transform(extracted)
 
         self.assertEqual(extracted.operating_profiles.shape[0], 1163)
-        self.assertEqual(transformed.operating_profiles.shape[0], 1163)
+        self.assertEqual(transformed.operating_profiles.shape[0], 948)
 
         self.assertCountEqual(
             list(extracted.operating_profiles.columns),

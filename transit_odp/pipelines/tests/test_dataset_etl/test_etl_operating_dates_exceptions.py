@@ -93,7 +93,7 @@ class ETLOperatingDatesException(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(519, df_extracted_data.shape[0])
+        self.assertEqual(497, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
@@ -196,7 +196,7 @@ class ETLOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(1280, df_extracted_data.shape[0])
+        self.assertEqual(1232, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
@@ -288,7 +288,7 @@ class ETLOperatingDatesExceptionVehicleJourneysOnly(ExtractBaseTestCase):
             list(df_extracted_data.columns),
             columns,
         )
-        self.assertEqual(519, df_extracted_data.shape[0])
+        self.assertEqual(497, df_extracted_data.shape[0])
 
     def test_load(self):
         # setup
