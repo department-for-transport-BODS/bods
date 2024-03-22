@@ -273,7 +273,7 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Variation Number",
             "The variation number element as extracted from the OTC database.",
         ),
-        "service_number": Column(
+        "service_numbers": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),
@@ -309,6 +309,14 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Service Type Other Details",
             "The service type other details element as extracted from the "
             "OTC database.",
+        ),
+        "traveline_region": Column(
+            "Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
         ),
     }
 )

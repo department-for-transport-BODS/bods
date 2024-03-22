@@ -15,6 +15,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_route_links,
     create_route_to_route_links,
     create_routes,
+    filter_operating_profiles,
     get_most_common_localities,
     get_vehicle_journey_with_timing_refs,
     get_vehicle_journey_without_timing_refs,
@@ -47,6 +48,7 @@ class TransXChangeTransformer:
         self.stop_point_cache = stop_point_cache
 
     def transform(self) -> TransformedData:
+        """Transform various dataframes created during the extraction stage, so that these records can be loaded into expected tables in the loader stage"""
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
@@ -96,6 +98,9 @@ class TransXChangeTransformer:
 
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
+
+        operating_profiles = filter_operating_profiles(operating_profiles, services)
+
         if not vehicle_journeys.empty and not journey_patterns.empty:
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
                 vehicle_journeys
@@ -332,7 +337,7 @@ class TransXChangeTransformer:
             vehicle_journeys=df_merged_vehicle_journeys,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
-            operating_profiles=self.extracted_data.operating_profiles,
+            operating_profiles=operating_profiles,
         )
 
     def sync_stop_points(self, stop_points, provisional_stops):

@@ -23,7 +23,7 @@ Make a copy of `./config/.env.local.template` in the root directory of the
 project, call this file `.env`.
 
 ```sh
-cp config/.env.local.template .env 
+cp config/.env.local.template .env
 ```
 
 Open the `.env` file and set the `UID` and `GID` to `1000`.
@@ -107,14 +107,46 @@ Select `Run selected tasks` from the dropdown and click `Go`.
 These tasks will populate the tables storing NaPTAN data and also fetch the schema
 files required to perform schema checks.
 
+## Upgrade Local Setup
+
+Upgrade the local setup to create images and container using the latest code in the dev branch.
+
+Below are the recommended steps:
+
+Take backup of local database using the below command.
+
+```sh
+make local-db-backup
+```
+
+Delete existing images and volumes from docker desktop.
+
+Run the below command and ensure vpn is switched off before running the command.
+
+```sh
+docker-compose up
+```
+
+If there was any failures while building the images, make sure the vpn is disconnected, exit docker desktop (not just close the window) and rerun the above command after running the below command.
+
+```sh
+docker builder prune -a
+```
+
+Restore the db after the service is up using the below command.
+
+```sh
+make local-db-restore
+```
+
 ## OTC Dataset
 
 BODS utilises the Office of Traffic Commissioners Bus Service dataset for
 Compliance and Monitoring functionality.
 To synchronise BODS with this data there are two Celery Tasks that need to be run.
 
-  1. task_get_all_otc_data
-  2. task_refresh_otc_data
+1. task_get_all_otc_data
+2. task_refresh_otc_data
 
 The first task should be run once on setup to ensure the BODS OTC tables are
 populated and the second task should be run periodically to ensure data stays

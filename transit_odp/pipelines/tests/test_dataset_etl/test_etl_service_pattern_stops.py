@@ -255,6 +255,84 @@ class ETLSPSWithProvisionalStop(ExtractBaseTestCase):
             transformed_stop_points["atco_code"].isin(atco_codes)
         ]
 
+        self.assertTrue(
+            (transformed.service_pattern_stops["is_timing_status"] == True).any()
+        )
         self.assertEqual(atco_codes, extracted_stops["atco_code"].to_list())
         self.assertEqual(common_names, extracted_stops["common_name"].to_list())
         self.assertEqual(atco_codes, provisional_stops["atco_code"].to_list())
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLSPSWithFlexibleSyntheticStop(ExtractBaseTestCase):
+    test_file = (
+        "data/test_servicepatternstops/test_extract_sps_flexible_synthetic_stop.xml"
+    )
+    ignore_stops = ["2700000083"]
+
+    def test_load(self):
+        extracted = self.trans_xchange_extractor.extract()
+        transformed = self.feed_parser.transform(extracted)
+        self.feed_parser.load(transformed)
+        sps_common_name = ServicePatternStop.objects.values_list(
+            "txc_common_name", flat=True
+        )
+
+        self.assertTrue(
+            transformed.service_pattern_stops["departure_time"].isna().all()
+        )
+        self.assertTrue(
+            (transformed.service_pattern_stops["is_timing_status"] == False).all()
+        )
+        self.assertIn("Methodist Church", sps_common_name)
+        self.assertNotIn("Railway Station", sps_common_name)
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLSPSWithFlexibleProvisionalStopsInDB(ExtractBaseTestCase):
+    test_file = (
+        "data/test_servicepatternstops/test_extract_sps_flexible_provisional_stop.xml"
+    )
+    ignore_provisional_stops = ["2700027009"]
+    allow_provisional_stops_in_naptan = True
+
+    def test_load(self):
+        extracted = self.trans_xchange_extractor.extract()
+        transformed = self.feed_parser.transform(extracted)
+        self.feed_parser.load(transformed)
+        sps_common_name = ServicePatternStop.objects.values_list(
+            "txc_common_name", flat=True
+        )
+
+        self.assertTrue(
+            transformed.service_pattern_stops["departure_time"].isna().all()
+        )
+        self.assertTrue(
+            (transformed.service_pattern_stops["is_timing_status"] == False).all()
+        )
+        self.assertIn("Verify Common Name", sps_common_name)
+        self.assertNotIn("Suborn Bus Station", sps_common_name)
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLSPSWithFlexibleProvisionalStopsNotInDB(ExtractBaseTestCase):
+    test_file = (
+        "data/test_servicepatternstops/test_extract_sps_flexible_provisional_stop.xml"
+    )
+
+    def test_load(self):
+        extracted = self.trans_xchange_extractor.extract()
+        transformed = self.feed_parser.transform(extracted)
+        self.feed_parser.load(transformed)
+        sps_common_name = ServicePatternStop.objects.values_list(
+            "txc_common_name", flat=True
+        )
+
+        self.assertTrue(
+            transformed.service_pattern_stops["departure_time"].isna().all()
+        )
+        self.assertTrue(
+            (transformed.service_pattern_stops["is_timing_status"] == False).all()
+        )
+        self.assertIn("Verify Common Name", sps_common_name)
+        self.assertIn("Suborn Bus Station", sps_common_name)

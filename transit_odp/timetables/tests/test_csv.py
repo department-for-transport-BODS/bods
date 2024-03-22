@@ -8,6 +8,7 @@ from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
     PTIValidationResultFactory,
 )
+from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.factories import (
     DatasetFactory,
@@ -19,7 +20,12 @@ from transit_odp.organisation.factories import (
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models import Dataset
-from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
+from transit_odp.otc.factories import (
+    LicenceModelFactory,
+    LocalAuthorityFactory,
+    ServiceModelFactory,
+    UILtaFactory,
+)
 from transit_odp.otc.models import Service
 from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 
@@ -93,7 +99,15 @@ def test_service_in_bods_but_not_in_otc():
         DataQualityReportFactory(revision=fa.revision)
         PTIValidationResultFactory(revision=fa.revision)
 
-    ServiceModelFactory.create_batch(5)
+    services = ServiceModelFactory.create_batch(5)
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=services,
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df[:5].iterrows():
@@ -117,13 +131,23 @@ def test_service_in_bods_but_not_in_otc():
 def test_service_in_bods_and_otc():
     import datetime
 
-    for service in ServiceModelFactory.create_batch(5):
+    services = ServiceModelFactory.create_batch(5)
+    for service in services:
         fa = TXCFileAttributesFactory(
             licence_number=service.licence.number,
             service_code=service.registration_number.replace("/", ":"),
         )
         DataQualityReportFactory(revision=fa.revision)
         PTIValidationResultFactory(revision=fa.revision)
+
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=services,
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     for index, row in df.iterrows():
@@ -202,8 +226,16 @@ def test_service_in_otc_and_not_in_bods():
     org1 = OrganisationFactory(name=org_name)
     LicenceFactory(organisation=org1, number=licence_number)
     otc_lic = LicenceModelFactory(id=10, number=licence_number)
-    ServiceModelFactory(licence=otc_lic)
+    service = ServiceModelFactory(licence=otc_lic)
     TXCFileAttributesFactory()
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[service],
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
 
