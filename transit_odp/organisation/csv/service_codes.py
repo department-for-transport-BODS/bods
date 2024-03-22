@@ -1,9 +1,15 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
+from transit_odp.browse.common import (
+    LTACSVHelper,
+    get_all_naptan_atco_df,
+    get_all_weca_traveline_region_map,
+)
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
@@ -66,7 +72,7 @@ def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]
     }
 
 
-class ServiceCodesCSV(CSVBuilder):
+class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
     columns = [
         CSVColumn(
             header="XML:Service Code",
@@ -95,7 +101,7 @@ class ServiceCodesCSV(CSVBuilder):
         CSVColumn(
             header="Scope Status",
             accessor=lambda otc_service: "Out of Scope"
-            if otc_service.get("scope_status")
+            if otc_service.get("scope_status", False)
             else "In Scope",
         ),
         CSVColumn(
@@ -182,9 +188,18 @@ class ServiceCodesCSV(CSVBuilder):
             header="OTC:Service Number",
             accessor=lambda otc_service: otc_service.get("otc_service_number"),
         ),
+        CSVColumn(
+            header="Traveline Region",
+            accessor=lambda otc_service: otc_service.get("traveline_region"),
+        ),
+        CSVColumn(
+            header="Local Transport Authority",
+            accessor=lambda otc_service: otc_service.get("ui_lta_name"),
+        ),
     ]
 
     def __init__(self, organisation_id: int):
+        super().__init__()
         self._organisation_id = organisation_id
         self._object_list = []
 
@@ -193,14 +208,16 @@ class ServiceCodesCSV(CSVBuilder):
         service: Optional[OTCService],
         file_attribute: Optional[TXCFileAttributes],
         seasonal_service: Optional[SeasonalService],
-        exemption: Optional[ServiceCodeExemption],
+        exempted: Optional[bool],
         staleness_status: Optional[str],
         require_attention: str,
+        traveline_region: str,
+        ui_lta_name: str,
     ) -> None:
         self._object_list.append(
             {
                 "require_attention": require_attention,
-                "scope_status": exemption and exemption.registration_number,
+                "scope_status": exempted,
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service and service.service_number,
@@ -230,6 +247,8 @@ class ServiceCodesCSV(CSVBuilder):
                 and file_attribute.effective_stale_date_last_modified_date,
                 "effective_stale_date_otc_effective_date": service
                 and (service.effective_stale_date_otc_effective_date),
+                "traveline_region": traveline_region,
+                "ui_lta_name": ui_lta_name,
             }
         )
 
@@ -238,10 +257,10 @@ class ServiceCodesCSV(CSVBuilder):
 
     def _get_require_attention(
         self,
-        exemption: Optional[ServiceCodeExemption],
+        exempted: Optional[bool],
         seasonal_service: Optional[SeasonalService],
     ) -> str:
-        if exemption or (seasonal_service and not seasonal_service.seasonal_status):
+        if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
         return "Yes"
 
@@ -257,6 +276,8 @@ class ServiceCodesCSV(CSVBuilder):
         txcfa_map = get_txc_map(organisation_id)
         seasonal_service_map = get_seasonal_service_map(organisation_id)
         service_code_exemption_map = get_service_code_exemption_map(organisation_id)
+        naptan_adminarea_df = get_all_naptan_atco_df()
+        traveline_region_map_weca = get_all_weca_traveline_region_map()
         services_code = set(otc_map)
         services_code.update(set(txcfa_map))
         services_code = sorted(services_code)
@@ -266,27 +287,55 @@ class ServiceCodesCSV(CSVBuilder):
             file_attribute = txcfa_map.get(service_code)
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
+            is_english_region = False
+            traveline_region = ui_lta_name = ""
+
+            if service:
+                if service.api_type == API_TYPE_WECA:
+                    is_english_region = self.get_is_english_region_weca(
+                        service.atco_code, naptan_adminarea_df
+                    )
+                    traveline_region = traveline_region_map_weca.get(
+                        service.atco_code, {"ui_lta_name": "", "region": ""}
+                    )
+                    ui_lta_name = traveline_region["ui_lta_name"]
+                    traveline_region = traveline_region["region"]
+                else:
+                    (
+                        is_english_region,
+                        ui_lta_name,
+                        traveline_region,
+                    ) = self.get_otc_service_details(service, naptan_adminarea_df)
+
+            exempted = False
+            if not (
+                not (exemption and exemption.registration_code) and is_english_region
+            ):
+                exempted = True
 
             staleness_status = "Up to date"
             if file_attribute is None:
                 require_attention = self._get_require_attention(
-                    exemption, seasonal_service
+                    exempted, seasonal_service
                 )
             elif service and is_stale(service, file_attribute):
                 rad = evaluate_staleness(service, file_attribute)
                 staleness_status = STALENESS_STATUS[rad.index(True)]
                 require_attention = self._get_require_attention(
-                    exemption, seasonal_service
+                    exempted, seasonal_service
                 )
             else:
                 require_attention = "No"
+
             self._update_data(
                 service,
                 file_attribute,
                 seasonal_service,
-                exemption,
+                exempted,
                 staleness_status,
                 require_attention,
+                traveline_region,
+                ui_lta_name,
             )
 
     def get_queryset(self):

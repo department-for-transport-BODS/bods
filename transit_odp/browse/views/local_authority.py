@@ -8,9 +8,9 @@ from django.http import HttpResponse
 from django.views import View
 
 from transit_odp.browse.common import (
+    LTACSVHelper,
     get_all_naptan_atco_df,
     get_service_traveline_regions,
-    get_service_ui_ltas,
     get_weca_services_register_numbers,
     get_weca_traveline_region_map,
     ui_ltas_string,
@@ -322,7 +322,7 @@ class LocalAuthorityExportView(View):
         return response
 
 
-class LTACSV(CSVBuilder):
+class LTACSV(CSVBuilder, LTACSVHelper):
     columns = create_columns(header_accessor_data)
 
     def _update_data(
@@ -384,6 +384,7 @@ class LTACSV(CSVBuilder):
         )
 
     def __init__(self, combined_authorities):
+        super().__init__()
         self._combined_authorities = combined_authorities
         self._object_list = []
         self.otc_service_traveline_region = {}
@@ -525,26 +526,14 @@ class LTACSV(CSVBuilder):
                 is_english_region = self.get_is_english_region_weca(
                     service.atco_code, naptan_adminarea_df
                 )
+                ui_lta_name = ui_lta.name
+                traveline_region = traveline_region_map_weca.get(service.atco_code, "")
             else:
-                ui_ltas = get_service_ui_ltas(service)
-                ui_ltas_dict_key = tuple(ui_ltas)
-                is_english_region = self.get_is_english_region_otc(
-                    ui_ltas, ui_ltas_dict_key, naptan_adminarea_df
-                )
-                ui_ltas_name = self.get_otc_ui_lta(ui_ltas, ui_ltas_dict_key)
-                traveline_region = self.get_otc_service_traveline_region(
-                    ui_ltas, ui_ltas_dict_key
-                )
-
-            traveline_region = (
-                traveline_region_map_weca[service.atco_code]
-                if service.api_type == API_TYPE_WECA
-                else traveline_region
-            )
-
-            ui_lta_name = (
-                ui_lta.name if service.api_type == API_TYPE_WECA else ui_ltas_name
-            )
+                (
+                    is_english_region,
+                    ui_lta_name,
+                    traveline_region,
+                ) = self.get_otc_service_details(service, naptan_adminarea_df)
 
             exempted = False
             if not (
