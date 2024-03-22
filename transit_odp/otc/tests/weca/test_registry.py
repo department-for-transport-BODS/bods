@@ -86,6 +86,13 @@ def test_weca_registry_otc_service(mock_weca_fetch):
 
 @patch(CLIENT)
 def test_weca_registry_missing_licence_service(mock_weca_fetch):
+    """Test for the services when some licence is missing,
+    and few are present in the database, So missing licences
+    will return only licences which are missing in the database
+
+    Args:
+        mock_weca_fetch
+    """
     LicenceModelFactory.create(number="PH0006633", status="Valid")
     LicenceModelFactory.create(number="PH0006347", status="Valid")
     mock_weca_fetch.return_value = get_weca_client_response_from_file(
