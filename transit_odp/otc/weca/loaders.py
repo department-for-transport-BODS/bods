@@ -22,7 +22,6 @@ class Loader:
         logger.info("WECA job to refresh all the services started")
         self.registry.process_services()
         self.licences = self.load_missing_licences()
-        self.registry.clean_services_list()
         if len(self.registry.services) > 0:
             self.delete_services()
             self.load_services()

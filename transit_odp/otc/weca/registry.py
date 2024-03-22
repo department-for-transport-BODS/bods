@@ -92,24 +92,20 @@ class Registry:
                 how="left",
             )
         self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
+        self.services.drop(["id_x", "number"], inplace=True, axis=1)
+        self.services.licence_id.replace({np.nan: None}, inplace=True)
 
     def get_missing_licences(self) -> None:
         """
-        Returns the list of services with licences which are not present in
+        Returns the list of services with licences which
+        are not present in database
         """
-        missing_licences = self.services[
-            self.services["licence_id"].isnull()
-        ].reset_index()["licence"]
-        if not missing_licences.empty:
+        if not self.services.empty:
+            missing_licences = self.services[
+                self.services["licence_id"].isnull()
+            ].reset_index()["licence"]
             return list(set(missing_licences.tolist()))
         return []
-
-    def clean_services_list(self) -> None:
-        """
-        Drop un-necessary columns and rename others
-        """
-        self.services.drop(["id_x", "number"], inplace=True, axis=1)
-        self.services.licence_id.replace({np.nan: None}, inplace=True)
 
     def process_services(self) -> None:
         """
