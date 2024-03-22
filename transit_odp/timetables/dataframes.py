@@ -746,8 +746,12 @@ def populate_operating_profiles(operating_profiles, vehicle_journey_code, servic
         operating_profile_obj["serviced_org_ref"] = serviced_org_refs
         operating_profile_obj["operational"] = operational
 
-    is_special_days_operation = bool(special_days_operation) and bool(special_days_operation.children)
-    is_bank_holiday_operation = bool(bank_holiday_operation) and bool(bank_holiday_operation.children)
+    is_special_days_operation = bool(special_days_operation) and bool(
+        special_days_operation.children
+    )
+    is_bank_holiday_operation = bool(bank_holiday_operation) and bool(
+        bank_holiday_operation.children
+    )
     if is_special_days_operation:
         days_of_operation = special_days_operation.get_element_or_none(
             ["DaysOfOperation"]
