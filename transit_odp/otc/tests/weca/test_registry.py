@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from transit_odp.otc.factories import ServiceModelFactory
+from transit_odp.otc.factories import ServiceModelFactory, LicenceModelFactory
 from transit_odp.otc.tests.conftest import get_weca_data
 from transit_odp.otc.weca.client import APIResponse
 from transit_odp.otc.weca.registry import Registry
@@ -82,3 +82,23 @@ def test_weca_registry_otc_service(mock_weca_fetch):
     registry = Registry()
     registry.process_services()
     assert len(registry.services) == 3
+
+
+@patch(CLIENT)
+def test_weca_registry_missing_licence_service(mock_weca_fetch):
+    """Test for the services when some licence is missing,
+    and few are present in the database, So missing licences
+    will return only licences which are missing in the database
+
+    Args:
+        mock_weca_fetch
+    """
+    LicenceModelFactory.create(number="PH0006633", status="Valid")
+    LicenceModelFactory.create(number="PH0006347", status="Valid")
+    mock_weca_fetch.return_value = get_weca_client_response_from_file(
+        "weca/otc_service.json"
+    )
+    registry = Registry()
+    registry.process_services()
+    missing_licences = registry.get_missing_licences()
+    assert len(missing_licences) == 2
