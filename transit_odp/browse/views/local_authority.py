@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.views import View
 
 from transit_odp.browse.common import (
-    LTACsvHelper,
+    LTACSVHelper,
     get_all_naptan_atco_df,
     get_service_traveline_regions,
     get_weca_services_register_numbers,
@@ -322,7 +322,7 @@ class LocalAuthorityExportView(View):
         return response
 
 
-class LTACSV(CSVBuilder, LTACsvHelper):
+class LTACSV(CSVBuilder, LTACSVHelper):
     columns = create_columns(header_accessor_data)
 
     def _update_data(

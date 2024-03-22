@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Optional
 
 from transit_odp.browse.common import (
-    LTACsvHelper,
+    LTACSVHelper,
     get_all_naptan_atco_df,
     get_all_weca_traveline_region_map,
 )
@@ -72,7 +72,7 @@ def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]
     }
 
 
-class ServiceCodesCSV(CSVBuilder, LTACsvHelper):
+class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
     columns = [
         CSVColumn(
             header="XML:Service Code",
@@ -190,7 +190,7 @@ class ServiceCodesCSV(CSVBuilder, LTACsvHelper):
         ),
         CSVColumn(
             header="Traveline Region",
-            accessor=lambda otc_service: otc_service.get("traveline_region", ""),
+            accessor=lambda otc_service: otc_service.get("traveline_region"),
         ),
         CSVColumn(
             header="Local Transport Authority",
