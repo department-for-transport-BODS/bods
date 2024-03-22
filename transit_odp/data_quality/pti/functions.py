@@ -313,6 +313,11 @@ def has_flexible_or_standard_service(context, services):
 
 
 def check_inbound_outbound_description(context, services):
+    """
+    Check when file has detected a standard service (includes StandardService):
+        - If both InboundDescription and OutboundDescription are not present, return False.
+        - All other combinations are acceptable, return True.
+    """
     for service in services:
         ns = {"x": service.nsmap.get(None)}
         standard_service_list = service.xpath(
