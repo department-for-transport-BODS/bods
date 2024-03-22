@@ -32,7 +32,7 @@ class FieldModel(BaseModel):
 class DataModel(BaseModel):
     id: int
     registration_number: str = Field(alias="fullserialnumbe_trationrations")
-    variation_number: int = Field(default=0)
+    variation_number: str = Field(alias="fullserialnumbe_trationrations")
     licence: str = Field(alias="fullserialnumbe_trationrations")
     service_number: str = Field(alias="servicenumbers_icespt7a")
     start_point: str = Field(alias="startpoint_espt")
@@ -54,6 +54,15 @@ class DataModel(BaseModel):
             return "/".join(parts[:2])
         else:
             return value
+
+    @validator("variation_number")
+    def trim_variation_number(cls, value):
+        # Split the variation number by slashes and take the third part
+        parts = value.split("/")
+        if len(parts) == 3:
+            return parts[2]
+        else:
+            return "0"
 
     @validator("licence")
     def extract_licence(cls, value):
