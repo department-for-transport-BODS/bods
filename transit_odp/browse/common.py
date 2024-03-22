@@ -115,7 +115,7 @@ def get_service_traveline_regions(ui_ltas):
     )
 
 
-class LTACsvHelper:
+class LTACSVHelper:
     """Class with methods to compute LTA related information,
     Used in both LTA completeness report and Operator compleness report
     """
