@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  TRANSXCHANGE EXAMPLE: Flexible service 
+Tim Rivett, Tim Rivett Consulting, 27 March 2023
+(C) Crown Copyright  2023
+
+Based on the service Lincolnshire County Council CallConnect service for Market Rasen
+Single operating period and vehicle journey
+
+-->
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.transxchange.org.uk/
+../../TransXChange_registration.xsd" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en" CreationDateTime="2023-03-27T10:21:00-05:00" ModificationDateTime="2023-03-27T10:21:00-05:00" Modification="new" RevisionNumber="0" FileName="Simple_Test_CallConnectMarketRasenFlexible.xml" SchemaVersion="2.4" RegistrationDocument="false" >
+  <StopPoints>
+  	<StopPoint CreationDateTime="2005-10-04T00:00:00" ModificationDateTime="2014-10-31T08:51:59" Modification="revise" RevisionNumber="6" Status="active">
+			<AtcoCode>2700027009</AtcoCode>
+			<Descriptor>
+				<CommonName>Verify Common Name</CommonName>
+				<Landmark>Demand Responsive Area</Landmark>
+			</Descriptor>
+			<Place>
+				<NptgLocalityRef>E0017407</NptgLocalityRef>
+				<LocalityCentre>true</LocalityCentre>
+				<Location>
+					<Translation>
+						<GridType>UKOS</GridType>
+						<Easting>498195</Easting>
+						<Northing>393013</Northing>
+						<Longitude>-0.523731689</Longitude>
+						<Latitude>53.424780895</Latitude>
+					</Translation>
+				</Location>
+			</Place>
+			<StopClassification>
+				<StopType>BCT</StopType>
+				<OnStreet>
+					<Bus>
+						<BusStopType>FLX</BusStopType>
+						<TimingStatus>TIP</TimingStatus>
+						<FlexibleZone RevisionNumber="0">
+							<Location>
+								<Translation>
+									<GridType>UKOS</GridType>
+									<Easting>498049</Easting>
+									<Northing>393065</Northing>
+									<Longitude>-0.525911878</Longitude>
+									<Latitude>53.425275270</Latitude>
+								</Translation>
+							</Location>
+							<Location>
+								<Translation>
+									<GridType>UKOS</GridType>
+									<Easting>498335</Easting>
+									<Northing>393065</Northing>
+									<Longitude>-0.521609390</Longitude>
+									<Latitude>53.425222093</Latitude>
+								</Translation>
+							</Location>
+							<Location>
+								<Translation>
+									<GridType>UKOS</GridType>
+									<Easting>498335</Easting>
+									<Northing>392880</Northing>
+									<Longitude>-0.521667060</Longitude>
+									<Latitude>53.423559771</Latitude>
+								</Translation>
+							</Location>
+							<Location>
+								<Translation>
+									<GridType>UKOS</GridType>
+									<Easting>498049</Easting>
+									<Northing>392880</Northing>
+									<Longitude>-0.525969380</Longitude>
+									<Latitude>53.423612944</Latitude>
+								</Translation>
+							</Location>
+						</FlexibleZone>
+					</Bus>
+				</OnStreet>
+			</StopClassification>
+			<AdministrativeAreaRef>089</AdministrativeAreaRef>
+		</StopPoint>
+		<StopPoint CreationDateTime="2004-06-09T14:20:00-05:00">
+			<AtcoCode>26001096622</AtcoCode>
+			<Descriptor>
+				<CommonName>Suborn Bus Station</CommonName>
+				<Landmark>Bus Station</Landmark>
+				<Street>High Street</Street>
+			</Descriptor>
+			<Place>
+				<NptgLocalityRef>E0000004</NptgLocalityRef>
+				<Location>
+					<Easting>442914</Easting>
+					<Northing>295186</Northing>
+				</Location>
+			</Place>
+			<StopClassification>
+				<StopType>BCT</StopType>
+				<OnStreet>
+					<Bus>
+						<BusStopType>MKD</BusStopType>
+						<TimingStatus>PTP</TimingStatus>
+						<MarkedPoint>
+							<DefaultWaitTime>PT0M</DefaultWaitTime>
+							<Bearing>
+								<CompassPoint>N</CompassPoint>
+							</Bearing>
+						</MarkedPoint>
+					</Bus>
+				</OnStreet>
+			</StopClassification>
+			<StopAreas>
+				<StopAreaRef>060G000001</StopAreaRef>
+			</StopAreas>
+			<AdministrativeAreaRef>060</AdministrativeAreaRef>
+		</StopPoint>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002700967</StopPointRef>
+      <CommonName>Covenham St Bartholomew</CommonName>
+	  <LocalityName>Loughborough</LocalityName>
+      <Location>
+        <Longitude>0.012847793</Longitude>
+        <Latitude>53.43334031</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+	 <AnnotatedStopPointRef>
+      <StopPointRef>07605866</StopPointRef>
+	    <CommonName>Sadberge</CommonName>
+		<LocalityName>Loughborough</LocalityName>
+	  <Location>
+        <Longitude>-1.4723048</Longitude>
+        <Latitude>54.5464542</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+	<AnnotatedStopPointRef>
+      <StopPointRef>02903501</StopPointRef>
+	    <CommonName>University of Bedfordshire</CommonName>
+		<LocalityName>Loughborough</LocalityName>
+	  <Location>
+        <Longitude>-0.40955</Longitude>
+        <Latitude>51.87735</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+	<AnnotatedStopPointRef>
+      <StopPointRef>030058880001</StopPointRef>
+	  <LocalityName>Loughborough</LocalityName>
+      <CommonName>The Street1</CommonName>
+    </AnnotatedStopPointRef>
+	    <AnnotatedStopPointRef>
+      <StopPointRef>030058860001</StopPointRef>
+	  <LocalityName>Loughborough</LocalityName>
+      <CommonName>The Street2</CommonName>
+    </AnnotatedStopPointRef>
+		    <AnnotatedStopPointRef>
+      <StopPointRef>030058920001</StopPointRef>
+	  <LocalityName>Loughborough</LocalityName>
+      <CommonName>The Street3</CommonName>
+    </AnnotatedStopPointRef>
+			    <AnnotatedStopPointRef>
+      <StopPointRef>030058870001</StopPointRef>
+	  <LocalityName>Loughborough</LocalityName>
+      <CommonName>The Street4</CommonName>
+	  </AnnotatedStopPointRef>
+  </StopPoints>
+  <Operators>
+    <Operator id="tkt_oid">
+      <NationalOperatorCode>CALC</NationalOperatorCode>
+      <OperatorCode>CALC</OperatorCode>
+      <OperatorShortName>CallConnect</OperatorShortName>
+      <LicenceNumber>PB0002032</LicenceNumber>
+    </Operator>
+  </Operators>	
+  <Services>
+			<Service> <!--U5fixed points sequenced-->
+			<ServiceCode>PB0002032:468</ServiceCode>
+			<Lines>
+				<Line id="CALC:PB0002032:468:550">
+					<LineName>550</LineName>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2022-01-01</StartDate>
+			</OperatingPeriod>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek> 
+						<Monday/> 
+					</DaysOfWeek> 
+				</RegularDayType>
+				<BankHolidayOperation>
+							<DaysOfNonOperation>
+						<ChristmasDay/>
+						<BoxingDay/>
+						<GoodFriday/>
+						<NewYearsDay/>
+						<LateSummerBankHolidayNotScotland/>
+						<MayDay/>
+						<EasterMonday/>
+						<SpringBank/>
+						<ChristmasDayHoliday/>
+						<BoxingDayHoliday/>
+						<NewYearsDayHoliday/>
+						<OtherPublicHoliday>
+								<Description>CoronationBankHoliday</Description>
+								<Date>2023-05-08</Date>
+						</OtherPublicHoliday>
+						<ChristmasEve/>
+						<NewYearsEve/>
+					</DaysOfNonOperation>
+				</BankHolidayOperation>
+			</OperatingProfile>
+			<ServiceClassification>
+				<Flexible/>
+			</ServiceClassification>
+			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+			<PublicUse>true</PublicUse>
+			<Description>Flexible on demand service for Market Rasen Area</Description>
+			<SchematicMap>CallConnect-Market-Rasen.jpg</SchematicMap>
+			<FlexibleService>
+				<Origin>Market Rasen</Origin>
+				<Destination>Market Rasen</Destination>
+				<FlexibleJourneyPattern id="jp_1">
+					<Direction>outbound</Direction>
+					<StopPointsInSequence>
+					<FixedStopUsage>
+					<StopPointRef>2700027009</StopPointRef>
+					<TimingStatus>otherPoint</TimingStatus>
+					</FixedStopUsage>
+					<FlexibleStopUsage>
+					<StopPointRef>26001096622</StopPointRef>
+					</FlexibleStopUsage>
+					<FixedStopUsage>
+					<StopPointRef>030058870001</StopPointRef>
+					<TimingStatus>otherPoint</TimingStatus>
+					</FixedStopUsage>
+					<FlexibleStopUsage>
+					<StopPointRef>030058860001</StopPointRef>
+					</FlexibleStopUsage>
+					</StopPointsInSequence>
+					<BookingArrangements>
+						<Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
+						<Phone>
+							<TelNationalNumber>0345 234 3344</TelNationalNumber>
+						</Phone>
+						<Email>CallConnect@lincolnshire.gov.uk</Email>
+						<WebAddress>https://callconnect.opendrt.co.uk/OpenDRT/</WebAddress>
+						<AllBookingsTaken>true</AllBookingsTaken>
+					</BookingArrangements>
+				</FlexibleJourneyPattern>
+			</FlexibleService>
+		</Service>
+	</Services>
+	<VehicleJourneys>
+		<!--  ===VJ1 ================================================ -->
+<VehicleJourney>
+      <OperatorRef>tkt_oid</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>1094</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+      <ServiceRef>PB0002032:468</ServiceRef>
+      <LineRef>CALC:PB0002032:468:550</LineRef>
+      <JourneyPatternRef>jp_1</JourneyPatternRef>
+      <DepartureTime>15:10:00</DepartureTime>
+ </VehicleJourney>		
+	</VehicleJourneys>
+</TransXChange>

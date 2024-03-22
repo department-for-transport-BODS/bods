@@ -10,11 +10,16 @@ from waffle import flag_is_active
 from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_str
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.timetables.exceptions import MissingLines
-from transit_odp.timetables.transxchange import GRID_LOCATION, WSG84_LOCATION
+from transit_odp.timetables.transxchange import (
+    GRID_LOCATION,
+    WSG84_LOCATION,
+    TransXChangeElement,
+)
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     db_bank_holidays_to_df,
 )
 from datetime import datetime, timedelta
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -610,34 +615,25 @@ def get_operating_profile_with_exception(
 
 
 def get_operating_profiles_for_all_exceptions(
-    operating_profile,
-    operations=None,
+    operating_profile: Dict[str, Any],
+    operations: TransXChangeElement = None,
     df_bank_holidays_from_db=pd.DataFrame(),
-    is_bank_holiday_exception=False,
-    is_special_operation=False,
-    is_days_of_operation=False,
-):
+    is_bank_holiday_exception: bool = False,
+    is_special_operation: bool = False,
+    is_days_of_operation: bool = False,
+) -> list:
+    """Creates records for each type of exceptions to be loaded into
+    days of operation and non operation exceptions tables. Data required
+    for operating profiles table is also included when each record is populated
+    """
     operating_profile_list = []
 
     if is_bank_holiday_exception:
         for holiday in operations.children:
-            date = None
-            no_bank_holidays = False
             if holiday.localname == "OtherPublicHoliday":
                 date = datetime.strptime(
                     holiday.get_element(["Date"]).text, "%Y-%m-%d"
                 ).date()
-            else:
-                filtered_df = df_bank_holidays_from_db.loc[
-                    df_bank_holidays_from_db["txc_element"] == holiday.localname,
-                    "date",
-                ]
-                if not filtered_df.empty:
-                    date = filtered_df.values[0]
-                else:
-                    no_bank_holidays = True
-
-            if not no_bank_holidays:
                 operating_profile_list.append(
                     get_operating_profile_with_exception(
                         operating_profile,
@@ -646,6 +642,25 @@ def get_operating_profiles_for_all_exceptions(
                         is_exceptions=True,
                     )
                 )
+            else:
+                filtered_df = df_bank_holidays_from_db.loc[
+                    df_bank_holidays_from_db["txc_element"] == holiday.localname,
+                    "date",
+                ]
+                operating_profile_list.extend(
+                    [
+                        get_operating_profile_with_exception(
+                            operating_profile,
+                            date,
+                            is_days_of_operation,
+                            is_exceptions=True,
+                        )
+                        for date in filtered_df.values
+                    ]
+                    if not filtered_df.empty
+                    else []
+                )
+
         # Return operating profiles when no date for holidays are found
         if not operating_profile_list:
             operating_profile_list.append(
@@ -674,6 +689,7 @@ def get_operating_profiles_for_all_exceptions(
                     )
                     start_date = start_date + timedelta(days=1)
     else:
+        # Return operating profiles when no exceptions are found
         operating_profile_list.append(
             get_operating_profile_with_exception(operating_profile)
         )
@@ -681,7 +697,13 @@ def get_operating_profiles_for_all_exceptions(
     return operating_profile_list
 
 
-def populate_operating_profiles(operating_profiles, vehicle_journey_code, service_ref):
+def populate_operating_profiles(
+    operating_profiles: TransXChangeElement, vehicle_journey_code: str, service_ref: str
+) -> list:
+    """Form the dataframe for operating profile which includes records
+    for days of operation and days of non operation based on elements in
+    SpecialDaysOperation, BankHolidayOperation and OtherPublicHolidays
+    """
     operating_profile_list = []
     serviced_org_refs = []
     days_of_week = ""
@@ -698,12 +720,6 @@ def populate_operating_profiles(operating_profiles, vehicle_journey_code, servic
     )
 
     df_bank_holidays_from_db = db_bank_holidays_to_df(["txc_element", "date"])
-
-    current_year = datetime.today().year
-
-    df_bank_holidays_from_db = df_bank_holidays_from_db[
-        df_bank_holidays_from_db["date"].apply(lambda x: x.year) == current_year
-    ]
 
     if regular_day_type:
         days_of_week_elements = regular_day_type.get_element_or_none(["DaysOfWeek"])
