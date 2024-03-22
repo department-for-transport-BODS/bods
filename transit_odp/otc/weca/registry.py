@@ -91,9 +91,11 @@ class Registry:
                 right_on="number",
                 how="left",
             )
-        self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
-        self.services.drop(["id_x", "number"], inplace=True, axis=1)
-        self.services.licence_id.replace({np.nan: None}, inplace=True)
+            self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
+            self.services.drop(["id_x", "number"], inplace=True, axis=1)
+            self.services.licence_id.replace({np.nan: None}, inplace=True)
+        else:
+            self.services["licence_id"] = None
 
     def get_missing_licences(self) -> None:
         """
