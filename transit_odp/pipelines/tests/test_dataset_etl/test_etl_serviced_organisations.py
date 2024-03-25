@@ -453,3 +453,48 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
 
         # test
         self.assertEqual(80, serviced_orgs_vehicle_journeys.count())
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicedOrganisationsServicesVehicleJourneyOperationHolidays(
+    ExtractBaseTestCase
+):
+    test_file = "data/test_serviced_orgs_vehicle_journeys_junction/test_load_serviced_org_vj_operation_holidays.xml"
+
+    def test_load(self):
+        # setup
+        extracted = self.trans_xchange_extractor.extract()
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        vj_operational = ServicedOrganisationVehicleJourney.objects.values_list(
+            "operating_on_working_days", flat=True
+        )
+        vj_operational2 = ServicedOrganisationVehicleJourney.objects.all()
+
+        # test
+        self.assertNotIn(True, list(vj_operational))
+        self.assertEqual(3, len(list(vj_operational)))
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicedOrganisationsServicesVehicleJourneyNonOperationHolidays(
+    ExtractBaseTestCase
+):
+    test_file = "data/test_serviced_orgs_vehicle_journeys_junction/test_load_serviced_org_vj_non_operation_holidays.xml"
+
+    def test_load(self):
+        # setup
+        extracted = self.trans_xchange_extractor.extract()
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        vj_operational = ServicedOrganisationVehicleJourney.objects.values_list(
+            "operating_on_working_days", flat=True
+        )
+
+        # test
+        self.assertNotIn(True, list(vj_operational))
+        self.assertEqual(4, len(list(vj_operational)))

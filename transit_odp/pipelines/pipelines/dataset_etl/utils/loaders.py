@@ -132,7 +132,11 @@ def add_service_pattern_to_localities_and_admin_area(df):
     return localities, admin_areas
 
 
-def add_service_pattern_to_service_pattern_stops(df, service_patterns):
+def add_service_pattern_to_service_pattern_stops(
+    df: pd.DataFrame, service_patterns: pd.DataFrame
+) -> list[ServicePatternStop]:
+    """Load data onto service pattern stop after mapping service patterns and vehicle journey"""
+
     logger.info("Adding service_pattern to service pattern stops")
 
     def _inner():
@@ -140,6 +144,7 @@ def add_service_pattern_to_service_pattern_stops(df, service_patterns):
             service_pattern_id = service_patterns.xs(
                 record["service_pattern_id"], level="service_pattern_id"
             ).iloc[0]["id"]
+            vehicle_journey_id = record.get("id", None)
             yield ServicePatternStop(
                 service_pattern_id=service_pattern_id,
                 sequence_number=record["order"],
@@ -148,6 +153,7 @@ def add_service_pattern_to_service_pattern_stops(df, service_patterns):
                 departure_time=record["departure_time"],
                 is_timing_point=record["is_timing_status"],
                 txc_common_name=record["common_name"],
+                vehicle_journey_id=vehicle_journey_id,
             )
 
     stops = list(_inner())
