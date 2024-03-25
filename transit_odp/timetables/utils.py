@@ -234,3 +234,18 @@ def get_line_description_based_on_direction(row: pd.Series) -> str:
         "antiClockwise": row["inbound_description"],
     }
     return direction_mapping.get(row["direction"], "")
+
+def get_dataframe_from_queryset(queryset: list) -> pd.DataFrame:
+     pd.set_option('display.max_rows', None)
+     pd.set_option('display.max_columns', None)
+
+     df_timetable_visualiser = pd.DataFrame.from_records(queryset.values())
+     print(df_timetable_visualiser.head())
+     columns_with_lists = [col for col in df_timetable_visualiser.columns if isinstance(df_timetable_visualiser[col].iloc[0], list)]
+     print("Columns containing lists:", columns_with_lists)
+    #  df_timetable_visualiser = df_timetable_visualiser.apply(tuple, axis=1).drop_duplicates().apply(list)
+    #  df_timetable_visualiser = df_timetable_visualiser.apply(tuple, axis=1)
+     print("Dataframe created", df_timetable_visualiser.info())
+    #  print("Dataframe created", df_timetable_visualiser)
+     df_timetable_visualiser.to_csv('timetable_visualiser.csv')
+     return df_timetable_visualiser

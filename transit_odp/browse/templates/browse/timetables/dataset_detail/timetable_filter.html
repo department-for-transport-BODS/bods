@@ -1,0 +1,10 @@
+{% if queryset_data %}
+    <h2>Queryset Data:</h2>
+    <ul>
+        {% for item in queryset_data %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No queryset data available.</p>
+{% endif %}

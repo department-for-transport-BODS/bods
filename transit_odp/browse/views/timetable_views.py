@@ -26,6 +26,7 @@ from transit_odp.browse.views.base_views import (
     BaseTemplateView,
     ChangeLogView,
 )
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.services import get_gtfs_bucket_service
@@ -53,9 +54,11 @@ from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
+
 from transit_odp.users.constants import SiteAdminType
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 User = get_user_model()
 Regions = namedtuple("Regions", ("region_code", "pretty_name_region_code", "exists"))
 
@@ -347,13 +350,13 @@ class LineMetadataDetailView(DetailView):
                 return self.get_single_booking_arrangements_file(
                     booking_arrangements_qs.revision_id, [service_code]
                 )
-
+    
     def get_context_data(self, **kwargs):
         line = self.request.GET.get("line")
         noc = self.request.GET.get("noc")
         licence_no = self.request.GET.get("l")
         kwargs = super().get_context_data(**kwargs)
-
+        target_date = datetime.strptime('08/01/2023', '%d/%m/%Y').date()
         dataset = self.object
         live_revision = dataset.live_revision
         kwargs["pk"] = dataset.id
@@ -383,7 +386,14 @@ class LineMetadataDetailView(DetailView):
             if booking_arrangements_info:
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
-
+        
+        kwargs["timetable_visualiser"] = TimetableVisualiser.get_timetable_visualiser(self,
+            live_revision.id,
+            next(iter(kwargs["service_codes"])),
+            kwargs["line_name"],
+            target_date,)
+        
+        print("Total number of records:", kwargs["timetable_visualiser"].count())
         return kwargs
 
 
