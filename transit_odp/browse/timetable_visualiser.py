@@ -54,8 +54,7 @@ class TimetableVisualiser:
                 serviced_organisation_id=F("service_patterns__service_pattern_vehicle_journey__vehicle_journeys__serviced_organisation__id"),
                 # op_exception_operatingdate=F("service_patterns__service_pattern_vehicle_journey__operating_dates_exceptions__operating_date"),
                 nonop_exception_operatingdate=F("service_patterns__service_pattern_vehicle_journey__non_operating_dates_exceptions__non_operating_date"),
-                
-                # day_of_week=F("service_patterns__service_pattern_vehicle_journey__operating_profiles__day_of_week"),
+                day_of_week=F("service_patterns__service_pattern_vehicle_journey__operating_profiles__day_of_week"),
                 op_exception_operatingdate=Case(
                     When(
                          Q(service_patterns__service_pattern_vehicle_journey__operating_dates_exceptions__operating_date=target_date),
