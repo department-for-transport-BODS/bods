@@ -75,6 +75,25 @@ class ServicePattern(models.Model):
         return f"{self.id}, {self.origin}, {self.destination}"
 
 
+class VehicleJourney(models.Model):
+    start_time = models.TimeField(null=True)
+    line_ref = models.CharField(max_length=255, null=True, blank=True)
+    journey_code = models.CharField(max_length=255, null=True, blank=True)
+    direction = models.CharField(max_length=255, null=True, blank=True)
+    departure_day_shift = models.BooleanField(default=False)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        on_delete=models.CASCADE,
+        related_name="service_pattern_vehicle_journey",
+        default=None,
+        null=True,
+    )
+
+    def __str__(self):
+        start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
+        return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
+
+
 class ServicePatternStop(models.Model):
     service_pattern = models.ForeignKey(
         ServicePattern, on_delete=models.CASCADE, related_name="service_pattern_stops"
@@ -83,6 +102,14 @@ class ServicePatternStop(models.Model):
     naptan_stop = models.ForeignKey(
         StopPoint,
         related_name="service_pattern_stops",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        related_name="service_pattern_stops_vehicle_journey",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -135,25 +162,6 @@ class ServiceLink(models.Model):
 
     def __str__(self):
         return f"{self.id}, {self.from_stop_atco} to {self.to_stop_atco}"
-
-
-class VehicleJourney(models.Model):
-    start_time = models.TimeField(null=True)
-    line_ref = models.CharField(max_length=255, null=True, blank=True)
-    journey_code = models.CharField(max_length=255, null=True, blank=True)
-    direction = models.CharField(max_length=255, null=True, blank=True)
-    departure_day_shift = models.BooleanField(default=False)
-    service_pattern = models.ForeignKey(
-        ServicePattern,
-        on_delete=models.CASCADE,
-        related_name="service_pattern_vehicle_journey",
-        default=None,
-        null=True,
-    )
-
-    def __str__(self):
-        start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
-        return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
 class BookingArrangements(models.Model):

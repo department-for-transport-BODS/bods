@@ -9,6 +9,8 @@ from transit_odp.pipelines.tests.utils import check_frame_equal
 
 from waffle.testutils import override_flag
 
+from transit_odp.transmodel.models import ServicePattern, ServicePatternStop
+
 TZ = tz.gettz("Europe/London")
 
 
@@ -33,8 +35,8 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
             4,
         )
         self.assertEqual(
-            list(extracted_provisional_stops.columns),
-            ["geometry", "locality", "common_name"],
+            sorted(list(extracted_provisional_stops.columns)),
+            sorted(["geometry", "locality", "common_name"]),
         )
 
         # check the extracted flexible stop points
@@ -116,31 +118,39 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
 
         transformed_service_pattern_stops = transformed.service_pattern_stops
         self.assertEquals(
-            list(transformed_service_pattern_stops.columns),
-            [
-                "service_pattern_id",
-                "order",
-                "stop_atco",
-                "departure_time",
-                "is_timing_status",
-                "naptan_id",
-                "geometry",
-                "locality_id",
-                "admin_area_id",
-                "common_name",
-            ],
+            sorted(list(transformed_service_pattern_stops.columns)),
+            sorted(
+                [
+                    "service_pattern_id",
+                    "order",
+                    "stop_atco",
+                    "departure_time",
+                    "is_timing_status",
+                    "journey_pattern_id",
+                    "vehicle_journey_code",
+                    "naptan_id",
+                    "geometry",
+                    "locality_id",
+                    "admin_area_id",
+                    "common_name",
+                ]
+            ),
         )
         transformed_service_patterns = transformed.service_patterns
         self.assertEquals(
-            list(transformed_service_patterns.columns),
-            [
-                "service_code",
-                "from_stop_atco",
-                "to_stop_atco",
-                "geometry",
-                "localities",
-                "admin_area_codes",
-            ],
+            sorted(list(transformed_service_patterns.columns)),
+            sorted(
+                [
+                    "service_code",
+                    "from_stop_atco",
+                    "to_stop_atco",
+                    "geometry",
+                    "localities",
+                    "admin_area_codes",
+                    "journey_pattern_id",
+                    "vehicle_journey_code",
+                ]
+            ),
         )
 
         expected_service_links = pd.DataFrame(
@@ -166,3 +176,24 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
         self.assertTrue(
             check_frame_equal(transformed.service_links, expected_service_links)
         )
+
+
+@override_flag("is_timetable_visualiser_active", active=False)
+class ExtractFlexibleStopsWithVehicleJourneyWithoutFeature(ExtractBaseTestCase):
+    test_file = "data/test_flexible_stops/test_flexible_stops_without_feature.xml"
+
+    def test_transform(self):
+        # setup
+        extracted = self.trans_xchange_extractor.extract()
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        sp_stops = ServicePatternStop.objects.all()
+        service_pattern = ServicePattern.objects.all()
+        # test
+
+        self.assertEqual(60, sp_stops.count())
+        self.assertEqual(1, service_pattern.count())
