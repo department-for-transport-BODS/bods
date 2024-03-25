@@ -744,14 +744,25 @@ def populate_operating_profiles(
         days_of_non_operation = serviced_organisation_day_type.get_element_or_none(
             ["DaysOfNonOperation"]
         )
+        operational = False
         if days_of_operation:
-            operational = True
-            serviced_orgs_working_days = days_of_operation.get_element("WorkingDays")
-        elif days_of_non_operation:
-            operational = False
-            serviced_orgs_working_days = days_of_non_operation.get_element(
+            serviced_orgs_working_days = days_of_operation.get_element_or_none(
                 "WorkingDays"
             )
+            if not serviced_orgs_working_days:
+                serviced_orgs_working_days = days_of_operation.get_element("Holidays")
+            else:
+                operational = True
+
+        elif days_of_non_operation:
+            serviced_orgs_working_days = days_of_non_operation.get_element_or_none(
+                "WorkingDays"
+            )
+            if not serviced_orgs_working_days:
+                serviced_orgs_working_days = days_of_non_operation.get_element(
+                    "Holidays"
+                )
+
         serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
             "ServicedOrganisationRef"
         )
