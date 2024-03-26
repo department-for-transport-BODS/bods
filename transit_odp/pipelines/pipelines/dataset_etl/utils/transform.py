@@ -108,13 +108,19 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         if not last_stop["wait_time_vj"].isnull().all():
             last_stop["wait_time"] = last_stop["wait_time_vj"].fillna(pd.Timedelta(0))
 
-        last_stop["departure_time"] = last_stop["run_time_vj"].replace(
-            "", pd.NaT
-        ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
-            "wait_time"
-        ].fillna(
-            pd.Timedelta(0)
+        # Replace empty strings with pd.NaT in "run_time_vj" column
+        last_stop["run_time_vj"] = last_stop["run_time_vj"].replace("", pd.NaT)
+
+        # Combine "run_time_vj" with "run_time", filling missing values with 0
+        run_time_combined = (
+            last_stop["run_time_vj"]
+            .combine_first(last_stop["run_time"])
+            .fillna(pd.Timedelta(0))
         )
+
+        # Fill missing values in "wait_time" with 0
+        wait_time_filled = last_stop["wait_time"].fillna(pd.Timedelta(0))
+        last_stop["departure_time"] = run_time_combined + wait_time_filled
     # Calculate departure time for standard stops where run_time is NOT found in VehicleJourney
     elif not is_flexible_departure_time:
         last_stop["departure_time"] = last_stop["run_time"].fillna(
@@ -494,24 +500,31 @@ def filter_operating_profiles(
     """Remove records from operating profiles where the date falls outside
     operating period start and end date
     """
+
+    df_services = services.copy()
+
+    df_services["end_date"] = df_services["end_date"].fillna(
+        pd.Timestamp.max.tz_localize(None)
+        .tz_localize("UTC")
+        .tz_convert("Europe/London")
+    )
+
+    df_services["start_date"] = pd.to_datetime(
+        df_services["start_date"]
+    ).dt.tz_localize(None)
+    df_services["end_date"] = pd.to_datetime(df_services["end_date"]).dt.tz_localize(
+        None
+    )
     if not operating_profiles.empty and not services.empty:
         service_columns = ["file_id", "service_code", "start_date", "end_date"]
         indexes = operating_profiles.index.names
         df_merged = pd.merge(
             operating_profiles.reset_index(),
-            services.reset_index()[service_columns],
+            df_services.reset_index()[service_columns],
             left_on=["file_id", "service_code"],
             right_on=["file_id", "service_code"],
         )
 
-        df_merged["end_date"] = df_merged["end_date"].fillna(pd.Timestamp.max)
-
-        df_merged["start_date"] = pd.to_datetime(
-            df_merged["start_date"]
-        ).dt.tz_localize(None)
-        df_merged["end_date"] = pd.to_datetime(df_merged["end_date"]).dt.tz_localize(
-            None
-        )
         df_merged["compare_exceptions_date"] = pd.to_datetime(
             df_merged["exceptions_date"]
         )
