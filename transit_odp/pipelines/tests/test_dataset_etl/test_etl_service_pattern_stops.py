@@ -96,7 +96,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
         self.assertEqual(60, count_stops)
         self.assertEqual("07:35:00", vj_data.iloc[0]["departure_time"])
-        self.assertEqual("08:25:00", vj_data.iloc[count_stops - 1]["departure_time"])
+        self.assertEqual("08:30:00", vj_data.iloc[count_stops - 1]["departure_time"])
 
     def test_load(self):
         # setup
@@ -336,3 +336,57 @@ class ETLSPSWithFlexibleProvisionalStopsNotInDB(ExtractBaseTestCase):
         )
         self.assertIn("Verify Common Name", sps_common_name)
         self.assertIn("Suborn Bus Station", sps_common_name)
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLSPSWithWaitTimeInVehicleJourney(ExtractBaseTestCase):
+    test_file = (
+        "data/test_servicepatternstops/test_extract_sps_runtime_in_vj_timings.xml"
+    )
+
+    def test_transform(self):
+        # setup
+        pd.set_option("display.max_rows", None)
+        pd.set_option("display.max_columns", None)
+        extracted = self.trans_xchange_extractor.extract()
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+        transformed_service_pattern_stops = (
+            transformed.service_pattern_stops.reset_index()
+        )
+        transformed_service_pattern_stops = transformed_service_pattern_stops[
+            transformed_service_pattern_stops["vehicle_journey_code"] == "VJ101"
+        ]
+
+        self.assertEqual(60, transformed_service_pattern_stops.shape[0])
+        self.assertEqual(
+            "17:52:00",
+            transformed_service_pattern_stops[
+                transformed_service_pattern_stops["order"] == 2
+            ]["departure_time"].item(),
+        )
+        self.assertEqual(
+            "18:17:00",
+            transformed_service_pattern_stops[
+                transformed_service_pattern_stops["order"] == 3
+            ]["departure_time"].item(),
+        )
+        self.assertEqual(
+            "18:32:00",
+            transformed_service_pattern_stops[
+                transformed_service_pattern_stops["order"] == 7
+            ]["departure_time"].item(),
+        )
+        self.assertEqual(
+            "19:04:00",
+            transformed_service_pattern_stops[
+                transformed_service_pattern_stops["order"] == 18
+            ]["departure_time"].item(),
+        )
+        self.assertEqual(
+            "19:45:00",
+            transformed_service_pattern_stops[
+                transformed_service_pattern_stops["order"] == 59
+            ]["departure_time"].item(),
+        )
