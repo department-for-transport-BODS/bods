@@ -1,9 +1,10 @@
 from logging import getLogger
+from typing import List
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from transit_odp.otc.models import Service, Licence
+from transit_odp.otc.models import Licence, Service
 from transit_odp.otc.weca.client import APIResponse, WecaClient
 
 logger = getLogger(__name__)
@@ -90,9 +91,23 @@ class Registry:
                 right_on="number",
                 how="left",
             )
-            self.services.drop(["id_x", "number", "licence"], inplace=True, axis=1)
             self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
+            self.services.drop(["id_x", "number"], inplace=True, axis=1)
             self.services.licence_id.replace({np.nan: None}, inplace=True)
+        else:
+            self.services["licence_id"] = None
+
+    def get_missing_licences(self) -> None:
+        """
+        Returns the list of services with licences which
+        are not present in database
+        """
+        if not self.services.empty:
+            missing_licences = self.services[
+                self.services["licence_id"].isnull()
+            ].reset_index()["licence"]
+            return list(set(missing_licences.tolist()))
+        return []
 
     def process_services(self) -> None:
         """

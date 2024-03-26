@@ -15,7 +15,9 @@ pytestmark = pytest.mark.django_db
 def get_weca_response():
     weca_data = APIResponse(**get_weca_data())
     services_list = [service.model_dump() for service in weca_data.data]
-    return pd.DataFrame(services_list).drop(["licence"], axis=1)
+    service_df = pd.DataFrame(services_list)
+    service_df["licence_id"] = None
+    return service_df
 
 
 class MockRegistry:
@@ -27,6 +29,11 @@ class MockRegistry:
 
     def process_services(self):
         pass
+
+    def get_missing_licences(self):
+        registry = Registry()
+        registry.services = self.services
+        return registry.get_missing_licences()
 
 
 @pytest.mark.django_db
@@ -58,7 +65,11 @@ def test_load_method_with_Response():
     loader.load()
 
     total_services = Service.objects.filter(api_type=API_TYPE_WECA).count()
+    total_services_without_licence = Service.objects.filter(
+        licence_id__isnull=True
+    ).count()
     assert total_services == 5
+    assert total_services_without_licence == 0
 
 
 @pytest.mark.django_db
