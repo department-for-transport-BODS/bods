@@ -145,5 +145,3 @@ SHELL_PLUS_IMPORTS = [
     ),
     "from transit_odp.avl.proxies import AVLDataset",
 ]
-
-DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405

@@ -10,7 +10,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from transit_odp.common.view_models import RangeFilter
 from transit_odp.site_admin.models import ResourceRequestCounter
-from django.db import transaction
+
 
 class RangeFilterContentMixin(object):
     # The lookup to filter with, e.g. 'name__iregex'
@@ -172,7 +172,7 @@ class BODSBaseView:
 
 class ResourceCounterMixin:
     """Mixin to count the number times a user requests a resource in a day"""
-    @transaction.non_atomic_requests
+
     def get(self, request, *args, **kwargs):
         ResourceRequestCounter.from_request(request)
         return super().get(request, *args, **kwargs)
