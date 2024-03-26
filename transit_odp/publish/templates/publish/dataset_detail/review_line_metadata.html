@@ -14,7 +14,7 @@
     {{ block.super }}
     {% include 'publish/dataset_detail/breadcrumb.html' %}
     <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}">
+        <a class="govuk-breadcrumbs__link" href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}&service={{ service_code }}">
             {{ line_name }}
         </a>
     </li>
