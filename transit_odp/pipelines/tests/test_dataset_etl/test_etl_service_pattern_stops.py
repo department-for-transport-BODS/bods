@@ -355,38 +355,48 @@ class ETLSPSWithWaitTimeInVehicleJourney(ExtractBaseTestCase):
         transformed_service_pattern_stops = (
             transformed.service_pattern_stops.reset_index()
         )
-        transformed_service_pattern_stops = transformed_service_pattern_stops[
+        stops_with_vj_wait_time = transformed_service_pattern_stops[
             transformed_service_pattern_stops["vehicle_journey_code"] == "VJ101"
         ]
+        stops_without_vj_wait_time = transformed_service_pattern_stops[
+            transformed_service_pattern_stops["vehicle_journey_code"] == "VJ90"
+        ]
 
-        self.assertEqual(60, transformed_service_pattern_stops.shape[0])
+        self.assertEqual(60, stops_with_vj_wait_time.shape[0])
         self.assertEqual(
             "17:52:00",
-            transformed_service_pattern_stops[
-                transformed_service_pattern_stops["order"] == 2
-            ]["departure_time"].item(),
+            stops_with_vj_wait_time[stops_with_vj_wait_time["order"] == 2][
+                "departure_time"
+            ].item(),
         )
         self.assertEqual(
             "18:17:00",
-            transformed_service_pattern_stops[
-                transformed_service_pattern_stops["order"] == 3
-            ]["departure_time"].item(),
+            stops_with_vj_wait_time[stops_with_vj_wait_time["order"] == 3][
+                "departure_time"
+            ].item(),
         )
         self.assertEqual(
             "18:32:00",
-            transformed_service_pattern_stops[
-                transformed_service_pattern_stops["order"] == 7
-            ]["departure_time"].item(),
+            stops_with_vj_wait_time[stops_with_vj_wait_time["order"] == 7][
+                "departure_time"
+            ].item(),
         )
         self.assertEqual(
             "19:04:00",
-            transformed_service_pattern_stops[
-                transformed_service_pattern_stops["order"] == 18
-            ]["departure_time"].item(),
+            stops_with_vj_wait_time[stops_with_vj_wait_time["order"] == 18][
+                "departure_time"
+            ].item(),
         )
         self.assertEqual(
             "19:45:00",
-            transformed_service_pattern_stops[
-                transformed_service_pattern_stops["order"] == 59
-            ]["departure_time"].item(),
+            stops_with_vj_wait_time[stops_with_vj_wait_time["order"] == 59][
+                "departure_time"
+            ].item(),
+        )
+
+        self.assertEqual(
+            "23:54:00",
+            stops_without_vj_wait_time[stops_without_vj_wait_time["order"] == 32][
+                "departure_time"
+            ].item(),
         )
