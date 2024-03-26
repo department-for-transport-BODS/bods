@@ -23,7 +23,7 @@
         {% breadcrumb_url name 'feed-detail' pk=pk host hosts.data %}
     {% endwith %}
     <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ line_name }}">
+        <a class="govuk-breadcrumbs__link" href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ line_name }}&service={{ service_code }}">
             {{ line_name }}
         </a>
     </li>
@@ -41,7 +41,7 @@
                 {% endblocktrans %}
             </p>
 
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible">
 
             {% include 'publish/snippets/dataset_map.html' %}
 
@@ -52,13 +52,9 @@
                         <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number(s)' %}</th>
+                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number' %}</th>
                         <td class="govuk-table__cell dont-break-out" colspan="2">
-                            {% for service_code in service_codes %}
-                                <div class="stacked">
-                                    {{ service_code }}
-                                </div>
-                            {% endfor %}
+                            {{ service_code }}
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
@@ -126,6 +122,6 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_codes|join:','}}");
+        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
     </script>
 {% endblock %}

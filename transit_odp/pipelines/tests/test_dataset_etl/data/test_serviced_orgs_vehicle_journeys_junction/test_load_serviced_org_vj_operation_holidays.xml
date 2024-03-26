@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <TransXChange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SchemaVersion="2.4" CreationDateTime="2020-03-12T15:43:26" ModificationDateTime="2023-07-20T08:21:54" Modification="revise" RevisionNumber="11" FileName="FALC_408_FALCPK110996911408_20230724_-_bc73b137-0424-4a17-a05d-273fbaefa107.xml" xmlns="http://www.transxchange.org.uk/">
   <ServicedOrganisations>
     <ServicedOrganisation>
@@ -5656,7 +5656,7 @@
         </Line>
       </Lines>
       <OperatingPeriod>
-        <StartDate>2024-05-06</StartDate>
+        <StartDate>2023-07-24</StartDate>
       </OperatingPeriod>
       <OperatingProfile>
         <RegularDayType>
@@ -5670,16 +5670,16 @@
         </RegularDayType>
         <ServicedOrganisationDayType>
           <DaysOfOperation>
-            <WorkingDays>
+            <Holidays>
               <ServicedOrganisationRef>SSCH2324</ServicedOrganisationRef>
-            </WorkingDays>
+            </Holidays>
           </DaysOfOperation>
         </ServicedOrganisationDayType>
         <SpecialDaysOperation>
           <DaysOfNonOperation>
             <DateRange>
-              <StartDate>2022-09-19</StartDate>
-              <EndDate>2022-09-19</EndDate>
+              <StartDate>2024-09-19</StartDate>
+              <EndDate>2024-09-19</EndDate>
             </DateRange>
           </DaysOfNonOperation>
         </SpecialDaysOperation>

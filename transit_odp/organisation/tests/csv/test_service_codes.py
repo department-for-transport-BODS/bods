@@ -5,6 +5,7 @@ import pytest
 from django.db.models.expressions import datetime
 from freezegun import freeze_time
 
+from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.factories import DatasetFactory
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
@@ -14,16 +15,16 @@ from transit_odp.organisation.factories import (
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.otc.constants import (
-    FLEXIBLE_REG,
-    OTC_SCOPE_STATUS_IN_SCOPE,
-    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
-    SCHOOL_OR_WORKS,
+from transit_odp.otc.constants import API_TYPE_WECA, FLEXIBLE_REG, OTC_SCOPE_STATUS_IN_SCOPE, OTC_SCOPE_STATUS_OUT_OF_SCOPE, SCHOOL_OR_WORKS
+from transit_odp.otc.factories import (
+    LicenceModelFactory,
+    LocalAuthorityFactory,
+    ServiceModelFactory,
+    UILtaFactory,
 )
-from transit_odp.otc.factories import LicenceModelFactory, ServiceModelFactory
 
 pytestmark = pytest.mark.django_db
-CSV_NUMBER_COLUMNS = 25
+CSV_NUMBER_COLUMNS = 27
 
 
 def get_csv_output(csv_string: str) -> Dict[str, list]:
@@ -45,15 +46,43 @@ def test_queryset():
     licence_number1 = "PD000001"
     otc_lic1 = LicenceModelFactory(number=licence_number1)
     registration_number1 = f"{licence_number1}/1"
-    ServiceModelFactory(
-        licence=otc_lic1,
-        registration_number=registration_number1,
-        service_type_description=FLEXIBLE_REG,
+    weca_registration_number1 = f"{licence_number1}/01010001"
+    atco_code = "010"
+    api_type = API_TYPE_WECA
+    services = []
+    # otc services
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=registration_number1,
+            service_type_description=FLEXIBLE_REG,
+        )
     )
-    ServiceModelFactory(
-        licence=otc_lic1,
-        registration_number=registration_number1,
-        service_type_description=SCHOOL_OR_WORKS,
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=registration_number1,
+            service_type_description=SCHOOL_OR_WORKS,
+        )
+    )
+    # weca services
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=weca_registration_number1,
+            service_type_description=FLEXIBLE_REG,
+            api_type=api_type,
+            atco_code=atco_code,
+        )
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic1,
+            registration_number=weca_registration_number1,
+            service_type_description=SCHOOL_OR_WORKS,
+            api_type=api_type,
+            atco_code=atco_code,
+        )
     )
 
     licence_number2 = "PA000002"
@@ -61,22 +90,85 @@ def test_queryset():
     registration_number2 = f"{licence_number2}/1"
     registration_number3 = f"{licence_number2}/2"
     registration_number6 = f"{licence_number2}/3"
-    ServiceModelFactory(licence=otc_lic2, registration_number=registration_number2)
-    ServiceModelFactory(licence=otc_lic2, registration_number=registration_number3)
-    ServiceModelFactory(licence=otc_lic2, registration_number=registration_number6)
+
+    weca_registration_number2 = f"{licence_number2}/01010001"
+    weca_registration_number3 = f"{licence_number2}/01010002"
+    weca_registration_number6 = f"{licence_number2}/01010003"
+    # otc services
+    services.append(
+        ServiceModelFactory(licence=otc_lic2, registration_number=registration_number2)
+    )
+    services.append(
+        ServiceModelFactory(licence=otc_lic2, registration_number=registration_number3)
+    )
+    services.append(
+        ServiceModelFactory(licence=otc_lic2, registration_number=registration_number6)
+    )
+    # weca services
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic2,
+            registration_number=weca_registration_number2,
+            api_type=api_type,
+            atco_code=atco_code,
+        )
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic2,
+            registration_number=weca_registration_number3,
+            api_type=api_type,
+            atco_code=atco_code,
+        )
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic2,
+            registration_number=weca_registration_number6,
+            api_type=api_type,
+            atco_code=atco_code,
+        )
+    )
 
     licence_number3 = "PB000003"
     otc_lic3 = LicenceModelFactory(number=licence_number3)
+    # otc services
     registration_number4 = f"{licence_number3}/1"
     registration_number5 = f"{licence_number3}/2"
-    ServiceModelFactory(licence=otc_lic3, registration_number=registration_number4)
-    ServiceModelFactory(licence=otc_lic3, registration_number=registration_number5)
+    services.append(
+        ServiceModelFactory(licence=otc_lic3, registration_number=registration_number4)
+    )
+    services.append(
+        ServiceModelFactory(licence=otc_lic3, registration_number=registration_number5)
+    )
+
+    # weca services
+    weca_registration_number4 = f"{licence_number3}/01010001"
+    weca_registration_number5 = f"{licence_number3}/01010002"
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic3, registration_number=weca_registration_number4
+        )
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic3, registration_number=weca_registration_number5
+        )
+    )
 
     org1 = OrganisationFactory()
     BODSLicenceFactory(organisation=org1, number=licence_number1)
     bods_lic = BODSLicenceFactory(organisation=org1, number=licence_number2)
     org2 = OrganisationFactory()
     BODSLicenceFactory(organisation=org2, number=licence_number3)
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code=atco_code)
 
     # Published but exempted service codes should be included in response
     ServiceCodeExemptionFactory(
@@ -85,9 +177,13 @@ def test_queryset():
 
     expected_pairs_org1 = [
         (licence_number1, registration_number1),
+        (licence_number1, weca_registration_number1),
         (licence_number2, registration_number2),
         (licence_number2, registration_number6),
         (licence_number2, registration_number3),
+        (licence_number2, weca_registration_number2),
+        (licence_number2, weca_registration_number6),
+        (licence_number2, weca_registration_number3),
     ]
 
     service_codes_csv = ServiceCodesCSV(org1.id)
@@ -111,15 +207,17 @@ def test_csv_output():
     org1 = OrganisationFactory()
     bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
     otc_lic = LicenceModelFactory(number=licence_number)
-
+    services = []
     # Require Attention: No
     # TXCFileAttribute = None
     # SeasonalService = Not None and Out of Season
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[0],
-        service_number=service_numbers[0],
-        effective_date=datetime.datetime(2023, 6, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[0],
+            service_number=service_numbers[0],
+            effective_date=datetime.datetime(2023, 6, 24),
+        )
     )
     SeasonalServiceFactory(
         licence=bods_licence,
@@ -131,11 +229,13 @@ def test_csv_output():
     # Require Attention: Yes
     # TXCFileAttribute = None
     # SeasonalService = Not None and In Season
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[1],
-        service_number=service_numbers[1],
-        effective_date=datetime.datetime(2023, 6, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[1],
+            service_number=service_numbers[1],
+            effective_date=datetime.datetime(2023, 6, 24),
+        )
     )
     SeasonalServiceFactory(
         licence=bods_licence,
@@ -147,11 +247,13 @@ def test_csv_output():
     # Require Attention: No
     # TXCFileAttribute = None
     # Exemption Exists
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[2],
-        service_number=service_numbers[2],
-        effective_date=datetime.datetime(2023, 6, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[2],
+            service_number=service_numbers[2],
+            effective_date=datetime.datetime(2023, 6, 24),
+        )
     )
     ServiceCodeExemptionFactory(
         licence=bods_licence,
@@ -170,11 +272,13 @@ def test_csv_output():
         modification_datetime=datetime.datetime(2022, 1, 24),
     )
     # staleness_otc = True => "Stale - OTC Variation"
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[3],
-        service_number=service_numbers[3],
-        effective_date=datetime.datetime(2023, 3, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[3],
+            service_number=service_numbers[3],
+            effective_date=datetime.datetime(2023, 3, 24),
+        )
     )
     SeasonalServiceFactory(
         licence=bods_licence,
@@ -195,11 +299,13 @@ def test_csv_output():
         modification_datetime=datetime.datetime(2023, 1, 24),
     )
     # staleness_42_day_look_ahead = True => "Stale - 42 day look ahead"
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[4],
-        service_number=service_numbers[4],
-        effective_date=datetime.datetime(2022, 6, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[4],
+            service_number=service_numbers[4],
+            effective_date=datetime.datetime(2022, 6, 24),
+        )
     )
     # in season
     SeasonalServiceFactory(
@@ -219,11 +325,13 @@ def test_csv_output():
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
     )
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[5],
-        service_number=service_numbers[5],
-        effective_date=datetime.datetime(2024, 1, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[5],
+            service_number=service_numbers[5],
+            effective_date=datetime.datetime(2024, 1, 24),
+        )
     )
     # in season
     SeasonalServiceFactory(
@@ -244,11 +352,13 @@ def test_csv_output():
         modification_datetime=datetime.datetime(2022, 1, 24),
     )
     # staleness_12_months_old = True => "Stale - 12 months old"
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[6],
-        service_number=service_numbers[6],
-        effective_date=datetime.datetime(2021, 1, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[6],
+            service_number=service_numbers[6],
+            effective_date=datetime.datetime(2021, 1, 24),
+        )
     )
     # in season
     SeasonalServiceFactory(
@@ -270,11 +380,13 @@ def test_csv_output():
         modification_datetime=datetime.datetime(2022, 1, 24),
     )
     # staleness_12_months_old = True => "Stale - 12 months old"
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[7],
-        service_number=service_numbers[7],
-        effective_date=datetime.datetime(2021, 1, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[7],
+            service_number=service_numbers[7],
+            effective_date=datetime.datetime(2021, 1, 24),
+        )
     )
     # don't care start end
     seasonal_service_7 = SeasonalServiceFactory(
@@ -300,11 +412,13 @@ def test_csv_output():
     )
     # staleness_otc = False, staleness_42_day_look_ahead = False,
     # staleness_12_months_old = False => Up to Date
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[8],
-        service_number=service_numbers[8],
-        effective_date=datetime.datetime(2021, 1, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[8],
+            service_number=service_numbers[8],
+            effective_date=datetime.datetime(2021, 1, 24),
+        )
     )
     seasonal_service_8 = SeasonalServiceFactory(
         licence=bods_licence,
@@ -330,6 +444,14 @@ def test_csv_output():
         start=datetime.datetime(2022, 2, 24),
         end=datetime.datetime(2024, 2, 24),
     )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     service_codes_csv = ServiceCodesCSV(org1.id)
     csv_string = service_codes_csv.to_string()
@@ -361,7 +483,10 @@ def test_csv_output():
         '"OTC:Licence Number"',
         '"OTC:Registration Number"',
         '"OTC:Service Number"',
+        '"Traveline Region"',
+        '"Local Transport Authority"',
     ]
+
     assert csv_output["row0"][0] == '""'  # XML:Service Code
     assert csv_output["row0"][1] == '""'  # XML:Line Name
     assert csv_output["row0"][2] == '"No"'  # requires attention
@@ -626,6 +751,242 @@ def test_csv_output():
 
 
 @freeze_time("2023-02-28")
+def test_weca_seasonal_status_csv_output():
+    """Test Operator report for weca season services
+    Match the CSV row outputs
+    """
+    licence_number = "PD0001111"
+    num_otc_services = 10
+    service_code_prefix = "1101000"
+    service_codes = [
+        f"{licence_number}:{service_code_prefix}{n}" for n in range(num_otc_services)
+    ]
+    service_numbers = [f"Line{n}" for n in range(num_otc_services)]
+
+    atco_code = "110"
+    registration_code_index = -len(service_code_prefix) - 1
+
+    org = OrganisationFactory()
+    bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+    otc_lic = LicenceModelFactory(number=licence_number)
+
+    services = []
+
+    # Up to Date
+    dataset0 = DatasetFactory(organisation=org)
+    txc_file_0 = TXCFileAttributesFactory(
+        revision=dataset0.live_revision,
+        service_code=service_codes[0],
+        operating_period_end_date=datetime.datetime(2023, 6, 28),
+        modification_datetime=datetime.datetime(2022, 1, 28),
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[0],
+            service_number=service_numbers[0],
+            effective_date=datetime.datetime(2024, 1, 28),
+            api_type=API_TYPE_WECA,
+            atco_code=atco_code,
+        )
+    )
+    # in season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[0][registration_code_index:],
+        start=datetime.datetime(2022, 2, 28),
+        end=datetime.datetime(2024, 2, 28),
+    )
+
+    dataset1 = DatasetFactory(organisation=org)
+    txc_file_1 = TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=service_codes[1],
+        operating_period_end_date=datetime.datetime(2023, 6, 24),
+        modification_datetime=datetime.datetime(2022, 1, 24),
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[1],
+            service_number=service_numbers[1],
+            effective_date=datetime.datetime(2024, 1, 24),
+            api_type=API_TYPE_WECA,
+            atco_code=atco_code,
+        )
+    )
+    # out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[1][registration_code_index:],
+        start=datetime.datetime(2026, 2, 28),
+        end=datetime.datetime(2028, 2, 28),
+    )
+
+    # Not Seasonal
+    dataset2 = DatasetFactory(organisation=org)
+    txc_file_2 = TXCFileAttributesFactory(
+        revision=dataset2.live_revision,
+        service_code=service_codes[2],
+        operating_period_end_date=datetime.datetime(2023, 6, 24),
+        modification_datetime=datetime.datetime(2022, 1, 24),
+    )
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[2],
+            service_number=service_numbers[2],
+            effective_date=datetime.datetime(2024, 1, 24),
+            api_type=API_TYPE_WECA,
+            atco_code=atco_code,
+        )
+    )
+
+    dataset3 = DatasetFactory(organisation=org)
+    # operating_period_end_date is None
+    txc_file_3 = TXCFileAttributesFactory(
+        revision=dataset3.live_revision,
+        service_code=service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=datetime.datetime(2022, 1, 28),
+    )
+    # is_stale: staleness_12_months_old = True => "Stale - 12 months old"
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[3],
+            service_number=service_numbers[3],
+            effective_date=datetime.datetime(2021, 1, 28),
+            api_type=API_TYPE_WECA,
+            atco_code=atco_code,
+        )
+    )
+    # in season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[3][registration_code_index:],
+        start=datetime.datetime(2022, 2, 28),
+        end=datetime.datetime(2024, 2, 28),
+    )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code=atco_code)
+
+    service_codes_csv = ServiceCodesCSV(org.id)
+    csv_string = service_codes_csv.to_string()
+    csv_output = get_csv_output(csv_string)
+
+    assert csv_output["row0"][0] == f'"PD0001111:{service_code_prefix}0"'
+    assert csv_output["row0"][1] == '"line1 line2"'
+    assert csv_output["row0"][2] == '"Yes"'
+    assert csv_output["row0"][3] == '"Published"'
+    assert csv_output["row0"][4] == '"Registered"'
+    assert csv_output["row0"][5] == '"In Scope"'
+    assert csv_output["row0"][6] == '"In Season"'
+    assert csv_output["row0"][7] == '"Service hasn\'t been updated within a year"'
+    assert csv_output["row0"][8] == f'"{dataset0.id}"'
+    assert csv_output["row0"][9] == '"2023-12-17"'
+    assert csv_output["row0"][10] == '"2023-04-11"'
+    assert csv_output["row0"][11] == '"2023-01-28"'
+    assert csv_output["row0"][12] == '"2022-01-17"'
+    assert csv_output["row0"][13] == '"2022-02-28"'
+    assert csv_output["row0"][14] == '"2024-02-28"'
+    assert csv_output["row0"][15] == f'"{txc_file_0.filename}"'
+    assert csv_output["row0"][16] == '"2022-01-28"'
+    assert csv_output["row0"][17] == f'"{txc_file_0.national_operator_code}"'
+    assert csv_output["row0"][18] == '"PF0002280"'
+    assert csv_output["row0"][19] == '"0"'
+    assert csv_output["row0"][20] == f'"{txc_file_0.operating_period_start_date}"'
+    assert csv_output["row0"][21] == '"2023-06-28"'
+    assert csv_output["row0"][22] == '"PD0001111"'
+    assert csv_output["row0"][23] == f'"PD0001111:{service_code_prefix}0"'
+    assert csv_output["row0"][24] == '"Line0"'
+
+    assert csv_output["row1"][0] == f'"PD0001111:{service_code_prefix}1"'
+    assert csv_output["row1"][1] == '"line1 line2"'
+    assert csv_output["row1"][2] == '"No"'
+    assert csv_output["row1"][3] == '"Published"'
+    assert csv_output["row1"][4] == '"Registered"'
+    assert csv_output["row1"][5] == '"In Scope"'
+    assert csv_output["row1"][6] == '"Out of Season"'
+    assert csv_output["row1"][7] == '"Service hasn\'t been updated within a year"'
+    assert csv_output["row1"][8] == f'"{dataset1.id}"'
+    assert csv_output["row1"][9] == '"2023-12-13"'
+    assert csv_output["row1"][10] == '"2023-04-11"'
+    assert csv_output["row1"][11] == '"2023-01-24"'
+    assert csv_output["row1"][12] == '"2026-01-17"'
+    assert csv_output["row1"][13] == '"2026-02-28"'
+    assert csv_output["row1"][14] == '"2028-02-28"'
+    assert csv_output["row0"][15] == f'"{txc_file_1.filename}"'
+    assert csv_output["row1"][16] == '"2022-01-24"'
+    assert csv_output["row0"][17] == f'"{txc_file_1.national_operator_code}"'
+    assert csv_output["row1"][18] == '"PF0002280"'
+    assert csv_output["row1"][19] == '"0"'
+    assert csv_output["row0"][20] == f'"{txc_file_1.operating_period_start_date}"'
+    assert csv_output["row1"][21] == '"2023-06-24"'
+    assert csv_output["row1"][22] == '"PD0001111"'
+    assert csv_output["row1"][23] == f'"PD0001111:{service_code_prefix}1"'
+    assert csv_output["row1"][24] == '"Line1"'
+
+    assert csv_output["row2"][0] == f'"PD0001111:{service_code_prefix}2"'
+    assert csv_output["row2"][1] == '"line1 line2"'
+    assert csv_output["row2"][2] == '"Yes"'
+    assert csv_output["row2"][3] == '"Published"'
+    assert csv_output["row2"][4] == '"Registered"'
+    assert csv_output["row2"][5] == '"In Scope"'
+    assert csv_output["row2"][6] == '"Not Seasonal"'
+    assert csv_output["row2"][7] == '"Service hasn\'t been updated within a year"'
+    assert csv_output["row2"][8] == f'"{dataset2.id}"'
+    assert csv_output["row2"][9] == '"2023-12-13"'
+    assert csv_output["row2"][10] == '"2023-04-11"'
+    assert csv_output["row2"][11] == '"2023-01-24"'
+    assert csv_output["row2"][12] == '""'
+    assert csv_output["row2"][13] == '""'
+    assert csv_output["row2"][14] == '""'
+    assert csv_output["row0"][15] == f'"{txc_file_2.filename}"'
+    assert csv_output["row2"][16] == '"2022-01-24"'
+    assert csv_output["row0"][17] == f'"{txc_file_2.national_operator_code}"'
+    assert csv_output["row2"][18] == '"PF0002280"'
+    assert csv_output["row2"][19] == '"0"'
+    assert csv_output["row0"][20] == f'"{txc_file_3.operating_period_start_date}"'
+    assert csv_output["row2"][21] == '"2023-06-24"'
+    assert csv_output["row2"][22] == '"PD0001111"'
+    assert csv_output["row2"][23] == f'"PD0001111:{service_code_prefix}2"'
+    assert csv_output["row2"][24] == '"Line2"'
+
+    assert csv_output["row3"][0] == f'"PD0001111:{service_code_prefix}3"'
+    assert csv_output["row3"][1] == '"line1 line2"'
+    assert csv_output["row3"][2] == '"Yes"'
+    assert csv_output["row3"][3] == '"Published"'
+    assert csv_output["row3"][4] == '"Registered"'
+    assert csv_output["row3"][5] == '"In Scope"'
+    assert csv_output["row3"][6] == '"In Season"'
+    assert csv_output["row3"][7] == '"Service hasn\'t been updated within a year"'
+    assert csv_output["row3"][8] == f'"{dataset3.id}"'
+    assert csv_output["row3"][9] == '"2020-12-17"'
+    assert csv_output["row3"][10] == '"2023-04-11"'
+    assert csv_output["row3"][11] == '"2023-01-28"'
+    assert csv_output["row3"][12] == '"2022-01-17"'
+    assert csv_output["row3"][13] == '"2022-02-28"'
+    assert csv_output["row3"][14] == '"2024-02-28"'
+    assert csv_output["row0"][15] == f'"{txc_file_3.filename}"'
+    assert csv_output["row3"][16] == '"2022-01-28"'
+    assert csv_output["row0"][17] == f'"{txc_file_3.national_operator_code}"'
+    assert csv_output["row3"][18] == '"PF0002280"'
+    assert csv_output["row3"][19] == '"0"'
+    assert csv_output["row0"][20] == f'"{txc_file_3.operating_period_start_date}"'
+    assert csv_output["row3"][21] == '""'
+    assert csv_output["row3"][22] == '"PD0001111"'
+    assert csv_output["row3"][23] == f'"PD0001111:{service_code_prefix}3"'
+    assert csv_output["row3"][24] == '"Line3"'
+
+
+@freeze_time("2023-02-28")
 def test_seasonal_status_csv_output():
     licence_number = "PD0001111"
     num_otc_services = 10
@@ -636,6 +997,8 @@ def test_seasonal_status_csv_output():
     bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
     otc_lic = LicenceModelFactory(number=licence_number)
 
+    services = []
+
     # Up to Date
     dataset0 = DatasetFactory(organisation=org)
     txc_file_0 = TXCFileAttributesFactory(
@@ -644,11 +1007,13 @@ def test_seasonal_status_csv_output():
         operating_period_end_date=datetime.datetime(2023, 6, 28),
         modification_datetime=datetime.datetime(2022, 1, 28),
     )
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[0],
-        service_number=service_numbers[0],
-        effective_date=datetime.datetime(2024, 1, 28),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[0],
+            service_number=service_numbers[0],
+            effective_date=datetime.datetime(2024, 1, 28),
+        )
     )
     # in season
     SeasonalServiceFactory(
@@ -665,11 +1030,13 @@ def test_seasonal_status_csv_output():
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
     )
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[1],
-        service_number=service_numbers[1],
-        effective_date=datetime.datetime(2024, 1, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[1],
+            service_number=service_numbers[1],
+            effective_date=datetime.datetime(2024, 1, 24),
+        )
     )
     # out of season
     SeasonalServiceFactory(
@@ -687,11 +1054,13 @@ def test_seasonal_status_csv_output():
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
     )
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[2],
-        service_number=service_numbers[2],
-        effective_date=datetime.datetime(2024, 1, 24),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[2],
+            service_number=service_numbers[2],
+            effective_date=datetime.datetime(2024, 1, 24),
+        )
     )
 
     dataset3 = DatasetFactory(organisation=org)
@@ -703,11 +1072,13 @@ def test_seasonal_status_csv_output():
         modification_datetime=datetime.datetime(2022, 1, 28),
     )
     # is_stale: staleness_12_months_old = True => "Stale - 12 months old"
-    ServiceModelFactory(
-        licence=otc_lic,
-        registration_number=service_codes[3],
-        service_number=service_numbers[3],
-        effective_date=datetime.datetime(2021, 1, 28),
+    services.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[3],
+            service_number=service_numbers[3],
+            effective_date=datetime.datetime(2021, 1, 28),
+        )
     )
     # in season
     SeasonalServiceFactory(
@@ -716,6 +1087,14 @@ def test_seasonal_status_csv_output():
         start=datetime.datetime(2022, 2, 28),
         end=datetime.datetime(2024, 2, 28),
     )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     service_codes_csv = ServiceCodesCSV(org.id)
     csv_string = service_codes_csv.to_string()
