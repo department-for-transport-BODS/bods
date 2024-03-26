@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
@@ -41,7 +42,7 @@
             <table class="govuk-table dataset-property-table">
                 <tbody class="govuk-table__body">
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{% trans 'Type of service - 2' %}</th>
+                        <th scope="row" class="govuk-table__header">{% trans 'Type of service' %}</th>
                         <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
                     </tr>
                     <tr class="govuk-table__row">
@@ -108,35 +109,25 @@
             {% include 'publish/dataset_detail/related_links.html' %}
         </div>
         
-            
-        
-        <!-- Nitish code -->
         <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-m">Timetable</h2>
             <h2 class="govuk-heading-m">Filter by</h2>
-        <div class="govuk-form-group  govuk-!-width-one-quarter govuk-!-padding-0  ">
-        <label class="govuk-label" for="timetable_date">
-            Date
-        </label>
-        <span id="timetable_date-hint" class="govuk-hint ">
-            For example: 21/11/2014
-        </span>
-        {% with params=request.GET.urlencode %}
-        <input type="text" 
-        oninput="BODSFrontend.reloadPageOnDate('date', this.value);"
-        
-        id="timetable_date" name="start" 
-        class="govuk-input" 
-        aria-describedby="timetable_date-hint" id="filter_date"
-        value={{curr_date}} min="{{start_date}}"  max="{{end_date}}"
-        data-gtm-form-interact-field-id="0" />
-        
-        </div>
-        {% endwith %}
+            <div class="govuk-form-group  govuk-!-width-one-quarter govuk-!-padding-0  ">
+            <label class="govuk-label" for="timetable_date">
+                Date
+            </label>
+            <span id="timetable_date-hint" class="govuk-hint ">
+                For example: 21/11/2014
+            </span>            
+            <input type="text" 
+            oninput="BODSFrontend.reloadPageOnDate('date', this.value);"        
+            id="timetable_date" name="start" class="govuk-input" aria-describedby="timetable_date-hint" id="filter_date"
+            value={{curr_date}} data-gtm-form-interact-field-id="0" />            
+        </div>        
         {% include 'publish/dataset_detail/journey_stop_timetable.html' with journey_name=outbound_journey_name journey_stops=outbound_journey_stops data=outbound_journey_bus_stops show_all=show_all_outbound ttl_page=outbound_ttl_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
         {% include 'publish/dataset_detail/journey_stop_timetable.html' with journey_name=inbound_journey_name journey_stops=inbound_journey_stops data=inbound_journey_bus_stops show_all=show_all_inbound ttl_page=inbound_ttl_page curr_page=inbound_curr_page page_param='inboundPage' show_all_param='showAllInbound' %}
         </div>
-    <!-- End of nitish code-->
+    
     </div>
 {% endblock %}
 

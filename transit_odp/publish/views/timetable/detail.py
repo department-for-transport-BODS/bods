@@ -129,6 +129,8 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["service_code"] = service_code
         kwargs["start_date"] = "2022-03-22"
         kwargs["end_date"] = "2025-03-22"
+        outbound_total_page = 3
+        inbound_total_page = 3
         kwargs["service_type"] = get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
@@ -180,9 +182,9 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
 
         kwargs["show_all_outbound"] = show_all_outbound
         kwargs["show_all_inbound"] = show_all_inbound
-        kwargs["outbound_ttl_page"] = 3
+        kwargs["outbound_ttl_page"] = outbound_total_page
         kwargs["outbound_curr_page"] = outbound_curr_page_param
-        kwargs["inbound_ttl_page"] = 3
+        kwargs["inbound_ttl_page"] = inbound_total_page
         kwargs["inbound_curr_page"] = inbound_curr_page_param
 
         if (

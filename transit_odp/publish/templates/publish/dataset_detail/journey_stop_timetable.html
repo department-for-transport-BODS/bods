@@ -5,11 +5,10 @@
   <caption class="govuk-table__caption govuk-table__caption--m">{% trans journey_name %}</caption>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header ">Stop</th>
+      <th scope="col" class="govuk-table__header ">{% trans 'Stop' %}</th>
       {% for elem in journey_stops %}
       <th scope="col" class="govuk-table__header ">{{elem}}</th>
-      {% endfor %}
-      <!-- <th scope="row" class="govuk-table__header">{% trans 'Text' %}</th> -->
+      {% endfor %}      
     </tr>
   </thead>
   <tbody class="govuk-table__body">
