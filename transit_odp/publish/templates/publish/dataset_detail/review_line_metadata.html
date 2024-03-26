@@ -1,5 +1,4 @@
 {% extends "page.html" %}
-{% load relative_url %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
@@ -116,16 +115,22 @@
             <h2 class="govuk-heading-m">Timetable</h2>
             <h2 class="govuk-heading-m">Filter by</h2>
         <div class="govuk-form-group  govuk-!-width-one-quarter govuk-!-padding-0  ">
-        <label class="govuk-label" for="id_start">
+        <label class="govuk-label" for="timetable_date">
             Date
         </label>
-        <span id="id_start-hint" class="govuk-hint ">
+        <span id="timetable_date-hint" class="govuk-hint ">
             For example: 21/11/2014
         </span>
         {% with params=request.GET.urlencode %}
-        <input type="date" 
-        onchange="window.location.assign('&date='+this.value )"
-        id="id_start" name="start" class="govuk-input" aria-describedby="id_start-hint" id="filter_date" value={{curr_date}} data-gtm-form-interact-field-id="0" />
+        <input type="text" 
+        oninput="BODSFrontend.reloadPageOnDate('date', this.value);"
+        
+        id="timetable_date" name="start" 
+        class="govuk-input" 
+        aria-describedby="timetable_date-hint" id="filter_date"
+        value={{curr_date}} min="{{start_date}}"  max="{{end_date}}"
+        data-gtm-form-interact-field-id="0" />
+        
         </div>
         {% endwith %}
         {% include 'publish/dataset_detail/journey_stop_timetable.html' with journey_name=outbound_journey_name journey_stops=outbound_journey_stops data=outbound_journey_bus_stops show_all=show_all_outbound ttl_page=outbound_ttl_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
@@ -139,5 +144,7 @@
     {{ block.super }}
     <script>
         BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
+        console.log(BODSFrontend.reloadPageOnDate);        
+        BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}");
     </script>
 {% endblock %}

@@ -22,6 +22,7 @@ import { initWarningDetailMap } from "./data-quality-detail-map";
 import { refresh } from "./dqs-review-panel";
 import { CounterCharactersInTextBox } from "./counter-characters-text-box";
 import { FormSet } from "./django-formset";
+import {initDatePicker, reloadPageOnDate} from "./timetable"
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
@@ -53,5 +54,7 @@ export {
   initOrgMap,
   initWarningDetailMap,
   refresh,
-  FormSet,
+  initDatePicker,
+  reloadPageOnDate,
+  FormSet
 };

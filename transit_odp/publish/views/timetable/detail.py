@@ -108,6 +108,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         licence_no = self.request.GET.get("l")
         show_all_outbound_param = self.request.GET.get("showAllOutbound", "false")
         show_all_inbound_param = self.request.GET.get("showAllInbound", "false")
+        date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 
         show_all_outbound = show_all_outbound_param.lower() == "true"
         show_all_inbound = show_all_inbound_param.lower() == "true"
@@ -121,11 +122,13 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         dataset = self.object
         live_revision = dataset.live_revision
         # datetime.now().strftime("%Y-%M-%d")"2013-01-08"
-        kwargs["curr_date"] = datetime.now().strftime("%Y-%m-%d")  # "2013-01-08"
+        kwargs["curr_date"] = date
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
         kwargs["line_name"] = line
         kwargs["service_code"] = service_code
+        kwargs["start_date"] = "2022-03-22"
+        kwargs["end_date"] = "2025-03-22"
         kwargs["service_type"] = get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
@@ -138,7 +141,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         stop_timings = list(range(1000, 1010, 1))
         kwargs["outbound_journey_stops"] = stop_timings
 
-        kwargs["outbound_journey_bus_stops"] = [
+        journey_bus_stops = [
             {"Oxford Circus Station": stop_timings},
             {"King's Cross St. Pancras Station": stop_timings},
             {"Victoria Station": stop_timings},
@@ -163,15 +166,17 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             {"Camden Town Station": stop_timings},
         ]
 
+        kwargs["outbound_journey_bus_stops"] = journey_bus_stops
+        kwargs["inbound_journey_bus_stops"] = journey_bus_stops
+
         if not show_all_outbound:
-            kwargs["outbound_journey_bus_stops"] = kwargs["outbound_journey_bus_stops"][
-                :10
-            ]
+            kwargs["outbound_journey_bus_stops"] = journey_bus_stops[:10]
+
+        if not show_all_inbound:
+            kwargs["inbound_journey_bus_stops"] = journey_bus_stops[:10]
 
         kwargs["inbound_journey_name"] = "Inbound - Watton to Norwich"
-        stop_timings = list(range(1000, 1010, 1))
         kwargs["inbound_journey_stops"] = stop_timings
-        kwargs["inbound_journey_bus_stops"] = kwargs["outbound_journey_bus_stops"]
 
         kwargs["show_all_outbound"] = show_all_outbound
         kwargs["show_all_inbound"] = show_all_inbound
@@ -179,8 +184,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["outbound_curr_page"] = outbound_curr_page_param
         kwargs["inbound_ttl_page"] = 3
         kwargs["inbound_curr_page"] = inbound_curr_page_param
-
-        # Current page, Total page
 
         if (
             kwargs["service_type"] == "Flexible"
