@@ -108,19 +108,13 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         if not last_stop["wait_time_vj"].isnull().all():
             last_stop["wait_time"] = last_stop["wait_time_vj"].fillna(pd.Timedelta(0))
 
-        # Replace empty strings with pd.NaT in "run_time_vj" column
-        last_stop["run_time_vj"] = last_stop["run_time_vj"].replace("", pd.NaT)
-
-        # Combine "run_time_vj" with "run_time", filling missing values with 0
-        run_time_combined = (
-            last_stop["run_time_vj"]
-            .combine_first(last_stop["run_time"])
-            .fillna(pd.Timedelta(0))
+        last_stop["departure_time"] = last_stop["run_time_vj"].replace(
+            "", pd.NaT
+        ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
+            "wait_time"
+        ].fillna(
+            pd.Timedelta(0)
         )
-
-        # Fill missing values in "wait_time" with 0
-        wait_time_filled = last_stop["wait_time"].fillna(pd.Timedelta(0))
-        last_stop["departure_time"] = run_time_combined + wait_time_filled
     # Calculate departure time for standard stops where run_time is NOT found in VehicleJourney
     elif not is_flexible_departure_time:
         last_stop["departure_time"] = last_stop["run_time"].fillna(
