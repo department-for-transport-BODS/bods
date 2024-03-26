@@ -15,7 +15,7 @@ from transit_odp.organisation.factories import (
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.otc.constants import API_TYPE_WECA, FLEXIBLE_REG, OTC_SCOPE_STATUS_IN_SCOPE, OTC_SCOPE_STATUS_OUT_OF_SCOPE, SCHOOL_OR_WORKS
+from transit_odp.otc.constants import API_TYPE_WECA, FLEXIBLE_REG, SCHOOL_OR_WORKS
 from transit_odp.otc.factories import (
     LicenceModelFactory,
     LocalAuthorityFactory,
@@ -492,7 +492,7 @@ def test_csv_output():
     assert csv_output["row0"][2] == '"No"'  # requires attention
     assert csv_output["row0"][3] == '"Unpublished"'  # published status
     assert csv_output["row0"][4] == '"Registered"'  # OTC status
-    assert csv_output["row0"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # scope status
+    assert csv_output["row0"][5] == '"In Scope"'  # scope status
     assert csv_output["row0"][6] == '"Out of Season"'  # seasonal status
     assert csv_output["row0"][7] == '"Up to date"'  # timeliness status
     assert csv_output["row0"][8] == '""'  # dataset id
@@ -522,7 +522,7 @@ def test_csv_output():
     assert csv_output["row1"][2] == '"Yes"'
     assert csv_output["row1"][3] == '"Unpublished"'
     assert csv_output["row1"][4] == '"Registered"'
-    assert csv_output["row1"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row1"][5] == '"In Scope"'
     assert csv_output["row1"][6] == '"In Season"'
     assert csv_output["row1"][7] == '"Up to date"'
     assert csv_output["row1"][8] == '""'
@@ -548,7 +548,7 @@ def test_csv_output():
     assert csv_output["row2"][2] == '"No"'
     assert csv_output["row2"][3] == '"Unpublished"'
     assert csv_output["row2"][4] == '"Registered"'
-    assert csv_output["row2"][5] == OTC_SCOPE_STATUS_OUT_OF_SCOPE
+    assert csv_output["row2"][5] == '"Out of Scope"'
     assert csv_output["row2"][6] == '"Not Seasonal"'
     assert csv_output["row2"][7] == '"Up to date"'
     assert csv_output["row2"][8] == '""'
@@ -574,7 +574,7 @@ def test_csv_output():
     assert csv_output["row3"][2] == '"Yes"'
     assert csv_output["row3"][3] == '"Published"'
     assert csv_output["row3"][4] == '"Registered"'
-    assert csv_output["row3"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row3"][5] == '"In Scope"'
     assert csv_output["row3"][6] == '"In Season"'
     assert csv_output["row3"][7] == '"OTC variation not published"'
     assert csv_output["row3"][8] == f'"{dataset3.id}"'
@@ -600,7 +600,7 @@ def test_csv_output():
     assert csv_output["row4"][2] == '"Yes"'
     assert csv_output["row4"][3] == '"Published"'
     assert csv_output["row4"][4] == '"Registered"'
-    assert csv_output["row4"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row4"][5] == '"In Scope"'
     assert csv_output["row4"][6] == '"In Season"'
     assert csv_output["row4"][7] == '"42 day look ahead is incomplete"'
     assert csv_output["row4"][8] == f'"{dataset4.id}"'
@@ -626,7 +626,7 @@ def test_csv_output():
     assert csv_output["row5"][2] == '"Yes"'
     assert csv_output["row5"][3] == '"Published"'
     assert csv_output["row5"][4] == '"Registered"'
-    assert csv_output["row5"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row5"][5] == '"In Scope"'
     assert csv_output["row5"][6] == '"In Season"'
     assert csv_output["row5"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row5"][8] == f'"{dataset5.id}"'
@@ -652,7 +652,7 @@ def test_csv_output():
     assert csv_output["row6"][2] == '"Yes"'
     assert csv_output["row6"][3] == '"Published"'
     assert csv_output["row6"][4] == '"Registered"'
-    assert csv_output["row6"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row6"][5] == '"In Scope"'
     assert csv_output["row6"][6] == '"In Season"'
     assert csv_output["row6"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row6"][8] == f'"{dataset6.id}"'
@@ -678,7 +678,7 @@ def test_csv_output():
     assert csv_output["row7"][2] == '"No"'
     assert csv_output["row7"][3] == '"Published"'
     assert csv_output["row7"][4] == '"Registered"'
-    assert csv_output["row7"][5] == OTC_SCOPE_STATUS_OUT_OF_SCOPE
+    assert csv_output["row7"][5] == '"Out of Scope"'
     assert csv_output["row7"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row7"][8] == f'"{dataset7.id}"'
     assert csv_output["row7"][9] == '"2020-12-13"'
@@ -703,7 +703,7 @@ def test_csv_output():
     assert csv_output["row8"][2] == '"No"'
     assert csv_output["row8"][3] == '"Published"'
     assert csv_output["row8"][4] == '"Registered"'
-    assert csv_output["row8"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row8"][5] == '"In Scope"'
     assert csv_output["row8"][7] == '"Up to date"'
     assert csv_output["row8"][8] == f'"{dataset8.id}"'
     assert csv_output["row8"][9] == '"2020-12-13"'
@@ -728,7 +728,7 @@ def test_csv_output():
     assert csv_output["row9"][2] == '"No"'
     assert csv_output["row9"][3] == '"Published"'
     assert csv_output["row9"][4] == '"Unregistered"'
-    assert csv_output["row9"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row9"][5] == '"In Scope"'
     assert csv_output["row9"][6] == '"Not Seasonal"'
     assert csv_output["row9"][7] == '"Up to date"'
     assert csv_output["row9"][8] == f'"{dataset9.id}"'
@@ -1105,7 +1105,7 @@ def test_seasonal_status_csv_output():
     assert csv_output["row0"][2] == '"Yes"'
     assert csv_output["row0"][3] == '"Published"'
     assert csv_output["row0"][4] == '"Registered"'
-    assert csv_output["row0"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row0"][5] == '"In Scope"'
     assert csv_output["row0"][6] == '"In Season"'
     assert csv_output["row0"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row0"][8] == f'"{dataset0.id}"'
@@ -1131,7 +1131,7 @@ def test_seasonal_status_csv_output():
     assert csv_output["row1"][2] == '"No"'
     assert csv_output["row1"][3] == '"Published"'
     assert csv_output["row1"][4] == '"Registered"'
-    assert csv_output["row1"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row1"][5] == '"In Scope"'
     assert csv_output["row1"][6] == '"Out of Season"'
     assert csv_output["row1"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row1"][8] == f'"{dataset1.id}"'
@@ -1157,7 +1157,7 @@ def test_seasonal_status_csv_output():
     assert csv_output["row2"][2] == '"Yes"'
     assert csv_output["row2"][3] == '"Published"'
     assert csv_output["row2"][4] == '"Registered"'
-    assert csv_output["row2"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row2"][5] == '"In Scope"'
     assert csv_output["row2"][6] == '"Not Seasonal"'
     assert csv_output["row2"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row2"][8] == f'"{dataset2.id}"'
@@ -1183,7 +1183,7 @@ def test_seasonal_status_csv_output():
     assert csv_output["row3"][2] == '"Yes"'
     assert csv_output["row3"][3] == '"Published"'
     assert csv_output["row3"][4] == '"Registered"'
-    assert csv_output["row3"][5] == OTC_SCOPE_STATUS_IN_SCOPE
+    assert csv_output["row3"][5] == '"In Scope"'
     assert csv_output["row3"][6] == '"In Season"'
     assert csv_output["row3"][7] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row3"][8] == f'"{dataset3.id}"'

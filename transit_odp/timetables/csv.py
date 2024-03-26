@@ -536,22 +536,31 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
 def add_requires_attention_column(
     df: pd.DataFrame, today: datetime.date
 ) -> pd.DataFrame:
-    requires_attention_creteria_1 = (
+    """
+    Logic for Requires Attention:
+    Yes if all of these are true:
+        OTC status = Registered
+        Scope Status = In scope
+        Seasonal Status = Not Seasonal or In Season
+        Published Status = Unpublished
+    Yes if all these are true:
+        OTC status = Registered
+        Scope Status = In scope
+        Seasonal Status = Not Seasonal or In Season
+        Published Status = Published
+        Timeliness Status ≠ Up to date
+    """
+    requires_attention_unpublished = (
         (df["otc_status"] == "Registered")
         & (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
         & (
             (df["seasonal_status"] == "Not Seasonal")
             | (df["seasonal_status"] == "In Season")
         )
-        & (
-            (df["published_status"] == "Unpublished")
-            | (
-                (df["published_status"] == "Published")
-                & (df["staleness_status"] != "Up to date")
-            )
-        )
+        & (df["published_status"] == "Unpublished")
     )
-    requires_attention_criteria_2 = (
+
+    requires_attention_published = (
         (df["otc_status"] == "Registered")
         & (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
         & (
@@ -562,7 +571,7 @@ def add_requires_attention_column(
         & (df["staleness_status"] != "Up to date")
     )
     df["requires_attention"] = np.where(
-        requires_attention_creteria_1 | requires_attention_criteria_2, "Yes", "No"
+        (requires_attention_unpublished) | (requires_attention_published), "Yes", "No"
     )
     return df
 
