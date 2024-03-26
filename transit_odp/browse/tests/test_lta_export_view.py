@@ -15,7 +15,7 @@ from transit_odp.organisation.factories import (
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.otc.constants import FLEXIBLE_REG, SCHOOL_OR_WORKS
+from transit_odp.otc.constants import FLEXIBLE_REG, OTC_SCOPE_STATUS_IN_SCOPE, SCHOOL_OR_WORKS
 from transit_odp.otc.factories import (
     LicenceModelFactory,
     LocalAuthorityFactory,
@@ -493,7 +493,7 @@ def test_lta_csv_output():
     assert csv_output["row0"][2] == '"No"'  # Requires Attention
     assert csv_output["row0"][3] == '"Unpublished"'  # Published Status
     assert csv_output["row0"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row0"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row0"][6] == '"Out of Season"'  # Seasonal Status
     assert csv_output["row0"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row0"][8] == '"test_org_1"'  # Organisation Name
@@ -531,7 +531,7 @@ def test_lta_csv_output():
     assert csv_output["row1"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row1"][3] == '"Unpublished"'  # Published Status
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row1"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row1"][6] == '"In Season"'  # Seasonal Status
     assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
@@ -600,7 +600,7 @@ def test_lta_csv_output():
     assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row3"][3] == '"Published"'  # Published Status
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row3"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
     assert csv_output["row3"][7] == '"OTC variation not published"'  # Timeliness Status
     assert csv_output["row3"][8] == '"test_org_1"'  # Organisation Name
@@ -640,7 +640,7 @@ def test_lta_csv_output():
     assert csv_output["row4"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row4"][3] == '"Published"'  # Published Status
     assert csv_output["row4"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row4"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row4"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row4"][6] == '"In Season"'  # Seasonal Status
     assert (
         csv_output["row4"][7] == '"42 day look ahead is incomplete"'
@@ -682,7 +682,7 @@ def test_lta_csv_output():
     assert csv_output["row5"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row5"][3] == '"Published"'  # Published Status
     assert csv_output["row5"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row5"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row5"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row5"][6] == '"In Season"'  # Seasonal Status
     assert (
         csv_output["row5"][7] == '"Service hasn\'t been updated within a year"'
@@ -724,7 +724,7 @@ def test_lta_csv_output():
     assert csv_output["row6"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row6"][3] == '"Published"'  # Published Status
     assert csv_output["row6"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row6"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row6"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row6"][6] == '"In Season"'  # Seasonal Status
     assert (
         csv_output["row6"][7] == '"Service hasn\'t been updated within a year"'
@@ -808,7 +808,7 @@ def test_lta_csv_output():
     assert csv_output["row8"][2] == '"No"'  # Requires Attention
     assert csv_output["row8"][3] == '"Published"'  # Published Status
     assert csv_output["row8"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row8"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row8"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row8"][6] == '"In Season"'  # Seasonal Status
     assert csv_output["row8"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row8"][8] == '"test_org_1"'  # Organisation Name
@@ -1011,7 +1011,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row0"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row0"][3] == '"Published"'  # Published Status
     assert csv_output["row0"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row0"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row0"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row0"][6] == '"In Season"'  # Seasonal Status
     assert (
         csv_output["row0"][7] == '"Service hasn\'t been updated within a year"'
@@ -1049,7 +1049,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row1"][2] == '"No"'  # Requires Attention
     assert csv_output["row1"][3] == '"Published"'  # Published Status
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row1"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row1"][6] == '"Out of Season"'  # Seasonal Status
     assert (
         csv_output["row1"][7] == '"Service hasn\'t been updated within a year"'
@@ -1087,7 +1087,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row2"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row2"][3] == '"Published"'  # Published Status
     assert csv_output["row2"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row2"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row2"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row2"][6] == '"Not Seasonal"'  # Seasonal Status
     assert (
         csv_output["row2"][7] == '"Service hasn\'t been updated within a year"'
@@ -1123,7 +1123,7 @@ def test_seasonal_status_lta_csv_output():
     assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row3"][3] == '"Published"'  # Published Status
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
+    assert csv_output["row3"][5] == OTC_SCOPE_STATUS_IN_SCOPE  # Scope Status
     assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
     assert (
         csv_output["row3"][7] == '"Service hasn\'t been updated within a year"'
