@@ -728,7 +728,7 @@ def test_csv_output():
     assert csv_output["row9"][2] == '"No"'
     assert csv_output["row9"][3] == '"Published"'
     assert csv_output["row9"][4] == '"Unregistered"'
-    assert csv_output["row9"][5] == '"In Scope"'
+    assert csv_output["row9"][5] == '"Out of Scope"'
     assert csv_output["row9"][6] == '"Not Seasonal"'
     assert csv_output["row9"][7] == '"Up to date"'
     assert csv_output["row9"][8] == f'"{dataset9.id}"'
