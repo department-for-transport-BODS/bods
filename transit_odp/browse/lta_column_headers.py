@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
 
 from transit_odp.organisation.models import Organisation
-from transit_odp.otc.constants import OTC_SCOPE_STATUS_IN_SCOPE, OTC_SCOPE_STATUS_OUT_OF_SCOPE
+from transit_odp.otc.constants import (
+    OTC_SCOPE_STATUS_IN_SCOPE,
+    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
+)
 
 
 def get_42_day_look_ahead_date() -> str:
