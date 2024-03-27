@@ -436,6 +436,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                 ["VehicleJourneyTimingLink"]
             )
 
+            to_wait_time_exists = False
             if vj_timing_links:
                 for links in vj_timing_links:
                     timing_link_ref = links.get_element(
@@ -446,6 +447,34 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         run_time = pd.to_timedelta(run_time_element.text)
                     else:
                         run_time = pd.NaT
+                    from_wait_time_element = links.get_element_or_none(["From"])
+                    to_wait_time_element = links.get_element_or_none(["To"])
+                    wait_time = pd.NaT
+                    from_wait_time = None
+                    to_wait_time = None
+
+                    if from_wait_time_element and not to_wait_time_exists:
+                        from_wait_time = from_wait_time_element.get_element_or_none(
+                            ["WaitTime"]
+                        )
+                        if from_wait_time:
+                            wait_time = pd.to_timedelta(from_wait_time.text)
+
+                    if to_wait_time_element:
+                        to_wait_time = to_wait_time_element.get_element_or_none(
+                            ["WaitTime"]
+                        )
+                        if to_wait_time:
+                            to_wait_time_exists = True
+                            if pd.isna(wait_time):
+                                wait_time = pd.to_timedelta(to_wait_time.text)
+                            else:
+                                wait_time = wait_time + pd.to_timedelta(
+                                    to_wait_time.text
+                                )
+
+                    else:
+                        to_wait_time_exists = False
 
                     all_vehicle_journeys.append(
                         {
@@ -460,6 +489,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             "vehicle_journey_code": vehicle_journey_code,
                             "timing_link_ref": timing_link_ref,
                             "run_time": run_time,
+                            "wait_time": wait_time,
                             "departure_day_shift": departure_day_shift,
                         }
                     )
@@ -477,6 +507,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "vehicle_journey_code": vehicle_journey_code,
                         "timing_link_ref": None,
                         "run_time": pd.NaT,
+                        "wait_time": pd.NaT,
                         "departure_day_shift": departure_day_shift,
                     }
                 )

@@ -85,6 +85,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             "run_time",
             "wait_time",
             "run_time_vj",
+            "wait_time_vj",
         ]
     else:
         columns = [
@@ -104,6 +105,9 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     columns.remove("is_timing_status")
     # Calculate departure time for standard stops where run_time is found in VehicleJourney
     if use_vehicle_journey_runtime and not is_flexible_departure_time:
+        if not last_stop["wait_time_vj"].isnull().all():
+            last_stop["wait_time"] = last_stop["wait_time_vj"].fillna(pd.Timedelta(0))
+
         last_stop["departure_time"] = last_stop["run_time_vj"].replace(
             "", pd.NaT
         ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
@@ -437,7 +441,7 @@ def create_route_to_route_links(
 
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                ["route_link_ref", "run_time_vj"]
+                ["route_link_ref", "run_time_vj", "wait_time_vj"]
             ]
         )
     else:
@@ -474,7 +478,9 @@ def transform_line_names(line_name_list):
 
 def get_vehicle_journey_without_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys[
-        vehicle_journeys.columns.difference(["timing_link_ref", "run_time"])
+        vehicle_journeys.columns.difference(
+            ["timing_link_ref", "run_time", "wait_time"]
+        )
     ]
     indexes = df_subset.index.names
     df_subset = df_subset.reset_index().drop_duplicates()
@@ -488,24 +494,31 @@ def filter_operating_profiles(
     """Remove records from operating profiles where the date falls outside
     operating period start and end date
     """
+
+    df_services = services.copy()
+
+    df_services["end_date"] = df_services["end_date"].fillna(
+        pd.Timestamp.max.tz_localize(None)
+        .tz_localize("UTC")
+        .tz_convert("Europe/London")
+    )
+
+    df_services["start_date"] = pd.to_datetime(
+        df_services["start_date"]
+    ).dt.tz_localize(None)
+    df_services["end_date"] = pd.to_datetime(df_services["end_date"]).dt.tz_localize(
+        None
+    )
     if not operating_profiles.empty and not services.empty:
         service_columns = ["file_id", "service_code", "start_date", "end_date"]
         indexes = operating_profiles.index.names
         df_merged = pd.merge(
             operating_profiles.reset_index(),
-            services.reset_index()[service_columns],
+            df_services.reset_index()[service_columns],
             left_on=["file_id", "service_code"],
             right_on=["file_id", "service_code"],
         )
 
-        df_merged["end_date"] = df_merged["end_date"].fillna(pd.Timestamp.max)
-
-        df_merged["start_date"] = pd.to_datetime(
-            df_merged["start_date"]
-        ).dt.tz_localize(None)
-        df_merged["end_date"] = pd.to_datetime(df_merged["end_date"]).dt.tz_localize(
-            None
-        )
         df_merged["compare_exceptions_date"] = pd.to_datetime(
             df_merged["exceptions_date"]
         )
@@ -537,6 +550,7 @@ def get_vehicle_journey_with_timing_refs(
             "service_code",
             "timing_link_ref",
             "run_time",
+            "wait_time",
             "vehicle_journey_code",
         ],
     ]
@@ -763,8 +777,9 @@ def transform_service_pattern_to_service_links(
             "run_time",
             "wait_time",
             "run_time_vj",
+            "wait_time_vj",
         ]
-        drop_columns.append("run_time_vj")
+        drop_columns.extend(["run_time_vj", "wait_time_vj"])
     else:
         link_columns = [
             "file_id",

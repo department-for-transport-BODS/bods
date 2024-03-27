@@ -18,6 +18,12 @@ from transit_odp.organisation.models import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.otc.constants import (
+    OTC_SCOPE_STATUS_IN_SCOPE,
+    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
+    OTC_STATUS_REGISTERED,
+    OTC_STATUS_UNREGISTERED,
+)
 from transit_odp.otc.models import Service as OTCService
 
 TXC_COLUMNS = (
@@ -47,7 +53,7 @@ OTC_COLUMNS = (
     "registration_number",
     "service_type_description",
     "variation_number",
-    "service_numbers",
+    "service_number",
     "start_point",
     "finish_point",
     "via",
@@ -257,7 +263,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Variation Number",
             "The variation number element as extracted from the OTC database.",
         ),
-        "service_numbers": Column(
+        "service_number": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),
@@ -336,12 +342,13 @@ def scope_status(row, exempted_reg_numbers):
     traveline_regions = row["traveline_region"].split("|")
     isin_english_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
 
-    row["scope_status"] = "Out of Scope"
-    if not is_exempted:
-        row["scope_status"] = "In Scope"
-
-    if not is_exempted and isin_english_region:
-        row["scope_status"] = "In Scope"
+    row["scope_status"] = OTC_SCOPE_STATUS_OUT_OF_SCOPE
+    if (
+        row["otc_status"] == OTC_STATUS_REGISTERED
+        and not is_exempted
+        and isin_english_region
+    ):
+        row["scope_status"] = OTC_SCOPE_STATUS_IN_SCOPE
 
     return row
 
@@ -403,7 +410,9 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
         .all()
     )
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
-    df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
+    df["otc_status"] = np.where(
+        exists_in_otc, OTC_STATUS_REGISTERED, OTC_STATUS_UNREGISTERED
+    )
     df["traveline_region"] = df["traveline_region"].fillna("").astype(str)
     df = df.apply(scope_status, args=[exempted_reg_numbers], axis=1)
     return df
@@ -527,18 +536,43 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
 def add_requires_attention_column(
     df: pd.DataFrame, today: datetime.date
 ) -> pd.DataFrame:
-    requires_attention = (
-        (df["scope_status"] == "In Scope")
-        & (df["seasonal_status"] != "Out of Season")
+    """
+    Logic for Requires Attention:
+    Yes if all of these are true:
+        OTC status = Registered
+        Scope Status = In scope
+        Seasonal Status = Not Seasonal or In Season
+        Published Status = Unpublished
+    Yes if all these are true:
+        OTC status = Registered
+        Scope Status = In scope
+        Seasonal Status = Not Seasonal or In Season
+        Published Status = Published
+        Timeliness Status ≠ Up to date
+    """
+    requires_attention_unpublished = (
+        (df["otc_status"] == "Registered")
+        & (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
         & (
-            (df["staleness_status"] != "Up to date")
-            | (
-                (df["published_status"] == "Unpublished")
-                & (df["otc_status"] == "Registered")
-            )
+            (df["seasonal_status"] == "Not Seasonal")
+            | (df["seasonal_status"] == "In Season")
         )
+        & (df["published_status"] == "Unpublished")
     )
-    df["requires_attention"] = np.where(requires_attention, "Yes", "No")
+
+    requires_attention_published = (
+        (df["otc_status"] == "Registered")
+        & (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
+        & (
+            (df["seasonal_status"] == "Not Seasonal")
+            | (df["seasonal_status"] == "In Season")
+        )
+        & (df["published_status"] == "Published")
+        & (df["staleness_status"] != "Up to date")
+    )
+    df["requires_attention"] = np.where(
+        (requires_attention_unpublished) | (requires_attention_published), "Yes", "No"
+    )
     return df
 
 

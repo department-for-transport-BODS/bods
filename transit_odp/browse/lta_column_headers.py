@@ -1,6 +1,10 @@
 from datetime import datetime, timedelta
 
 from transit_odp.organisation.models import Organisation
+from transit_odp.otc.constants import (
+    OTC_SCOPE_STATUS_IN_SCOPE,
+    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
+)
 
 
 def get_42_day_look_ahead_date() -> str:
@@ -40,9 +44,9 @@ header_accessor_data = [
     ),
     (
         "Scope Status",
-        lambda otc_service: "Out of Scope"
+        lambda otc_service: OTC_SCOPE_STATUS_OUT_OF_SCOPE
         if otc_service.get("scope_status", False)
-        else "In Scope",
+        else OTC_SCOPE_STATUS_IN_SCOPE,
     ),
     (
         "Seasonal Status",
