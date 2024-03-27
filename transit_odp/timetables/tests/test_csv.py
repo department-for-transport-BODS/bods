@@ -115,7 +115,7 @@ def test_service_in_bods_but_not_in_otc():
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Unregistered"
-        assert row["Scope Status"] == "In Scope"
+        assert row["Scope Status"] == "Out of Scope"
         assert row["XML:Filename"] == txc_file_attributes.filename
         assert (
             row["XML:National Operator Code"]
@@ -295,7 +295,7 @@ def test_unregistered_services_in_bods():
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
         assert row["Published Status"] == "Published"
         assert row["OTC Status"] == "Unregistered"
-        assert row["Scope Status"] == "In Scope"
+        assert row["Scope Status"] == "Out of Scope"
         assert row["XML:Filename"] == txc_file_attributes.filename
         assert (
             row["XML:National Operator Code"]
@@ -481,6 +481,14 @@ def test_stale_42_day_look_ahead(effective, modified, period_end, is_stale):
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
     LicenceFactory(number=otc_service.licence.number)
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[otc_service],
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     assert (df["Timeliness Status"][0] == "42 day look ahead is incomplete") == is_stale
@@ -529,6 +537,14 @@ def test_stale_12_months_old(effective, modified, period_end, period_start, is_s
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
     LicenceFactory(number=otc_service.licence.number)
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[otc_service],
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     assert (
@@ -584,6 +600,14 @@ def test_stale_otc_variation(effective, modified, period_end, period_start, is_s
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
     LicenceFactory(number=otc_service.licence.number)
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[otc_service],
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
     assert (df["Timeliness Status"][0] == "OTC variation not published") == is_stale

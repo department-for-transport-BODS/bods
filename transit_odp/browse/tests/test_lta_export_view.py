@@ -7,6 +7,7 @@ from freezegun import freeze_time
 
 from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.browse.views.local_authority import LTACSV
+from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.factories import DatasetFactory
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
@@ -22,7 +23,6 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
-from transit_odp.naptan.factories import AdminAreaFactory
 
 pytestmark = pytest.mark.django_db
 FAKER = faker.Faker()
