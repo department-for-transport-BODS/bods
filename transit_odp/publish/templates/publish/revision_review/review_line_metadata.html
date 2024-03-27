@@ -23,7 +23,7 @@
         {% breadcrumb_url feed_name 'revision-publish' pk1=pk1 pk=pk host hosts.publish %}
     {% endif %}
     <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'revision-line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}">
+        <a class="govuk-breadcrumbs__link" href="{% url 'revision-line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}&revision_id={{ revision_id }}&service={{ service_code }}">
             {{ line_name }}
         </a>
     </li>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible">
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -56,13 +56,9 @@
                         <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number(s)' %}</th>
+                        <th scope="row" class="govuk-table__header">{% trans 'Registration Number' %}</th>
                         <td class="govuk-table__cell dont-break-out" colspan="2">
-                            {% for service_code in service_codes %}
-                                <div class="stacked">
-                                    {{ service_code }}
-                                </div>
-                            {% endfor %}
+                            {{ service_code }}
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
@@ -129,6 +125,6 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        BODSFrontend.initMap("{{ api_root }}", {{ revision_id }}, "{{line_name}}", "{{service_codes|join:','}}");
+        BODSFrontend.initMap("{{ api_root }}", {{ revision_id }}, "{{line_name}}", "{{service_code}}");
     </script>
 {% endblock %}

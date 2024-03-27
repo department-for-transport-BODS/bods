@@ -18801,6 +18801,7 @@
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260070186</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
+          <WaitTime>PT7M</WaitTime>
         </To>
         <RouteLinkRef>RL11</RouteLinkRef>
         <RunTime>PT0S</RunTime>
@@ -18810,11 +18811,13 @@
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260070186</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
+          <WaitTime>PT7M</WaitTime>
         </From>
         <To id="JPSU24" SequenceNumber="13">
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260007396</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
+          <WaitTime>PT7M</WaitTime>
         </To>
         <RouteLinkRef>RL12</RouteLinkRef>
         <RunTime>PT0S</RunTime>
@@ -18824,11 +18827,13 @@
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260007396</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
+          <WaitTime>PT7M</WaitTime>
         </From>
         <To id="JPSU26" SequenceNumber="14">
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260007397</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
+          <WaitTime>PT8M</WaitTime>
         </To>
         <RouteLinkRef>RL13</RouteLinkRef>
         <RunTime>PT0S</RunTime>
@@ -18838,6 +18843,7 @@
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260007397</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
+          <WaitTime>PT8M</WaitTime>
         </From>
         <To id="JPSU28" SequenceNumber="15">
           <Activity>pickUpAndSetDown</Activity>
@@ -18887,6 +18893,7 @@
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260007408</StopPointRef>
           <TimingStatus>principalTimingPoint</TimingStatus>
+          <WaitTime>PT4M</WaitTime>
         </To>
         <RouteLinkRef>RL17</RouteLinkRef>
         <RunTime>PT0S</RunTime>
@@ -18898,6 +18905,7 @@
           <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>260007408</StopPointRef>
           <TimingStatus>principalTimingPoint</TimingStatus>
+          <WaitTime>PT4M</WaitTime>
         </From>
         <To id="JPSU36" SequenceNumber="19">
           <Activity>pickUpAndSetDown</Activity>
@@ -36962,10 +36970,16 @@
       <VehicleJourneyTimingLink id="VJTL3219">
         <JourneyPatternTimingLinkRef>JPTL2</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <To>
+          <WaitTime>PT15M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3220">
         <JourneyPatternTimingLinkRef>JPTL3</JourneyPatternTimingLinkRef>
         <RunTime>PT0S</RunTime>
+        <To>
+          <WaitTime>PT25M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3221">
         <JourneyPatternTimingLinkRef>JPTL4</JourneyPatternTimingLinkRef>
@@ -36974,14 +36988,32 @@
       <VehicleJourneyTimingLink id="VJTL3222">
         <JourneyPatternTimingLinkRef>JPTL5</JourneyPatternTimingLinkRef>
         <RunTime>PT0S</RunTime>
+        <From>
+          <WaitTime>PT3M</WaitTime>
+        </From>
+        <To>
+          <WaitTime>PT3M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3223">
         <JourneyPatternTimingLinkRef>JPTL6</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <From>
+          <WaitTime>PT3M</WaitTime>
+        </From>
+        <To>
+          <WaitTime>PT3M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3224">
         <JourneyPatternTimingLinkRef>JPTL7</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <From>
+          <WaitTime>PT3M</WaitTime>
+        </From>
+        <To>
+          <WaitTime>PT3M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3225">
         <JourneyPatternTimingLinkRef>JPTL8</JourneyPatternTimingLinkRef>
@@ -36990,10 +37022,22 @@
       <VehicleJourneyTimingLink id="VJTL3226">
         <JourneyPatternTimingLinkRef>JPTL9</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <From>
+          <WaitTime>PT2M</WaitTime>
+        </From>
+        <To>
+          <WaitTime>PT2M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3227">
         <JourneyPatternTimingLinkRef>JPTL10</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <From>
+          <WaitTime>PT2M</WaitTime>
+        </From>
+        <To>
+          <WaitTime>PT2M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3228">
         <JourneyPatternTimingLinkRef>JPTL11</JourneyPatternTimingLinkRef>
@@ -37002,10 +37046,19 @@
       <VehicleJourneyTimingLink id="VJTL3229">
         <JourneyPatternTimingLinkRef>JPTL12</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <To>
+          <WaitTime>PT5M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3230">
         <JourneyPatternTimingLinkRef>JPTL13</JourneyPatternTimingLinkRef>
         <RunTime>PT1M</RunTime>
+        <From>
+          <WaitTime>PT9M</WaitTime>
+        </From>
+        <To>
+          <WaitTime>PT9M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3231">
         <JourneyPatternTimingLinkRef>JPTL14</JourneyPatternTimingLinkRef>
@@ -37026,6 +37079,9 @@
       <VehicleJourneyTimingLink id="VJTL3235">
         <JourneyPatternTimingLinkRef>JPTL18</JourneyPatternTimingLinkRef>
         <RunTime>PT0S</RunTime>
+        <From>
+          <WaitTime>PT3M</WaitTime>
+        </From>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL3236">
         <JourneyPatternTimingLinkRef>JPTL19</JourneyPatternTimingLinkRef>
