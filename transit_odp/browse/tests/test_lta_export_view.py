@@ -531,7 +531,7 @@ def test_lta_csv_output():
     assert csv_output["row1"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row1"][3] == '"Unpublished"'  # Published Status
     assert csv_output["row1"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row1"][5] == "In Scope"  # Scope Status
+    assert csv_output["row1"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row1"][6] == '"In Season"'  # Seasonal Status
     assert csv_output["row1"][7] == '"Up to date"'  # Timeliness Status
     assert csv_output["row1"][8] == '"test_org_1"'  # Organisation Name
@@ -600,7 +600,7 @@ def test_lta_csv_output():
     assert csv_output["row3"][2] == '"Yes"'  # Requires Attention
     assert csv_output["row3"][3] == '"Published"'  # Published Status
     assert csv_output["row3"][4] == '"Registered"'  # OTC Status
-    assert csv_output["row3"][5] == "In Scope"  # Scope Status
+    assert csv_output["row3"][5] == '"In Scope"'  # Scope Status
     assert csv_output["row3"][6] == '"In Season"'  # Seasonal Status
     assert csv_output["row3"][7] == '"OTC variation not published"'  # Timeliness Status
     assert csv_output["row3"][8] == '"test_org_1"'  # Organisation Name
