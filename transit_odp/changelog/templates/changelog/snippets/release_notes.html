@@ -1,6 +1,52 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "April 2024 (1.35.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An improvement to the way the new service level pages are organised within each data set which will show information specifically for that service.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            WECA registrations are imported and will be shown alongside OTC registrations on the catalogues and completeness reports.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A bug fix to improve the way booking arrangements for flexible services are handled.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the validation logic to check for the presence a ServicePeriod for flexible services.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Various bug fixes to improve the way errors are displayed to users to be inline with GDS guidelines.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A fix to the link for consumer feedback reports within the Operator Profile pages.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Functionality to extract additional data that will be used within the upcoming timetable visualiser features.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "February 2024 (1.34.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
