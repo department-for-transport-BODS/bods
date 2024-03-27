@@ -15,10 +15,12 @@ logger.setLevel(logging.DEBUG)
 class TimetableVisualiser:
     def get_timetable_visualiser(self, revision_id, service_code, line_name, target_date):
         day_of_week = target_date.strftime('%A')
+        # AND sp_stop.vehicle_journey_id = vj.id
         queryset = Service.objects.filter(
                 revision_id=revision_id,
                 service_code=service_code,
-                service_patterns__line_name=line_name
+                service_patterns__line_name=line_name,
+                service_patterns__service_pattern_stops__vehicle_journey=F('service_patterns__service_pattern_vehicle_journey__id'),
                     ).annotate(
                 service_code_s=F("service_code"),
                 revision_id_s=F("revision_id"),
@@ -66,7 +68,7 @@ class TimetableVisualiser:
         )
         
         # Another queryset for txfileattributes
-        
+
         queryset_serviced_org = ServicedOrganisationVehicleJourney.objects.select_related(
             'serviced_organisation',
         ).prefetch_related(
