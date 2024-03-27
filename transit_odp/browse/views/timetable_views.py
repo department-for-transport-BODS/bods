@@ -356,7 +356,7 @@ class LineMetadataDetailView(DetailView):
         noc = self.request.GET.get("noc")
         licence_no = self.request.GET.get("l")
         kwargs = super().get_context_data(**kwargs)
-        target_date = datetime.strptime('08/01/2023', '%d/%m/%Y').date()
+        target_date = datetime.strptime('07/04/2023', '%d/%m/%Y').date()
         dataset = self.object
         live_revision = dataset.live_revision
         kwargs["pk"] = dataset.id
