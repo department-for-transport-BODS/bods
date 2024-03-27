@@ -53,7 +53,7 @@ OTC_COLUMNS = (
     "registration_number",
     "service_type_description",
     "variation_number",
-    "service_numbers",
+    "service_number",
     "start_point",
     "finish_point",
     "via",
@@ -263,7 +263,7 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Variation Number",
             "The variation number element as extracted from the OTC database.",
         ),
-        "service_numbers": Column(
+        "service_number": Column(
             "OTC:Service Number",
             "The service number element as extracted from the OTC database.",
         ),
