@@ -49,8 +49,15 @@ EMPTY_TIMESTAMP = None
 
 @override_flag("is_timetable_visualiser_active", active=True)
 class ExtractBaseTestCase(TestCase):
+    """Loads required stop data onto naptan StopPoint table
+    to ensure these stops are available when the table is
+    queried while syncing stops with naptan stops
+    """
+
     test_file: str
     ignore_stops = []
+    ignore_provisional_stops = []
+    allow_provisional_stops_in_naptan = False
 
     def setUp(self):
         self.cur_dir = os.path.abspath(os.path.dirname(__file__))
@@ -128,7 +135,27 @@ class ExtractBaseTestCase(TestCase):
             locality_ref = xml_toolkit.get_child_text(
                 provisional_stop, "x:Place/x:NptgLocalityRef"
             )
-            self.get_locality(name=locality_ref)
+            db_locality = self.get_locality(name=locality_ref)
+            if self.allow_provisional_stops_in_naptan:
+                stoppoint_naptan = xml_toolkit.get_child_text(
+                    provisional_stop, "x:AtcoCode"
+                )
+                if (
+                    not self.ignore_provisional_stops
+                    or stoppoint_naptan not in self.ignore_provisional_stops
+                ):
+                    common_name = xml_toolkit.get_child_text(
+                        provisional_stop, "x:Descriptor/x:CommonName"
+                    )
+                    stoppoint = StopPoint(
+                        naptan_code=stoppoint_naptan,
+                        atco_code=stoppoint_naptan,
+                        common_name=common_name,
+                        location=Point(0, 0),
+                        locality=db_locality,
+                        admin_area=self.admin,
+                    )
+                    stoppoint.save()
 
     # Get or create a locality by name
     def get_locality(self, name: str):
@@ -543,6 +570,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "localities",
                 "line_name",
                 "description",
+                "journey_code",
+                "vehicle_journey_code",
             ],
         )
         self.assertEqual(
@@ -558,11 +587,16 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         # self.assertEqual(transformed.service_links.shape, (0, 2))
         self.assertCountEqual(
             list(transformed.service_pattern_to_service_links.columns),
-            ["from_stop_atco", "to_stop_atco"],
-        )
-        self.assertEqual(
-            transformed.service_pattern_to_service_links.index.names,
-            ["file_id", "service_pattern_id", "order"],
+            [
+                "from_stop_atco",
+                "to_stop_atco",
+                "file_id",
+                "service_pattern_id",
+                "journey_pattern_id",
+                "vehicle_journey_code",
+                "journey_code",
+                "order",
+            ],
         )
 
     # TODO - re-enable this test
@@ -729,7 +763,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         revision = self.revision
         self.assertEqual(3, revision.services.count())
         self.assertEqual(12, revision.service_patterns.count())
-        self.assertEqual(55, ServicePatternStop.objects.count())
+        self.assertEqual(202, ServicePatternStop.objects.count())
 
         # Note Localities and AdminArea have not yet been 'rolled up' on the
         # feed at this point but still should have been be created
