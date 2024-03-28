@@ -41,10 +41,31 @@ const reloadPageOnDate = (paramKey, paramValue) => {
 
   const urlParams = new URLSearchParams(window.location.search);
   urlParams.set(paramKey, paramValue);  
-  const newUrl = window.location.origin + window.location.pathname + "?"+ encodeQueryParam(Object.fromEntries(urlParams));
-  console.log("newUrl: ", newUrl);
-  //window.location.assign(newUrl);
+  const newUrl = window.location.origin + window.location.pathname + "?"+ encodeQueryParam(Object.fromEntries(urlParams));  
+  window.location.assign(newUrl);
 };
+
+/**
+ * Exit Button to show on the date picker
+ */
+let exitButton = {
+  content: 'Exit',
+  onClick: (dp) => {
+      dp.hide();      
+  }
+}
+
+/**
+ * Today button to show on the date picker
+ */
+let todayButton = {
+  content: 'Today',
+  onClick: (dp) => {
+    console.log("Today button clicked");
+    dp.selectedDates = [new Date()];
+    reloadPageOnDate("date", formatDate(new Date()));
+  }
+}
 
 /**
  * 
@@ -56,19 +77,22 @@ const reloadPageOnDate = (paramKey, paramValue) => {
  * 
  * initDatePicker("#date", null, "2024-03-23", "2025-03-22", ["2024-02-23", "2024-03-27","2024-04-29"])
  */
-const initDatePicker = (domId, selectedDate, startDate, endDate, enabledDays=[]) => {
-  
-  console.log("startDate: ", startDate);
+const initDatePicker = (domId, selectedDate, startDate, endDate, enabledDays='') => {
+
   // If there is no selected date, default to today date
   if (selectedDate === null) {
     selectedDate = new Date();    
   }
-  let dpMin, dpMax;
-  new AirDatepicker(domId, {
+
+  enabledDays = enabledDays.split(",")
+  
+  const dp = new AirDatepicker(domId, {
     locale: localeEn,
     dateFormat: "dd/MM/yyyy",
     selectedDates: [new Date(selectedDate)],
-    buttons:['today', 'clear'],
+    buttons:[todayButton, exitButton],
+    minDate: new Date(startDate),
+    maxDate: new Date(endDate),
     onSelect({date}) {      
       reloadPageOnDate("date", formatDate(date));
     },
@@ -78,12 +102,12 @@ const initDatePicker = (domId, selectedDate, startDate, endDate, enabledDays=[])
       // If calendar type is viewing days      
       if (cellType === 'day' ) {
 
-        let isDisabled = false;        
+        let isDisabled = false;
         let day = formatDate(date);
 
         // enabled the days, if empty array is found, enable for all days
         if (enabledDays.length != 0) {
-          isDisabled = disabledDays.indexOf(day) == -1;
+          isDisabled = enabledDays.indexOf(day) > -1;
         }
       
         return {
