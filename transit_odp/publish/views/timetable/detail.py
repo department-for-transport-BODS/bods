@@ -104,8 +104,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         and the object's attributes.
         """
         line = self.request.GET.get("line")
-        noc = self.request.GET.get("noc")
-        licence_no = self.request.GET.get("l")
         show_all_outbound_param = self.request.GET.get("showAllOutbound", "false")
         show_all_inbound_param = self.request.GET.get("showAllInbound", "false")
         date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
