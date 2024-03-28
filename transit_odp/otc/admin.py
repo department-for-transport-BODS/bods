@@ -1,9 +1,8 @@
-from django.contrib import admin
 from django import forms
-
-from transit_odp.otc.models import Service, LocalAuthority, UILta
-
+from django.contrib import admin
 from django.db import models
+
+from transit_odp.otc.models import LocalAuthority, Service, UILta
 
 
 @admin.register(UILta)
@@ -136,7 +135,7 @@ class LocalAuthoritiesForm(forms.ModelForm):
 class LocalAuthorityAdmin(admin.ModelAdmin):
     list_per_page = 50
     list_display = ("name", "ui_lta_name")
-    search_fields = ("name", "ui_lta_name")
+    search_fields = ("name", "ui_lta__name")
     list_filter = ("name",)
     ordering = ("name",)
     form = LocalAuthoritiesForm
