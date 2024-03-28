@@ -54,11 +54,9 @@ from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
-
 from transit_odp.users.constants import SiteAdminType
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 User = get_user_model()
 Regions = namedtuple("Regions", ("region_code", "pretty_name_region_code", "exists"))
 
@@ -406,7 +404,32 @@ class LineMetadataDetailView(DetailView):
                 return self.get_single_booking_arrangements_file(
                     booking_arrangements_qs.first().revision_id, [service_code]
                 )
-    
+
+            lastest_operating_period_start = (
+                self.get_lastest_operating_period_start_date(
+                    revision_id,
+                    service_code,
+                    line_name,
+                    most_recent_modification_datetime,
+                )
+            )
+            booking_arrangements_qs = booking_arrangements_qs.filter(
+                operating_period_start_date=lastest_operating_period_start
+            )
+
+            if len(booking_arrangements_qs) == 1:
+                return self.get_single_booking_arrangements_file(
+                    booking_arrangements_qs.first().revision_id, [service_code]
+                )
+
+            booking_arrangements_qs = booking_arrangements_qs.order_by(
+                "-filename"
+            ).first()
+
+            return self.get_single_booking_arrangements_file(
+                booking_arrangements_qs.revision_id, [service_code]
+            )
+
     def get_context_data(self, **kwargs):
         """
         Get the context data for the view.
@@ -417,7 +440,7 @@ class LineMetadataDetailView(DetailView):
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service")
         kwargs = super().get_context_data(**kwargs)
-        target_date = datetime.strptime('07/04/2023', '%d/%m/%Y').date()
+
         dataset = self.object
         live_revision = dataset.live_revision
         kwargs["pk"] = dataset.id
@@ -446,13 +469,15 @@ class LineMetadataDetailView(DetailView):
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
         
+        # Initial commit for timetable visualiser
+        target_date = datetime.strptime("08/01/2023", "%d/%m/%Y").date()
         kwargs["timetable_visualiser"] = TimetableVisualiser.get_timetable_visualiser(self,
             live_revision.id,
-            next(iter(kwargs["service_codes"])),
+            kwargs["service_code"],
             kwargs["line_name"],
             target_date,)
         
-        print("Total number of records:", kwargs["timetable_visualiser"].count())
+        print(f"Total number of records:{kwargs['timetable_visualiser'].count()}")
         return kwargs
 
 

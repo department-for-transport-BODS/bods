@@ -15,12 +15,11 @@ logger.setLevel(logging.DEBUG)
 class TimetableVisualiser:
     def get_timetable_visualiser(self, revision_id, service_code, line_name, target_date):
         day_of_week = target_date.strftime('%A')
-        # AND sp_stop.vehicle_journey_id = vj.id
-        queryset = Service.objects.filter(
+        queryset_all_vehicle_journeys = Service.objects.filter(
                 revision_id=revision_id,
                 service_code=service_code,
                 service_patterns__line_name=line_name,
-                service_patterns__service_pattern_stops__vehicle_journey=F('service_patterns__service_pattern_vehicle_journey__id'),
+                service_patterns__service_pattern_stops__vehicle_journey__id=F("service_patterns__service_pattern_vehicle_journey__id")
                     ).annotate(
                 service_code_s=F("service_code"),
                 revision_id_s=F("revision_id"),
@@ -67,9 +66,9 @@ class TimetableVisualiser:
             'vehicle_journey_id',
         )
         
-        # Another queryset for txfileattributes
+        # Another queryset for txfileattributes - TBD
 
-        queryset_serviced_org = ServicedOrganisationVehicleJourney.objects.select_related(
+        queryset_serviced_orgs = ServicedOrganisationVehicleJourney.objects.select_related(
             'serviced_organisation',
         ).prefetch_related(
             'serviced_organisation__serviced_organisations_working_days'
@@ -104,10 +103,8 @@ class TimetableVisualiser:
         ).annotate(
         ).values('vehicle_journey_id', 'non_operating_date')
 
-        for query in connection.queries:
-            print(f"***************************** {query['sql']}")
-        df_from_queryset = get_dataframe_from_queryset(queryset, queryset_serviced_org, 
+        df_from_queryset = get_dataframe_from_queryset(queryset_all_vehicle_journeys, queryset_serviced_orgs, 
                                                        queryset_vehicle_journey_op_exceptions, 
                                                        queryset_vehicle_journey_nonop_exceptions)
 
-        return queryset
+        return queryset_all_vehicle_journeys

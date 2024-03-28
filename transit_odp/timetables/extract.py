@@ -107,7 +107,6 @@ class TransXChangeExtractor:
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
-        # lines = pd.DataFrame()
         if is_timetable_visualiser_active:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
