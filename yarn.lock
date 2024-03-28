@@ -4923,11 +4923,6 @@ make-dir@^2.1.0:
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.1"
 
-mapboxgl-spiderifier@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.npmjs.org/mapboxgl-spiderifier/-/mapboxgl-spiderifier-1.0.10.tgz"
-  integrity sha512-a9fq0n1hU8fD4LQhuIrfVKXFM0gUx2RDBrK52WArkLIBUCTic+epzIp/4yF0D+tkpaQj3wrxN7DQ1jLagxYWsw==
-
 mdn-data@2.0.28:
   version "2.0.28"
   resolved "https://registry.npmjs.org/mdn-data/-/mdn-data-2.0.28.tgz"

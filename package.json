@@ -7,7 +7,6 @@
     "govuk-frontend": "~4.7.0",
     "jquery": "~3.7.1",
     "mapbox-gl": "~1.13.3",
-    "mapboxgl-spiderifier": "^1.0.10",
     "normalize.css": "~8.0.1",
     "process": "^0.11.10",
     "stream": "^0.0.2",
