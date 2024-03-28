@@ -137,8 +137,7 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
-        console.log(BODSFrontend.reloadPageOnDate);        
+        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");        
         BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
     </script>
 {% endblock %}
