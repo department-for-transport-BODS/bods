@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "~5.15.4",
+    "@nazka/map-gl-js-spiderfy": "^1.2.1",
     "govuk-frontend": "~4.7.0",
     "jquery": "~3.7.1",
     "mapbox-gl": "~1.13.3",
