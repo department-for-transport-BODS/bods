@@ -1,16 +1,31 @@
 import logging
 
-from django.db.models import Q, F, CharField, FilteredRelation, Value, DateField, Case, When
+from django.db.models import (
+    Q,
+    F,
+    CharField,
+    FilteredRelation,
+    Value,
+    DateField,
+    Case,
+    When,
+)
 from django.db.models.functions import Coalesce
 from django.db import connection
 
-from transit_odp.transmodel.models import Service, ServicedOrganisationVehicleJourney, OperatingDatesExceptions, NonOperatingDatesExceptions
+from transit_odp.transmodel.models import (
+    Service,
+    ServicedOrganisationVehicleJourney,
+    OperatingDatesExceptions,
+    NonOperatingDatesExceptions,
+)
 from transit_odp.timetables.utils import filter_df_on_exceptions
 from django.db import models
 import pandas as pd
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 class TimetableVisualiser:
 
