@@ -261,9 +261,6 @@ def filter_df_on_exceptions(
         "vehicle_journey_id"
     ].unique()
 
-    print(f"op_exception_vehicle_journey: {op_exception_vehicle_journey}")
-    print(f"nonop_exception_vehicle_journey: {nonop_exception_vehicle_journey}")
-
     # Filter the dataframe based on the day of week or in the operating exception
     df_operating_vehicle_journey = df_all_vehicle_journey.loc[
         (df_all_vehicle_journey["day_of_week"] == day_of_week)
@@ -273,7 +270,6 @@ def filter_df_on_exceptions(
             )
         )
     ]
-    print(f"df_operating_vehicle_journey: {df_operating_vehicle_journey.count()}")
 
     # Remove the vehicle journey which are not running on target date (nonoperating exception)
     df_operating_vehicle_journey = df_operating_vehicle_journey[
@@ -281,8 +277,6 @@ def filter_df_on_exceptions(
             nonop_exception_vehicle_journey
         )
     ]
-
-    print(f"df_operating_vehicle_journey: {df_operating_vehicle_journey.count()}")
 
     return df_operating_vehicle_journey
 
