@@ -94,9 +94,14 @@ const initDatePicker = (domId, selectedDate, startDate, endDate, enabledDays='')
     locale: localeEn,
     dateFormat: "dd/MM/yyyy",
     selectedDates: [new Date(selectedDate)],
-    buttons:[todayButton, exitButton],
+    buttons:[exitButton, todayButton],
     minDate: new Date(startDate),
     maxDate: new Date(endDate),
+    navTitles: {
+      days: 'MMMM yyyy',
+      months: 'yyyy',
+      years: 'yyyy1 - yyyy2'
+    },
     onSelect({date}) {      
       reloadPageOnDate("date", formatDate(date));
     },
