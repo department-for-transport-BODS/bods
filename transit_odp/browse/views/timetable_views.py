@@ -468,15 +468,13 @@ class LineMetadataDetailView(DetailView):
             if booking_arrangements_info:
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
-        
+
         # Initial commit for timetable visualiser
-        target_date = datetime.strptime("08/01/2023", "%d/%m/%Y").date()
-        kwargs["timetable_visualiser"] = TimetableVisualiser.get_timetable_visualiser(self,
-            live_revision.id,
-            kwargs["service_code"],
-            kwargs["line_name"],
-            target_date,)
-        
+        target_date = datetime.strptime("09/01/2023", "%d/%m/%Y").date()
+        kwargs["timetable_visualiser"] = TimetableVisualiser(
+            live_revision.id, kwargs["service_code"], kwargs["line_name"], target_date
+        ).get_timetable_visualiser()
+
         print(f"Total number of records:{kwargs['timetable_visualiser'].count()}")
         return kwargs
 

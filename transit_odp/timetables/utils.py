@@ -235,15 +235,88 @@ def get_line_description_based_on_direction(row: pd.Series) -> str:
     }
     return direction_mapping.get(row["direction"], "")
 
-def get_dataframe_from_queryset(queryset_all_vehicle_journeys: list, queryset_serviced_orgs: list, 
-                                queryset_vehicle_journey_op_exceptions: list,
-                                queryset_vehicle_journey_nonop_exceptions: list
-                                ) -> pd.DataFrame:
 
-    
-    df_qs_all_vehicle_journeys = pd.DataFrame.from_records(queryset_all_vehicle_journeys.values_list())
-    df_qs_serviced_org = pd.DataFrame.from_records(queryset_serviced_orgs.values_list())
-    df_qs_vehicle_journey_op_exceptions = pd.DataFrame.from_records(queryset_vehicle_journey_op_exceptions.values_list())
-    df_qs_vehicle_journey_nonop_exceptions = pd.DataFrame.from_records(queryset_vehicle_journey_nonop_exceptions.values_list())
-    
+def filter_df_on_exceptions(
+    day_of_week: str,
+    df_all_vehicle_journey: pd.DataFrame,
+    df_op_exception_vehicle_journey: pd.DataFrame,
+    df_nonop_excecption_vehicle_journey: pd.DataFrame,
+) -> pd.DataFrame:
+    """Get the valid vehicle journey based on the exceptions in
+    operating and non-operating tables.
+
+    :return: DataFrame
+            Returns dataframe containing the valid vehicle journey id
+    """
+
+    # base_df = base_df.drop(columns=[])
+    df_all_vehicle_journey.to_csv("base.csv")
+    df_op_exception_vehicle_journey.to_csv("op_exception.csv")
+    df_nonop_excecption_vehicle_journey.to_csv("nonop_exception.csv")
+
+    op_exception_vehicle_journey = df_op_exception_vehicle_journey[
+        "vehicle_journey_id"
+    ].unique()
+    nonop_exception_vehicle_journey = df_nonop_excecption_vehicle_journey[
+        "vehicle_journey_id"
+    ].unique()
+
+    print(f"op_exception_vehicle_journey: {op_exception_vehicle_journey}")
+    print(f"nonop_exception_vehicle_journey: {nonop_exception_vehicle_journey}")
+
+    # Filter the dataframe based on the day of week or in the operating exception
+    df_operating_vehicle_journey = df_all_vehicle_journey.loc[
+        (df_all_vehicle_journey["day_of_week"] == day_of_week)
+        | (
+            df_all_vehicle_journey["vehicle_journey_id"].isin(
+                op_exception_vehicle_journey
+            )
+        )
+    ]
+    print(f"df_operating_vehicle_journey: {df_operating_vehicle_journey.count()}")
+
+    # Remove the vehicle journey which are not running on target date (nonoperating exception)
+    df_operating_vehicle_journey = df_operating_vehicle_journey[
+        ~df_operating_vehicle_journey["vehicle_journey_id"].isin(
+            nonop_exception_vehicle_journey
+        )
+    ]
+
+    print(f"df_operating_vehicle_journey: {df_operating_vehicle_journey.count()}")
+
+    return df_operating_vehicle_journey
+
+
+def convert_queryset_to_dataframe(queryset: list):
+
+    return pd.DataFrame.from_records(queryset)
+
+
+def get_dataframe_from_queryset(
+    target_date,
+    day_of_week,
+    queryset_all_vehicle_journeys: list,
+    queryset_serviced_orgs: list,
+    queryset_vehicle_journey_op_exceptions: list,
+    queryset_vehicle_journey_nonop_exceptions: list,
+) -> pd.DataFrame:
+
+    df_qs_all_vehicle_journeys = pd.DataFrame.from_records(
+        queryset_all_vehicle_journeys
+    )
+    df_qs_serviced_org = pd.DataFrame.from_records(queryset_serviced_orgs)
+    df_qs_vehicle_journey_op_exceptions = pd.DataFrame.from_records(
+        queryset_vehicle_journey_op_exceptions
+    )
+    df_qs_vehicle_journey_nonop_exceptions = pd.DataFrame.from_records(
+        queryset_vehicle_journey_nonop_exceptions
+    )
+
+    filter_df_on_exceptions(
+        target_date,
+        day_of_week,
+        df_qs_all_vehicle_journeys,
+        df_qs_vehicle_journey_op_exceptions,
+        df_qs_vehicle_journey_nonop_exceptions,
+    )
     return df_qs_all_vehicle_journeys
