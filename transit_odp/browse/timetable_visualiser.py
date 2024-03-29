@@ -191,7 +191,7 @@ class TimetableVisualiser:
         return pd.DataFrame.from_records(qs_vehicle_journeys)
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
-        """
+        """ 
         Get the timetable visualiser for the specific service code, revision id, line name and the date
         """
 
