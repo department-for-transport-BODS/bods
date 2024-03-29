@@ -28,7 +28,6 @@ logger.setLevel(logging.DEBUG)
 
 
 class TimetableVisualiser:
-
     def __init__(self, revision_id, service_code, line_name, target_date) -> None:
         self._revision_id = revision_id
         self._service_code = service_code
@@ -191,7 +190,7 @@ class TimetableVisualiser:
         return pd.DataFrame.from_records(qs_vehicle_journeys)
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
-        """ 
+        """
         Get the timetable visualiser for the specific service code, revision id, line name and the date
         """
 
