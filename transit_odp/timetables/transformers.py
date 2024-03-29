@@ -15,9 +15,11 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_route_links,
     create_route_to_route_links,
     create_routes,
+    filter_operating_profiles,
     get_most_common_localities,
     get_vehicle_journey_with_timing_refs,
     get_vehicle_journey_without_timing_refs,
+    merge_flexible_jp_with_vehicle_journey,
     merge_journey_pattern_with_vj_for_departure_time,
     merge_vehicle_journeys_with_jp,
     merge_serviced_organisations_with_operating_profile,
@@ -46,6 +48,7 @@ class TransXChangeTransformer:
         self.stop_point_cache = stop_point_cache
 
     def transform(self) -> TransformedData:
+        """Transform various dataframes created during the extraction stage, so that these records can be loaded into expected tables in the loader stage"""
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
@@ -95,6 +98,8 @@ class TransXChangeTransformer:
 
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
+
+        operating_profiles = filter_operating_profiles(operating_profiles, services)
 
         if not vehicle_journeys.empty and not journey_patterns.empty:
             vehicle_journeys_with_timing_refs = get_vehicle_journey_with_timing_refs(
@@ -156,6 +161,12 @@ class TransXChangeTransformer:
             ) = transform_service_pattern_to_service_links(  # noqa: E501
                 service_patterns, route_to_route_links, route_links
             )
+            service_patterns = service_patterns.drop_duplicates(
+                drop_duplicates_columns_sp
+            )
+            service_patterns.drop(
+                ["route_hash", "journey_pattern_id"], axis=1, inplace=True
+            )
             # aggregate stop_sequence and geometry
             service_pattern_stops = transform_service_pattern_stops(
                 service_pattern_to_service_links, stop_points
@@ -210,7 +221,6 @@ class TransXChangeTransformer:
                 )
 
                 df_merged_flexible_vehicle_journeys = pd.DataFrame()
-
                 if not flexible_vehicle_journeys.empty:
                     flexible_vehicle_journeys.drop(
                         columns=["service_code"], axis=1, inplace=True
@@ -224,9 +234,20 @@ class TransXChangeTransformer:
                         )
                     )
 
+                    df_merged_flexible_journey_patterns = (
+                        merge_flexible_jp_with_vehicle_journey(
+                            flexible_vehicle_journeys, flexible_journey_patterns
+                        )
+                    )
+                else:
+                    df_merged_flexible_journey_patterns = (
+                        flexible_journey_patterns.reset_index()
+                    )
+                    df_merged_flexible_journey_patterns["vehicle_journey_code"] = ""
+
                 if not flexible_journey_details.empty:
                     flexible_journey_details = merge_flexible_jd_with_jp(
-                        flexible_journey_details, flexible_journey_patterns
+                        flexible_journey_details, df_merged_flexible_journey_patterns
                     )
                     # create flexible timing link
                     flexible_timing_links = self.create_flexible_timing_link(
@@ -245,14 +266,12 @@ class TransXChangeTransformer:
                         flexible_service_patterns = transform_flexible_service_patterns(
                             flexible_timing_links
                         )
-
                         (
                             flexible_service_pattern_to_service_links,
                             drop_columns,
                         ) = transform_flexible_service_pattern_to_service_links(
                             flexible_service_patterns
                         )
-
                         flexible_service_pattern_stops = (
                             transform_service_pattern_stops(
                                 flexible_service_pattern_to_service_links,
@@ -318,7 +337,7 @@ class TransXChangeTransformer:
             vehicle_journeys=df_merged_vehicle_journeys,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
-            operating_profiles=self.extracted_data.operating_profiles,
+            operating_profiles=operating_profiles,
         )
 
     def sync_stop_points(self, stop_points, provisional_stops):
@@ -441,9 +460,10 @@ class TransXChangeTransformer:
         This function transform the flexible journery details to get the sequence of stops
         """
 
-        def get_stop_sequence(group, journey_pattern_id):
+        def get_stop_sequence(group, journey_pattern_id, vehicle_journey_code):
             group["order"] = range(len(group))
             group["journey_pattern_id"] = journey_pattern_id
+            group["vehicle_journey_code"] = vehicle_journey_code
             group["from_stop_atco"] = group["atco_code"].shift(0)
             group["to_stop_atco"] = group["atco_code"].shift(-1)
             return group.dropna(subset=["to_stop_atco"])
@@ -451,10 +471,11 @@ class TransXChangeTransformer:
         if not flexible_journey_details.empty:
             flexible_timing_links = (
                 flexible_journey_details.reset_index()
-                .groupby("journey_pattern_id")
-                .apply(lambda group: get_stop_sequence(group, group.name))
+                .groupby(["journey_pattern_id", "vehicle_journey_code"])
+                .apply(
+                    lambda group: get_stop_sequence(group, group.name[0], group.name[1])
+                )
             )
-
             flexible_timing_links = flexible_timing_links[
                 [
                     "file_id",
@@ -464,6 +485,7 @@ class TransXChangeTransformer:
                     "journey_pattern_id",
                     "service_code",
                     "route_hash",
+                    "vehicle_journey_code",
                 ]
             ].set_index(["file_id", "journey_pattern_id"])
             return flexible_timing_links

@@ -112,8 +112,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         show_all_inbound = show_all_inbound_param.lower() == "true"
         outbound_curr_page_param = int(self.request.GET.get("outboundPage", "1"))
         inbound_curr_page_param = int(self.request.GET.get("inboundPage", "1"))
-
-        service_code = self.request.GET.get("service_code")
+        service_code = self.request.GET.get("service")
 
         kwargs = super().get_context_data(**kwargs)
 

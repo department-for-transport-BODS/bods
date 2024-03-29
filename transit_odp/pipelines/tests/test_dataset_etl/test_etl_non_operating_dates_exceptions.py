@@ -123,6 +123,10 @@ class ETLNonOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
         self.assertTrue(
             pd.to_datetime("2024-12-26") in df_extracted_data["exceptions_date"].values
         )
+        # Operating period start should be conisdered
+        self.assertTrue(
+            pd.to_datetime("2024-05-06") in df_extracted_data["exceptions_date"].values
+        )
         self.assertCountEqual(
             list(df_extracted_data.columns),
             columns,
@@ -142,11 +146,13 @@ class ETLNonOperatingDatesExceptionServicesOnly(ExtractBaseTestCase):
             "non_operating_date", flat=True
         )
         # test
-        self.assertEqual(24, non_operating_dates_exception.count())
+        self.assertEqual(15, non_operating_dates_exception.count())
         # Verify ChristmayDay date in days of non operation dates exception
         self.assertIn(datetime.date(2024, 12, 25), non_operating_dates_exception)
+        # Verify New year eve    date in days of non operation dates exception
+        self.assertIn(datetime.date(2024, 12, 31), non_operating_dates_exception)
         # Verify OtherPublicHoliday QueensJubilee date in days of non operation dates exception
-        self.assertIn(datetime.date(2022, 6, 3), non_operating_dates_exception)
+        self.assertNotIn(datetime.date(2022, 6, 3), non_operating_dates_exception)
 
 
 @override_flag("is_timetable_visualiser_active", active=True)

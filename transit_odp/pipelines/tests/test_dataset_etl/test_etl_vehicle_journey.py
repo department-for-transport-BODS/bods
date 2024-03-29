@@ -38,6 +38,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "vehicle_journey_code": "3681",
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
+                    "wait_time": pd.NaT,
                     "departure_day_shift": False,
                 },
                 {
@@ -50,6 +51,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "vehicle_journey_code": "3682",
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
+                    "wait_time": pd.NaT,
                     "departure_day_shift": False,
                 },
             ]
@@ -238,6 +240,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "vehicle_journey_code": "vj_3",
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
+                    "wait_time": pd.NaT,
                     "departure_day_shift": False,
                 },
             ]
@@ -398,6 +401,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "departure_day_shift": True,
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
+                    "wait_time": pd.NaT,
                 },
                 {
                     "file_id": file_id,
@@ -410,6 +414,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "departure_day_shift": True,
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
+                    "wait_time": pd.NaT,
                 },
             ]
         ).set_index("file_id")
