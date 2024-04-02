@@ -258,23 +258,28 @@ def filter_df_serviced_org_operating(
     ].unique()
 
     # Filtered based on serviced organisation id
-    serviced_org_id = [14,15]
+    serviced_org_id = [14, 15]
     df_service = df_service[df_service["serviced_org_id"].isin(serviced_org_id)]
 
-    # Remove the vehicle journey which are not running on target date (nonoperating exception) 
-    df_service = df_service[~df_service['vehicle_journey_id'].isin(nonop_exception_vehicle_journey)]
+    # Remove the vehicle journey which are not running on target date (nonoperating exception)
+    df_service = df_service[
+        ~df_service["vehicle_journey_id"].isin(nonop_exception_vehicle_journey)
+    ]
 
     # Split the vehicle journey based on the operating_on_working_days
     df_service_operating = df_service[df_service["operating_on_working_days"]]
-    df_service_non_operating = df_service[~df_service["operating_on_working_days"]]    
-    df_service_operating = df_service_operating[(df_service_operating.start_date < target_date) 
-                                                & (target_date < df_service_operating.end_date)]
+    df_service_non_operating = df_service[~df_service["operating_on_working_days"]]
+    df_service_operating = df_service_operating[
+        (df_service_operating.start_date < target_date)
+        & (target_date < df_service_operating.end_date)
+    ]
 
-    ''' 
+    """ 
     
-    '''
-    
+    """
+
     return None
+
 
 def filter_df_on_exceptions(
     day_of_week: str,
@@ -322,7 +327,6 @@ def filter_df_on_exceptions(
 
 
 def convert_queryset_to_dataframe(queryset: list):
-
     return pd.DataFrame.from_records(queryset)
 
 
@@ -334,7 +338,6 @@ def get_dataframe_from_queryset(
     queryset_vehicle_journey_op_exceptions: list,
     queryset_vehicle_journey_nonop_exceptions: list,
 ) -> pd.DataFrame:
-
     df_qs_all_vehicle_journeys = pd.DataFrame.from_records(
         queryset_all_vehicle_journeys
     )
