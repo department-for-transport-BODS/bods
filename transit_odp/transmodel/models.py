@@ -1,5 +1,8 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
+from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 from transit_odp.organisation.models import DatasetRevision
@@ -7,10 +10,6 @@ from transit_odp.transmodel.managers import (
     ServicePatternManager,
     ServicePatternStopManager,
 )
-
-from django.utils.translation import gettext_lazy as _
-from django.db.models import Q
-from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 
 class Service(models.Model):
@@ -49,9 +48,10 @@ class ServicePattern(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+    line_name = models.CharField(max_length=255, null=True, blank=True)
     origin = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
 
     stops = models.ManyToManyField(StopPoint, through="transmodel.ServicePatternStop")
     service_links = models.ManyToManyField(
@@ -68,11 +68,30 @@ class ServicePattern(models.Model):
     objects = ServicePatternManager()
 
     class Meta:
-        ordering = ("revision", "service_pattern_id")
-        unique_together = ("revision", "service_pattern_id")
+        ordering = ("revision", "service_pattern_id", "line_name")
+        unique_together = ("revision", "service_pattern_id", "line_name")
 
     def __str__(self):
         return f"{self.id}, {self.origin}, {self.destination}"
+
+
+class VehicleJourney(models.Model):
+    start_time = models.TimeField(null=True)
+    line_ref = models.CharField(max_length=255, null=True, blank=True)
+    journey_code = models.CharField(max_length=255, null=True, blank=True)
+    direction = models.CharField(max_length=255, null=True, blank=True)
+    departure_day_shift = models.BooleanField(default=False)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        on_delete=models.CASCADE,
+        related_name="service_pattern_vehicle_journey",
+        default=None,
+        null=True,
+    )
+
+    def __str__(self):
+        start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
+        return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
 class ServicePatternStop(models.Model):
@@ -83,6 +102,14 @@ class ServicePatternStop(models.Model):
     naptan_stop = models.ForeignKey(
         StopPoint,
         related_name="service_pattern_stops",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        related_name="service_pattern_stops_vehicle_journey",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -137,23 +164,12 @@ class ServiceLink(models.Model):
         return f"{self.id}, {self.from_stop_atco} to {self.to_stop_atco}"
 
 
-class VehicleJourney(models.Model):
-    start_time = models.TimeField(null=True)
-    line_ref = models.CharField(max_length=255, null=True, blank=True)
-    journey_code = models.CharField(max_length=255, null=True, blank=True)
-    direction = models.CharField(max_length=255, null=True, blank=True)
-
-    def __str__(self):
-        start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
-        return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
-
-
 class BookingArrangements(models.Model):
     service = models.ForeignKey(
         Service, on_delete=models.CASCADE, related_name="booking_arrangements"
     )
 
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     email = models.EmailField(_("email address"), null=True, blank=True)
     phone_number = models.CharField(max_length=16, null=True, blank=True)
     web_address = models.URLField(null=True, blank=True)
@@ -238,9 +254,9 @@ class FlexibleServiceOperationPeriod(models.Model):
         related_name="flexible_service_operation_period",
     )
 
-    start_date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
 
-    end_date = models.DateField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
 
 
 class ServicedOrganisationVehicleJourney(models.Model):
@@ -256,9 +272,7 @@ class ServicedOrganisationVehicleJourney(models.Model):
 
 
 class ServicedOrganisations(models.Model):
-    organisation_code = models.CharField(
-        max_length=255, null=True, blank=True, unique=True
-    )
+    organisation_code = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
 
 
@@ -270,3 +284,11 @@ class ServicedOrganisationWorkingDays(models.Model):
     )
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+
+
+class BankHolidays(models.Model):
+    txc_element = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateField()
+    notes = models.CharField(max_length=255, null=True, blank=True)
+    division = models.CharField(max_length=255, null=True, blank=True)

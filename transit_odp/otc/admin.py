@@ -30,11 +30,15 @@ class ServiceAdmin(admin.ModelAdmin):
         "service_number",
         "start_point",
         "finish_point",
+        "api_type",
     )
     ordering = ("current_traffic_area",)
 
     search_fields = ("service_code",)
-    list_filter = ("current_traffic_area",)
+    list_filter = (
+        "current_traffic_area",
+        "api_type",
+    )
 
     exclude = ("operator", "licence", "registration_code")
     readonly_fields = (

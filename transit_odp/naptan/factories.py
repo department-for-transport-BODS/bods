@@ -11,6 +11,7 @@ from transit_odp.naptan.models import (
 )
 
 from factory.django import DjangoModelFactory
+from transit_odp.otc.factories import UILtaFactory
 
 
 class DistrictFactory(DjangoModelFactory):
@@ -27,6 +28,7 @@ class AdminAreaFactory(DjangoModelFactory):
     atco_code = factory.Sequence(lambda n: n)  # unique atco code
     name = factory.Faker("street_name")
     traveline_region_id = factory.Faker("pystr", min_chars=12, max_chars=12)
+    ui_lta = factory.SubFactory(UILtaFactory)
 
 
 class LocalityFactory(DjangoModelFactory):

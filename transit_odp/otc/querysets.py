@@ -2,26 +2,34 @@ from datetime import timedelta
 from typing import TypeVar
 
 from django.db.models import (
+    Case,
     CharField,
+    Count,
     DateField,
     ExpressionWrapper,
     F,
+    OuterRef,
     QuerySet,
     Subquery,
     Value,
+    When,
 )
-from django.db.models.aggregates import Count
 from django.db.models.functions import Replace, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
 
+from transit_odp.common.querysets import GroupConcat
+from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
 from transit_odp.organisation.models import Licence as BODSLicence
+from transit_odp.organisation.models import Licence as OrganisationLicence
 from transit_odp.organisation.models import (
     SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
 )
 from transit_odp.otc.constants import (
+    API_TYPE_WECA,
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
     SubsidiesDescription,
@@ -55,8 +63,134 @@ class ServiceQuerySet(QuerySet):
             granted_date=F("licence__granted_date"),
         )
 
+    def add_traveline_region_weca(self) -> TServiceQuerySet:
+        """
+        Traveline Region that the UI LTA maps to via the admin area table
+        by joining atco code. If Traveline Region value is multiple in the row
+        for this service code it should sperated with |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            traveline_region_weca=GroupConcat(
+                AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
+                    "traveline_region_id"
+                ),
+                delimiter="|",
+                distinct=True,
+            )
+        )
+
+    def add_traveline_region_otc(self) -> TServiceQuerySet:
+        """
+        Traveline Region that the UI LTA maps to via LocalAuthority table
+        by joining ui lta table and then admin area table via ui lta and
+        get the traveline_region_id.If Traveline Region value is multiple
+        in the row for this service code it should sperated with |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            traveline_region_otc=GroupConcat(
+                "registration__ui_lta__naptan_ui_lta_records__traveline_region_id",
+                delimiter="|",
+                distinct=True,
+            )
+        )
+
+    def add_traveline_region_details(self):
+        """Fetch traveline reason id for WECA and OTC
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            traveline_region=Case(
+                When(
+                    Q(api_type=API_TYPE_WECA),
+                    then=F("traveline_region_weca"),
+                ),
+                default=F("traveline_region_otc"),
+                output_field=CharField(),
+            )
+        )
+
+    def add_ui_lta_otc(self) -> TServiceQuerySet:
+        """
+        Local authority name should be displayed with | seperation if multiple.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            ui_lta_otc=GroupConcat(
+                F("registration__ui_lta__name"), delimiter="|", distinct=True
+            )
+        )
+
+    def add_ui_lta_weca(self) -> TServiceQuerySet:
+        """
+        This column is populated with the UI LTA(s) the service code belongs to
+        via the relationship between the service and the Admin Area with the ATCO
+        which is mapped to the UI LTA entity. And if the service belongs to more
+        than one UI LTA, then separate these with a |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            ui_lta_weca=GroupConcat(
+                AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
+                    "ui_lta__name"
+                ),
+                delimiter="|",
+                distinct=True,
+            )
+        )
+
+    def add_ui_lta(self):
+        """
+        This column is populated with the UI LTA(s) the service code belongs to
+        via the relationship between the service and the Admin Area with the ATCO
+        which is mapped to the UI LTA entity. And if the service belongs to more
+        than one UI LTA, then separate these with a |.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        return self.annotate(
+            local_authority_ui_lta=Case(
+                When(
+                    Q(api_type=API_TYPE_WECA),
+                    then=F("ui_lta_weca"),
+                ),
+                default=F("ui_lta_otc"),
+                output_field=CharField(),
+            )
+        )
+
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
-        return self.add_service_code().add_operator_details().add_licence_details()
+        """
+        This will fetch oprator details travline region ui lta and service number from
+        OTC service table.
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+
+        return (
+            self.add_service_code()
+            .add_operator_details()
+            .add_licence_details()
+            .add_traveline_region_weca()
+            .add_traveline_region_otc()
+            .add_traveline_region_details()
+            .add_ui_lta_otc()
+            .add_ui_lta_weca()
+            .add_ui_lta()
+        )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
         org_licences = BODSLicence.objects.filter(organisation__id=organisation_id)
@@ -119,6 +253,10 @@ class ServiceQuerySet(QuerySet):
             .values("registration_number")
         )
 
+        traveline_region_subquery = Subquery(
+            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+        )
+
         return (
             self.filter(
                 licence__number__in=Subquery(licences_subquery.values("number"))
@@ -126,9 +264,117 @@ class ServiceQuerySet(QuerySet):
             .add_service_code()
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
+            .exclude(registration_number__in=traveline_region_subquery)
             .order_by("licence__number", "registration_number", "service_number")
             .distinct("licence__number", "registration_number")
         )
+
+    def get_org_weca_otc_traveline_region_exemption(self, organisation_id: int):
+        """Return registration numbers to be exempted based on traveline_region_id
+        Which are not in england
+
+        Args:
+            organisation_id (int): Organisation to filter services for
+        """
+        organisation_licences = OrganisationLicence.objects.filter(
+            organisation_id=organisation_id
+        ).values("number")
+        weca_registrations = [
+            (
+                self.filter(
+                    licence__number__in=organisation_licences,
+                    api_type=API_TYPE_WECA,
+                )
+                .exclude(
+                    atco_code__in=AdminArea.objects.filter(
+                        traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
+                    ).values("atco_code")
+                )
+                .values("registration_number")
+            )
+        ]
+
+        # OTC registrations which doesn't have any UI LTA in english region
+        weca_registrations.append(
+            (
+                self.filter(licence__number__in=organisation_licences)
+                .filter(api_type__isnull=True)
+                .exclude(
+                    registration_number__in=Subquery(
+                        self.filter(licence__number__in=organisation_licences)
+                        .filter(
+                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS  # noqa
+                        )
+                        .values("registration_number")
+                    )
+                )
+                .values("registration_number")
+            )
+        )
+
+        return self.merge_weca_otc_queries(weca_registrations)
+
+    def merge_weca_otc_queries(self, registrations) -> TServiceQuerySet:
+        """Combine the different querysets and return the
+        final unique services to use service
+
+        Args:
+            registrations (TServiceQuerySet): List of querysets
+        Returns:
+            TServiceQuerySet: Queryset with list of distinct services
+        """
+        final_subquery = None
+        for service_queryset in registrations:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+
+        final_subquery = final_subquery.distinct()
+        return final_subquery
+
+    def get_weca_services_register_numbers(self, ui_lta):
+        """
+        Get the WECA services for a given ui lta
+        """
+        return self.filter(
+            atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta).values("atco_code"),
+            licence_id__isnull=False,
+        ).values("id")
+
+    def get_weca_otc_traveline_region_exemption(self, ui_lta):
+        """
+        Get OTC and WECA registration_number subquery, which are exempted
+        because those are not present in english traveline region
+        """
+        weca_registrations = [
+            self.filter(
+                atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta)
+                .exclude(traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS)
+                .values("atco_code"),
+                api_type=API_TYPE_WECA,
+            ).values("registration_number")
+        ]
+
+        # OTC registrations which doesn't have any UI LTA in english region
+        weca_registrations.append(
+            (
+                self.filter(registration__ui_lta__in=[ui_lta])
+                .filter(api_type__isnull=True)
+                .exclude(
+                    registration_number__in=Subquery(
+                        self.filter(registration__ui_lta__in=[ui_lta])
+                        .filter(
+                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS  # noqa
+                        )
+                        .values("registration_number")
+                    )
+                )
+                .values("registration_number")
+            )
+        )
+
+        return self.merge_weca_otc_queries(weca_registrations)
 
     def get_in_scope_in_season_lta_services(self, lta_list):
         now = timezone.now()
@@ -138,15 +384,16 @@ class ServiceQuerySet(QuerySet):
             if x.registration_numbers.values("id")
         ]
 
-        if services_subquery_list:
-            final_subquery = None
-            for service_queryset in services_subquery_list:
-                if final_subquery is None:
-                    final_subquery = service_queryset
-                else:
-                    final_subquery = final_subquery | service_queryset
-            final_subquery = final_subquery.distinct()
+        if len(lta_list) > 0:
+            weca_services_list = self.get_weca_services_register_numbers(
+                lta_list[0].ui_lta
+            )
 
+            if weca_services_list:
+                services_subquery_list.append(weca_services_list)
+
+        if services_subquery_list:
+            final_subquery = self.merge_weca_otc_queries(services_subquery_list)
             if len(final_subquery) > 0:
                 seasonal_services_subquery = Subquery(
                     SeasonalService.objects.filter(
@@ -169,11 +416,18 @@ class ServiceQuerySet(QuerySet):
                     .values("registration_number")
                 )
 
+                exemption_traveline_region_subquery = Subquery(
+                    self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
+                )
+
                 all_in_scope_in_season_services_count = (
                     self.filter(id__in=Subquery(final_subquery.values("id")))
                     .annotate(otc_licence_number=F("licence__number"))
                     .exclude(registration_number__in=exemptions_subquery)
                     .exclude(registration_number__in=seasonal_services_subquery)
+                    .exclude(
+                        registration_number__in=exemption_traveline_region_subquery
+                    )
                     .order_by(
                         "licence__number", "registration_number", "service_number"
                     )
@@ -256,10 +510,15 @@ class ServiceQuerySet(QuerySet):
             .values("registration_number")
         )
 
+        traveline_region_subquery = Subquery(
+            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+        )
+
         return (
             self.get_all_otc_data_for_organisation(organisation_id)
             .exclude(registration_number__in=exemptions_subquery)
             .exclude(registration_number__in=seasonal_services_subquery)
+            .exclude(registration_number__in=traveline_region_subquery)
             .order_by("licence__number", "registration_number", "service_number")
             .distinct("licence__number", "registration_number")
         )
@@ -273,14 +532,15 @@ class ServiceQuerySet(QuerySet):
             if x.registration_numbers.values("id")
         ]
 
+        if len(lta_list) > 0:
+            weca_services_list = self.get_weca_services_register_numbers(
+                lta_list[0].ui_lta
+            )
+            if weca_services_list:
+                services_subquery_list.append(weca_services_list)
+
         if services_subquery_list:
-            final_subquery = None
-            for service_queryset in services_subquery_list:
-                if final_subquery is None:
-                    final_subquery = service_queryset
-                else:
-                    final_subquery = final_subquery | service_queryset
-            final_subquery = final_subquery.distinct()
+            final_subquery = self.merge_weca_otc_queries(services_subquery_list)
 
             # seasonal services that are out of season
             seasonal_services_subquery = Subquery(
@@ -303,10 +563,15 @@ class ServiceQuerySet(QuerySet):
                 .values("registration_number")
             )
 
+            exemption_traveline_region_subquery = Subquery(
+                self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
+            )
+
             return (
                 self.get_all_otc_data_for_lta(final_subquery)
                 .exclude(registration_number__in=exemptions_subquery)
                 .exclude(registration_number__in=seasonal_services_subquery)
+                .exclude(registration_number__in=exemption_traveline_region_subquery)
                 .order_by("licence__number", "registration_number", "service_number")
                 .distinct("licence__number", "registration_number")
             )

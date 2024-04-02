@@ -403,7 +403,7 @@ def is_name_present_in_fare_frame(context, fare_zones, *args):
 def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *args):
     """
     Check if fareZones is present in FareFrame.
-    If true, then fareZones properties should be present
+    If true, then fareZones properties (members and ScheduledStopPointRef) should be present.
     """
     if fare_zones:
         xpath = "../x:TypeOfFrameRef"
@@ -429,12 +429,17 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
                 )
                 response = response_details.__list__()
                 return response
+
             xpath = "//x:FareZone"
             zones = fare_zones[0].xpath(xpath, namespaces=NAMESPACE)
+            members_list = []
             for zone in zones:
                 xpath = "x:members"
                 members = zone.xpath(xpath, namespaces=NAMESPACE)
-                if not members:
+                if members:
+                    members_list.append(members)
+                    continue
+                elif not members:
                     sourceline_zone = zone.sourceline
                     response_details = XMLViolationDetail(
                         "violation",
@@ -443,6 +448,7 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
                     )
                     response = response_details.__list__()
                     return response
+            for members in members_list:
                 xpath = "x:ScheduledStopPointRef"
                 schedule_stop_points = members[0].xpath(xpath, namespaces=NAMESPACE)
                 sourceline_schedule_stop_points = members[0].sourceline
@@ -460,8 +466,7 @@ def is_members_scheduled_point_ref_present_in_fare_frame(context, fare_zones, *a
 
 def get_scheduled_point_ref_text(stop_point):
     """
-    Check if fareZones is present in FareFrame.
-    If true, then fareZones properties should be present
+    Check if text is present in ScheduledStopPointRef element.
     """
     sourceline_stop_point = stop_point.sourceline
     stop_point_text = _extract_text(stop_point)

@@ -310,6 +310,14 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
+        "traveline_region": Column(
+            "Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
+        ),
     }
 )
 

@@ -7,12 +7,22 @@ import pandas as pd
 from pandas import Series
 
 from transit_odp.common.collections import Column
+from transit_odp.organisation.constants import (
+    ENGLISH_TRAVELINE_REGIONS,
+    TravelineRegions,
+)
 from transit_odp.organisation.csv import EmptyDataFrame
 from transit_odp.organisation.models import (
     Organisation,
     SeasonalService,
     ServiceCodeExemption,
     TXCFileAttributes,
+)
+from transit_odp.otc.constants import (
+    OTC_SCOPE_STATUS_IN_SCOPE,
+    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
+    OTC_STATUS_REGISTERED,
+    OTC_STATUS_UNREGISTERED,
 )
 from transit_odp.otc.models import Service as OTCService
 
@@ -52,6 +62,9 @@ OTC_COLUMNS = (
     "effective_date",
     "received_date",
     "service_type_other_details",
+    "traveline_region",
+    "local_authority_ui_lta",
+    "api_type",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -287,6 +300,14 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "The service type other details element as extracted from the "
             "OTC database.",
         ),
+        "traveline_region": Column(
+            "Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
+        ),
     }
 )
 
@@ -304,7 +325,83 @@ def add_operator_name(row: Series) -> str:
         return row["organisation_name"]
 
 
+def scope_status(row, exempted_reg_numbers):
+    """
+    Column “Scope” for a service
+    A service should be deemed “in scope” if:
+    Registered with OTC or WECA and has not been marked out of scope by the DVSA.
+    If at least one of the Traveline Region values for that row is mapped to England.
+    Args:
+        row (df): Dataframe row
+        exempted_reg_numbers (array): array of dataframe with registration number
+
+    Returns:
+        df: df
+    """
+    is_exempted = row["registration_number"] in exempted_reg_numbers
+    traveline_regions = row["traveline_region"].split("|")
+    isin_english_region = list(set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions))
+
+    row["scope_status"] = OTC_SCOPE_STATUS_OUT_OF_SCOPE
+    if (
+        row["otc_status"] == OTC_STATUS_REGISTERED
+        and not is_exempted
+        and isin_english_region
+    ):
+        row["scope_status"] = OTC_SCOPE_STATUS_IN_SCOPE
+
+    return row
+
+
+def traveline_regions(row, traveline_regions_dict):
+    """
+    Traveline region need to mapped with Value metioned in TravelineRegions
+
+    Args:
+        row (df): df row
+        traveline_regions_dict (dict): Dictionary of tavelineregion key value map
+
+    Returns:
+        df: modified row of df
+    """
+    traveline_regions = row["traveline_region"].split("|")
+    travelines = [
+        traveline_regions_dict.get(region, region)
+        for region in traveline_regions
+        if region != "None"
+    ]
+    if travelines:
+        row["traveline_region"] = "|".join(map(str, travelines))
+    return row
+
+
+def add_traveline_regions(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Traveline Regions short form is fetched from DB and
+    it need to be replaced by label assigned in TravelineRegions
+
+    Args:
+        row (df): Merged df
+
+    Returns:
+        df: modified row of df
+    """
+    traveline_regions_dict = {
+        region_code: pretty_name_region_code
+        for region_code, pretty_name_region_code in TravelineRegions.choices
+    }
+    return df.apply(traveline_regions, args=[traveline_regions_dict], axis=1)
+
+
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Status columns of published, otc and scopes will be modified
+
+    Args:
+        df (pd.DataFrame): Merged df
+
+    Returns:
+        pd.DataFrame: Modified df
+    """
     exists_in_bods = np.invert(pd.isna(df["dataset_id"]))
     exists_in_otc = np.invert(pd.isna(df["otc_licence_number"]))
     exempted_reg_numbers = (
@@ -312,13 +409,12 @@ def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
         .values_list("registration_number", flat=True)
         .all()
     )
-    registration_number_exempted = df["registration_number"].isin(exempted_reg_numbers)
-
     df["published_status"] = np.where(exists_in_bods, "Published", "Unpublished")
-    df["otc_status"] = np.where(exists_in_otc, "Registered", "Unregistered")
-    df["scope_status"] = np.where(
-        registration_number_exempted, "Out of Scope", "In Scope"
+    df["otc_status"] = np.where(
+        exists_in_otc, OTC_STATUS_REGISTERED, OTC_STATUS_UNREGISTERED
     )
+    df["traveline_region"] = df["traveline_region"].fillna("").astype(str)
+    df = df.apply(scope_status, args=[exempted_reg_numbers], axis=1)
     return df
 
 
@@ -354,6 +450,10 @@ def add_seasonal_status(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     return annotated_df
 
 
+def defer_one_year(d):
+    return d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
+
+
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
@@ -364,7 +464,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     df["effective_stale_date_from_end_date"] = df[
         "operating_period_end_date"
     ] - pd.Timedelta(days=42)
-    defer_one_year = lambda d: d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
+
     df["effective_stale_date_from_last_modified"] = df[
         "effective_last_modified_date"
     ].apply(defer_one_year)
@@ -436,18 +536,43 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
 def add_requires_attention_column(
     df: pd.DataFrame, today: datetime.date
 ) -> pd.DataFrame:
-    requires_attention = (
-        (df["scope_status"] == "In Scope")
-        & (df["seasonal_status"] != "Out of Season")
+    """
+    Logic for Requires Attention:
+    Yes if all of these are true:
+        OTC status = Registered
+        Scope Status = In scope
+        Seasonal Status = Not Seasonal or In Season
+        Published Status = Unpublished
+    Yes if all these are true:
+        OTC status = Registered
+        Scope Status = In scope
+        Seasonal Status = Not Seasonal or In Season
+        Published Status = Published
+        Timeliness Status ≠ Up to date
+    """
+    requires_attention_unpublished = (
+        (df["otc_status"] == "Registered")
+        & (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
         & (
-            (df["staleness_status"] != "Up to date")
-            | (
-                (df["published_status"] == "Unpublished")
-                & (df["otc_status"] == "Registered")
-            )
+            (df["seasonal_status"] == "Not Seasonal")
+            | (df["seasonal_status"] == "In Season")
         )
+        & (df["published_status"] == "Unpublished")
     )
-    df["requires_attention"] = np.where(requires_attention, "Yes", "No")
+
+    requires_attention_published = (
+        (df["otc_status"] == "Registered")
+        & (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
+        & (
+            (df["seasonal_status"] == "Not Seasonal")
+            | (df["seasonal_status"] == "In Season")
+        )
+        & (df["published_status"] == "Published")
+        & (df["staleness_status"] != "Up to date")
+    )
+    df["requires_attention"] = np.where(
+        (requires_attention_unpublished) | (requires_attention_published), "Yes", "No"
+    )
     return df
 
 
@@ -491,6 +616,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
     merged = add_requires_attention_column(merged, today)
+    merged = add_traveline_regions(merged)
 
     rename_map = {
         old_name: column_tuple.field_name

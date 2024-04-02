@@ -9,8 +9,12 @@ import pandas as pd
 class ExtractedData(object):
     services: pd.DataFrame
     stop_points: pd.DataFrame
+    flexible_stop_points: pd.DataFrame
     provisional_stops: pd.DataFrame
     journey_patterns: pd.DataFrame
+    flexible_journey_patterns: pd.DataFrame
+    flexible_journey_details: pd.DataFrame
+    flexible_vehicle_journeys: pd.DataFrame
     jp_to_jps: pd.DataFrame
     jp_sections: pd.DataFrame
     timing_links: pd.DataFrame
@@ -18,6 +22,8 @@ class ExtractedData(object):
     vehicle_journeys: pd.DataFrame
     serviced_organisations: pd.DataFrame
     operating_profiles: pd.DataFrame
+    flexible_operation_periods: pd.DataFrame
+    lines: pd.DataFrame
 
     routes: pd.DataFrame
     route_to_route_links: pd.DataFrame
@@ -44,6 +50,8 @@ class TransformedData(object):
     booking_arrangements: pd.DataFrame
     vehicle_journeys: pd.DataFrame
     serviced_organisations: pd.DataFrame
+    flexible_operation_periods: pd.DataFrame
+    operating_profiles: pd.DataFrame
 
     schema_version: str
     creation_datetime: datetime

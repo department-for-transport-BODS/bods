@@ -25,9 +25,11 @@
                             </div>
                             <div id="sub-accordion-content-{{ forloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.counter }}">
                                 {% for line_name, service_codes in line_names_dict.items %}
-                                    <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
-                                        <a class="govuk-link" href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}&noc={{noc}}&l={{licence_number}}">{{ line_name }} - {{service_codes|join:", "}}</a>
-                                    </p>
+                                    {% for service_code in service_codes %}
+                                        <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
+                                            <a class="govuk-link" href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}&service={{ service_code }}">{{ line_name }} - {{ service_code }}</a>
+                                        </p>
+                                    {% endfor %}
                                 {% endfor %}
                             </div>
                         </div>

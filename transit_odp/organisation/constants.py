@@ -111,6 +111,9 @@ class TravelineRegions(TextChoices):
     YORKSHIRE = ("Y", _("Yorkshire"))
 
 
+ENGLISH_TRAVELINE_REGIONS = ["EA", "EM", "NE", "NW", "SE", "SW", "WM", "Y"]
+
+
 @enum.unique
 class OrganisationStatus(ChoiceEnum):
     not_yet_invited = "Not yet invited"

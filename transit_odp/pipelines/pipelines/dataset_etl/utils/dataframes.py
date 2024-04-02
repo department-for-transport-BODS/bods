@@ -2,27 +2,72 @@
 A collection of utility functions for converting pandas dataframes to and from
 BODS transxchange models.
 """
+
 import logging
 from collections import OrderedDict
-from typing import Iterator
+from typing import Iterator, List
+from waffle import flag_is_active
 
 import geopandas
 import pandas as pd
 from shapely.geometry import Point
+from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import (
+    FlexibleServiceOperationPeriod,
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
     Service,
     ServiceLink,
     ServicePattern,
+    ServicedOrganisationWorkingDays,
     StopPoint,
     BookingArrangements,
     VehicleJourney,
     ServicedOrganisations,
+    OperatingProfile,
+    ServicedOrganisationVehicleJourney,
+    BankHolidays,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
 logger = logging.getLogger(__name__)
+
+
+def create_naptan_flexible_zone_df_from_queryset(queryset):
+    """
+    Converts the naptan flexible zone table query set to pandas dataframe object
+    and converts the flexible location geometry to list for same naptan stop points
+    """
+    flexible_zone = (
+        {
+            "naptan_id": obj.naptan_stoppoint_id,
+            "flexible_location": Point(obj.location.x, obj.location.y),
+            "sequence_number": obj.sequence_number,
+        }
+        for obj in queryset
+    )
+    df = create_flexible_zone_df(flexible_zone)
+    # perform grouping of data on naptan_id and create list of flexible zone geometry
+    if not df.empty:
+        df = df.groupby(["naptan_id"])["flexible_location"].agg(list).reset_index()
+    return df
+
+
+def create_flexible_zone_df(data=None):
+    """
+    Converts the list of object to geopandas dataframe
+    """
+    typings = OrderedDict(
+        {
+            "naptan_id": "object",
+            "flexible_location": "geometry",
+            "sequence_number": "int",
+        }
+    )
+    df = geopandas.GeoDataFrame(data, columns=typings.keys()).astype(typings)
+    return df
 
 
 def create_stop_point_cache(revision_id):
@@ -54,10 +99,8 @@ def create_naptan_stoppoint_df(data=None):
             "locality_id": "str",
         }
     )
-    return (
-        geopandas.GeoDataFrame(data, columns=typings.keys())
-        .astype(typings)
-        .set_index("atco_code", verify_integrity=True)
+    return geopandas.GeoDataFrame(data, columns=typings.keys()).set_index(
+        "atco_code", verify_integrity=True
     )
 
 
@@ -142,11 +185,18 @@ def create_naptan_locality_df(data=None):
 def df_to_service_patterns(
     revision: DatasetRevision, df: pd.DataFrame
 ) -> Iterator[ServicePattern]:
+    """
+    Convert a pandas DataFrame to an iterator of ServicePattern objects.
+    DataFrame is expected to have columns 'service_pattern_id' and 'geometry'.
+    Additional columns 'line_name' and 'description' are optional.
+    """
     for record in df.reset_index().to_dict("records"):
         yield ServicePattern(
             revision=revision,
             service_pattern_id=record["service_pattern_id"],
             geom=record["geometry"],
+            line_name=record.get("line_name", None),
+            description=record.get("description", None),
         )
 
 
@@ -173,25 +223,109 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
 
 def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
     for record in df.to_dict("records"):
+        service_pattern_id = record.get("id_service", None)
+
         yield VehicleJourney(
             journey_code=record["journey_code"],
             start_time=record["departure_time"],
             line_ref=record["line_ref"],
             direction=record["direction"],
+            departure_day_shift=record["departure_day_shift"],
+            service_pattern_id=service_pattern_id,
+        )
+
+
+def get_time_field_or_none(time_in_text):
+    time_field = None
+    if time_in_text:
+        time_field = datetime.strptime(time_in_text, "%H:%M:%S").time()
+
+    return time_field
+
+
+def df_to_flexible_service_operation_period(
+    df: pd.DataFrame,
+) -> Iterator[FlexibleServiceOperationPeriod]:
+    for record in df.to_dict("records"):
+        yield FlexibleServiceOperationPeriod(
+            vehicle_journey_id=record["id"],
+            start_time=get_time_field_or_none(record["start_time"]),
+            end_time=get_time_field_or_none(record["end_time"]),
         )
 
 
 def df_to_serviced_organisations(
-    df: pd.DataFrame, existing_serviced_orgs
+    df: pd.DataFrame, existing_serviced_orgs_list: List[str]
 ) -> Iterator[ServicedOrganisations]:
-    unique_org_codes = df.drop_duplicates(subset="serviced_org_ref", keep="first")
+    """Compare the serviced organisation present in the database with the
+    uploaded file based on name and org code"""
+
+    unique_org_codes = df.drop_duplicates(
+        subset=["serviced_org_ref", "name"], keep="first"
+    )
+    unique_org_codes["serviced_org_ref_name"] = df[["name", "serviced_org_ref"]].agg(
+        "".join, axis=1
+    )
     serviced_org_records = unique_org_codes[
-        ~unique_org_codes["serviced_org_ref"].isin(existing_serviced_orgs)
+        ~unique_org_codes["serviced_org_ref_name"].isin(existing_serviced_orgs_list)
     ]
 
     for record in serviced_org_records.to_dict("records"):
         yield ServicedOrganisations(
             organisation_code=record["serviced_org_ref"], name=record["name"]
+        )
+
+
+def df_to_serviced_organisation_working_days(
+    df: pd.DataFrame, columns_to_drop: list, columns_to_drop_duplicates: list
+) -> Iterator[ServicedOrganisationWorkingDays]:
+    if not df.empty:
+        df_to_load = df.drop(columns=columns_to_drop)
+        df_to_load = df_to_load.reset_index()
+        for record in df_to_load.drop_duplicates(
+            subset=columns_to_drop_duplicates
+        ).itertuples(index=False):
+            yield ServicedOrganisationWorkingDays(
+                serviced_organisation_id=record.id,
+                start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
+                end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date(),
+            )
+
+
+def df_to_operating_profiles(df: pd.DataFrame) -> Iterator[OperatingProfile]:
+    for record in df.to_dict("records"):
+        yield OperatingProfile(
+            vehicle_journey_id=record["id"], day_of_week=record["day_of_week"]
+        )
+
+
+def df_to_serviced_org_vehicle_journey(
+    df: pd.DataFrame,
+) -> Iterator[ServicedOrganisationVehicleJourney]:
+    for record in df.to_dict("records"):
+        yield ServicedOrganisationVehicleJourney(
+            vehicle_journey_id=record["vehicle_journey_id"],
+            serviced_organisation_id=record["serviced_org_id"],
+            operating_on_working_days=record["operational_so"],
+        )
+
+
+def df_to_operating_dates_exceptions(
+    df: pd.DataFrame,
+) -> Iterator[OperatingDatesExceptions]:
+    for record in df.to_dict("records"):
+        yield OperatingDatesExceptions(
+            vehicle_journey_id=record["id"], operating_date=record["exceptions_date"]
+        )
+
+
+def df_to_non_operating_dates_exceptions(
+    df: pd.DataFrame,
+) -> Iterator[NonOperatingDatesExceptions]:
+    for record in df.to_dict("records"):
+        yield NonOperatingDatesExceptions(
+            vehicle_journey_id=record["id"],
+            non_operating_date=record["exceptions_date"],
         )
 
 
@@ -218,6 +352,14 @@ def df_to_service_pattern_service(
         yield ServicePatternThrough(
             servicepattern_id=record["id"], servicelink_id=record["service_link_id"]
         )
+
+
+def db_bank_holidays_to_df(columns: List[str]) -> pd.DataFrame:
+    db_bank_holidays = BankHolidays.objects.values(*columns)
+    df_bank_holidays_from_db = pd.DataFrame(db_bank_holidays, columns=columns)
+    df_bank_holidays_from_db.drop_duplicates(inplace=True)
+
+    return df_bank_holidays_from_db
 
 
 def get_first_and_last_expiration_dates(expiration_dates: list, start_dates: list):

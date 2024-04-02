@@ -17,13 +17,15 @@ from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
     check_flexible_service_stop_point_ref,
+    check_flexible_service_times,
     check_flexible_service_timing_status,
+    check_inbound_outbound_description,
+    check_service_group_validations,
     contains_date,
     has_flexible_or_standard_service,
     has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
-    check_service_group_validations,
     is_member_of,
     regex,
     strip,
@@ -481,7 +483,10 @@ class PTIValidator:
             "check_flexible_service_stop_point_ref",
             check_flexible_service_stop_point_ref,
         )
-
+        self.register_function(
+            "check_inbound_outbound_description",
+            check_inbound_outbound_description,
+        )
         self.register_function("date", cast_to_date)
         self.register_function("days", to_days)
         self.register_function("has_destination_display", has_destination_display)
@@ -495,6 +500,10 @@ class PTIValidator:
         self.register_function("has_prohibited_chars", has_prohibited_chars)
         self.register_function(
             "check_service_group_validations", check_service_group_validations
+        )
+        self.register_function(
+            "check_flexible_service_times",
+            check_flexible_service_times,
         )
         self.register_function("in", is_member_of)
         self.register_function("regex", regex)

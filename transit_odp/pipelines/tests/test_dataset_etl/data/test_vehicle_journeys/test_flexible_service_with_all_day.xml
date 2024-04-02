@@ -160,6 +160,18 @@
               <!--- Atterby -->
               <StopPointRef>270002700155</StopPointRef>
             </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <!--- Atterby -->
+              <StopPointRef>2700LCCC2147</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <!--- Atterby -->
+              <StopPointRef>1900HAFLX001</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <!--- Atterby -->
+              <StopPointRef>1900HAFLX002</StopPointRef>
+            </FlexibleStopUsage>
           </StopPointsInSequence>
           <BookingArrangements>
             <Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
@@ -185,10 +197,7 @@
       <LineRef>CALC:UZ000CALC:53M:53M</LineRef>
       <JourneyPatternRef>jp_1</JourneyPatternRef>
       <FlexibleServiceTimes>
-        <ServicePeriod>
-          <StartTime>07:00:00</StartTime>
-          <EndTime>19:00:00</EndTime>
-        </ServicePeriod>
+        <AllDayService/>
       </FlexibleServiceTimes>
     </FlexibleVehicleJourney>
   </VehicleJourneys>

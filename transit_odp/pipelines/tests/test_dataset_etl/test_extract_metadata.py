@@ -11,8 +11,9 @@ from django.contrib.gis.geos import Point
 from django.core.files import File
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
+from waffle.testutils import override_flag
 
-
+from waffle.testutils import override_flag
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
 from transit_odp.organisation.constants import FeedStatus
@@ -23,7 +24,9 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
-from transit_odp.pipelines.pipelines.dataset_etl.transform import Transform
+from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
+    agg_service_pattern_sequences,
+)
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -44,8 +47,17 @@ TZ = tz.gettz("Europe/London")
 EMPTY_TIMESTAMP = None
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractBaseTestCase(TestCase):
+    """Loads required stop data onto naptan StopPoint table
+    to ensure these stops are available when the table is
+    queried while syncing stops with naptan stops
+    """
+
     test_file: str
+    ignore_stops = []
+    ignore_provisional_stops = []
+    allow_provisional_stops_in_naptan = False
 
     def setUp(self):
         self.cur_dir = os.path.abspath(os.path.dirname(__file__))
@@ -72,6 +84,8 @@ class ExtractBaseTestCase(TestCase):
         self.file_obj = File(os.path.join(self.cur_dir, self.test_file))
         self.doc, result = xml_toolkit.parse_xml_file(self.file_obj.file)
 
+        self.trans_xchange_extractor = TransXChangeExtractor(self.file_obj, self.now)
+
         # Create bogus admin area
         self.admin = AdminAreaFactory(
             name="admin1",
@@ -97,17 +111,51 @@ class ExtractBaseTestCase(TestCase):
             stoppoint_naptan = xml_toolkit.get_child_text(
                 xml_stoppointref, "x:StopPointRef"
             )
-            common_name = xml_toolkit.get_child_text(xml_stoppointref, "x:CommonName")
-            if locality_name:
-                stoppoint = StopPoint(
-                    naptan_code=stoppoint_naptan,
-                    atco_code=stoppoint_naptan,
-                    common_name=common_name,
-                    location=Point(0, 0),
-                    locality=self.get_locality(locality_name),
-                    admin_area=self.admin,
+
+            if not self.ignore_stops or stoppoint_naptan not in self.ignore_stops:
+                common_name = xml_toolkit.get_child_text(
+                    xml_stoppointref, "x:CommonName"
                 )
-                stoppoint.save()
+                if locality_name:
+                    stoppoint = StopPoint(
+                        naptan_code=stoppoint_naptan,
+                        atco_code=stoppoint_naptan,
+                        common_name=common_name,
+                        location=Point(0, 0),
+                        locality=self.get_locality(locality_name),
+                        admin_area=self.admin,
+                    )
+                    stoppoint.save()
+
+        xml_provisional_stoppointrefs = xml_toolkit.get_elements(
+            self.doc.getroot(), "/x:TransXChange/x:StopPoints/x:StopPoint"
+        )
+        # insert locality for provisional stops
+        for provisional_stop in xml_provisional_stoppointrefs:
+            locality_ref = xml_toolkit.get_child_text(
+                provisional_stop, "x:Place/x:NptgLocalityRef"
+            )
+            db_locality = self.get_locality(name=locality_ref)
+            if self.allow_provisional_stops_in_naptan:
+                stoppoint_naptan = xml_toolkit.get_child_text(
+                    provisional_stop, "x:AtcoCode"
+                )
+                if (
+                    not self.ignore_provisional_stops
+                    or stoppoint_naptan not in self.ignore_provisional_stops
+                ):
+                    common_name = xml_toolkit.get_child_text(
+                        provisional_stop, "x:Descriptor/x:CommonName"
+                    )
+                    stoppoint = StopPoint(
+                        naptan_code=stoppoint_naptan,
+                        atco_code=stoppoint_naptan,
+                        common_name=common_name,
+                        location=Point(0, 0),
+                        locality=db_locality,
+                        admin_area=self.admin,
+                    )
+                    stoppoint.save()
 
     # Get or create a locality by name
     def get_locality(self, name: str):
@@ -128,6 +176,7 @@ class ExtractBaseTestCase(TestCase):
 
 
 @ddt
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractMetadataTestCase(ExtractBaseTestCase):
     test_file = "data/test_extract_metadata.xml"
 
@@ -215,13 +264,17 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
         stop_points_expected.index.name = "atco_code"
 
-        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df1 = (
+            extracted.stop_points.drop(columns=["common_name"], axis=1)
+            .sort_values("atco_code")
+            .reset_index()
+        )
         df2 = stop_points_expected.sort_values("atco_code").reset_index()
 
         self.assertTrue(check_frame_equal(df1, df2))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertCountEqual(list(extracted.stop_points.columns), [])
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertCountEqual(list(extracted.stop_points.columns), ["common_name"])
         self.assertEqual(extracted.stop_points.index.names, ["atco_code"])
 
         # assert routes
@@ -275,7 +328,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 5))
+        self.assertEqual(extracted.timing_links.shape, (20, 8))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -284,6 +337,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_stop_ref",
                 "to_stop_ref",
                 "route_link_ref",
+                "is_timing_status",
+                "run_time",
+                "wait_time",
             ],
         )
         self.assertEqual(
@@ -295,8 +351,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # assert
         services_expected = pd.DataFrame(
@@ -345,13 +401,17 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
         stop_points_expected.index.name = "atco_code"
 
-        df1 = extracted.stop_points.sort_values("atco_code").reset_index()
+        df1 = (
+            extracted.stop_points.drop(columns=["common_name"], axis=1)
+            .sort_values("atco_code")
+            .reset_index()
+        )
         df2 = stop_points_expected.sort_values("atco_code").reset_index()
 
         self.assertTrue(check_frame_equal(df1, df2))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertEqual(extracted.stop_points.shape, (11, 0))
-        self.assertCountEqual(list(extracted.stop_points.columns), [])
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertEqual(extracted.stop_points.shape, (11, 1))
+        self.assertCountEqual(list(extracted.stop_points.columns), ["common_name"])
         self.assertEqual(extracted.stop_points.index.names, ["atco_code"])
 
         # assert routes
@@ -405,7 +465,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 5))
+        self.assertEqual(extracted.timing_links.shape, (20, 8))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -414,6 +474,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_stop_ref",
                 "to_stop_ref",
                 "route_link_ref",
+                "is_timing_status",
+                "run_time",
+                "wait_time",
             ],
         )
         self.assertEqual(
@@ -422,8 +485,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
         Locality.objects.add_district_name()
 
         # test
@@ -484,6 +547,9 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         stop_points_expected = stop_points.merge(
             localities, how="left", left_on="locality_id", right_index=True
         )
+        stop_points_expected["naptan_id"] = stop_points_expected["naptan_id"].astype(
+            object
+        )
         self.assertTrue(
             check_frame_equal(transformed.stop_points, stop_points_expected)
         )
@@ -496,7 +562,17 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
         self.assertCountEqual(
             list(transformed.service_patterns.columns),
-            ["direction", "service_code", "admin_area_codes", "geometry", "localities"],
+            [
+                "direction",
+                "service_code",
+                "admin_area_codes",
+                "geometry",
+                "localities",
+                "line_name",
+                "description",
+                "journey_code",
+                "vehicle_journey_code",
+            ],
         )
         self.assertEqual(
             transformed.service_patterns.index.names, ["file_id", "service_pattern_id"]
@@ -511,18 +587,23 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         # self.assertEqual(transformed.service_links.shape, (0, 2))
         self.assertCountEqual(
             list(transformed.service_pattern_to_service_links.columns),
-            ["from_stop_atco", "to_stop_atco"],
-        )
-        self.assertEqual(
-            transformed.service_pattern_to_service_links.index.names,
-            ["file_id", "service_pattern_id", "order"],
+            [
+                "from_stop_atco",
+                "to_stop_atco",
+                "file_id",
+                "service_pattern_id",
+                "journey_pattern_id",
+                "vehicle_journey_code",
+                "journey_code",
+                "order",
+            ],
         )
 
     # TODO - re-enable this test
     @pytest.mark.skip
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -575,7 +656,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_load_services(self):
         # setup
-        file_id = self.xml_file_parser.file_id
+        file_id = self.trans_xchange_extractor.file_id
 
         indata = pd.DataFrame(
             [
@@ -648,7 +729,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         be multiple route_link_refs with the same stop pair
         """
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # Test
@@ -665,7 +746,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
 
     def test_load_service_patterns(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         data_loader = self.feed_parser.data_loader
@@ -682,7 +763,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         revision = self.revision
         self.assertEqual(3, revision.services.count())
         self.assertEqual(12, revision.service_patterns.count())
-        self.assertEqual(63, ServicePatternStop.objects.count())
+        self.assertEqual(202, ServicePatternStop.objects.count())
 
         # Note Localities and AdminArea have not yet been 'rolled up' on the
         # feed at this point but still should have been be created
@@ -714,7 +795,7 @@ class ExtractTxcNoRoutesTestCase(ExtractBaseTestCase):
     @pytest.mark.skip
     def test_load(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -743,6 +824,7 @@ class ExtractTxcNoRoutesTestCase(ExtractBaseTestCase):
         self.assertEqual("", result.bounding_box)
 
 
+@override_flag("is_timetable_visualiser_active", active=True)
 class ExtractUtilitiesTestCase(TestCase):
     """TestCases for utility methods
 
@@ -802,7 +884,7 @@ class ExtractUtilitiesTestCase(TestCase):
 
         # Test
         actual = inputs.groupby(["file_id", "service_pattern_id"]).apply(
-            Transform.agg_service_pattern_sequences
+            agg_service_pattern_sequences
         )
 
         # Assert
@@ -810,6 +892,7 @@ class ExtractUtilitiesTestCase(TestCase):
 
 
 @ddt
+@override_flag("is_timetable_visualiser_active", active=True)
 class ETLBookingArrangements(ExtractBaseTestCase):
     """Test cases around transXchange file with BookingArrangements data for Flexible Services"""
 
@@ -817,8 +900,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # assert
         booking_arrangements_expected = pd.DataFrame(
@@ -853,8 +936,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -889,7 +972,7 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test
@@ -978,6 +1061,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         timing_point_count = ""
         vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
+        flexible_operation_periods = pd.DataFrame()
+        operating_profiles = pd.DataFrame()
 
         transformed = TransformedData(
             services=services,
@@ -998,6 +1083,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             timing_point_count=timing_point_count,
             vehicle_journeys=vehicle_journeys,
             serviced_organisations=serviced_organisations,
+            flexible_operation_periods=flexible_operation_periods,
+            operating_profiles=operating_profiles,
         )
 
         service_cache = []
@@ -1029,8 +1116,8 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
 
     def test_extract(self):
         # test
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # assert
         booking_arrangements_expected = pd.DataFrame(
@@ -1075,8 +1162,8 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
-        file_id = self.xml_file_parser.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -1122,7 +1209,7 @@ class ETLBookingArrangementsWithMinimumElements(ExtractBaseTestCase):
         )
 
     def test_load(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         # test

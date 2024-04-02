@@ -1,6 +1,7 @@
 """ loaders.py utility functions for loading data into the BODS database."""
 import logging
 from collections import namedtuple
+import pandas as pd
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop
@@ -10,7 +11,13 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 2000
 
 
-def add_service_associations(services, service_patterns):
+def add_service_associations(
+    services: pd.DataFrame, service_patterns: pd.DataFrame
+) -> list:
+    """
+    Add associations between services and service patterns.
+    DataFrames are expected to have columns 'id_service' and 'id_service_pattern'.
+    """
     through_model = Service.service_patterns.through
 
     def _inner(df):
@@ -26,6 +33,7 @@ def add_service_associations(services, service_patterns):
         right_on=["file_id", "service_code"],
         suffixes=["_service", "_service_pattern"],
     )
+    service_to_service_patterns.drop_duplicates(inplace=True)
 
     return through_model.objects.bulk_create(_inner(service_to_service_patterns))
 
@@ -124,7 +132,11 @@ def add_service_pattern_to_localities_and_admin_area(df):
     return localities, admin_areas
 
 
-def add_service_pattern_to_service_pattern_stops(df, service_patterns):
+def add_service_pattern_to_service_pattern_stops(
+    df: pd.DataFrame, service_patterns: pd.DataFrame
+) -> list[ServicePatternStop]:
+    """Load data onto service pattern stop after mapping service patterns and vehicle journey"""
+
     logger.info("Adding service_pattern to service pattern stops")
 
     def _inner():
@@ -132,11 +144,16 @@ def add_service_pattern_to_service_pattern_stops(df, service_patterns):
             service_pattern_id = service_patterns.xs(
                 record["service_pattern_id"], level="service_pattern_id"
             ).iloc[0]["id"]
+            vehicle_journey_id = record.get("id", None)
             yield ServicePatternStop(
                 service_pattern_id=service_pattern_id,
                 sequence_number=record["order"],
                 naptan_stop_id=record["naptan_id"],
                 atco_code=record["stop_atco"],
+                departure_time=record["departure_time"],
+                is_timing_point=record["is_timing_status"],
+                txc_common_name=record["common_name"],
+                vehicle_journey_id=vehicle_journey_id,
             )
 
     stops = list(_inner())
