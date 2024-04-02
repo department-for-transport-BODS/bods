@@ -19,7 +19,7 @@ from transit_odp.transmodel.models import (
     OperatingDatesExceptions,
     NonOperatingDatesExceptions,
 )
-from transit_odp.timetables.utils import filter_df_on_exceptions
+from transit_odp.timetables.utils import filter_df_on_exceptions, filter_df_serviced_org_operating
 from django.db import models
 import pandas as pd
 
@@ -204,6 +204,13 @@ class TimetableVisualiser:
         df_from_queryset = filter_df_on_exceptions(
             self._day_of_week,
             df_all_vehicle_journeys,
+            df_op_exceptions_vehicle_journey,
+            df_nonop_exceptions_vehicle_journey,
+        )
+
+        filter_df_serviced_org_operating(self._target_date, 
+                                  self._day_of_week,
+            df_serviced_org,
             df_op_exceptions_vehicle_journey,
             df_nonop_exceptions_vehicle_journey,
         )
