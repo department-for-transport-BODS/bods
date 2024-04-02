@@ -195,6 +195,7 @@ class TimetableVisualiser:
         """
 
         df_all_vehicle_journeys = self.get_df_all_vehicle_journeys()
+        df_all_vehicle_journeys.drop_duplicates(inplace=True)
         df_serviced_org = self.get_df_servicedorg_vehicle_journey()
         df_op_exceptions_vehicle_journey = self.get_df_op_exceptions_vehicle_journey()
         df_nonop_exceptions_vehicle_journey = (
