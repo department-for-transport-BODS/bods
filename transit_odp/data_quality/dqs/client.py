@@ -85,10 +85,17 @@ class DQSClient:
             logger.exception(
                 f"Unexpected exception occurred in DQS monitor pipeline when running for {task_id} :: {e}"
             )
-            raise PipelineException from e
+            raise PipelineException(
+                f"Unexpected exception occurred in DQS monitor pipeline when running for {task_id} :: {e}"
+            )
         else:
             logger.info(f"DQSStatusRes data for {task_id} is :: {data}")
-            return DQSStatusRes(**data)
+            try:
+                return DQSStatusRes(**data)
+            except Exception as e:
+                logger.exception(
+                    f"Error occurred while parsing DQSStatusRes data for {task_id} :: {e}"
+                )
 
     def download(self, task_id: uuid.UUID) -> bytes:
         """Download the report from DQS for job task_id UUID"""
