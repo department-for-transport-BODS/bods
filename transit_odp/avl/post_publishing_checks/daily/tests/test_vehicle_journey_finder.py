@@ -245,3 +245,27 @@ def test_filter_vehicle_journeys_by_published_line_name():
     )
     assert len(txc_vehicle_journey) == 1
     assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
+
+
+def test_filter_vehicle_journeys_by_published_line_name_no_matching_lineref():
+    txc_filenames = [
+        str(DATA_DIR / xml) for xml in ("vehicle_journeys_no_matching_lineref.xml",)
+    ]
+    txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
+    txc_vehicle_journeys = [
+        TxcVehicleJourney(txc.get_vehicle_journeys()[0], txc) for txc in txc_xml
+    ]
+    filter_published_line_name = "695"
+    result = ValidationResult()
+    vehicle_journey_finder = VehicleJourneyFinder()
+    txc_vehicle_journey = (
+        vehicle_journey_finder.filter_vehicle_journeys_by_published_line_name(
+            txc_vehicle_journeys,
+            published_line_name=filter_published_line_name,
+            result=result,
+        )
+    )
+    assert result.errors[ErrorCategory.GENERAL] == [
+        "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
+    ]
+    assert txc_vehicle_journey is None
