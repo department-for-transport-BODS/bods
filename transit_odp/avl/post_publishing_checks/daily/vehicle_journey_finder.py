@@ -85,7 +85,7 @@ class VehicleJourneyFinder:
             )
             return False
 
-        if mvj.line_ref is None:
+        if mvj.published_line_name is None:
             result.add_error(
                 ErrorCategory.GENERAL, "LineRef missing in SIRI-VM VehicleActivity"
             )
@@ -93,18 +93,17 @@ class VehicleJourneyFinder:
         return True
 
     def get_txc_file_metadata(
-        self, noc: str, line_name: str, result: ValidationResult
+        self, noc: str, published_line_name: str, result: ValidationResult
     ) -> List[TXCFileAttributes]:
         """Get a list of published datasets with live revisions that match operator
         ref and line name.
         """
         logger.info(
-            f"Get published timetable files matching NOC {noc} and LineName {line_name}"
+            f"Get published timetable files matching NOC {noc} and PublishedLineName {published_line_name}"
         )
         txc_file_attrs = list(
             TXCFileAttributes.objects.add_revision_details()
-            .get_active_live_revisions()
-            .filter_by_noc_and_line_name(noc, line_name)
+            .filter_by_noc_and_line_name(noc, published_line_name)
             .select_related("revision")
         )
 
@@ -112,7 +111,7 @@ class VehicleJourneyFinder:
             result.add_error(
                 ErrorCategory.GENERAL,
                 f"No published TXC files found matching NOC {noc} and "
-                f"line name {line_name}",
+                f"published line name {published_line_name}",
             )
 
         logger.debug(
@@ -139,12 +138,15 @@ class VehicleJourneyFinder:
             result.set_txc_value(SirivmField.OPERATOR_REF, mvj.operator_ref)
             result.set_matches(SirivmField.OPERATOR_REF)
             result.set_txc_value(SirivmField.LINE_REF, mvj.line_ref)
+            result.set_txc_value(
+                SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name
+            )
             result.set_matches(SirivmField.LINE_REF)
         else:
             logger.error("Matching TXC files belong to different datasets!\n")
             result.add_error(
                 ErrorCategory.GENERAL,
-                "Matched OperatorRef and LineRef in more than one dataset",
+                "Matched OperatorRef and PublishedLineName in more than one dataset",
             )
 
         return consistent_data
@@ -295,6 +297,32 @@ class VehicleJourneyFinder:
             )
 
         return matching_journeys
+
+    def filter_vehicle_journeys_by_published_line_name(
+        self,
+        vehicle_journeys: List[TxcVehicleJourney],
+        published_line_name: str,
+        result: ValidationResult,
+    ) -> List[TxcVehicleJourney]:
+        """Filter list of timetable files down to individual journeys matching the
+        passed published line name. Returns list of matching journeys coupled with their
+        parent timetable file.
+        """
+        vehicle_journeys = [
+            vj
+            for vj in vehicle_journeys
+            if vj.vehicle_journey.get_element("LineRef")
+            and vj.vehicle_journey.get_element("LineRef").text.split(":")[3]
+            == published_line_name
+        ]
+
+        if len(vehicle_journeys) == 0:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName",
+            )
+            return None
+        return vehicle_journeys
 
     def get_operating_profile_for_journey(
         self, vj: TxcVehicleJourney
@@ -607,7 +635,9 @@ class VehicleJourneyFinder:
             return None
 
         matching_txc_file_attrs = self.get_txc_file_metadata(
-            noc=mvj.operator_ref, line_name=mvj.line_ref, result=result
+            noc=mvj.operator_ref,
+            published_line_name=mvj.published_line_name,
+            result=result,
         )
         if not matching_txc_file_attrs:
             return None
@@ -635,7 +665,16 @@ class VehicleJourneyFinder:
             return None
 
         vehicle_journeys = self.filter_by_journey_code(
-            txc_xml, vehicle_journey_ref, result
+            txc_xml=txc_xml, vehicle_journey_ref=vehicle_journey_ref, result=result
+        )
+
+        if not vehicle_journeys:
+            return None
+
+        vehicle_journeys = self.filter_vehicle_journeys_by_published_line_name(
+            vehicle_journeys=vehicle_journeys,
+            published_line_name=mvj.published_line_name,
+            result=result,
         )
         if not vehicle_journeys:
             return None

@@ -30,7 +30,7 @@ def test_get_txc_file_metadata():
 
     vehicle_journey_finder = VehicleJourneyFinder()
     txc_file_list = vehicle_journey_finder.get_txc_file_metadata(
-        noc="NOC1", line_name="L4", result=ValidationResult()
+        noc="NOC1", published_line_name="L4", result=ValidationResult()
     )
     assert len(txc_file_list) == 1
     assert txc_file_list[0].id == txc_file_attrs.id
@@ -223,3 +223,25 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
         assert result.errors[ErrorCategory.GENERAL] == expected_error
     else:
         assert result.errors == expected_error
+
+
+def test_filter_vehicle_journeys_by_published_line_name():
+    txc_filenames = [
+        str(DATA_DIR / xml) for xml in ("vehicle_journeys_same_journey_code.xml",)
+    ]
+    txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
+    txc_vehicle_journeys = [
+        TxcVehicleJourney(txc.get_vehicle_journeys()[0], txc) for txc in txc_xml
+    ]
+    filter_published_line_name = "695"
+    result = ValidationResult()
+    vehicle_journey_finder = VehicleJourneyFinder()
+    txc_vehicle_journey = (
+        vehicle_journey_finder.filter_vehicle_journeys_by_published_line_name(
+            txc_vehicle_journeys,
+            published_line_name=filter_published_line_name,
+            result=result,
+        )
+    )
+    assert len(txc_vehicle_journey) == 1
+    assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
