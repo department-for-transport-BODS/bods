@@ -64,20 +64,42 @@ class DQSClient:
         """Fetches the status of the processing job with task id `task_id`"""
         url = f"{self.url}/status"
         try:
+            logger.info(f"The request url for {task_id} is {url}")
             response = requests.get(url, params={"uuid": task_id}, timeout=60)
             response.raise_for_status()
             data = response.json()
         except requests.Timeout as e:
-            logger.exception(f"The request {url} timed out.")
+            logger.exception(f"The request {url} timed out for {task_id}.")
             raise PipelineException from e
         except requests.exceptions.HTTPError as e:
-            logger.exception(f"Request to {url!r} resulted in HTTPError.", exc_info=e)
+            logger.exception(
+                f"Request to {url!r} resulted in HTTPError for {task_id}.", exc_info=e
+            )
             raise PipelineException from e
         except (json.decoder.JSONDecodeError, TypeError) as e:
-            logger.exception(f"The request {url!r} returned malformed JSON.")
+            logger.exception(
+                f"The request {url!r} returned malformed JSON for {task_id}."
+            )
             raise PipelineException from e
-        else:
-            return DQSStatusRes(**data)
+        except Exception as e:
+            logger.exception(
+                f"Unexpected exception occurred in DQS monitor pipeline when running for {task_id} :: {e}"
+            )
+            raise PipelineException(
+                f"Unexpected exception occurred in DQS monitor pipeline when running for {task_id} :: {e}"
+            )
+        logger.info(f"DQSStatusRes data for {task_id} is :: {data}")
+        try:
+            dqs_parsed_response = DQSStatusRes(**data)
+        except Exception as e:
+            message = (
+                f"Error occurred while parsing DQSStatusRes data for {task_id} :: {e}"
+            )
+            logger.exception(message)
+            dqs_parsed_response = DQSStatusRes(
+                uuid=task_id, job_exitcode=STATUS_FAILURE, job_status=message
+            )
+        return dqs_parsed_response
 
     def download(self, task_id: uuid.UUID) -> bytes:
         """Download the report from DQS for job task_id UUID"""
