@@ -77,6 +77,9 @@ class VehicleJourneyFinder:
     def check_operator_and_line_present(
         self, activity: VehicleActivity, result: ValidationResult
     ) -> bool:
+        """
+        Checks if OperatorRef and PublishedLineName are present in Vehicle activity
+        """
         mvj = activity.monitored_vehicle_journey
         if mvj.operator_ref is None:
             result.add_error(
@@ -87,7 +90,8 @@ class VehicleJourneyFinder:
 
         if mvj.published_line_name is None:
             result.add_error(
-                ErrorCategory.GENERAL, "LineRef missing in SIRI-VM VehicleActivity"
+                ErrorCategory.GENERAL,
+                "PublishedLineName missing in SIRI-VM VehicleActivity",
             )
             return False
         return True
@@ -298,7 +302,7 @@ class VehicleJourneyFinder:
 
         return matching_journeys
 
-    def filter_vehicle_journeys_by_published_line_name(
+    def filter_by_published_line_name(
         self,
         vehicle_journeys: List[TxcVehicleJourney],
         published_line_name: str,
@@ -671,11 +675,12 @@ class VehicleJourneyFinder:
         if not vehicle_journeys:
             return None
 
-        vehicle_journeys = self.filter_vehicle_journeys_by_published_line_name(
+        vehicle_journeys = self.filter_by_published_line_name(
             vehicle_journeys=vehicle_journeys,
             published_line_name=mvj.published_line_name,
             result=result,
         )
+
         if not vehicle_journeys:
             return None
 
