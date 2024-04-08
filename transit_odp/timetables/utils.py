@@ -14,7 +14,8 @@ from requests import RequestException
 
 from enum import Enum
 from pydantic import BaseModel, ValidationError, Field
-from typing import List, Optional
+from typing import List, Optional, Tuple
+import numpy as np
 from datetime import datetime, timedelta
 
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bucket_storage
@@ -236,56 +237,279 @@ def get_line_description_based_on_direction(row: pd.Series) -> str:
     return direction_mapping.get(row["direction"], "")
 
 
+
+def get_index_stop(stops, elem):
+
+    """
+    Get the position of the element based on the next and the previous
+    element of the stop
+    """
+
+    # If the element previous is None, then check out for the next element
+    if elem['prev'] is None:        
+        return get_index_stop(elem['next'])
+    else: # If the previous element is there, found the position
+        try:
+            return stops.index(elem['prev'])
+        except ValueError as ve:            
+            return get_index_stop(stops, elem['next'])
+
+
+def merge_bus_new_stops(bus_stops, new_stops):
+
+    """
+    Merge the bus stops and the new stops for the all journeys.
+    """
+
+    # Iterate over the new stops and place them in the bus_stops 
+    for idx, el in enumerate(new_stops):        
+        print("-"*30)
+        print(f"Iterating stop: {el['stop']}")
+        index_stop = get_index_stop(bus_stops, el)
+        bus_stops.insert(index_stop+1, el['stop'])
+
+def get_(df_vj_wo_fir_jou: pd.DataFrame):
+
+    """
+    Get the 
+    """
+    print(f"df_vehicle_journey_operating: {df_vj_wo_fir_jou}")
+    df_vj_wo_fir_jou.reset_index(inplace=True, drop=True)
+    df_vj_wo_fir_jou.to_csv("df_vj_wo_fir_jou.csv")
+    data = {}
+    atco_codes = []
+    new_stops = []
+    df_size = len(df_vj_wo_fir_jou)
+    prev_row = None
+    bus_stop = {}
+    first_vj_code = None
+    # Iterating over the data frame to retreive the stops
+    for loop_idx, row in df_vj_wo_fir_jou.iterrows():
+        print(f"loop_idx: {loop_idx}")
+        
+        atco_code = row["atco_code"]
+        vj = row['vehicle_journey_code']
+        name = row['common_name']        
+        stop_name = row['common_name']
+        
+        key = vj+"_"+atco_code
+        data[key] = row['departure_time']
+        if atco_code not in bus_stop:
+            bus_stop[atco_code] = stop_name
+
+        if not first_vj_code:
+            first_vj_code = vj
+        
+        # If first vehicle journey, add the stops
+        if first_vj_code == vj:
+            atco_codes.append(atco_code)
+            prev_row = row
+            continue
+        
+        if loop_idx +1 == df_size:
+            next_row = next_atco_code = next_vj = None
+        else:
+            print(f"Checking row: {loop_idx+1}")
+            next_row = df_vj_wo_fir_jou.iloc[loop_idx+1]
+            next_atco_code = next_row['atco_code']
+            next_vj = next_row['vehicle_journey_code']
+        
+        prev_vj = prev_row['vehicle_journey_code']
+        prev_atco_code = prev_row['atco_code']
+        print(f"next_stop: {next_atco_code}-{next_row}")
+        print(f"- {next_vj}--{vj}")
+        print(f", prev_stop: {prev_atco_code} - {prev_vj}")
+
+        next_stop = None
+        if next_vj and next_vj != vj:
+            next_stop = next_atco_code
+        
+        prev_stop = None
+        if prev_vj == vj:
+            prev_stop = prev_atco_code
+
+        obj = {"atco_code": atco_code, "prev": prev_stop, "next": next_stop, "name": stop_name}
+        print("obj", obj)
+
+        # If the atco code/node is not present, then need add the stop (based on prev and next) 
+        if obj not in new_stops:
+            print("Adding stop as new stop")
+            new_stops.append(obj)
+        
+        # Update the current row as previous row
+        prev_row = row
+
+    print(f"new_stops: {new_stops}")
+    #merge_bus_new_stops(atco_codes, new_stops)
+
+
+def get_df_(df_vehicle_journey_operating: pd.DataFrame) -> pd.DataFrame:
+    
+    """
+    Get the dataframe containing the list of stops and the timetable details 
+    with journey code as columns
+    """    
+
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)    
+
+    # Remove the extra columns from dataframe
+    columns_to_keep = ['common_name', 'stop_sequence', 'vehicle_journey_code', 'departure_time', 'atco_code']
+    df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
+    df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()    
+    #df_vehicle_journey_operating = df_vehicle_journey_operating.sort_values(by=['vehicle_journey_code', 'stop_sequence'])
+    df_vehicle_journey_operating.to_csv('df_vehicle_journey_operating_sorted.csv')
+    
+    # Get the unique sorted vehicle journey codes based on the departure time
+    df_vehicle_journey_grouped = df_vehicle_journey_operating.groupby(by='vehicle_journey_code')
+    df_vehicle_journey_grouped = df_vehicle_journey_grouped.agg({'departure_time': "min"})    
+    df_vehicle_journey_sorted = df_vehicle_journey_grouped.sort_values(by='departure_time')
+    df_vehicle_journey_sorted = df_vehicle_journey_sorted.reset_index()
+    vehicle_journey_codes_sorted = df_vehicle_journey_sorted["vehicle_journey_code"]
+
+    # Replace the vehicle journey codes with order by adding a new column
+    vehicle_journey_codes_sorted_dict = {code: index for index, code in enumerate(vehicle_journey_codes_sorted)}
+    df_vehicle_journey_operating['vehicle_journey_sorted'] = df_vehicle_journey_operating['vehicle_journey_code'].\
+                                                                replace(vehicle_journey_codes_sorted_dict)
+    
+    # Sort the data frame based on the vehicle journey and the stop sequence
+    df_vehicle_journey_operating = df_vehicle_journey_operating.sort_values(by=['vehicle_journey_sorted', 'stop_sequence'])
+    df_vehicle_journey_operating.to_csv('df_vehicle_journey_operating_sorted.csv')
+    
+    # line = {}
+    # atco_codes = []
+    # for index, row in df_first_bus_route.iterrows():
+    #     atco_codes.append(row['atco_code'])
+        #line[row['atco_code']] = row['stop_sequence']
+        
+    data = {}
+    atco_codes = []
+    # df_vj_wo_fir_jou = df_vehicle_journey_operating[df_vehicle_journey_operating['vehicle_journey_code'] != first_vehicle_journey]
+    df_vj_wo_fir_jou = df_vehicle_journey_operating
+    get_(df_vehicle_journey_operating)
+    
+    # stops = []
+    # for el in atco_codes:
+    #     print(f"Stop: {el}: {bus_stop[el]}")
+    #     stops.append(bus_stop[el])
+
+    # data_df = []
+    # # vehicle_journey_codes = ['6001']
+    # for atco_code in atco_codes:        
+    #     obj = {}
+    #     for journey_code in vehicle_journey_codes_sorted:
+    #         key = journey_code+"_"+atco_code
+    #         val = data.get(key, "-")
+    #         obj[journey_code] = val
+    #     data_df.append(obj)
+    # #print(data_df)
+    
+    # #bus_stops = list(bus_stop.values())
+    # df = pd.DataFrame(data_df)
+    # df = pd.DataFrame(data_df, index=stops)
+    # #print("df: ", df.head(n=100))
+    # df.to_csv("data_df.csv")
+    return pd.DataFrame()
+    
+
 def filter_df_serviced_org_operating(
     target_date: str,
-    day_of_week: str,
-    df_service: pd.DataFrame,
-    df_op_exception_vehicle_journey: pd.DataFrame,
-    df_nonop_excecption_vehicle_journey: pd.DataFrame,
-) -> pd.DataFrame:
+    df_serviced_org_working_days: pd.DataFrame,
+    all_exception_vehicle_journey: np.ndarray,
+) -> Tuple[List, List]:
     """
     Get the vehicle journeys based on the serviced organisation
     working days and the operating/non-operating execptions
 
     :return: DataFrame
-    Return the filtered dataframe
+    Return the filtered dataframe based on the serviced organisation
     """
 
-    # base_df = base_df.drop(columns=[])
-    df_service.to_csv("serviced.csv")
-    nonop_exception_vehicle_journey = df_nonop_excecption_vehicle_journey[
-        "vehicle_journey_id"
-    ].unique()
-
-    # Filtered based on serviced organisation id
-    serviced_org_id = [14, 15]
-    df_service = df_service[df_service["serviced_org_id"].isin(serviced_org_id)]
+    df_serviced_org_working_days.to_csv("serviced.csv")
 
     # Remove the vehicle journey which are not running on target date (nonoperating exception)
-    df_service = df_service[
-        ~df_service["vehicle_journey_id"].isin(nonop_exception_vehicle_journey)
+    df_serviced_org_working_days = df_serviced_org_working_days[
+        ~df_serviced_org_working_days["vehicle_journey_id"].isin(all_exception_vehicle_journey)
     ]
+
+    # Get the operating and non-operating working days
+    df_service_operating = df_serviced_org_working_days[df_serviced_org_working_days["operating_on_working_days"]]
+    df_service_nonoperating = df_serviced_org_working_days[~df_serviced_org_working_days["operating_on_working_days"]]
+
+    # Find the service which are operating within range of start and end date
+    df_service_operating = df_service_operating[
+        (target_date > df_serviced_org_working_days.start_date) & (target_date < df_serviced_org_working_days.end_date)
+    ]
+
+    # Exclude the service which are outside the earliest start and latest end date as non-operating
+    df_group_vehicle_journey_date = df_service_nonoperating.groupby(
+        by="vehicle_journey_id"
+    )
+        
+    df_service_grouped = df_group_vehicle_journey_date.agg(
+        {'start_date': "min", 'end_date': "max"}
+    )
+    df_service_nonoperating = df_service_grouped[
+        (target_date < df_service_grouped.start_date)
+        | (target_date > df_service_grouped.end_date)
+    ]    
 
     # Split the vehicle journey based on the operating_on_working_days
-    df_service_operating = df_service[df_service["operating_on_working_days"]]
-    df_service_non_operating = df_service[~df_service["operating_on_working_days"]]
-    df_service_operating = df_service_operating[
-        (df_service_operating.start_date < target_date)
-        & (target_date < df_service_operating.end_date)
-    ]
+    (
+        vehicle_journey_operating,
+        vehicle_journey_nonoperating,
+        _,
+    ) = get_vehicle_journeys_operating_nonoperating(df_service_operating, df_service_nonoperating)
 
-    """ 
-    
+    return (vehicle_journey_operating, vehicle_journey_nonoperating)
+
+
+def get_vehicle_journeys_operating_nonoperating(
+    df_vehicle_journey_operating: pd.DataFrame,
+    df_vehicle_journey_nonoperating: pd.DataFrame,
+) -> Tuple[List, List, List]:
+    """
+    Return the unique vehicle journey which are operating/non-operating and
+    combination of both
+
+    In returning tuple, first element contains the list of unique vehicle journey operating,
+    second element contains the list of unique vehicle journey non-operating and
+    third element contains the list of unique vehicle journeys operating and non-operating 
     """
 
-    return None
+    # Get all the vehicle journey which are operating on date
+    op_exception_vehicle_journey = []
+    if not df_vehicle_journey_operating.empty and 'vehicle_journey_id' in df_vehicle_journey_operating.columns:
+        op_exception_vehicle_journey = df_vehicle_journey_operating[
+            "vehicle_journey_id"
+        ].unique().tolist()
+
+    # Get all the vehicle journey which are not operating on date
+    nonop_exception_vehicle_journey = []
+    if not df_vehicle_journey_nonoperating.empty and 'vehicle_journey_id' in df_vehicle_journey_nonoperating.columns:
+        nonop_exception_vehicle_journey = df_vehicle_journey_nonoperating[
+            "vehicle_journey_id"
+        ].unique().tolist()
+
+    # Get all vehicle journey which are operating/non-operating on date
+    all_exception_vehicle_journey = set(
+        op_exception_vehicle_journey + nonop_exception_vehicle_journey
+    )
+
+    return (
+        op_exception_vehicle_journey,
+        nonop_exception_vehicle_journey,
+        all_exception_vehicle_journey,
+    )
 
 
-def filter_df_on_exceptions(
+def get_df_operating_vehicle_journey(
     day_of_week: str,
     df_all_vehicle_journey: pd.DataFrame,
     df_op_exception_vehicle_journey: pd.DataFrame,
     df_nonop_excecption_vehicle_journey: pd.DataFrame,
+    op_exception_vehicle_journey: np.ndarray,
+    nonop_exception_vehicle_journey: np.ndarray,
 ) -> pd.DataFrame:
     """Get the valid vehicle journey based on the exceptions in
     operating and non-operating tables.
@@ -294,17 +518,9 @@ def filter_df_on_exceptions(
             Returns dataframe containing the valid vehicle journey id
     """
 
-    # base_df = base_df.drop(columns=[])
     df_all_vehicle_journey.to_csv("base.csv")
     df_op_exception_vehicle_journey.to_csv("op_exception.csv")
     df_nonop_excecption_vehicle_journey.to_csv("nonop_exception.csv")
-
-    op_exception_vehicle_journey = df_op_exception_vehicle_journey[
-        "vehicle_journey_id"
-    ].unique()
-    nonop_exception_vehicle_journey = df_nonop_excecption_vehicle_journey[
-        "vehicle_journey_id"
-    ].unique()
 
     # Filter the dataframe based on the day of week or in the operating exception
     df_operating_vehicle_journey = df_all_vehicle_journey.loc[
@@ -349,7 +565,7 @@ def get_dataframe_from_queryset(
         queryset_vehicle_journey_nonop_exceptions
     )
 
-    filter_df_on_exceptions(
+    get_df_operating_vehicle_journey(
         target_date,
         day_of_week,
         df_qs_all_vehicle_journeys,

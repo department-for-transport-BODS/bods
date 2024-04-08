@@ -20,8 +20,10 @@ from transit_odp.transmodel.models import (
     NonOperatingDatesExceptions,
 )
 from transit_odp.timetables.utils import (
-    filter_df_on_exceptions,
+    get_df_operating_vehicle_journey,
     filter_df_serviced_org_operating,
+    get_vehicle_journeys_operating_nonoperating,
+    get_df_
 )
 from django.db import models
 import pandas as pd
@@ -66,7 +68,7 @@ class TimetableVisualiser:
 
         return pd.DataFrame.from_records(qs_vehicle_journey_nonop_exceptions)
 
-    def get_df_servicedorg_vehicle_journey(self) -> pd.DataFrame:
+    def get_df_servicedorg_vehicle_journey(self, vehicle_journey_ids: set) -> pd.DataFrame:
         """
         Get the dataframe of vehicle journey and working days of the serviced organisation
         """
@@ -81,6 +83,7 @@ class TimetableVisualiser:
             .filter(
                 serviced_organisation__isnull=False,
                 serviced_organisation__serviced_organisations_working_days__isnull=False,
+                vehicle_journey_id__in=vehicle_journey_ids,
             )
             .annotate(
                 serviced_org_id=F("serviced_organisation__id"),
@@ -146,6 +149,9 @@ class TimetableVisualiser:
                     "service_patterns__service_pattern_stops__txc_common_name",
                     output_field=CharField(),
                 ),
+                atco_code = F(
+                    "service_patterns__service_pattern_stops__atco_code",                    
+                ),
                 direction=F(
                     "service_patterns__service_pattern_vehicle_journey__direction"
                 ),
@@ -185,6 +191,7 @@ class TimetableVisualiser:
                 "departure_day_shift",
                 "day_of_week",
                 "vehicle_journey_id",
+                "atco_code"
             )
         )
 
@@ -197,28 +204,57 @@ class TimetableVisualiser:
         Get the timetable visualiser for the specific service code, revision id, line name and the date
         """
 
-        df_all_vehicle_journeys = self.get_df_all_vehicle_journeys()
-        df_serviced_org = self.get_df_servicedorg_vehicle_journey()
+        # Create the dataframes for the serviced organisation and service tables.
+        df_base_vehicle_journeys = self.get_df_all_vehicle_journeys()
         df_op_exceptions_vehicle_journey = self.get_df_op_exceptions_vehicle_journey()
         df_nonop_exceptions_vehicle_journey = (
             self.get_df_nonop_exceptions_vehicle_journey()
         )
+        base_vehicle_journey_ids = df_base_vehicle_journeys["vehicle_journey_id"].unique().tolist()
+        df_serviced_org = self.get_df_servicedorg_vehicle_journey(base_vehicle_journey_ids)
 
-        df_from_queryset = filter_df_on_exceptions(
+        # Get the list of operating and non-operating vehicle journey in the exception table
+        (
+            op_exception_vehicle_journey,
+            nonop_exception_vehicle_journey,
+            all_exception_vehicle_journey,
+        ) = get_vehicle_journeys_operating_nonoperating(
+            df_op_exceptions_vehicle_journey, df_nonop_exceptions_vehicle_journey
+        )
+        
+        # Get the vehicle journeys which are operating on the target date based on exception and non-exception
+        df_vehicle_journey_operating = get_df_operating_vehicle_journey(
             self._day_of_week,
-            df_all_vehicle_journeys,
+            df_base_vehicle_journeys,
             df_op_exceptions_vehicle_journey,
             df_nonop_exceptions_vehicle_journey,
+            op_exception_vehicle_journey,
+            nonop_exception_vehicle_journey
         )
 
-        filter_df_serviced_org_operating(
+        # Get the vehicle journey id which are operating/non-operating for the serviced organisation
+        vehicle_journey_ids_op_serviced_org, vehicle_journey_ids_nonop_serviced_org = filter_df_serviced_org_operating(
             self._target_date,
-            self._day_of_week,
             df_serviced_org,
-            df_op_exceptions_vehicle_journey,
-            df_nonop_exceptions_vehicle_journey,
+            all_exception_vehicle_journey
         )
+        
+        # Remove the vehicle journeys which are not running for serviced organisation
+        df_vehicle_journey_operating = df_vehicle_journey_operating[
+            ~df_vehicle_journey_operating["vehicle_journey_id"].isin(
+                vehicle_journey_ids_nonop_serviced_org)
+        ]
 
-        df_from_queryset.to_csv("filtered.csv")
+        # Include the vehicle journey id which are not part of base vehicle journey
+        base_vehicle_journey_ids = set(df_vehicle_journey_operating["vehicle_journey_id"].unique())
+        vehicle_journey_ids_op_serviced_org = set(vehicle_journey_ids_op_serviced_org)
+        if not vehicle_journey_ids_op_serviced_org.issubset(base_vehicle_journey_ids):
+            vehicle_journey_id_missing = vehicle_journey_ids_op_serviced_org - base_vehicle_journey_ids
+            df_vehicle_journey_serviced_org = df_base_vehicle_journeys[
+                df_base_vehicle_journeys["vehicle_journey_id"].isin(
+                    vehicle_journey_id_missing)
+            ]
 
-        return df_from_queryset
+        get_df_(df_vehicle_journey_operating)
+
+        return df_vehicle_journey_operating
