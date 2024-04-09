@@ -2,7 +2,7 @@ import logging
 import csv
 from io import StringIO
 import pandas as pd
-
+import numpy as np
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
@@ -237,7 +237,9 @@ def get_line_description_based_on_direction(row: pd.Series) -> str:
     return direction_mapping.get(row["direction"], "")
 
 
-def get_df_(df_vehicle_journey_operating: pd.DataFrame) -> pd.DataFrame:
+def get_df_timetable_visualiser(
+    df_vehicle_journey_operating: pd.DataFrame,
+) -> pd.DataFrame:
     """
     Get the dataframe containing the list of stops and the timetable details
     with journey code as columns
@@ -270,55 +272,23 @@ def get_df_(df_vehicle_journey_operating: pd.DataFrame) -> pd.DataFrame:
     df_vehicle_journey_sorted = df_vehicle_journey_sorted.reset_index()
     vehicle_journey_codes_sorted = df_vehicle_journey_sorted["vehicle_journey_code"]
 
-    # Replace the vehicle journey codes with order by adding a new column
+    # Add a new column stating the vehicle journey order based on vehicle journey codes order
     vehicle_journey_codes_sorted_dict = {
         code: index for index, code in enumerate(vehicle_journey_codes_sorted)
     }
     df_vehicle_journey_operating[
-        "vehicle_journey_sorted"
+        "vehicle_journey_order"
     ] = df_vehicle_journey_operating["vehicle_journey_code"].replace(
         vehicle_journey_codes_sorted_dict
     )
 
     # Sort the data frame based on the vehicle journey and the stop sequence
     df_vehicle_journey_operating = df_vehicle_journey_operating.sort_values(
-        by=["vehicle_journey_sorted", "stop_sequence"]
+        by=["vehicle_journey_order", "stop_sequence"]
     )
     df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_sorted.csv")
+    # TODO: Add the logic for creating the final dataframe of timetable
 
-    # line = {}
-    # atco_codes = []
-    # for index, row in df_first_bus_route.iterrows():
-    #     atco_codes.append(row['atco_code'])
-    # line[row['atco_code']] = row['stop_sequence']
-
-    data = {}
-    atco_codes = []
-    # df_vj_wo_fir_jou = df_vehicle_journey_operating[df_vehicle_journey_operating['vehicle_journey_code'] != first_vehicle_journey]
-    df_vj_wo_fir_jou = df_vehicle_journey_operating
-    get_(df_vehicle_journey_operating)
-
-    # stops = []
-    # for el in atco_codes:
-    #     print(f"Stop: {el}: {bus_stop[el]}")
-    #     stops.append(bus_stop[el])
-
-    # data_df = []
-    # # vehicle_journey_codes = ['6001']
-    # for atco_code in atco_codes:
-    #     obj = {}
-    #     for journey_code in vehicle_journey_codes_sorted:
-    #         key = journey_code+"_"+atco_code
-    #         val = data.get(key, "-")
-    #         obj[journey_code] = val
-    #     data_df.append(obj)
-    # #print(data_df)
-
-    # #bus_stops = list(bus_stop.values())
-    # df = pd.DataFrame(data_df)
-    # df = pd.DataFrame(data_df, index=stops)
-    # #print("df: ", df.head(n=100))
-    # df.to_csv("data_df.csv")
     return pd.DataFrame()
 
 

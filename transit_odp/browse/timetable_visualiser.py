@@ -17,7 +17,7 @@ from transit_odp.timetables.utils import (
     get_vehicle_journeys_operating_nonoperating,
     filter_df_serviced_org_operating,
     get_df_operating_vehicle_journey,
-    get_df_,
+    get_df_timetable_visualiser,
 )
 import pandas as pd
 
@@ -258,11 +258,9 @@ class TimetableVisualiser:
         ]
 
         # Include the vehicle journey id which are not part of base vehicle journey
-        base_vehicle_journey_ids = set(
-            df_vehicle_journey_operating["vehicle_journey_id"].unique()
-        )
+        base_vehicle_journey_ids = df_vehicle_journey_operating["vehicle_journey_id"].unique()        
         vehicle_journey_ids_op_serviced_org = set(vehicle_journey_ids_op_serviced_org)
-        if not vehicle_journey_ids_op_serviced_org.issubset(base_vehicle_journey_ids):
+        if not vehicle_journey_ids_op_serviced_org.issubset(set(base_vehicle_journey_ids)):
             vehicle_journey_id_missing = (
                 vehicle_journey_ids_op_serviced_org - base_vehicle_journey_ids
             )
@@ -272,6 +270,6 @@ class TimetableVisualiser:
                 )
             ]
 
-        get_df_(df_vehicle_journey_operating)
+        df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
 
-        return df_vehicle_journey_operating
+        return df_timetable
