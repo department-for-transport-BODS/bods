@@ -402,7 +402,15 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
     all_vehicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
-            departure_time = vehicle_journey.get_element(["DepartureTime"]).text
+            departure_time = pd.to_timedelta(
+                vehicle_journey.get_element(["DepartureTime"]).text
+            )
+            dead_run_time = vehicle_journey.get_element_or_none(
+                ["StartDeadRun", "PositioningLink", "RunTime"]
+            )
+            if dead_run_time:
+                departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
+
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
             )
