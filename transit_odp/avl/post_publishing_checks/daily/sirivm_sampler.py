@@ -102,7 +102,9 @@ class SirivmSampler:
     ) -> List[VehicleActivity]:
         """Ignore vehicle activities which matches any of the two criterias given below
         1. If same RecordedAtTime and vehicleRef has already been processed in given week
-        2. If vehicle activities date is different than the response date in XML
+        2. If vehicle activities RecordedAtTime (date) is different than the response date in XML
+
+        Only dates will be compared, Time part will be ignored
 
         Args:
             activities (List[VehicleActivity]): list of activities extracted from XML response
