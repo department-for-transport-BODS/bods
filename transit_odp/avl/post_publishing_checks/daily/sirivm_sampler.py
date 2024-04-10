@@ -189,7 +189,7 @@ class SirivmSampler:
         activity["VehicleRef"] = activity["monitored_vehicle_journey"]["vehicle_ref"]
         return activity
 
-    def get_week_reports_pd(self, feed_id: int) -> pd.DataFrame:
+    def get_week_reports_df(self, feed_id: int) -> pd.DataFrame:
         """Get current week old vehicle activities dataframe
 
         Args:
@@ -244,7 +244,7 @@ class SirivmSampler:
         Returns:
             start_date (Date)
         """
-        days_to_monday = end_date.weekday() - 0
+        days_to_monday = end_date.weekday()
         start_date = (
             end_date
             if end_date.weekday() == 0
