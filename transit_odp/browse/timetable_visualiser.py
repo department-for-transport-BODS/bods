@@ -221,18 +221,26 @@ class TimetableVisualiser:
 
         # Create the dataframes for the serviced organisation and service tables.
         df_base_vehicle_journeys = self.get_df_all_vehicle_journeys()
+        df_base_vehicle_journeys.to_csv("test_base_vehicle_journey.csv")
         base_vehicle_journey_ids = (
             df_base_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
         df_op_excep_vehicle_journey = self.get_df_op_exceptions_vehicle_journey(
             base_vehicle_journey_ids
         )
+        df_op_excep_vehicle_journey.to_csv(
+            "test_operating_exception_vehicle_journey.csv"
+        )
         df_nonop_except_vehicle_journey = self.get_df_nonop_exceptions_vehicle_journey(
             base_vehicle_journey_ids
+        )
+        df_nonop_except_vehicle_journey.to_csv(
+            "test_nonoperating_exception_vehicle_journey.csv"
         )
         df_serviced_org = self.get_df_servicedorg_vehicle_journey(
             base_vehicle_journey_ids
         )
+        df_serviced_org.to_csv("test_serviced_organisation_working_days.csv")
 
         # Get the list of operating and non-operating vehicle journey in the exception table
         (
@@ -283,6 +291,7 @@ class TimetableVisualiser:
                 )
             ]
 
+        df_vehicle_journey_operating.to_csv("test_vehicle_journey_operating.csv")
         df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
 
         return df_timetable

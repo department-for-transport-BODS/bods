@@ -32,7 +32,7 @@ df_nonop_exception_vehicle_journeys = pd.read_csv(os.path.join(cur_dir, csv_file
 csv_file = "data/test_serviced_organisation_working_days.csv"
 df_serviced_org_working_days = pd.read_csv(os.path.join(cur_dir, csv_file))
 
-csv_file = "test_vehicle_journey_operating.csv"
+csv_file = "data/test_vehicle_journey_operating.csv"
 df_vehicle_journey_operating = pd.read_csv(os.path.join(cur_dir, csv_file))
 
 
