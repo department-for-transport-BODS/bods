@@ -245,9 +245,6 @@ def get_df_timetable_visualiser(
     with journey code as columns
     """
 
-    pd.set_option("display.max_rows", None)
-    pd.set_option("display.max_columns", None)
-
     if df_vehicle_journey_operating.empty:
         return df_vehicle_journey_operating
 
@@ -327,8 +324,8 @@ def filter_df_serviced_org_operating(
 
     # Find the service which are operating within range of start and end date
     df_service_operating = df_service_operating[
-        (target_date > df_serviced_org_working_days.start_date)
-        & (target_date < df_serviced_org_working_days.end_date)
+        (target_date >= df_serviced_org_working_days.start_date)
+        & (target_date <= df_serviced_org_working_days.end_date)
     ]
 
     # Exclude the service which are outside the earliest start and latest end date as non-operating
@@ -340,8 +337,8 @@ def filter_df_serviced_org_operating(
         {"start_date": "min", "end_date": "max"}
     )
     df_service_nonoperating = df_service_grouped[
-        (target_date < df_service_grouped.start_date)
-        | (target_date > df_service_grouped.end_date)
+        (target_date <= df_service_grouped.start_date)
+        | (target_date >= df_service_grouped.end_date)
     ]
 
     # Split the vehicle journey based on the operating_on_working_days

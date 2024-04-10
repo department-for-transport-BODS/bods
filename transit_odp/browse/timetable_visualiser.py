@@ -43,20 +43,26 @@ class TimetableVisualiser:
         self._target_date = target_date
         self._day_of_week = target_date.strftime("%A")
 
-    def get_df_op_exceptions_vehicle_journey(self) -> pd.DataFrame:
+    def get_df_op_exceptions_vehicle_journey(
+        self, vehicle_journey_ids: set
+    ) -> pd.DataFrame:
         """
         Get the dataframe of vehicle journey which are operating on the target date
         """
         columns = ["vehicle_journey_id", "operating_date"]
         qs_vehicle_journey_op_exceptions = (
-            OperatingDatesExceptions.objects.filter(operating_date=self._target_date)
+            OperatingDatesExceptions.objects.filter(
+                vehicle_journey_id__in=vehicle_journey_ids
+            )
             .annotate()
             .values(*columns)
         )
 
         return pd.DataFrame.from_records(qs_vehicle_journey_op_exceptions)
 
-    def get_df_nonop_exceptions_vehicle_journey(self) -> pd.DataFrame:
+    def get_df_nonop_exceptions_vehicle_journey(
+        self, vehicle_journey_ids: set
+    ) -> pd.DataFrame:
         """
         Get the dataframe of vehicle journey which are not operating on the target date
 
@@ -64,7 +70,8 @@ class TimetableVisualiser:
         columns = ["vehicle_journey_id", "non_operating_date"]
         qs_vehicle_journey_nonop_exceptions = (
             NonOperatingDatesExceptions.objects.filter(
-                non_operating_date=self._target_date
+                non_operating_date=self._target_date,
+                vehicle_journey_id__in=vehicle_journey_ids,
             )
             .annotate()
             .values(*columns)
@@ -214,13 +221,14 @@ class TimetableVisualiser:
 
         # Create the dataframes for the serviced organisation and service tables.
         df_base_vehicle_journeys = self.get_df_all_vehicle_journeys()
-        df_base_vehicle_journeys.to_csv("Base.csv")
-        df_op_excep_vehicle_journey = self.get_df_op_exceptions_vehicle_journey()
-        df_op_excep_vehicle_journey.to_csv("op_exc.csv")
-        df_nonop_except_vehicle_journey = self.get_df_nonop_exceptions_vehicle_journey()
-        df_nonop_except_vehicle_journey.to_csv("nonop_exc.csv")
         base_vehicle_journey_ids = (
             df_base_vehicle_journeys["vehicle_journey_id"].unique().tolist()
+        )
+        df_op_excep_vehicle_journey = self.get_df_op_exceptions_vehicle_journey(
+            base_vehicle_journey_ids
+        )
+        df_nonop_except_vehicle_journey = self.get_df_nonop_exceptions_vehicle_journey(
+            base_vehicle_journey_ids
         )
         df_serviced_org = self.get_df_servicedorg_vehicle_journey(
             base_vehicle_journey_ids
@@ -238,7 +246,7 @@ class TimetableVisualiser:
         # Get the vehicle journeys which are operating on the target date based on exception and non-exception
         df_vehicle_journey_operating = get_df_operating_vehicle_journey(
             self._day_of_week,
-            df_base_vehicle_journeys,            
+            df_base_vehicle_journeys,
             op_exception_vehicle_journeys,
             nonop_exception_vehicle_journeys,
         )
@@ -259,9 +267,13 @@ class TimetableVisualiser:
         ]
 
         # Include the vehicle journey id which are not part of base vehicle journey
-        base_vehicle_journey_ids = df_vehicle_journey_operating["vehicle_journey_id"].unique()        
+        base_vehicle_journey_ids = df_vehicle_journey_operating[
+            "vehicle_journey_id"
+        ].unique()
         vehicle_journey_ids_op_serviced_org = set(vehicle_journey_ids_op_serviced_org)
-        if not vehicle_journey_ids_op_serviced_org.issubset(set(base_vehicle_journey_ids)):
+        if not vehicle_journey_ids_op_serviced_org.issubset(
+            set(base_vehicle_journey_ids)
+        ):
             vehicle_journey_id_missing = (
                 vehicle_journey_ids_op_serviced_org - base_vehicle_journey_ids
             )
