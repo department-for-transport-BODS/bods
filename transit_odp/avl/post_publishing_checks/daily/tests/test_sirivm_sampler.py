@@ -27,7 +27,7 @@ pytestmark = pytest.mark.django_db
 
 def test_get_inscope_inseason_lines():
     # setup
-    start_date = "2023-02-01"
+    start_date = f"{date.today() - timedelta(days=10)}"
     end_date = f"{date.today() + timedelta(days=10)}"
     services = ServiceModelFactory.create_batch(5, service_number="1|2|Bellford")
     for service in services:
@@ -55,6 +55,7 @@ def test_get_inscope_inseason_lines():
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
     sirivm_sampler = SirivmSampler()
     expected_line_names = ["1", "Bellford", "2"]
+
     # test
     actual_line_names = sirivm_sampler.get_inscope_inseason_lines()
 
@@ -73,7 +74,7 @@ def test_get_vehicle_activities(mock_get_siri_vm_data_feed_by_id):
         xml_data = f.read()
         xml_data_bytes = bytes(xml_data, "utf-8")
     mock_get_siri_vm_data_feed_by_id.return_value = xml_data_bytes
-    start_date = "2023-02-01"
+    start_date = f"{date.today() - timedelta(days=10)}"
     end_date = f"{date.today() + timedelta(days=10)}"
     services = ServiceModelFactory.create_batch(5, service_number="100|200|Bellford")
     for service in services:
