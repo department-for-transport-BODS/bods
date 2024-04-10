@@ -440,7 +440,6 @@ class TransXChangeDataLoader:
                         "file_id",
                         "serviced_org_id",
                         "serviced_org_ref",
-                        "operational",
                     ]
                 ],
                 on=["file_id", "serviced_org_ref"],
