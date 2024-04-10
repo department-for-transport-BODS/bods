@@ -150,7 +150,7 @@ class SirivmSampler:
         Returns:
             pd.DataFrame: returns the dataframe with first time vehicle activities
         """
-        prev_activities = self.get_week_reports_pd(feed_id)
+        prev_activities = self.get_week_reports_df(feed_id)
         curr_activities = pd.DataFrame(
             [self.format_date(activity.dict()) for activity in activities]
         )
