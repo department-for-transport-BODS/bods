@@ -133,6 +133,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "locality_id",
                     "admin_area_id",
                     "common_name",
+                    "sequence_number",
                 ]
             ),
         )

@@ -328,7 +328,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 8))
+        self.assertEqual(extracted.timing_links.shape, (20, 10))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -340,6 +340,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "is_timing_status",
                 "run_time",
                 "wait_time",
+                "from_stop_sequence_number",
+                "to_stop_sequence_number",
             ],
         )
         self.assertEqual(
@@ -465,7 +467,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 8))
+        self.assertEqual(extracted.timing_links.shape, (20, 10))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -477,6 +479,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "is_timing_status",
                 "run_time",
                 "wait_time",
+                "from_stop_sequence_number",
+                "to_stop_sequence_number",
             ],
         )
         self.assertEqual(
@@ -596,6 +600,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "vehicle_journey_code",
                 "journey_code",
                 "order",
+                "from_stop_sequence_number",
+                "to_stop_sequence_number",
             ],
         )
 
@@ -846,6 +852,7 @@ class ExtractUtilitiesTestCase(TestCase):
                     "geometry": None,
                     "locality_id": 1,
                     "admin_area_id": 1,
+                    "sequence_number": 0,
                 },
                 {
                     "file_id": 4288313304800897227,
@@ -856,6 +863,7 @@ class ExtractUtilitiesTestCase(TestCase):
                     "geometry": None,
                     "locality_id": 1,
                     "admin_area_id": 1,
+                    "sequence_number": 1,
                 },
                 {
                     "file_id": 4288313304800897227,
@@ -866,6 +874,7 @@ class ExtractUtilitiesTestCase(TestCase):
                     "geometry": None,
                     "locality_id": 1,
                     "admin_area_id": 1,
+                    "sequence_number": 2,
                 },
             ]
         )
