@@ -283,7 +283,7 @@ class TimetableVisualiser:
             set(base_vehicle_journey_ids)
         ):
             vehicle_journey_id_missing = (
-                vehicle_journey_ids_op_serviced_org - base_vehicle_journey_ids
+                vehicle_journey_ids_op_serviced_org - set(base_vehicle_journey_ids)
             )
             df_vehicle_journey_serviced_org = df_base_vehicle_journeys[
                 df_base_vehicle_journeys["vehicle_journey_id"].isin(
