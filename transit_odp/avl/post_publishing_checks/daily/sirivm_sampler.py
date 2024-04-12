@@ -1,19 +1,19 @@
-from datetime import timedelta
 import datetime
 import json
 import logging
 import random
+from datetime import timedelta
 from typing import List, Optional, Tuple
-
 
 import pandas as pd
 import requests
 from django.conf import settings
 
-from transit_odp.avl.models import PPCReportType, PostPublishingCheckReport
+from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.post_publishing_checks.constants import SirivmField
 from transit_odp.avl.post_publishing_checks.models import Siri, VehicleActivity
 from transit_odp.avl.post_publishing_checks.weekly.constants import DailyReport
+from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 
 logger = logging.getLogger(__name__)
 
@@ -70,11 +70,25 @@ class SirivmSampler:
         sirivm_header = SiriHeader.from_siri_packet(siri)
 
         vmd = siri.service_delivery.vehicle_monitoring_delivery
-        vehicle_activities = vmd.vehicle_activities
+
         logger.info(
-            f"Client returned {len(vehicle_activities)} vehicle activities for "
+            f"Client returned {len(vmd.vehicle_activities)} vehicle activities for "
             f"feed {feed_id}"
         )
+        inscope_inseason_lines = self.get_inscope_inseason_lines()
+
+        vehicle_activities = [
+            vehicle_activity
+            for vehicle_activity in vmd.vehicle_activities
+            if vehicle_activity.monitored_vehicle_journey.line_ref
+            in inscope_inseason_lines
+        ]
+
+        logger.info(
+            f"In Scope and In Season vehicle activities {len(vehicle_activities)} for "
+            f"feed {feed_id}"
+        )
+
         if len(vehicle_activities) == 0:
             return sirivm_header, []
 
@@ -93,6 +107,26 @@ class SirivmSampler:
         )
 
         return sirivm_header, samples
+
+    def get_inscope_inseason_lines(self) -> set:
+        """
+        Retrieves a set of unique service numbers corresponding to lines that are 'In Scope' and 'In Season'
+        according to the timetable catalogue.
+
+        Returns:
+            set: A set containing unique service numbers of lines that are 'In Scope' and 'In Season'.
+        """
+        timetable_df = _get_timetable_catalogue_dataframe()
+        inscope_inseason_lines = timetable_df[
+            (timetable_df["Scope Status"] == "In Scope")
+            & (timetable_df["Seasonal Status"] == "In Season")
+        ]
+        inscope_inseason_lines = inscope_inseason_lines["OTC:Service Number"].str.split(
+            "|", expand=True
+        )
+        inscope_inseason_lines = inscope_inseason_lines.melt()["value"].dropna()
+        inscope_inseason_lines = set(inscope_inseason_lines)
+        return inscope_inseason_lines
 
     def ignore_old_activites(
         self,
