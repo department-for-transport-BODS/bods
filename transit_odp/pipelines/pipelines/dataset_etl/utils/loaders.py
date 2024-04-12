@@ -145,9 +145,12 @@ def add_service_pattern_to_service_pattern_stops(
                 record["service_pattern_id"], level="service_pattern_id"
             ).iloc[0]["id"]
             vehicle_journey_id = record.get("id", None)
+            sequence_number = record["sequence_number"]
+            if not sequence_number:
+                sequence_number = record["order"]
             yield ServicePatternStop(
                 service_pattern_id=service_pattern_id,
-                sequence_number=record["order"],
+                sequence_number=sequence_number,
                 naptan_stop_id=record["naptan_id"],
                 atco_code=record["stop_atco"],
                 departure_time=record["departure_time"],
