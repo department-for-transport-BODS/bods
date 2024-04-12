@@ -88,6 +88,7 @@ class VehicleJourney(models.Model):
         default=None,
         null=True,
     )
+    block_number = models.IntegerField(null=True, default=None)
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
@@ -292,3 +293,9 @@ class BankHolidays(models.Model):
     date = models.DateField()
     notes = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=255, null=True, blank=True)
+
+class StopActivity(models.Model):
+    name = models.CharField(max_length=255)
+    is_pickup = models.BooleanField(default=False)
+    is_setdown = models.BooleanField(default=False)
+    is_driverrequest = models.BooleanField(default=False)

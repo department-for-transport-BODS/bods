@@ -15,6 +15,13 @@ from .transmodel import (
     TimingPatternStop,
     VehicleJourney,
 )
+from .dqs import (
+    Report,
+    Checks,
+    TaskResults,
+    ErrorResults,
+)
+
 from .warnings import (
     WARNING_MODELS,
     BadTimingsMixin,
@@ -49,9 +56,11 @@ from .warnings import (
 
 __all__ = [
     "BadTimingsMixin",
+    "Checks",
     "DataQualityReport",
     "DataQualityReportSummary",
     "DataQualityWarningBase",
+    "ErrorResults",
     "FastLinkWarning",
     "FastTimingWarning",
     "IncorrectNOCWarning",
@@ -64,6 +73,7 @@ __all__ = [
     "LineExpiredWarning",
     "LineMissingBlockIDWarning",
     "PTIObservation",
+    "Report",
     "SchemaViolation",
     "Service",
     "ServiceLink",
@@ -77,6 +87,7 @@ __all__ = [
     "StopMissingNaptanWarning",
     "StopPoint",
     "StopWarningBase",
+    "TaskResults",
     "TimingBackwardsWarning",
     "TimingDropOffWarning",
     "TimingFirstWarning",
