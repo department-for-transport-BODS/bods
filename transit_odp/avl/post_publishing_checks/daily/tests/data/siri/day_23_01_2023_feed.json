@@ -1,0 +1,170 @@
+{
+  "AVLtoTimetable matching summary": [
+    {
+      "SIRI field": "OperatorRef",
+      "TXC match field": "NationalOperatorCode",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "LineRef",
+      "TXC match field": "LineName",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "DatedVehicleJourneyRef",
+      "TXC match field": "TicketMachine/JourneyCode",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "PublishedLineName",
+      "TXC match field": "LineName",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "DestinationRef",
+      "TXC match field": "JourneyPatternTimingLink/To/StopPointRef",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "OriginRef",
+      "TXC match field": "JourneyPatternTimingLink/from/StopPointRef",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "DirectionRef",
+      "TXC match field": "Direction",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": ""
+    },
+    {
+      "SIRI field": "BlockRef",
+      "TXC match field": "BlockNumber",
+      "Total vehicleActivities analysed": 2,
+      "Total count of SIRI fields populated": 2,
+      "%populated": "100.0%",
+      "Successful match with TXC": "0",
+      "%match": "0.0%",
+      "Notes": "Enforcement agency may consider this data as a mandatory field if you are technologically enabled to generate it. Please work with your suppliers to ensure it is provided accurately"
+    }
+  ],
+  "All SIRI-VM analysed": [
+    {
+      "Version": "2.0",
+      "ResponseTimestamp (ServiceDelivery)": "2023-01-25T17:02:00.971080+00:00",
+      "ProducerRef": "ItoWorld",
+      "ResponseTimestamp (VehicleMonitoringDelivery)": "2023-01-25T17:02:01.071080+00:00",
+      "RequestMessageRef": "c68a8a45-7fe5-45b4-8225-0b5eb09b2c82",
+      "ValidUntil": "2023-01-25T17:07:00.971080+00:00",
+      "ShortestPossibleCycle": "PT5S",
+      "RecordedAtTime": "2023-01-25T17:01:48+00:00",
+      "ItemIdentifier": "af8758ce-f416-4e37-a7ba-95aed3f36cc8",
+      "ValidUntilTime": "2023-01-25T17:07:00.971637",
+      "LineRef": "59",
+      "DirectionRef": "OUTBOUND",
+      "DataFrameRef": "2023-01-25",
+      "DatedVehicleJourneyRef": "1094",
+      "PublishedLineName": "59",
+      "OperatorRef": "SBLB",
+      "OriginRef": "2090A20181",
+      "OriginName": "Finnan Brae",
+      "DestinationRef": "2090A041615",
+      "DestinationName": "Howes Road",
+      "OriginAimedDepartureTime": "2023-01-25T16:45:00+00:00",
+      "Longitude": "-2.0972388",
+      "Latitude": "57.1450272",
+      "Bearing": "216.0",
+      "VehicleRef": "SBLB-14051",
+      "BlockRef": "6502",
+      "DriverRef": "-"
+    },
+    {
+      "Version": "2.0",
+      "ResponseTimestamp (ServiceDelivery)": "2023-01-25T17:02:00.971080+00:00",
+      "ProducerRef": "ItoWorld",
+      "ResponseTimestamp (VehicleMonitoringDelivery)": "2023-01-25T17:02:01.071080+00:00",
+      "RequestMessageRef": "c68a8a45-7fe5-45b4-8225-0b5eb09b2c82",
+      "ValidUntil": "2023-01-25T17:07:00.971080+00:00",
+      "ShortestPossibleCycle": "PT5S",
+      "RecordedAtTime": "2023-01-25T17:01:47+00:00",
+      "ItemIdentifier": "31d3cfb2-9a24-42a6-a93c-c0efbdab5b66",
+      "ValidUntilTime": "2023-01-25T17:07:00.971260",
+      "LineRef": "22",
+      "DirectionRef": "OUTBOUND",
+      "DataFrameRef": "2023-01-25",
+      "DatedVehicleJourneyRef": "65",
+      "PublishedLineName": "22",
+      "OperatorRef": "CRTB",
+      "OriginRef": "2090A20181",
+      "OriginName": "Carron Place",
+      "DestinationRef": "2090A041615",
+      "DestinationName": "Strathmore Park",
+      "OriginAimedDepartureTime": "2023-01-25T16:56:00+00:00",
+      "Longitude": "-4.664237",
+      "Latitude": "55.6348305",
+      "Bearing": "222.0",
+      "VehicleRef": "STWS-37498",
+      "BlockRef": "6502",
+      "DriverRef": "-"
+    }
+  ],
+  "UncountedVehicleActivities": [
+    {
+      "SD ResponseTimestamp": "2023-01-25T17:02:00.971080+00:00",
+      "AVL data set name BODS": "ITO World Test_14_20230117 14:01:16",
+      "AVL data set ID BODS": "14",
+      "OperatorRef": "SBLB",
+      "LineRef": "59",
+      "RecordedAtTime": "2023-01-25T17:01:48+00:00",
+      "DatedVehicleJourneyRef in SIRI": "1094",
+      "Error note: Reason it could not be analysed against TXC": "No published TXC files found matching NOC SBLB and line name 59"
+    },
+    {
+      "SD ResponseTimestamp": "2023-01-25T17:02:00.971080+00:00",
+      "AVL data set name BODS": "ITO World Test_14_20230117 14:01:16",
+      "AVL data set ID BODS": "14",
+      "OperatorRef": "CRTB",
+      "LineRef": "22",
+      "RecordedAtTime": "2023-01-25T17:01:47+00:00",
+      "DatedVehicleJourneyRef in SIRI": "65",
+      "Error note: Reason it could not be analysed against TXC": "No published TXC files found matching NOC CRTB and line name 22"
+    }
+  ],
+  "DirectionRef": [],
+  "DestinationRef": [],
+  "OriginRef": [],
+  "BlockRef": []
+}
