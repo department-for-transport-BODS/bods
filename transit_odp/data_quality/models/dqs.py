@@ -29,17 +29,17 @@ class TaskResults(models.Model):
         Checks, related_name="dqs_taskresults_check", on_delete=models.SET_NULL, null=True
     )
 
-class ErrorResults(models.Model):
+class ObservationResults(models.Model):
     details = models.TextField(
         blank=True, help_text="Contains more details about the error"
     )
     taskresults = models.ForeignKey(
-        TaskResults, related_name="dqs_errorresult_taskresults", on_delete=models.CASCADE
+        TaskResults, related_name="dqs_observationresult_taskresults", on_delete=models.CASCADE
     )
     vehicle_journey = models.ForeignKey(
-        VehicleJourney, on_delete=models.CASCADE, related_name="dqs_errorresult_vehicle_journey"
+        VehicleJourney, on_delete=models.CASCADE, related_name="dqs_observationresult_vehicle_journey"
     )
 
     service_pattern_stop = models.ForeignKey(
-        ServicePatternStop, on_delete=models.CASCADE, related_name="dqs_errorresult_service_pattern_stop"
+        ServicePatternStop, on_delete=models.CASCADE, related_name="dqs_observationresult_service_pattern_stop"
     )

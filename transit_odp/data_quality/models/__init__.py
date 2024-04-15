@@ -19,7 +19,7 @@ from .dqs import (
     Report,
     Checks,
     TaskResults,
-    ErrorResults,
+    ObservationResults,
 )
 
 from .warnings import (
@@ -60,7 +60,6 @@ __all__ = [
     "DataQualityReport",
     "DataQualityReportSummary",
     "DataQualityWarningBase",
-    "ErrorResults",
     "FastLinkWarning",
     "FastTimingWarning",
     "IncorrectNOCWarning",
@@ -72,6 +71,7 @@ __all__ = [
     "JourneyWithoutHeadsignWarning",
     "LineExpiredWarning",
     "LineMissingBlockIDWarning",
+    "ObservationResults",
     "PTIObservation",
     "Report",
     "SchemaViolation",
