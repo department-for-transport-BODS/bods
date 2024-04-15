@@ -237,6 +237,43 @@ def get_line_description_based_on_direction(row: pd.Series) -> str:
     return direction_mapping.get(row["direction"], "")
 
 
+def create_df_timetable_visualiser(df_vehicle_journey: pd.DataFrame) -> pd.DataFrame:
+    
+    """
+    Create the data frame for the timetable visualiser based on stops/atco codes
+    and the vehicle journey codes
+    """
+    
+    atco_codes = set()
+    vehicle_journey_codes = set()
+    data_df = []
+    data = {}
+    return pd.DataFrame()
+    for _, row in df_vehicle_journey.iterrows():
+        atco_code = row['atco_code']
+        vehicle_journey_code = row['vehicle_journey_code']
+        key = vehicle_journey_code+"_"+atco_code
+        data[key] = row['departure_time']
+        atco_codes.add(atco_code)
+        vehicle_journey_codes.add(vehicle_journey_code)
+
+    
+    for atco_code in atco_codes:
+        obj = {}
+        for journey_code in vehicle_journey_codes_sorted:
+            key = journey_code+"_"+atco_code
+            val = data.get(key, "-")
+            obj[journey_code] = val
+        data_df.append(obj)
+    #print(data_df)
+
+    #bus_stops = list(bus_stop.values())
+    df = pd.DataFrame(data_df)
+    df = pd.DataFrame(data_df, index=stops)
+    #print("df: ", df.head(n=100))
+    df.to_csv("data_df.csv")
+
+
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
 ) -> pd.DataFrame:
@@ -289,68 +326,111 @@ def get_df_timetable_visualiser(
     df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_sorted.csv")
     # TODO: Add the logic for creating the final dataframe of timetable
 
+    df_vehicle_journey_operating['atco_sequence'] = df_vehicle_journey_operating.apply(lambda row: str(row['stop_sequence']) + "_" +row['atco_code'] , axis=1)    
+    atco_codes_sequence = list(df_vehicle_journey_operating['atco_sequence'].unique())
+    vehicle_journey_codes_sorted = list(df_vehicle_journey_operating['vehicle_journey_code'].unique())
+
+    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_11.csv")
+    data = {}
+    stops = {}
+    for row in df_vehicle_journey_operating.to_dict('records'):
+        sequence = row['stop_sequence']
+        key = str(sequence) + "_" +row['vehicle_journey_code']
+        data[key] = row['departure_time']
+        if sequence not in stops:
+            stops[sequence] = row["common_name"]
+
+    print(f"Stops Unsorted: ", stops)
+    bus_stop_sequences = list(stops.keys())
+    bus_stop_sequences.sort()
+    stops = {k: stops[k] for k in bus_stop_sequences}
+
+    print(f"Stops Sorted: ", stops)
+    
+    data_df = []
+    # vehicle_journey_codes = ['6001']
+    
+    print(f"Sequences: ", bus_stop_sequences)
+    for seqeunce in bus_stop_sequences:
+        obj = {}
+        # atco_code_list = atco_code_dtl.split("_")
+        # seqeunce = atco_code_list[0]
+        # atco_code = atco_code_list[1]
+        #stops.append(atco_code)
+        for journey_code in vehicle_journey_codes_sorted:
+            key = str(seqeunce) + "_" + journey_code
+            val = data.get(key, "-")
+            obj[journey_code] = val
+        #print(obj)
+        #print("*"*20)
+        data_df.append(obj)
+    #print(data_df)
+
+    #bus_stops = list(bus_stop.values())
+    df = pd.DataFrame(data_df)
+    print(stops.keys())
+    df = pd.DataFrame(data_df, index=list(stops.values()))
+    #print("df: ", df.head(n=100))
+    df.to_csv("data_df.csv")
+
     return df_vehicle_journey_operating
 
 
 def filter_df_serviced_org_operating(
     target_date: str,
-    df_serviced_org_working_days: pd.DataFrame,
-    all_exception_vehicle_journey: Set,
-) -> Tuple[List, List]:
+    df_serviced_org_working_days: pd.DataFrame
+) -> List:
     """
-    Get the vehicle journeys based on the serviced organisation
-    working days and the operating/non-operating execptions
+    Get the vehicle journeys non-operating based on the serviced organisation
+    working days
 
-    :return: DataFrame
-    Return the filtered dataframe based on the serviced organisation
-    """
+    :return: List
+    Return the non-operating vehicle journey ids
+    """    
+    if df_serviced_org_working_days.empty:
+        return []
+    df_serviced_org_working_days = df_serviced_org_working_days.drop_duplicates()
+    df_serviced_org_working_days.sort_values(by=['start_date'])
+    vehicle_journey_nonoperating = []
 
-    df_serviced_org_working_days.to_csv("serviced.csv")
-
-    # Remove the vehicle journey which are not running on target date (nonoperating exception)
-    df_serviced_org_working_days = df_serviced_org_working_days[
-        ~df_serviced_org_working_days["vehicle_journey_id"].isin(
-            all_exception_vehicle_journey
-        )
-    ]
-
-    # Get the operating and non-operating working days
-    df_service_operating = df_serviced_org_working_days[
-        df_serviced_org_working_days["operating_on_working_days"]
-    ]
-    df_service_nonoperating = df_serviced_org_working_days[
-        ~df_serviced_org_working_days["operating_on_working_days"]
-    ]
-
-    # Find the service which are operating within range of start and end date
-    df_service_operating = df_service_operating[
-        (target_date >= df_serviced_org_working_days.start_date)
-        & (target_date <= df_serviced_org_working_days.end_date)
-    ]
-
-    # Exclude the service which are outside the earliest start and latest end date as non-operating
-    df_group_vehicle_journey_date = df_service_nonoperating.groupby(
+    # Step 1: Remove the vehicle journeys which are outside the start date and end date as we don't have information
+    df_group_vehicle_journey_date = df_serviced_org_working_days.groupby(
         by="vehicle_journey_id"
-    )
-
+    )    
     df_service_grouped = df_group_vehicle_journey_date.agg(
         {"start_date": "min", "end_date": "max"}
     )
-    df_service_nonoperating = df_service_grouped[
-        (target_date <= df_service_grouped.start_date)
-        | (target_date >= df_service_grouped.end_date)
-    ]
+    df_service_nonoperating = df_service_grouped[(target_date < df_service_grouped.start_date) | (target_date > df_service_grouped.end_date)]
+    if not df_service_nonoperating.empty:
+        vehicle_journey_nonoperating = df_service_nonoperating['vehicle_journey_id'].unique().tolist()
+        df_serviced_org_working_days = df_serviced_org_working_days[~df_serviced_org_working_days['vehicle_journey_id'].isin(vehicle_journey_nonoperating)]
+    
+    # Step 2: Find out the vehicle journeys which are not operating and lies within start and end date on the target date
+    df_service_nonoperating = df_serviced_org_working_days[(target_date >= df_serviced_org_working_days.start_date)
+        & (target_date <= df_serviced_org_working_days.end_date) & (~df_serviced_org_working_days["operating_on_working_days"])]
+    if not df_service_nonoperating.empty:
+        vehicle_journey_nonoperating = df_service_nonoperating['vehicle_journey_id'].unique().tolist()
+        df_serviced_org_working_days = df_serviced_org_working_days[~df_serviced_org_working_days['vehicle_journey_id'].isin(vehicle_journey_nonoperating)]
 
-    # Split the vehicle journey based on the operating_on_working_days
-    (
-        vehicle_journey_operating,
-        vehicle_journey_nonoperating,
-        _,
-    ) = get_vehicle_journeys_operating_nonoperating(
-        df_service_operating, df_service_nonoperating
-    )
+    # Step 3: Find out the vehicle journeys which are operating and fall outside the operating range
+    df_service_operating = df_serviced_org_working_days[df_serviced_org_working_days["operating_on_working_days"]]
+    df_service_operating.reset_index(inplace=True)    
+    
+    for idx, row in df_service_operating.iterrows():
+        # Iterate till second last row
+        if idx + 1 == len(df_service_operating):
+            continue
+        next_row = df_service_operating.iloc[idx+1]
+        next_vj = next_row['vehicle_journey_id']
+        vj = row['vehicle_journey_id']
+        if vj != next_vj: # If the vehicle journey is matching with current
+            continue
+        if vj in vehicle_journey_nonoperating:
+            continue
+        if target_date > row['end_date'] and target_date < next_row['start_date']:
+            vehicle_journey_nonoperating.append(vj)
 
-    return (vehicle_journey_operating, vehicle_journey_nonoperating)
+    return vehicle_journey_nonoperating
 
 
 def get_vehicle_journeys_operating_nonoperating(

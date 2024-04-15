@@ -221,6 +221,8 @@ class TimetableVisualiser:
 
         # Create the dataframes for the serviced organisation and service tables.
         df_base_vehicle_journeys = self.get_df_all_vehicle_journeys()
+        # if df_base_vehicle_journeys.empty:
+        #     return pd.DataFrame()
         df_base_vehicle_journeys.to_csv("test_base_vehicle_journey.csv")
         base_vehicle_journey_ids = (
             df_base_vehicle_journeys["vehicle_journey_id"].unique().tolist()
@@ -260,36 +262,16 @@ class TimetableVisualiser:
         )
 
         # Get the vehicle journey id which are operating/non-operating for the serviced organisation
-        (
-            vehicle_journey_ids_op_serviced_org,
-            vehicle_journey_ids_nonop_serviced_org,
-        ) = filter_df_serviced_org_operating(
-            self._target_date, df_serviced_org, all_exception_vehicle_journeys
+        vehicle_journey_ids_non_operating = filter_df_serviced_org_operating(
+            self._target_date, df_serviced_org
         )
 
-        # Remove the vehicle journeys which are not running for serviced organisation
+        # Remove the vehicle journeys which are not operating for serviced organisation
         df_vehicle_journey_operating = df_vehicle_journey_operating[
             ~df_vehicle_journey_operating["vehicle_journey_id"].isin(
-                vehicle_journey_ids_nonop_serviced_org
+                vehicle_journey_ids_non_operating
             )
-        ]
-
-        # Include the vehicle journey id which are not part of base vehicle journey
-        base_vehicle_journey_ids = df_vehicle_journey_operating[
-            "vehicle_journey_id"
-        ].unique()
-        vehicle_journey_ids_op_serviced_org = set(vehicle_journey_ids_op_serviced_org)
-        if not vehicle_journey_ids_op_serviced_org.issubset(
-            set(base_vehicle_journey_ids)
-        ):
-            vehicle_journey_id_missing = (
-                vehicle_journey_ids_op_serviced_org - set(base_vehicle_journey_ids)
-            )
-            df_vehicle_journey_serviced_org = df_base_vehicle_journeys[
-                df_base_vehicle_journeys["vehicle_journey_id"].isin(
-                    vehicle_journey_id_missing
-                )
-            ]
+        ]        
 
         df_vehicle_journey_operating.to_csv("test_vehicle_journey_operating.csv")
         df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
