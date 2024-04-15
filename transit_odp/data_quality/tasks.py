@@ -4,6 +4,8 @@ import celery
 from celery.app import shared_task
 from django.db import transaction
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from transit_odp.common.loggers import (
     DatasetPipelineLoggerContext,
     PipelineAdapter,
@@ -66,6 +68,11 @@ def run_dqs_report_etl_pipeline(report_id: int):
 
             pipeline = TransXChangeDQPipeline(dq_report)
             pipeline.run()
+            # Check status Ready
+            # if Ready:
+            # else:
+            # if Received:
+            # set to QUEUED
 
             adapter.info("Calculating Data Quality Score.")
             calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
@@ -165,6 +172,22 @@ def upload_dataset_to_dqs(task_pk):
     dq_task.task_id = report_uuid
     dq_task.save()
 
+    return dq_task
+
+
+def update_dqs_task_status(task_pk):
+    etl_task = get_etl_task_or_pipeline_exception(task_pk)
+    revision = etl_task.revision
+    try:
+        dq_task = DataQualityTask.objects.get(revision=revision)
+        adapter = get_dataset_adapter_from_revision(logger, revision)
+        dq_task.status = DataQualityTask.READY
+        dq_task.save()
+        adapter.info(
+            f"DQS task status set to READY successfully for revision {revision}."
+        )
+    except ObjectDoesNotExist:
+        adapter.info(f"DataQualityTask with revision {revision} does not exist.")
     return dq_task
 
 

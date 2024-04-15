@@ -19,7 +19,7 @@ from transit_odp.data_quality.models.report import (
     PostSchemaViolation,
     PTIValidationResult,
 )
-from transit_odp.data_quality.tasks import upload_dataset_to_dqs
+from transit_odp.data_quality.tasks import upload_dataset_to_dqs, update_dqs_task_status
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
@@ -407,7 +407,7 @@ def task_dataset_etl(revision_id: int, task_id: int):
             message="Unknown timetable ETL pipeline error.",
             task_name="dataset_etl",
         )
-
+    update_dqs_task_status(task_id)
     adapter.info("Timetable ETL pipeline task completed.")
     return revision_id
 
