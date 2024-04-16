@@ -139,10 +139,10 @@ const httpGetAsync = (url, callback) => {
 const initOrgMap = (apiRoot, orgId, disruptionId) => {
   const url = disruptionId
     ? apiRoot +
-      "disruption_detail_map_data/?orgId=" +
-      orgId.toString() +
-      "&disruptionId=" +
-      disruptionId.toString()
+    "disruption_detail_map_data/?orgId=" +
+    orgId.toString() +
+    "&disruptionId=" +
+    disruptionId.toString()
     : apiRoot + "organisation_map_data/?orgId=" + orgId.toString();
 
   // Initialise Map
@@ -176,71 +176,64 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
   zoomObject["_zoomOutButton"].setAttribute("tabindex", -1);
 
   const formatOrganisationDetailPageDisruptions = (disruptions) => {
-    return disruptions
-      .flatMap((disruption) => {
-        if (disruption.services && disruption.services.length > 0) {
-          const serviceDisruptions = disruption.services.map((service) => {
-            if (service.coordinates.longitude && service.coordinates.latitude) {
-              return {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [
-                    service.coordinates.longitude,
-                    service.coordinates.latitude,
-                  ],
-                },
-                properties: {
-                  icon: getIconForDisruption(disruption.disruptionReason),
-                  consequenceType: "services",
-                  disruptionReason: disruption.disruptionReason,
-                  disruptionId: disruption.disruptionId,
-                  lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
-                  operatorName: service.operatorName,
-                  disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
-                  disruptionEndDateTime: disruption.disruptionNoEndDateTime
-                    ? "No end date time"
-                    : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
-                  disruptionNoEndDateTime: service.disruptionNoEndDateTime,
-                },
-              };
+    let stopsDisruptions = []
+    let serviceDisruptions = []
+    return disruptions.flatMap((disruption) => {
+      if (disruption.services && disruption.services.length > 0) {
+        serviceDisruptions = disruption.services.map((service) => {
+          if (service.coordinates.longitude && service.coordinates.latitude) {
+            return {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [
+                  service.coordinates.longitude,
+                  service.coordinates.latitude,
+                ],
+              },
+              properties: {
+                icon: getIconForDisruption(disruption.disruptionReason),
+                consequenceType: "services",
+                disruptionReason: disruption.disruptionReason,
+                disruptionId: disruption.disruptionId,
+                lineDisplayName: `${service.lineName} - ${service.origin} - ${service.destination}`,
+                operatorName: service.operatorName,
+                disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+                disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+                disruptionNoEndDateTime: service.disruptionNoEndDateTime
+              }
             }
-          });
-          return serviceDisruptions;
-        }
+          }
+        })
+      }
 
-        if (disruption.stops && disruption.stops.length > 0) {
-          const stopsDisruptions = disruption.stops.map((stop) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                stop.coordinates.longitude,
-                stop.coordinates.latitude,
-              ],
-            },
-
-            properties: {
-              icon: getIconForDisruption(disruption.disruptionReason),
-              consequenceType: "stops",
-              disruptionReason: disruption.disruptionReason,
-              disruptionId: disruption.disruptionId,
-              atcoCode: stop.atcoCode,
-              commonName: stop.commonName,
-              bearing: stop.bearing ?? "N/A",
-              disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
-              disruptionEndDateTime: disruption.disruptionNoEndDateTime
-                ? "No end date time"
-                : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
-              disruptionNoEndDateTime: stop.disruptionNoEndDateTime,
-            },
-          }));
-          return stopsDisruptions;
-        }
-        return [...serviceDisruptions, ...stopsDisruptions];
-      })
-      .filter((val) => val !== undefined);
-  };
+      if (disruption.stops && disruption.stops.length > 0) {
+        stopsDisruptions = disruption.stops.map((stop) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [
+              stop.coordinates.longitude,
+              stop.coordinates.latitude,
+            ],
+          },
+          properties: {
+            icon: getIconForDisruption(disruption.disruptionReason),
+            consequenceType: "stops",
+            disruptionReason: disruption.disruptionReason,
+            disruptionId: disruption.disruptionId,
+            atcoCode: stop.atcoCode,
+            commonName: stop.commonName,
+            bearing: stop.bearing ?? "N/A",
+            disruptionStartDateTime: `${disruption.disruptionStartDate} ${disruption.disruptionStartTime}`,
+            disruptionEndDateTime: disruption.disruptionNoEndDateTime ? "No end date time" : `${disruption.disruptionEndDate} ${disruption.disruptionEndTime}`,
+            disruptionNoEndDateTime: stop.disruptionNoEndDateTime
+          }
+        }))
+      }
+      return [...serviceDisruptions, ...stopsDisruptions]
+    }).filter(val => val !== undefined)
+  }
 
   httpGetAsync(url, function (responseText) {
     const response = JSON.parse(responseText);
