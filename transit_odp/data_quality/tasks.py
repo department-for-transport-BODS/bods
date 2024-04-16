@@ -179,7 +179,7 @@ def update_dqs_task_status(task_pk):
     etl_task = get_etl_task_or_pipeline_exception(task_pk)
     revision = etl_task.revision
     try:
-        dq_task = DataQualityTask.objects.get(revision=revision)
+        dq_task = DataQualityTask.objects.get(revision=revision, status="RECEIVED")
         adapter = get_dataset_adapter_from_revision(logger, revision)
         dq_task.status = DataQualityTask.READY
         dq_task.save()
