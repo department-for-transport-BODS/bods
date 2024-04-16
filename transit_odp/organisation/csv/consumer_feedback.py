@@ -31,8 +31,20 @@ class ConsumerFeedbackBaseCSV(CSVBuilder):
 
 
 class ConsumerFeedbackCSV(ConsumerFeedbackBaseCSV):
-    def __init__(self, organisation_id: int):
+    def __init__(self, organisation_id: int, add_name_email_columns: bool = False):
         self._organisation_id = organisation_id
+        self._add_name_email_columns = add_name_email_columns
+
+    @property
+    def columns(self):
+        columns = super().columns
+        if not self._add_name_email_columns:
+            columns = [
+                column
+                for column in columns
+                if column.header not in ["Raised by: Name", "Raised by: Email"]
+            ]
+        return columns
 
     def get_queryset(self):
         qs = super().get_queryset()
