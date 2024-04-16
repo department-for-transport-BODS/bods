@@ -80,7 +80,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         is_flexible_departure_time = True
     else:
         stops_atcos["is_timing_status"] = True
-        stops_atcos["departure_time"] = pd.to_timedelta(stops_atcos["departure_time"])
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
