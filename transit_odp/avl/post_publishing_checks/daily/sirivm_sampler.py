@@ -238,9 +238,7 @@ class SirivmSampler:
             pd.DataFrame: Will have all the vehicle activities proccessed
             in the current week
         """
-
         start_date, end_date = self.get_start_and_end_date()
-
         feeds_in_last_week = PostPublishingCheckReport.objects.filter(
             created__range=[start_date, end_date],
             granularity=PPCReportType.DAILY,
