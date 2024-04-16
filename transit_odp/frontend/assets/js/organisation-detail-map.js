@@ -242,9 +242,13 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
       return;
     }
 
+    const newResp = response?.[0] ?? {}
+    const properties = newResp.properties
+
     const formattedDisruptions = disruptionId
-      ? response
+      ? [{ ...newResp, properties: { ...properties, ...(properties?.disruptionReason ? { icon: getIconForDisruption(properties?.disruptionReason) } : {}) } }]
       : formatOrganisationDetailPageDisruptions(response);
+
 
     const bounds = new mapboxgl.LngLatBounds();
 
