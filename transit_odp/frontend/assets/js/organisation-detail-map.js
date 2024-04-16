@@ -242,13 +242,16 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
       return;
     }
 
-    const newResp = response?.[0] ?? {}
-    const properties = newResp.properties
-
-    const formattedDisruptions = disruptionId
-      ? [{ ...newResp, properties: { ...properties, ...(properties?.disruptionReason ? { icon: getIconForDisruption(properties?.disruptionReason) } : {}) } }]
-      : formatOrganisationDetailPageDisruptions(response);
-
+    let formattedDisruptions = []
+    if (disruptionId) {
+      formattedDisruptions = response.map(resp => {
+        const properties = resp.properties
+        return { ...resp, properties: { ...properties, ...(properties?.disruptionReason ? { icon: getIconForDisruption(properties?.disruptionReason) } : {}) } }
+      })
+    }
+    else {
+      formattedDisruptions = formatOrganisationDetailPageDisruptions(response);
+    }
 
     const bounds = new mapboxgl.LngLatBounds();
 
