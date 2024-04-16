@@ -31,7 +31,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                 {
                     "file_id": file_id,
                     "service_code": "PB0000582:186",
-                    "departure_time": "08:14:00",
+                    "departure_time": pd.to_timedelta("08:14:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_1",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3681",
@@ -45,7 +45,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                 {
                     "file_id": file_id,
                     "service_code": "PB0000582:186",
-                    "departure_time": "16:40:00",
+                    "departure_time": pd.to_timedelta("16:40:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_2",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
@@ -79,7 +79,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
             [
                 {
                     "file_id": file_id,
-                    "departure_time": "08:14:00",
+                    "departure_time": pd.to_timedelta("08:14:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_1",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3681",
@@ -91,7 +91,7 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                 },
                 {
                     "file_id": file_id,
-                    "departure_time": "16:40:00",
+                    "departure_time": pd.to_timedelta("16:40:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_2",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
@@ -239,7 +239,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                 {
                     "file_id": file_id,
                     "service_code": "UZ000WBCT:B1081",
-                    "departure_time": "15:10:00",
+                    "departure_time": pd.to_timedelta("15:10:00"),
                     "journey_pattern_ref": "UZ000WBCT:B1081-jp_3",
                     "line_ref": "ARBB:UZ000WBCT:B1081:123",
                     "journey_code": "1094",
@@ -311,7 +311,7 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
             [
                 {
                     "file_id": file_id,
-                    "departure_time": "15:10:00",
+                    "departure_time": pd.to_timedelta("15:10:00"),
                     "journey_pattern_ref": "UZ000WBCT:B1081-jp_3",
                     "line_ref": "ARBB:UZ000WBCT:B1081:123",
                     "journey_code": "1094",
@@ -405,7 +405,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 {
                     "file_id": file_id,
                     "service_code": "PB0000582:186",
-                    "departure_time": "08:14:00",
+                    "departure_time": pd.to_timedelta("08:14:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_1",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3681",
@@ -419,7 +419,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 {
                     "file_id": file_id,
                     "service_code": "PB0000582:186",
-                    "departure_time": "16:40:00",
+                    "departure_time": pd.to_timedelta("16:44:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_2",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
@@ -454,7 +454,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
             [
                 {
                     "file_id": file_id,
-                    "departure_time": "08:14:00",
+                    "departure_time": pd.to_timedelta("08:14:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_1",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3681",
@@ -466,7 +466,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 },
                 {
                     "file_id": file_id,
-                    "departure_time": "16:40:00",
+                    "departure_time": pd.to_timedelta("16:44:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_2",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",

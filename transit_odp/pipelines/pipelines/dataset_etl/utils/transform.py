@@ -80,7 +80,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         is_flexible_departure_time = True
     else:
         stops_atcos["is_timing_status"] = True
-        stops_atcos["departure_time"] = pd.to_timedelta(stops_atcos["departure_time"])
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
@@ -333,15 +332,11 @@ def create_route_links(timing_links, stop_points):
             "is_timing_status",
             "run_time",
             "wait_time",
-            "from_stop_sequence_number",
-            "to_stop_sequence_number",
         ]
     else:
         columns = [
             "from_stop_ref",
             "to_stop_ref",
-            "from_stop_sequence_number",
-            "to_stop_sequence_number",
         ]
 
     route_links = (
@@ -464,7 +459,13 @@ def create_route_to_route_links(
 
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                ["route_link_ref", "run_time_vj", "wait_time_vj"]
+                [
+                    "route_link_ref",
+                    "run_time_vj",
+                    "wait_time_vj",
+                    "from_stop_sequence_number",
+                    "to_stop_sequence_number",
+                ]
             ]
         )
     else:
@@ -473,7 +474,11 @@ def create_route_to_route_links(
         # orderings and use 'reset_index' to create a new sequential index in this order
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                ["route_link_ref"]
+                [
+                    "route_link_ref",
+                    "from_stop_sequence_number",
+                    "to_stop_sequence_number",
+                ]
             ]
         )
 

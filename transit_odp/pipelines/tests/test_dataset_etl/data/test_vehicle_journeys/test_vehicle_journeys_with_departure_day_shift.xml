@@ -758,6 +758,17 @@
       <LineRef>WRAY:PB0000582:186:WF1</LineRef>
       <JourneyPatternRef>jp_2</JourneyPatternRef>
       <DepartureTime>16:40:00</DepartureTime>
+      <StartDeadRun id="VJDR1" CreationDateTime="2024-01-03T08:36:37" Modification="new" RevisionNumber="0">
+        <PositioningLink CreationDateTime="2024-01-03T08:36:37" Modification="new" RevisionNumber="0" id="VJPL1">
+          <RunTime>PT4M</RunTime>
+          <From>
+            <GarageRef>CV</GarageRef>
+          </From>
+          <To>
+            <StopPointRef>43000001204</StopPointRef>
+          </To>
+        </PositioningLink>
+      </StartDeadRun>
     </VehicleJourney>
   </VehicleJourneys>
 </TransXChange>
