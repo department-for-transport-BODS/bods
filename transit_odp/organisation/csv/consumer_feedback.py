@@ -1,6 +1,9 @@
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import ConsumerFeedback
 
+RAISED_BY_NAME_HEADER = "Raised by: Name"
+RAISED_BY_EMAIL_HEADER = "Raised by: Email"
+
 
 class ConsumerFeedbackBaseCSV(CSVBuilder):
     @property
@@ -11,8 +14,8 @@ class ConsumerFeedbackBaseCSV(CSVBuilder):
             CSVColumn(header="Dataset ID", accessor="dataset_id"),
             CSVColumn(header="DataType", accessor="dataset_type"),
             CSVColumn(header="Description", accessor="feedback"),
-            CSVColumn(header="Raised by: Name", accessor="username"),
-            CSVColumn(header="Raised by: Email", accessor="email"),
+            CSVColumn(header=RAISED_BY_NAME_HEADER, accessor="username"),
+            CSVColumn(header=RAISED_BY_EMAIL_HEADER, accessor="email"),
             CSVColumn(
                 header="Total number of issues raised on this dataset/feed",
                 accessor=lambda n: "-" if n.count is None else str(n.count),
@@ -42,7 +45,7 @@ class ConsumerFeedbackCSV(ConsumerFeedbackBaseCSV):
             columns = [
                 column
                 for column in columns
-                if column.header not in ["Raised by: Name", "Raised by: Email"]
+                if column.header not in [RAISED_BY_EMAIL_HEADER, RAISED_BY_NAME_HEADER]
             ]
         return columns
 
