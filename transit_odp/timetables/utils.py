@@ -330,46 +330,48 @@ def get_df_timetable_visualiser(
     atco_codes_sequence = list(df_vehicle_journey_operating['atco_sequence'].unique())
     vehicle_journey_codes_sorted = list(df_vehicle_journey_operating['vehicle_journey_code'].unique())
 
-    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_11.csv")
+    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_11.csv")    
+    
+    df_sequence_time: pd.DataFrame =  df_vehicle_journey_operating.sort_values(['stop_sequence', 'departure_time'])
+    df_sequence_time = df_sequence_time[['stop_sequence', 'common_name']]
+    df_sequence_time = df_sequence_time.drop_duplicates()
+    final_stops = df_sequence_time['common_name'].tolist()
+    sequences_itr = df_sequence_time.to_dict('records')
     data = {}
     stops = {}
     for row in df_vehicle_journey_operating.to_dict('records'):
         sequence = row['stop_sequence']
-        key = str(sequence) + "_" +row['vehicle_journey_code']
+        common_name = row['common_name']
+        key = common_name + "_" + str(sequence) + "_" +row['vehicle_journey_code']
         data[key] = row['departure_time']
+        print(f"AddingKey: ", key)
         if sequence not in stops:
-            stops[sequence] = row["common_name"]
+            stops[sequence] = common_name
+            #sequences.append()
 
     print(f"Stops Unsorted: ", stops)
     bus_stop_sequences = list(stops.keys())
     bus_stop_sequences.sort()
     stops = {k: stops[k] for k in bus_stop_sequences}
-
-    print(f"Stops Sorted: ", stops)
     
     data_df = []
-    # vehicle_journey_codes = ['6001']
-    
-    print(f"Sequences: ", bus_stop_sequences)
-    for seqeunce in bus_stop_sequences:
+
+    for seqeunce_elem in sequences_itr:
         obj = {}
-        # atco_code_list = atco_code_dtl.split("_")
-        # seqeunce = atco_code_list[0]
-        # atco_code = atco_code_list[1]
-        #stops.append(atco_code)
+        sequence = seqeunce_elem['stop_sequence']
+        common_name = seqeunce_elem['common_name']
         for journey_code in vehicle_journey_codes_sorted:
-            key = str(seqeunce) + "_" + journey_code
+            key = common_name + "_" + str(sequence) + "_" + journey_code
             val = data.get(key, "-")
             obj[journey_code] = val
-        #print(obj)
-        #print("*"*20)
         data_df.append(obj)
     #print(data_df)
 
     #bus_stops = list(bus_stop.values())
+    #sequences_itr = 
     df = pd.DataFrame(data_df)
     print(stops.keys())
-    df = pd.DataFrame(data_df, index=list(stops.values()))
+    df = pd.DataFrame(data_df, index=final_stops)
     #print("df: ", df.head(n=100))
     df.to_csv("data_df.csv")
 
