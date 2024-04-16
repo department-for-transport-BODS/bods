@@ -203,6 +203,7 @@ def test_filter_df_serviced_org_operating():
     # Scenario 4: When the target date is between the date ranges of the operating vehicle journeys
     target_date = "2022-07-27"
     expected_nonop_vehicle_journeys = [540, 544, 550, 553, 559, 561, 568, 573]
+    # [540, 541, 544, 545, 549, 550, 553, 554, 559, 560, 561, 562, 567, 568, 573, 574]
     actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
         target_date, df_serviced_org_working_days
     )

@@ -244,37 +244,14 @@ def get_vehicle_journey_codes_sorted(
     """
     Get the vehicle journey codes sorted based on the departure time
     """
-    # Get the unique sorted vehicle journey codes based on the departure time
-    df_vehicle_journey_grouped = df_vehicle_journey_operating.groupby(
-        by="vehicle_journey_code"
-    )
-    df_vehicle_journey_grouped = df_vehicle_journey_grouped.agg(
-        {"departure_time": "min"}
-    )
-    df_vehicle_journey_sorted = df_vehicle_journey_grouped.sort_values(
-        by="departure_time"
-    )
-    df_vehicle_journey_sorted = df_vehicle_journey_sorted.reset_index()
-    vehicle_journey_codes_sorted = df_vehicle_journey_sorted["vehicle_journey_code"]
 
-    # Add a new column stating the vehicle journey order based on vehicle journey codes order
-    vehicle_journey_codes_sorted_dict = {
-        code: index for index, code in enumerate(vehicle_journey_codes_sorted)
-    }
-    df_vehicle_journey_operating[
-        "vehicle_journey_order"
-    ] = df_vehicle_journey_operating["vehicle_journey_code"].replace(
-        vehicle_journey_codes_sorted_dict
-    )
-
-    # Sort the data frame based on the vehicle journey and the stop sequence
-    df_vehicle_journey_operating = df_vehicle_journey_operating.sort_values(
-        by=["vehicle_journey_order"]
-    )
-    df_vehicle_journey_operating["vehicle_journey_code"] = df_vehicle_journey_operating[
+    df_vehicle_journey_sorted = df_vehicle_journey_operating.groupby(
+        "vehicle_journey_code"
+    ).apply(lambda x: x.sort_values(by="departure_time"))
+    df_vehicle_journey_sorted["vehicle_journey_code"] = df_vehicle_journey_sorted[
         "vehicle_journey_code"
     ].astype(str)
-    return df_vehicle_journey_operating["vehicle_journey_code"].unique().tolist()
+    return df_vehicle_journey_sorted["vehicle_journey_code"].unique().tolist()
 
 
 def get_df_timetable_visualiser(
@@ -339,6 +316,43 @@ def get_df_timetable_visualiser(
     return df_vehicle_journey_operating
 
 
+def is_vehicle_journey_operating(df_vj, target_date) -> bool:
+
+    min_start_date = df_vj["start_date"].min()
+    max_end_date = df_vj["end_date"].max()
+
+    # Step 1: Remove the vehicle journeys which are outside the start date and end date as we don't have information
+    is_nonoperating = (target_date < min_start_date) or (target_date > max_end_date)
+    if is_nonoperating:
+        return False
+    df_vj["IsInRange"] = df_vj.apply(
+        lambda row: (target_date >= row["start_date"])
+        & (target_date <= row["end_date"]),
+        axis=1,
+    )
+
+    # Step 2: Find out the vehicle journeys which are not operating and lies within start and end date on the target date
+    df_service_nonoperating = df_vj[
+        df_vj["IsInRange"] & ~df_vj["operating_on_working_days"]
+    ]
+
+    if not df_service_nonoperating.empty:
+        return False
+    # Step 3: Find out the vehicle journeys which are operating and fall outside the operating range
+    df_vj = df_vj[df_vj["operating_on_working_days"]]
+    df_vj.reset_index(inplace=True)
+    for idx, row in df_vj.iterrows():
+        # Iterate till second last row
+        if idx + 1 == len(df_vj):
+            continue
+        next_row = df_vj.iloc[idx + 1]
+        vj = row["vehicle_journey_id"]
+        if target_date > row["end_date"] and target_date < next_row["start_date"]:
+            return False
+
+    return True
+
+
 def get_non_operating_vj_serviced_org(
     target_date: str, df_serviced_org_working_days: pd.DataFrame
 ) -> List:
@@ -352,66 +366,21 @@ def get_non_operating_vj_serviced_org(
     if df_serviced_org_working_days.empty:
         return []
     df_serviced_org_working_days = df_serviced_org_working_days.drop_duplicates()
-    df_serviced_org_working_days.sort_values(by=["start_date"])
+    df_serviced_org_working_days = df_serviced_org_working_days.sort_values(
+        by=["start_date"]
+    )
     vehicle_journey_nonoperating = []
 
-    # Step 1: Remove the vehicle journeys which are outside the start date and end date as we don't have information
     df_group_vehicle_journey_date = df_serviced_org_working_days.groupby(
         by="vehicle_journey_id"
     )
-    df_service_grouped = df_group_vehicle_journey_date.agg(
-        {"start_date": "min", "end_date": "max"}
-    )
-    df_service_nonoperating = df_service_grouped[
-        (target_date < df_service_grouped.start_date)
-        | (target_date > df_service_grouped.end_date)
-    ]
-    if not df_service_nonoperating.empty:
-        df_service_nonoperating = df_service_nonoperating.reset_index()
-        vehicle_journey_nonoperating = (
-            df_service_nonoperating["vehicle_journey_id"].unique().tolist()
-        )
-        df_serviced_org_working_days = df_serviced_org_working_days[
-            ~df_serviced_org_working_days["vehicle_journey_id"].isin(
-                vehicle_journey_nonoperating
-            )
-        ]
+    vehicle_journey_operating_status = df_group_vehicle_journey_date.apply(
+        is_vehicle_journey_operating, target_date
+    ).to_dict()
 
-    # Step 2: Find out the vehicle journeys which are not operating and lies within start and end date on the target date
-    df_service_nonoperating = df_serviced_org_working_days[
-        (target_date >= df_serviced_org_working_days.start_date)
-        & (target_date <= df_serviced_org_working_days.end_date)
-        & (~df_serviced_org_working_days["operating_on_working_days"])
+    vehicle_journey_nonoperating = [
+        vj for vj, status in vehicle_journey_operating_status.items() if not status
     ]
-    if not df_service_nonoperating.empty:
-        vehicle_journey_nonoperating = (
-            df_service_nonoperating["vehicle_journey_id"].unique().tolist()
-        )
-        df_serviced_org_working_days = df_serviced_org_working_days[
-            ~df_serviced_org_working_days["vehicle_journey_id"].isin(
-                vehicle_journey_nonoperating
-            )
-        ]
-
-    # Step 3: Find out the vehicle journeys which are operating and fall outside the operating range
-    df_service_operating = df_serviced_org_working_days[
-        df_serviced_org_working_days["operating_on_working_days"]
-    ]
-    df_service_operating.reset_index(inplace=True)
-
-    for idx, row in df_service_operating.iterrows():
-        # Iterate till second last row
-        if idx + 1 == len(df_service_operating):
-            continue
-        next_row = df_service_operating.iloc[idx + 1]
-        next_vj = next_row["vehicle_journey_id"]
-        vj = row["vehicle_journey_id"]
-        if vj != next_vj:  # If the vehicle journey is matching with current
-            continue
-        if vj in vehicle_journey_nonoperating:
-            continue
-        if target_date > row["end_date"] and target_date < next_row["start_date"]:
-            vehicle_journey_nonoperating.append(vj)
 
     return vehicle_journey_nonoperating
 
