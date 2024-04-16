@@ -1,20 +1,13 @@
 import os
-
 import pandas as pd
-import pytest
-from django.core.files import File
-
-from transit_odp.timetables.transxchange import TransXChangeDocument
-from transit_odp.timetables.dataframes import (
-    flexible_journey_patterns_to_dataframe,
-    flexible_stop_points_from_journey_details,
-)
 from transit_odp.timetables.utils import (
-    get_vehicle_journeys_operating_nonoperating,
-    filter_df_serviced_org_operating,
+    get_vehicle_journeyids_exceptions,
+    get_non_operating_vj_serviced_org,
     get_df_operating_vehicle_journey,
     get_df_timetable_visualiser,
+    get_vehicle_journey_codes_sorted,
 )
+
 from transit_odp.pipelines.tests.utils import check_frame_equal
 
 # setup
@@ -32,8 +25,13 @@ df_nonop_exception_vehicle_journeys = pd.read_csv(os.path.join(cur_dir, csv_file
 csv_file = "data/test_serviced_organisation_working_days.csv"
 df_serviced_org_working_days = pd.read_csv(os.path.join(cur_dir, csv_file))
 
-csv_file = "data/test_vehicle_journey_operating.csv"
+csv_file = "data/test_operating_vehicle_journey.csv"
 df_vehicle_journey_operating = pd.read_csv(os.path.join(cur_dir, csv_file))
+
+csv_file = "data/test_timetable_visualiser.csv"
+expected_df_timetable_visualiser = pd.read_csv(
+    os.path.join(cur_dir, csv_file), index_col=0
+)
 
 
 def test_get_vehicle_journeys_operating_nonoperating():
@@ -44,15 +42,14 @@ def test_get_vehicle_journeys_operating_nonoperating():
 
     expected_op_vehicle_journeys = [363]
     expected_nonop_vehicle_journeys = [333]
-    expected_all_vehicle_journeys = [363, 333]
 
-    vehicle_journeys = get_vehicle_journeys_operating_nonoperating(
+    vehicle_journeys = get_vehicle_journeyids_exceptions(
         df_op_exception_vehicle_journeys, df_nonop_exception_vehicle_journeys
     )
 
     # Scenario 1: Operating and non-operating dataframes are not empty
     assert isinstance(vehicle_journeys, tuple)  # Check the return type of the function
-    assert len(vehicle_journeys) == 3  # Check the count of tuple returned
+    assert len(vehicle_journeys) == 2  # Check the count of tuple returned
     assert len(expected_op_vehicle_journeys) == len(
         vehicle_journeys[0]
     )  # Compare the operating and non-operating vehicle journeys
@@ -62,16 +59,13 @@ def test_get_vehicle_journeys_operating_nonoperating():
     assert all(
         [a == b for a, b in zip(vehicle_journeys[1], expected_nonop_vehicle_journeys)]
     )
-    assert all(
-        [a == b for a, b in zip(vehicle_journeys[2], expected_all_vehicle_journeys)]
-    )
 
     # Scenario 2: Operating dataframe contains data and non-operating is empty
-    vehicle_journeys = get_vehicle_journeys_operating_nonoperating(
+    vehicle_journeys = get_vehicle_journeyids_exceptions(
         df_op_exception_vehicle_journeys, pd.DataFrame()
     )
     assert isinstance(vehicle_journeys, tuple)  # Check the return type of the function
-    assert len(vehicle_journeys) == 3  # Check the count of tuple returned
+    assert len(vehicle_journeys) == 2  # Check the count of tuple returned
     assert len(expected_op_vehicle_journeys) == len(
         vehicle_journeys[0]
     )  # Compare the operating vehicle journeys
@@ -79,22 +73,19 @@ def test_get_vehicle_journeys_operating_nonoperating():
         [a == b for a, b in zip(vehicle_journeys[0], expected_op_vehicle_journeys)]
     )
     assert len(vehicle_journeys[1]) == 0
-    assert len(expected_op_vehicle_journeys) == len(vehicle_journeys[2])
 
     # Scenario 3: Operating dataframe is empty and non-operating contains data
-    vehicle_journeys = get_vehicle_journeys_operating_nonoperating(
+    vehicle_journeys = get_vehicle_journeyids_exceptions(
         pd.DataFrame(), df_nonop_exception_vehicle_journeys
     )
     assert isinstance(vehicle_journeys, tuple)  # Check the return type of the function
-    assert len(vehicle_journeys) == 3  # Check the count of tuple returned
+    assert len(vehicle_journeys) == 2  # Check the count of tuple returned
     assert len(vehicle_journeys[0]) == 0
     assert all(
         [a == b for a, b in zip(vehicle_journeys[1], expected_nonop_vehicle_journeys)]
     )
-    assert len(expected_nonop_vehicle_journeys) == len(
-        vehicle_journeys[1]
-    )  # Compare the non-operating vehicle journeys
-    assert len(expected_nonop_vehicle_journeys) == len(vehicle_journeys[2])
+    # Compare the non-operating vehicle journeys
+    assert len(expected_nonop_vehicle_journeys) == len(vehicle_journeys[1])
 
 
 def test_get_df_operating_vehicle_journey():
@@ -138,37 +129,88 @@ def test_filter_df_serviced_org_operating():
     """
     Test the filter_df_serviced_org_operating() based on target date
     """
-    target_date = "2023-01-09"
-    all_exception_vehicle_journey = set([363, 333])
-    expected_op_vehicle_journeys = [
-        321,
-        322,
-        325,
-        326,
-        330,
-        331,
-        334,
-        335,
-        340,
-        341,
-        342,
-        343,
-        348,
-        349,
-        354,
-        355,
-    ]
-    expected_nonop_vehicle_journeys = []
 
-    serviced_org_vehicle_journeys = filter_df_serviced_org_operating(
-        target_date, df_serviced_org_working_days, all_exception_vehicle_journey
+    # Scenario 1: When the target date is between the non-operating journeys
+    target_date = "2023-01-09"
+    expected_nonop_vehicle_journeys = [541, 545, 549, 554, 560, 562, 567, 574]
+    actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
+        target_date, df_serviced_org_working_days
     )
-    assert isinstance(
-        serviced_org_vehicle_journeys, tuple
-    )  # Check the return type of the function
-    assert len(serviced_org_vehicle_journeys) == 2
-    assert len(expected_op_vehicle_journeys) == len(serviced_org_vehicle_journeys[0])
-    assert len(expected_nonop_vehicle_journeys) == len(serviced_org_vehicle_journeys[1])
+
+    # Check the return type, length and list values
+    assert isinstance(actual_nonop_vehicle_journeys, list)
+    assert len(expected_nonop_vehicle_journeys) == len(actual_nonop_vehicle_journeys)
+    assert expected_nonop_vehicle_journeys == actual_nonop_vehicle_journeys
+
+    # Scenario 2: When the target date is less than start date for all vehicle journeys
+    target_date = "2001-01-01"
+    expected_nonop_vehicle_journeys = [
+        540,
+        541,
+        544,
+        545,
+        549,
+        550,
+        553,
+        554,
+        559,
+        560,
+        561,
+        562,
+        567,
+        568,
+        573,
+        574,
+    ]
+    actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
+        target_date, df_serviced_org_working_days
+    )
+
+    # Check the return type, length and list values
+    assert isinstance(actual_nonop_vehicle_journeys, list)
+    assert len(expected_nonop_vehicle_journeys) == len(actual_nonop_vehicle_journeys)
+    assert expected_nonop_vehicle_journeys == actual_nonop_vehicle_journeys
+
+    # Scenario 3: When the target date is greater than end date for all vehicle journeys
+    target_date = "2030-01-01"
+    expected_nonop_vehicle_journeys = [
+        540,
+        541,
+        544,
+        545,
+        549,
+        550,
+        553,
+        554,
+        559,
+        560,
+        561,
+        562,
+        567,
+        568,
+        573,
+        574,
+    ]
+    actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
+        target_date, df_serviced_org_working_days
+    )
+
+    # Check the return type, length and list values
+    assert isinstance(actual_nonop_vehicle_journeys, list)
+    assert len(expected_nonop_vehicle_journeys) == len(actual_nonop_vehicle_journeys)
+    assert expected_nonop_vehicle_journeys == actual_nonop_vehicle_journeys
+
+    # Scenario 4: When the target date is between the date ranges of the operating vehicle journeys
+    target_date = "2022-07-27"
+    expected_nonop_vehicle_journeys = [540, 544, 550, 553, 559, 561, 568, 573]
+    actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
+        target_date, df_serviced_org_working_days
+    )
+
+    # Check the return type, length and list values
+    assert isinstance(actual_nonop_vehicle_journeys, list)
+    assert len(expected_nonop_vehicle_journeys) == len(actual_nonop_vehicle_journeys)
+    assert expected_nonop_vehicle_journeys == actual_nonop_vehicle_journeys
 
 
 def test_get_df_timetable_visualiser():
@@ -179,4 +221,47 @@ def test_get_df_timetable_visualiser():
     actual_df_vehicle_journey = get_df_timetable_visualiser(pd.DataFrame())
     assert actual_df_vehicle_journey.empty
 
-    # TODO: Add more test cases based on the logic
+    actual_df_vehicle_journey = get_df_timetable_visualiser(
+        df_vehicle_journey_operating
+    )
+
+    # Check the dataframe expected
+    assert check_frame_equal(
+        actual_df_vehicle_journey, expected_df_timetable_visualiser
+    )
+
+
+def test_get_vehicle_journey_codes_sorted():
+    """
+    Test the get_vehicle_journey_codes_sorted() based on the vehicle journey operating
+    """
+    expected_vehicle_journey_ids = [
+        "6001",
+        "6009",
+        "6013",
+        "6017",
+        "6019",
+        "6021",
+        "6025",
+        "6029",
+        "6033",
+        "6037",
+        "6041",
+        "6045",
+        "6049",
+        "6053",
+        "6057",
+        "6061",
+        "6069",
+        "6073",
+        "6075",
+        "6077",
+        "6081",
+        "6085",
+        "6093",
+    ]
+    # Check the vehicle journey ids
+    actual_vehicle_journey_ids = get_vehicle_journey_codes_sorted(
+        df_vehicle_journey_operating
+    )
+    assert expected_vehicle_journey_ids == actual_vehicle_journey_ids
