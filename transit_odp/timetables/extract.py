@@ -44,11 +44,12 @@ logger = get_task_logger(__name__)
 class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
-    def __init__(self, file_obj: File, start_time):
+    def __init__(self, file_obj: File, start_time, stop_activity_cache):
         self.file_id = uuid.uuid4()
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
         self.start_time = start_time
+        self.stop_activity_cache = stop_activity_cache
 
     def extract(self) -> ExtractedData:
         """Extract data from document
@@ -381,9 +382,10 @@ class TransXChangeExtractor:
 
 
 class TransXChangeZipExtractor:
-    def __init__(self, file_obj, start_time):
+    def __init__(self, file_obj, start_time, stop_activity_cache):
         self.file_obj = file_obj
         self.start_time = start_time
+        self.stop_activity_cache = stop_activity_cache
 
     def extract(self) -> ExtractedData:
         """
@@ -415,7 +417,7 @@ class TransXChangeZipExtractor:
             if filename.endswith(".xml"):
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
-                    extractor = TransXChangeExtractor(file_obj, self.start_time)
+                    extractor = TransXChangeExtractor(file_obj, self.start_time, self.stop_activity_cache)
                     extracted = extractor.extract()
                     extracts.append(extracted)
 

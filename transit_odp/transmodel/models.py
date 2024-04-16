@@ -95,6 +95,13 @@ class VehicleJourney(models.Model):
         return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
+class StopActivity(models.Model):
+    name = models.CharField(max_length=255)
+    is_pickup = models.BooleanField(default=False)
+    is_setdown = models.BooleanField(default=False)
+    is_driverrequest = models.BooleanField(default=False)
+
+
 class ServicePatternStop(models.Model):
     service_pattern = models.ForeignKey(
         ServicePattern, on_delete=models.CASCADE, related_name="service_pattern_stops"
@@ -111,6 +118,14 @@ class ServicePatternStop(models.Model):
     vehicle_journey = models.ForeignKey(
         VehicleJourney,
         related_name="service_pattern_stops_vehicle_journey",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    stop_activity = models.ForeignKey(
+        StopActivity,
+        related_name="stop_activity",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -294,9 +309,3 @@ class BankHolidays(models.Model):
     notes = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=255, null=True, blank=True)
 
-
-class StopActivity(models.Model):
-    name = models.CharField(max_length=255)
-    is_pickup = models.BooleanField(default=False)
-    is_setdown = models.BooleanField(default=False)
-    is_driverrequest = models.BooleanField(default=False)
