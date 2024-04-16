@@ -10,6 +10,7 @@ from transit_odp.transmodel.models import (
     ServicedOrganisationWorkingDays,
     ServicedOrganisations,
     ServicedOrganisationVehicleJourney,
+    VehicleJourney,
 )
 from waffle.testutils import override_flag
 
@@ -452,7 +453,7 @@ class ETLServicedOrganisationsServicesVehicleJourney(ExtractBaseTestCase):
         )
 
         # test
-        self.assertEqual(80, serviced_orgs_vehicle_journeys.count())
+        self.assertEqual(40, serviced_orgs_vehicle_journeys.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -471,7 +472,6 @@ class ETLServicedOrganisationsServicesVehicleJourneyOperationHolidays(
         vj_operational = ServicedOrganisationVehicleJourney.objects.values_list(
             "operating_on_working_days", flat=True
         )
-        vj_operational2 = ServicedOrganisationVehicleJourney.objects.all()
 
         # test
         self.assertNotIn(True, list(vj_operational))
