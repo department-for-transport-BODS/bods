@@ -142,7 +142,8 @@ class TimetableVisualiser:
         columns = ["vehicle_journey_id", "operating_date"]
         qs_vehicle_journey_op_exceptions = (
             OperatingDatesExceptions.objects.filter(
-                vehicle_journey_id__in=vehicle_journey_ids
+                vehicle_journey_id__in=vehicle_journey_ids,
+                operating_date=self._target_date,
             )
             .annotate()
             .values(*columns)
@@ -257,7 +258,6 @@ class TimetableVisualiser:
         )
 
         # Get the vehicle journey id which are not operating for the serviced organisation
-        df_serviced_org.to_csv("test_serviced_organisation_working_days.csv")
         vehicle_journey_ids_non_operating = get_non_operating_vj_serviced_org(
             self._target_date, df_serviced_org
         )
