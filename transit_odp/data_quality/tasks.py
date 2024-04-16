@@ -68,11 +68,6 @@ def run_dqs_report_etl_pipeline(report_id: int):
 
             pipeline = TransXChangeDQPipeline(dq_report)
             pipeline.run()
-            # Check status Ready
-            # if Ready:
-            # else:
-            # if Received:
-            # set to QUEUED
 
             adapter.info("Calculating Data Quality Score.")
             calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
