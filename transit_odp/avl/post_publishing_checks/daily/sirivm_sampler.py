@@ -96,6 +96,11 @@ class SirivmSampler:
             vehicle_activities, vmd.response_timestamp.date(), feed_id
         )
 
+        logger.info(
+            f"Vehicle activities not already analised {len(vehicle_activities)} for "
+            f"feed {feed_id}"
+        )
+
         if len(vehicle_activities) == 0:
             return sirivm_header, []
 
@@ -119,7 +124,7 @@ class SirivmSampler:
         timetable_df = _get_timetable_catalogue_dataframe()
         inscope_inseason_lines = timetable_df[
             (timetable_df["Scope Status"] == "In Scope")
-            & (timetable_df["Seasonal Status"] == "In Season")
+            & (timetable_df["Seasonal Status"] != "Out of Season")
         ]
         inscope_inseason_lines = inscope_inseason_lines["OTC:Service Number"].str.split(
             "|", expand=True
