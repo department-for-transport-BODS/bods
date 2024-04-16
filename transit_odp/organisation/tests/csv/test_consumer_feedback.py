@@ -28,7 +28,7 @@ def test_consumer_feedback_to_string():
     ConsumerFeedbackFactory(consumer=consumer, dataset=None, organisation=org)
     ConsumerFeedbackFactory(consumer=None, dataset=None, organisation=org)
 
-    consumer_feedback_csv = ConsumerFeedbackCSV(org.id)
+    consumer_feedback_csv = ConsumerFeedbackCSV(org.id, True)
     consumer_feedback_csv.queryset = consumer_feedback_csv.get_queryset().order_by("id")
     actual = consumer_feedback_csv.to_string()
     csvfile = io.StringIO(actual)
