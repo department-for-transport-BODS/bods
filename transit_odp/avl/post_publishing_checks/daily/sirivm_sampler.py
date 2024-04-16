@@ -239,7 +239,7 @@ class SirivmSampler:
             in the current week
         """
         if datetime.datetime.today().weekday() == 0:
-            # today is monday, so don't expect any report
+            # today is Monday, so don't expect any report
             return pd.DataFrame()
 
         start_date, end_date = self.get_start_and_end_date()

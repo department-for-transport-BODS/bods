@@ -196,3 +196,23 @@ def test_vehicle_activites_ignore_old_first_timer():
     )
 
     assert len(vehicle_activities) == 1
+
+
+@freeze_time("2023-01-23")
+def test_get_week_reports_df_for_monday():
+    siri_sampler = SirivmSampler()
+    df = siri_sampler.get_week_reports_df(DATASET_ID)
+    assert df.empty == True
+
+@freeze_time("2023-01-25")
+def test_get_week_reports_df_for_monday():
+    siri_sampler = SirivmSampler()
+    df = siri_sampler.get_week_reports_df(DATASET_ID)
+    assert df.empty == True
+
+@freeze_time("2023-01-25")
+def test_get_start_and_end_date():
+    siri_sampler = SirivmSampler()
+    start_date, end_date = siri_sampler.get_start_and_end_date()
+    assert start_date.strftime("%Y-%m-%d") == "2023-01-23"
+    assert end_date.strftime("%Y-%m-%d") == "2023-01-24"
