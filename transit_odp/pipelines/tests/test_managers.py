@@ -16,5 +16,5 @@ class TestDataQualityTaskManager:
         # Assert
         mocked_filter.assert_called_with(task_id__isnull=False)
         mocked_exclude.assert_called_with(
-            status__in=[DataQualityTask.SUCCESS, DataQualityTask.FAILURE],
+            status__in=[DataQualityTask.SUCCESS, DataQualityTask.FAILURE, DataQualityTask.RECEIVED],
         )
