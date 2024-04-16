@@ -238,7 +238,12 @@ class SirivmSampler:
             pd.DataFrame: Will have all the vehicle activities proccessed
             in the current week
         """
+        if datetime.datetime.today().weekday() == 0:
+            # today is monday, so don't expect any report
+            return pd.DataFrame()
+
         start_date, end_date = self.get_start_and_end_date()
+
         feeds_in_last_week = PostPublishingCheckReport.objects.filter(
             created__range=[start_date, end_date],
             granularity=PPCReportType.DAILY,
@@ -271,6 +276,8 @@ class SirivmSampler:
         """
         end_date = datetime.datetime.today()
         start_date = self.get_prev_monday(end_date)
+        if end_date.weekday() > 0:
+            end_date = end_date - timedelta(days=1)
         return start_date, end_date
 
     def get_prev_monday(self, end_date: datetime.date) -> datetime.date:
