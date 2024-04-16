@@ -442,6 +442,13 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                 ["VehicleJourneyTimingLink"]
             )
 
+            block_number_element = vehicle_journey.get_element_or_none(
+                ["Operational", "Block", "BlockNumber"]
+            )
+            block_number = None
+            if block_number_element:
+                block_number = block_number_element.text
+
             to_wait_time_exists = False
             if vj_timing_links:
                 for links in vj_timing_links:
@@ -497,6 +504,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             "run_time": run_time,
                             "wait_time": wait_time,
                             "departure_day_shift": departure_day_shift,
+                            "block_number": block_number,
                         }
                     )
 
@@ -515,6 +523,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "run_time": pd.NaT,
                         "wait_time": pd.NaT,
                         "departure_day_shift": departure_day_shift,
+                        "block_number": block_number,
                     }
                 )
 
@@ -548,6 +557,7 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
                 }
             )
     return pd.DataFrame(all_vehicle_journeys)
