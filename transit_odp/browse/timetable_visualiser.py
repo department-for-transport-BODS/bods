@@ -70,6 +70,7 @@ class TimetableVisualiser:
             "day_of_week",
             "vehicle_journey_id",
             "atco_code",
+            "public_use",
         ]
 
         qs_vehicle_journeys = (
@@ -80,6 +81,7 @@ class TimetableVisualiser:
                 service_patterns__service_pattern_stops__vehicle_journey__id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
+                revision__txc_file_attributes__public_use=True,
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -126,6 +128,7 @@ class TimetableVisualiser:
                 vehicle_journey_id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
+                public_use=F("revision__txc_file_attributes__public_use"),
             )
             .values(*columns)
         )
@@ -226,6 +229,7 @@ class TimetableVisualiser:
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
         df_base_vehicle_journeys = self.get_df_service_vehicle_journeys()
+        print(f"df_base_vehicle_journeys {df_base_vehicle_journeys}")
         if df_base_vehicle_journeys.empty:
             return pd.DataFrame()
         base_vehicle_journey_ids = (
