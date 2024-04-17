@@ -33,7 +33,9 @@ class TimetableVisualiser:
     routes.
     """
 
-    def __init__(self, revision_id, service_code, line_name, target_date) -> None:
+    def __init__(
+        self, revision_id, service_code, line_name, target_date, public_use_check_flag
+    ) -> None:
         """
         Intializes the properties of the object.
         """
@@ -42,8 +44,9 @@ class TimetableVisualiser:
         self._line_name = line_name
         self._target_date = target_date
         self._day_of_week = target_date.strftime("%A")
+        self._check_public_use_flag = public_use_check_flag
 
-    def get_df_service_vehicle_journeys(self) -> pd.DataFrame:
+    def get_qs_service_vehicle_journeys(self) -> pd.DataFrame:
         """
         Get the dataframe of vehicle journey for the service with respect to service code, revision
         and line name
@@ -81,7 +84,7 @@ class TimetableVisualiser:
                 service_patterns__service_pattern_stops__vehicle_journey__id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
-                revision__txc_file_attributes__public_use=True,
+                # revision__txc_file_attributes__public_use=True,
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -133,7 +136,7 @@ class TimetableVisualiser:
             .values(*columns)
         )
 
-        return pd.DataFrame.from_records(qs_vehicle_journeys)
+        return qs_vehicle_journeys
 
     def get_df_op_exceptions_vehicle_journey(
         self, vehicle_journey_ids: set
@@ -228,8 +231,12 @@ class TimetableVisualiser:
         """
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
-        df_base_vehicle_journeys = self.get_df_service_vehicle_journeys()
-        print(f"df_base_vehicle_journeys {df_base_vehicle_journeys}")
+        base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
+        if self._check_public_use_flag == True:
+            base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
+                revision__txc_file_attributes__public_use=True,
+            )
+        df_base_vehicle_journeys = pd.DataFrame.from_records(base_qs_vehicle_journeys)
         if df_base_vehicle_journeys.empty:
             return pd.DataFrame()
         base_vehicle_journey_ids = (

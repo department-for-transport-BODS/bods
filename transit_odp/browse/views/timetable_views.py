@@ -471,11 +471,14 @@ class LineMetadataDetailView(DetailView):
 
         # Initial commit for timetable visualiser
         target_date = datetime.strptime("09/01/2023", "%d/%m/%Y").date()
+        public_use_check_flag = True
         kwargs["timetable_visualiser"] = TimetableVisualiser(
-            live_revision.id, kwargs["service_code"], kwargs["line_name"], target_date
+            live_revision.id,
+            kwargs["service_code"],
+            kwargs["line_name"],
+            target_date,
+            public_use_check_flag,
         ).get_timetable_visualiser()
-
-        print(f"Total number of records:{kwargs['timetable_visualiser'].count()}")
         return kwargs
 
 
