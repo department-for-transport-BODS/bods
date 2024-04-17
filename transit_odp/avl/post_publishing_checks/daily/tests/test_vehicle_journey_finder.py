@@ -193,7 +193,7 @@ def test_filter_by_days_of_operation():
             ["vehicle_journeys5.xml"],
             False,
             [
-                "Found more than one matching vehicle journey in timetables belonging to a single service code"
+                "Found more than one matching vehicle journey in a single timetables file belonging to a single service code"
             ],
         ),
         (["vehicle_journeys5.xml", "vehicle_journeys6.xml"], False, None),
