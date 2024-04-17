@@ -500,6 +500,9 @@ class VehicleJourneyFinder:
             error_msg = None
 
             service_org_day_type = self.service_org_day_type(vj)
+            if service_org_day_type is None:
+                service_org_day_type = vj.txc_xml.service_org_day_type()
+                
             if service_org_day_type is not None:
                 days_of_non_operation: TransXChangeElement = (
                     service_org_day_type.get_element_or_none("DaysOfNonOperation")
