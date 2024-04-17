@@ -479,6 +479,7 @@ class LineMetadataDetailView(DetailView):
             target_date,
             public_use_check_flag,
         ).get_timetable_visualiser()
+
         return kwargs
 
 
