@@ -152,7 +152,7 @@ const initOrgMap = (apiRoot, orgId, disruptionId) => {
     style: "mapbox://styles/mapbox/streets-v12",
     center: [-1.1743, 52.3555],
     zoom: 5,
-    maxzoom: 12,
+    maxzoom: 14,
   });
 
   // Add zoom and rotation controls to the map.
