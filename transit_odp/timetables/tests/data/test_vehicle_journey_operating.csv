@@ -1,0 +1,890 @@
+,service_code,revision_id,name,start_date,end_date,origin,destination,journey_description,line_name,stop_sequence,departure_time,is_timing_point,common_name,atco_code,direction,vehicle_journey_code,line_ref,departure_day_shift,day_of_week,vehicle_journey_id
+0,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,06:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+5,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,06:45:00,False,Victoria Avenue,3200YND81000,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+10,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,06:46:00,False,Montpellier Hill,3200YND81010,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+15,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,06:47:00,False,White Hart Hotel,3200YND81370,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+20,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,06:48:00,False,Cold Bath Road Po,3200YND81360,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+25,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,06:48:00,False,Queens Road,3200YND81040,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+30,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,06:49:00,False,New Inn,3200YND81050,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+35,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,06:49:00,False,Pannal Ash Road,3200YND81060,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+40,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,06:50:00,False,Harlow Oval,3200YND81070,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+45,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,06:50:00,False,College Street,3200YND81080,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+50,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,06:51:00,False,Shepherds Dog,3200YND81090,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+55,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,06:51:00,False,Plantation Road,3200YND81100,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+60,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,06:51:00,False,Larkfield Way,3200YND81110,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+65,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,06:52:00,False,Beckwith Avenue,3200YND81120,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+70,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,06:53:00,False,Beckwith Crescent,3200YND81130,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+75,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,06:54:00,True,Wellfield Court,3200YND81210,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+80,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,06:54:00,False,Opp Sports Centre,3200YND81220,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+85,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,06:55:00,False,Harlow Crescent,3200YND81230,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+90,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,06:55:00,False,Harlow Park Drive,3200YND81240,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+95,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,06:56:00,False,Beckwith Avenue,3200YND81250,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+100,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,06:57:00,False,Larkfield Way,3200YND81260,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+105,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,06:57:00,False,Plantation Road,3200YND81290,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+110,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,06:58:00,False,Shepherds Dog,3200YND81300,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+115,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,06:58:00,False,College Street,3200YND81310,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+120,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,06:59:00,False,Harlow Oval,3200YND81320,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+125,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,07:00:00,False,New Inn,3200YND81330,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+130,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,07:00:00,False,Wordsworth Crescent,3200YND81340,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+135,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,07:01:00,False,Beechwood Crescent,3200YND81350,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+140,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,07:02:00,False,The Adelphi,3200YNA96791,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+145,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,07:03:00,False,White Hart,3200YND81020,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+150,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,07:04:00,False,Cheltenham Crescent,3200YND13100,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+155,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,07:05:00,True,Bus Station,3200YND13110,outbound,6001,HRGT:PB0001746:15:6,False,Monday,321
+160,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,06:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+165,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,06:45:00,False,Victoria Avenue,3200YND81000,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+170,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,06:46:00,False,Montpellier Hill,3200YND81010,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+175,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,06:47:00,False,White Hart Hotel,3200YND81370,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+180,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,06:48:00,False,Cold Bath Road Po,3200YND81360,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+185,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,06:48:00,False,Queens Road,3200YND81040,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+190,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,06:49:00,False,New Inn,3200YND81050,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+195,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,06:49:00,False,Pannal Ash Road,3200YND81060,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+200,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,06:50:00,False,Harlow Oval,3200YND81070,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+205,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,06:50:00,False,College Street,3200YND81080,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+210,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,06:51:00,False,Shepherds Dog,3200YND81090,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+215,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,06:51:00,False,Plantation Road,3200YND81100,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+220,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,06:51:00,False,Larkfield Way,3200YND81110,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+225,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,06:52:00,False,Beckwith Avenue,3200YND81120,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+230,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,06:53:00,False,Beckwith Crescent,3200YND81130,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+235,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,06:54:00,True,Wellfield Court,3200YND81210,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+240,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,06:54:00,False,Opp Sports Centre,3200YND81220,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+245,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,06:55:00,False,Harlow Crescent,3200YND81230,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+250,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,06:55:00,False,Harlow Park Drive,3200YND81240,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+255,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,06:56:00,False,Beckwith Avenue,3200YND81250,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+260,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,06:57:00,False,Larkfield Way,3200YND81260,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+265,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,06:57:00,False,Plantation Road,3200YND81290,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+270,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,06:58:00,False,Shepherds Dog,3200YND81300,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+275,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,06:58:00,False,College Street,3200YND81310,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+280,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,06:59:00,False,Harlow Oval,3200YND81320,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+285,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,07:00:00,False,New Inn,3200YND81330,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+290,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,07:00:00,False,Wordsworth Crescent,3200YND81340,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+295,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,07:01:00,False,Beechwood Crescent,3200YND81350,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+300,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,07:02:00,False,The Adelphi,3200YNA96791,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+305,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,07:03:00,False,White Hart,3200YND81020,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+310,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,07:04:00,False,Cheltenham Crescent,3200YND13100,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+315,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,07:05:00,True,Bus Station,3200YND13110,outbound,6001,HRGT:PB0001746:15:6,False,Monday,322
+320,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,08:20:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+325,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,08:21:00,False,Victoria Avenue,3200YND81000,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+330,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,08:22:00,False,Montpellier Hill,3200YND81010,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+335,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,08:23:00,False,White Hart Hotel,3200YND81370,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+340,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,08:25:00,False,Cold Bath Road Po,3200YND81360,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+345,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,08:26:00,False,Queens Road,3200YND81040,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+350,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,08:27:00,False,New Inn,3200YND81050,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+355,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,08:28:00,False,Pannal Ash Road,3200YND81060,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+360,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,08:29:00,False,Harlow Oval,3200YND81070,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+365,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,08:30:00,False,College Street,3200YND81080,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+370,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,08:30:00,False,Shepherds Dog,3200YND81090,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+375,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,08:31:00,False,Plantation Road,3200YND81100,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+380,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,08:32:00,False,Larkfield Way,3200YND81110,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+385,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,08:33:00,False,Beckwith Avenue,3200YND81120,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+390,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,08:35:00,False,Beckwith Crescent,3200YND81130,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+395,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,08:36:00,True,Wellfield Court,3200YND81210,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+400,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,08:36:00,False,Opp Sports Centre,3200YND81220,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+405,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,08:38:00,False,Harlow Crescent,3200YND81230,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+410,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,08:39:00,False,Harlow Park Drive,3200YND81240,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+415,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,08:40:00,False,Beckwith Avenue,3200YND81250,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+420,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,08:41:00,False,Larkfield Way,3200YND81260,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+425,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,08:42:00,False,Plantation Road,3200YND81290,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+430,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,08:43:00,False,Shepherds Dog,3200YND81300,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+435,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,08:43:00,False,College Street,3200YND81310,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+440,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,08:44:00,False,Harlow Oval,3200YND81320,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+445,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,08:46:00,False,New Inn,3200YND81330,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+450,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,08:46:00,False,Wordsworth Crescent,3200YND81340,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+455,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,08:47:00,False,Beechwood Crescent,3200YND81350,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+460,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,08:49:00,False,The Adelphi,3200YNA96791,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+465,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,08:50:00,False,White Hart,3200YND81020,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+470,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,08:53:00,False,Cheltenham Crescent,3200YND13100,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+475,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,08:54:00,True,Bus Station,3200YND13110,outbound,6017,HRGT:PB0001746:15:6,False,Monday,330
+480,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,09:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+485,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,09:16:00,False,Victoria Avenue,3200YND81000,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+490,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,09:17:00,False,Montpellier Hill,3200YND81010,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+495,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,09:18:00,False,White Hart Hotel,3200YND81370,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+500,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,09:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+505,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,09:20:00,False,Queens Road,3200YND81040,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+510,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,09:21:00,False,New Inn,3200YND81050,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+515,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,09:22:00,False,Pannal Ash Road,3200YND81060,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+520,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,09:22:00,False,Harlow Oval,3200YND81070,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+525,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,09:23:00,False,College Street,3200YND81080,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+530,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,09:24:00,False,Shepherds Dog,3200YND81090,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+535,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,09:25:00,False,Plantation Road,3200YND81100,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+540,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,09:25:00,False,Larkfield Way,3200YND81110,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+545,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,09:26:00,False,Beckwith Avenue,3200YND81120,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+550,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,09:28:00,False,Beckwith Crescent,3200YND81130,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+555,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,09:29:00,True,Wellfield Court,3200YND81210,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+560,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,09:29:00,False,Opp Sports Centre,3200YND81220,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+565,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,09:30:00,False,Harlow Crescent,3200YND81230,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+570,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,09:31:00,False,Harlow Park Drive,3200YND81240,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+575,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,09:32:00,False,Beckwith Avenue,3200YND81250,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+580,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,09:33:00,False,Larkfield Way,3200YND81260,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+585,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,09:34:00,False,Plantation Road,3200YND81290,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+590,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,09:35:00,False,Shepherds Dog,3200YND81300,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+595,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,09:35:00,False,College Street,3200YND81310,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+600,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,09:36:00,False,Harlow Oval,3200YND81320,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+605,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,09:37:00,False,New Inn,3200YND81330,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+610,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,09:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+615,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,09:38:00,False,Beechwood Crescent,3200YND81350,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+620,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,09:39:00,False,The Adelphi,3200YNA96791,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+625,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,09:41:00,False,White Hart,3200YND81020,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+630,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,09:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+635,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,09:44:00,True,Bus Station,3200YND13110,outbound,6021,HRGT:PB0001746:15:6,False,Monday,334
+640,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,09:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+645,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,09:16:00,False,Victoria Avenue,3200YND81000,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+650,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,09:17:00,False,Montpellier Hill,3200YND81010,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+655,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,09:18:00,False,White Hart Hotel,3200YND81370,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+660,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,09:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+665,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,09:20:00,False,Queens Road,3200YND81040,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+670,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,09:21:00,False,New Inn,3200YND81050,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+675,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,09:22:00,False,Pannal Ash Road,3200YND81060,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+680,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,09:22:00,False,Harlow Oval,3200YND81070,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+685,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,09:23:00,False,College Street,3200YND81080,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+690,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,09:24:00,False,Shepherds Dog,3200YND81090,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+695,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,09:25:00,False,Plantation Road,3200YND81100,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+700,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,09:25:00,False,Larkfield Way,3200YND81110,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+705,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,09:26:00,False,Beckwith Avenue,3200YND81120,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+710,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,09:28:00,False,Beckwith Crescent,3200YND81130,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+715,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,09:29:00,True,Wellfield Court,3200YND81210,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+720,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,09:29:00,False,Opp Sports Centre,3200YND81220,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+725,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,09:30:00,False,Harlow Crescent,3200YND81230,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+730,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,09:31:00,False,Harlow Park Drive,3200YND81240,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+735,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,09:32:00,False,Beckwith Avenue,3200YND81250,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+740,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,09:33:00,False,Larkfield Way,3200YND81260,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+745,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,09:34:00,False,Plantation Road,3200YND81290,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+750,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,09:35:00,False,Shepherds Dog,3200YND81300,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+755,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,09:35:00,False,College Street,3200YND81310,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+760,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,09:36:00,False,Harlow Oval,3200YND81320,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+765,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,09:37:00,False,New Inn,3200YND81330,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+770,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,09:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+775,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,09:38:00,False,Beechwood Crescent,3200YND81350,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+780,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,09:39:00,False,The Adelphi,3200YNA96791,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+785,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,09:41:00,False,White Hart,3200YND81020,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+790,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,09:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+795,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,09:44:00,True,Bus Station,3200YND13110,outbound,6021,HRGT:PB0001746:15:6,False,Monday,335
+800,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,09:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+805,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,09:46:00,False,Victoria Avenue,3200YND81000,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+810,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,09:47:00,False,Montpellier Hill,3200YND81010,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+815,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,09:48:00,False,White Hart Hotel,3200YND81370,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+820,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,09:49:00,False,Cold Bath Road Po,3200YND81360,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+825,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,09:50:00,False,Queens Road,3200YND81040,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+830,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,09:51:00,False,New Inn,3200YND81050,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+835,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,09:52:00,False,Pannal Ash Road,3200YND81060,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+840,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,09:52:00,False,Harlow Oval,3200YND81070,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+845,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,09:53:00,False,College Street,3200YND81080,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+850,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,09:54:00,False,Shepherds Dog,3200YND81090,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+855,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,09:55:00,False,Plantation Road,3200YND81100,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+860,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,09:55:00,False,Larkfield Way,3200YND81110,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+865,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,09:56:00,False,Beckwith Avenue,3200YND81120,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+870,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,09:58:00,False,Beckwith Crescent,3200YND81130,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+875,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,09:59:00,True,Wellfield Court,3200YND81210,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+880,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,09:59:00,False,Opp Sports Centre,3200YND81220,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+885,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,10:00:00,False,Harlow Crescent,3200YND81230,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+890,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,10:01:00,False,Harlow Park Drive,3200YND81240,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+895,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,10:02:00,False,Beckwith Avenue,3200YND81250,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+900,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,10:03:00,False,Larkfield Way,3200YND81260,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+905,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,10:04:00,False,Plantation Road,3200YND81290,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+910,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,10:05:00,False,Shepherds Dog,3200YND81300,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+915,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,10:05:00,False,College Street,3200YND81310,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+920,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,10:06:00,False,Harlow Oval,3200YND81320,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+925,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,10:07:00,False,New Inn,3200YND81330,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+930,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,10:08:00,False,Wordsworth Crescent,3200YND81340,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+935,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,10:08:00,False,Beechwood Crescent,3200YND81350,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+940,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,10:09:00,False,The Adelphi,3200YNA96791,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+945,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,10:11:00,False,White Hart,3200YND81020,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+950,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,10:13:00,False,Cheltenham Crescent,3200YND13100,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+955,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,10:14:00,True,Bus Station,3200YND13110,outbound,6025,HRGT:PB0001746:15:6,False,Monday,336
+960,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,10:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+965,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,10:16:00,False,Victoria Avenue,3200YND81000,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+970,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,10:17:00,False,Montpellier Hill,3200YND81010,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+975,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,10:18:00,False,White Hart Hotel,3200YND81370,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+980,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,10:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+985,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,10:20:00,False,Queens Road,3200YND81040,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+990,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,10:21:00,False,New Inn,3200YND81050,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+995,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,10:22:00,False,Pannal Ash Road,3200YND81060,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1000,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,10:22:00,False,Harlow Oval,3200YND81070,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1005,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,10:23:00,False,College Street,3200YND81080,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1010,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,10:24:00,False,Shepherds Dog,3200YND81090,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1015,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,10:25:00,False,Plantation Road,3200YND81100,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1020,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,10:25:00,False,Larkfield Way,3200YND81110,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1025,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,10:26:00,False,Beckwith Avenue,3200YND81120,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1030,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,10:28:00,False,Beckwith Crescent,3200YND81130,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1035,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,10:29:00,True,Wellfield Court,3200YND81210,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1040,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,10:29:00,False,Opp Sports Centre,3200YND81220,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1045,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,10:30:00,False,Harlow Crescent,3200YND81230,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1050,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,10:31:00,False,Harlow Park Drive,3200YND81240,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1055,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,10:32:00,False,Beckwith Avenue,3200YND81250,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1060,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,10:33:00,False,Larkfield Way,3200YND81260,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1065,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,10:34:00,False,Plantation Road,3200YND81290,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1070,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,10:35:00,False,Shepherds Dog,3200YND81300,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1075,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,10:35:00,False,College Street,3200YND81310,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1080,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,10:36:00,False,Harlow Oval,3200YND81320,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1085,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,10:37:00,False,New Inn,3200YND81330,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1090,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,10:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1095,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,10:38:00,False,Beechwood Crescent,3200YND81350,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1100,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,10:39:00,False,The Adelphi,3200YNA96791,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1105,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,10:41:00,False,White Hart,3200YND81020,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1110,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,10:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1115,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,10:44:00,True,Bus Station,3200YND13110,outbound,6029,HRGT:PB0001746:15:6,False,Monday,337
+1120,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,10:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1125,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,10:46:00,False,Victoria Avenue,3200YND81000,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1130,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,10:47:00,False,Montpellier Hill,3200YND81010,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1135,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,10:48:00,False,White Hart Hotel,3200YND81370,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1140,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,10:49:00,False,Cold Bath Road Po,3200YND81360,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1145,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,10:50:00,False,Queens Road,3200YND81040,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1150,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,10:51:00,False,New Inn,3200YND81050,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1155,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,10:52:00,False,Pannal Ash Road,3200YND81060,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1160,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,10:52:00,False,Harlow Oval,3200YND81070,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1165,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,10:53:00,False,College Street,3200YND81080,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1170,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,10:54:00,False,Shepherds Dog,3200YND81090,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1175,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,10:55:00,False,Plantation Road,3200YND81100,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1180,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,10:55:00,False,Larkfield Way,3200YND81110,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1185,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,10:56:00,False,Beckwith Avenue,3200YND81120,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1190,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,10:58:00,False,Beckwith Crescent,3200YND81130,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1195,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,10:59:00,True,Wellfield Court,3200YND81210,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1200,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,10:59:00,False,Opp Sports Centre,3200YND81220,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1205,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,11:00:00,False,Harlow Crescent,3200YND81230,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1210,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,11:01:00,False,Harlow Park Drive,3200YND81240,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1215,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,11:02:00,False,Beckwith Avenue,3200YND81250,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1220,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,11:03:00,False,Larkfield Way,3200YND81260,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1225,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,11:04:00,False,Plantation Road,3200YND81290,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1230,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,11:05:00,False,Shepherds Dog,3200YND81300,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1235,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,11:05:00,False,College Street,3200YND81310,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1240,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,11:06:00,False,Harlow Oval,3200YND81320,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1245,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,11:07:00,False,New Inn,3200YND81330,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1250,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,11:08:00,False,Wordsworth Crescent,3200YND81340,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1255,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,11:08:00,False,Beechwood Crescent,3200YND81350,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1260,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,11:09:00,False,The Adelphi,3200YNA96791,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1265,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,11:11:00,False,White Hart,3200YND81020,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1270,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,11:13:00,False,Cheltenham Crescent,3200YND13100,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1275,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,11:14:00,True,Bus Station,3200YND13110,outbound,6033,HRGT:PB0001746:15:6,False,Monday,338
+1280,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,11:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1285,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,11:16:00,False,Victoria Avenue,3200YND81000,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1290,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,11:17:00,False,Montpellier Hill,3200YND81010,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1295,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,11:18:00,False,White Hart Hotel,3200YND81370,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1300,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,11:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1305,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,11:20:00,False,Queens Road,3200YND81040,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1310,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,11:21:00,False,New Inn,3200YND81050,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1315,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,11:22:00,False,Pannal Ash Road,3200YND81060,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1320,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,11:22:00,False,Harlow Oval,3200YND81070,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1325,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,11:23:00,False,College Street,3200YND81080,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1330,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,11:24:00,False,Shepherds Dog,3200YND81090,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1335,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,11:25:00,False,Plantation Road,3200YND81100,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1340,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,11:25:00,False,Larkfield Way,3200YND81110,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1345,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,11:26:00,False,Beckwith Avenue,3200YND81120,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1350,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,11:28:00,False,Beckwith Crescent,3200YND81130,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1355,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,11:29:00,True,Wellfield Court,3200YND81210,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1360,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,11:29:00,False,Opp Sports Centre,3200YND81220,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1365,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,11:30:00,False,Harlow Crescent,3200YND81230,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1370,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,11:31:00,False,Harlow Park Drive,3200YND81240,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1375,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,11:32:00,False,Beckwith Avenue,3200YND81250,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1380,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,11:33:00,False,Larkfield Way,3200YND81260,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1385,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,11:34:00,False,Plantation Road,3200YND81290,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1390,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,11:35:00,False,Shepherds Dog,3200YND81300,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1395,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,11:35:00,False,College Street,3200YND81310,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1400,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,11:36:00,False,Harlow Oval,3200YND81320,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1405,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,11:37:00,False,New Inn,3200YND81330,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1410,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,11:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1415,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,11:38:00,False,Beechwood Crescent,3200YND81350,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1420,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,11:39:00,False,The Adelphi,3200YNA96791,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1425,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,11:41:00,False,White Hart,3200YND81020,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1430,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,11:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1435,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,11:44:00,True,Bus Station,3200YND13110,outbound,6037,HRGT:PB0001746:15:6,False,Monday,339
+1440,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,11:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1445,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,11:46:00,False,Victoria Avenue,3200YND81000,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1450,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,11:47:00,False,Montpellier Hill,3200YND81010,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1455,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,11:48:00,False,White Hart Hotel,3200YND81370,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1460,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,11:49:00,False,Cold Bath Road Po,3200YND81360,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1465,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,11:50:00,False,Queens Road,3200YND81040,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1470,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,11:51:00,False,New Inn,3200YND81050,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1475,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,11:52:00,False,Pannal Ash Road,3200YND81060,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1480,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,11:52:00,False,Harlow Oval,3200YND81070,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1485,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,11:53:00,False,College Street,3200YND81080,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1490,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,11:54:00,False,Shepherds Dog,3200YND81090,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1495,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,11:55:00,False,Plantation Road,3200YND81100,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1500,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,11:55:00,False,Larkfield Way,3200YND81110,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1505,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,11:56:00,False,Beckwith Avenue,3200YND81120,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1510,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,11:58:00,False,Beckwith Crescent,3200YND81130,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1515,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,11:59:00,True,Wellfield Court,3200YND81210,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1520,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,11:59:00,False,Opp Sports Centre,3200YND81220,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1525,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,12:00:00,False,Harlow Crescent,3200YND81230,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1530,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,12:01:00,False,Harlow Park Drive,3200YND81240,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1535,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,12:02:00,False,Beckwith Avenue,3200YND81250,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1540,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,12:03:00,False,Larkfield Way,3200YND81260,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1545,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,12:04:00,False,Plantation Road,3200YND81290,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1550,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,12:05:00,False,Shepherds Dog,3200YND81300,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1555,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,12:05:00,False,College Street,3200YND81310,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1560,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,12:06:00,False,Harlow Oval,3200YND81320,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1565,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,12:07:00,False,New Inn,3200YND81330,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1570,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,12:08:00,False,Wordsworth Crescent,3200YND81340,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1575,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,12:08:00,False,Beechwood Crescent,3200YND81350,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1580,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,12:09:00,False,The Adelphi,3200YNA96791,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1585,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,12:11:00,False,White Hart,3200YND81020,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1590,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,12:13:00,False,Cheltenham Crescent,3200YND13100,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1595,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,12:14:00,True,Bus Station,3200YND13110,outbound,6041,HRGT:PB0001746:15:6,False,Monday,340
+1600,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,11:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1605,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,11:46:00,False,Victoria Avenue,3200YND81000,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1610,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,11:47:00,False,Montpellier Hill,3200YND81010,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1615,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,11:48:00,False,White Hart Hotel,3200YND81370,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1620,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,11:49:00,False,Cold Bath Road Po,3200YND81360,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1625,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,11:50:00,False,Queens Road,3200YND81040,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1630,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,11:51:00,False,New Inn,3200YND81050,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1635,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,11:52:00,False,Pannal Ash Road,3200YND81060,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1640,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,11:52:00,False,Harlow Oval,3200YND81070,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1645,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,11:53:00,False,College Street,3200YND81080,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1650,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,11:54:00,False,Shepherds Dog,3200YND81090,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1655,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,11:55:00,False,Plantation Road,3200YND81100,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1660,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,11:55:00,False,Larkfield Way,3200YND81110,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1665,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,11:56:00,False,Beckwith Avenue,3200YND81120,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1670,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,11:58:00,False,Beckwith Crescent,3200YND81130,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1675,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,11:59:00,True,Wellfield Court,3200YND81210,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1680,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,11:59:00,False,Opp Sports Centre,3200YND81220,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1685,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,12:00:00,False,Harlow Crescent,3200YND81230,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1690,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,12:01:00,False,Harlow Park Drive,3200YND81240,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1695,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,12:02:00,False,Beckwith Avenue,3200YND81250,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1700,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,12:03:00,False,Larkfield Way,3200YND81260,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1705,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,12:04:00,False,Plantation Road,3200YND81290,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1710,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,12:05:00,False,Shepherds Dog,3200YND81300,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1715,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,12:05:00,False,College Street,3200YND81310,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1720,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,12:06:00,False,Harlow Oval,3200YND81320,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1725,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,12:07:00,False,New Inn,3200YND81330,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1730,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,12:08:00,False,Wordsworth Crescent,3200YND81340,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1735,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,12:08:00,False,Beechwood Crescent,3200YND81350,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1740,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,12:09:00,False,The Adelphi,3200YNA96791,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1745,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,12:11:00,False,White Hart,3200YND81020,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1750,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,12:13:00,False,Cheltenham Crescent,3200YND13100,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1755,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,12:14:00,True,Bus Station,3200YND13110,outbound,6041,HRGT:PB0001746:15:6,False,Monday,341
+1760,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,12:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1765,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,12:16:00,False,Victoria Avenue,3200YND81000,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1770,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,12:17:00,False,Montpellier Hill,3200YND81010,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1775,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,12:18:00,False,White Hart Hotel,3200YND81370,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1780,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,12:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1785,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,12:20:00,False,Queens Road,3200YND81040,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1790,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,12:21:00,False,New Inn,3200YND81050,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1795,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,12:22:00,False,Pannal Ash Road,3200YND81060,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1800,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,12:22:00,False,Harlow Oval,3200YND81070,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1805,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,12:23:00,False,College Street,3200YND81080,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1810,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,12:24:00,False,Shepherds Dog,3200YND81090,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1815,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,12:25:00,False,Plantation Road,3200YND81100,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1820,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,12:25:00,False,Larkfield Way,3200YND81110,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1825,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,12:26:00,False,Beckwith Avenue,3200YND81120,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1830,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,12:28:00,False,Beckwith Crescent,3200YND81130,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1835,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,12:29:00,True,Wellfield Court,3200YND81210,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1840,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,12:29:00,False,Opp Sports Centre,3200YND81220,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1845,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,12:30:00,False,Harlow Crescent,3200YND81230,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1850,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,12:31:00,False,Harlow Park Drive,3200YND81240,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1855,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,12:32:00,False,Beckwith Avenue,3200YND81250,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1860,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,12:33:00,False,Larkfield Way,3200YND81260,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1865,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,12:34:00,False,Plantation Road,3200YND81290,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1870,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,12:35:00,False,Shepherds Dog,3200YND81300,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1875,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,12:35:00,False,College Street,3200YND81310,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1880,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,12:36:00,False,Harlow Oval,3200YND81320,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1885,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,12:37:00,False,New Inn,3200YND81330,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1890,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,12:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1895,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,12:38:00,False,Beechwood Crescent,3200YND81350,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1900,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,12:39:00,False,The Adelphi,3200YNA96791,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1905,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,12:41:00,False,White Hart,3200YND81020,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1910,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,12:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1915,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,12:44:00,True,Bus Station,3200YND13110,outbound,6045,HRGT:PB0001746:15:6,False,Monday,342
+1920,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,12:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1925,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,12:16:00,False,Victoria Avenue,3200YND81000,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1930,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,12:17:00,False,Montpellier Hill,3200YND81010,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1935,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,12:18:00,False,White Hart Hotel,3200YND81370,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1940,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,12:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1945,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,12:20:00,False,Queens Road,3200YND81040,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1950,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,12:21:00,False,New Inn,3200YND81050,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1955,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,12:22:00,False,Pannal Ash Road,3200YND81060,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1960,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,12:22:00,False,Harlow Oval,3200YND81070,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1965,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,12:23:00,False,College Street,3200YND81080,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1970,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,12:24:00,False,Shepherds Dog,3200YND81090,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1975,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,12:25:00,False,Plantation Road,3200YND81100,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1980,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,12:25:00,False,Larkfield Way,3200YND81110,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1985,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,12:26:00,False,Beckwith Avenue,3200YND81120,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1990,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,12:28:00,False,Beckwith Crescent,3200YND81130,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+1995,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,12:29:00,True,Wellfield Court,3200YND81210,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2000,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,12:29:00,False,Opp Sports Centre,3200YND81220,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2005,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,12:30:00,False,Harlow Crescent,3200YND81230,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2010,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,12:31:00,False,Harlow Park Drive,3200YND81240,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2015,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,12:32:00,False,Beckwith Avenue,3200YND81250,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2020,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,12:33:00,False,Larkfield Way,3200YND81260,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2025,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,12:34:00,False,Plantation Road,3200YND81290,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2030,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,12:35:00,False,Shepherds Dog,3200YND81300,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2035,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,12:35:00,False,College Street,3200YND81310,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2040,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,12:36:00,False,Harlow Oval,3200YND81320,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2045,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,12:37:00,False,New Inn,3200YND81330,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2050,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,12:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2055,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,12:38:00,False,Beechwood Crescent,3200YND81350,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2060,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,12:39:00,False,The Adelphi,3200YNA96791,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2065,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,12:41:00,False,White Hart,3200YND81020,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2070,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,12:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2075,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,12:44:00,True,Bus Station,3200YND13110,outbound,6045,HRGT:PB0001746:15:6,False,Monday,343
+2080,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,12:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2085,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,12:46:00,False,Victoria Avenue,3200YND81000,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2090,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,12:47:00,False,Montpellier Hill,3200YND81010,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2095,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,12:48:00,False,White Hart Hotel,3200YND81370,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2100,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,12:49:00,False,Cold Bath Road Po,3200YND81360,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2105,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,12:50:00,False,Queens Road,3200YND81040,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2110,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,12:51:00,False,New Inn,3200YND81050,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2115,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,12:52:00,False,Pannal Ash Road,3200YND81060,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2120,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,12:52:00,False,Harlow Oval,3200YND81070,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2125,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,12:53:00,False,College Street,3200YND81080,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2130,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,12:54:00,False,Shepherds Dog,3200YND81090,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2135,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,12:55:00,False,Plantation Road,3200YND81100,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2140,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,12:55:00,False,Larkfield Way,3200YND81110,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2145,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,12:56:00,False,Beckwith Avenue,3200YND81120,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2150,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,12:58:00,False,Beckwith Crescent,3200YND81130,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2155,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,12:59:00,True,Wellfield Court,3200YND81210,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2160,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,12:59:00,False,Opp Sports Centre,3200YND81220,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2165,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,13:00:00,False,Harlow Crescent,3200YND81230,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2170,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,13:01:00,False,Harlow Park Drive,3200YND81240,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2175,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,13:02:00,False,Beckwith Avenue,3200YND81250,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2180,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,13:03:00,False,Larkfield Way,3200YND81260,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2185,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,13:04:00,False,Plantation Road,3200YND81290,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2190,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,13:05:00,False,Shepherds Dog,3200YND81300,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2195,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,13:05:00,False,College Street,3200YND81310,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2200,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,13:06:00,False,Harlow Oval,3200YND81320,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2205,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,13:07:00,False,New Inn,3200YND81330,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2210,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,13:08:00,False,Wordsworth Crescent,3200YND81340,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2215,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,13:08:00,False,Beechwood Crescent,3200YND81350,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2220,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,13:09:00,False,The Adelphi,3200YNA96791,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2225,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,13:11:00,False,White Hart,3200YND81020,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2230,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,13:13:00,False,Cheltenham Crescent,3200YND13100,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2235,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,13:14:00,True,Bus Station,3200YND13110,outbound,6049,HRGT:PB0001746:15:6,False,Monday,344
+2240,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,13:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2245,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,13:16:00,False,Victoria Avenue,3200YND81000,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2250,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,13:17:00,False,Montpellier Hill,3200YND81010,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2255,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,13:18:00,False,White Hart Hotel,3200YND81370,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2260,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,13:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2265,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,13:20:00,False,Queens Road,3200YND81040,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2270,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,13:21:00,False,New Inn,3200YND81050,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2275,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,13:22:00,False,Pannal Ash Road,3200YND81060,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2280,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,13:22:00,False,Harlow Oval,3200YND81070,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2285,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,13:23:00,False,College Street,3200YND81080,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2290,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,13:24:00,False,Shepherds Dog,3200YND81090,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2295,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,13:25:00,False,Plantation Road,3200YND81100,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2300,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,13:25:00,False,Larkfield Way,3200YND81110,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2305,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,13:26:00,False,Beckwith Avenue,3200YND81120,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2310,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,13:28:00,False,Beckwith Crescent,3200YND81130,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2315,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,13:29:00,True,Wellfield Court,3200YND81210,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2320,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,13:29:00,False,Opp Sports Centre,3200YND81220,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2325,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,13:30:00,False,Harlow Crescent,3200YND81230,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2330,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,13:31:00,False,Harlow Park Drive,3200YND81240,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2335,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,13:32:00,False,Beckwith Avenue,3200YND81250,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2340,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,13:33:00,False,Larkfield Way,3200YND81260,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2345,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,13:34:00,False,Plantation Road,3200YND81290,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2350,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,13:35:00,False,Shepherds Dog,3200YND81300,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2355,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,13:35:00,False,College Street,3200YND81310,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2360,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,13:36:00,False,Harlow Oval,3200YND81320,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2365,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,13:37:00,False,New Inn,3200YND81330,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2370,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,13:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2375,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,13:38:00,False,Beechwood Crescent,3200YND81350,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2380,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,13:39:00,False,The Adelphi,3200YNA96791,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2385,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,13:41:00,False,White Hart,3200YND81020,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2390,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,13:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2395,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,13:44:00,True,Bus Station,3200YND13110,outbound,6053,HRGT:PB0001746:15:6,False,Monday,345
+2400,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,13:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2405,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,13:46:00,False,Victoria Avenue,3200YND81000,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2410,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,13:47:00,False,Montpellier Hill,3200YND81010,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2415,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,13:48:00,False,White Hart Hotel,3200YND81370,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2420,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,13:49:00,False,Cold Bath Road Po,3200YND81360,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2425,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,13:50:00,False,Queens Road,3200YND81040,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2430,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,13:51:00,False,New Inn,3200YND81050,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2435,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,13:52:00,False,Pannal Ash Road,3200YND81060,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2440,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,13:52:00,False,Harlow Oval,3200YND81070,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2445,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,13:53:00,False,College Street,3200YND81080,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2450,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,13:54:00,False,Shepherds Dog,3200YND81090,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2455,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,13:55:00,False,Plantation Road,3200YND81100,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2460,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,13:55:00,False,Larkfield Way,3200YND81110,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2465,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,13:56:00,False,Beckwith Avenue,3200YND81120,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2470,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,13:58:00,False,Beckwith Crescent,3200YND81130,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2475,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,13:59:00,True,Wellfield Court,3200YND81210,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2480,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,13:59:00,False,Opp Sports Centre,3200YND81220,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2485,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,14:00:00,False,Harlow Crescent,3200YND81230,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2490,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,14:01:00,False,Harlow Park Drive,3200YND81240,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2495,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,14:02:00,False,Beckwith Avenue,3200YND81250,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2500,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,14:03:00,False,Larkfield Way,3200YND81260,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2505,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,14:04:00,False,Plantation Road,3200YND81290,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2510,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,14:05:00,False,Shepherds Dog,3200YND81300,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2515,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,14:05:00,False,College Street,3200YND81310,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2520,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,14:06:00,False,Harlow Oval,3200YND81320,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2525,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,14:07:00,False,New Inn,3200YND81330,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2530,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,14:08:00,False,Wordsworth Crescent,3200YND81340,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2535,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,14:08:00,False,Beechwood Crescent,3200YND81350,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2540,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,14:09:00,False,The Adelphi,3200YNA96791,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2545,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,14:11:00,False,White Hart,3200YND81020,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2550,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,14:13:00,False,Cheltenham Crescent,3200YND13100,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2555,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,14:14:00,True,Bus Station,3200YND13110,outbound,6057,HRGT:PB0001746:15:6,False,Monday,346
+2560,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,14:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2565,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,14:16:00,False,Victoria Avenue,3200YND81000,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2570,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,14:17:00,False,Montpellier Hill,3200YND81010,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2575,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,14:18:00,False,White Hart Hotel,3200YND81370,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2580,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,14:19:00,False,Cold Bath Road Po,3200YND81360,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2585,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,14:20:00,False,Queens Road,3200YND81040,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2590,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,14:21:00,False,New Inn,3200YND81050,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2595,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,14:22:00,False,Pannal Ash Road,3200YND81060,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2600,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,14:22:00,False,Harlow Oval,3200YND81070,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2605,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,14:23:00,False,College Street,3200YND81080,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2610,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,14:24:00,False,Shepherds Dog,3200YND81090,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2615,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,14:25:00,False,Plantation Road,3200YND81100,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2620,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,14:25:00,False,Larkfield Way,3200YND81110,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2625,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,14:26:00,False,Beckwith Avenue,3200YND81120,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2630,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,14:28:00,False,Beckwith Crescent,3200YND81130,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2635,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,14:29:00,True,Wellfield Court,3200YND81210,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2640,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,14:29:00,False,Opp Sports Centre,3200YND81220,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2645,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,14:30:00,False,Harlow Crescent,3200YND81230,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2650,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,14:31:00,False,Harlow Park Drive,3200YND81240,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2655,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,14:32:00,False,Beckwith Avenue,3200YND81250,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2660,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,14:33:00,False,Larkfield Way,3200YND81260,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2665,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,14:34:00,False,Plantation Road,3200YND81290,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2670,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,14:35:00,False,Shepherds Dog,3200YND81300,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2675,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,14:35:00,False,College Street,3200YND81310,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2680,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,14:36:00,False,Harlow Oval,3200YND81320,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2685,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,14:37:00,False,New Inn,3200YND81330,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2690,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,14:38:00,False,Wordsworth Crescent,3200YND81340,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2695,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,14:38:00,False,Beechwood Crescent,3200YND81350,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2700,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,14:39:00,False,The Adelphi,3200YNA96791,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2705,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,14:41:00,False,White Hart,3200YND81020,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2710,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,14:43:00,False,Cheltenham Crescent,3200YND13100,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2715,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,14:44:00,True,Bus Station,3200YND13110,outbound,6061,HRGT:PB0001746:15:6,False,Monday,347
+2720,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,14:55:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2725,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,14:56:00,False,Victoria Avenue,3200YND81000,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2730,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,14:57:00,False,Montpellier Hill,3200YND81010,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2735,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,14:58:00,False,White Hart Hotel,3200YND81370,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2740,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,15:00:00,False,Cold Bath Road Po,3200YND81360,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2745,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,15:01:00,False,Queens Road,3200YND81040,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2750,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,15:02:00,False,New Inn,3200YND81050,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2755,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,15:03:00,False,Pannal Ash Road,3200YND81060,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2760,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,15:04:00,False,Harlow Oval,3200YND81070,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2765,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,15:05:00,False,College Street,3200YND81080,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2770,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,15:05:00,False,Shepherds Dog,3200YND81090,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2775,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,15:06:00,False,Plantation Road,3200YND81100,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2780,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,15:07:00,False,Larkfield Way,3200YND81110,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2785,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,15:08:00,False,Beckwith Avenue,3200YND81120,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2790,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,15:10:00,False,Beckwith Crescent,3200YND81130,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2795,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,15:11:00,True,Wellfield Court,3200YND81210,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2800,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,15:11:00,False,Opp Sports Centre,3200YND81220,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2805,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,15:12:00,False,Harlow Crescent,3200YND81230,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2810,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,15:13:00,False,Harlow Park Drive,3200YND81240,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2815,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,15:14:00,False,Beckwith Avenue,3200YND81250,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2820,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,15:15:00,False,Larkfield Way,3200YND81260,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2825,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,15:16:00,False,Plantation Road,3200YND81290,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2830,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,15:17:00,False,Shepherds Dog,3200YND81300,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2835,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,15:17:00,False,College Street,3200YND81310,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2840,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,15:18:00,False,Harlow Oval,3200YND81320,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2845,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,15:19:00,False,New Inn,3200YND81330,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2850,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,15:20:00,False,Wordsworth Crescent,3200YND81340,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2855,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,15:20:00,False,Beechwood Crescent,3200YND81350,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2860,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,15:21:00,False,The Adelphi,3200YNA96791,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2865,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,15:23:00,False,White Hart,3200YND81020,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2870,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,15:25:00,False,Cheltenham Crescent,3200YND13100,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2875,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,15:26:00,True,Bus Station,3200YND13110,outbound,6069,HRGT:PB0001746:15:6,False,Monday,348
+2880,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,18:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2885,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,18:16:00,False,Victoria Avenue,3200YND81000,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2890,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,18:17:00,False,Montpellier Hill,3200YND81010,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2895,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,18:17:00,False,White Hart Hotel,3200YND81370,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2900,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,18:18:00,False,Cold Bath Road Po,3200YND81360,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2905,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,18:19:00,False,Queens Road,3200YND81040,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2910,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,18:20:00,False,New Inn,3200YND81050,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2915,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,18:20:00,False,Pannal Ash Road,3200YND81060,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2920,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,18:21:00,False,Harlow Oval,3200YND81070,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2925,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,18:21:00,False,College Street,3200YND81080,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2930,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,18:22:00,False,Shepherds Dog,3200YND81090,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2935,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,18:22:00,False,Plantation Road,3200YND81100,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2940,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,18:23:00,False,Larkfield Way,3200YND81110,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2945,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,18:24:00,False,Beckwith Avenue,3200YND81120,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2950,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,18:25:00,False,Beckwith Crescent,3200YND81130,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2955,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,18:26:00,True,Wellfield Court,3200YND81210,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2960,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,18:26:00,False,Opp Sports Centre,3200YND81220,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2965,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,18:27:00,False,Harlow Crescent,3200YND81230,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2970,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,18:27:00,False,Harlow Park Drive,3200YND81240,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2975,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,18:28:00,False,Beckwith Avenue,3200YND81250,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2980,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,18:29:00,False,Larkfield Way,3200YND81260,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2985,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,18:29:00,False,Plantation Road,3200YND81290,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2990,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,18:30:00,False,Shepherds Dog,3200YND81300,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+2995,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,18:30:00,False,College Street,3200YND81310,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3000,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,18:31:00,False,Harlow Oval,3200YND81320,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3005,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,18:32:00,False,New Inn,3200YND81330,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3010,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,18:32:00,False,Wordsworth Crescent,3200YND81340,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3015,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,18:33:00,False,Beechwood Crescent,3200YND81350,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3020,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,18:34:00,False,The Adelphi,3200YNA96791,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3025,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,18:35:00,False,White Hart,3200YND81020,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3030,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,18:36:00,False,Cheltenham Crescent,3200YND13100,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3035,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,18:37:00,True,Bus Station,3200YND13110,outbound,6085,HRGT:PB0001746:15:6,False,Monday,360
+3040,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,18:40:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3045,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,18:41:00,False,Victoria Avenue,3200YND81000,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3050,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,18:42:00,False,Montpellier Hill,3200YND81010,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3055,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,18:42:00,False,White Hart Hotel,3200YND81370,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3060,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,18:43:00,False,Cold Bath Road Po,3200YND81360,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3065,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,18:44:00,False,Queens Road,3200YND81040,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3070,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,18:45:00,False,New Inn,3200YND81050,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3075,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,18:45:00,False,Pannal Ash Road,3200YND81060,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3080,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,18:46:00,False,Harlow Oval,3200YND81070,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3085,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,18:46:00,False,College Street,3200YND81080,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3090,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,18:47:00,False,Shepherds Dog,3200YND81090,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3095,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,18:47:00,False,Plantation Road,3200YND81100,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3100,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,18:48:00,False,Larkfield Way,3200YND81110,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3105,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,18:49:00,False,Beckwith Avenue,3200YND81120,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3110,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,18:50:00,False,Beckwith Crescent,3200YND81130,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3115,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,18:51:00,True,Wellfield Court,3200YND81210,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3120,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,18:51:00,False,Opp Sports Centre,3200YND81220,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3125,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,18:52:00,False,Harlow Crescent,3200YND81230,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3130,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,18:52:00,False,Harlow Park Drive,3200YND81240,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3135,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,18:53:00,False,Beckwith Avenue,3200YND81250,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3140,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,18:54:00,False,Larkfield Way,3200YND81260,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3145,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,18:54:00,False,Plantation Road,3200YND81290,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3150,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,18:55:00,False,Shepherds Dog,3200YND81300,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3155,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,18:55:00,False,College Street,3200YND81310,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3160,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,18:56:00,False,Harlow Oval,3200YND81320,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3165,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,18:57:00,False,New Inn,3200YND81330,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3170,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,18:57:00,False,Wordsworth Crescent,3200YND81340,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3175,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,18:58:00,False,Beechwood Crescent,3200YND81350,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3180,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,18:59:00,False,The Adelphi,3200YNA96791,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3185,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,19:00:00,False,White Hart,3200YND81020,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3190,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,19:01:00,False,Cheltenham Crescent,3200YND13100,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3195,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,19:02:00,True,Bus Station,3200YND13110,outbound,6093,HRGT:PB0001746:15:6,False,Monday,361
+3232,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,08:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3233,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,08:45:00,False,Victoria Avenue,3200YND81000,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3234,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,08:46:00,False,Montpellier Hill,3200YND81010,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3235,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,08:47:00,False,White Hart Hotel,3200YND81370,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3236,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,08:48:00,False,Cold Bath Road Po,3200YND81360,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3237,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,08:48:00,False,Queens Road,3200YND81040,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3238,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,08:49:00,False,New Inn,3200YND81050,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3239,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,08:49:00,False,Pannal Ash Road,3200YND81060,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3240,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,08:50:00,False,Harlow Oval,3200YND81070,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3241,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,08:50:00,False,College Street,3200YND81080,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3242,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,08:51:00,False,Shepherds Dog,3200YND81090,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3243,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,08:51:00,False,Plantation Road,3200YND81100,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3244,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,08:51:00,False,Larkfield Way,3200YND81110,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3245,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,08:52:00,False,Beckwith Avenue,3200YND81120,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3246,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,08:53:00,False,Beckwith Crescent,3200YND81130,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3247,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,08:54:00,True,Wellfield Court,3200YND81210,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3248,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,08:54:00,False,Opp Sports Centre,3200YND81220,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3249,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,08:55:00,False,Harlow Crescent,3200YND81230,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3250,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,08:55:00,False,Harlow Park Drive,3200YND81240,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3251,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,08:56:00,False,Beckwith Avenue,3200YND81250,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3252,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,08:57:00,False,Larkfield Way,3200YND81260,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3253,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,08:57:00,False,Plantation Road,3200YND81290,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3254,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,08:58:00,False,Shepherds Dog,3200YND81300,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3255,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,23,08:58:00,False,College Street,3200YND81310,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3256,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,24,08:59:00,False,Harlow Oval,3200YND81320,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3257,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,25,09:00:00,False,New Inn,3200YND81330,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3258,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,26,09:00:00,False,Wordsworth Crescent,3200YND81340,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3259,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,27,09:01:00,False,Beechwood Crescent,3200YND81350,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3260,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,28,09:02:00,False,The Adelphi,3200YNA96791,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3261,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,29,09:03:00,False,White Hart,3200YND81020,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3262,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,30,09:04:00,False,Cheltenham Crescent,3200YND13100,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+3263,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,31,09:05:00,True,Bus Station,3200YND13110,outbound,6005,HRGT:PB0001746:15:6,False,Saturday,363
+4224,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,07:20:00,True,Beckwith Knowle,3200YND81104,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4229,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,07:21:00,False,Harlow Grange,3200YNA97049,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4234,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,07:22:00,False,Harlow Pines,3200YNA96426,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4239,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,07:23:00,False,Larkfield Way,3200YND81110,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4244,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,07:24:00,False,Beckwith Avenue,3200YND81120,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4249,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,07:25:00,False,Beckwith Crescent,3200YND81130,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4254,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,07:26:00,True,Wellfield Court,3200YND81210,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4259,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,07:26:00,False,Opp Sports Centre,3200YND81220,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4264,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,07:27:00,False,Harlow Crescent,3200YND81230,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4269,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,07:27:00,False,Harlow Park Drive,3200YND81240,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4274,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,07:28:00,False,Beckwith Avenue,3200YND81250,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4279,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,07:29:00,False,Larkfield Way,3200YND81260,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4284,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,07:29:00,False,Plantation Road,3200YND81290,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4289,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,07:30:00,False,Shepherds Dog,3200YND81300,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4294,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,07:30:00,False,College Street,3200YND81310,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4299,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,07:31:00,False,Harlow Oval,3200YND81320,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4304,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,07:32:00,False,New Inn,3200YND81330,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4309,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,07:32:00,False,Wordsworth Crescent,3200YND81340,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4314,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,07:33:00,False,Beechwood Crescent,3200YND81350,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4319,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,07:34:00,False,The Adelphi,3200YNA96791,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4324,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,07:35:00,False,White Hart,3200YND81020,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4329,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,07:36:00,False,Cheltenham Crescent,3200YND13100,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4334,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,07:37:00,True,Bus Station,3200YND13110,outbound,6009,HRGT:PB0001746:15:6,False,Monday,325
+4339,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,07:20:00,True,Beckwith Knowle,3200YND81104,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4344,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,07:21:00,False,Harlow Grange,3200YNA97049,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4349,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,07:22:00,False,Harlow Pines,3200YNA96426,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4354,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,07:23:00,False,Larkfield Way,3200YND81110,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4359,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,07:24:00,False,Beckwith Avenue,3200YND81120,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4364,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,07:25:00,False,Beckwith Crescent,3200YND81130,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4369,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,07:26:00,True,Wellfield Court,3200YND81210,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4374,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,07:26:00,False,Opp Sports Centre,3200YND81220,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4379,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,07:27:00,False,Harlow Crescent,3200YND81230,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4384,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,07:27:00,False,Harlow Park Drive,3200YND81240,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4389,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,07:28:00,False,Beckwith Avenue,3200YND81250,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4394,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,07:29:00,False,Larkfield Way,3200YND81260,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4399,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,07:29:00,False,Plantation Road,3200YND81290,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4404,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,07:30:00,False,Shepherds Dog,3200YND81300,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4409,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,07:30:00,False,College Street,3200YND81310,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4414,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,07:31:00,False,Harlow Oval,3200YND81320,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4419,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,07:32:00,False,New Inn,3200YND81330,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4424,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,07:32:00,False,Wordsworth Crescent,3200YND81340,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4429,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,07:33:00,False,Beechwood Crescent,3200YND81350,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4434,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,07:34:00,False,The Adelphi,3200YNA96791,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4439,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,07:35:00,False,White Hart,3200YND81020,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4444,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,07:36:00,False,Cheltenham Crescent,3200YND13100,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4449,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,07:37:00,True,Bus Station,3200YND13110,outbound,6009,HRGT:PB0001746:15:6,False,Monday,326
+4454,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,07:45:00,True,Beckwith Knowle,3200YND81104,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4459,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,07:46:00,False,Harlow Grange,3200YNA97049,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4464,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,07:47:00,False,Harlow Pines,3200YNA96426,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4469,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,07:48:00,False,Larkfield Way,3200YND81110,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4474,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,07:49:00,False,Beckwith Avenue,3200YND81120,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4479,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,07:50:00,False,Beckwith Crescent,3200YND81130,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4484,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,07:51:00,True,Wellfield Court,3200YND81210,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4489,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,07:51:00,False,Opp Sports Centre,3200YND81220,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4494,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,07:52:00,False,Harlow Crescent,3200YND81230,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4499,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,07:53:00,False,Harlow Park Drive,3200YND81240,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4504,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,07:54:00,False,Beckwith Avenue,3200YND81250,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4509,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,07:55:00,False,Larkfield Way,3200YND81260,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4514,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,07:56:00,False,Plantation Road,3200YND81290,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4519,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,07:57:00,False,Shepherds Dog,3200YND81300,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4524,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,07:57:00,False,College Street,3200YND81310,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4529,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,07:58:00,False,Harlow Oval,3200YND81320,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4534,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,07:59:00,False,New Inn,3200YND81330,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4539,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,08:00:00,False,Wordsworth Crescent,3200YND81340,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4544,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,08:00:00,False,Beechwood Crescent,3200YND81350,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4549,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,08:01:00,False,The Adelphi,3200YNA96791,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4554,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,08:03:00,False,White Hart,3200YND81020,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4559,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,08:05:00,False,Cheltenham Crescent,3200YND13100,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4564,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,08:06:00,True,Bus Station,3200YND13110,outbound,6013,HRGT:PB0001746:15:6,False,Monday,328
+4684,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,08:36:00,True,Wellfield Court,3200YND81210,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4689,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,08:36:00,False,Opp Sports Centre,3200YND81220,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4694,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,08:38:00,False,Harlow Crescent,3200YND81230,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4699,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,08:39:00,False,Harlow Park Drive,3200YND81240,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4704,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,08:40:00,False,Beckwith Avenue,3200YND81250,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4709,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,08:41:00,False,Larkfield Way,3200YND81260,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4714,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,08:42:00,False,Plantation Road,3200YND81290,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4719,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,08:43:00,False,Shepherds Dog,3200YND81300,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4724,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,08:43:00,False,College Street,3200YND81310,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4729,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,08:44:00,False,Harlow Oval,3200YND81320,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4734,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,08:46:00,False,New Inn,3200YND81330,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4739,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,08:46:00,False,Wordsworth Crescent,3200YND81340,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4744,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,08:47:00,False,Beechwood Crescent,3200YND81350,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4749,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,08:49:00,False,The Adelphi,3200YNA96791,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4754,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,08:50:00,False,White Hart,3200YND81020,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4759,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,08:53:00,False,Cheltenham Crescent,3200YND13100,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4764,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,08:54:00,True,Bus Station,3200YND13110,outbound,6017,HRGT:PB0001746:15:6,False,Monday,331
+4769,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,14:55:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4774,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,14:56:00,False,Victoria Avenue,3200YND81000,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4779,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,14:57:00,False,Montpellier Hill,3200YND81010,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4784,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,14:58:00,False,White Hart Hotel,3200YND81370,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4789,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,15:00:00,False,Cold Bath Road Po,3200YND81360,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4794,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,15:01:00,False,Queens Road,3200YND81040,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4799,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,15:02:00,False,New Inn,3200YND81050,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4804,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,15:03:00,False,Pannal Ash Road,3200YND81060,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4809,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,15:04:00,False,Harlow Oval,3200YND81070,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4814,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,15:05:00,False,College Street,3200YND81080,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4819,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,15:05:00,False,Shepherds Dog,3200YND81090,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4824,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,15:06:00,False,Plantation Road,3200YND81100,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4829,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,15:07:00,False,Larkfield Way,3200YND81110,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4834,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,15:08:00,False,Beckwith Avenue,3200YND81120,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4839,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,15:10:00,False,Beckwith Crescent,3200YND81130,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4844,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,15:11:00,True,Wellfield Court,3200YND81210,outbound,6069,HRGT:PB0001746:15:6,False,Monday,349
+4849,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,15:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4854,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,15:46:00,False,Victoria Avenue,3200YND81000,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4859,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,15:47:00,False,Montpellier Hill,3200YND81010,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4864,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,15:48:00,False,White Hart Hotel,3200YND81370,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4869,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,15:50:00,False,Cold Bath Road Po,3200YND81360,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4874,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,15:51:00,False,Queens Road,3200YND81040,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4879,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,15:52:00,False,New Inn,3200YND81050,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4884,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,15:53:00,False,Pannal Ash Road,3200YND81060,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4889,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,15:54:00,False,Harlow Oval,3200YND81070,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4894,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,15:55:00,False,College Street,3200YND81080,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4899,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,15:55:00,False,Shepherds Dog,3200YND81090,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4904,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,15:56:00,False,Plantation Road,3200YND81100,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4909,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,15:57:00,False,Larkfield Way,3200YND81110,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4914,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,15:58:00,False,Beckwith Avenue,3200YND81120,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4919,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,16:00:00,False,Beckwith Crescent,3200YND81130,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4924,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,16:01:00,True,Wellfield Court,3200YND81210,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4929,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,16:01:00,False,Opp Sports Centre,3200YND81220,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4934,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,16:02:00,False,Harlow Crescent,3200YND81230,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4939,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,16:03:00,False,Harlow Park Drive,3200YND81240,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4944,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,16:04:00,False,Beckwith Avenue,3200YND81250,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4949,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,16:05:00,False,Larkfield Way,3200YND81260,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4954,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,16:07:00,False,Harlow Pines,3200YND81102,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4959,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,16:08:00,True,Beckwith Knowle,3200YND81104,outbound,6073,HRGT:PB0001746:15:6,False,Monday,350
+4964,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,16:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4969,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,16:16:00,False,Victoria Avenue,3200YND81000,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4974,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,16:17:00,False,Montpellier Hill,3200YND81010,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4979,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,16:18:00,False,White Hart Hotel,3200YND81370,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4984,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,16:20:00,False,Cold Bath Road Po,3200YND81360,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4989,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,16:21:00,False,Queens Road,3200YND81040,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4994,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,16:22:00,False,New Inn,3200YND81050,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+4999,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,16:23:00,False,Pannal Ash Road,3200YND81060,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5004,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,16:24:00,False,Harlow Oval,3200YND81070,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5009,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,16:25:00,False,College Street,3200YND81080,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5014,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,16:25:00,False,Shepherds Dog,3200YND81090,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5019,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,16:26:00,False,Plantation Road,3200YND81100,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5024,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,16:27:00,False,Larkfield Way,3200YND81110,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5029,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,16:28:00,False,Beckwith Avenue,3200YND81120,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5034,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,16:30:00,False,Beckwith Crescent,3200YND81130,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5039,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,16:31:00,True,Wellfield Court,3200YND81210,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5044,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,16:31:00,False,Opp Sports Centre,3200YND81220,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5049,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,16:32:00,False,Harlow Crescent,3200YND81230,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5054,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,16:33:00,False,Harlow Park Drive,3200YND81240,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5059,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,16:34:00,False,Beckwith Avenue,3200YND81250,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5064,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,16:35:00,False,Larkfield Way,3200YND81260,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5069,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,16:37:00,False,Harlow Pines,3200YND81102,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5074,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,16:38:00,True,Beckwith Knowle,3200YND81104,outbound,6075,HRGT:PB0001746:15:6,False,Monday,352
+5079,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,16:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5084,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,16:46:00,False,Victoria Avenue,3200YND81000,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5089,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,16:47:00,False,Montpellier Hill,3200YND81010,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5094,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,16:48:00,False,White Hart Hotel,3200YND81370,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5099,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,16:50:00,False,Cold Bath Road Po,3200YND81360,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5104,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,16:51:00,False,Queens Road,3200YND81040,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5109,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,16:52:00,False,New Inn,3200YND81050,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5114,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,16:53:00,False,Pannal Ash Road,3200YND81060,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5119,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,16:54:00,False,Harlow Oval,3200YND81070,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5124,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,16:55:00,False,College Street,3200YND81080,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5129,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,16:55:00,False,Shepherds Dog,3200YND81090,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5134,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,16:56:00,False,Plantation Road,3200YND81100,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5139,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,16:57:00,False,Larkfield Way,3200YND81110,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5144,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,16:58:00,False,Beckwith Avenue,3200YND81120,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5149,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,17:00:00,False,Beckwith Crescent,3200YND81130,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5154,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,17:01:00,True,Wellfield Court,3200YND81210,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5159,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,17:01:00,False,Opp Sports Centre,3200YND81220,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5164,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,17:02:00,False,Harlow Crescent,3200YND81230,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5169,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,17:03:00,False,Harlow Park Drive,3200YND81240,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5174,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,17:04:00,False,Beckwith Avenue,3200YND81250,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5179,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,17:05:00,False,Larkfield Way,3200YND81260,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5184,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,17:07:00,False,Harlow Pines,3200YND81102,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5189,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,17:08:00,True,Beckwith Knowle,3200YND81104,outbound,6077,HRGT:PB0001746:15:6,False,Monday,354
+5194,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,16:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5199,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,16:46:00,False,Victoria Avenue,3200YND81000,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5204,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,16:47:00,False,Montpellier Hill,3200YND81010,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5209,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,16:48:00,False,White Hart Hotel,3200YND81370,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5214,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,16:50:00,False,Cold Bath Road Po,3200YND81360,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5219,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,16:51:00,False,Queens Road,3200YND81040,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5224,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,16:52:00,False,New Inn,3200YND81050,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5229,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,16:53:00,False,Pannal Ash Road,3200YND81060,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5234,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,16:54:00,False,Harlow Oval,3200YND81070,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5239,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,16:55:00,False,College Street,3200YND81080,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5244,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,16:55:00,False,Shepherds Dog,3200YND81090,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5249,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,16:56:00,False,Plantation Road,3200YND81100,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5254,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,16:57:00,False,Larkfield Way,3200YND81110,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5259,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,16:58:00,False,Beckwith Avenue,3200YND81120,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5264,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,17:00:00,False,Beckwith Crescent,3200YND81130,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5269,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,17:01:00,True,Wellfield Court,3200YND81210,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5274,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,17:01:00,False,Opp Sports Centre,3200YND81220,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5279,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,17:02:00,False,Harlow Crescent,3200YND81230,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5284,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,17:03:00,False,Harlow Park Drive,3200YND81240,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5289,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,17:04:00,False,Beckwith Avenue,3200YND81250,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5294,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,17:05:00,False,Larkfield Way,3200YND81260,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5299,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,17:07:00,False,Harlow Pines,3200YND81102,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5304,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,17:08:00,True,Beckwith Knowle,3200YND81104,outbound,6077,HRGT:PB0001746:15:6,False,Monday,355
+5309,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,0,17:15:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5314,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,17:16:00,False,Victoria Avenue,3200YND81000,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5319,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,17:17:00,False,Montpellier Hill,3200YND81010,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5324,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,17:18:00,False,White Hart Hotel,3200YND81370,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5329,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,4,17:20:00,False,Cold Bath Road Po,3200YND81360,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5334,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,5,17:21:00,False,Queens Road,3200YND81040,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5339,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,6,17:22:00,False,New Inn,3200YND81050,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5344,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,7,17:23:00,False,Pannal Ash Road,3200YND81060,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5349,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,8,17:24:00,False,Harlow Oval,3200YND81070,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5354,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,9,17:25:00,False,College Street,3200YND81080,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5359,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,10,17:25:00,False,Shepherds Dog,3200YND81090,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5364,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,11,17:26:00,False,Plantation Road,3200YND81100,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5369,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,12,17:27:00,False,Larkfield Way,3200YND81110,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5374,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,13,17:28:00,False,Beckwith Avenue,3200YND81120,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5379,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,14,17:30:00,False,Beckwith Crescent,3200YND81130,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5384,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,15,17:31:00,True,Wellfield Court,3200YND81210,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5389,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,16,17:31:00,False,Opp Sports Centre,3200YND81220,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5394,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,17,17:32:00,False,Harlow Crescent,3200YND81230,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5399,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,18,17:33:00,False,Harlow Park Drive,3200YND81240,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5404,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,19,17:34:00,False,Beckwith Avenue,3200YND81250,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5409,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,20,17:35:00,False,Larkfield Way,3200YND81260,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5414,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,21,17:37:00,False,Harlow Pines,3200YND81102,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
+5419,PB0001746:15,24,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,22,17:38:00,True,Beckwith Knowle,3200YND81104,outbound,6081,HRGT:PB0001746:15:6,False,Monday,358
