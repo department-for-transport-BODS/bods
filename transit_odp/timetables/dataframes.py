@@ -50,7 +50,7 @@ def get_flexible_journey_details(
     return stop_points_details
 
 
-def flexible_journey_patterns_to_dataframe(services):
+def flexible_journey_patterns_to_dataframe(services, stop_activities):
     """
     This function iterates over FlexibleService xml tag and converts FlexibleJourneyPattern
     to pandas dataframe
@@ -99,6 +99,18 @@ def flexible_journey_patterns_to_dataframe(services):
                             atco_code = children.get_element_or_none(
                                 "StopPointRef"
                             ).text
+
+                            activity = "none"
+                            activity_element = children.get_element_or_none(
+                                ["Activity"]
+                            )
+                            if activity_element:
+                                activity = activity_element.text
+
+                            activity_id = get_stop_activity_id(
+                                stop_activities, activity
+                            )
+
                             flexible_journey_patterns.append(
                                 {
                                     "service_code": service_code,
@@ -106,6 +118,7 @@ def flexible_journey_patterns_to_dataframe(services):
                                     "bus_stop_type": bus_stop_type,
                                     "journey_pattern_id": pattern["id"],
                                     "direction": direction,
+                                    "activity_id": int(activity_id),
                                 }
                             )
 
@@ -116,6 +129,7 @@ def flexible_journey_patterns_to_dataframe(services):
             "journey_pattern_id",
             "service_code",
             "direction",
+            "activity_id",
         ]
         flexible_journey_patterns_df = pd.DataFrame(
             flexible_journey_patterns, columns=columns
@@ -345,7 +359,15 @@ def journey_pattern_section_from_journey_pattern(df: pd.DataFrame):
         return pd.DataFrame()
 
 
-def journey_pattern_sections_to_dataframe(sections):
+def get_stop_activity_id(stop_activities, name):
+    matching_activity = next(
+        (activity.id for activity in stop_activities if activity.name == name), None
+    )
+
+    return matching_activity
+
+
+def journey_pattern_sections_to_dataframe(sections, stop_activities):
     all_links = []
     if sections is not None:
         for section in sections:
@@ -382,6 +404,20 @@ def journey_pattern_sections_to_dataframe(sections):
                 else:
                     route_link_ref = hash((from_stop_ref, to_stop_ref))
 
+                # Default key for activity name is none in db when there are no elements
+                from_activity = "none"
+                to_activity = "none"
+                from_activity_element = from_stop.get_element_or_none(["Activity"])
+                to_activity_element = to_stop.get_element_or_none(["Activity"])
+                if from_activity_element:
+                    from_activity = from_activity_element.text
+
+                if to_activity_element:
+                    to_activity = to_activity_element.text
+
+                from_activity_id = get_stop_activity_id(stop_activities, from_activity)
+                to_activity_id = get_stop_activity_id(stop_activities, to_activity)
+
                 all_links.append(
                     {
                         "jp_section_id": id_,
@@ -395,6 +431,8 @@ def journey_pattern_sections_to_dataframe(sections):
                         "is_timing_status": is_timing_status,
                         "run_time": run_time,
                         "wait_time": wait_time,
+                        "from_activity_id": from_activity_id,
+                        "to_activity_id": to_activity_id,
                     }
                 )
     timing_links = pd.DataFrame(all_links)

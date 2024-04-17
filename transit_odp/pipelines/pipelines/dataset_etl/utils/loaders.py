@@ -157,6 +157,7 @@ def add_service_pattern_to_service_pattern_stops(
                 is_timing_point=record["is_timing_status"],
                 txc_common_name=record["common_name"],
                 vehicle_journey_id=vehicle_journey_id,
+                stop_activity_id=record["activity_id"],
             )
 
     stops = list(_inner())

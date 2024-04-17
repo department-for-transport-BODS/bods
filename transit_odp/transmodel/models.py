@@ -308,4 +308,3 @@ class BankHolidays(models.Model):
     date = models.DateField()
     notes = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=255, null=True, blank=True)
-

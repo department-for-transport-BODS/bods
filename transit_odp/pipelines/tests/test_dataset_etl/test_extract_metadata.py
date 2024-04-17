@@ -24,6 +24,9 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
+from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
+    get_stop_activities,
+)
 from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     agg_service_pattern_sequences,
 )
@@ -84,7 +87,9 @@ class ExtractBaseTestCase(TestCase):
         self.file_obj = File(os.path.join(self.cur_dir, self.test_file))
         self.doc, result = xml_toolkit.parse_xml_file(self.file_obj.file)
 
-        self.trans_xchange_extractor = TransXChangeExtractor(self.file_obj, self.now)
+        self.trans_xchange_extractor = TransXChangeExtractor(
+            self.file_obj, self.now, stop_activity_cache=get_stop_activities()
+        )
 
         # Create bogus admin area
         self.admin = AdminAreaFactory(

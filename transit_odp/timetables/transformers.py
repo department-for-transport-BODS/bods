@@ -307,7 +307,7 @@ class TransXChangeTransformer:
                             ]
                         )
                         service_pattern_stops.dropna(
-                            subset=["stop_atco", "geometry"], inplace=True
+                            subset=["stop_atco", "geometry"], how="all", inplace=True
                         )
 
                         df_merged_vehicle_journeys = pd.concat(
@@ -466,7 +466,9 @@ class TransXChangeTransformer:
             group["vehicle_journey_code"] = vehicle_journey_code
             group["from_stop_atco"] = group["atco_code"].shift(0)
             group["to_stop_atco"] = group["atco_code"].shift(-1)
-            return group.dropna(subset=["to_stop_atco"])
+            group["from_activity_id"] = group["activity_id"].shift(0)
+            group["to_activity_id"] = group["activity_id"].shift(-1)
+            return group.dropna(subset=["to_stop_atco", "activity_id"])
 
         if not flexible_journey_details.empty:
             flexible_timing_links = (
@@ -481,7 +483,9 @@ class TransXChangeTransformer:
                     "file_id",
                     "order",
                     "from_stop_atco",
+                    "from_activity_id",
                     "to_stop_atco",
+                    "to_activity_id",
                     "journey_pattern_id",
                     "service_code",
                     "route_hash",

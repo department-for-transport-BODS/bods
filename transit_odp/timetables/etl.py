@@ -63,9 +63,13 @@ class TransXChangePipeline:
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
         if self.file_obj.file.name.endswith("zip"):
-            extractor = TransXChangeZipExtractor(self.file_obj, self.start_time, self.stop_activity_cache)
+            extractor = TransXChangeZipExtractor(
+                self.file_obj, self.start_time, self.stop_activity_cache
+            )
         elif self.file_obj.file.name.endswith("xml"):
-            extractor = TransXChangeExtractor(self.file_obj, self.start_time, self.stop_activity_cache)
+            extractor = TransXChangeExtractor(
+                self.file_obj, self.start_time, self.stop_activity_cache
+            )
         else:
             raise exceptions.NoDataFoundError(filename)
 

@@ -48,6 +48,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         "departure_time",
         "is_timing_status",
         "from_stop_sequence_number",
+        "from_activity_id",
     ]
 
     if "vehicle_journey_code" in df.columns:
@@ -71,6 +72,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             columns={
                 "from_stop_atco": "stop_atco",
                 "from_stop_sequence_number": "sequence_number",
+                "from_activity_id": "activity_id",
             }
         )
     )
@@ -84,25 +86,23 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
     # and hence needs to be conditionally removed to avoid exceptions in dataframes
+    columns = [
+        "to_stop_atco",
+        "to_stop_sequence_number",
+        "is_timing_status",
+        "run_time",
+        "wait_time",
+        "to_activity_id",
+    ]
+
     if "run_time_vj" in columns:
         use_vehicle_journey_runtime = True
-        columns = [
-            "to_stop_atco",
-            "to_stop_sequence_number",
-            "is_timing_status",
-            "run_time",
-            "wait_time",
-            "run_time_vj",
-            "wait_time_vj",
-        ]
-    else:
-        columns = [
-            "to_stop_atco",
-            "to_stop_sequence_number",
-            "is_timing_status",
-            "run_time",
-            "wait_time",
-        ]
+        columns.extend(
+            [
+                "run_time_vj",
+                "wait_time_vj",
+            ]
+        )
 
     if vehicle_journey_exists:
         columns.extend(["journey_pattern_id"])
@@ -113,6 +113,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         columns={
             "to_stop_atco": "stop_atco",
             "to_stop_sequence_number": "sequence_number",
+            "to_activity_id": "activity_id",
         }
     )
     columns.remove("to_stop_atco")
@@ -438,6 +439,14 @@ def create_route_to_route_links(
         suffixes=["_section", "_link"],
     )
 
+    r2r_links_columns = [
+        "route_link_ref",
+        "from_stop_sequence_number",
+        "to_stop_sequence_number",
+        "from_activity_id",
+        "to_activity_id",
+    ]
+
     if not vehicle_journeys_with_timing_refs.empty:
         route_to_route_links = route_to_route_links.merge(
             vehicle_journeys_with_timing_refs.reset_index(),
@@ -456,31 +465,13 @@ def create_route_to_route_links(
             how="left",
             suffixes=["_rl", "_vj"],
         )
+        r2r_links_columns.extend(["run_time_vj", "wait_time_vj"])
 
-        route_to_route_links = route_to_route_links.groupby(route_columns).apply(
-            lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                [
-                    "route_link_ref",
-                    "run_time_vj",
-                    "wait_time_vj",
-                    "from_stop_sequence_number",
-                    "to_stop_sequence_number",
-                ]
-            ]
-        )
-    else:
-        # Build the new sequence. To get the final ordering of route_link_ref,
-        # we sort each group by the two
-        # orderings and use 'reset_index' to create a new sequential index in this order
-        route_to_route_links = route_to_route_links.groupby(route_columns).apply(
-            lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                [
-                    "route_link_ref",
-                    "from_stop_sequence_number",
-                    "to_stop_sequence_number",
-                ]
-            ]
-        )
+    route_to_route_links = route_to_route_links.groupby(route_columns).apply(
+        lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
+            r2r_links_columns
+        ]
+    )
 
     route_columns.append("order")
     route_to_route_links.index.names = route_columns
@@ -790,43 +781,28 @@ def transform_service_pattern_to_service_links(
         "wait_time",
     ]
 
+    link_columns = [
+        "file_id",
+        "service_pattern_id",
+        "journey_pattern_id",
+        "vehicle_journey_code",
+        "journey_code",
+        "order",
+        "from_stop_atco",
+        "to_stop_atco",
+        "from_stop_sequence_number",
+        "from_activity_id",
+        "to_stop_sequence_number",
+        "to_activity_id",
+        "departure_time",
+        "is_timing_status",
+        "run_time",
+        "wait_time",
+    ]
+
     if "run_time_vj" in link_columns:
-        link_columns = [
-            "file_id",
-            "service_pattern_id",
-            "journey_pattern_id",
-            "vehicle_journey_code",
-            "journey_code",
-            "order",
-            "from_stop_atco",
-            "to_stop_atco",
-            "from_stop_sequence_number",
-            "to_stop_sequence_number",
-            "departure_time",
-            "is_timing_status",
-            "run_time",
-            "wait_time",
-            "run_time_vj",
-            "wait_time_vj",
-        ]
+        link_columns = link_columns.extend(["run_time_vj", "wait_time_vj"])
         drop_columns.extend(["run_time_vj", "wait_time_vj"])
-    else:
-        link_columns = [
-            "file_id",
-            "service_pattern_id",
-            "journey_pattern_id",
-            "vehicle_journey_code",
-            "journey_code",
-            "order",
-            "from_stop_atco",
-            "to_stop_atco",
-            "from_stop_sequence_number",
-            "to_stop_sequence_number",
-            "departure_time",
-            "is_timing_status",
-            "run_time",
-            "wait_time",
-        ]
 
     # filter and rename columns
     service_pattern_to_service_links = service_pattern_to_service_links[link_columns]
@@ -880,7 +856,9 @@ def transform_flexible_service_patterns(
             "order",
             "service_code",
             "from_stop_atco",
+            "from_activity_id",
             "to_stop_atco",
+            "to_activity_id",
             "vehicle_journey_code",
             "journey_pattern_id",
         ]
