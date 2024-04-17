@@ -84,7 +84,6 @@ class TimetableVisualiser:
                 service_patterns__service_pattern_stops__vehicle_journey__id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
-                # revision__txc_file_attributes__public_use=True,
             )
             .annotate(
                 service_code_s=F("service_code"),
