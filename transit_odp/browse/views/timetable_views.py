@@ -26,6 +26,7 @@ from transit_odp.browse.views.base_views import (
     BaseTemplateView,
     ChangeLogView,
 )
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.services import get_gtfs_bucket_service
@@ -468,6 +469,13 @@ class LineMetadataDetailView(DetailView):
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
 
+        # Initial commit for timetable visualiser
+        target_date = datetime.strptime("09/01/2023", "%d/%m/%Y").date()
+        kwargs["timetable_visualiser"] = TimetableVisualiser(
+            live_revision.id, kwargs["service_code"], kwargs["line_name"], target_date
+        ).get_timetable_visualiser()
+
+        print(f"Total number of records:{kwargs['timetable_visualiser'].count()}")
         return kwargs
 
 
