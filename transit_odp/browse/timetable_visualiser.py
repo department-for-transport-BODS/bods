@@ -251,10 +251,11 @@ class TimetableVisualiser:
         )
 
         data = {}
-        for direction in ["outbound", "inbound"]:
+        directions = {"inbound": {"inbound", "antiClockwise"}, "outbound":["outbound", "clockwise"] }
+        for direction in directions.keys():
 
             df_base_vehicle_journeys = df_base_vehicle_journeys[
-                df_base_vehicle_journeys["direction"] == direction
+                df_base_vehicle_journeys["direction"].isin(directions.get(direction))
             ]
             if df_base_vehicle_journeys.empty:
                 data[direction] = {
