@@ -333,7 +333,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 10))
+        self.assertEqual(extracted.timing_links.shape, (20, 12))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -341,6 +341,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "order",
                 "from_stop_ref",
                 "to_stop_ref",
+                "from_activity_id",
+                "to_activity_id",
                 "route_link_ref",
                 "is_timing_status",
                 "run_time",
@@ -472,7 +474,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 10))
+        self.assertEqual(extracted.timing_links.shape, (20, 12))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -480,6 +482,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "order",
                 "from_stop_ref",
                 "to_stop_ref",
+                "from_activity_id",
+                "to_activity_id",
                 "route_link_ref",
                 "is_timing_status",
                 "run_time",
@@ -599,6 +603,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
             [
                 "from_stop_atco",
                 "to_stop_atco",
+                "from_activity_id",
+                "to_activity_id",
                 "file_id",
                 "service_pattern_id",
                 "journey_pattern_id",

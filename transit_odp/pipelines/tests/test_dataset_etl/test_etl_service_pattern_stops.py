@@ -1,3 +1,4 @@
+import pytest
 from waffle.testutils import override_flag
 
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (

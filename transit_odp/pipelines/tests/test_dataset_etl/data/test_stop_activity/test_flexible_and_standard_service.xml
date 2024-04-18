@@ -131,6 +131,7 @@
   <StopPoints>
     <AnnotatedStopPointRef>
       <StopPointRef>02903617</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Church Street</CommonName>
       <Location>
         <Longitude>-0.411325</Longitude>
@@ -139,6 +140,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02903803</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Burr Street</CommonName>
       <Location>
         <Longitude>-0.410090</Longitude>
@@ -147,6 +149,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901356</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Charles Street</CommonName>
       <Location>
         <Longitude>-0.407644</Longitude>
@@ -155,6 +158,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901355</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Jubilee Street</CommonName>
       <Location>
         <Longitude>-0.406538</Longitude>
@@ -163,6 +167,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901354</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>High Town Road</CommonName>
       <Location>
         <Longitude>-0.403586</Longitude>
@@ -171,6 +176,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02903501</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Vicarage Street</CommonName>
       <Location>
         <Longitude>-0.409481</Longitude>
@@ -179,6 +185,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02903511</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Vicarage Street</CommonName>
       <Location>
         <Longitude>-0.409481</Longitude>
@@ -187,6 +194,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02903020</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>St Marys Road</CommonName>
       <Location>
         <Longitude>-0.409545</Longitude>
@@ -195,6 +203,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02903802</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Burr Street</CommonName>
       <Location>
         <Longitude>-0.409722</Longitude>
@@ -203,6 +212,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901353</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Hart Lane</CommonName>
       <Location>
         <Longitude>-0.402831</Longitude>
@@ -211,6 +221,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901363</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Hart Lane</CommonName>
       <Location>
         <Longitude>-0.402831</Longitude>
@@ -219,6 +230,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901376</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Deep Denes</CommonName>
       <Location>
         <Longitude>-0.401464</Longitude>
@@ -227,6 +239,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901350</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Round Green Tavern</CommonName>
       <Location>
         <Longitude>-0.401607</Longitude>
@@ -235,6 +248,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901375</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Moreton Road South</CommonName>
       <Location>
         <Longitude>-0.400908</Longitude>
@@ -243,6 +257,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901378</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Birchen Grove</CommonName>
       <Location>
         <Longitude>-0.401829</Longitude>
@@ -251,6 +266,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901377</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Deep Denes</CommonName>
       <Location>
         <Longitude>-0.401566</Longitude>
@@ -259,6 +275,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901281</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Jansel House</CommonName>
       <Location>
         <Longitude>-0.394145</Longitude>
@@ -267,6 +284,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901280</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Jansel House</CommonName>
       <Location>
         <Longitude>-0.394426</Longitude>
@@ -275,6 +293,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901050</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Collingtree</CommonName>
       <Location>
         <Longitude>-0.390130</Longitude>
@@ -283,6 +302,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901279</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Wood Green Road</CommonName>
       <Location>
         <Longitude>-0.385755</Longitude>
@@ -291,6 +311,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901049</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Collingtree</CommonName>
       <Location>
         <Longitude>-0.390251</Longitude>
@@ -299,6 +320,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02900018</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Putteridge High School</CommonName>
       <Location>
         <Longitude>-0.382530</Longitude>
@@ -307,6 +329,7 @@
     </AnnotatedStopPointRef>
     <AnnotatedStopPointRef>
       <StopPointRef>02901278</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
       <CommonName>Wood Green Road</CommonName>
       <Location>
         <Longitude>-0.386638</Longitude>

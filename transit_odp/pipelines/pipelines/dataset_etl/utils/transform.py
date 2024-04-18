@@ -42,7 +42,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     df = df.reset_index()
     df = df.sort_values("order")
     vehicle_journey_exists = False
-    columns = df.columns
+    df_columns = df.columns
     first_stop_columns = [
         "from_stop_atco",
         "departure_time",
@@ -95,7 +95,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         "to_activity_id",
     ]
 
-    if "run_time_vj" in columns:
+    if "run_time_vj" in df_columns:
         use_vehicle_journey_runtime = True
         columns.extend(
             [
@@ -763,8 +763,8 @@ def transform_service_pattern_to_service_links(
         )
     )
 
-    link_columns = service_pattern_to_service_links.columns
-    if "departure_time" not in link_columns:
+    df_link_columns = service_pattern_to_service_links.columns
+    if "departure_time" not in df_link_columns:
         service_pattern_to_service_links = service_pattern_to_service_links.set_index(
             ["file_id", "service_pattern_id", "order"]
         )
@@ -781,6 +781,7 @@ def transform_service_pattern_to_service_links(
         "wait_time",
     ]
 
+    # subset of columns from df_link_columns
     link_columns = [
         "file_id",
         "service_pattern_id",
@@ -800,8 +801,8 @@ def transform_service_pattern_to_service_links(
         "wait_time",
     ]
 
-    if "run_time_vj" in link_columns:
-        link_columns = link_columns.extend(["run_time_vj", "wait_time_vj"])
+    if "run_time_vj" in df_link_columns:
+        link_columns.extend(["run_time_vj", "wait_time_vj"])
         drop_columns.extend(["run_time_vj", "wait_time_vj"])
 
     # filter and rename columns

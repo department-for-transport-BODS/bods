@@ -2,6 +2,7 @@
 import logging
 from collections import namedtuple
 import pandas as pd
+import numpy as np
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop

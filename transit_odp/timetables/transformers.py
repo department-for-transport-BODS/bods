@@ -253,7 +253,6 @@ class TransXChangeTransformer:
                     flexible_timing_links = self.create_flexible_timing_link(
                         flexible_journey_details
                     )
-
                     # create flexible service link
                     if not flexible_timing_links.empty:
                         flexible_service_links = transform_service_links(
@@ -307,7 +306,7 @@ class TransXChangeTransformer:
                             ]
                         )
                         service_pattern_stops.dropna(
-                            subset=["stop_atco", "geometry"], how="all", inplace=True
+                            subset=["stop_atco", "geometry"], inplace=True
                         )
 
                         df_merged_vehicle_journeys = pd.concat(
@@ -468,7 +467,7 @@ class TransXChangeTransformer:
             group["to_stop_atco"] = group["atco_code"].shift(-1)
             group["from_activity_id"] = group["activity_id"].shift(0)
             group["to_activity_id"] = group["activity_id"].shift(-1)
-            return group.dropna(subset=["to_stop_atco", "activity_id"])
+            return group.dropna(subset=["to_stop_atco"])
 
         if not flexible_journey_details.empty:
             flexible_timing_links = (

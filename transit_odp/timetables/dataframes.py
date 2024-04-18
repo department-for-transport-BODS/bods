@@ -21,11 +21,18 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 from datetime import datetime, timedelta
 from typing import Dict, Any
 
+from transit_odp.transmodel.models import StopActivity
+
 logger = logging.getLogger(__name__)
 
 
 def get_flexible_journey_details(
-    stop_points, service_code, pattern, direction, element_name
+    stop_points,
+    service_code,
+    pattern,
+    direction,
+    stop_activities,
+    element_name,
 ):
     """
     This function converts the FixedStopUsage and FlexibleStopUsage xml tag data to
@@ -38,6 +45,12 @@ def get_flexible_journey_details(
         )
         for fixed_stop_usage in stop_points.get_elements(element_name):
             atco_code = fixed_stop_usage.get_element("StopPointRef").text
+            activity = "none"
+            activity_element = fixed_stop_usage.get_element_or_none(["Activity"])
+            if activity_element:
+                activity = activity_element.text
+
+            activity_id = get_stop_activity_id(stop_activities, activity)
             stop_points_details.append(
                 {
                     "service_code": service_code,
@@ -45,6 +58,7 @@ def get_flexible_journey_details(
                     "bus_stop_type": bus_stop_type,
                     "journey_pattern_id": pattern["id"],
                     "direction": direction,
+                    "activity_id": activity_id,
                 }
             )
     return stop_points_details
@@ -73,6 +87,7 @@ def flexible_journey_patterns_to_dataframe(services, stop_activities):
                             service_code,
                             pattern,
                             direction,
+                            stop_activities,
                             element_name="FlexibleStopUsage",
                         )
                     )
@@ -83,6 +98,7 @@ def flexible_journey_patterns_to_dataframe(services, stop_activities):
                             service_code,
                             pattern,
                             direction,
+                            stop_activities,
                             element_name="FixedStopUsage",
                         )
                     )
