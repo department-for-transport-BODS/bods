@@ -34,7 +34,12 @@ class TimetableVisualiser:
     """
 
     def __init__(
-        self, revision_id: str, service_code: str, line_name: str, target_date: str, public_use_check_flag: bool = False
+        self,
+        revision_id: str,
+        service_code: str,
+        line_name: str,
+        target_date: str,
+        public_use_check_flag: bool = False,
     ) -> None:
         """
         Intializes the properties of the object.
@@ -235,7 +240,9 @@ class TimetableVisualiser:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
                 revision__txc_file_attributes__public_use=True,
             )
-        df_initial_vehicle_journeys = pd.DataFrame.from_records(base_qs_vehicle_journeys)        
+        df_initial_vehicle_journeys = pd.DataFrame.from_records(
+            base_qs_vehicle_journeys
+        )
         if df_initial_vehicle_journeys.empty:
             return {
                 "outbound": {
@@ -261,7 +268,10 @@ class TimetableVisualiser:
         )
 
         data = {}
-        directions = {"inbound": {"inbound", "antiClockwise"}, "outbound":["outbound", "clockwise"] }
+        directions = {
+            "inbound": {"inbound", "antiClockwise"},
+            "outbound": ["outbound", "clockwise"],
+        }
         for direction in directions.keys():
 
             df_base_vehicle_journeys = df_initial_vehicle_journeys[

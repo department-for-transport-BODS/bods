@@ -487,7 +487,6 @@ class LineMetadataDetailView(DetailView):
             "show_all": show_all,
             "df_timetable": df_timetable,
         }
-    
 
     def get_context_data(self, **kwargs):
         """
@@ -541,7 +540,7 @@ class LineMetadataDetailView(DetailView):
         # Set the context for the timetable visualiser and the line details
         kwargs["curr_date"] = date
         for direction in ["outbound", "inbound"]:
-            direction_details = timetable_inbound_outbound[direction]            
+            direction_details = timetable_inbound_outbound[direction]
             journey = direction_details["description"]
             journey = direction.capitalize() + " - " + journey if journey else ""
             bound_details = self.get_direction_timetable(
