@@ -231,7 +231,7 @@ class TimetableVisualiser:
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
-        if self._check_public_use_flag == True:
+        if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
                 revision__txc_file_attributes__public_use=True,
             )
