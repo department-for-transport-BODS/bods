@@ -580,6 +580,13 @@ class VehicleJourneyFinder:
     def filter_by_service_code(
         self, vehicle_journeys: List[TxcVehicleJourney], result: ValidationResult
     ):
+        """
+        Filters vehicle journeys based on service code.
+        This function checks if there are multiple vehicle journeys in a single timetable file
+        or multiple vehicle journeys in timetables belonging to a single service code.
+        Returns:
+        bool: True if the vehicle journeys pass the filter, False otherwise.
+        """
         txc_file_list = []
         service_code_list = []
         for vj in reversed(vehicle_journeys):
@@ -593,7 +600,7 @@ class VehicleJourneyFinder:
         if len(txc_file_set) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
-                "Found more than one matching vehicle journey in timetables belonging to a single service code",
+                "Found more than one matching vehicle journey in a single timetables file belonging to a single service code",
             )
             return False
         elif len(service_code_set) == 1:
