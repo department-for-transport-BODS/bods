@@ -240,7 +240,6 @@ def get_line_description_based_on_direction(row: pd.Series) -> str:
 def get_vehicle_journey_codes_sorted(
     df_vehicle_journey_operating: pd.DataFrame,
 ) -> List:
-
     """
     Get the vehicle journey codes sorted based on the departure time
     """
@@ -317,7 +316,6 @@ def get_df_timetable_visualiser(
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
-
     min_start_date = df_vj["start_date"].min()
     max_end_date = df_vj["end_date"].max()
 
