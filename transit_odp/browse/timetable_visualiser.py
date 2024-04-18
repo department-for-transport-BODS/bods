@@ -34,7 +34,7 @@ class TimetableVisualiser:
     """
 
     def __init__(
-        self, revision_id, service_code, line_name, target_date, public_use_check_flag
+        self, revision_id: str, service_code: str, line_name: str, target_date: str, public_use_check_flag: bool = False
     ) -> None:
         """
         Intializes the properties of the object.
@@ -235,20 +235,20 @@ class TimetableVisualiser:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
                 revision__txc_file_attributes__public_use=True,
             )
-        df_base_vehicle_journeys = pd.DataFrame.from_records(base_qs_vehicle_journeys)
-        if df_base_vehicle_journeys.empty:
+        df_initial_vehicle_journeys = pd.DataFrame.from_records(base_qs_vehicle_journeys)        
+        if df_initial_vehicle_journeys.empty:
             return {
                 "outbound": {
                     "description": "",
-                    "df_timetable": df_base_vehicle_journeys,
+                    "df_timetable": pd.DataFrame(),
                 },
                 "inbound": {
                     "description": "",
-                    "df_timetable": df_base_vehicle_journeys,
+                    "df_timetable": pd.DataFrame(),
                 },
             }
         base_vehicle_journey_ids = (
-            df_base_vehicle_journeys["vehicle_journey_id"].unique().tolist()
+            df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
         df_op_excep_vehicle_journey = self.get_df_op_exceptions_vehicle_journey(
             base_vehicle_journey_ids
@@ -264,8 +264,8 @@ class TimetableVisualiser:
         directions = {"inbound": {"inbound", "antiClockwise"}, "outbound":["outbound", "clockwise"] }
         for direction in directions.keys():
 
-            df_base_vehicle_journeys = df_base_vehicle_journeys[
-                df_base_vehicle_journeys["direction"].isin(directions.get(direction))
+            df_base_vehicle_journeys = df_initial_vehicle_journeys[
+                df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
             ]
             if df_base_vehicle_journeys.empty:
                 data[direction] = {
