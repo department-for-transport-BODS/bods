@@ -227,7 +227,16 @@ class TimetableVisualiser:
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
         df_base_vehicle_journeys = self.get_df_service_vehicle_journeys()
         if df_base_vehicle_journeys.empty:
-            return pd.DataFrame()
+            return {
+                "outbound": {
+                    "description": "",
+                    "df_timetable": df_base_vehicle_journeys,
+                },
+                "inbound": {
+                    "description": "",
+                    "df_timetable": df_base_vehicle_journeys,
+                },
+            }
         base_vehicle_journey_ids = (
             df_base_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
@@ -241,34 +250,52 @@ class TimetableVisualiser:
             base_vehicle_journey_ids
         )
 
-        # Get the list of operating and non-operating vehicle journey in the exception table
-        (
-            op_exception_vj_ids,
-            nonop_exception_vj_ids,
-        ) = get_vehicle_journeyids_exceptions(
-            df_op_excep_vehicle_journey, df_nonop_excep_vehicle_journey
-        )
+        data = {}
+        for direction in ["outbound", "inbound"]:
 
-        # Get the vehicle journeys which are operating on the target date based on exception and non-exception
-        df_vehicle_journey_operating = get_df_operating_vehicle_journey(
-            self._day_of_week,
-            df_base_vehicle_journeys,
-            op_exception_vj_ids,
-            nonop_exception_vj_ids,
-        )
+            df_base_vehicle_journeys = df_base_vehicle_journeys[
+                df_base_vehicle_journeys["direction"] == direction
+            ]
+            if df_base_vehicle_journeys.empty:
+                data[direction] = {
+                    "description": "",
+                    "df_timetable": df_base_vehicle_journeys,
+                }
+                continue
+            journey_description = df_base_vehicle_journeys["journey_description"][0]
 
-        # Get the vehicle journey id which are not operating for the serviced organisation
-        vehicle_journey_ids_non_operating = get_non_operating_vj_serviced_org(
-            self._target_date, df_serviced_org
-        )
-
-        # Remove the vehicle journeys which are not operating for serviced organisation
-        df_vehicle_journey_operating = df_vehicle_journey_operating[
-            ~df_vehicle_journey_operating["vehicle_journey_id"].isin(
-                vehicle_journey_ids_non_operating
+            # Get the list of operating and non-operating vehicle journey in the exception table
+            (
+                op_exception_vj_ids,
+                nonop_exception_vj_ids,
+            ) = get_vehicle_journeyids_exceptions(
+                df_op_excep_vehicle_journey, df_nonop_excep_vehicle_journey
             )
-        ]
 
-        df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
+            # Get the vehicle journeys which are operating on the target date based on exception and non-exception
+            df_vehicle_journey_operating = get_df_operating_vehicle_journey(
+                self._day_of_week,
+                df_base_vehicle_journeys,
+                op_exception_vj_ids,
+                nonop_exception_vj_ids,
+            )
 
-        return df_timetable
+            # Get the vehicle journey id which are not operating for the serviced organisation
+            vehicle_journey_ids_non_operating = get_non_operating_vj_serviced_org(
+                self._target_date, df_serviced_org
+            )
+
+            # Remove the vehicle journeys which are not operating for serviced organisation
+            df_vehicle_journey_operating = df_vehicle_journey_operating[
+                ~df_vehicle_journey_operating["vehicle_journey_id"].isin(
+                    vehicle_journey_ids_non_operating
+                )
+            ]
+
+            df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
+            data[direction] = {
+                "description": journey_description,
+                "df_timetable": df_timetable,
+            }
+
+        return data
