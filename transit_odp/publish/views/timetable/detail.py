@@ -102,7 +102,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         and the object's attributes.
         """
         line = self.request.GET.get("line")
-        service_code = self.request.GET.get("service_code")
+        service_code = self.request.GET.get("service")
         kwargs = super().get_context_data(**kwargs)
 
         dataset = self.object

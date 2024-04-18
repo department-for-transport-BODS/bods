@@ -224,10 +224,14 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
 def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
     for record in df.to_dict("records"):
         service_pattern_id = record.get("id_service", None)
+        if pd.isna(record["departure_time"]):
+            departure_time = None
+        else:
+            departure_time = str(record["departure_time"]).split()[2]
 
         yield VehicleJourney(
             journey_code=record["journey_code"],
-            start_time=record["departure_time"],
+            start_time=departure_time,
             line_ref=record["line_ref"],
             direction=record["direction"],
             departure_day_shift=record["departure_day_shift"],
@@ -306,7 +310,7 @@ def df_to_serviced_org_vehicle_journey(
         yield ServicedOrganisationVehicleJourney(
             vehicle_journey_id=record["vehicle_journey_id"],
             serviced_organisation_id=record["serviced_org_id"],
-            operating_on_working_days=record["operational_so"],
+            operating_on_working_days=record["operational"],
         )
 
 

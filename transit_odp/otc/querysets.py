@@ -171,20 +171,6 @@ class ServiceQuerySet(QuerySet):
             )
         )
 
-    def add_service_number(self) -> TServiceQuerySet:
-        """
-        There may be multiple rows for the service, and each row has it's
-        own service number, then This will appear in the report as with | seperator.
-
-        Returns:
-            TServiceQuerySet: QuerySet with anotated column
-        """
-        return self.annotate(
-            service_numbers=GroupConcat(
-                F("service_number"), delimiter="|", distinct=True
-            )
-        )
-
     def add_timetable_data_annotations(self) -> TServiceQuerySet:
         """
         This will fetch oprator details travline region ui lta and service number from
@@ -204,7 +190,6 @@ class ServiceQuerySet(QuerySet):
             .add_ui_lta_otc()
             .add_ui_lta_weca()
             .add_ui_lta()
-            .add_service_number()
         )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:
@@ -318,7 +303,7 @@ class ServiceQuerySet(QuerySet):
                     registration_number__in=Subquery(
                         self.filter(licence__number__in=organisation_licences)
                         .filter(
-                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
+                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS  # noqa
                         )
                         .values("registration_number")
                     )
@@ -380,7 +365,7 @@ class ServiceQuerySet(QuerySet):
                     registration_number__in=Subquery(
                         self.filter(registration__ui_lta__in=[ui_lta])
                         .filter(
-                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS
+                            registration__ui_lta__naptan_ui_lta_records__traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS  # noqa
                         )
                         .values("registration_number")
                     )

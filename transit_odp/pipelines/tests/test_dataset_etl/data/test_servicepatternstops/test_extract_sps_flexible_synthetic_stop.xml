@@ -1,401 +1,408 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  TRANSXCHANGE EXAMPLE: Flexible service 
+<!--  TRANSXCHANGE EXAMPLE: Flexible service
 Tim Rivett, Tim Rivett Consulting, 27 March 2023
 (C) Crown Copyright  2023
 
 Based on the service Lincolnshire County Council CallConnect service for Metheringham
 
 -->
-<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en" CreationDateTime="2023-03-27T18:13:00-05:00" ModificationDateTime="2023-03-27T18:13:00-05:00" Modification="new" RevisionNumber="0" FileName="CallConnectMetheringhamFlexible.xml" SchemaVersion="2.4" RegistrationDocument="false" >
-	<StopPoints>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>2700000083</StopPointRef>
-		  <CommonName>Methodist Church</CommonName>
-		  <Indicator>o/s</Indicator>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270000008317</StopPointRef>
-		  <CommonName>Railway Station</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701710</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701702</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701705</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701254</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701253</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701701</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701700</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701712</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701704</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701703</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701706</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701252</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701251</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701250</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701249</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>2700LWCC3002</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701248</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>2700LBCC2963</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701246</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701247</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>2700LTBC2993</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701257</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701256</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701226</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701227</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701255</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701245</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-		<AnnotatedStopPointRef>
-		  <StopPointRef>270002701707</StopPointRef>
-		  <CommonName>Demand Responsive Area</CommonName>
-		  <LocalityName>Loughborough</LocalityName>
-		</AnnotatedStopPointRef>
-	</StopPoints>
-	<Operators>
-		<LicensedOperator id="CALC">
-			<NationalOperatorCode>CALC</NationalOperatorCode>
-			<OperatorCode>CALC</OperatorCode>
-			<OperatorShortName>CallConnect</OperatorShortName>
-			<OperatorNameOnLicence>CallConnect</OperatorNameOnLicence>
-			<LicenceNumber></LicenceNumber>
-			<LicenceClassification>standardNational</LicenceClassification>
-			<EnquiryTelephoneNumber>
-				<TelNationalNumber>0345 234 3344</TelNationalNumber>
-			</EnquiryTelephoneNumber>
-			<ContactTelephoneNumber>
-				<TelNationalNumber>0345 234 3344</TelNationalNumber>
-			</ContactTelephoneNumber>
-			<OperatorAddresses>
-				<CorrespondenceAddress>
-					<apd:Line>Witham Park House</apd:Line>
-					<apd:Line>Waterside South</apd:Line>
-					<apd:Line>Lincoln</apd:Line>
-					<apd:PostCode>LN1 7JN</apd:PostCode>
-				</CorrespondenceAddress>
-				<MiscellaneousAddress>
-					<apd:Line>Lincolnshire County Council</apd:Line>
-					<apd:Line>County Offices</apd:Line>
-					<apd:Line>Newland</apd:Line>
-					<apd:Line>Lincoln</apd:Line>
-					<apd:PostCode>LN1 1YL</apd:PostCode>
-				</MiscellaneousAddress>
-			</OperatorAddresses>
-			<EmailAddress>CallConnect@lincolnshire.gov.uk</EmailAddress>
-		</LicensedOperator>
-	</Operators>
-	<Services>
-		<Service>
-			<ServiceCode>lincs_CALC_18M_1318M_</ServiceCode>
-			<Lines>
-				<Line id="calc_18M">
-					<LineName>18M</LineName>
-				</Line>
-			</Lines>
-			<OperatingPeriod>
-				<StartDate>2018-04-01</StartDate>
-			</OperatingPeriod>
-			<OperatingProfile>
-				<RegularDayType>
-					<DaysOfWeek> 
-						<Monday/> 
-						<Tuesday/> 
-						<Wednesday/> 
-						<Thursday/> 
-						<Friday/>
-						<Saturday/> 
-					</DaysOfWeek> 
-				</RegularDayType>
-				<BankHolidayOperation>
-					<DaysOfNonOperation>
-						<ChristmasDay/>
-						<BoxingDay/>
-						<GoodFriday/>
-						<NewYearsDay/>
-						<LateSummerBankHolidayNotScotland/>
-						<MayDay/>
-						<EasterMonday/>
-						<SpringBank/>
-						<ChristmasDayHoliday/>
-						<BoxingDayHoliday/>
-						<NewYearsDayHoliday/>
-						<OtherPublicHoliday>
-								<Description>CoronationBankHoliday</Description>
-								<Date>2023-05-08</Date>
-						</OtherPublicHoliday>
-						<ChristmasEve/>
-						<NewYearsEve/>
-					</DaysOfNonOperation>
-				</BankHolidayOperation>
-			</OperatingProfile>
-			<ServiceClassification>
-			<Flexible/>
-			</ServiceClassification>
-			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
-			<Description>Flexible on demand service for Metheringham Callconnect Area</Description>
-			<SchematicMap>CallConnect-Sleaford.jpg</SchematicMap>
-			<FlexibleService>
-				<Origin>Metheringham</Origin>
-				<Destination>South Kyme</Destination>
-				<FlexibleJourneyPattern id="jp_1">
-					<Direction>outbound</Direction>
-					<FlexibleZones>					
-						<FlexibleStopUsage>
-							<StopPointRef>2700000083</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270000008317</StopPointRef>
-						 </FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701710</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701702</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701705</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701254</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701253</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701701</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701700</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701712</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701704</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701703</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701706</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701252</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701251</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701250</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701249</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>2700LWCC3002</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701248</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>2700LBCC2963</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701246</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701247</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>2700LTBC2993</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701257</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701256</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701226</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701227</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701255</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701245</StopPointRef>
-						</FlexibleStopUsage>
-						<FlexibleStopUsage>
-						  <StopPointRef>270002701707</StopPointRef>
-						</FlexibleStopUsage>
-					</FlexibleZones>
-					<BookingArrangements>
-						<Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
-						<Phone>
-							<TelNationalNumber>0345 234 3344</TelNationalNumber>
-						</Phone>
-						<Email>CallConnect@lincolnshire.gov.uk</Email>
-						<WebAddress>https://callconnect.opendrt.co.uk/OpenDRT/</WebAddress>
-						<AllBookingsTaken>true</AllBookingsTaken>
-					</BookingArrangements>
-				</FlexibleJourneyPattern>
-			</FlexibleService>
-		</Service>
-	</Services>
-	<VehicleJourneys>
-		<!--  ===VJ1 ================================================ -->
-		<FlexibleVehicleJourney>
-			<DestinationDisplay>Flexible</DestinationDisplay>
-			<Direction>outbound</Direction>
-			<Description>Monday to Friday service around Metheringham Callconnect Area</Description>
-			<VehicleJourneyCode>vj_1</VehicleJourneyCode>
-			<ServiceRef>lincs_CALC_18M_1318M_</ServiceRef>
-			<LineRef>calc_18M</LineRef>
-			<JourneyPatternRef>jp_1</JourneyPatternRef>
-			<FlexibleServiceTimes>
-				<ServicePeriod>
-					<StartTime>07:00:00</StartTime>
-					<EndTime>19:00:00</EndTime>
-				</ServicePeriod>
-			</FlexibleServiceTimes>
-		</FlexibleVehicleJourney>
-		<!--  ===VJ2 ================================================ -->
-		<!--  ==Overide OperatingProfile with Saturday operating times=== -->
-		<FlexibleVehicleJourney>
-			<DestinationDisplay>Flexible</DestinationDisplay>
-			<Direction>outbound</Direction>
-			<OperatingProfile>
-				<RegularDayType>
-					<DaysOfWeek>
-						<Saturday/>
-					</DaysOfWeek>
-				</RegularDayType>
-			</OperatingProfile>
-			<Description>Saturday service around Metheringham Callconnect Area</Description>
-			<VehicleJourneyCode>vj_2</VehicleJourneyCode>
-			<ServiceRef>lincs_CALC_18M_1318M_</ServiceRef>
-			<LineRef>calc_18M</LineRef>
-			<JourneyPatternRef>jp_1</JourneyPatternRef>
-			<FlexibleServiceTimes>
-				<ServicePeriod>
-					<StartTime>07:30:00</StartTime>
-					<EndTime>18:30:00</EndTime>
-				</ServicePeriod>
-			</FlexibleServiceTimes>
-		</FlexibleVehicleJourney>	
-	</VehicleJourneys>
-	<SupportingDocuments>
-		<SupportingDocument>
-			<DocumentUri>https://lincsbus.info/callconnect/more-information/</DocumentUri>
-		</SupportingDocument>
-	</SupportingDocuments>
+<TransXChange xmlns="http://www.transxchange.org.uk/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd"
+  xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xml:lang="en"
+  CreationDateTime="2023-03-27T18:13:00-05:00" ModificationDateTime="2023-03-27T18:13:00-05:00"
+  Modification="new" RevisionNumber="0" FileName="CallConnectMetheringhamFlexible.xml"
+  SchemaVersion="2.4" RegistrationDocument="false">
+  <StopPoints>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2700000083</StopPointRef>
+      <CommonName>Methodist Church</CommonName>
+      <Indicator>o/s</Indicator>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270000008317</StopPointRef>
+      <CommonName>Railway Station</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701710</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701702</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701705</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701254</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701253</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701701</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701700</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701712</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701704</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701703</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701706</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701252</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701251</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701250</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701249</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2700LWCC3002</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701248</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2700LBCC2963</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701246</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701247</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2700LTBC2993</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701257</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701256</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701226</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701227</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701255</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701245</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>270002701707</StopPointRef>
+      <CommonName>Demand Responsive Area</CommonName>
+      <LocalityName>Loughborough</LocalityName>
+    </AnnotatedStopPointRef>
+  </StopPoints>
+  <Operators>
+    <LicensedOperator id="CALC">
+      <NationalOperatorCode>CALC</NationalOperatorCode>
+      <OperatorCode>CALC</OperatorCode>
+      <OperatorShortName>CallConnect</OperatorShortName>
+      <OperatorNameOnLicence>CallConnect</OperatorNameOnLicence>
+      <LicenceNumber></LicenceNumber>
+      <LicenceClassification>standardNational</LicenceClassification>
+      <EnquiryTelephoneNumber>
+        <TelNationalNumber>0345 234 3344</TelNationalNumber>
+      </EnquiryTelephoneNumber>
+      <ContactTelephoneNumber>
+        <TelNationalNumber>0345 234 3344</TelNationalNumber>
+      </ContactTelephoneNumber>
+      <OperatorAddresses>
+        <CorrespondenceAddress>
+          <apd:Line>Witham Park House</apd:Line>
+          <apd:Line>Waterside South</apd:Line>
+          <apd:Line>Lincoln</apd:Line>
+          <apd:PostCode>LN1 7JN</apd:PostCode>
+        </CorrespondenceAddress>
+        <MiscellaneousAddress>
+          <apd:Line>Lincolnshire County Council</apd:Line>
+          <apd:Line>County Offices</apd:Line>
+          <apd:Line>Newland</apd:Line>
+          <apd:Line>Lincoln</apd:Line>
+          <apd:PostCode>LN1 1YL</apd:PostCode>
+        </MiscellaneousAddress>
+      </OperatorAddresses>
+      <EmailAddress>CallConnect@lincolnshire.gov.uk</EmailAddress>
+    </LicensedOperator>
+  </Operators>
+  <Services>
+    <Service>
+      <ServiceCode>lincs_CALC_18M_1318M_</ServiceCode>
+      <Lines>
+        <Line id="calc_18M">
+          <LineName>18M</LineName>
+        </Line>
+      </Lines>
+      <OperatingPeriod>
+        <StartDate>2018-04-01</StartDate>
+      </OperatingPeriod>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Thursday />
+            <Friday />
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <BankHolidayOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay />
+            <BoxingDay />
+            <GoodFriday />
+            <NewYearsDay />
+            <LateSummerBankHolidayNotScotland />
+            <MayDay />
+            <EasterMonday />
+            <SpringBank />
+            <ChristmasDayHoliday />
+            <BoxingDayHoliday />
+            <NewYearsDayHoliday />
+            <OtherPublicHoliday>
+              <Description>CoronationBankHoliday</Description>
+              <Date>2023-05-08</Date>
+            </OtherPublicHoliday>
+            <ChristmasEve />
+            <NewYearsEve />
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <ServiceClassification>
+        <Flexible />
+      </ServiceClassification>
+      <RegisteredOperatorRef>O1</RegisteredOperatorRef>
+      <Description>Flexible on demand service for Metheringham Callconnect Area</Description>
+      <SchematicMap>CallConnect-Sleaford.jpg</SchematicMap>
+      <FlexibleService>
+        <Origin>Metheringham</Origin>
+        <Destination>South Kyme</Destination>
+        <FlexibleJourneyPattern id="jp_1">
+          <Direction>outbound</Direction>
+          <FlexibleZones>
+            <FlexibleStopUsage>
+              <StopPointRef>2700000083</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270000008317</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701710</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701702</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701705</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701254</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701253</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701701</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701700</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701712</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701704</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701703</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701706</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701252</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701251</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701250</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701249</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>2700LWCC3002</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701248</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>2700LBCC2963</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701246</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701247</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>2700LTBC2993</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701257</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701256</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701226</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701227</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701255</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701245</StopPointRef>
+            </FlexibleStopUsage>
+            <FlexibleStopUsage>
+              <StopPointRef>270002701707</StopPointRef>
+            </FlexibleStopUsage>
+          </FlexibleZones>
+          <BookingArrangements>
+            <Description>The booking office is open for all advance booking Monday to Friday 8:30am
+              – 6:30pm, Saturday 9am – 5pm</Description>
+            <Phone>
+              <TelNationalNumber>0345 234 3344</TelNationalNumber>
+            </Phone>
+            <Email>CallConnect@lincolnshire.gov.uk</Email>
+            <WebAddress>https://callconnect.opendrt.co.uk/OpenDRT/</WebAddress>
+            <AllBookingsTaken>true</AllBookingsTaken>
+          </BookingArrangements>
+        </FlexibleJourneyPattern>
+      </FlexibleService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <!--  ===VJ1 ================================================ -->
+    <FlexibleVehicleJourney>
+      <DestinationDisplay>Flexible</DestinationDisplay>
+      <Direction>outbound</Direction>
+      <Description>Monday to Friday service around Metheringham Callconnect Area</Description>
+      <VehicleJourneyCode>vj_1</VehicleJourneyCode>
+      <ServiceRef>lincs_CALC_18M_1318M_</ServiceRef>
+      <LineRef>calc_18M</LineRef>
+      <JourneyPatternRef>jp_1</JourneyPatternRef>
+      <FlexibleServiceTimes>
+        <ServicePeriod>
+          <StartTime>07:00:00</StartTime>
+          <EndTime>19:00:00</EndTime>
+        </ServicePeriod>
+      </FlexibleServiceTimes>
+    </FlexibleVehicleJourney>
+    <!--  ===VJ2 ================================================ -->
+    <!--  ==Overide OperatingProfile with Saturday operating times=== -->
+    <FlexibleVehicleJourney>
+      <DestinationDisplay>Flexible</DestinationDisplay>
+      <Direction>outbound</Direction>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+      </OperatingProfile>
+      <Description>Saturday service around Metheringham Callconnect Area</Description>
+      <VehicleJourneyCode>vj_2</VehicleJourneyCode>
+      <ServiceRef>lincs_CALC_18M_1318M_</ServiceRef>
+      <LineRef>calc_18M</LineRef>
+      <JourneyPatternRef>jp_1</JourneyPatternRef>
+      <FlexibleServiceTimes>
+        <ServicePeriod>
+          <StartTime>07:30:00</StartTime>
+          <EndTime>18:30:00</EndTime>
+        </ServicePeriod>
+      </FlexibleServiceTimes>
+    </FlexibleVehicleJourney>
+  </VehicleJourneys>
+  <SupportingDocuments>
+    <SupportingDocument>
+      <DocumentUri>https://lincsbus.info/callconnect/more-information/</DocumentUri>
+    </SupportingDocument>
+  </SupportingDocuments>
 </TransXChange>

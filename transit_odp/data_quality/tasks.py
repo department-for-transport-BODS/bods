@@ -168,6 +168,23 @@ def upload_dataset_to_dqs(task_pk):
     return dq_task
 
 
+def update_dqs_task_status(task_pk):
+    etl_task = get_etl_task_or_pipeline_exception(task_pk)
+    revision = etl_task.revision
+    adapter = get_dataset_adapter_from_revision(logger, revision)
+    try:
+        dq_task = DataQualityTask.objects.get(revision=revision, status="RECEIVED")
+        dq_task.status = DataQualityTask.READY
+        dq_task.save()
+        adapter.info(
+            f"DQS task status set to READY successfully for revision {revision}."
+        )
+    except DataQualityTask.DoesNotExist:
+        adapter.info(f"DataQualityTask with revision {revision} does not exist.")
+        dq_task = None
+    return dq_task
+
+
 @transaction.atomic()
 def download_dqs_report(pk):
     """A pipeline to download a DQS report once it is ready"""

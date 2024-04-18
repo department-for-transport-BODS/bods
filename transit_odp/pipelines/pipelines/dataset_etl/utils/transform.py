@@ -47,6 +47,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         "from_stop_atco",
         "departure_time",
         "is_timing_status",
+        "from_stop_sequence_number",
     ]
 
     if "vehicle_journey_code" in df.columns:
@@ -64,7 +65,14 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         )
 
     stops_atcos = (
-        df[first_stop_columns].iloc[[0]].rename(columns={"from_stop_atco": "stop_atco"})
+        df[first_stop_columns]
+        .iloc[[0]]
+        .rename(
+            columns={
+                "from_stop_atco": "stop_atco",
+                "from_stop_sequence_number": "sequence_number",
+            }
+        )
     )
     is_flexible_departure_time = False
     # Departure time for flexible stops is null
@@ -72,7 +80,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         is_flexible_departure_time = True
     else:
         stops_atcos["is_timing_status"] = True
-        stops_atcos["departure_time"] = pd.to_timedelta(stops_atcos["departure_time"])
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
@@ -81,14 +88,17 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         use_vehicle_journey_runtime = True
         columns = [
             "to_stop_atco",
+            "to_stop_sequence_number",
             "is_timing_status",
             "run_time",
             "wait_time",
             "run_time_vj",
+            "wait_time_vj",
         ]
     else:
         columns = [
             "to_stop_atco",
+            "to_stop_sequence_number",
             "is_timing_status",
             "run_time",
             "wait_time",
@@ -99,11 +109,19 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
 
     columns_to_drop = ["run_time", "wait_time"]
     # Extract all remaining stop to be placed below the principal stop
-    last_stop = df[columns].rename(columns={"to_stop_atco": "stop_atco"})
+    last_stop = df[columns].rename(
+        columns={
+            "to_stop_atco": "stop_atco",
+            "to_stop_sequence_number": "sequence_number",
+        }
+    )
     columns.remove("to_stop_atco")
     columns.remove("is_timing_status")
     # Calculate departure time for standard stops where run_time is found in VehicleJourney
     if use_vehicle_journey_runtime and not is_flexible_departure_time:
+        if not last_stop["wait_time_vj"].isnull().all():
+            last_stop["wait_time"] = last_stop["wait_time_vj"].fillna(pd.Timedelta(0))
+
         last_stop["departure_time"] = last_stop["run_time_vj"].replace(
             "", pd.NaT
         ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
@@ -168,6 +186,7 @@ def transform_service_pattern_stops(
 
 def agg_service_pattern_sequences(df: pd.DataFrame):
     geometry = None
+    df = df.drop_duplicates(subset=["sequence_number"])
     points = df["geometry"].values
     if len(list(point for point in points if point)) > 1:
         geometry = LineString(
@@ -315,7 +334,10 @@ def create_route_links(timing_links, stop_points):
             "wait_time",
         ]
     else:
-        columns = ["from_stop_ref", "to_stop_ref"]
+        columns = [
+            "from_stop_ref",
+            "to_stop_ref",
+        ]
 
     route_links = (
         timing_links.reset_index()
@@ -437,7 +459,13 @@ def create_route_to_route_links(
 
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                ["route_link_ref", "run_time_vj"]
+                [
+                    "route_link_ref",
+                    "run_time_vj",
+                    "wait_time_vj",
+                    "from_stop_sequence_number",
+                    "to_stop_sequence_number",
+                ]
             ]
         )
     else:
@@ -446,7 +474,11 @@ def create_route_to_route_links(
         # orderings and use 'reset_index' to create a new sequential index in this order
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
-                ["route_link_ref"]
+                [
+                    "route_link_ref",
+                    "from_stop_sequence_number",
+                    "to_stop_sequence_number",
+                ]
             ]
         )
 
@@ -474,7 +506,9 @@ def transform_line_names(line_name_list):
 
 def get_vehicle_journey_without_timing_refs(vehicle_journeys):
     df_subset = vehicle_journeys[
-        vehicle_journeys.columns.difference(["timing_link_ref", "run_time"])
+        vehicle_journeys.columns.difference(
+            ["timing_link_ref", "run_time", "wait_time"]
+        )
     ]
     indexes = df_subset.index.names
     df_subset = df_subset.reset_index().drop_duplicates()
@@ -488,24 +522,31 @@ def filter_operating_profiles(
     """Remove records from operating profiles where the date falls outside
     operating period start and end date
     """
+
+    df_services = services.copy()
+
+    df_services["end_date"] = df_services["end_date"].fillna(
+        pd.Timestamp.max.tz_localize(None)
+        .tz_localize("UTC")
+        .tz_convert("Europe/London")
+    )
+
+    df_services["start_date"] = pd.to_datetime(
+        df_services["start_date"]
+    ).dt.tz_localize(None)
+    df_services["end_date"] = pd.to_datetime(df_services["end_date"]).dt.tz_localize(
+        None
+    )
     if not operating_profiles.empty and not services.empty:
         service_columns = ["file_id", "service_code", "start_date", "end_date"]
         indexes = operating_profiles.index.names
         df_merged = pd.merge(
             operating_profiles.reset_index(),
-            services.reset_index()[service_columns],
+            df_services.reset_index()[service_columns],
             left_on=["file_id", "service_code"],
             right_on=["file_id", "service_code"],
         )
 
-        df_merged["end_date"] = df_merged["end_date"].fillna(pd.Timestamp.max)
-
-        df_merged["start_date"] = pd.to_datetime(
-            df_merged["start_date"]
-        ).dt.tz_localize(None)
-        df_merged["end_date"] = pd.to_datetime(df_merged["end_date"]).dt.tz_localize(
-            None
-        )
         df_merged["compare_exceptions_date"] = pd.to_datetime(
             df_merged["exceptions_date"]
         )
@@ -537,6 +578,7 @@ def get_vehicle_journey_with_timing_refs(
             "service_code",
             "timing_link_ref",
             "run_time",
+            "wait_time",
             "vehicle_journey_code",
         ],
     ]
@@ -758,13 +800,16 @@ def transform_service_pattern_to_service_links(
             "order",
             "from_stop_atco",
             "to_stop_atco",
+            "from_stop_sequence_number",
+            "to_stop_sequence_number",
             "departure_time",
             "is_timing_status",
             "run_time",
             "wait_time",
             "run_time_vj",
+            "wait_time_vj",
         ]
-        drop_columns.append("run_time_vj")
+        drop_columns.extend(["run_time_vj", "wait_time_vj"])
     else:
         link_columns = [
             "file_id",
@@ -775,6 +820,8 @@ def transform_service_pattern_to_service_links(
             "order",
             "from_stop_atco",
             "to_stop_atco",
+            "from_stop_sequence_number",
+            "to_stop_sequence_number",
             "departure_time",
             "is_timing_status",
             "run_time",
@@ -803,6 +850,12 @@ def transform_flexible_service_pattern_to_service_links(flexible_service_pattern
     service_pattern_to_service_links["is_timing_status"] = False
     service_pattern_to_service_links["run_time"] = pd.NaT
     service_pattern_to_service_links["wait_time"] = pd.NaT
+    service_pattern_to_service_links[
+        "from_stop_sequence_number"
+    ] = service_pattern_to_service_links["order"]
+    service_pattern_to_service_links["to_stop_sequence_number"] = (
+        service_pattern_to_service_links["order"] + 1
+    )
     service_pattern_to_service_links = service_pattern_to_service_links.set_index(
         ["file_id", "service_pattern_id", "order"]
     )

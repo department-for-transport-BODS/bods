@@ -1,0 +1,41 @@
+name: Delete Stale Branches
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Delete stale branches
+        run: |
+          : # Set the name of the default branch
+          DEFAULT_BRANCH='dev'
+
+          : # Get merged branches excluding the default branch and any protected branches
+          stale_branches=$(git branch --merged $DEFAULT_BRANCH --format '%(refname:short)' | grep -vE "^($DEFAULT_BRANCH|main|test)$")
+
+          : # Loop through each stale branch
+          for branch in $stale_branches; do
+            : # Get the last commit date for the branch
+            last_commit_date=$(git log -1 --format="%ci" $branch)
+
+            : # Convert the last commit date to the number of days ago
+            days_ago=$(( ($(date +%s) - $(date -d "$last_commit_date" +%s)) / 86400 ))
+
+            : # Check if the branch is older than 60 days
+            if [ $days_ago -gt 60 ]; then
+              : # Delete the branch remotely
+              : # git branch -d $branch
+              echo "Branch to delete is: $branch"
+            fi
+          done
+
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

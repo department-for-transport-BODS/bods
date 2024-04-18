@@ -9,7 +9,11 @@ from transit_odp.browse.common import (
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
-from transit_odp.otc.constants import API_TYPE_WECA
+from transit_odp.otc.constants import (
+    API_TYPE_WECA,
+    OTC_SCOPE_STATUS_IN_SCOPE,
+    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
+)
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
@@ -100,9 +104,9 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Scope Status",
-            accessor=lambda otc_service: "Out of Scope"
+            accessor=lambda otc_service: OTC_SCOPE_STATUS_OUT_OF_SCOPE
             if otc_service.get("scope_status", False)
-            else "In Scope",
+            else OTC_SCOPE_STATUS_IN_SCOPE,
         ),
         CSVColumn(
             header="Seasonal Status",
