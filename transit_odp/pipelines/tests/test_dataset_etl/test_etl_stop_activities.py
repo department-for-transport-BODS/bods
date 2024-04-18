@@ -20,7 +20,6 @@ TZ = tz.gettz("Europe/London")
 class ExtractStandardStopActivities(ExtractBaseTestCase):
     test_file = "data/test_stop_activity/test_standard_service.xml"
 
-
     def test_extract(self):
         # test
         extracted = self.trans_xchange_extractor.extract()
