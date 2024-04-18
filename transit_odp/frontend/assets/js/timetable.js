@@ -11,41 +11,50 @@ import localeEn from 'air-datepicker/locale/en';
  * @example encodeQueryParam({'param1': 'value1', 'param2': 'value2'} ) will return 'param1=value1&param2=value2'
  */
 function encodeQueryParam(data) {
-  return Object.keys(data).map(function(key) {
-      console.log(key, data[key])
+  return Object.keys(data)
+    .map(function (key) {
       return [key, data[key]].map(encodeURIComponent).join("=");
-  }).join("&");
+    })
+    .join("&");
 }
 
 /**
- * 
+ *
  * @param {date} date Date to in the format of yyyy-MM-dd
- * 
+ *
  * @returns Return the date in string format (yyyy-MM-dd)
- * 
+ *
  * @example formatDate(new Date()) will return 2024-03-22
  */
 function formatDate(date) {
-
-  if(date !== null ) {
-    return (date.getFullYear()+'-'+(('0' + (date.getMonth()+1)).slice(-2))+'-'+(('0' + date.getDate()).slice(-2)));
+  if (date !== null) {
+    return (
+      date.getFullYear() +
+      "-" +
+      ("0" + (date.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + date.getDate()).slice(-2)
+    );
   }
-  
+
   return formatDate(new Date());
 }
 
 /**
- * 
+ *
  * Reloads the current page after adding/updating the query parameter in the query string
- * 
+ *
  * @param {string} paramKey Key of the query parameter which will be added if not present in query string
  * @param {string} paramValue Value of the query parameter
  */
 const reloadPageOnDate = (paramKey, paramValue) => {
-
   const urlParams = new URLSearchParams(window.location.search);
-  urlParams.set(paramKey, paramValue);  
-  const newUrl = window.location.origin + window.location.pathname + "?"+ encodeQueryParam(Object.fromEntries(urlParams));  
+  urlParams.set(paramKey, paramValue);
+  const newUrl =
+    window.location.origin +
+    window.location.pathname +
+    "?" +
+    encodeQueryParam(Object.fromEntries(urlParams));
   window.location.assign(newUrl);
 };
 
@@ -53,23 +62,22 @@ const reloadPageOnDate = (paramKey, paramValue) => {
  * Exit Button to show on the date picker
  */
 let exitButton = {
-  content: 'Exit',
+  content: "Exit",
   onClick: (dp) => {
-      dp.hide();      
-  }
-}
+    dp.hide();
+  },
+};
 
 /**
  * Today button to show on the date picker
  */
 let todayButton = {
-  content: 'Today',
+  content: "Today",
   onClick: (dp) => {
-    console.log("Today button clicked");
     dp.selectedDates = [new Date()];
     reloadPageOnDate("date", formatDate(new Date()));
-  }
-}
+  },
+};
 
 /**
  * 

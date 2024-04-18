@@ -528,8 +528,8 @@ class LineMetadataDetailView(DetailView):
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
 
-        
-        target_date = datetime.strptime("09/01/2023", "%d/%m/%Y").date()        
+        date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
+        target_date = datetime.strptime(date, "%Y-%m-%d").date()
         timetable_inbound_outbound = TimetableVisualiser(
             live_revision.id,
             kwargs["service_code"],
@@ -538,8 +538,8 @@ class LineMetadataDetailView(DetailView):
             True,
         ).get_timetable_visualiser()
 
-                # Set the context for the timetable visualiser and the line details
-        kwargs["curr_date"] = target_date
+        # Set the context for the timetable visualiser and the line details
+        kwargs["curr_date"] = date
         for direction in ["outbound", "inbound"]:
             direction_details = timetable_inbound_outbound[direction]            
             journey = direction_details["description"]
