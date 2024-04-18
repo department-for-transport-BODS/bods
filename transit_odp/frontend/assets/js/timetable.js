@@ -74,51 +74,66 @@ let exitButton = {
 let todayButton = {
   content: "Today",
   onClick: (dp) => {
-    dp.selectedDates = [new Date()];
-    reloadPageOnDate("date", formatDate(new Date()));
+    dp.update({
+      selectedDates: [new Date()],
+    });
   },
 };
 
 /**
- * 
+ * Change the target date and apply filter to show timetable for selected date
+ */
+const changeTargetDate = (domId) => {
+  const dpValue = document.getElementById(domId).value;
+  const dpValuesArr = dpValue.split("/"); // format will be DD/MM/YYYY
+
+  if (dpValuesArr.length == 3) {
+    let dt = new Date(dpValuesArr[2], dpValuesArr[1] - 1, dpValuesArr[0]);
+    reloadPageOnDate("date", formatDate(dt));
+  }
+};
+
+/**
+ *
  * @param {string} domId ElementId in DOM in which the datepicker is to be initialized
  * @param {*} selectedDate Date to be selected in the calendar
  * @param {*} startDate Start date of the calendar to be enabled
  * @param {*} endDate Last date for the calendar to be enabled
  * @param {Array} disabledDays Array of the dates to be disabled in calendar
- * 
+ *
  * initDatePicker("#date", null, "2024-03-23", "2025-03-22", ["2024-02-23", "2024-03-27","2024-04-29"])
  */
-const initDatePicker = (domId, selectedDate, startDate, endDate, enabledDays='') => {
-
+const initDatePicker = (
+  domId,
+  selectedDate,
+  startDate,
+  endDate,
+  enabledDays = ""
+) => {
   // If there is no selected date, default to today date
   if (selectedDate === null) {
-    selectedDate = new Date();    
+    selectedDate = new Date();
+  } else {
+    selectedDate = new Date(selectedDate);
   }
 
-  enabledDays = enabledDays.split(",")
-  
+  enabledDays = enabledDays.split(",");
   const dp = new AirDatepicker(domId, {
     locale: localeEn,
     dateFormat: "dd/MM/yyyy",
-    selectedDates: [new Date(selectedDate)],
-    buttons:[exitButton, todayButton],
-    minDate: new Date(startDate),
-    maxDate: new Date(endDate),
+    selectedDates: [selectedDate],
+    buttons: [exitButton, todayButton],
+    // minDate: new Date(startDate),
+    // maxDate: new Date(endDate),
     navTitles: {
-      days: 'MMMM yyyy',
-      months: 'yyyy',
-      years: 'yyyy1 - yyyy2'
-    },
-    onSelect({date}) {      
-      reloadPageOnDate("date", formatDate(date));
+      days: "MMMM yyyy",
+      months: "yyyy",
+      years: "yyyy1 - yyyy2",
     },
     // Trigger when the calendar is shown
-    onRenderCell: function onRenderCell({date, cellType}) {
-
-      // If calendar type is viewing days      
-      if (cellType === 'day' ) {
-
+    onRenderCell: function onRenderCell({ date, cellType }) {
+      // If calendar type is viewing days
+      if (cellType === "day") {
         let isDisabled = false;
         let day = formatDate(date);
 
@@ -126,14 +141,13 @@ const initDatePicker = (domId, selectedDate, startDate, endDate, enabledDays='')
         if (enabledDays.length != 0) {
           isDisabled = enabledDays.indexOf(day) > -1;
         }
-      
+
         return {
-          disabled: isDisabled
-        }
+          disabled: isDisabled,
+        };
       }
-   },
+    },
   });
-  
 };
 
-export { initDatePicker };
+export { initDatePicker, changeTargetDate };

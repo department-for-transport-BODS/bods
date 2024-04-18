@@ -136,12 +136,20 @@
             class="govuk-!-margin-right-1" style="position: relative;top: 2px;margin-left: -30px;" 
             width="20" height="20" src="{% static 'frontend/images/calendar-icon.png' %}"            
            alt="{% trans 'Calendar icon' %}">
+           <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button" onclick="BODSFrontend.changeTargetDate('timetable_date');">
+            Apply filter
+          </button>
         </div>
         {% if not outbound_timetable.empty %}
             {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=outbound_timetable journey_name=outbound_journey_name show_all=outbound_show_all total_page=outbound_total_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
         {% endif %}
         {% if not inbound_timetable.empty %}
             {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=inbound_timetable journey_name=inbound_journey_name show_all=inbound_show_all total_page=inbound_total_page curr_page=inbound_curr_page page_param='inboundPage' show_all_param='showAllInbound' %}
+        {% endif %}
+        {% if inbound_timetable.empty and outbound_timetable.empty %}
+        <div class="govuk-inset-text">
+            There are no timetables information available to view for this date. Please select another date.
+          </div>
         {% endif %}
     </div>
 {% endblock %}
@@ -151,6 +159,6 @@
     {{ block.super }}
     <script>
         BODSFrontend.initMap("{{ api_root }}", {{ revision_id }}, "{{line_name}}", "{{service_code}}");
-        BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
+        BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");        
     </script>
 {% endblock %}
