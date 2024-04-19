@@ -11,9 +11,14 @@ from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import 
     VehicleJourneyFinder,
 )
 from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
-from transit_odp.organisation.factories import DatasetFactory, TXCFileAttributesFactory
+from transit_odp.organisation.factories import (
+    DatasetFactory,
+    TXCFileAttributesFactory,
+    DatasetRevisionFactory,
+)
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.timetables.transxchange import TransXChangeDocument
+from transit_odp.organisation.constants import FeedStatus
 
 pytestmark = pytest.mark.django_db
 
@@ -21,16 +26,23 @@ DATA_DIR = Path(__file__).parent / "data"
 
 
 def test_get_txc_file_metadata():
-    TXCFileAttributesFactory(national_operator_code="NOC1", line_names=["L1", "L2"])
-    txc_file_attrs = TXCFileAttributesFactory(
-        national_operator_code="NOC1", line_names=["L3", "L4"]
+    unpublished_revision = DatasetRevisionFactory(
+        status=FeedStatus.pending.value, is_published=False
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        revision=unpublished_revision,
     )
     TXCFileAttributesFactory(national_operator_code="NOC2", line_names=["L3", "L4"])
     TXCFileAttributesFactory(national_operator_code="NOC2", line_names=["L1", "L2"])
+    txc_file_attrs = TXCFileAttributesFactory(
+        national_operator_code="NOC1", line_names=["L1", "L2"]
+    )
 
     vehicle_journey_finder = VehicleJourneyFinder()
     txc_file_list = vehicle_journey_finder.get_txc_file_metadata(
-        noc="NOC1", published_line_name="L4", result=ValidationResult()
+        noc="NOC1", published_line_name="L1", result=ValidationResult()
     )
     assert len(txc_file_list) == 1
     assert txc_file_list[0].id == txc_file_attrs.id
