@@ -6,6 +6,7 @@ from django_extensions.db.fields import CreationDateTimeField, ModificationDateT
 
 from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.transmodel.managers import (
     ServicePatternManager,
     ServicePatternStopManager,
@@ -30,6 +31,14 @@ class Service(models.Model):
 
     service_patterns = models.ManyToManyField(
         "transmodel.ServicePattern", related_name="services"
+    )
+
+    txcfileattributes_id = models.ForeignKey(
+        TXCFileAttributes,
+        related_name="service_txcfileattributes",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
 
     class Meta:
