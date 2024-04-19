@@ -446,7 +446,17 @@ class VehicleJourneyFinder:
             return None
         return service_org_day_type
 
-    def get_service_org_day_type_from_service(self, vj: TxcVehicleJourney):
+    def get_service_org_day_type_from_service(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[TransXChangeElement]:
+        """Find and return ServicedOrganisationDayType from service element
+
+        Args:
+            vj (TxcVehicleJourney): vehicle journey object
+
+        Returns:
+            Optional[TransXChangeElement]: Return ServicedOrganisationDayType Txc element
+        """
         try:
             services = vj.txc_xml.get_services()
             vj_service_code = vj.vehicle_journey.get_text_or_default(
