@@ -108,6 +108,7 @@ class VehicleJourneyFinder:
         txc_file_attrs = list(
             TXCFileAttributes.objects.add_revision_details()
             .filter_by_noc_and_line_name(noc, published_line_name)
+            .get_active_live_revisions()
             .select_related("revision")
         )
 
