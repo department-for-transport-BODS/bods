@@ -86,12 +86,17 @@ let todayButton = {
 const changeTargetDate = (domId) => {
   const dpValue = document.getElementById(domId).value;
   const dpValuesArr = dpValue.split("/"); // format will be DD/MM/YYYY
+  const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)\d{2}$/;
+  const isValid = dateRegex.test(dpValue);
 
-  if (dpValuesArr.length == 3) {
-    let dt = new Date(dpValuesArr[2], dpValuesArr[1] - 1, dpValuesArr[0]);
+  if (isValid & (dpValuesArr.length == 3)) {
+    let day = dpValuesArr[0];
+    let month = dpValuesArr[1];
+    let year = dpValuesArr[2];
+    let dt = new Date(year, month - 1, day);
     reloadPageOnDate("date", formatDate(dt));
   }
-};
+}
 
 /**
  *

@@ -270,7 +270,7 @@ class TimetableVisualiser:
         data = {}
         directions = {
             "inbound": {"inbound", "antiClockwise"},
-            "outbound": ["outbound", "clockwise"],
+            "outbound": {"outbound", "clockwise"},
         }
         for direction in directions.keys():
 
@@ -283,8 +283,9 @@ class TimetableVisualiser:
                     "df_timetable": df_base_vehicle_journeys,
                 }
                 continue
-            journey_description = df_base_vehicle_journeys["journey_description"][0]
-
+            journey_description = (
+                df_base_vehicle_journeys["journey_description"].unique().tolist()[0]
+            )
             # Get the list of operating and non-operating vehicle journey in the exception table
             (
                 op_exception_vj_ids,
