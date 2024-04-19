@@ -222,16 +222,12 @@ def test_get_df_timetable_visualiser():
     actual_df_vehicle_journey = get_df_timetable_visualiser(pd.DataFrame())
     assert actual_df_vehicle_journey.empty
 
-    pd.set_option("display.max_rows", None)
-    pd.set_option("display.max_columns", None)
     df_vehicle_journey_operating["departure_time"] = pd.to_datetime(
         df_vehicle_journey_operating["departure_time"], format="%H:%M:%S"
     ).dt.time
     actual_df_vehicle_journey = get_df_timetable_visualiser(
         df_vehicle_journey_operating
     )
-    print(f"actual_df_vehicle_journey-----{actual_df_vehicle_journey}")
-    print(f"expected_df_timetable_visualiser-----{expected_df_timetable_visualiser}")
 
     # Check the dataframe expected
     assert check_frame_equal(
