@@ -33,7 +33,7 @@ class Service(models.Model):
         "transmodel.ServicePattern", related_name="services"
     )
 
-    txcfileattributes_id = models.ForeignKey(
+    txcfileattributes = models.ForeignKey(
         TXCFileAttributes,
         related_name="service_txcfileattributes",
         on_delete=models.CASCADE,

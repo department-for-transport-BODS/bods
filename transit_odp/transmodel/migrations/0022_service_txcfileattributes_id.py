@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="service",
-            name="txcfileattributes_id",
+            name="txcfileattributes",
             field=models.ForeignKey(
                 blank=True,
                 null=True,

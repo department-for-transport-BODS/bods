@@ -41,7 +41,6 @@ class TransXChangePipeline:
         self.stop_point_cache = create_stop_point_cache(revision.id)
         self.service_link_cache = create_service_link_cache(revision.id)
         self.service_cache: Dict[str, Service] = {}
-        self.txc_files = get_txc_files(revision.id)
 
     def run(self):
         """
@@ -62,10 +61,13 @@ class TransXChangePipeline:
     def extract(self) -> ExtractedData:
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
+        txc_files = get_txc_files(self.revision.id)
         if self.file_obj.file.name.endswith("zip"):
-            extractor = TransXChangeZipExtractor(self.file_obj, self.start_time)
+            extractor = TransXChangeZipExtractor(
+                self.file_obj, self.start_time, txc_files
+            )
         elif self.file_obj.file.name.endswith("xml"):
-            extractor = TransXChangeExtractor(self.file_obj, self.start_time)
+            extractor = TransXChangeExtractor(self.file_obj, self.start_time, txc_files)
         else:
             raise exceptions.NoDataFoundError(filename)
 

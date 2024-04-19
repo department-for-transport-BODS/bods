@@ -88,12 +88,31 @@ def create_txc_file_attributes_df(queryset):
     return df_txc_file_attributes
 
 
-def get_txc_files(revision_id):
-    txc_files = TXCFileAttributes.objects.filter(
-        service_patterns__revision_id=revision_id
-    )
+def filter_redundant_files(df):
+    max_revision = df["revision_number"].max()
+    df_max_revision_number = df[df["revision_number"] == max_revision]
+    max_start_date = df_max_revision_number["operating_period_start_date"].max()
+    df_filtered = df[df["operating_period_start_date"] <= max_start_date]
+    return df_filtered[["id", "filename"]]
 
-    return create_txc_file_attributes_df(txc_files)
+
+def get_txc_files(revision_id):
+    txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id)
+    df_txc_files = create_txc_file_attributes_df(txc_files)
+    columns = [
+        "id",
+        "service_code",
+        "revision_number",
+        "operating_period_start_date",
+        "filename",
+    ]
+    df_with_valid_files = pd.DataFrame()
+    if not df_txc_files.empty:
+        df_txc_files = df_txc_files[columns]
+        df_with_valid_files = filter_redundant_files(df_txc_files)
+
+    return df_with_valid_files
+
 
 def create_service_link_cache(revision_id):
     service_links = ServiceLink.objects.filter(
@@ -232,6 +251,7 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
             name=line_names[0],
             other_names=line_names[1:],
             service_type=service_type,
+            txcfileattributes_id=record["txc_file_id"],
         )
 
 
