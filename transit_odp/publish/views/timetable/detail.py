@@ -14,8 +14,6 @@ from transit_odp.publish.views.utils import (
     get_valid_files,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
-import urllib.parse
-from datetime import datetime
 
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
@@ -104,30 +102,15 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
         and the object's attributes.
         """
         line = self.request.GET.get("line")
-        show_all_outbound_param = self.request.GET.get("showAllOutbound", "false")
-        show_all_inbound_param = self.request.GET.get("showAllInbound", "false")
-        date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
-
-        show_all_outbound = show_all_outbound_param.lower() == "true"
-        show_all_inbound = show_all_inbound_param.lower() == "true"
-        outbound_curr_page_param = int(self.request.GET.get("outboundPage", "1"))
-        inbound_curr_page_param = int(self.request.GET.get("inboundPage", "1"))
         service_code = self.request.GET.get("service")
-
         kwargs = super().get_context_data(**kwargs)
 
         dataset = self.object
         live_revision = dataset.live_revision
-        # datetime.now().strftime("%Y-%M-%d")"2013-01-08"
-        kwargs["curr_date"] = date
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
         kwargs["line_name"] = line
         kwargs["service_code"] = service_code
-        kwargs["start_date"] = "2022-03-22"
-        kwargs["end_date"] = "2025-03-22"
-        outbound_total_page = 3
-        inbound_total_page = 3
         kwargs["service_type"] = get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
@@ -135,54 +118,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-
-        kwargs["outbound_journey_name"] = "Outbound - Norwich to Watton"
-        stop_timings = list(range(1000, 1010, 1))
-        kwargs["outbound_journey_stops"] = stop_timings
-
-        journey_bus_stops = [
-            {"Oxford Circus Station": stop_timings},
-            {"King's Cross St. Pancras Station": stop_timings},
-            {"Victoria Station": stop_timings},
-            {"Waterloo Station": stop_timings},
-            {"Marble Arch": stop_timings},
-            {"Trafalgar Square": stop_timings},
-            {"Piccadilly Circus": stop_timings},
-            {"Euston Station": stop_timings},
-            {"Paddington Station": stop_timings},
-            {"Liverpool Street Station": stop_timings},
-            {"Whitechapel Station": stop_timings},
-            {"London Bridge": stop_timings},
-            {"Aldgate East Station": stop_timings},
-            {"Stratford Station": stop_timings},
-            {"Elephant & Castle Station": stop_timings},
-            {"Brixton Station": stop_timings},
-            {"Clapham Junction Station": stop_timings},
-            {"Hammersmith Bus Station": stop_timings},
-            {
-                "Notting Hill Gate": stop_timings,
-            },
-            {"Camden Town Station": stop_timings},
-        ]
-
-        kwargs["outbound_journey_bus_stops"] = journey_bus_stops
-        kwargs["inbound_journey_bus_stops"] = journey_bus_stops
-
-        if not show_all_outbound:
-            kwargs["outbound_journey_bus_stops"] = journey_bus_stops[:10]
-
-        if not show_all_inbound:
-            kwargs["inbound_journey_bus_stops"] = journey_bus_stops[:10]
-
-        kwargs["inbound_journey_name"] = "Inbound - Watton to Norwich"
-        kwargs["inbound_journey_stops"] = stop_timings
-
-        kwargs["show_all_outbound"] = show_all_outbound
-        kwargs["show_all_inbound"] = show_all_inbound
-        kwargs["outbound_ttl_page"] = outbound_total_page
-        kwargs["outbound_curr_page"] = outbound_curr_page_param
-        kwargs["inbound_ttl_page"] = inbound_total_page
-        kwargs["inbound_curr_page"] = inbound_curr_page_param
 
         if (
             kwargs["service_type"] == "Flexible"
