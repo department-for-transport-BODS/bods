@@ -185,6 +185,8 @@ def test_filter_by_days_of_operation():
     assert len(txc_vehicle_journeys) == 1
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"
 
+
+def test_filter_by_days_of_operation_service_inherited():
     txc_filename = str(DATA_DIR / "vehicle_journeys7.xml")
     txc_xml = TransXChangeDocument(txc_filename)
     vehicle_journeys = txc_xml.get_vehicle_journeys()
@@ -199,7 +201,8 @@ def test_filter_by_days_of_operation():
     assert len(txc_vehicle_journeys) == 1
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"
 
-def test_filter_by_days_of_operation_without_element():
+
+def test_filter_by_days_of_operation_missing_operating_profile_element():
     txc_filename = str(DATA_DIR / "vehicle_journeys8.xml")
     txc_xml = TransXChangeDocument(txc_filename)
     vehicle_journeys = txc_xml.get_vehicle_journeys()
