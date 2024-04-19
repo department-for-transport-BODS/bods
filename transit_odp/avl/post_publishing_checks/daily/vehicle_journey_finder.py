@@ -447,6 +447,34 @@ class VehicleJourneyFinder:
             return None
         return service_org_day_type
 
+    def get_service_org_day_type_from_service(
+        self, vj: TxcVehicleJourney
+    ) -> Optional[TransXChangeElement]:
+        """Find and return ServicedOrganisationDayType from service element
+
+        Args:
+            vj (TxcVehicleJourney): vehicle journey object
+
+        Returns:
+            Optional[TransXChangeElement]: Return ServicedOrganisationDayType Txc element
+        """
+        try:
+            services = vj.txc_xml.get_services()
+            vj_service_code = vj.vehicle_journey.get_text_or_default(
+                "ServiceRef", default=None
+            )
+
+            for service in services:
+                service_code = service.get_text_or_default("ServiceCode", default=None)
+                if service_code and service_code == vj_service_code:
+                    xpath = ["OperatingProfile", "ServicedOrganisationDayType"]
+                    return service.get_element(xpath)
+            return None
+        except NoElement:
+            return None
+        except TooManyElements:
+            return None
+
     def get_service_org_ref(
         self, txcElement: TransXChangeElement
     ) -> Optional[TransXChangeElement]:
@@ -500,7 +528,10 @@ class VehicleJourneyFinder:
             inside_operating_range = False
             error_msg = None
 
-            service_org_day_type = self.service_org_day_type(vj)
+            service_org_day_type = self.service_org_day_type(
+                vj
+            ) or self.get_service_org_day_type_from_service(vj)
+
             if service_org_day_type is not None:
                 days_of_non_operation: TransXChangeElement = (
                     service_org_day_type.get_element_or_none("DaysOfNonOperation")
