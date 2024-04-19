@@ -8,6 +8,7 @@ from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_cache,
     create_stop_point_cache,
+    get_txc_files,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -40,6 +41,7 @@ class TransXChangePipeline:
         self.stop_point_cache = create_stop_point_cache(revision.id)
         self.service_link_cache = create_service_link_cache(revision.id)
         self.service_cache: Dict[str, Service] = {}
+        self.txc_files = get_txc_files(revision.id)
 
     def run(self):
         """

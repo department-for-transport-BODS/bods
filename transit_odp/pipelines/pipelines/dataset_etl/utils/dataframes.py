@@ -14,6 +14,7 @@ from shapely.geometry import Point
 from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
@@ -80,6 +81,19 @@ def create_stop_point_cache(revision_id):
     )
     return create_naptan_stoppoint_df_from_queryset(stops)
 
+
+def create_txc_file_attributes_df(queryset):
+    df_txc_file_attributes = pd.DataFrame.from_records(queryset.values())
+
+    return df_txc_file_attributes
+
+
+def get_txc_files(revision_id):
+    txc_files = TXCFileAttributes.objects.filter(
+        service_patterns__revision_id=revision_id
+    )
+
+    return create_txc_file_attributes_df(txc_files)
 
 def create_service_link_cache(revision_id):
     service_links = ServiceLink.objects.filter(
