@@ -21,6 +21,7 @@ from transit_odp.common.utils.s3_bucket_connection import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
 from typing import Tuple, Set
+from datetime import time
 
 logger = logging.getLogger(__name__)
 
@@ -298,19 +299,25 @@ def get_df_timetable_visualiser(
     # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
-        departure_time_data[row["key"]] = row["departure_time"]
+        departure_time: time = row["departure_time"]
+        minute = (
+            departure_time.minute
+            if departure_time.second < 30
+            else departure_time.minute + 1
+        )
+        departure_time = departure_time.replace(minute=minute)
+        departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
 
     stops_journey_code_time_list = []
-    for row in df_sequence_time.to_dict("records"):
+    for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
-        for journey_code in vehicle_journey_codes_sorted:
+        record["Stop"] = bus_stops[idx]
+        for journey_code in vehicle_journey_codes_sorted:  # cols
             key = f"{row['key']}_{journey_code}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
 
-    df_vehicle_journey_operating = pd.DataFrame(
-        stops_journey_code_time_list, index=bus_stops
-    )
+    df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
 
     return df_vehicle_journey_operating
 
