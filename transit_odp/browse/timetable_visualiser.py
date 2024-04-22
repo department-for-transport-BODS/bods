@@ -130,7 +130,7 @@ class TimetableVisualiser:
                 vehicle_journey_id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
-                public_use=F("revision__txc_file_attributes__public_use"),
+                public_use=F("txcfileattributes__public_use"),
             )
             .values(*columns)
         )
@@ -233,7 +233,7 @@ class TimetableVisualiser:
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
         if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
-                revision__txc_file_attributes__public_use=True,
+                txcfileattributes__public_use=True,
             )
         df_base_vehicle_journeys = pd.DataFrame.from_records(base_qs_vehicle_journeys)
         if df_base_vehicle_journeys.empty:
