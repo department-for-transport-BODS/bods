@@ -280,7 +280,7 @@ class TimetableVisualiser:
             if df_base_vehicle_journeys.empty:
                 data[direction] = {
                     "description": "",
-                    "df_timetable": df_base_vehicle_journeys,
+                    "df_timetable": pd.DataFrame(),
                 }
                 continue
             journey_description = (
