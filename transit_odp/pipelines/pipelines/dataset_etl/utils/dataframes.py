@@ -6,7 +6,7 @@ BODS transxchange models.
 import logging
 from collections import OrderedDict
 from typing import Iterator, List
-from waffle import flag_is_active
+from django.db.models.query import QuerySet
 
 import geopandas
 import pandas as pd
@@ -82,13 +82,17 @@ def create_stop_point_cache(revision_id):
     return create_naptan_stoppoint_df_from_queryset(stops)
 
 
-def create_txc_file_attributes_df(queryset):
+def create_txc_file_attributes_df(queryset: QuerySet) -> pd.DataFrame:
+    """
+    Creates dataframe from queryset
+    """
     df_txc_file_attributes = pd.DataFrame.from_records(queryset.values())
 
     return df_txc_file_attributes
 
 
-def filter_redundant_files(df):
+def filter_redundant_files(df: pd.DataFrame) -> pd.DataFrame:
+    """Filters out files for the same service code which have lower revision number but the start date is greater than the highest revision file"""
     max_revision = df["revision_number"].max()
     df_max_revision_number = df[df["revision_number"] == max_revision]
     max_start_date = df_max_revision_number["operating_period_start_date"].max()
@@ -96,7 +100,8 @@ def filter_redundant_files(df):
     return df_filtered[["id", "filename"]]
 
 
-def get_txc_files(revision_id):
+def get_txc_files(revision_id: int) -> pd.DataFrame:
+    """Returns the valid txc files that should be processed for timetable visualiser based on their service code and operating start date"""
     txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id)
     df_txc_files = create_txc_file_attributes_df(txc_files)
     columns = [
@@ -109,8 +114,11 @@ def get_txc_files(revision_id):
     df_with_valid_files = pd.DataFrame()
     if not df_txc_files.empty:
         df_txc_files = df_txc_files[columns]
-        df_with_valid_files = filter_redundant_files(df_txc_files)
+        df_with_valid_files = df_txc_files.groupby("service_code").apply(
+            filter_redundant_files
+        )
 
+    print(f"df_with_valid_files--{df_with_valid_files}")
     return df_with_valid_files
 
 

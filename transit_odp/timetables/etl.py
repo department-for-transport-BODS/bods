@@ -59,6 +59,7 @@ class TransXChangePipeline:
         self.revision.save()
 
     def extract(self) -> ExtractedData:
+        """Extraction step which extract the data from the xml file"""
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
         txc_files = get_txc_files(self.revision.id)

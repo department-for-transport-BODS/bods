@@ -46,8 +46,6 @@ class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
     def __init__(self, file_obj: File, start_time, df_txc_files=pd.DataFrame()):
-        pd.set_option("display.max_rows", None)
-        pd.set_option("display.max_columns", None)
         self.file_id = uuid.uuid4()
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
