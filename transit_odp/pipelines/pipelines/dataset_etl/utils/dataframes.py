@@ -118,7 +118,6 @@ def get_txc_files(revision_id: int) -> pd.DataFrame:
             filter_redundant_files
         )
 
-    print(f"df_with_valid_files--{df_with_valid_files}")
     return df_with_valid_files
 
 
