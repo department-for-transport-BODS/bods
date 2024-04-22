@@ -1,0 +1,29 @@
+.air-datepicker {
+    --adp-day-name-color: #0b0d0c !important;
+    --adp-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --adp-accent-color: #4eb5e6;
+    --adp-color-secondary: #9c9c9c;
+
+    --adp-color-current-date: #00703c;
+
+    --adp-background-color-active: #eaeaea;
+    --adp-background-color-selected-other-month-focused: #8ad5f4;
+    --adp-background-color-selected-other-month: #a2ddf6;
+    --adp-color: #4a4a4a;
+
+    --adp-color-other-month: #dedede;
+    --adp-color-disabled: #aeaeae;
+    --adp-color-disabled-in-range: #939393;
+    --adp-color-other-month-hover: #c5c5c5;
+    --adp-border-color: #dbdbdb;
+    --adp-border-color-inner: #efefef;
+    --adp-border-color-inline: #d7d7d7;
+    --adp-nav-arrow-color: var(--adp-color-secondary);
+    --adp-nav-color-secondary: var(--adp-color-secondary);
+    --adp-day-name-color: #6E6E6E;
+    --adp-day-name-color-hover: #8ad5f4;
+    --adp-cell-background-color-hover: var(--adp-background-color-hover);
+    --adp-cell-background-color-selected: #6E6E6E;
+        --adp-cell-background-color-selected-hover: #6E6E6E;
+    
+}
