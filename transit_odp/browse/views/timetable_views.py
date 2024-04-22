@@ -458,6 +458,14 @@ class LineMetadataDetailView(DetailView):
         }
         """
 
+        if df_timetable.empty:
+            return {
+                "total_page": 0,
+                "curr_page": 1,
+                "show_all": False,
+                "df_timetable": pd.DataFrame(),
+            }
+
         if direction == "outbound":
             show_all_param = self.request.GET.get("showAllOutbound", "false")
             curr_page_param = int(self.request.GET.get("outboundPage", "1"))
@@ -467,22 +475,24 @@ class LineMetadataDetailView(DetailView):
             pass
 
         show_all = show_all_param.lower() == "true"
-        total_columns_count = len(df_timetable.columns)
+        total_row_count, total_columns_count = df_timetable.shape
         total_page = math.ceil((total_columns_count - 1) / 10)
         curr_page_param = 1 if curr_page_param > total_page else curr_page_param
         page_size = 10
         # Adding 1 to always show the first column of stops
         col_start = ((curr_page_param - 1) * page_size) + 1
         col_end = min(total_columns_count, (curr_page_param * page_size) + 1)
-        col_indexes_display = [0]
+        col_indexes_display = []
         for i in range(col_start, col_end):
             col_indexes_display.append(i)
-
+        if len(col_indexes_display) > 0:
+            col_indexes_display.insert(0, 0)
+        row_count = min(total_row_count, 10)
         # Slice the dataframe by the 10 rows if show all is false
         df_timetable = (
             df_timetable.iloc[:, col_indexes_display]
             if show_all
-            else df_timetable.iloc[:10, col_indexes_display]
+            else df_timetable.iloc[:row_count, col_indexes_display]
         )
 
         return {

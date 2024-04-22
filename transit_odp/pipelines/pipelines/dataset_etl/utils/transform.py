@@ -537,7 +537,7 @@ def filter_operating_profiles(
     df_services["end_date"] = pd.to_datetime(df_services["end_date"]).dt.tz_localize(
         None
     )
-    if not operating_profiles.empty and not services.empty:
+    if not operating_profiles.empty and not df_services.empty:
         service_columns = ["file_id", "service_code", "start_date", "end_date"]
         indexes = operating_profiles.index.names
         df_merged = pd.merge(
