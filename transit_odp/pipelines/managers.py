@@ -10,7 +10,7 @@ from transit_odp.data_quality.models import DataQualityReportSummary
 class DataQualityTaskManager(models.Manager):
     def get_unfinished(self):
         return self.filter(task_id__isnull=False).exclude(
-            status__in=[self.model.SUCCESS, self.model.FAILURE]
+            status__in=[self.model.SUCCESS, self.model.FAILURE, self.model.RECEIVED]
         )
 
     def get_latest_status(self):

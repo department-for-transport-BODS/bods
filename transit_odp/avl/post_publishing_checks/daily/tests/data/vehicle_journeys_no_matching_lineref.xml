@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<TransXChange FileName="vehicle_journeys.xml" RevisionNumber="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+  <ServicedOrganisations>
+  </ServicedOrganisations>
+  <StopPoints>
+  </StopPoints>
+  <RouteSections>
+  </RouteSections>
+  <Routes>
+  </Routes>
+  <JourneyPatternSections>
+    <JourneyPatternSection id="JPS51">
+      <JourneyPatternTimingLink id="JPTL511">
+        <From>
+          <StopPointRef>Earth</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </From>
+        <To>
+          <StopPointRef>Mars</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </To>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL512">
+        <From>
+          <StopPointRef>Mars</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </From>
+        <To>
+          <StopPointRef>Jupiter</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </To>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL513">
+        <From>
+          <StopPointRef>Jupiter</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </From>
+        <To>
+          <StopPointRef>Saturn</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </To>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS52">
+      <JourneyPatternTimingLink id="JPTL521">
+        <From>
+          <StopPointRef>Saturn</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </From>
+        <To>
+          <StopPointRef>Uranus</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </To>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL522">
+        <From>
+          <StopPointRef>Uranus</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </From>
+        <To>
+          <StopPointRef>Neptune</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </To>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL523">
+        <From>
+          <StopPointRef>Neptune</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </From>
+        <To>
+          <StopPointRef>Pluto</StopPointRef>
+          <DynamicDestinationDisplay>Pluto</DynamicDestinationDisplay>
+        </To>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+  </JourneyPatternSections>
+  <Operators>
+  </Operators>
+  <Services>
+    <Service>
+    <ServiceCode>PD1073423:5</ServiceCode>
+      <Lines>
+        <Line id="697">
+          <LineName>Victoria</LineName>
+        </Line>
+        <Line id="698">
+          <LineName>Piccadilly</LineName>
+        </Line>
+      </Lines>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Tuesday/>
+          </DaysOfWeek>
+        </RegularDayType>
+      </OperatingProfile>
+      <StandardService>
+        <JourneyPattern id="JP5">
+          <Direction>outbound</Direction>
+          <JourneyPatternSectionRefs>JPS51</JourneyPatternSectionRefs>
+          <JourneyPatternSectionRefs>JPS52</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP6">
+          <Direction>inboundAndOutbound</Direction>
+          <DestinationDisplay>Mercury</DestinationDisplay>
+          <JourneyPatternSectionRefs>JPS61</JourneyPatternSectionRefs>
+          <JourneyPatternSectionRefs>JPS62</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP7">
+          <Direction>inbound</Direction>
+        </JourneyPattern>
+        <JourneyPattern id="JP8">
+          <Direction>clockwise</Direction>
+        </JourneyPattern>
+        <JourneyPattern id="JP9">
+          <Direction>circular</Direction>
+        </JourneyPattern>
+        <JourneyPattern id="JP10">
+          <Direction>anticlockwise</Direction>
+        </JourneyPattern>
+        <JourneyPattern id="JP11">
+        </JourneyPattern>
+      </StandardService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <VehicleJourney SequenceNumber="1">
+      <Operational>
+        <Block>
+          <BlockNumber>Jenny</BlockNumber>
+        </Block>
+        <TicketMachine>
+          <JourneyCode>50</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday/>
+            <Friday/>
+          </DaysOfWeek>
+        </RegularDayType>
+      </OperatingProfile>
+      <LineRef>RDRT:PK1055511:35:697</LineRef>
+      <JourneyPatternRef>JP5</JourneyPatternRef>
+    </VehicleJourney>
+    <VehicleJourney SequenceNumber="2">
+      <Operational>
+        <Block>
+          <BlockNumber>Lopez</BlockNumber>
+        </Block>
+        <TicketMachine>
+          <JourneyCode>50</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+      </OperatingProfile>
+      <LineRef>RDRT:PK1055511:35:698</LineRef>
+      <JourneyPatternRef>JP7</JourneyPatternRef>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>

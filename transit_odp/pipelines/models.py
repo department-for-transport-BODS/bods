@@ -64,8 +64,10 @@ class TaskResult(TimeStampedModel):
     SUCCESS = "SUCCESS"
     #: Task failed
     FAILURE = "FAILURE"
+    #: Task ready
+    READY = "READY"
 
-    ALL_STATES = frozenset({PENDING, RECEIVED, STARTED, SUCCESS, FAILURE})
+    ALL_STATES = frozenset({PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, READY})
     TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
     task_id = models.CharField(

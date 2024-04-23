@@ -6,6 +6,7 @@ from django_extensions.db.fields import CreationDateTimeField, ModificationDateT
 
 from transit_odp.naptan.models import AdminArea, Locality, StopPoint
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.transmodel.managers import (
     ServicePatternManager,
     ServicePatternStopManager,
@@ -30,6 +31,14 @@ class Service(models.Model):
 
     service_patterns = models.ManyToManyField(
         "transmodel.ServicePattern", related_name="services"
+    )
+
+    txcfileattributes = models.ForeignKey(
+        TXCFileAttributes,
+        related_name="service_txcfileattributes",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -88,6 +97,7 @@ class VehicleJourney(models.Model):
         default=None,
         null=True,
     )
+    block_number = models.IntegerField(null=True, default=None)
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
@@ -292,3 +302,10 @@ class BankHolidays(models.Model):
     date = models.DateField()
     notes = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=255, null=True, blank=True)
+
+
+class StopActivity(models.Model):
+    name = models.CharField(max_length=255)
+    is_pickup = models.BooleanField(default=False)
+    is_setdown = models.BooleanField(default=False)
+    is_driverrequest = models.BooleanField(default=False)

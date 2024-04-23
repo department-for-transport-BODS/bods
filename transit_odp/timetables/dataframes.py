@@ -19,7 +19,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     db_bank_holidays_to_df,
 )
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +130,9 @@ def flexible_journey_patterns_to_dataframe(services):
     return pd.DataFrame()
 
 
-def services_to_dataframe(services: list) -> pd.DataFrame:
+def services_to_dataframe(
+    services: list, txc_file_id: Union[int, None]
+) -> pd.DataFrame:
     """Convert a TransXChange Service XMLElement to a pandas DataFrame"""
     items = []
     lines_list = []
@@ -144,7 +146,7 @@ def services_to_dataframe(services: list) -> pd.DataFrame:
         flexible_service = service.get_element_or_none(["FlexibleService"])
         if end_date:
             end_date = end_date.text
-        if is_timetable_visualiser_active:
+        if is_timetable_visualiser_active and txc_file_id:
             lines = service.get_elements(["Lines", "Line"])
             line_names = [
                 line_name.get_element(["LineName"]).text for line_name in lines
@@ -174,10 +176,18 @@ def services_to_dataframe(services: list) -> pd.DataFrame:
                 "end_date": end_datetime,
                 "line_names": line_names,
                 "service_type": service_type,
+                "txc_file_id": txc_file_id,
             }
         )
 
-    columns = ["service_code", "start_date", "end_date", "line_names", "service_type"]
+    columns = [
+        "service_code",
+        "start_date",
+        "end_date",
+        "line_names",
+        "service_type",
+        "txc_file_id",
+    ]
     service_df = pd.DataFrame(items, columns=columns)
     lines_df = pd.DataFrame(lines_list)
     for datetime_column_name in ["start_date", "end_date"]:
@@ -408,7 +418,15 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
     all_vehicle_journeys = []
     if standard_vehicle_journeys is not None:
         for vehicle_journey in standard_vehicle_journeys:
-            departure_time = vehicle_journey.get_element(["DepartureTime"]).text
+            departure_time = pd.to_timedelta(
+                vehicle_journey.get_element(["DepartureTime"]).text
+            )
+            dead_run_time = vehicle_journey.get_element_or_none(
+                ["StartDeadRun", "PositioningLink", "RunTime"]
+            )
+            if dead_run_time:
+                departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
+
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
             )
