@@ -186,7 +186,9 @@ def transform_service_pattern_stops(
 
 def agg_service_pattern_sequences(df: pd.DataFrame):
     geometry = None
-    df = df.drop_duplicates(subset=["sequence_number"])
+    df = df.drop_duplicates(subset=["stop_atco"]).sort_values(
+        by="sequence_number", key=pd.to_numeric
+    )
     points = df["geometry"].values
     if len(list(point for point in points if point)) > 1:
         geometry = LineString(
