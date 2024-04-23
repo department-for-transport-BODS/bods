@@ -36,6 +36,7 @@ class ServicePatternSerializer(GeoFeatureModelSerializer):
             "destination",
             "description",
             "service_name",
+            "line_name",
         ]
 
     service_name = serializers.CharField(read_only=True)  # annotation

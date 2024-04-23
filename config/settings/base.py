@@ -672,3 +672,14 @@ if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "transit_odp",
+        "USER": "transit_odp",
+        "PASSWORD": "transit_odp",
+        "HOST": "postgres",
+        "PORT": "5432",
+    }
+}

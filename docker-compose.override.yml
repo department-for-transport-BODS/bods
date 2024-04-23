@@ -66,14 +66,14 @@ services:
       - "5555:5555"
     command: /start-celeryflower
 
-  pytest:
-    <<: *django
-    ports: []
-    command: ["pytest", "-vv"]
-    depends_on:
-      - django
-      - postgres
-      - redis
-      - celeryworker
-      - celerybeat
-      - flower
+  # pytest:
+  #   # <<: *django
+  #   # ports: []
+  #   # command: ["pytest", "-vv"]
+  #   # depends_on:
+  #   #   - django
+  #   #   - postgres
+  #   #   - redis
+  #   #   - celeryworker
+  #   #   - celerybeat
+  #   #   - flower
