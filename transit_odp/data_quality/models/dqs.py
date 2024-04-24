@@ -5,6 +5,7 @@ from django_extensions.db.fields import CreationDateTimeField
 
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
+from transit_odp.organisation.models.data import TXCFileAttributes
 
 
 class Report(models.Model):
@@ -13,6 +14,7 @@ class Report(models.Model):
     revision = models.ForeignKey(
         DatasetRevision, related_name="dqs_report", on_delete=models.CASCADE
     )
+    status = models.CharField(max_length=64, null=True)
 
 
 class Checks(models.Model):
@@ -34,6 +36,18 @@ class TaskResults(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+    dataquality_report = models.ForeignKey(
+        Report,
+        related_name="dqs_taskresults_report",
+        on_delete=models.CASCADE,
+        null=True,
+        )
+    transmodel_txcfileattributes=models.ForeignKey(
+            TXCFileAttributes,
+            related_name="dqs_taskresults_txcfileattributes",
+            on_delete=models.CASCADE,
+            null=True,
+        )
 
 
 class ObservationResults(models.Model):
