@@ -471,7 +471,7 @@ class LineMetadataDetailView(DetailView):
             curr_page_param = int(self.request.GET.get("outboundPage", "1"))
         else:
             show_all_param = self.request.GET.get("showAllInbound", "false")
-            curr_page_param = int(self.request.GET.get("outboundPage", "1"))
+            curr_page_param = int(self.request.GET.get("inboundPage", "1"))
             pass
 
         show_all = show_all_param.lower() == "true"

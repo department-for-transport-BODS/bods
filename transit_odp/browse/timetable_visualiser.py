@@ -265,6 +265,10 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
+        max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
+        df_initial_vehicle_journeys = df_initial_vehicle_journeys[
+            df_initial_vehicle_journeys["revision_number"] == max_revision_number
+        ]
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
