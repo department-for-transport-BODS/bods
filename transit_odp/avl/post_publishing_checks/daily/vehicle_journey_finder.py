@@ -731,11 +731,10 @@ class VehicleJourneyFinder:
         if not self.filter_by_revision_number(vehicle_journeys, result):
             return None
 
-        if len(vehicle_journeys) > 1:
-            if not self.filter_by_days_of_operation(
-                recorded_at_time, vehicle_journeys, result
-            ):
-                return None
+        if not self.filter_by_days_of_operation(
+            recorded_at_time, vehicle_journeys, result
+        ):
+            return None
 
         if len(vehicle_journeys) > 1:
             if not self.filter_by_service_code(vehicle_journeys, result):
