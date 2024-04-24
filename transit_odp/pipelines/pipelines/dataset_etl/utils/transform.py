@@ -186,7 +186,9 @@ def transform_service_pattern_stops(
 
 def agg_service_pattern_sequences(df: pd.DataFrame):
     geometry = None
-    df = df.drop_duplicates(subset=["sequence_number"])
+    df = df.drop_duplicates(subset=["stop_atco"]).sort_values(
+        by="sequence_number", key=pd.to_numeric
+    )
     points = df["geometry"].values
     if len(list(point for point in points if point)) > 1:
         geometry = LineString(
@@ -537,7 +539,7 @@ def filter_operating_profiles(
     df_services["end_date"] = pd.to_datetime(df_services["end_date"]).dt.tz_localize(
         None
     )
-    if not operating_profiles.empty and not services.empty:
+    if not operating_profiles.empty and not df_services.empty:
         service_columns = ["file_id", "service_code", "start_date", "end_date"]
         indexes = operating_profiles.index.names
         df_merged = pd.merge(
