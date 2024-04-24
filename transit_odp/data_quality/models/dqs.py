@@ -41,13 +41,13 @@ class TaskResults(models.Model):
         related_name="dqs_taskresults_report",
         on_delete=models.CASCADE,
         null=True,
-        )
-    transmodel_txcfileattributes=models.ForeignKey(
-            TXCFileAttributes,
-            related_name="dqs_taskresults_txcfileattributes",
-            on_delete=models.CASCADE,
-            null=True,
-        )
+    )
+    transmodel_txcfileattributes = models.ForeignKey(
+        TXCFileAttributes,
+        related_name="dqs_taskresults_txcfileattributes",
+        on_delete=models.CASCADE,
+        null=True,
+    )
 
 
 class ObservationResults(models.Model):
