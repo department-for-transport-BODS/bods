@@ -244,10 +244,9 @@ def get_vehicle_journey_codes_sorted(
     """
     Get the vehicle journey codes sorted based on the departure time
     """
-
-    df_vehicle_journey_sorted = df_vehicle_journey_operating.groupby(
-        "vehicle_journey_code"
-    ).apply(lambda x: x.sort_values(by="departure_time"))
+    df_vehicle_journey_sorted = df_vehicle_journey_operating.sort_values(
+        by=["departure_day_shift", "departure_time"], ascending=[True, True]
+    )
     df_vehicle_journey_sorted["vehicle_journey_code"] = df_vehicle_journey_sorted[
         "vehicle_journey_code"
     ].astype(str)
@@ -279,6 +278,7 @@ def get_df_timetable_visualiser(
         "vehicle_journey_code",
         "departure_time",
         "atco_code",
+        "departure_day_shift",
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
