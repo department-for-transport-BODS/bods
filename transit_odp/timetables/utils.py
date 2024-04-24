@@ -254,6 +254,13 @@ def get_vehicle_journey_codes_sorted(
     return df_vehicle_journey_sorted["vehicle_journey_code"].unique().tolist()
 
 
+def round_time(t):
+    dt = datetime.combine(datetime.today(), t)  # Convert time to datetime
+    if dt.second >= 30:
+        dt += timedelta(minutes=1)
+    return dt.time().replace(second=0)  # Convert back to time
+
+
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
 ) -> pd.DataFrame:
@@ -300,12 +307,7 @@ def get_df_timetable_visualiser(
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
         departure_time: time = row["departure_time"]
-        minute = (
-            departure_time.minute
-            if departure_time.second < 30
-            else departure_time.minute + 1
-        )
-        departure_time = departure_time.replace(minute=minute)
+        departure_time = round_time(departure_time)
         departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
 
     stops_journey_code_time_list = []
