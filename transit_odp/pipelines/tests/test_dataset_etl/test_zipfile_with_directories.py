@@ -83,7 +83,7 @@ class ZipFileWithDirectoriesTestCase(TestCase):
         self.assertEqual(1, revision.admin_areas.count())
         self.assertEqual(3, revision.services.count())
         self.assertEqual(3, revision.localities.count())
-        self.assertEqual(4, revision.service_patterns.count())
+        self.assertEqual(12, revision.service_patterns.count())
         self.assertEqual(
             63,
             ServicePatternStop.objects.filter(
