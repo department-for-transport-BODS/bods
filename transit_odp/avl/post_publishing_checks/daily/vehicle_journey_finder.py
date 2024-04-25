@@ -602,8 +602,8 @@ class VehicleJourneyFinder:
         if len(vehicle_journeys) == 0:
             result.add_error(
                 ErrorCategory.GENERAL,
-                "No vehicle journeys found with OperatingProfile applicable to "
-                "VehicleActivity date",
+                "Journeys can be found for the operating profile, but they belong to "
+                "the working days of a serviced operation which is not working on the day of the journey",
             )
             return False
 
