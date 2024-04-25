@@ -79,6 +79,8 @@ class TimetableVisualiser:
             "vehicle_journey_id",
             "atco_code",
             "public_use",
+            "revision_number",
+            "start_time",
         ]
 
         qs_vehicle_journeys = (
@@ -89,6 +91,15 @@ class TimetableVisualiser:
                 service_patterns__service_pattern_stops__vehicle_journey__id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
+            )
+            .filter(
+                Q(txcfileattributes__operating_period_start_date__lte=self._target_date)
+                & (
+                    Q(txcfileattributes__operating_period_end_date__isnull=True)
+                    | Q(
+                        txcfileattributes__operating_period_end_date__gte=self._target_date
+                    )
+                )
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -126,6 +137,9 @@ class TimetableVisualiser:
                 line_ref=F(
                     "service_patterns__service_pattern_vehicle_journey__line_ref"
                 ),
+                start_time=F(
+                    "service_patterns__service_pattern_vehicle_journey__start_time"
+                ),
                 departure_day_shift=F(
                     "service_patterns__service_pattern_vehicle_journey__departure_day_shift"
                 ),
@@ -136,6 +150,7 @@ class TimetableVisualiser:
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
                 public_use=F("txcfileattributes__public_use"),
+                revision_number=F("txcfileattributes__revision_number"),
             )
             .values(*columns)
         )
@@ -254,6 +269,10 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
+        max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
+        df_initial_vehicle_journeys = df_initial_vehicle_journeys[
+            df_initial_vehicle_journeys["revision_number"] == max_revision_number
+        ]
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
@@ -273,7 +292,6 @@ class TimetableVisualiser:
             "outbound": {"outbound", "clockwise"},
         }
         for direction in directions.keys():
-
             df_base_vehicle_journeys = df_initial_vehicle_journeys[
                 df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
             ]
