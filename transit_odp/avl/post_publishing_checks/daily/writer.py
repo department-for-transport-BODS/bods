@@ -82,7 +82,7 @@ class PostPublishingResultsJsonWriter:
         self.json_report[
             "UncountedVehicleActivities"
         ] = self.compile_uncounted_vehicle_activities(results)
-        self.json_report["error_data"] = self.compile_error_code(results)
+        self.json_report["ErrorData"] = self.compile_error_code(results)
         self.json_report["DirectionRef"] = self.compile_direction_ref(results)
         self.json_report["DestinationRef"] = self.compile_destination_ref(results)
         self.json_report["OriginRef"] = self.compile_origin_ref(results)
