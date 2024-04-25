@@ -6,7 +6,10 @@ from transit_odp.avl.post_publishing_checks.constants import (
     ErrorCategory,
     MiscFieldPPC,
     SirivmField,
+    TransXChangeField,
+    ErrorCode,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,8 @@ class ValidationResult:
             self.validated.append(FieldValidation(field, SIRIVM_TO_TXC_MAP.get(field)))
         self.misc = {field: None for field in MiscFieldPPC}
         self.errors = {category: [] for category in ErrorCategory}
+        self.errors_code = {error_code.name: False for error_code in ErrorCode}
+        self.transxchange_field = {field: None for field in TransXChangeField}
         self.journey_matched = False
         self.stats = None
 
@@ -63,8 +68,12 @@ class ValidationResult:
                 return
         assert False
 
-    def add_error(self, category: ErrorCategory, error: str):
+    def add_error(
+        self, category: ErrorCategory, error: str, error_code: ErrorCode = None
+    ):
         self.errors[category].append(error)
+        if error_code:
+            self.errors_code[error_code.name] = True
         logger.info(error)
 
     def sirivm_value(self, sirivm_field: SirivmField) -> Optional[str]:
@@ -108,3 +117,9 @@ class ValidationResult:
 
     def journey_was_matched(self) -> bool:
         return self.journey_matched
+
+    def set_transxchange_attribute(self, trans_field: TransXChangeField, value: str):
+        self.transxchange_field[trans_field] = value
+
+    def transxchange_attribute(self, trans_field: TransXChangeField) -> Optional[str]:
+        return self.transxchange_field.get(trans_field, None)
