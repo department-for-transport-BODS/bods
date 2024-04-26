@@ -591,7 +591,6 @@ class TransXChangeDataLoader:
                 ],
                 on=["file_id", "service_pattern_id"],
             )
-            print(f"service_pattern_stops columns---{service_pattern_stops.columns}")
 
         add_service_pattern_to_service_pattern_stops(
             service_pattern_stops, service_patterns
