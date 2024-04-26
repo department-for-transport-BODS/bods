@@ -329,9 +329,13 @@ class TimetableVisualiser:
             ]
 
             df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
+            for column in df_timetable.columns:
+                 if column == '':
+                    df_timetable.rename(columns={column: '-'}, inplace=True)
+            df_timetable.to_csv("data.csv")
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
             }
-
+        print(f"the keys are:: {data.values()}")
         return data
