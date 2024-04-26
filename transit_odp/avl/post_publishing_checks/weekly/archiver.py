@@ -50,6 +50,16 @@ class WeeklyPPCReportArchiver:
     """Create Weekly Archive for PPC"""
 
     def to_zip(self, data: WeeklyReport):
+        """
+        Converts the provided weekly report data into a zip file. The zip file contains multiple CSV files,
+        each representing a different aspect of the report.
+
+        Args:
+            data (WeeklyReport): The weekly report data to be converted into a zip file.
+
+        Returns:
+            BytesIO: A BytesIO object representing the zip file.
+        """
         bytesio = io.BytesIO()
 
         with ZipFile(bytesio, "w", ZIP_DEFLATED) as archive:

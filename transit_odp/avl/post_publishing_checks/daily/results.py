@@ -71,6 +71,14 @@ class ValidationResult:
     def add_error(
         self, category: ErrorCategory, error: str, error_code: ErrorCode = None
     ):
+        """
+        Adds an error message to the specified category and logs the error.
+
+        Args:
+            category (ErrorCategory): The category to which the error belongs.
+            error (str): The error message to be added.
+            error_code (ErrorCode, optional): The error code associated with the error. Defaults to None.
+        """
         self.errors[category].append(error)
         if error_code:
             self.errors_code[error_code.name] = True
@@ -119,7 +127,23 @@ class ValidationResult:
         return self.journey_matched
 
     def set_transxchange_attribute(self, trans_field: TransXChangeField, value: str):
+        """
+        Sets the value of a specified TransXChange field.
+
+        Args:
+            trans_field (TransXChangeField): The field for which the value is to be set.
+            value (str): The value to be set for the specified field.
+        """
         self.transxchange_field[trans_field] = value
 
     def transxchange_attribute(self, trans_field: TransXChangeField) -> Optional[str]:
+        """
+        Retrieves the value of a specified TransXChange field.
+
+        Args:
+            trans_field (TransXChangeField): The field for which the value is to be retrieved.
+
+        Returns:
+            Optional[str]: The value of the specified field, if it exists. Otherwise, None.
+        """
         return self.transxchange_field.get(trans_field, None)

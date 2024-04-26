@@ -166,6 +166,7 @@ class AggregatedDailyReports:
         return self.block_ref.fillna("-")
 
     def get_error_data(self):
+        """Produces DataFrame used for error_code_*.csv."""
         return self.error_data
 
 
@@ -222,7 +223,18 @@ class PostPublishingChecksSummaryData:
             summary.error_data = pd.concat([summary.error_data, df], ignore_index=True)
         return summary
 
-    def create_error_data_df(self, error_data):
+    def create_error_data_df(self, error_data: dict) -> pd.DataFrame:
+        """
+        Creates a pandas DataFrame from the provided error data.
+
+        Args:
+            error_data (dict): The error data to be converted into a DataFrame.
+                            The keys are error codes and the values are lists of error values.
+
+        Returns:
+            DataFrame: A pandas DataFrame where each row represents an error,
+                    with a column for the error code and columns for each attribute of the error.
+        """
         error_df = pd.DataFrame()
         for error_code, error_value in error_data.items():
             df = pd.DataFrame(error_value)

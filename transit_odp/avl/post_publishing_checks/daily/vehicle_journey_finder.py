@@ -143,6 +143,18 @@ class VehicleJourneyFinder:
         mvj: MonitoredVehicleJourney,
         result: ValidationResult,
     ) -> bool:
+        """
+        Checks if the matched TXC files belong to the same dataset. If they do, sets various attributes in the result object.
+        If they don't, logs an error and adds an error to the result object.
+
+        Args:
+            txc_file_attrs (List[TXCFileAttributes]): List of TXC file attributes.
+            mvj (MonitoredVehicleJourney): The monitored vehicle journey.
+            result (ValidationResult): The result object to be updated.
+
+        Returns:
+            bool: True if the matched TXC files belong to the same dataset, False otherwise.
+        """
         dataset_ids = {txc.dataset_id for txc in txc_file_attrs}
         consistent_data = len(dataset_ids) == 1
         if consistent_data:
@@ -395,6 +407,15 @@ class VehicleJourneyFinder:
     def get_operating_profile_xml_tag_for_journey(
         self, vj: TxcVehicleJourney
     ) -> Optional[TransXChangeElement]:
+        """
+        Retrieves the XML tag for the operating profile of a given journey.
+
+        Args:
+            vj (TxcVehicleJourney): The vehicle journey for which the operating profile XML tag is to be retrieved.
+
+        Returns:
+            Optional[TransXChangeElement]: The XML tag for the operating profile of the journey, if it exists. Otherwise, None.
+        """
         operating_profile_string = None
         operating_profile_element = self.get_operating_profile_for_journey(vj)
         if operating_profile_element:
@@ -589,7 +610,18 @@ class VehicleJourneyFinder:
             return []
         return working_days
 
-    def get_service_org_xml_string(self, vehicle_journey):
+    def get_service_org_xml_string(
+        self, vehicle_journey: TxcVehicleJourney
+    ) -> Optional[TransXChangeElement]:
+        """
+        Retrieves the XML string for the service organization of a given vehicle journey.
+
+        Args:
+            vehicle_journey: The vehicle journey for which the service organization XML string is to be retrieved.
+
+        Returns:
+            str: The XML string for the service organization of the vehicle journey.
+        """
         service_org_xml_str = None
         service_org_from_vj = self.service_org_day_type(vehicle_journey)
         if service_org_from_vj:
