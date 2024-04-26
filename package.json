@@ -45,15 +45,6 @@
   },
   "scripts": {
     "start": "webpack --config webpack/dev.js",
-    "build": "webpack --config webpack/prod.js",
-    "dev:static": "webpack --config webpack/dev.js",
-    "dev:django": "python -m debugpy --listen 0.0.0.0:3000 manage.py runserver 0.0.0.0:8001",
-    "dev:beat": "celery -A transit_odp.taskapp beat -l INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler",
-    "dev:flower": "celery --app=transit_odp.taskapp --broker=\"redis://localhost:6379/0\" flower --basic_auth=\"admin:admin\"",
-    "dev:worker": "hupper -m celery -A transit_odp.taskapp worker --pool threads -l INFO",
-    "dev:mailhog": "mailhog",
-    "dev:redis": "redis-server",
-    "test": "pytest -vv --junitxml=junit_report.xml || [ $? = 1 ]",
-    "serve": "run-p --print-label \"dev:*\""
+    "build": "webpack --config webpack/prod.js"
   }
 }
