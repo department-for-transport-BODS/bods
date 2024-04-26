@@ -305,6 +305,17 @@ class PostPublishingResultsJsonWriter:
             if result.txc_value(
                 SirivmField.DATED_VEHICLE_JOURNEY_REF
             ) != result.sirivm_value(SirivmField.DATED_VEHICLE_JOURNEY_REF):
+                error_code = [
+                    err_code
+                    for err_code, should_process in result.errors_code.items()
+                    if should_process
+                ]
+                error_code = " ".join(error_code).strip()
+                error_note = "\n".join(result.errors.get(ErrorCategory.GENERAL))
+                error_note = (
+                    f"{error_note} [{error_code}]" if error_code else error_note
+                )
+
                 vehicle_activity = {
                     "SD ResponseTimestamp": result.sirivm_value(
                         SirivmField.RESPONSE_TIMESTAMP_SD
@@ -322,7 +333,7 @@ class PostPublishingResultsJsonWriter:
                         SirivmField.DATED_VEHICLE_JOURNEY_REF
                     ),
                     "Error note: Reason it could not be analysed against "
-                    "TXC": "\n".join(result.errors.get(ErrorCategory.GENERAL)),
+                    "TXC": error_note,
                 }
                 vehicle_activity = {
                     k: self.pretty_print(v) for k, v in vehicle_activity.items()
