@@ -42,6 +42,9 @@ class WeeklyReport(Protocol):
     def get_block_ref(self) -> DataFrame:
         ...
 
+    def get_error_data(self) -> DataFrame:
+        ...
+
 
 class WeeklyPPCReportArchiver:
     """Create Weekly Archive for PPC"""
@@ -80,13 +83,15 @@ class WeeklyPPCReportArchiver:
             )
             archive.writestr(WeeklyPPCSummaryFiles.README, data=self._get_readme())
 
-            grouped_df = data.error_data.groupby("error_code")
-            for name, group in grouped_df:
-                cleaned_group = group.dropna(how="all", axis=1).drop(
-                    "error_code", axis=1
-                )
-                filename = f"ERROR_{name}.csv"
-                archive.writestr(filename, data=cleaned_group.to_csv(index=False))
+            error_data = data.get_error_data()
+            if not error_data.empty:
+                grouped_df = error_data.groupby("error_code")
+                for error_code, group in grouped_df:
+                    cleaned_group = group.dropna(how="all", axis=1).drop(
+                        "error_code", axis=1
+                    )
+                    filename = f"ERROR_{error_code}.csv".lower()
+                    archive.writestr(filename, data=cleaned_group.to_csv(index=False))
 
         return bytesio
 

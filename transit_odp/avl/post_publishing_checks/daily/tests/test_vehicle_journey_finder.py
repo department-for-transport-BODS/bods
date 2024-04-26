@@ -150,9 +150,8 @@ def test_filter_by_operating_profile():
     activity_date = datetime.date.fromisoformat("2022-01-04")
     vehicle_journey_finder = VehicleJourneyFinder()
     vehicle_journey_finder.filter_by_operating_profile(
-        activity_date, txc_vehicle_journeys, ValidationResult()
+        activity_date, txc_vehicle_journeys, ValidationResult(), vehicle_journey_ref=502
     )
-
     assert len(txc_vehicle_journeys) == 1
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "2"
 
@@ -259,7 +258,7 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
     vehicle_journey_finder = VehicleJourneyFinder()
     result = ValidationResult()
     return_result = vehicle_journey_finder.filter_by_service_code(
-        txc_vehicle_journeys, result
+        txc_vehicle_journeys, result, vehicle_journey_ref=502
     )
 
     assert return_result == expected_result
@@ -284,6 +283,7 @@ def test_filter_by_published_line_name():
         txc_vehicle_journeys,
         published_line_name=filter_published_line_name,
         result=result,
+        vehicle_journey_ref=50,
     )
     assert len(txc_vehicle_journey) == 1
     assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
@@ -304,6 +304,7 @@ def test_filter_by_published_line_name_no_matching_lineref():
         txc_vehicle_journeys,
         published_line_name=filter_published_line_name,
         result=result,
+        vehicle_journey_ref=50,
     )
     assert result.errors[ErrorCategory.GENERAL] == [
         "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"

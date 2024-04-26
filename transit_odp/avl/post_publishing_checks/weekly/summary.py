@@ -40,7 +40,6 @@ class AggregatedDailyReports:
 
     total_vehicles_analysed = 0
     total_vehicles_completely_matching = 0
-    error_reports = []
 
     @cached_property
     def all_fields_matching_vehicles_score(self) -> int:
@@ -166,8 +165,8 @@ class AggregatedDailyReports:
         """Produces DataFrame used for blockref.csv."""
         return self.block_ref.fillna("-")
 
-    def get_error_reports(self):
-        return self.error_reports
+    def get_error_data(self):
+        return self.error_data
 
 
 class PostPublishingChecksSummaryData:
