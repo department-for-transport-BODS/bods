@@ -80,6 +80,7 @@ class TimetableVisualiser:
             "atco_code",
             "public_use",
             "revision_number",
+            "start_time",
         ]
 
         qs_vehicle_journeys = (
@@ -135,6 +136,9 @@ class TimetableVisualiser:
                 ),
                 line_ref=F(
                     "service_patterns__service_pattern_vehicle_journey__line_ref"
+                ),
+                start_time=F(
+                    "service_patterns__service_pattern_vehicle_journey__start_time"
                 ),
                 departure_day_shift=F(
                     "service_patterns__service_pattern_vehicle_journey__departure_day_shift"
