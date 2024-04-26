@@ -345,7 +345,7 @@ if USE_TZ:
     # celery should use db timezone to avoid problems, e.g. expired data sets task runs at
     # 00:00 4th Nov BST but UTC is still 23:00 3rd Nov. Data sets expiring 00:00 4th Nov (UTC) therefore aren't
     # expired until the task runs again in 24 hours
-    CELERY_TIMEZONE = "UTC"
+    CELERY_TIMEZONE = "Europe/London"
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
