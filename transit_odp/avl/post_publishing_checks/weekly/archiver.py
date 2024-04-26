@@ -82,13 +82,11 @@ class WeeklyPPCReportArchiver:
 
             grouped_df = data.error_data.groupby("error_code")
             for name, group in grouped_df:
-                cleaned_group = group.dropna(how="all", axis=1)
-                cleaned_group.drop("error_code", axis=1, inplace=True)
-                filename = name + ".csv"
-                archive.writestr(
-                    filename,
-                    data=cleaned_group.to_csv(index=False),
+                cleaned_group = group.dropna(how="all", axis=1).drop(
+                    "error_code", axis=1
                 )
+                filename = f"ERROR_{name}.csv"
+                archive.writestr(filename, data=cleaned_group.to_csv(index=False))
 
         return bytesio
 

@@ -82,120 +82,106 @@ class PostPublishingResultsJsonWriter:
         self.json_report[
             "UncountedVehicleActivities"
         ] = self.compile_uncounted_vehicle_activities(results)
-        self.json_report["ErrorData"] = self.compile_error_code(results)
+        self.json_report["ErrorData"] = self.compile_error_data(results)
         self.json_report["DirectionRef"] = self.compile_direction_ref(results)
         self.json_report["DestinationRef"] = self.compile_destination_ref(results)
         self.json_report["OriginRef"] = self.compile_origin_ref(results)
         self.json_report["BlockRef"] = self.compile_block_ref(results)
 
-    def compile_error_code(self, results):
-        error_results_json = {}
-        for result in results:
-            if result.txc_value(
-                SirivmField.DATED_VEHICLE_JOURNEY_REF
-            ) != result.sirivm_value(SirivmField.DATED_VEHICLE_JOURNEY_REF):
-                for error_code in result.errors_code:
-                    txc_data = {}
-                    if (
-                        error_code == ErrorCode.CODE_1_2.name
-                        or error_code == ErrorCode.CODE_2_1.name
-                    ) and result.errors_code[error_code]:
-                        txc_data = {
-                            "Dataset ID": result.transxchange_attribute(
-                                TransXChangeField.DATASET_ID
-                            ),
-                            "Filename": result.transxchange_attribute(
-                                TransXChangeField.FILENAME
-                            ),
-                            "Modification date": result.transxchange_attribute(
-                                TransXChangeField.MODIFICATION_DATE
-                            ),
-                            "Revision number": result.transxchange_attribute(
-                                TransXChangeField.REVISION_NUMBER
-                            ),
-                            "Operation period start date": result.transxchange_attribute(
-                                TransXChangeField.OPERATING_PERIOD_START_DATE
-                            ),
-                            "Operating period end date": result.transxchange_attribute(
-                                TransXChangeField.OPERATING_PERIOD_END_DATE
-                            ),
-                        }
-                        txc_data = {
-                            k: self.pretty_print(v) for k, v in txc_data.items()
-                        }
-                        prev_results = error_results_json.get(error_code, [])
-                        prev_results.append(txc_data)
-                        error_results_json[error_code] = prev_results
+    def compile_error_data(self, results):
+        """
+        Compiles error data from a list of result objects into a dictionary of error results.
 
-                    elif (
-                        error_code == ErrorCode.CODE_3_1.name
-                        and result.errors_code[error_code]
-                    ):
-                        for operating_profile in result.transxchange_attribute(
-                            TransXChangeField.OPERATING_PROFILES
-                        ):
-                            txc_data = {
-                                "Dataset ID": result.transxchange_attribute(
-                                    TransXChangeField.DATASET_ID
-                                ),
-                                "Filename": result.transxchange_attribute(
-                                    TransXChangeField.FILENAME
-                                ),
-                                "Modification date": result.transxchange_attribute(
-                                    TransXChangeField.MODIFICATION_DATE
-                                ),
-                                "Revision number": result.transxchange_attribute(
-                                    TransXChangeField.REVISION_NUMBER
-                                ),
+        Args:
+            results (list): A list of result objects containing error information.
+
+        Returns:
+            dict: A dictionary where keys are error codes and values are lists of error data dictionaries.
+
+        Each error data dictionary contains the following keys:
+            - 'Dataset ID': The dataset ID associated with the error.
+            - 'Filename': The filename associated with the error.
+            - 'Modification date': The modification date associated with the error.
+            - 'Revision number': The revision number associated with the error.
+            - 'Operation period start date': The start date of the operating period associated with the error.
+            - 'Operating period end date': The end date of the operating period associated with the error.
+            Additional keys depend on the specific error code:
+                - For error codes 1.2 and 2.1: No additional keys.
+                - For error code 3.1: 'Journey Code', 'Operating Profile', and 'Service Code'.
+                - For error code 5.1: 'Journey Code', 'Operating Profile', 'Service Code', and 'LineRef'.
+                - For error codes 6.2 A and 6.2 C: 'Journey Code', 'Operating Profile',
+                  'Serviced organisation for that journey', and 'Serviced organisation operating on that day'.
+
+        """
+        error_results_json = {}
+
+        for result in results:
+            error_codes = result.errors_code
+            txc_data_common = {
+                "Dataset ID": result.transxchange_attribute(
+                    TransXChangeField.DATASET_ID
+                ),
+                "Filename": result.transxchange_attribute(TransXChangeField.FILENAME),
+                "Modification date": result.transxchange_attribute(
+                    TransXChangeField.MODIFICATION_DATE
+                ),
+                "Revision number": result.transxchange_attribute(
+                    TransXChangeField.REVISION_NUMBER
+                ),
+                "Operation period start date": result.transxchange_attribute(
+                    TransXChangeField.OPERATING_PERIOD_START_DATE
+                ),
+                "Operating period end date": result.transxchange_attribute(
+                    TransXChangeField.OPERATING_PERIOD_END_DATE
+                ),
+            }
+            for error_code, should_process in error_codes.items():
+                if not should_process:
+                    continue
+
+                if error_code in (ErrorCode.CODE_1_2.name, ErrorCode.CODE_2_1.name):
+                    txc_data = txc_data_common.copy()
+                    pretty_printed_data = {
+                        k: self.pretty_print(v) for k, v in txc_data.items()
+                    }
+                    error_results_json.setdefault(error_code, []).append(
+                        pretty_printed_data
+                    )
+
+                elif error_code == ErrorCode.CODE_3_1.name:
+                    operating_profiles = result.transxchange_attribute(
+                        TransXChangeField.OPERATING_PROFILES
+                    )
+                    for operating_profile in operating_profiles:
+                        txc_data = txc_data_common.copy()
+                        txc_data.update(
+                            {
                                 "Journey Code": result.transxchange_attribute(
                                     TransXChangeField.JOURNEY_CODE
-                                ),
-                                "Operation period start date": result.transxchange_attribute(
-                                    TransXChangeField.OPERATING_PERIOD_START_DATE
-                                ),
-                                "Operating period end date": result.transxchange_attribute(
-                                    TransXChangeField.OPERATING_PERIOD_END_DATE
                                 ),
                                 "Operating Profile": operating_profile,
                                 "Service Code": result.transxchange_attribute(
                                     TransXChangeField.SERVICE_CODE
                                 ),
                             }
-                            txc_data = {
-                                k: self.pretty_print(v) for k, v in txc_data.items()
-                            }
-                            prev_results = error_results_json.get(error_code, [])
-                            prev_results.append(txc_data)
-                            error_results_json[error_code] = prev_results
+                        )
+                        pretty_printed_data = {
+                            k: self.pretty_print(v) for k, v in txc_data.items()
+                        }
+                        error_results_json.setdefault(error_code, []).append(
+                            pretty_printed_data
+                        )
 
-                    elif (
-                        error_code == ErrorCode.CODE_5_1.name
-                        and result.errors_code[error_code]
-                    ):
-                        for operating_profile in result.transxchange_attribute(
-                            TransXChangeField.OPERATING_PROFILES
-                        ):
-                            txc_data = {
-                                "Dataset ID": result.transxchange_attribute(
-                                    TransXChangeField.DATASET_ID
-                                ),
-                                "Filename": result.transxchange_attribute(
-                                    TransXChangeField.FILENAME
-                                ),
-                                "Modification date": result.transxchange_attribute(
-                                    TransXChangeField.MODIFICATION_DATE
-                                ),
-                                "Revision number": result.transxchange_attribute(
-                                    TransXChangeField.REVISION_NUMBER
-                                ),
+                elif error_code == ErrorCode.CODE_5_1.name:
+                    operating_profiles = result.transxchange_attribute(
+                        TransXChangeField.OPERATING_PROFILES
+                    )
+                    for operating_profile in operating_profiles:
+                        txc_data = txc_data_common.copy()
+                        txc_data.update(
+                            {
                                 "Journey Code": result.transxchange_attribute(
                                     TransXChangeField.JOURNEY_CODE
-                                ),
-                                "Operation period start date": result.transxchange_attribute(
-                                    TransXChangeField.OPERATING_PERIOD_START_DATE
-                                ),
-                                "Operating period end date": result.transxchange_attribute(
-                                    TransXChangeField.OPERATING_PERIOD_END_DATE
                                 ),
                                 "Operating Profile": operating_profile,
                                 "Service Code": result.transxchange_attribute(
@@ -205,39 +191,25 @@ class PostPublishingResultsJsonWriter:
                                     TransXChangeField.LINE_REF
                                 ),
                             }
-                            txc_data = {
-                                k: self.pretty_print(v) for k, v in txc_data.items()
-                            }
-                            prev_results = error_results_json.get(error_code, [])
-                            prev_results.append(txc_data)
-                            error_results_json[error_code] = prev_results
+                        )
+                        pretty_printed_data = {
+                            k: self.pretty_print(v) for k, v in txc_data.items()
+                        }
+                        error_results_json.setdefault(error_code, []).append(
+                            pretty_printed_data
+                        )
 
-                    elif (
-                        error_code == ErrorCode.CODE_6_2_A.name
-                        or error_code == ErrorCode.CODE_6_2_C.name
-                    ) and result.errors_code[error_code]:
-                        for service_org_detail in result.transxchange_attribute(
-                            TransXChangeField.SERVICE_ORGANISATION_DETAILS
-                        ):
-                            txc_data = {
-                                "Dataset ID": result.transxchange_attribute(
-                                    TransXChangeField.DATASET_ID
-                                ),
-                                "Filename": result.transxchange_attribute(
-                                    TransXChangeField.FILENAME
-                                ),
-                                "Modification date": result.transxchange_attribute(
-                                    TransXChangeField.MODIFICATION_DATE
-                                ),
-                                "Revision number": result.transxchange_attribute(
-                                    TransXChangeField.REVISION_NUMBER
-                                ),
-                                "Operation period start date": result.transxchange_attribute(
-                                    TransXChangeField.OPERATING_PERIOD_START_DATE
-                                ),
-                                "Operating period end date": result.transxchange_attribute(
-                                    TransXChangeField.OPERATING_PERIOD_END_DATE
-                                ),
+                elif error_code in (
+                    ErrorCode.CODE_6_2_A.name,
+                    ErrorCode.CODE_6_2_C.name,
+                ):
+                    service_org_details = result.transxchange_attribute(
+                        TransXChangeField.SERVICE_ORGANISATION_DETAILS
+                    )
+                    for service_org_detail in service_org_details:
+                        txc_data = txc_data_common.copy()
+                        txc_data.update(
+                            {
                                 "Journey Code": service_org_detail.get(
                                     "journey_code", "-"
                                 ),
@@ -251,14 +223,13 @@ class PostPublishingResultsJsonWriter:
                                     "service_organisation_day_operating", "-"
                                 ),
                             }
-                            txc_data = {
-                                k: self.pretty_print(v) for k, v in txc_data.items()
-                            }
-                            prev_results = error_results_json.get(error_code, [])
-                            prev_results.append(txc_data)
-                            error_results_json[error_code] = prev_results
-                    else:
-                        pass
+                        )
+                        pretty_printed_data = {
+                            k: self.pretty_print(v) for k, v in txc_data.items()
+                        }
+                        error_results_json.setdefault(error_code, []).append(
+                            pretty_printed_data
+                        )
         return error_results_json
 
     def compile_ppc_summary_report(self, results: List[ValidationResult]) -> List[Dict]:
