@@ -584,10 +584,10 @@ class TransXChangeDataLoader:
 
         if not service_patterns.empty:
             sp_records = service_patterns.copy()
-            sp_records = sp_records.rename(columns={"id": "service_db_id"})
+            sp_records = sp_records.rename(columns={"id": "db_service_pattern_id"})
             service_pattern_stops = service_pattern_stops.merge(
                 sp_records.reset_index()[
-                    ["file_id", "service_pattern_id", "service_db_id"]
+                    ["file_id", "service_pattern_id", "db_service_pattern_id"]
                 ],
                 on=["file_id", "service_pattern_id"],
             )
