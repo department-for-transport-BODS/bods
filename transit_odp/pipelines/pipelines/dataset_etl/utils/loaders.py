@@ -141,9 +141,7 @@ def add_service_pattern_to_service_pattern_stops(
 
     def _inner():
         for record in df.to_dict("records"):
-            service_pattern_id = service_patterns.xs(
-                record["service_pattern_id"], level="service_pattern_id"
-            ).iloc[0]["id"]
+            service_pattern_id = record.get("service_db_id", None)
             vehicle_journey_id = record.get("id", None)
             sequence_number = record["sequence_number"]
             if not sequence_number:

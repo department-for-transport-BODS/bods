@@ -179,10 +179,13 @@ class TransXChangeDataLoader:
 
     def load_vehicle_journeys(self, service_patterns):
         vehicle_journeys = self.transformed.vehicle_journeys
+
         if not vehicle_journeys.empty:
             if not service_patterns.empty:
                 service_patterns = (
-                    service_patterns.reset_index()[["service_pattern_id", "id"]]
+                    service_patterns.reset_index()[
+                        ["service_pattern_id", "id", "file_id"]
+                    ]
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
@@ -190,7 +193,7 @@ class TransXChangeDataLoader:
                     vehicle_journeys.reset_index()
                     .merge(
                         service_patterns,
-                        on=["service_pattern_id"],
+                        on=["file_id", "service_pattern_id"],
                         how="left",
                     )
                     .reset_index()
@@ -529,24 +532,8 @@ class TransXChangeDataLoader:
             service_pattern_objs, batch_size=BATCH_SIZE
         )
 
-        created = pd.DataFrame(
-            (
-                {
-                    "service_pattern_id": obj.service_pattern_id,
-                    "id": obj.id,
-                    "instance": obj,
-                }
-                for obj in created
-            )
-        )
-
-        if not created.empty:
-            created = created.set_index("service_pattern_id")
-
         if not service_patterns.empty:
-            service_patterns = service_patterns.join(
-                created, on="service_pattern_id", how="inner"
-            )
+            service_patterns["id"] = [obj.id for obj in created]
 
         # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
         # ServicePattern
@@ -594,6 +581,17 @@ class TransXChangeDataLoader:
                 left_on=["file_id", "journey_pattern_id", "vehicle_journey_code"],
                 right_on=["file_id", "journey_pattern_ref", "vehicle_journey_code"],
             )
+
+        if not service_patterns.empty:
+            sp_records = service_patterns.copy()
+            sp_records = sp_records.rename(columns={"id": "service_db_id"})
+            service_pattern_stops = service_pattern_stops.merge(
+                sp_records.reset_index()[
+                    ["file_id", "service_pattern_id", "service_db_id"]
+                ],
+                on=["file_id", "service_pattern_id"],
+            )
+            print(f"service_pattern_stops columns---{service_pattern_stops.columns}")
 
         add_service_pattern_to_service_pattern_stops(
             service_pattern_stops, service_patterns
