@@ -62,14 +62,9 @@ class SirivmSampler:
     ) -> Tuple[SiriHeader, List[VehicleActivity]]:
         random.seed()
         sirivm_fields = {}
-        # feed = self.get_siri_vm_data_feed_by_id(feed_id=feed_id)
-        # if not isinstance(feed, bytes):
-        #     return sirivm_fields, []
-        with open(
-            "/Users/ankitmahajan4/Desktop/BODS Tickets/BODS-1720/siri_sample.xml", "r"
-        ) as f:
-            xml_data = f.read()
-            feed = bytes(xml_data, "utf-8")
+        feed = self.get_siri_vm_data_feed_by_id(feed_id=feed_id)
+        if not isinstance(feed, bytes):
+            return sirivm_fields, []
 
         siri = Siri.from_bytes(feed)
         sirivm_header = SiriHeader.from_siri_packet(siri)
@@ -85,29 +80,29 @@ class SirivmSampler:
         vehicle_activities = [
             vehicle_activity
             for vehicle_activity in vmd.vehicle_activities
-            # if vehicle_activity.monitored_vehicle_journey.line_ref
-            # in inscope_inseason_lines
+            if vehicle_activity.monitored_vehicle_journey.line_ref
+            in inscope_inseason_lines
         ]
 
-        # logger.info(
-        #     f"In Scope and In Season vehicle activities {len(vehicle_activities)} for "
-        #     f"feed {feed_id}"
-        # )
+        logger.info(
+            f"In Scope and In Season vehicle activities {len(vehicle_activities)} for "
+            f"feed {feed_id}"
+        )
 
         if len(vehicle_activities) == 0:
             return sirivm_header, []
 
-        # vehicle_activities = self.ignore_old_activites(
-        #     vehicle_activities, vmd.response_timestamp.date(), feed_id
-        # )
+        vehicle_activities = self.ignore_old_activites(
+            vehicle_activities, vmd.response_timestamp.date(), feed_id
+        )
 
-        # logger.info(
-        #     f"Vehicle activities not already analised {len(vehicle_activities)} for "
-        #     f"feed {feed_id}"
-        # )
+        logger.info(
+            f"Vehicle activities not already analised {len(vehicle_activities)} for "
+            f"feed {feed_id}"
+        )
 
-        # if len(vehicle_activities) == 0:
-        #     return sirivm_header, []
+        if len(vehicle_activities) == 0:
+            return sirivm_header, []
 
         num_samples = min(num_activities, len(vehicle_activities))
         samples = random.sample(vehicle_activities, k=num_samples)

@@ -383,10 +383,9 @@ def task_daily_post_publishing_checks_all_feeds():
     today = date.today()
     logger.info("Perform daily post publishing checks for all active AVL feeds")
     for dataset in avl_datasets:
-        if dataset.id == 14:
-            task_daily_post_publishing_checks_single_feed(
-                feed_id=dataset.id, report_date=today
-            )
+        task_daily_post_publishing_checks_single_feed(
+            feed_id=dataset.id, report_date=today
+        )
 
 
 @shared_task()
