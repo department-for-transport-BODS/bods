@@ -45,6 +45,7 @@
   },
   "scripts": {
     "start": "webpack --config webpack/dev.js",
-    "build": "webpack --config webpack/prod.js"
+    "build": "webpack --config webpack/prod.js",
+    "dev:static": "webpack --config webpack/dev.js"
   }
 }
