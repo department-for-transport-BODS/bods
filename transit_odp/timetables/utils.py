@@ -254,7 +254,7 @@ def get_vehicle_journey_codes_sorted(
     vehicle_journeys = df_vehicle_journey_sorted[
         ["vehicle_journey_code", "vehicle_journey_id"]
     ].drop_duplicates()
-
+    print(f"The list is :: {list(vehicle_journeys.itertuples(index=False, name=None))}")
     return list(vehicle_journeys.itertuples(index=False, name=None))
 
 def round_time(t):
@@ -289,7 +289,7 @@ def get_df_timetable_visualiser(
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
-        lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}",
+        lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
         axis=1,
     )
 
@@ -316,7 +316,7 @@ def get_df_timetable_visualiser(
         departure_time: time = row["departure_time"]
         departure_time = round_time(departure_time)
         departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
-
+    
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
