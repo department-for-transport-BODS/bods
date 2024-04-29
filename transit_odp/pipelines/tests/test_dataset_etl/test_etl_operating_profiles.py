@@ -7,7 +7,7 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
 )
 
-from transit_odp.transmodel.models import OperatingProfile
+from transit_odp.transmodel.models import OperatingProfile, ServicePatternStop
 from waffle.testutils import override_flag
 
 TZ = tz.gettz("Europe/London")
@@ -207,5 +207,7 @@ class ETLOperatingProfilesWithSmalleroperatingPeriods(ExtractBaseTestCase):
         self.feed_parser.load(transformed)
 
         operating_profiles = OperatingProfile.objects.all()
+        service_pattern_stops = ServicePatternStop.objects.all()
 
         self.assertEqual(521, operating_profiles.count())
+        self.assertEqual(2478, service_pattern_stops.count())
