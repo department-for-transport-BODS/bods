@@ -93,13 +93,7 @@ class TimetableVisualiser:
                 ),
             )
             .filter(
-                Q(txcfileattributes__operating_period_start_date__lte=self._target_date)
-                & (
-                    Q(txcfileattributes__operating_period_end_date__isnull=True)
-                    | Q(
-                        txcfileattributes__operating_period_end_date__gte=self._target_date
-                    )
-                )
+                Q(txcfileattributes__operating_period_start_date__lte=self._target_date)                
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -270,8 +264,10 @@ class TimetableVisualiser:
                 },
             }
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
+        df_initial_vehicle_journeys["end_date"] = df_initial_vehicle_journeys["end_date"].apply(lambda x: self._target_date if not x else x)        
         df_initial_vehicle_journeys = df_initial_vehicle_journeys[
-            df_initial_vehicle_journeys["revision_number"] == max_revision_number
+            (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
+            & (df_initial_vehicle_journeys["end_date"] >= self._target_date)
         ]
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
