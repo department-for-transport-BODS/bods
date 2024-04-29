@@ -87,7 +87,7 @@ class TimetableVisualiser:
             Service.objects.filter(
                 revision_id=self._revision_id,
                 service_code=self._service_code,
-                service_patterns__line_name=self._line_name,
+                # service_patterns__line_name=self._line_name,
                 service_patterns__service_pattern_stops__vehicle_journey__id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
@@ -266,7 +266,10 @@ class TimetableVisualiser:
             }
 
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
-        df_initial_vehicle_journeys = df_initial_vehicle_journeys[
+        df_initial_vehicle_journeys = df_initial_vehicle_journeys[(
+            df_initial_vehicle_journeys["line_name"] == self._line_name
+        )
+            &
             (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
             & (
                 (df_initial_vehicle_journeys["end_date"] >= self._target_date)
