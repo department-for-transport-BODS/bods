@@ -20,7 +20,6 @@ from transit_odp.timetables.utils import (
     get_df_timetable_visualiser,
 )
 import pandas as pd
-from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
