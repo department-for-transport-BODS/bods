@@ -276,6 +276,7 @@ class TimetableVisualiser:
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
+        print(f"The base vehicle journeys are :: {base_vehicle_journey_ids}")
         df_op_excep_vehicle_journey = self.get_df_op_exceptions_vehicle_journey(
             base_vehicle_journey_ids
         )
@@ -295,6 +296,8 @@ class TimetableVisualiser:
             df_base_vehicle_journeys = df_initial_vehicle_journeys[
                 df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
             ]
+            # PR
+            df_base_vehicle_journeys.to_csv("df_base_vehicle_journeys.csv")
             if df_base_vehicle_journeys.empty:
                 data[direction] = {
                     "description": "",
@@ -333,6 +336,7 @@ class TimetableVisualiser:
             ]
 
             df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
+            df_timetable.to_csv("df_timetable.csv")
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,

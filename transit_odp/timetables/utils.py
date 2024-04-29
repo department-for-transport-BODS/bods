@@ -250,8 +250,12 @@ def get_vehicle_journey_codes_sorted(
     df_vehicle_journey_sorted["vehicle_journey_code"] = df_vehicle_journey_sorted[
         "vehicle_journey_code"
     ].astype(str)
-    return df_vehicle_journey_sorted["vehicle_journey_code"].unique().tolist()
 
+    vehicle_journeys = df_vehicle_journey_sorted[
+        ["vehicle_journey_code", "vehicle_journey_id"]
+    ].drop_duplicates()
+
+    return list(vehicle_journeys.itertuples(index=False, name=None))
 
 def round_time(t):
     dt = datetime.combine(datetime.today(), t)  # Convert time to datetime
@@ -280,6 +284,7 @@ def get_df_timetable_visualiser(
         "atco_code",
         "departure_day_shift",
         "start_time",
+        "vehicle_journey_id",
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
@@ -303,7 +308,8 @@ def get_df_timetable_visualiser(
         axis=1,
     )
     bus_stops = df_sequence_time["common_name"].tolist()
-
+    # PR
+    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating.csv")
     # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
@@ -315,13 +321,15 @@ def get_df_timetable_visualiser(
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
         record["Stop"] = bus_stops[idx]
-        for journey_code in vehicle_journey_codes_sorted:  # cols
-            key = f"{row['key']}_{journey_code}"
+        for vehicle_journey in vehicle_journey_codes_sorted:  # tuple with journey code(cols) and journey id
+            journey_code, journey_id = vehicle_journey
+            key = f"{row['key']}_{journey_code}_{journey_id}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
-
+    # PR
+    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_1.csv")
     return df_vehicle_journey_operating
 
 
