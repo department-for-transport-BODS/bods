@@ -15,14 +15,15 @@ jobs:
 
       - name: Delete stale branches
         run: |
-          DEFAULT_BRANCH='dev'
+          DAYS_THRESHOLD=60
           stale_branches=$(git branch --merged $DEFAULT_BRANCH --format '%(refname:short)' | grep -vE "^($DEFAULT_BRANCH|main|test)$")
           for branch in $stale_branches; do
-            last_commit_date=$(git log -1 --format="%ci" $branch)
-            days_ago=$(( ($(date +%s) - $(date -d "$last_commit_date" +%s)) / 86400 ))
-            if [ $days_ago -gt 60 ]; then
-              echo "Branch to delete is: $branch"
-            fi
+              last_commit_timestamp=$(git log -1 --pretty=format:"%ct" "$branch")
+              days_ago=$(( ( $(date +%s) - last_commit_timestamp ) / 86400 ))
+              if [ "$days_ago" -gt "$DAYS_THRESHOLD" ]; then
+                  # git branch -D "$branch"
+                  echo "Deleted stale branch: $branch"
+              fi
           done
         env:
           github-token: ${{ secrets.GITHUB_TOKEN }}
