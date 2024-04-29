@@ -15,6 +15,7 @@ jobs:
 
       - name: Delete stale branches
         run: |
+          DEFAULT_BRANCH='dev'
           DAYS_THRESHOLD=60
           stale_branches=$(git branch --merged $DEFAULT_BRANCH --format '%(refname:short)' | grep -vE "^($DEFAULT_BRANCH|main|test)$")
           for branch in $stale_branches; do
