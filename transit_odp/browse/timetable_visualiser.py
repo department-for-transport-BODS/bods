@@ -265,25 +265,16 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
-        df_revision = df_initial_vehicle_journeys[
-            ["revision_number", "start_date", "end_date"]
-        ].drop_duplicates()
 
-        for idx, row in df_revision.iterrows():
-            if idx < len(df_revision) - 1:
-                next_row = df_revision.iloc[idx + 1]                
-                df_revision.at[idx, "end_date"] = next_row["start_date"] - timedelta(
-                    days=1
-                )
-        df_revision['end_date'] = df_revision['end_date'].apply(lambda row_date: self._target_date + timedelta(days=1) if not row_date else row_date)
-        df_revision = df_revision[
-            (df_revision["start_date"] <= self._target_date)
-            & (df_revision["end_date"] >= self._target_date)
-        ]
-        max_revision_number = df_revision["revision_number"].max()        
+        max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
         df_initial_vehicle_journeys = df_initial_vehicle_journeys[
             (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
+            & (
+                (df_initial_vehicle_journeys["end_date"] >= self._target_date)
+                | (df_initial_vehicle_journeys["end_date"].isna())
+            )
         ]
+        df_initial_vehicle_journeys.to_csv("df_initial_vehicle_journeys.csv")
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
