@@ -1,12 +1,12 @@
 name: regression_trigger_test
 
 on:
+  push:
   workflow_dispatch:
 
 
 jobs:
-
-  ProvisionTools:
+  Regression_Trigger:
     name: 'Regression_trigger'
     runs-on: ubuntu-latest   
     permissions:
@@ -18,7 +18,7 @@ jobs:
     - name: Trigger Regression Testing
       uses: peter-evans/repository-dispatch@v3
       with:
-        token: ${{ secrets.PAT }}
+        token: ${{ secrets.kpmg_testing_pat }}
         repository: KPMG-UK/bods-dft-python-automation-framework
         event-type: bods-regression-test
         client-payload: '{"pytest_marker": "test_bods_lta_verify_sorting"}'
