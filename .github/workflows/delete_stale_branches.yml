@@ -1,6 +1,9 @@
 name: Delete Stale Branches
 
 on:
+  push:
+    branches:
+      - github_action
   schedule:
     - cron: "*/5 * * * *"
 
