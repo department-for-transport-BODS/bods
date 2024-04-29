@@ -27,13 +27,17 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    <p class="govuk-body">            
-      {% if show_all %}
-      <a href="{% query_transform_kv show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
-      {% else %}
-      <a href="{% query_transform_kv show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
+    
+    <p class="govuk-body">
+      {% if df.iterrows|length > 10 %}
+        {% if show_all %}
+        <a href="{% query_transform_kv show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
+        {% else %}
+        <a href="{% query_transform_kv show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
+        {% endif %}
       {% endif %}
     </p>
+    
   </div>
 
   {% if total_page > 0 %}  

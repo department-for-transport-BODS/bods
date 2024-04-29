@@ -94,12 +94,6 @@ class TimetableVisualiser:
             )
             .filter(
                 Q(txcfileattributes__operating_period_start_date__lte=self._target_date)
-                & (
-                    Q(txcfileattributes__operating_period_end_date__isnull=True)
-                    | Q(
-                        txcfileattributes__operating_period_end_date__gte=self._target_date
-                    )
-                )
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -250,6 +244,7 @@ class TimetableVisualiser:
         """
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
+
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
         if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
@@ -269,9 +264,14 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
+
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
         df_initial_vehicle_journeys = df_initial_vehicle_journeys[
-            df_initial_vehicle_journeys["revision_number"] == max_revision_number
+            (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
+            & (
+                (df_initial_vehicle_journeys["end_date"] >= self._target_date)
+                | (df_initial_vehicle_journeys["end_date"].isna())
+            )
         ]
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
