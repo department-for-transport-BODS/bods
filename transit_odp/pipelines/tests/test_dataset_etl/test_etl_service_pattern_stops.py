@@ -58,8 +58,8 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
             ].shape[0],
         )
 
-        self.assertEqual(["07:05:00"], departure_time_vj_1)
-        self.assertEqual(["20:00:00"], departure_time_vj_2)
+        self.assertEqual(pd.to_timedelta("07:05:00"), departure_time_vj_1[0])
+        self.assertEqual(pd.to_timedelta("20:00:00"), departure_time_vj_2[0])
 
     def test_transform(self):
         # setup
@@ -173,8 +173,8 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
             ].shape[0],
         )
 
-        self.assertEqual(["07:40:00"], departure_time_vj_1)
-        self.assertEqual(["16:13:00"], departure_time_vj_2)
+        self.assertEqual(pd.to_timedelta("07:40:00"), departure_time_vj_1[0])
+        self.assertEqual(pd.to_timedelta("16:13:00"), departure_time_vj_2[0])
 
     def test_transform(self):
         # setup
@@ -346,8 +346,6 @@ class ETLSPSWithWaitTimeInVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        pd.set_option("display.max_rows", None)
-        pd.set_option("display.max_columns", None)
         extracted = self.trans_xchange_extractor.extract()
 
         # test

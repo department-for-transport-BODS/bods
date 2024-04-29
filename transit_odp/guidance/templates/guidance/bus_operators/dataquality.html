@@ -633,12 +633,17 @@
                     <ul class="govuk-list govuk-list--alpha">
                         <li class="govuk-body govuk-!-padding-left-5">
                             If there is only one TxC that is found at this point, then mark the vehicle journey as failed to be analysed.
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>
+                                    Error for step 2a: “Found more than one matching vehicle journey in a single timetables file belonging to a single service code“
+                                </li>
+                            </ul>
                         </li>
                         <li class="govuk-body govuk-!-padding-left-5">
                             If there is more than one TxC that is found at this point but each TxC has the same service code, then mark the vehicle journey as failed to be analysed.
                             <ul class="govuk-list govuk-list--bullet">
                                 <li>
-                                    Errors for step 2a or 2b: “Found more than one matching vehicle journey in timetables belonging to a single service code“
+                                    Error for step 2b: “Found more than one matching vehicle journey in timetables belonging to a single service code“
                                 </li>
                             </ul>
                         </li>

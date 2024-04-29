@@ -1,0 +1,76 @@
+<Siri xmlns="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.siri.org.uk/siri http://www.siri.org.uk/schema/2.0/xsd/siri.xsd" version="2.0">
+  <ServiceDelivery>
+    <ResponseTimestamp>2023-01-25T17:02:00.971080+00:00</ResponseTimestamp>
+    <ProducerRef>ItoWorld</ProducerRef>
+    <VehicleMonitoringDelivery>
+      <ResponseTimestamp>2023-01-25T17:02:01.071080+00:00</ResponseTimestamp>
+      <RequestMessageRef>c68a8a45-7fe5-45b4-8225-0b5eb09b2c82</RequestMessageRef>
+      <ValidUntil>2023-01-25T17:07:00.971080+00:00</ValidUntil>
+      <ShortestPossibleCycle>PT5S</ShortestPossibleCycle>
+      <VehicleActivity>
+        <RecordedAtTime>2023-01-24T17:01:47+00:00</RecordedAtTime>
+        <ItemIdentifier>31d3cfb2-9a24-42a6-a93c-c0efbdab5b66</ItemIdentifier>
+        <ValidUntilTime>2023-01-25T17:07:00.971260</ValidUntilTime>
+        <MonitoredVehicleJourney>
+          <LineRef>22</LineRef>
+          <DirectionRef>OUTBOUND</DirectionRef>
+          <FramedVehicleJourneyRef>
+            <DataFrameRef>2023-01-25</DataFrameRef>
+            <DatedVehicleJourneyRef>65</DatedVehicleJourneyRef>
+          </FramedVehicleJourneyRef>
+          <PublishedLineName>22</PublishedLineName>
+          <OperatorRef>CRTB</OperatorRef>
+          <OriginRef>2090A20181</OriginRef>
+          <OriginName>Carron Place</OriginName>
+          <DestinationRef>2090A041615</DestinationRef>
+          <DestinationName>Strathmore Park</DestinationName>
+          <OriginAimedDepartureTime>2023-01-25T16:56:00+00:00</OriginAimedDepartureTime>
+          <VehicleLocation>
+            <Longitude>-4.664237</Longitude>
+            <Latitude>55.6348305</Latitude>
+          </VehicleLocation>
+          <Bearing>222.0</Bearing>
+          <BlockRef>6502</BlockRef>
+          <VehicleRef>STWS-37498</VehicleRef>
+        </MonitoredVehicleJourney>
+        <Extensions>
+          <VehicleJourney>
+            <DriverRef>850214</DriverRef>
+          </VehicleJourney>
+        </Extensions>
+      </VehicleActivity>
+      <VehicleActivity>
+        <RecordedAtTime>2023-01-25T17:01:48+00:00</RecordedAtTime>
+        <ItemIdentifier>af8758ce-f416-4e37-a7ba-95aed3f36cc8</ItemIdentifier>
+        <ValidUntilTime>2023-01-25T17:07:00.971637</ValidUntilTime>
+        <MonitoredVehicleJourney>
+          <LineRef>59</LineRef>
+          <BlockRef>6502</BlockRef>
+          <DirectionRef>OUTBOUND</DirectionRef>
+          <FramedVehicleJourneyRef>
+            <DataFrameRef>2023-01-25</DataFrameRef>
+            <DatedVehicleJourneyRef>1094</DatedVehicleJourneyRef>
+          </FramedVehicleJourneyRef>
+          <PublishedLineName>59</PublishedLineName>
+          <OperatorRef>SBLB</OperatorRef>
+          <OriginRef>2090A20181</OriginRef>
+          <OriginName>Finnan Brae</OriginName>
+          <DestinationRef>2090A041615</DestinationRef>
+          <DestinationName>Howes Road</DestinationName>
+          <OriginAimedDepartureTime>2023-01-25T16:45:00+00:00</OriginAimedDepartureTime>
+          <VehicleLocation>
+            <Longitude>-2.0972388</Longitude>
+            <Latitude>57.1450272</Latitude>
+          </VehicleLocation>
+          <Bearing>216.0</Bearing>
+          <VehicleRef>SBLB-14051</VehicleRef>
+        </MonitoredVehicleJourney>
+        <Extensions>
+          <VehicleJourney>
+            <DriverRef>87117</DriverRef>
+          </VehicleJourney>
+        </Extensions>
+      </VehicleActivity>
+    </VehicleMonitoringDelivery>
+  </ServiceDelivery>
+</Siri>

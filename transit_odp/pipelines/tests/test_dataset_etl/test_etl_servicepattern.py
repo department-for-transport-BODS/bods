@@ -128,7 +128,7 @@ class ETLServicePatterns(ExtractBaseTestCase):
     test_file = "data/test_servicepattern/test_etl_service_pattern.xml"
 
     def test_extract_lines(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         self.assertEqual(extracted.lines.shape[0], 2)
 
@@ -140,7 +140,7 @@ class ETLServicePatterns(ExtractBaseTestCase):
 
     def test_tranform_service_patterns(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
 
         # test
         transformed = self.feed_parser.transform(extracted)
@@ -154,7 +154,7 @@ class ETLServicePatterns(ExtractBaseTestCase):
 
     def test_load_service_patterns(self):
         # setup
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         self.feed_parser.load(transformed)
@@ -167,7 +167,7 @@ class ETLServicePatterns(ExtractBaseTestCase):
         self.assertEqual(7, service_service_patterns_through.count())
 
     def test_correct_description_based_on_direction_and_line(self):
-        extracted = self.xml_file_parser._extract(self.doc, self.file_obj)
+        extracted = self.trans_xchange_extractor.extract()
         transformed = self.feed_parser.transform(extracted)
 
         service_patterns = transformed.service_patterns

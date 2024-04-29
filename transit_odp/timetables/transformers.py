@@ -148,10 +148,9 @@ class TransXChangeTransformer:
         service_pattern_to_service_links = pd.DataFrame()
         service_pattern_stops = pd.DataFrame()
         if not journey_patterns.empty and not route_to_route_links.empty:
-            if is_timetable_visualiser_active:
-                drop_duplicates_columns_sp = ["service_code", "route_hash", "line_name"]
-            else:
-                drop_duplicates_columns_sp = ["service_code", "route_hash"]
+            drop_duplicates_columns_sp = ["file_id", "service_code", "route_hash"]
+            if "line_name" in journey_patterns.columns:
+                drop_duplicates_columns_sp.append("line_name")
             service_patterns = transform_service_patterns(
                 journey_patterns, drop_duplicates_columns_sp
             )
@@ -161,8 +160,11 @@ class TransXChangeTransformer:
             ) = transform_service_pattern_to_service_links(  # noqa: E501
                 service_patterns, route_to_route_links, route_links
             )
-            service_patterns = service_patterns.drop_duplicates(
+            service_patterns = service_patterns.reset_index().drop_duplicates(
                 drop_duplicates_columns_sp
+            )
+            service_patterns = service_patterns.set_index(
+                ["file_id", "service_pattern_id"]
             )
             service_patterns.drop(
                 ["route_hash", "journey_pattern_id"], axis=1, inplace=True
@@ -175,7 +177,7 @@ class TransXChangeTransformer:
             service_patterns = transform_stop_sequence(
                 service_pattern_stops, service_patterns
             )
-            if is_timetable_visualiser_active:
+            if is_timetable_visualiser_active and not vehicle_journeys.empty:
                 service_patterns["description"] = service_patterns.apply(
                     get_line_description_based_on_direction, axis=1
                 )
