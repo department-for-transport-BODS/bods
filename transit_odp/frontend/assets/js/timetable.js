@@ -135,6 +135,10 @@ const initDatePicker = (
       months: "yyyy",
       years: "yyyy1 - yyyy2",
     },
+    // Hiding the datepicker instance on selecting date
+    onSelect({ date, formattedDate, datepicker }) {
+      datepicker.hide();
+    },
     // Trigger when the calendar is shown
     onRenderCell: function onRenderCell({ date, cellType }) {
       // If calendar type is viewing days

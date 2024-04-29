@@ -7,7 +7,7 @@ from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
 )
 
-from transit_odp.transmodel.models import OperatingProfile
+from transit_odp.transmodel.models import OperatingProfile, ServicePatternStop
 from waffle.testutils import override_flag
 
 TZ = tz.gettz("Europe/London")
@@ -190,3 +190,24 @@ class ETLOperatingProfilesServicesWithHolidays(ExtractBaseTestCase):
         operating_profiles = OperatingProfile.objects.all()
 
         self.assertEqual(8, operating_profiles.count())
+
+
+# Test operating profiles when there are no exceptions during the operating period dates
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLOperatingProfilesWithSmalleroperatingPeriods(ExtractBaseTestCase):
+    test_file = "data/test_operating_profiles/test_operating_profiles_with_smaller_operating_periods.xml"
+
+    def test_load(self):
+        # setup
+        setup_bank_holidays()
+        extracted = self.trans_xchange_extractor.extract()
+
+        # test
+        transformed = self.feed_parser.transform(extracted)
+        self.feed_parser.load(transformed)
+
+        operating_profiles = OperatingProfile.objects.all()
+        service_pattern_stops = ServicePatternStop.objects.all()
+
+        self.assertEqual(521, operating_profiles.count())
+        self.assertEqual(2478, service_pattern_stops.count())
