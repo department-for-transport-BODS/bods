@@ -20,6 +20,7 @@ from transit_odp.timetables.utils import (
     get_df_timetable_visualiser,
 )
 import pandas as pd
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -93,7 +94,7 @@ class TimetableVisualiser:
                 ),
             )
             .filter(
-                Q(txcfileattributes__operating_period_start_date__lte=self._target_date)                
+                Q(txcfileattributes__operating_period_start_date__lte=self._target_date)
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -244,6 +245,7 @@ class TimetableVisualiser:
         """
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
+
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
         if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
@@ -263,11 +265,24 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
-        max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
-        df_initial_vehicle_journeys["end_date"] = df_initial_vehicle_journeys["end_date"].apply(lambda x: self._target_date if not x else x)        
+        df_revision = df_initial_vehicle_journeys[
+            ["revision_number", "start_date", "end_date"]
+        ].drop_duplicates()
+
+        for idx, row in df_revision.iterrows():
+            if idx < len(df_revision) - 1:
+                next_row = df_revision.iloc[idx + 1]                
+                df_revision.at[idx, "end_date"] = next_row["start_date"] - timedelta(
+                    days=1
+                )
+        df_revision['end_date'] = df_revision['end_date'].apply(lambda row_date: self._target_date + timedelta(days=1) if not row_date else row_date)
+        df_revision = df_revision[
+            (df_revision["start_date"] <= self._target_date)
+            & (df_revision["end_date"] >= self._target_date)
+        ]
+        max_revision_number = df_revision["revision_number"].max()        
         df_initial_vehicle_journeys = df_initial_vehicle_journeys[
             (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
-            & (df_initial_vehicle_journeys["end_date"] >= self._target_date)
         ]
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
