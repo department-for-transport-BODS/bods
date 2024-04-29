@@ -273,7 +273,6 @@ class TimetableVisualiser:
                 | (df_initial_vehicle_journeys["end_date"].isna())
             )
         ]
-        df_initial_vehicle_journeys.to_csv("df_initial_vehicle_journeys.csv")
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
