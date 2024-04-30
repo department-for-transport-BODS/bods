@@ -244,14 +244,20 @@ def get_vehicle_journey_codes_sorted(
     """
     Get the vehicle journey codes sorted based on the departure time
     """
-
-    df_vehicle_journey_sorted = df_vehicle_journey_operating.groupby(
-        "vehicle_journey_code"
-    ).apply(lambda x: x.sort_values(by="departure_time"))
+    df_vehicle_journey_sorted = df_vehicle_journey_operating.sort_values(
+        by=["departure_day_shift", "start_time"]
+    )
     df_vehicle_journey_sorted["vehicle_journey_code"] = df_vehicle_journey_sorted[
         "vehicle_journey_code"
     ].astype(str)
     return df_vehicle_journey_sorted["vehicle_journey_code"].unique().tolist()
+
+
+def round_time(t):
+    dt = datetime.combine(datetime.today(), t)  # Convert time to datetime
+    if dt.second >= 30:
+        dt += timedelta(minutes=1)
+    return dt.time().replace(second=0)  # Convert back to time
 
 
 def get_df_timetable_visualiser(
@@ -272,6 +278,8 @@ def get_df_timetable_visualiser(
         "vehicle_journey_code",
         "departure_time",
         "atco_code",
+        "departure_day_shift",
+        "start_time",
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
@@ -300,12 +308,7 @@ def get_df_timetable_visualiser(
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
         departure_time: time = row["departure_time"]
-        minute = (
-            departure_time.minute
-            if departure_time.second < 30
-            else departure_time.minute + 1
-        )
-        departure_time = departure_time.replace(minute=minute)
+        departure_time = round_time(departure_time)
         departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
 
     stops_journey_code_time_list = []

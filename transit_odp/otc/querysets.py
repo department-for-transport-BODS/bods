@@ -13,8 +13,9 @@ from django.db.models import (
     Subquery,
     Value,
     When,
+    Window,
 )
-from django.db.models.functions import Replace, TruncDate
+from django.db.models.functions import Replace, RowNumber, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
 
@@ -62,6 +63,24 @@ class ServiceQuerySet(QuerySet):
             expiry_date=F("licence__expiry_date"),
             granted_date=F("licence__granted_date"),
         )
+
+    def check_highest_variation_number(self) -> TServiceQuerySet:
+        """
+        Orders each service code by the variation number and retrieves
+        the first service code (with the highest variation number)
+
+        Returns:
+            TServiceQuerySet: QuerySet with anotated column
+        """
+        ordered_services = self.annotate(
+            rank=Window(
+                expression=RowNumber(),
+                order_by=F("variation_number").desc(),
+                partition_by=[F("service_code")],
+            )
+        )
+
+        return ordered_services.filter(rank=1)
 
     def add_traveline_region_weca(self) -> TServiceQuerySet:
         """
@@ -190,6 +209,7 @@ class ServiceQuerySet(QuerySet):
             .add_ui_lta_otc()
             .add_ui_lta_weca()
             .add_ui_lta()
+            .check_highest_variation_number()
         )
 
     def get_all_in_organisation(self, organisation_id: int) -> TServiceQuerySet:

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.deletion import ProtectedError
 
 from transit_odp.otc.constants import (
     LicenceDescription,
@@ -16,8 +17,6 @@ from transit_odp.otc.managers import (
     OperatorManager,
     ServiceManager,
 )
-
-from django.db.models.deletion import ProtectedError
 
 
 class Licence(models.Model):
@@ -59,7 +58,7 @@ class Service(models.Model):
     licence = models.ForeignKey(
         Licence, related_name="services", on_delete=models.CASCADE, null=True
     )
-    registration_number = models.CharField(max_length=20, blank=False, null=False)
+    registration_number = models.CharField(max_length=25, blank=False, null=False)
     variation_number = models.IntegerField(blank=False, null=False)
     service_number = models.CharField(max_length=1000, blank=True, null=False)
     current_traffic_area = models.CharField(
@@ -101,7 +100,6 @@ class Service(models.Model):
 
 
 class UILta(models.Model):
-
     name = models.TextField(blank=False, null=False, unique=True)
 
     def __str__(self) -> str:
