@@ -4,8 +4,10 @@ from datetime import date
 from functools import cache, cached_property
 
 import pandas as pd
+from django.db.models import F
 
 from transit_odp.avl.models import PostPublishingCheckReport
+from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.avl.post_publishing_checks.weekly.constants import DailyReport
 from transit_odp.avl.post_publishing_checks.weekly.fields import (
     BLOCK_REF_FIELDS,
@@ -34,6 +36,7 @@ class AggregatedDailyReports:
     destination_ref = pd.DataFrame(columns=DESTINATION_REF_FIELDS)
     origin_ref = pd.DataFrame(columns=ORIGIN_REF_FIELDS)
     block_ref = pd.DataFrame(columns=BLOCK_REF_FIELDS)
+    error_data = pd.DataFrame()
 
     total_vehicles_analysed = 0
     total_vehicles_completely_matching = 0
@@ -162,6 +165,10 @@ class AggregatedDailyReports:
         """Produces DataFrame used for blockref.csv."""
         return self.block_ref.fillna("-")
 
+    def get_error_data(self):
+        """Produces DataFrame used for error_code_*.csv."""
+        return self.error_data
+
 
 class PostPublishingChecksSummaryData:
     def __init__(self, start_date: date, end_date: date) -> None:
@@ -212,4 +219,25 @@ class PostPublishingChecksSummaryData:
             df = pd.DataFrame(report.block_ref)
             summary.block_ref = pd.concat([summary.block_ref, df], ignore_index=True)
 
+            df = self.create_error_data_df(report.error_data)
+            summary.error_data = pd.concat([summary.error_data, df], ignore_index=True)
         return summary
+
+    def create_error_data_df(self, error_data: dict) -> pd.DataFrame:
+        """
+        Creates a pandas DataFrame from the provided error data.
+
+        Args:
+            error_data (dict): The error data to be converted into a DataFrame.
+                            The keys are error codes and the values are lists of error values.
+
+        Returns:
+            DataFrame: A pandas DataFrame where each row represents an error,
+                    with a column for the error code and columns for each attribute of the error.
+        """
+        error_df = pd.DataFrame()
+        for error_code, error_value in error_data.items():
+            df = pd.DataFrame(error_value)
+            df["error_code"] = error_code
+            error_df = pd.concat([df, error_df], axis=0, join="outer")
+        return error_df
