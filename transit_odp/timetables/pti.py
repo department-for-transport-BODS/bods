@@ -26,6 +26,7 @@ class DatasetPTIValidator:
         context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
         adapter = PipelineAdapter(logger, {"context": context})
         file_ = revision.upload_file
+        adapter.info(f"Iterating over the file, iter_get_files.")
         if zipfile.is_zipfile(file_):
             with zipfile.ZipFile(file_) as zf:
                 names = [n for n in zf.namelist() if n.endswith(".xml")]
@@ -40,11 +41,12 @@ class DatasetPTIValidator:
             file_.seek(0)
             yield file_
 
-    def get_live_hashes(self, revision: TimetableDatasetRevision) -> List[str]:
+    def get_live_hashes(self, revision: TimetableDatasetRevision, adapter:PipelineAdapter) -> List[str]:
         live_revision_id = revision.dataset.live_revision_id
         try:
             live_revision = TimetableDatasetRevision.objects.get(id=live_revision_id)
         except TimetableDatasetRevision.DoesNotExist:
+            adapter.info("Live revision not found")
             return []
 
         return live_revision.get_txc_hashes()
@@ -52,15 +54,17 @@ class DatasetPTIValidator:
     def get_violations(self, revision: TimetableDatasetRevision) -> List[Violation]:
         context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
         adapter = PipelineAdapter(logger, {"context": context})
-        live_hashes = self.get_live_hashes(revision)
-
+        live_hashes = self.get_live_hashes(revision, adapter)
+        adapter.info(f"Iterating over the files of the revision")
         for xml in self.iter_get_files(revision=revision):
             if sha1sum(xml.read()) in live_hashes:
                 adapter.info(f"{xml.name} unchanged, skipping.")
                 continue
             else:
                 xml.seek(0)
+                adapter.info(f"File {xml.name} changed, validating...")
                 self._validator.is_valid(xml)
+                adapter.info(f"File {xml.name} completed validation")
 
         adapter.info(f"Revision contains {len(self._validator.violations)} violations.")
         return self._validator.violations
