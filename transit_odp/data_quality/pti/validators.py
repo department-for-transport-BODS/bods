@@ -45,6 +45,7 @@ from transit_odp.otc.models import Service
 
 logger = getLogger(__name__)
 
+
 def has_destination_display(context, patterns):
     """
     First check if DestinationDisplay in JourneyPattern is provided.

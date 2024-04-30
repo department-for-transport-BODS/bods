@@ -41,7 +41,9 @@ class DatasetPTIValidator:
             file_.seek(0)
             yield file_
 
-    def get_live_hashes(self, revision: TimetableDatasetRevision, adapter:PipelineAdapter) -> List[str]:
+    def get_live_hashes(
+        self, revision: TimetableDatasetRevision, adapter: PipelineAdapter
+    ) -> List[str]:
         live_revision_id = revision.dataset.live_revision_id
         try:
             live_revision = TimetableDatasetRevision.objects.get(id=live_revision_id)
