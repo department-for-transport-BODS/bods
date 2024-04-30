@@ -300,19 +300,20 @@ class TransXChangeDataLoader:
         self, serviced_organisations, serviced_orgs_vjs
     ):
         columns_to_drop_duplicates = ["start_date", "end_date", "serviced_org_vj_id"]
-        merged_df = pd.merge(
-            serviced_organisations,
-            serviced_orgs_vjs,
-            on=["file_id", "serviced_org_ref"],
-        )
-        serviced_organisation_working_days_objs = list(
-            df_to_serviced_organisation_working_days(
-                merged_df, columns_to_drop_duplicates
+        if not serviced_orgs_vjs.empty:
+            merged_df = pd.merge(
+                serviced_organisations,
+                serviced_orgs_vjs,
+                on=["file_id", "serviced_org_ref"],
             )
-        )
-        ServicedOrganisationWorkingDays.objects.bulk_create(
-            serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
-        )
+            serviced_organisation_working_days_objs = list(
+                df_to_serviced_organisation_working_days(
+                    merged_df, columns_to_drop_duplicates
+                )
+            )
+            ServicedOrganisationWorkingDays.objects.bulk_create(
+                serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
+            )
 
     def load_operating_profiles(self, merged_operating_profiles_and_journeys):
         refined_operating_profiles_and_journeys = (
@@ -486,6 +487,8 @@ class TransXChangeDataLoader:
                 ] = [obj.id for obj in created]
 
             return operating_profiles_serviced_orgs_vehicle_journeys_merged_df
+
+        return pd.DataFrame()
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""
