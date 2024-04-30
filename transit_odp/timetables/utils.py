@@ -254,7 +254,7 @@ def get_vehicle_journey_codes_sorted(
     vehicle_journeys = df_vehicle_journey_sorted[
         ["vehicle_journey_code", "vehicle_journey_id"]
     ].drop_duplicates()
-    print(f"The list is :: {list(vehicle_journeys.itertuples(index=False, name=None))}")
+    # print(f"The list is :: {list(vehicle_journeys.itertuples(index=False, name=None))}")
     return list(vehicle_journeys.itertuples(index=False, name=None))
 
 def round_time(t):
@@ -297,7 +297,6 @@ def get_df_timetable_visualiser(
     vehicle_journey_codes_sorted = get_vehicle_journey_codes_sorted(
         df_vehicle_journey_operating
     )
-    # print(f"vehicle journey code is :: >> {vehicle_journey_codes_sorted}")
     # Extract the stops based on the stop sequence and departure time
     df_sequence_time: pd.DataFrame = df_vehicle_journey_operating.sort_values(
         ["stop_sequence", "departure_time"]
@@ -323,11 +322,13 @@ def get_df_timetable_visualiser(
         record = {}
         record["Stop"] = bus_stops[idx]
         for vehicle_journey in vehicle_journey_codes_sorted:  # tuple with journey code(cols) and journey id
+            print(f"vehicle_journey :: {vehicle_journey}")
             journey_code, journey_id = vehicle_journey
             key = f"{row['key']}_{journey_code}_{journey_id}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
 
+    print(f"stops_journey_code_time_list :: {stops_journey_code_time_list}")
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
     # PR
     df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_1.csv")
