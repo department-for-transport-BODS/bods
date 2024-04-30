@@ -88,7 +88,7 @@ class PostPublishingResultsJsonWriter:
         self.json_report["OriginRef"] = self.compile_origin_ref(results)
         self.json_report["BlockRef"] = self.compile_block_ref(results)
 
-    def compile_error_data(self, results):
+    def compile_error_data(self, results: List[ValidationResult]) -> dict:
         """
         Compiles error data from a list of result objects into a dictionary of error results.
 

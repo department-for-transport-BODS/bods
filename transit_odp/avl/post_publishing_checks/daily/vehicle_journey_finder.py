@@ -2,7 +2,7 @@ import datetime
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from zipfile import ZipFile
 
 from lxml import etree
@@ -637,6 +637,42 @@ class VehicleJourneyFinder:
             ).decode()
         return service_org_xml_str
 
+    def get_service_org_ref_and_days_of_operation(
+        self, vehicle_journey: TxcVehicleJourney
+    ) -> Tuple[Optional[str], Optional[TransXChangeElement]]:
+        """
+        Retrieve the service organization reference and days of operation or non-operation from the provided vehicle journey.
+
+        Args:
+            self: The object instance.
+            vehicle_journey (TxcVehicleJourney): The vehicle journey for which the service organization reference and days of operation or non-operation are to be obtained.
+
+        Returns:
+            Tuple[Optional[str], Optional[TransXChangeElement]]: A tuple containing the service organization reference and the element representing the days of operation or non-operation, or (None, None) if not found.
+        """
+        service_org_ref = None
+        days_of_non_operation = None
+        days_of_operation = None
+
+        service_org_day_type = self.service_org_day_type(
+            vehicle_journey
+        ) or self.get_service_org_day_type_from_service(vehicle_journey)
+
+        if service_org_day_type is not None:
+            days_of_non_operation: TransXChangeElement = (
+                service_org_day_type.get_element_or_none("DaysOfNonOperation")
+            )
+            if days_of_non_operation is not None:
+                service_org_ref = self.get_service_org_ref(days_of_non_operation)
+
+            days_of_operation: TransXChangeElement = (
+                service_org_day_type.get_element_or_none("DaysOfOperation")
+            )
+            if days_of_operation is not None:
+                service_org_ref = self.get_service_org_ref(days_of_operation)
+
+        return service_org_ref, days_of_non_operation, days_of_operation
+
     def filter_by_days_of_operation(
         self,
         recorded_at_time,
@@ -646,27 +682,14 @@ class VehicleJourneyFinder:
         for vj in reversed(vehicle_journeys):
             days_of_non_operation = None
             days_of_operation = None
-            service_org_ref = None
             inside_operating_range = False
             error_msg = None
 
-            service_org_day_type = self.service_org_day_type(
-                vj
-            ) or self.get_service_org_day_type_from_service(vj)
-
-            if service_org_day_type is not None:
-                days_of_non_operation: TransXChangeElement = (
-                    service_org_day_type.get_element_or_none("DaysOfNonOperation")
-                )
-                if days_of_non_operation is not None:
-                    service_org_ref = self.get_service_org_ref(days_of_non_operation)
-
-                days_of_operation: TransXChangeElement = (
-                    service_org_day_type.get_element_or_none("DaysOfOperation")
-                )
-                if days_of_operation is not None:
-                    service_org_ref = self.get_service_org_ref(days_of_operation)
-
+            (
+                service_org_ref,
+                days_of_non_operation,
+                days_of_operation,
+            ) = self.get_service_org_ref_and_days_of_operation(vj)
             service_orgs = self.get_serviced_organisations(vj)
             for org in service_orgs:
                 org_code = org.get_text_or_default("OrganisationCode")
@@ -749,26 +772,7 @@ class VehicleJourneyFinder:
         journey_code_operating_profile_service_org = []
 
         for vj in reversed(vehicle_journeys):
-            service_org_ref = None
-            days_of_non_operation = None
-            days_of_operation = None
-            service_org_day_type = self.service_org_day_type(
-                vj
-            ) or self.get_service_org_day_type_from_service(vj)
-
-            if service_org_day_type is not None:
-                days_of_non_operation: TransXChangeElement = (
-                    service_org_day_type.get_element_or_none("DaysOfNonOperation")
-                )
-                if days_of_non_operation is not None:
-                    service_org_ref = self.get_service_org_ref(days_of_non_operation)
-
-                days_of_operation: TransXChangeElement = (
-                    service_org_day_type.get_element_or_none("DaysOfOperation")
-                )
-                if days_of_operation is not None:
-                    service_org_ref = self.get_service_org_ref(days_of_operation)
-
+            service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
             get_service_org_xml_string = self.get_service_org_xml_string(vj)
             journey_code_operating_profile_service_org.append(
                 {

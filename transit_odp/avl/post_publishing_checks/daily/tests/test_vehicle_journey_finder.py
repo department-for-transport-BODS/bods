@@ -310,3 +310,41 @@ def test_filter_by_published_line_name_no_matching_lineref():
         "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
     ]
     assert txc_vehicle_journey is None
+
+
+def test_get_service_org_ref_and_days_of_operation():
+    txc_filename = str(DATA_DIR / "vehicle_journeys7.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    vehicle_journey_finder = VehicleJourneyFinder()
+    (
+        service_org_ref,
+        days_of_non_operation,
+        days_of_operation,
+    ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
+        txc_vehicle_journeys[0]
+    )
+
+    assert service_org_ref == "KPMG"
+    assert days_of_non_operation is None
+    assert days_of_operation is not None
+
+
+def test_get_service_org_ref_and_days_of_non_operation():
+    txc_filename = str(DATA_DIR / "vehicle_journeys8.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    vehicle_journey_finder = VehicleJourneyFinder()
+    (
+        service_org_ref,
+        days_of_non_operation,
+        days_of_operation,
+    ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
+        txc_vehicle_journeys[0]
+    )
+
+    assert service_org_ref is None
+    assert days_of_non_operation is None
+    assert days_of_operation is None
