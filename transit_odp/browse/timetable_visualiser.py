@@ -248,9 +248,7 @@ class TimetableVisualiser:
         df_initial_vehicle_journeys = pd.DataFrame.from_records(
             base_qs_vehicle_journeys
         )
-        df_initial_vehicle_journeys[
-            "vehicle_journey_code"
-        ] = df_initial_vehicle_journeys.apply(fill_missing_journey_codes, axis=1)
+
         if df_initial_vehicle_journeys.empty:
             return {
                 "outbound": {
@@ -262,6 +260,11 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
+
+        df_initial_vehicle_journeys[
+            "vehicle_journey_code"
+        ] = df_initial_vehicle_journeys.apply(fill_missing_journey_codes, axis=1)
+
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
         df_initial_vehicle_journeys = get_initial_vehicle_journeys_df(
             df_initial_vehicle_journeys,
