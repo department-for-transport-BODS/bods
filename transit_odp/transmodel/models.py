@@ -78,7 +78,6 @@ class ServicePattern(models.Model):
 
     class Meta:
         ordering = ("revision", "service_pattern_id", "line_name")
-        unique_together = ("revision", "service_pattern_id", "line_name")
 
     def __str__(self):
         return f"{self.id}, {self.origin}, {self.destination}"
@@ -104,6 +103,13 @@ class VehicleJourney(models.Model):
         return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
+class StopActivity(models.Model):
+    name = models.CharField(max_length=255)
+    is_pickup = models.BooleanField(default=False)
+    is_setdown = models.BooleanField(default=False)
+    is_driverrequest = models.BooleanField(default=False)
+
+
 class ServicePatternStop(models.Model):
     service_pattern = models.ForeignKey(
         ServicePattern, on_delete=models.CASCADE, related_name="service_pattern_stops"
@@ -112,6 +118,14 @@ class ServicePatternStop(models.Model):
     naptan_stop = models.ForeignKey(
         StopPoint,
         related_name="service_pattern_stops",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    stop_activity = models.ForeignKey(
+        StopActivity,
+        related_name="service_pattern_stops_activity",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -302,10 +316,3 @@ class BankHolidays(models.Model):
     date = models.DateField()
     notes = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=255, null=True, blank=True)
-
-
-class StopActivity(models.Model):
-    name = models.CharField(max_length=255)
-    is_pickup = models.BooleanField(default=False)
-    is_setdown = models.BooleanField(default=False)
-    is_driverrequest = models.BooleanField(default=False)

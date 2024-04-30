@@ -168,7 +168,7 @@ const initMap = (apiRoot, revisionId, lineName, serviceCodes) => {
       map.getCanvas().style.cursor = "pointer";
 
       var description =
-        "Service number: " + e.features[0].properties.service_name;
+        "Service number: " + e.features[0].properties.line_name;
 
       // Populate the popup and set its coordinates
       // based on the feature found.
