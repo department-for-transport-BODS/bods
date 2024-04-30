@@ -167,7 +167,7 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
         self.assertEqual(2, serviced_orgs.count())
-        self.assertEqual(11, serviced_org_working_days.count())
+        self.assertEqual(360, serviced_org_working_days.count())
 
         serviced_org_names = [serviced_org.name for serviced_org in serviced_orgs]
         self.assertEqual(serviced_org_names, ["NYCC Schools", "NYCC SCHOOLS"])
@@ -189,7 +189,7 @@ class ETLServicedOrganisationsWithOrgInDB(ExtractBaseTestCase):
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
         self.assertEqual(3, serviced_orgs.count())
-        self.assertEqual(14, serviced_org_working_days.count())
+        self.assertEqual(140, serviced_org_working_days.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -407,7 +407,7 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
         self.assertEqual(2, serviced_orgs.count())
-        self.assertEqual(10, serviced_org_working_days.count())
+        self.assertEqual(470, serviced_org_working_days.count())
 
         serviced_org_names = {serviced_org.name for serviced_org in serviced_orgs}
 
