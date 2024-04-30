@@ -19,10 +19,8 @@ jobs:
       - name: Delete stale branches
         shell: bash
         run: |
-          DEFAULT_BRANCH='dev'
           DAYS_THRESHOLD=60
-          branches=$(git branch | sed '/\*/d')
-          for branch in branches; do
+          for branch in $(git branch | sed '/\*/d'); do
               last_commit_timestamp=$(git log -1 --pretty=format:"%ct" "$branch")
               days_ago=$(( ( $(date +%s) - last_commit_timestamp ) / 86400 ))
               if [ "$days_ago" -gt "$DAYS_THRESHOLD" ]; then
