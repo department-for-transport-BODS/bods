@@ -252,6 +252,8 @@ class TimetableVisualiser:
         df_initial_vehicle_journeys = pd.DataFrame.from_records(
             base_qs_vehicle_journeys
         )
+        df_initial_vehicle_journeys["vehicle_journey_code"] = df_initial_vehicle_journeys["vehicle_journey_code"].replace('', pd.NA)
+        df_initial_vehicle_journeys["vehicle_journey_code"] = df_initial_vehicle_journeys["vehicle_journey_code"].fillna(df_initial_vehicle_journeys["vehicle_journey_id"])
         if df_initial_vehicle_journeys.empty:
             return {
                 "outbound": {
@@ -263,7 +265,7 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
-
+        df_initial_vehicle_journeys.to_csv("df_initial_vehicle_journeys.csv")
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
         df_initial_vehicle_journeys = df_initial_vehicle_journeys[
             (df_initial_vehicle_journeys["line_name"] == self._line_name)
