@@ -4,12 +4,14 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
+import pandas as pd
 import factory
 import pytest
 from freezegun import freeze_time
 from lxml import etree
 
 from transit_odp.avl.post_publishing_checks.daily.sirivm_sampler import SirivmSampler
+import transit_odp.avl.post_publishing_checks.daily.sirivm_sampler as sirivm_sampler
 from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
     PTIValidationResultFactory,
@@ -39,7 +41,8 @@ DATES_REPORT = ["23/01/2023"]
 pytestmark = pytest.mark.django_db
 
 
-def test_get_inscope_inseason_lines():
+@patch.object(sirivm_sampler, "_get_timetable_catalogue_dataframe")
+def test_generate_noc_line_ref_mapping_for_inscope_lines(mock_get_timetable_catalogue):
     # setup
     start_date = f"{date.today() - timedelta(days=10)}"
     end_date = f"{date.today() + timedelta(days=10)}"
@@ -67,20 +70,51 @@ def test_get_inscope_inseason_lines():
         registration_numbers=services,
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+    timetable_data_catalogue_df = pd.DataFrame(
+        [
+            {
+                "Scope Status": "In Scope",
+                "Seasonal Status": "In Season",
+                "OTC:Service Number": "1|2",
+                "XML:National Operator Code": "WLZC",
+            },
+            {
+                "Scope Status": "In Scope",
+                "Seasonal Status": "Not Seasonal",
+                "OTC:Service Number": "Bellford",
+                "XML:National Operator Code": "KENS",
+            },
+            {
+                "Scope Status": "In Scope",
+                "Seasonal Status": "Out of Season",
+                "OTC:Service Number": "3",
+                "XML:National Operator Code": "WLZC",
+            },
+            {
+                "Scope Status": "Out of Scope",
+                "Seasonal Status": "In Season",
+                "OTC:Service Number": "4|5",
+                "XML:National Operator Code": "WLZC",
+            },
+        ]
+    )
+    mock_get_timetable_catalogue.return_value = timetable_data_catalogue_df
     sirivm_sampler = SirivmSampler()
-    expected_line_names = ["1", "Bellford", "2"]
+    expected_line_name_noc_map = [("1", "WLZC"), ("2", "WLZC"), ("Bellford", "KENS")]
 
     # test
-    actual_line_names = sirivm_sampler.get_inscope_inseason_lines()
+    actual_line_names = sirivm_sampler.generate_noc_line_ref_mapping_for_inscope_lines()
 
     # result
-    for line_name in expected_line_names:
-        if line_name not in actual_line_names:
+    assert len(actual_line_names) == 3
+    for line_name_noc in expected_line_name_noc_map:
+        if line_name_noc not in actual_line_names:
             assert False
 
 
 @patch.object(SirivmSampler, "get_siri_vm_data_feed_by_id")
-def test_get_vehicle_activities(mock_get_siri_vm_data_feed_by_id):
+@patch.object(SirivmSampler, "generate_noc_line_ref_mapping_for_inscope_lines")
+def test_get_vehicle_activities(mock_lineref_noc_map, mock_get_siri_vm_data_feed_by_id):
     # setup
     DATA_DIR = Path(__file__).parent / "data"
     FILE_PATH = DATA_DIR / "siri_vm.xml"
@@ -114,6 +148,7 @@ def test_get_vehicle_activities(mock_get_siri_vm_data_feed_by_id):
         registration_numbers=services,
     )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+    mock_lineref_noc_map.return_value = {("100", "CRTB"): 1}
 
     # test
     sirivm_sampler = SirivmSampler()
