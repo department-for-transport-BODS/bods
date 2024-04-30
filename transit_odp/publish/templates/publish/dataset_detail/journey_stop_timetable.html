@@ -1,7 +1,11 @@
 {% load i18n %}
-{% load query_transform %} 
+{% load query_transform %}
 
+{% if  df.columns|length  <= 5 %}
+<table class="govuk-table govuk-table--small-text-until-tablet timetables_govuk_table">
+{% else %}
 <table class="govuk-table govuk-table--small-text-until-tablet">
+{% endif %}
   <caption class="govuk-table__caption govuk-table__caption--m">{% trans journey_name %}</caption>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">

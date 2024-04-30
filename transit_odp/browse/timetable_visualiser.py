@@ -80,25 +80,19 @@ class TimetableVisualiser:
             "atco_code",
             "public_use",
             "revision_number",
+            "start_time",
         ]
 
         qs_vehicle_journeys = (
             Service.objects.filter(
                 revision_id=self._revision_id,
                 service_code=self._service_code,
-                service_patterns__line_name=self._line_name,
                 service_patterns__service_pattern_stops__vehicle_journey__id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
             )
             .filter(
                 Q(txcfileattributes__operating_period_start_date__lte=self._target_date)
-                & (
-                    Q(txcfileattributes__operating_period_end_date__isnull=True)
-                    | Q(
-                        txcfileattributes__operating_period_end_date__gte=self._target_date
-                    )
-                )
             )
             .annotate(
                 service_code_s=F("service_code"),
@@ -135,6 +129,9 @@ class TimetableVisualiser:
                 ),
                 line_ref=F(
                     "service_patterns__service_pattern_vehicle_journey__line_ref"
+                ),
+                start_time=F(
+                    "service_patterns__service_pattern_vehicle_journey__start_time"
                 ),
                 departure_day_shift=F(
                     "service_patterns__service_pattern_vehicle_journey__departure_day_shift"
@@ -246,6 +243,7 @@ class TimetableVisualiser:
         """
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
+
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
         if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
@@ -265,9 +263,15 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
+
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
         df_initial_vehicle_journeys = df_initial_vehicle_journeys[
-            df_initial_vehicle_journeys["revision_number"] == max_revision_number
+            (df_initial_vehicle_journeys["line_name"] == self._line_name)
+            & (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
+            & (
+                (df_initial_vehicle_journeys["end_date"] >= self._target_date)
+                | (df_initial_vehicle_journeys["end_date"].isna())
+            )
         ]
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()

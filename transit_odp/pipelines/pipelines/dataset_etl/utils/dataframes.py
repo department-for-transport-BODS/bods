@@ -96,7 +96,16 @@ def filter_redundant_files(df: pd.DataFrame) -> pd.DataFrame:
     max_revision = df["revision_number"].max()
     df_max_revision_number = df[df["revision_number"] == max_revision]
     max_start_date = df_max_revision_number["operating_period_start_date"].max()
-    df_filtered = df[df["operating_period_start_date"] <= max_start_date]
+    df_filtered = df[
+        (
+            (df["operating_period_start_date"] < max_start_date)
+            & (df["revision_number"] <= max_revision)
+        )
+        | (
+            (df["operating_period_start_date"] == max_start_date)
+            & (df["revision_number"] == max_revision)
+        )
+    ]
     return df_filtered[["id", "filename"]]
 
 

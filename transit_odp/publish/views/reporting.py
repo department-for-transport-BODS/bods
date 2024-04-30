@@ -20,9 +20,14 @@ FEEDBACK_DEFINITION = "feedbackreportingoperatorbreakdown.txt"
 
 class ConsumerFeedbackView(View):
     organisation = None
+    add_name_email_columns = False
 
     def get(self, *args, **kwargs):
         self.organisation = get_object_or_404(Organisation, id=self.kwargs["pk1"])
+        if self.request.user.is_authenticated:
+            self.add_name_email_columns = (
+                self.organisation in self.request.user.organisations.all()
+            )
         return self.render_to_response()
 
     def render_to_response(self, *args, **kwargs):
@@ -33,7 +38,10 @@ class ConsumerFeedbackView(View):
         csv_filename = f"{common_name}.csv"
 
         with ZipFile(buffer_, mode="w", compression=ZIP_DEFLATED) as zin:
-            builder = ConsumerFeedbackCSV(organisation_id=organisation_id)
+            builder = ConsumerFeedbackCSV(
+                organisation_id=organisation_id,
+                add_name_email_columns=self.add_name_email_columns,
+            )
             output = builder.to_string()
             if builder.count() > 0:
                 zin.writestr(csv_filename, output)
