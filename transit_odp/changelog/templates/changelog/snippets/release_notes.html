@@ -1,6 +1,42 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "May 2024 (1.36.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            An improvement to the AVL to timetable matching logic to handle cases where duplicate failures appear in the report.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the AVL to timetable matching logic to handle cases where serviced organisations data is supplied within the service element in a TxC.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the AVL to timetable matching logic to handle cases where out of scope services appear in the report.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            An improvement to the AVL to timetable matching logic to handle cases where data for multiple lines are supplied within a TxC.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A new feature to visualise timetables so that operators and consumers can inspect the data within a TxC for accuracy.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "April 2024 (1.35.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
