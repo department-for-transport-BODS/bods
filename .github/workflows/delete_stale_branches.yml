@@ -21,8 +21,8 @@ jobs:
         run: |
           DEFAULT_BRANCH='dev'
           DAYS_THRESHOLD=60
-          stale_branches=$(git branch --merged $DEFAULT_BRANCH --format '%(refname:short)' | grep -vE "^($DEFAULT_BRANCH|main|test)$")
-          for branch in $stale_branches; do
+          branches=$(git branch | sed '/\*/d')
+          for branch in branches; do
               last_commit_timestamp=$(git log -1 --pretty=format:"%ct" "$branch")
               days_ago=$(( ( $(date +%s) - last_commit_timestamp ) / 86400 ))
               if [ "$days_ago" -gt "$DAYS_THRESHOLD" ]; then
