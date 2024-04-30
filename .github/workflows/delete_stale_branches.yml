@@ -17,6 +17,7 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Delete stale branches
+        shell: bash
         run: |
           DEFAULT_BRANCH='dev'
           DAYS_THRESHOLD=60
