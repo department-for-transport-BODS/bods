@@ -711,7 +711,7 @@ def merge_serviced_organisations_with_operating_profile(
     serviced_organisations, operating_profiles
 ):
     serviced_organisations.reset_index(inplace=True)
-
+    serviced_organisations.drop_duplicates(inplace=True)
     df_merged = pd.merge(
         serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
     )
