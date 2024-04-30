@@ -250,8 +250,12 @@ def get_vehicle_journey_codes_sorted(
     df_vehicle_journey_sorted["vehicle_journey_code"] = df_vehicle_journey_sorted[
         "vehicle_journey_code"
     ].astype(str)
-    return df_vehicle_journey_sorted["vehicle_journey_code"].unique().tolist()
 
+    vehicle_journeys = df_vehicle_journey_sorted[
+        ["vehicle_journey_code", "vehicle_journey_id"]
+    ].drop_duplicates()
+    print(f"The list is :: {list(vehicle_journeys.itertuples(index=False, name=None))}")
+    return list(vehicle_journeys.itertuples(index=False, name=None))
 
 def round_time(t):
     dt = datetime.combine(datetime.today(), t)  # Convert time to datetime
@@ -280,12 +284,13 @@ def get_df_timetable_visualiser(
         "atco_code",
         "departure_day_shift",
         "start_time",
+        "vehicle_journey_id",
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
     df_vehicle_journey_operating.to_csv("intermediate.csv")
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
-        lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}",
+        lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
         axis=1,
     )
     df_vehicle_journey_operating.to_csv("Newafterkey.csv")
@@ -304,7 +309,8 @@ def get_df_timetable_visualiser(
         axis=1,
     )
     bus_stops = df_sequence_time["common_name"].tolist()
-
+    # PR
+    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating.csv")
     # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
@@ -312,20 +318,19 @@ def get_df_timetable_visualiser(
         departure_time = round_time(departure_time)
         departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
     
-    print(f"The departure time data :: {departure_time_data}")
-
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
         record["Stop"] = bus_stops[idx]
-        for journey_code in vehicle_journey_codes_sorted:  # cols
-            key = f"{row['key']}_{journey_code}"
-            print(f"key is {key}")
+        for vehicle_journey in vehicle_journey_codes_sorted:  # tuple with journey code(cols) and journey id
+            journey_code, journey_id = vehicle_journey
+            key = f"{row['key']}_{journey_code}_{journey_id}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
-    df_vehicle_journey_operating.to_csv("final_df_for_direc.csv")
+    # PR
+    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_1.csv")
     return df_vehicle_journey_operating
 
 
