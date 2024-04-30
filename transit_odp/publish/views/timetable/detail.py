@@ -129,6 +129,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
                 "curr_page": 1,
                 "show_all": False,
                 "df_timetable": pd.DataFrame(),
+                "total_row_count": 0,
             }
 
         if direction == "outbound":
