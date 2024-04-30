@@ -301,10 +301,12 @@ class ServicedOrganisations(models.Model):
 
 
 class ServicedOrganisationWorkingDays(models.Model):
-    serviced_organisation = models.ForeignKey(
-        ServicedOrganisations,
+    serviced_organisation_vehicle_journey = models.ForeignKey(
+        ServicedOrganisationVehicleJourney,
         on_delete=models.CASCADE,
-        related_name="serviced_organisations_working_days",
+        related_name="serviced_organisations_vehicle_journey",
+        null=True,
+        blank=True,
     )
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)

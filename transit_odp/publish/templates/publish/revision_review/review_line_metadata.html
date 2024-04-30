@@ -141,10 +141,10 @@
             </button>
             </div>
             {% if not outbound_timetable.empty %}
-                {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=outbound_timetable journey_name=outbound_journey_name show_all=outbound_show_all total_page=outbound_total_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
+                {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=outbound_timetable journey_name=outbound_journey_name show_all=outbound_show_all total_rows=outbound_total_row_count total_page=outbound_total_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
             {% endif %}
             {% if not inbound_timetable.empty %}
-                {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=inbound_timetable journey_name=inbound_journey_name show_all=inbound_show_all total_page=inbound_total_page curr_page=inbound_curr_page page_param='inboundPage' show_all_param='showAllInbound' %}
+                {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=inbound_timetable journey_name=inbound_journey_name show_all=inbound_show_all total_rows=inbound_total_row_count total_page=inbound_total_page curr_page=inbound_curr_page page_param='inboundPage' show_all_param='showAllInbound' %}
             {% endif %}
             {% if inbound_timetable.empty and outbound_timetable.empty %}
             <div class="govuk-inset-text">

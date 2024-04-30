@@ -464,6 +464,7 @@ class LineMetadataDetailView(DetailView):
                 "curr_page": 1,
                 "show_all": False,
                 "df_timetable": pd.DataFrame(),
+                "total_row_count": 0,
             }
 
         if direction == "outbound":
@@ -500,6 +501,7 @@ class LineMetadataDetailView(DetailView):
             "curr_page": curr_page_param,
             "show_all": show_all,
             "df_timetable": df_timetable,
+            "total_row_count": total_row_count,
         }
 
     def get_context_data(self, **kwargs):
@@ -576,6 +578,9 @@ class LineMetadataDetailView(DetailView):
                 )
                 kwargs[direction + "_timetable"] = bound_details["df_timetable"]
                 kwargs[direction + "_total_page"] = bound_details["total_page"]
+                kwargs[direction + "_total_row_count"] = bound_details[
+                    "total_row_count"
+                ]
                 kwargs[direction + "_curr_page"] = bound_details["curr_page"]
                 kwargs[direction + "_show_all"] = bound_details["show_all"]
                 kwargs[direction + "_journey_name"] = journey
