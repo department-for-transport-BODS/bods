@@ -1,20 +1,18 @@
 name: Delete Stale Branches
 
 on:
-  push:
-    branches:
-      - github_action
   schedule:
-    - cron: "*/55 * * * *"
+    - cron: "0 0 * * *" # Everday at midnight
 
 jobs:
   remove-stale-branches:
-    name: Remove Stale Branches
+    name: Delete Stale Branches
     runs-on: ubuntu-latest
     steps:
-      - uses: fpicalausa/remove-stale-branches@v1.6.0
+      - name: Delete Stale Branches
+        uses: fpicalausa/remove-stale-branches@v1.6.0
         with:
-          dry-run: true # Check out the console output before setting this to false
+          dry-run: false # Check out the console output before setting this to false
           days-before-branch-stale: 60
           exempt-branches-regex: ^(main|dev|test)$
           exempt-protected-branches: true
