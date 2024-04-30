@@ -261,9 +261,7 @@ class TimetableVisualiser:
                 },
             }
 
-        df_initial_vehicle_journeys[
-            "vehicle_journey_code"
-        ] = df_initial_vehicle_journeys.apply(fill_missing_journey_codes, axis=1)
+        df_initial_vehicle_journeys = fill_missing_journey_codes(df_initial_vehicle_journeys)
 
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
         df_initial_vehicle_journeys = get_initial_vehicle_journeys_df(
