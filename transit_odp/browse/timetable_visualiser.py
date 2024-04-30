@@ -207,15 +207,12 @@ class TimetableVisualiser:
         ]
 
         qs_serviced_orgs = (
-            ServicedOrganisationVehicleJourney.objects.select_related(
-                "serviced_organisation",
-            )
-            .prefetch_related(
-                "serviced_organisation__serviced_organisations_working_days"
+            ServicedOrganisationVehicleJourney.objects.prefetch_related(
+                "serviced_organisation", "serviced_organisations_vehicle_journey"
             )
             .filter(
                 serviced_organisation__isnull=False,
-                serviced_organisation__serviced_organisations_working_days__isnull=False,
+                serviced_organisations_vehicle_journey__isnull=False,
                 vehicle_journey_id__in=vehicle_journey_ids,
             )
             .annotate(
@@ -224,12 +221,8 @@ class TimetableVisualiser:
                 operating_on_working_days_so=F("operating_on_working_days"),
                 name=F("serviced_organisation__name"),
                 organisation_code=F("serviced_organisation__organisation_code"),
-                start_date=F(
-                    "serviced_organisation__serviced_organisations_working_days__start_date"
-                ),
-                end_date=F(
-                    "serviced_organisation__serviced_organisations_working_days__end_date"
-                ),
+                start_date=F("serviced_organisations_vehicle_journey__start_date"),
+                end_date=F("serviced_organisations_vehicle_journey__end_date"),
             )
             .values(*columns)
         )
