@@ -21,7 +21,9 @@ jobs:
         run: |
           DAYS_THRESHOLD=60
           for branch in $(git branch | sed '/\*/d'); do
+              echo "$branch"
               last_commit_timestamp=$(git log -1 --pretty=format:"%ct" "$branch")
+              echo "$last_commit_timestamp"
               days_ago=$(( ( $(date +%s) - last_commit_timestamp ) / 86400 ))
               if [ "$days_ago" -gt "$DAYS_THRESHOLD" ]; then
                   # git branch -D "$branch"
