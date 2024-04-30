@@ -15,7 +15,6 @@ jobs:
       - uses: fpicalausa/remove-stale-branches@v1.6.0
         with:
           dry-run: true # Check out the console output before setting this to false
-          exempt-authors-regex: "^dependabot"
           days-before-branch-stale: 60
           exempt-branches-regex: ^(main|dev|test)$
           exempt-protected-branches: true
