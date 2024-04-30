@@ -256,6 +256,7 @@ def get_vehicle_journey_codes_sorted(
     ].drop_duplicates()
     return list(vehicle_journeys.itertuples(index=False, name=None))
 
+
 def round_time(t):
     dt = datetime.combine(datetime.today(), t)  # Convert time to datetime
     if dt.second >= 30:
@@ -312,12 +313,17 @@ def get_df_timetable_visualiser(
         departure_time: time = row["departure_time"]
         departure_time = round_time(departure_time)
         departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
-    
+
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
         record["Stop"] = bus_stops[idx]
-        for journey_code, journey_id in vehicle_journey_codes_sorted:  # tuple with journey code(cols) and journey id
+        for (
+            journey_code,
+            journey_id,
+        ) in (
+            vehicle_journey_codes_sorted
+        ):  # tuple with journey code(cols) and journey id
             key = f"{row['key']}_{journey_code}_{journey_id}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
@@ -458,25 +464,26 @@ def get_df_operating_vehicle_journey(
 
     return df_operating_vehicle_journey
 
-def get_initial_vehicle_journeys_df(df: pd.DataFrame, line_name: str, target_date: datetime, max_revision_number: int) -> pd.DataFrame:
+
+def get_initial_vehicle_journeys_df(
+    df: pd.DataFrame, line_name: str, target_date: datetime, max_revision_number: int
+) -> pd.DataFrame:
     """
     Filter initial vehicle journey dataframe
     """
     return df[
-            (df["line_name"] == line_name)
-            & (df["revision_number"] == max_revision_number)
-            & (
-                (df["end_date"] >= target_date)
-                | (df["end_date"].isna())
-            )
-        ]
+        (df["line_name"] == line_name)
+        & (df["revision_number"] == max_revision_number)
+        & ((df["end_date"] >= target_date) | (df["end_date"].isna()))
+    ]
+
 
 def fill_missing_journey_codes(row: pd.Series) -> pd.Series:
     """
     Replace empty journey codes with journey id and append a unique identifier
     """
-    unique_identifier = '-missing_journey_code'
-    if row["vehicle_journey_code"] == '':
+    unique_identifier = "-missing_journey_code"
+    if row["vehicle_journey_code"] == "":
         return str(row["vehicle_journey_id"]) + unique_identifier
     return row["vehicle_journey_code"]
 
@@ -486,6 +493,4 @@ def get_updated_columns(df: pd.DataFrame) -> pd.Series:
     Replace column names in the DataFrame where the column name contains '-missing_journey_code'
     with the string '-'.
     """
-    return ['-' if '-missing_journey_code' in col else col for col in df.columns]
-
-
+    return ["-" if "-missing_journey_code" in col else col for col in df.columns]

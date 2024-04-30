@@ -232,7 +232,6 @@ class TimetableVisualiser:
 
         return pd.DataFrame.from_records(qs_serviced_orgs)
 
-
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
         Get the timetable visualiser for the specific service code, revision id,
@@ -249,9 +248,9 @@ class TimetableVisualiser:
         df_initial_vehicle_journeys = pd.DataFrame.from_records(
             base_qs_vehicle_journeys
         )
-        df_initial_vehicle_journeys["vehicle_journey_code"] = df_initial_vehicle_journeys.apply(
-            fill_missing_journey_codes, axis=1
-        )
+        df_initial_vehicle_journeys[
+            "vehicle_journey_code"
+        ] = df_initial_vehicle_journeys.apply(fill_missing_journey_codes, axis=1)
         if df_initial_vehicle_journeys.empty:
             return {
                 "outbound": {
@@ -264,7 +263,12 @@ class TimetableVisualiser:
                 },
             }
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
-        df_initial_vehicle_journeys = get_initial_vehicle_journeys_df(df_initial_vehicle_journeys, self._line_name, self._target_date, max_revision_number)
+        df_initial_vehicle_journeys = get_initial_vehicle_journeys_df(
+            df_initial_vehicle_journeys,
+            self._line_name,
+            self._target_date,
+            max_revision_number,
+        )
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
