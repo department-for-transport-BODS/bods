@@ -483,10 +483,12 @@ def fill_missing_journey_codes(df: pd.Series) -> pd.Series:
     Replace empty journey codes with journey id and append a unique identifier
     """
     unique_identifier = "-missing_journey_code"
-    
+
     # Create a boolean mask for rows where the vehicle journey code is empty
     mask = df["vehicle_journey_code"] == ""
-    df.loc[mask, "vehicle_journey_code"] = df.loc[mask, "vehicle_journey_id"].astype(str) + unique_identifier
+    df.loc[mask, "vehicle_journey_code"] = (
+        df.loc[mask, "vehicle_journey_id"].astype(str) + unique_identifier
+    )
 
     return df
 
