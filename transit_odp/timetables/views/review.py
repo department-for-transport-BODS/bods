@@ -228,6 +228,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
             "curr_page": curr_page_param,
             "show_all": show_all,
             "df_timetable": df_timetable,
+            "total_row_count": total_row_count,
         }
 
     def get_context_data(self, **kwargs):
@@ -305,6 +306,9 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
                 )
                 context[direction + "_timetable"] = bound_details["df_timetable"]
                 context[direction + "_total_page"] = bound_details["total_page"]
+                context[direction + "_total_row_count"] = bound_details[
+                    "total_row_count"
+                ]
                 context[direction + "_curr_page"] = bound_details["curr_page"]
                 context[direction + "_show_all"] = bound_details["show_all"]
                 context[direction + "_journey_name"] = journey
