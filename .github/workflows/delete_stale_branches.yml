@@ -5,7 +5,7 @@ on:
     branches:
       - github_action
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/55 * * * *"
 
 jobs:
   cleanup:
