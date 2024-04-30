@@ -18,6 +18,9 @@ from transit_odp.timetables.utils import (
     get_non_operating_vj_serviced_org,
     get_df_operating_vehicle_journey,
     get_df_timetable_visualiser,
+    get_initial_vehicle_journeys_df,
+    get_updated_columns,
+    fill_missing_journey_codes,
 )
 import pandas as pd
 
@@ -229,6 +232,7 @@ class TimetableVisualiser:
 
         return pd.DataFrame.from_records(qs_serviced_orgs)
 
+
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
         Get the timetable visualiser for the specific service code, revision id,
@@ -245,8 +249,9 @@ class TimetableVisualiser:
         df_initial_vehicle_journeys = pd.DataFrame.from_records(
             base_qs_vehicle_journeys
         )
-        df_initial_vehicle_journeys["vehicle_journey_code"] = df_initial_vehicle_journeys["vehicle_journey_code"].replace('', pd.NA)
-        df_initial_vehicle_journeys["vehicle_journey_code"] = df_initial_vehicle_journeys["vehicle_journey_code"].fillna(df_initial_vehicle_journeys["vehicle_journey_id"])
+        df_initial_vehicle_journeys["vehicle_journey_code"] = df_initial_vehicle_journeys.apply(
+            fill_missing_journey_codes, axis=1
+        )
         if df_initial_vehicle_journeys.empty:
             return {
                 "outbound": {
@@ -258,20 +263,11 @@ class TimetableVisualiser:
                     "df_timetable": pd.DataFrame(),
                 },
             }
-        df_initial_vehicle_journeys.to_csv("df_initial_vehicle_journeys.csv")
         max_revision_number = df_initial_vehicle_journeys["revision_number"].max()
-        df_initial_vehicle_journeys = df_initial_vehicle_journeys[
-            (df_initial_vehicle_journeys["line_name"] == self._line_name)
-            & (df_initial_vehicle_journeys["revision_number"] == max_revision_number)
-            & (
-                (df_initial_vehicle_journeys["end_date"] >= self._target_date)
-                | (df_initial_vehicle_journeys["end_date"].isna())
-            )
-        ]
+        df_initial_vehicle_journeys = get_initial_vehicle_journeys_df(df_initial_vehicle_journeys, self._line_name, self._target_date, max_revision_number)
         base_vehicle_journey_ids = (
             df_initial_vehicle_journeys["vehicle_journey_id"].unique().tolist()
         )
-        print(f"The base vehicle journeys are :: {base_vehicle_journey_ids}")
         df_op_excep_vehicle_journey = self.get_df_op_exceptions_vehicle_journey(
             base_vehicle_journey_ids
         )
@@ -291,8 +287,6 @@ class TimetableVisualiser:
             df_base_vehicle_journeys = df_initial_vehicle_journeys[
                 df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
             ]
-            # PR
-            df_base_vehicle_journeys.to_csv("df_base_vehicle_journeys.csv")
             if df_base_vehicle_journeys.empty:
                 data[direction] = {
                     "description": "",
@@ -331,10 +325,12 @@ class TimetableVisualiser:
             ]
 
             df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
-            df_timetable.to_csv("df_timetable.csv")
+
+            # Get updated columns where the missing journey code is replaced with journey id
+            df_timetable.columns = get_updated_columns(df_timetable)
+
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
             }
-        print(f"the keys are:: {data.values()}")
         return data

@@ -254,7 +254,6 @@ def get_vehicle_journey_codes_sorted(
     vehicle_journeys = df_vehicle_journey_sorted[
         ["vehicle_journey_code", "vehicle_journey_id"]
     ].drop_duplicates()
-    # print(f"The list is :: {list(vehicle_journeys.itertuples(index=False, name=None))}")
     return list(vehicle_journeys.itertuples(index=False, name=None))
 
 def round_time(t):
@@ -288,12 +287,10 @@ def get_df_timetable_visualiser(
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
-    df_vehicle_journey_operating.to_csv("intermediate.csv")
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
         lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
         axis=1,
     )
-    df_vehicle_journey_operating.to_csv("Newafterkey.csv")
     vehicle_journey_codes_sorted = get_vehicle_journey_codes_sorted(
         df_vehicle_journey_operating
     )
@@ -308,8 +305,7 @@ def get_df_timetable_visualiser(
         axis=1,
     )
     bus_stops = df_sequence_time["common_name"].tolist()
-    # PR
-    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating.csv")
+
     # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
@@ -321,17 +317,13 @@ def get_df_timetable_visualiser(
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
         record["Stop"] = bus_stops[idx]
-        for vehicle_journey in vehicle_journey_codes_sorted:  # tuple with journey code(cols) and journey id
-            print(f"vehicle_journey :: {vehicle_journey}")
-            journey_code, journey_id = vehicle_journey
+        for journey_code, journey_id in vehicle_journey_codes_sorted:  # tuple with journey code(cols) and journey id
             key = f"{row['key']}_{journey_code}_{journey_id}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
 
-    print(f"stops_journey_code_time_list :: {stops_journey_code_time_list}")
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
-    # PR
-    df_vehicle_journey_operating.to_csv("df_vehicle_journey_operating_1.csv")
+
     return df_vehicle_journey_operating
 
 
@@ -465,3 +457,35 @@ def get_df_operating_vehicle_journey(
     ]
 
     return df_operating_vehicle_journey
+
+def get_initial_vehicle_journeys_df(df: pd.DataFrame, line_name: str, target_date: datetime, max_revision_number: int) -> pd.DataFrame:
+    """
+    Filter initial vehicle journey dataframe
+    """
+    return df[
+            (df["line_name"] == line_name)
+            & (df["revision_number"] == max_revision_number)
+            & (
+                (df["end_date"] >= target_date)
+                | (df["end_date"].isna())
+            )
+        ]
+
+def fill_missing_journey_codes(row: pd.Series) -> pd.Series:
+    """
+    Replace empty journey codes with journey id and append a unique identifier
+    """
+    unique_identifier = '-missing_journey_code'
+    if row["vehicle_journey_code"] == '':
+        return str(row["vehicle_journey_id"]) + unique_identifier
+    return row["vehicle_journey_code"]
+
+
+def get_updated_columns(df: pd.DataFrame) -> pd.Series:
+    """
+    Replace column names in the DataFrame where the column name contains '-missing_journey_code'
+    with the string '-'.
+    """
+    return ['-' if '-missing_journey_code' in col else col for col in df.columns]
+
+
