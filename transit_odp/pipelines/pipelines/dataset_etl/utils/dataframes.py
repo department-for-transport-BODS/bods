@@ -331,16 +331,15 @@ def df_to_serviced_organisations(
 
 
 def df_to_serviced_organisation_working_days(
-    df: pd.DataFrame, columns_to_drop: list, columns_to_drop_duplicates: list
+    df: pd.DataFrame, columns_to_drop_duplicates: list
 ) -> Iterator[ServicedOrganisationWorkingDays]:
     if not df.empty:
-        df_to_load = df.drop(columns=columns_to_drop)
-        df_to_load = df_to_load.reset_index()
+        df_to_load = df.reset_index()
         for record in df_to_load.drop_duplicates(
             subset=columns_to_drop_duplicates
         ).itertuples(index=False):
             yield ServicedOrganisationWorkingDays(
-                serviced_organisation_id=record.id,
+                serviced_organisation_vehicle_journey_id=record.serviced_org_vj_id,
                 start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
                 end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date(),
             )
