@@ -580,9 +580,9 @@ def filter_operating_profiles(
             df_merged["exceptions_date"]
         )
 
-        filtered_df = df_merged.groupby(["file_id", "vehicle_journey_code"]).apply(
-            filter_profiles_on_vehicle_journeys
-        )
+        filtered_df = df_merged.groupby(
+            ["file_id", "vehicle_journey_code", "serviced_org_ref"], dropna=False
+        ).apply(filter_profiles_on_vehicle_journeys)
         filtered_df = filtered_df.drop(
             ["start_date", "end_date", "compare_exceptions_date"], axis=1
         ).set_index(indexes)
@@ -711,7 +711,7 @@ def merge_serviced_organisations_with_operating_profile(
     serviced_organisations, operating_profiles
 ):
     serviced_organisations.reset_index(inplace=True)
-
+    serviced_organisations.drop_duplicates(inplace=True)
     df_merged = pd.merge(
         serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
     )
