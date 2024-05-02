@@ -167,7 +167,7 @@ class ETLServicedOrganisations(ExtractBaseTestCase):
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
         self.assertEqual(2, serviced_orgs.count())
-        self.assertEqual(11, serviced_org_working_days.count())
+        self.assertEqual(360, serviced_org_working_days.count())
 
         serviced_org_names = [serviced_org.name for serviced_org in serviced_orgs]
         self.assertEqual(serviced_org_names, ["NYCC Schools", "NYCC SCHOOLS"])
@@ -189,7 +189,7 @@ class ETLServicedOrganisationsWithOrgInDB(ExtractBaseTestCase):
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
         self.assertEqual(3, serviced_orgs.count())
-        self.assertEqual(14, serviced_org_working_days.count())
+        self.assertEqual(140, serviced_org_working_days.count())
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -407,7 +407,7 @@ class ETLServicedOrganisationsWithMultipleServicedOrfRefs(ExtractBaseTestCase):
         serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
         # test
         self.assertEqual(2, serviced_orgs.count())
-        self.assertEqual(10, serviced_org_working_days.count())
+        self.assertEqual(470, serviced_org_working_days.count())
 
         serviced_org_names = {serviced_org.name for serviced_org in serviced_orgs}
 
@@ -498,3 +498,28 @@ class ETLServicedOrganisationsServicesVehicleJourneyNonOperationHolidays(
         # test
         self.assertNotIn(True, list(vj_operational))
         self.assertEqual(4, len(list(vj_operational)))
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLServicedOrganisationsVehicleJourneyWithTwoServicedOrgRefs(ExtractBaseTestCase):
+    test_file = "data/test_serviced_orgs_vehicle_journeys_junction/test_load_serviced_org_vj_with_two_serviced_orgs.xml"
+
+    def test_load(self):
+        # setup
+        extracted = self.trans_xchange_extractor.extract()
+        transformed = self.feed_parser.transform(extracted)
+
+        self.feed_parser.load(transformed)
+
+        vj_operational = ServicedOrganisationVehicleJourney.objects.values_list(
+            "operating_on_working_days", flat=True
+        )
+        serviced_orgs = ServicedOrganisations.objects.all()
+        serviced_org_working_days = ServicedOrganisationWorkingDays.objects.all()
+
+        # test
+        self.assertEqual(4, len(list(vj_operational)))
+        self.assertEqual(2, sum(list(vj_operational)))
+        self.assertEqual(2, len(list(vj_operational)) - sum(list(vj_operational)))
+        self.assertEqual(2, serviced_orgs.count())
+        self.assertEqual(26, serviced_org_working_days.count())
