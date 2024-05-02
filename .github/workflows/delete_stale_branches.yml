@@ -2,29 +2,16 @@ name: Delete Stale Branches
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 0 * * *" # Everday at midnight
 
 jobs:
-  cleanup:
+  remove-stale-branches:
+    name: Remove Stale Branches
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: fpicalausa/remove-stale-branches@v1.6.0
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
-
-      - name: Delete stale branches
-        run: |
-          DEFAULT_BRANCH='dev'
-          DAYS_THRESHOLD=60
-          stale_branches=$(git branch --merged $DEFAULT_BRANCH --format '%(refname:short)' | grep -vE "^($DEFAULT_BRANCH|main|test)$")
-          for branch in $stale_branches; do
-              last_commit_timestamp=$(git log -1 --pretty=format:"%ct" "$branch")
-              days_ago=$(( ( $(date +%s) - last_commit_timestamp ) / 86400 ))
-              if [ "$days_ago" -gt "$DAYS_THRESHOLD" ]; then
-                  # git branch -D "$branch"
-                  echo "Deleted stale branch: $branch"
-              fi
-          done
-        env:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: false # Check out the console output before setting this to false
+          days-before-branch-stale: 60
+          exempt-branches-regex: ^(main|dev|test)$
+          exempt-protected-branches: true
