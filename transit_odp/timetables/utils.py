@@ -250,7 +250,11 @@ def get_vehicle_journey_codes_sorted(
     df_vehicle_journey_sorted["vehicle_journey_code"] = df_vehicle_journey_sorted[
         "vehicle_journey_code"
     ].astype(str)
-    return df_vehicle_journey_sorted["vehicle_journey_code"].unique().tolist()
+
+    vehicle_journeys = df_vehicle_journey_sorted[
+        ["vehicle_journey_code", "vehicle_journey_id"]
+    ].drop_duplicates()
+    return list(vehicle_journeys.itertuples(index=False, name=None))
 
 
 def round_time(t):
@@ -280,18 +284,17 @@ def get_df_timetable_visualiser(
         "atco_code",
         "departure_day_shift",
         "start_time",
+        "vehicle_journey_id",
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
-        lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}",
+        lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
         axis=1,
     )
-
     vehicle_journey_codes_sorted = get_vehicle_journey_codes_sorted(
         df_vehicle_journey_operating
     )
-
     # Extract the stops based on the stop sequence and departure time
     df_sequence_time: pd.DataFrame = df_vehicle_journey_operating.sort_values(
         ["stop_sequence", "departure_time"]
@@ -315,8 +318,13 @@ def get_df_timetable_visualiser(
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
         record["Stop"] = bus_stops[idx]
-        for journey_code in vehicle_journey_codes_sorted:  # cols
-            key = f"{row['key']}_{journey_code}"
+        for (
+            journey_code,
+            journey_id,
+        ) in (
+            vehicle_journey_codes_sorted
+        ):  # tuple with journey code(cols) and journey id
+            key = f"{row['key']}_{journey_code}_{journey_id}"
             record[journey_code] = departure_time_data.get(key, "-")
         stops_journey_code_time_list.append(record)
 
@@ -340,15 +348,20 @@ def is_vehicle_journey_operating(df_vj, target_date) -> bool:
     )
 
     # Step 2: Find out the vehicle journeys which are not operating and lies within start and end date on the target date
-    df_service_nonoperating = df_vj[
-        df_vj["IsInRange"] & ~df_vj["operating_on_working_days"]
-    ]
+    df_non_operating = df_vj[~df_vj["operating_on_working_days"]]
+    df_service_nonoperating = df_non_operating[df_non_operating["IsInRange"]]
 
     if not df_service_nonoperating.empty:
         return False
+
+    df_non_operating = df_vj[~df_vj["operating_on_working_days"]]
     # Step 3: Find out the vehicle journeys which are operating and fall outside the operating range
     df_vj = df_vj[df_vj["operating_on_working_days"]]
-    if not df_vj.empty and (df_vj["IsInRange"] == False).all():
+    if (
+        (not df_vj.empty)
+        and ((df_vj["IsInRange"] == False).all())
+        and (df_non_operating.empty)
+    ):
         return False
 
     return True
@@ -455,3 +468,39 @@ def get_df_operating_vehicle_journey(
     ]
 
     return df_operating_vehicle_journey
+
+
+def get_initial_vehicle_journeys_df(
+    df: pd.DataFrame, line_name: str, target_date: datetime, max_revision_number: int
+) -> pd.DataFrame:
+    """
+    Filter initial vehicle journey dataframe
+    """
+    return df[
+        (df["line_name"] == line_name)
+        & (df["revision_number"] == max_revision_number)
+        & ((df["end_date"] >= target_date) | (df["end_date"].isna()))
+    ]
+
+
+def fill_missing_journey_codes(df: pd.Series) -> pd.Series:
+    """
+    Replace empty journey codes with journey id and append a unique identifier
+    """
+    unique_identifier = "-missing_journey_code"
+
+    # Create a boolean mask for rows where the vehicle journey code is empty
+    mask = df["vehicle_journey_code"] == ""
+    df.loc[mask, "vehicle_journey_code"] = (
+        df.loc[mask, "vehicle_journey_id"].astype(str) + unique_identifier
+    )
+
+    return df
+
+
+def get_updated_columns(df: pd.DataFrame) -> pd.Series:
+    """
+    Replace column names in the DataFrame where the column name contains '-missing_journey_code'
+    with the string '-'.
+    """
+    return ["-" if "-missing_journey_code" in col else col for col in df.columns]
