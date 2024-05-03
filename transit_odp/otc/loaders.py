@@ -177,7 +177,7 @@ class Loader:
         count, _ = Operator.objects.filter(services=None).delete()
         logger.info(f"{count} Operators removed")
 
-    def inactivate_bad_data(self):
+    def inactive_to_delete_effective_date_future(self):
         to_delete_services = self.to_delete_service
         services = set(
             [
@@ -242,7 +242,7 @@ class Loader:
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
-            self.inactivate_bad_data()
+            self.inactive_to_delete_effective_date_future()
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
