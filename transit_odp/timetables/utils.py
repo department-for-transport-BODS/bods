@@ -325,13 +325,7 @@ def get_df_timetable_visualiser(
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
-    min_start_date = df_vj["start_date"].min()
-    max_end_date = df_vj["end_date"].max()
 
-    # Step 1: Remove the vehicle journeys which are outside the start date and end date as we don't have information
-    is_nonoperating = (target_date < min_start_date) or (target_date > max_end_date)
-    if is_nonoperating:
-        return False
     df_vj["IsInRange"] = df_vj.apply(
         lambda row: (target_date >= row["start_date"])
         & (target_date <= row["end_date"]),
@@ -345,7 +339,6 @@ def is_vehicle_journey_operating(df_vj, target_date) -> bool:
     if not df_service_nonoperating.empty:
         return False
 
-    df_non_operating = df_vj[~df_vj["operating_on_working_days"]]
     # Step 3: Find out the vehicle journeys which are operating and fall outside the operating range
     df_vj = df_vj[df_vj["operating_on_working_days"]]
     if (
