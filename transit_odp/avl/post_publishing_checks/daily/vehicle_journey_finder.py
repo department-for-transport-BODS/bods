@@ -189,7 +189,9 @@ class VehicleJourneyFinder:
                 TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
             )
             result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
-            result.set_transxchange_attribute(TransXChangeField.REVISION_NUMBER, txc_file_attrs[0].revision_number)
+            result.set_transxchange_attribute(
+                TransXChangeField.REVISION_NUMBER, txc_file_attrs[0].revision_number
+            )
             result.set_matches(SirivmField.LINE_REF)
         else:
             logger.error("Matching TXC files belong to different datasets!\n")
