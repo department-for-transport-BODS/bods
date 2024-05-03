@@ -257,13 +257,6 @@ def get_vehicle_journey_codes_sorted(
     return list(vehicle_journeys.itertuples(index=False, name=None))
 
 
-def round_time(t):
-    dt = datetime.combine(datetime.today(), t)  # Convert time to datetime
-    if dt.second >= 30:
-        dt += timedelta(minutes=1)
-    return dt.time().replace(second=0)  # Convert back to time
-
-
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
 ) -> pd.DataFrame:
@@ -310,9 +303,7 @@ def get_df_timetable_visualiser(
     # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
-        departure_time: time = row["departure_time"]
-        departure_time = round_time(departure_time)
-        departure_time_data[row["key"]] = departure_time.strftime("%H:%M")
+        departure_time_data[row["key"]] = row["departure_time"].strftime("%H:%M")
 
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
@@ -334,13 +325,7 @@ def get_df_timetable_visualiser(
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
-    min_start_date = df_vj["start_date"].min()
-    max_end_date = df_vj["end_date"].max()
 
-    # Step 1: Remove the vehicle journeys which are outside the start date and end date as we don't have information
-    is_nonoperating = (target_date < min_start_date) or (target_date > max_end_date)
-    if is_nonoperating:
-        return False
     df_vj["IsInRange"] = df_vj.apply(
         lambda row: (target_date >= row["start_date"])
         & (target_date <= row["end_date"]),
@@ -354,7 +339,6 @@ def is_vehicle_journey_operating(df_vj, target_date) -> bool:
     if not df_service_nonoperating.empty:
         return False
 
-    df_non_operating = df_vj[~df_vj["operating_on_working_days"]]
     # Step 3: Find out the vehicle journeys which are operating and fall outside the operating range
     df_vj = df_vj[df_vj["operating_on_working_days"]]
     if (

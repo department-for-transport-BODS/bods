@@ -144,24 +144,7 @@ def test_filter_df_serviced_org_operating():
 
     # Scenario 2: When the target date is less than start date for all vehicle journeys
     target_date = "2001-01-01"
-    expected_nonop_vehicle_journeys = [
-        540,
-        541,
-        544,
-        545,
-        549,
-        550,
-        553,
-        554,
-        559,
-        560,
-        561,
-        562,
-        567,
-        568,
-        573,
-        574,
-    ]
+    expected_nonop_vehicle_journeys = [540, 544, 550, 553, 559, 561, 568, 573]
     actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
         target_date, df_serviced_org_working_days
     )
@@ -173,24 +156,7 @@ def test_filter_df_serviced_org_operating():
 
     # Scenario 3: When the target date is greater than end date for all vehicle journeys
     target_date = "2030-01-01"
-    expected_nonop_vehicle_journeys = [
-        540,
-        541,
-        544,
-        545,
-        549,
-        550,
-        553,
-        554,
-        559,
-        560,
-        561,
-        562,
-        567,
-        568,
-        573,
-        574,
-    ]
+    expected_nonop_vehicle_journeys = [540, 544, 550, 553, 559, 561, 568, 573]
     actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
         target_date, df_serviced_org_working_days
     )
