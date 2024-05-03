@@ -308,7 +308,7 @@ def get_df_timetable_visualiser(
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
-        record["Stop"] = bus_stops[idx]
+        record["Journey Code"] = bus_stops[idx]
         for (
             journey_code,
             journey_id,
