@@ -78,7 +78,7 @@ class SirivmSampler:
         random.seed()
         sirivm_fields = {}
         vehicle_activities = []
-        org_details = self.get_organisation_name_for_feedid(feed_id)
+        organisation_name = self.get_organisation_name_for_feedid(feed_id)
 
         feed = self.get_siri_vm_data_feed_by_id(feed_id=feed_id)
         if not isinstance(feed, bytes):
@@ -102,7 +102,7 @@ class SirivmSampler:
             for vehicle_activity in vmd.vehicle_activities
             if (
                 vehicle_activity.monitored_vehicle_journey.line_ref,
-                org_details,
+                organisation_name,
             )
             in organisation_lineref_map
         ]
