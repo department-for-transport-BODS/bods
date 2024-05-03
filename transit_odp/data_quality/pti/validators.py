@@ -1,6 +1,7 @@
 import itertools
 import json
 from collections import defaultdict
+from logging import getLogger
 from pathlib import Path
 from typing import Callable, List, Optional
 from urllib.parse import unquote
@@ -41,6 +42,8 @@ from transit_odp.data_quality.pti.models import Observation, Schema, Violation
 from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
 from transit_odp.naptan.models import StopPoint
 from transit_odp.otc.models import Service
+
+logger = getLogger(__name__)
 
 
 def has_destination_display(context, patterns):
@@ -572,8 +575,10 @@ class PTIValidator:
             for x in self.schema.observations
             if x.service_type == txc_service_type or x.service_type == "All"
         ]
+        logger.info(f"Checking overvations for the XML file {source.name}")
         for observation in service_observations:
             elements = document.xpath(observation.context, namespaces=self.namespaces)
             for element in elements:
                 self.check_observation(observation, element)
+        logger.info(f"Completed overvations for the XML file {source.name}")
         return len(self.violations) == 0
