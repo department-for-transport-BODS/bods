@@ -124,7 +124,10 @@ class Loader:
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()
 
-                for (db_item, kwargs,) in (
+                for (
+                    db_item,
+                    kwargs,
+                ) in (
                     (db_service.licence, updated_service_kwargs.pop("licence")),
                     (db_service.operator, updated_service_kwargs.pop("operator")),
                     (db_service, updated_service_kwargs),
@@ -174,6 +177,27 @@ class Loader:
         count, _ = Operator.objects.filter(services=None).delete()
         logger.info(f"{count} Operators removed")
 
+    def inactivate_bad_data(self):
+        to_delete_services = self.to_delete_service
+        services = set(
+            [
+                service
+                for service in self.registry.get_services_with_future_effective_date(
+                    to_delete_services=to_delete_services
+                )
+            ]
+        )
+
+        def inactive_services():
+            for service in services:
+                yield InactiveService(
+                    registration_number=service.registration_number,
+                    registration_status=service.registration_status,
+                    effective_date=service.effective_date,
+                )
+
+        InactiveService.objects.bulk_create(inactive_services())
+
     def load(self):
         """
         The method is used to update the database, add and remove unnecessary objects.
@@ -218,6 +242,7 @@ class Loader:
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
+            self.inactivate_bad_data()
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
