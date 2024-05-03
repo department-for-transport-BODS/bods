@@ -77,6 +77,18 @@ def test_registry_returns_highest_non_expired_variation(
         assert variation.variation_number == 50
         assert variation.registration_status == RegistrationStatusEnum.REGISTERED.value
 
+@patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
+@patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
+def test_registry_returns_expired_variation_if_veration_number_zero(
+    otc_data_from_filename_truncated,
+):
+    registry = Registry()
+    service = registry.get_latest_variations_by_id("PC2021320/53")
+    print(service)
+    for variation in service:
+        assert variation.variation_number == 0
+        assert variation.registration_status == RegistrationStatusEnum.EXPIRED.value
+
 
 @freeze_time("25/12/2022")
 @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
