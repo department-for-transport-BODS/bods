@@ -774,11 +774,15 @@ class VehicleJourneyFinder:
         for vj in reversed(vehicle_journeys):
             service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
             get_service_org_xml_string = self.get_service_org_xml_string(vj)
+            operational = vj.vehicle_journey.get_element("Operational")
+            ticket_machine = operational.get_element("TicketMachine")
+            journey_code = ticket_machine.get_element("JourneyCode").text
             journey_code_operating_profile_service_org.append(
                 {
                     "operating_profile_xml_string": get_service_org_xml_string,
                     "service_organisation_xml_str": service_org_ref,
                     "service_organisation_day_operating": service_org_ref,
+                    "journey_code": journey_code,
                 }
             )
 
