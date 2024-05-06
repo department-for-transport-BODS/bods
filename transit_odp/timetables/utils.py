@@ -242,7 +242,7 @@ def get_vehicle_journey_codes_sorted(
     df_vehicle_journey_operating: pd.DataFrame,
 ) -> List:
     """
-    Get the vehicle journey codes sorted based on the departure time
+    Get the vehicle journey codes sorted based on the departure time.
     """
     df_vehicle_journey_sorted = df_vehicle_journey_operating.sort_values(
         by=["departure_day_shift", "start_time"]
@@ -308,7 +308,7 @@ def get_df_timetable_visualiser(
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
-        record["Stop"] = bus_stops[idx]
+        record["Journey Code"] = bus_stops[idx]
         for (
             journey_code,
             journey_id,
@@ -325,7 +325,6 @@ def get_df_timetable_visualiser(
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
-
     df_vj["IsInRange"] = df_vj.apply(
         lambda row: (target_date >= row["start_date"])
         & (target_date <= row["end_date"]),
