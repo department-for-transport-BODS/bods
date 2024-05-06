@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from functools import cached_property
 from itertools import chain
 from logging import getLogger
-from typing import Set, Tuple, Union
+from typing import List, Set, Tuple, Union
 
 from django.conf import settings
 from django.db import transaction
@@ -163,7 +163,10 @@ class Loader:
                     to_delete_services
                 )
             ]
-            + [service.registration_number for service in self.inactive_services]
+            + [
+                service.registration_number
+                for service in self.to_change_services_with_variation_zero
+            ]
         )
 
         count, _ = Service.objects.filter(registration_number__in=services).delete()
@@ -294,7 +297,13 @@ class Loader:
         return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)
 
     @cached_property
-    def inactive_services(self):
+    def to_change_services_with_variation_zero(self) -> List[Service]:
+        """Property to get list of variations which are in RegistrationStatusEnum.to_change
+        with the variation number Zero
+
+        Returns:
+            List[Service]: List of services
+        """
         return [
             service
             for service in self.registry.services
