@@ -28,4 +28,4 @@ jobs:
         with:
           options: "--check --config .black.toml"
           src: "."
-          version: "24.4.2"
+          version: "22.3.0"
