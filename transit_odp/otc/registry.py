@@ -161,16 +161,17 @@ class Registry:
                 service_list.append(service)
         return service_list
 
-    def get_services_with_future_effective_date(
-        self, to_delete_services
-    ) -> List[Service]:
-        service_list = []
-        for service in to_delete_services:
-            if service.effective_date:
-                if service.effective_date > date.today():
-                    service_list.append(service)
-            else:
-                service_list.append(service)
+    def get_services_with_future_effective_date(self, services) -> List[Service]:
+        """
+        Gets a list of the all services whoes status are in RegistrationStatusEnum.to_delete().
+        and their effecitve date is in future
+        """
+        service_list = [
+            service
+            for service in services
+            if (service.effective_date and service.effective_date > date.today())
+        ]
+
         return service_list
 
     def get_latest_variations_by_id(self, registration_number) -> List[Registration]:
