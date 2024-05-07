@@ -454,3 +454,52 @@ def check_flexible_service_times(context, vehiclejourneys):
                 return False
 
             return True
+
+
+def check_vehicle_journey_timing_links(
+    context, vehicleJourney: List[etree._Element]
+) -> bool:
+    """Validation for VehicleJourneyTimingLink and JourneyPatternTimingLink
+    If VehicleJourneyTimingLink is provided, then number of JourneyPatternTimingLink
+    in the vehicleJourney must be equal. No validation is VehicleJourneyTimingLink is
+    missing
+
+    Args:
+        context : Context object for xml
+        vehicleJourney (_Element): Vehicle Journey object
+
+    Returns:
+        bool: False if validation failed, True is validation passed
+    """
+    ns = {"x": vehicleJourney[0].nsmap.get(None)}
+    xpath = "x:VehicleJourneyTimingLink"
+    vehicle_journey_timing_links = vehicleJourney[0].xpath(xpath, namespaces=ns)
+
+    if len(vehicle_journey_timing_links) <= 0:
+        return True
+
+    journey_pattern_ref = vehicleJourney[0].xpath("x:JourneyPatternRef", namespaces=ns)[
+        0
+    ]
+
+    services_xpath = "../../x:Services"
+    services = vehicleJourney[0].xpath(services_xpath, namespaces=ns)[0]
+    journey_pattern_sections_refs = services.xpath(
+        f"//x:JourneyPattern[@id='{journey_pattern_ref.text}']/x:JourneyPatternSectionRefs",
+        namespaces=ns,
+    )
+
+    if len(journey_pattern_sections_refs) <= 0:
+        return False
+
+    journey_pattern_sections_refs_ids = 0
+    for jpsr in journey_pattern_sections_refs:
+        journey_pattern_sections_xpath = f"../../x:JourneyPatternSections/x:JourneyPatternSection[@id='{jpsr.text}']/x:JourneyPatternTimingLink"
+        journey_pattern_timing_lists = vehicleJourney[0].xpath(
+            journey_pattern_sections_xpath, namespaces=ns
+        )
+        journey_pattern_sections_refs_ids += len(journey_pattern_timing_lists)
+
+    if len(vehicle_journey_timing_links) != journey_pattern_sections_refs_ids:
+        return False
+    return True

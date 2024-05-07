@@ -22,6 +22,7 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_timing_status,
     check_inbound_outbound_description,
     check_service_group_validations,
+    check_vehicle_journey_timing_links,
     contains_date,
     has_flexible_or_standard_service,
     has_flexible_service_classification,
@@ -524,6 +525,9 @@ class PTIValidator:
         self.register_function("validate_timing_link_stops", validate_timing_link_stops)
         self.register_function("validate_bank_holidays", validate_bank_holidays)
         self.register_function("validate_service_code", get_service_code_validator())
+        self.register_function(
+            "check_vehicle_journey_timing_links", check_vehicle_journey_timing_links
+        )
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
