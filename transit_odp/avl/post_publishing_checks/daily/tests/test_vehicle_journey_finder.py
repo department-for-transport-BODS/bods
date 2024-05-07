@@ -11,9 +11,14 @@ from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import 
     VehicleJourneyFinder,
 )
 from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
-from transit_odp.organisation.factories import DatasetFactory, TXCFileAttributesFactory
+from transit_odp.organisation.factories import (
+    DatasetFactory,
+    TXCFileAttributesFactory,
+    DatasetRevisionFactory,
+)
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.timetables.transxchange import TransXChangeDocument
+from transit_odp.organisation.constants import FeedStatus
 
 pytestmark = pytest.mark.django_db
 
@@ -21,16 +26,23 @@ DATA_DIR = Path(__file__).parent / "data"
 
 
 def test_get_txc_file_metadata():
-    TXCFileAttributesFactory(national_operator_code="NOC1", line_names=["L1", "L2"])
-    txc_file_attrs = TXCFileAttributesFactory(
-        national_operator_code="NOC1", line_names=["L3", "L4"]
+    unpublished_revision = DatasetRevisionFactory(
+        status=FeedStatus.pending.value, is_published=False
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        revision=unpublished_revision,
     )
     TXCFileAttributesFactory(national_operator_code="NOC2", line_names=["L3", "L4"])
     TXCFileAttributesFactory(national_operator_code="NOC2", line_names=["L1", "L2"])
+    txc_file_attrs = TXCFileAttributesFactory(
+        national_operator_code="NOC1", line_names=["L1", "L2"]
+    )
 
     vehicle_journey_finder = VehicleJourneyFinder()
     txc_file_list = vehicle_journey_finder.get_txc_file_metadata(
-        noc="NOC1", published_line_name="L4", result=ValidationResult()
+        noc="NOC1", published_line_name="L1", result=ValidationResult()
     )
     assert len(txc_file_list) == 1
     assert txc_file_list[0].id == txc_file_attrs.id
@@ -138,9 +150,8 @@ def test_filter_by_operating_profile():
     activity_date = datetime.date.fromisoformat("2022-01-04")
     vehicle_journey_finder = VehicleJourneyFinder()
     vehicle_journey_finder.filter_by_operating_profile(
-        activity_date, txc_vehicle_journeys, ValidationResult()
+        activity_date, txc_vehicle_journeys, ValidationResult(), vehicle_journey_ref=502
     )
-
     assert len(txc_vehicle_journeys) == 1
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "2"
 
@@ -186,6 +197,38 @@ def test_filter_by_days_of_operation():
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"
 
 
+def test_filter_by_days_of_operation_service_inherited():
+    txc_filename = str(DATA_DIR / "vehicle_journeys7.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    # Set recorded at date within serviced org working days
+    recorded_at_time = datetime.date.fromisoformat("2023-04-18")
+    vehicle_journey_finder = VehicleJourneyFinder()
+    vehicle_journey_finder.filter_by_days_of_operation(
+        recorded_at_time, txc_vehicle_journeys, ValidationResult()
+    )
+
+    assert len(txc_vehicle_journeys) == 1
+    assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"
+
+
+def test_filter_by_days_of_operation_missing_operating_profile_element():
+    txc_filename = str(DATA_DIR / "vehicle_journeys8.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    # Set recorded at date within serviced org working days
+    recorded_at_time = datetime.date.fromisoformat("2023-04-18")
+    vehicle_journey_finder = VehicleJourneyFinder()
+    vehicle_journey_finder.filter_by_days_of_operation(
+        recorded_at_time, txc_vehicle_journeys, ValidationResult()
+    )
+
+    assert len(txc_vehicle_journeys) == 2
+    assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"
+
+
 @pytest.mark.parametrize(
     "txc_files,expected_result,expected_error",
     [
@@ -193,7 +236,7 @@ def test_filter_by_days_of_operation():
             ["vehicle_journeys5.xml"],
             False,
             [
-                "Found more than one matching vehicle journey in timetables belonging to a single service code"
+                "Found more than one matching vehicle journey in a single timetables file belonging to a single service code"
             ],
         ),
         (["vehicle_journeys5.xml", "vehicle_journeys6.xml"], False, None),
@@ -215,7 +258,7 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
     vehicle_journey_finder = VehicleJourneyFinder()
     result = ValidationResult()
     return_result = vehicle_journey_finder.filter_by_service_code(
-        txc_vehicle_journeys, result
+        txc_vehicle_journeys, result, vehicle_journey_ref=502
     )
 
     assert return_result == expected_result
@@ -240,6 +283,7 @@ def test_filter_by_published_line_name():
         txc_vehicle_journeys,
         published_line_name=filter_published_line_name,
         result=result,
+        vehicle_journey_ref=50,
     )
     assert len(txc_vehicle_journey) == 1
     assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
@@ -260,8 +304,47 @@ def test_filter_by_published_line_name_no_matching_lineref():
         txc_vehicle_journeys,
         published_line_name=filter_published_line_name,
         result=result,
+        vehicle_journey_ref=50,
     )
     assert result.errors[ErrorCategory.GENERAL] == [
         "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
     ]
     assert txc_vehicle_journey is None
+
+
+def test_get_service_org_ref_and_days_of_operation():
+    txc_filename = str(DATA_DIR / "vehicle_journeys7.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    vehicle_journey_finder = VehicleJourneyFinder()
+    (
+        service_org_ref,
+        days_of_non_operation,
+        days_of_operation,
+    ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
+        txc_vehicle_journeys[0]
+    )
+
+    assert service_org_ref == "KPMG"
+    assert days_of_non_operation is None
+    assert days_of_operation is not None
+
+
+def test_get_service_org_ref_and_days_of_non_operation():
+    txc_filename = str(DATA_DIR / "vehicle_journeys8.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    vehicle_journey_finder = VehicleJourneyFinder()
+    (
+        service_org_ref,
+        days_of_non_operation,
+        days_of_operation,
+    ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
+        txc_vehicle_journeys[0]
+    )
+
+    assert service_org_ref is None
+    assert days_of_non_operation is None
+    assert days_of_operation is None

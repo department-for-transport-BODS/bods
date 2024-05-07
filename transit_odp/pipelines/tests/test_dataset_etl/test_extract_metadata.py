@@ -1,5 +1,6 @@
 import os
 from datetime import date, datetime
+from pathlib import Path
 from unittest import skip
 
 import pandas as pd
@@ -20,12 +21,13 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
-    get_stop_activities,
+    get_stop_activities, get_txc_files
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     agg_service_pattern_sequences,
@@ -48,6 +50,12 @@ from transit_odp.xmltoolkit.xml_toolkit import XmlToolkit
 
 TZ = tz.gettz("Europe/London")
 EMPTY_TIMESTAMP = None
+
+
+class FileObject:
+    def __init__(self, name, file):
+        self.name = name
+        self.file = file
 
 
 @override_flag("is_timetable_visualiser_active", active=True)
@@ -85,10 +93,19 @@ class ExtractBaseTestCase(TestCase):
 
         # Test file
         self.file_obj = File(os.path.join(self.cur_dir, self.test_file))
+        self.file_name = Path(os.path.join(self.cur_dir, self.test_file)).name
+        self.file_obj.name = self.file_name
+        self.txc_instance = TXCFileAttributesFactory(
+            filename=self.file_name, revision=self.revision
+        )
+
         self.doc, result = xml_toolkit.parse_xml_file(self.file_obj.file)
 
+        
+        txc_files = get_txc_files(self.revision.id)
+
         self.trans_xchange_extractor = TransXChangeExtractor(
-            self.file_obj, self.now, stop_activity_cache=get_stop_activities()
+            self.file_obj, self.now, stop_activity_cache=get_stop_activities(), df_txc_files=txc_files
         )
 
         # Create bogus admin area
@@ -219,10 +236,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         """This is a re-implementation of the XML file parser class, this is to
         ensure that both the extract method of this class and the XmlFileParser return
         the same result."""
-        now = self.xml_file_parser.feed_parser.now
-        transxchange_extractor = TransXChangeExtractor(self.file_obj, now)
-        extracted = transxchange_extractor.extract()
-        file_id = transxchange_extractor.file_id
+        extracted = self.trans_xchange_extractor.extract()
+        file_id = self.trans_xchange_extractor.file_id
 
         services_expected = pd.DataFrame(
             [
@@ -233,6 +248,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -241,6 +257,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -249,13 +266,14 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
             ]
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
             list(extracted.services.columns),
-            ["start_date", "end_date", "line_names", "service_type"],
+            ["start_date", "end_date", "line_names", "service_type", "txc_file_id"],
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 
@@ -373,6 +391,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -381,6 +400,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -389,6 +409,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
             ]
         ).set_index(["file_id", "service_code"])
@@ -396,7 +417,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         self.assertTrue(check_frame_equal(extracted.services, services_expected))
         self.assertCountEqual(
             list(extracted.services.columns),
-            ["start_date", "end_date", "line_names", "service_type"],
+            ["start_date", "end_date", "line_names", "service_type", "txc_file_id"],
         )
         self.assertEqual(extracted.services.index.names, ["file_id", "service_code"])
 
@@ -516,6 +537,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": EMPTY_TIMESTAMP,
                     "line_names": ["1"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -524,6 +546,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": datetime(2019, 4, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["2"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -532,13 +555,14 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": datetime(2019, 6, 13, 23, 59, 0, tzinfo=TZ),
                     "line_names": ["3"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
             ]
         ).set_index(["file_id", "service_code"])
         self.assertTrue(check_frame_equal(transformed.services, services_expected))
         self.assertCountEqual(
             list(transformed.services.columns),
-            ["start_date", "end_date", "line_names", "service_type"],
+            ["start_date", "end_date", "line_names", "service_type", "txc_file_id"],
         )
         self.assertEqual(transformed.services.index.names, ["file_id", "service_code"])
 
@@ -684,6 +708,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": pd.Timestamp("2019-04-13 00:00:00"),
                     "line_names": ["1"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
                 {
                     "file_id": file_id,
@@ -692,6 +717,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                     "end_date": pd.Timestamp("2019-04-13 00:00:00"),
                     "line_names": ["2", "2a"],
                     "service_type": "standard",
+                    "txc_file_id": self.txc_instance.id,
                 },
             ]
         ).set_index("service_code")
@@ -704,7 +730,14 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         self.assertEqual(services.count(), 2)
         self.assertCountEqual(
             list(actual.columns),
-            ["id", "start_date", "end_date", "line_names", "service_type"],
+            [
+                "id",
+                "start_date",
+                "end_date",
+                "line_names",
+                "service_type",
+                "txc_file_id",
+            ],
         )
 
         expected = {

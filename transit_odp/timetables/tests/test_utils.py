@@ -144,24 +144,7 @@ def test_filter_df_serviced_org_operating():
 
     # Scenario 2: When the target date is less than start date for all vehicle journeys
     target_date = "2001-01-01"
-    expected_nonop_vehicle_journeys = [
-        540,
-        541,
-        544,
-        545,
-        549,
-        550,
-        553,
-        554,
-        559,
-        560,
-        561,
-        562,
-        567,
-        568,
-        573,
-        574,
-    ]
+    expected_nonop_vehicle_journeys = [540, 544, 550, 553, 559, 561, 568, 573]
     actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
         target_date, df_serviced_org_working_days
     )
@@ -173,24 +156,7 @@ def test_filter_df_serviced_org_operating():
 
     # Scenario 3: When the target date is greater than end date for all vehicle journeys
     target_date = "2030-01-01"
-    expected_nonop_vehicle_journeys = [
-        540,
-        541,
-        544,
-        545,
-        549,
-        550,
-        553,
-        554,
-        559,
-        560,
-        561,
-        562,
-        567,
-        568,
-        573,
-        574,
-    ]
+    expected_nonop_vehicle_journeys = [540, 544, 550, 553, 559, 561, 568, 573]
     actual_nonop_vehicle_journeys = get_non_operating_vj_serviced_org(
         target_date, df_serviced_org_working_days
     )
@@ -222,13 +188,16 @@ def test_get_df_timetable_visualiser():
     actual_df_vehicle_journey = get_df_timetable_visualiser(pd.DataFrame())
     assert actual_df_vehicle_journey.empty
 
+    df_vehicle_journey_operating["departure_time"] = pd.to_datetime(
+        df_vehicle_journey_operating["departure_time"], format="%H:%M:%S"
+    ).dt.time
     actual_df_vehicle_journey = get_df_timetable_visualiser(
         df_vehicle_journey_operating
     )
 
     # Check the dataframe expected
     assert check_frame_equal(
-        actual_df_vehicle_journey, expected_df_timetable_visualiser
+        actual_df_vehicle_journey, expected_df_timetable_visualiser.reset_index()
     )
 
 
@@ -237,29 +206,29 @@ def test_get_vehicle_journey_codes_sorted():
     Test the get_vehicle_journey_codes_sorted() based on the vehicle journey operating
     """
     expected_vehicle_journey_ids = [
-        "6001",
-        "6009",
-        "6013",
-        "6017",
-        "6019",
-        "6021",
-        "6025",
-        "6029",
-        "6033",
-        "6037",
-        "6041",
-        "6045",
-        "6049",
-        "6053",
-        "6057",
-        "6061",
-        "6069",
-        "6073",
-        "6075",
-        "6077",
-        "6081",
-        "6085",
-        "6093",
+        ("6001", 540),
+        ("6009", 544),
+        ("6013", 547),
+        ("6017", 550),
+        ("6019", 552),
+        ("6021", 553),
+        ("6025", 555),
+        ("6029", 556),
+        ("6033", 557),
+        ("6037", 558),
+        ("6041", 559),
+        ("6045", 561),
+        ("6049", 563),
+        ("6053", 564),
+        ("6057", 565),
+        ("6061", 566),
+        ("6069", 568),
+        ("6073", 569),
+        ("6075", 571),
+        ("6077", 573),
+        ("6081", 577),
+        ("6085", 579),
+        ("6093", 580),
     ]
     # Check the vehicle journey ids
     actual_vehicle_journey_ids = get_vehicle_journey_codes_sorted(

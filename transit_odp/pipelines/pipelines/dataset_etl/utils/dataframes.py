@@ -6,7 +6,7 @@ BODS transxchange models.
 import logging
 from collections import OrderedDict
 from typing import Iterator, List
-from waffle import flag_is_active
+from django.db.models.query import QuerySet
 
 import geopandas
 import pandas as pd
@@ -14,6 +14,7 @@ from shapely.geometry import Point
 from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
@@ -84,6 +85,54 @@ def create_stop_point_cache(revision_id):
         .order_by("id")
     )
     return create_naptan_stoppoint_df_from_queryset(stops)
+
+
+def create_txc_file_attributes_df(queryset: QuerySet) -> pd.DataFrame:
+    """
+    Creates dataframe from queryset
+    """
+    df_txc_file_attributes = pd.DataFrame.from_records(queryset.values())
+
+    return df_txc_file_attributes
+
+
+def filter_redundant_files(df: pd.DataFrame) -> pd.DataFrame:
+    """Filters out files for the same service code which have lower revision number but the start date is greater than the highest revision file"""
+    max_revision = df["revision_number"].max()
+    df_max_revision_number = df[df["revision_number"] == max_revision]
+    max_start_date = df_max_revision_number["operating_period_start_date"].max()
+    df_filtered = df[
+        (
+            (df["operating_period_start_date"] < max_start_date)
+            & (df["revision_number"] <= max_revision)
+        )
+        | (
+            (df["operating_period_start_date"] == max_start_date)
+            & (df["revision_number"] == max_revision)
+        )
+    ]
+    return df_filtered[["id", "filename"]]
+
+
+def get_txc_files(revision_id: int) -> pd.DataFrame:
+    """Returns the valid txc files that should be processed for timetable visualiser based on their service code and operating start date"""
+    txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id)
+    df_txc_files = create_txc_file_attributes_df(txc_files)
+    columns = [
+        "id",
+        "service_code",
+        "revision_number",
+        "operating_period_start_date",
+        "filename",
+    ]
+    df_with_valid_files = pd.DataFrame()
+    if not df_txc_files.empty:
+        df_txc_files = df_txc_files[columns]
+        df_with_valid_files = df_txc_files.groupby("service_code").apply(
+            filter_redundant_files
+        )
+
+    return df_with_valid_files
 
 
 def create_service_link_cache(revision_id):
@@ -223,6 +272,7 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
             name=line_names[0],
             other_names=line_names[1:],
             service_type=service_type,
+            txcfileattributes_id=record["txc_file_id"],
         )
 
 
@@ -287,16 +337,15 @@ def df_to_serviced_organisations(
 
 
 def df_to_serviced_organisation_working_days(
-    df: pd.DataFrame, columns_to_drop: list, columns_to_drop_duplicates: list
+    df: pd.DataFrame, columns_to_drop_duplicates: list
 ) -> Iterator[ServicedOrganisationWorkingDays]:
     if not df.empty:
-        df_to_load = df.drop(columns=columns_to_drop)
-        df_to_load = df_to_load.reset_index()
+        df_to_load = df.reset_index()
         for record in df_to_load.drop_duplicates(
             subset=columns_to_drop_duplicates
         ).itertuples(index=False):
             yield ServicedOrganisationWorkingDays(
-                serviced_organisation_id=record.id,
+                serviced_organisation_vehicle_journey_id=record.serviced_org_vj_id,
                 start_date=datetime.strptime(record.start_date, "%Y-%m-%d").date(),
                 end_date=datetime.strptime(record.end_date, "%Y-%m-%d").date(),
             )

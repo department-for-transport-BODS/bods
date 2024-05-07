@@ -9,6 +9,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_service_link_cache,
     create_stop_point_cache,
     get_stop_activities,
+    get_txc_files,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -60,15 +61,17 @@ class TransXChangePipeline:
         self.revision.save()
 
     def extract(self) -> ExtractedData:
+        """Extraction step which extract the data from the xml file"""
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
+        txc_files = get_txc_files(self.revision.id)
         if self.file_obj.file.name.endswith("zip"):
             extractor = TransXChangeZipExtractor(
-                self.file_obj, self.start_time, self.stop_activity_cache
+                self.file_obj, self.start_time, self.stop_activity_cache, txc_files
             )
         elif self.file_obj.file.name.endswith("xml"):
             extractor = TransXChangeExtractor(
-                self.file_obj, self.start_time, self.stop_activity_cache
+                self.file_obj, self.start_time, self.stop_activity_cache, txc_files
             )
         else:
             raise exceptions.NoDataFoundError(filename)

@@ -347,8 +347,6 @@ class ETLSPSWithWaitTimeInVehicleJourney(ExtractBaseTestCase):
 
     def test_transform(self):
         # setup
-        pd.set_option("display.max_rows", None)
-        pd.set_option("display.max_columns", None)
         extracted = self.trans_xchange_extractor.extract()
 
         # test

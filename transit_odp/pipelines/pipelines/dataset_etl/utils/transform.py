@@ -187,7 +187,9 @@ def transform_service_pattern_stops(
 
 def agg_service_pattern_sequences(df: pd.DataFrame):
     geometry = None
-    df = df.drop_duplicates(subset=["sequence_number"])
+    df = df.drop_duplicates(subset=["stop_atco"]).sort_values(
+        by="sequence_number", key=pd.to_numeric
+    )
     points = df["geometry"].values
     if len(list(point for point in points if point)) > 1:
         geometry = LineString(
@@ -507,6 +509,32 @@ def get_vehicle_journey_without_timing_refs(vehicle_journeys):
     return df_subset.set_index(indexes)
 
 
+def filter_profiles_on_vehicle_journeys(
+    operating_profiles: pd.DataFrame,
+) -> pd.DataFrame:
+    default_profiles = operating_profiles.reset_index().drop_duplicates("day_of_week")
+    filtered_df = operating_profiles[
+        (
+            (operating_profiles["exceptions_date"].isna())
+            | (
+                (
+                    operating_profiles["start_date"]
+                    <= operating_profiles["compare_exceptions_date"]
+                )
+                & (
+                    operating_profiles["end_date"]
+                    >= operating_profiles["compare_exceptions_date"]
+                )
+            )
+        )
+    ]
+
+    if not filtered_df.empty:
+        return filtered_df
+
+    return default_profiles
+
+
 def filter_operating_profiles(
     operating_profiles: pd.DataFrame, services: pd.DataFrame
 ) -> pd.DataFrame:
@@ -528,7 +556,8 @@ def filter_operating_profiles(
     df_services["end_date"] = pd.to_datetime(df_services["end_date"]).dt.tz_localize(
         None
     )
-    if not operating_profiles.empty and not services.empty:
+
+    if not operating_profiles.empty and not df_services.empty:
         service_columns = ["file_id", "service_code", "start_date", "end_date"]
         indexes = operating_profiles.index.names
         df_merged = pd.merge(
@@ -542,15 +571,9 @@ def filter_operating_profiles(
             df_merged["exceptions_date"]
         )
 
-        filtered_df = df_merged[
-            (
-                (df_merged["exceptions_date"].isna())
-                | (
-                    (df_merged["start_date"] <= df_merged["compare_exceptions_date"])
-                    & (df_merged["end_date"] >= df_merged["compare_exceptions_date"])
-                )
-            )
-        ]
+        filtered_df = df_merged.groupby(
+            ["file_id", "vehicle_journey_code", "serviced_org_ref"], dropna=False
+        ).apply(filter_profiles_on_vehicle_journeys)
         filtered_df = filtered_df.drop(
             ["start_date", "end_date", "compare_exceptions_date"], axis=1
         ).set_index(indexes)
@@ -679,7 +702,7 @@ def merge_serviced_organisations_with_operating_profile(
     serviced_organisations, operating_profiles
 ):
     serviced_organisations.reset_index(inplace=True)
-
+    serviced_organisations.drop_duplicates(inplace=True)
     df_merged = pd.merge(
         serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
     )

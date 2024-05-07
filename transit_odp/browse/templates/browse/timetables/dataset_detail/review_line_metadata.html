@@ -112,6 +112,42 @@
             </table>
         </div>
     </div>
+    {% if is_timetable_visualiser_active %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h2 class="govuk-heading-m">Timetable</h2>
+                <h2 class="govuk-heading-m">Filter by</h2>
+                <div class="govuk-form-group  govuk-!-width-one-quarter govuk-!-padding-0  ">
+                <label class="govuk-label" for="timetable_date">
+                    Date
+                </label>
+                <span id="timetable_date-hint" class="govuk-hint ">
+                    For example: 21/11/2014
+                </span>            
+                <input type="text"            
+                id="timetable_date" name="start" style="width: 90%;" class="govuk-input" aria-describedby="timetable_date-hint"
+                value={{curr_date}} data-gtm-form-interact-field-id="0" />
+                <img id="timetable_date_calendar"
+                class="govuk-!-margin-right-1" style="position: relative;top: 2px;margin-left: -30px;" 
+                width="20" height="20" src="{% static 'frontend/images/calendar-icon.png' %}"
+            alt="{% trans 'Calendar icon' %}">
+            <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button" onclick="BODSFrontend.changeTargetDate('timetable_date');">
+                Apply filter
+            </button>
+            </div>
+            {% if not outbound_timetable.empty %}
+                {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=outbound_timetable journey_name=outbound_journey_name show_all=outbound_show_all total_rows=outbound_total_row_count total_page=outbound_total_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
+            {% endif %}
+            {% if not inbound_timetable.empty %}
+                {% include 'publish/dataset_detail/journey_stop_timetable.html' with df=inbound_timetable journey_name=inbound_journey_name show_all=inbound_show_all total_rows=inbound_total_row_count total_page=inbound_total_page curr_page=inbound_curr_page page_param='inboundPage' show_all_param='showAllInbound' %}
+            {% endif %}
+            {% if inbound_timetable.empty and outbound_timetable.empty %}
+            <div class="govuk-inset-text">
+                There is no timetable information available to view for this date. Please select another date.
+            </div>
+            {% endif %}
+        </div>
+    {% endif %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             {% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback" %}
@@ -123,5 +159,8 @@
     {{ block.super }}
     <script>
         BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
+        {% if is_timetable_visualiser_active %}
+            BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
+        {% endif %}
     </script>
 {% endblock %}

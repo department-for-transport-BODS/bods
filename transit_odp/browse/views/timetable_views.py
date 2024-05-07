@@ -55,6 +55,12 @@ from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
+import pandas as pd
+from typing import Dict
+import math
+import re
+from waffle import flag_is_active
+
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -430,6 +436,74 @@ class LineMetadataDetailView(DetailView):
                 booking_arrangements_qs.revision_id, [service_code]
             )
 
+    def get_direction_timetable(
+        self, df_timetable: pd.DataFrame, direction: str = "outbound"
+    ) -> Dict:
+
+        """
+        Get the timetable details like the total, current page and the dataframe
+        based on the timetable dataframe and the direction.
+
+        :param df_timetable pd.DataFrame
+        Timetable visualiser dataframe
+        :param direction string
+        Possible values can be 'outbound' or 'inbound'
+
+        :return Dict
+        {
+            'total_page': "Total pages of the dataframe",
+            'curr_page': "Current page",
+            'show_all': "Flag to show all rows in dataframe",
+            'df_timetable': "Dataframe sliced with rows and columns"
+        }
+        """
+
+        if df_timetable.empty:
+            return {
+                "total_page": 0,
+                "curr_page": 1,
+                "show_all": False,
+                "df_timetable": pd.DataFrame(),
+                "total_row_count": 0,
+            }
+
+        if direction == "outbound":
+            show_all_param = self.request.GET.get("showAllOutbound", "false")
+            curr_page_param = int(self.request.GET.get("outboundPage", "1"))
+        else:
+            show_all_param = self.request.GET.get("showAllInbound", "false")
+            curr_page_param = int(self.request.GET.get("inboundPage", "1"))
+            pass
+
+        show_all = show_all_param.lower() == "true"
+        total_row_count, total_columns_count = df_timetable.shape
+        total_page = math.ceil((total_columns_count - 1) / 10)
+        curr_page_param = 1 if curr_page_param > total_page else curr_page_param
+        page_size = 10
+        # Adding 1 to always show the first column of stops
+        col_start = ((curr_page_param - 1) * page_size) + 1
+        col_end = min(total_columns_count, (curr_page_param * page_size) + 1)
+        col_indexes_display = []
+        for i in range(col_start, col_end):
+            col_indexes_display.append(i)
+        if len(col_indexes_display) > 0:
+            col_indexes_display.insert(0, 0)
+        row_count = min(total_row_count, 10)
+        # Slice the dataframe by the 10 rows if show all is false
+        df_timetable = (
+            df_timetable.iloc[:, col_indexes_display]
+            if show_all
+            else df_timetable.iloc[:row_count, col_indexes_display]
+        )
+
+        return {
+            "total_page": total_page,
+            "curr_page": curr_page_param,
+            "show_all": show_all,
+            "df_timetable": df_timetable,
+            "total_row_count": total_row_count,
+        }
+
     def get_context_data(self, **kwargs):
         """
         Get the context data for the view.
@@ -469,16 +543,47 @@ class LineMetadataDetailView(DetailView):
                 kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
                 kwargs["booking_methods"] = booking_arrangements_info[0][1:]
 
-        # Initial commit for timetable visualiser
-        target_date = datetime.strptime("09/01/2023", "%d/%m/%Y").date()
-        public_use_check_flag = True
-        kwargs["timetable_visualiser"] = TimetableVisualiser(
+        date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
+        # Regular expression pattern to match dates in yyyy-mm-dd format
+        date_pattern = r"^\d{4}-\d{2}-\d{2}$"
+        is_valid_date = re.match(date_pattern, date) is not None
+        if not is_valid_date:
+
+            date = datetime.now().strftime("%Y-%m-%d")
+
+        target_date = datetime.strptime(date, "%Y-%m-%d").date()
+        timetable_inbound_outbound = TimetableVisualiser(
             live_revision.id,
             kwargs["service_code"],
             kwargs["line_name"],
             target_date,
-            public_use_check_flag,
+            True,
         ).get_timetable_visualiser()
+
+        # Get the flag is_timetable_visualiser_active state
+        is_timetable_visualiser_active = flag_is_active(
+            "", "is_timetable_visualiser_active"
+        )
+        kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
+        # If flag is enabled, show the timetable visualiser
+        if is_timetable_visualiser_active:
+            # Set the context for the timetable visualiser and the line details
+            kwargs["curr_date"] = date
+            for direction in ["outbound", "inbound"]:
+                direction_details = timetable_inbound_outbound[direction]
+                journey = direction_details["description"]
+                journey = direction.capitalize() + " - " + journey if journey else ""
+                bound_details = self.get_direction_timetable(
+                    direction_details["df_timetable"], direction
+                )
+                kwargs[direction + "_timetable"] = bound_details["df_timetable"]
+                kwargs[direction + "_total_page"] = bound_details["total_page"]
+                kwargs[direction + "_total_row_count"] = bound_details[
+                    "total_row_count"
+                ]
+                kwargs[direction + "_curr_page"] = bound_details["curr_page"]
+                kwargs[direction + "_show_all"] = bound_details["show_all"]
+                kwargs[direction + "_journey_name"] = journey
 
         return kwargs
 
