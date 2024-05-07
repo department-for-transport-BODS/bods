@@ -15,9 +15,9 @@ class Loader:
     def load(self):
         """
         EP job will remove all the services from the database and re-insert all in DB
-        Services present in WECA must be considered as registered, Other status will not be present
-        Some licences in weca might be missing from the database, job will create those licences and
-        Will bind those licences to the weca services being created
+        Services present in EP must be considered as registered, Other status will not be present
+        Some licences in EP might be missing from the database, job will create those licences and
+        Will bind those licences to the EP services being created
         """
         logger.info("EP job to refresh all the services started")
         self.registry.process_services()
@@ -26,14 +26,20 @@ class Loader:
             self.delete_services()
             self.load_services()
 
-        logger.info("WECA job finished the execution")
+        logger.info("EP job finished the execution")
 
-    def load_missing_licences(self):
+    def load_missing_licences(self) -> dict:
+        """
+        This function is used to load missing licences.
+
+        Returns:
+            dict: A dictionary where the keys are the licence numbers and the values are the IDs of the Licence objects.
+        """
         logger.info("Loading missing licences")
         missing_licences = self.registry.get_missing_licences()
         licences = {}
         if len(missing_licences) == 0:
-            logger.info("Found 0 Licences missing")
+            logger.info("No Licences missing")
             return licences
 
         logger.info(f"Found {len(missing_licences)} missing licences")
@@ -48,22 +54,22 @@ class Loader:
         """
         Load all services in database by filling object
         If licence_id is null, licence is missing in the database
-        service will check it in the licences property and
+        service will check it in the licences property andx
         assign licence_id to the service object
         """
         logger.info("Loading services into the database")
         service_objects = []
-        for index, service in self.registry.services.iterrows():
+        for _, service in self.registry.services.iterrows():
             if not service["licence_id"]:
                 service["licence_id"] = self.licences.get(service["licence"], None)
             service.drop(["licence"], inplace=True)
             service_objects.append(Service(**service))
 
         Service.objects.bulk_create(service_objects)
-        logger.info("WECA services inserted into the database")
+        logger.info("EP services inserted into the database")
 
     def delete_services(self):
         """
-        Remove all the services with api_type WECA to reload all services
+        Remove all the services with api_type EP to reload all services
         """
         Service.objects.filter(api_type=API_TYPE_EP).delete()

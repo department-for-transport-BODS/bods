@@ -3,7 +3,7 @@ from logging import getLogger
 import numpy as np
 import pandas as pd
 
-from transit_odp.otc.models import Licence, Service
+from transit_odp.otc.models import Licence, Service, Operator
 from transit_odp.otc.ep.client import APIResponse, EPClient
 
 logger = getLogger(__name__)
@@ -14,7 +14,6 @@ class Registry:
         self._client = EPClient()
         self.services = pd.DataFrame()
         self.data = []
-        self.fields = []
 
     def fetch_all_records(self) -> APIResponse:
         """
@@ -22,8 +21,7 @@ class Registry:
         """
         logger.info("Fetching EP services")
         response = self._client.fetch_ep_services()
-        self.data = response.data
-        self.fields = response.fields
+        self.data = response.Results
         logger.info("Total Services found {}".format(len(self.data)))
         return response
 
@@ -35,22 +33,9 @@ class Registry:
             ["registration_number", "service_number"], keep="first"
         )
 
-    def merge_service_numbers(self) -> None:
+    def ignore_existing_services(self) -> None:
         """
-        There can be same registration number with multiple service numbers,
-        Method will merge the rows with service numbers seprated by pipe |
-        """
-        aggregation = {
-            col: "first" if col != "service_number" else "|".join
-            for col in self.services.columns
-        }
-        self.services = self.services.groupby(
-            "registration_number", as_index=False
-        ).agg(aggregation)
-
-    def ignore_otc_services(self) -> None:
-        """
-        To ignore the services which belongs to OTC but are comming in WECA API
+        To ignore the existing services which belongs to OTC/WECA but are comming in EP API
         Expectation is such scenarios will not happen but if they are those will be
         skipped from the dataframe
         """
@@ -60,7 +45,7 @@ class Registry:
         ).values_list("registration_number")
         services_to_ignore = [service[0] for service in services_queryset]
         logger.info(
-            "Found {} services of OTC in weca data, and these will be ignored".format(
+            "Found {} services of OTC/WECA in EP data, and these will be ignored".format(
                 len(services_to_ignore)
             )
         )
@@ -74,29 +59,15 @@ class Registry:
         """
         services_list = [service.model_dump() for service in self.data]
         self.services = pd.DataFrame(services_list)
-    
-    def rename_df_columns(self) -> None:
-        """
-        Rename dataframe columns
-        """
-        self.services.rename(columns={
-            "routeNumber": "service_number",
-            "variationNumber": "variation_number",
-            "busServiceTypeDescription": "service_type_description",
-            "subsidised": "subsidies_description",
-            "subsidyDetail": "subsidies_details",
-            "startPoint": "start_point",
-            "finishPoint": "finish_point",
-            "effectiveDate": "effective_date"
-        }, inplace=True)
 
-    def map_otc_licences(self) -> None:
+    def map_licences(self) -> None:
         """
-        Map the licences with the services, so that WECA services will have OTC_LICENCE link
+        Map the licences with the services, so that EP services will have OTC_LICENCE link
         Unlike OTC, we will not create licences if they are missing in database table,
         We will leave licence_id field blank
         """
         licence_df = pd.DataFrame.from_records(Licence.objects.values("id", "number"))
+        licence_df.rename(columns={"id": "licence_id"}, inplace=True)
         if not licence_df.empty:
             self.services = pd.merge(
                 self.services,
@@ -105,11 +76,31 @@ class Registry:
                 right_on="number",
                 how="left",
             )
-            self.services.rename(columns={"id_y": "licence_id"}, inplace=True)
-            self.services.drop(["id_x", "number"], inplace=True, axis=1)
             self.services.licence_id.replace({np.nan: None}, inplace=True)
         else:
             self.services["licence_id"] = None
+
+    def map_operatorname(self) -> None:
+        """
+        Map the Operator name with the services, so that EP services will have OTC_Operator link
+        We will not create Operators if they are missing in database table,
+        We will leave operator_id field blank
+        """
+        operator_df = pd.DataFrame.from_records(
+            Operator.objects.values("id", "operator_name")
+        )
+        operator_df.rename(columns={"id": "operator_id"}, inplace=True)
+        if not operator_df.empty:
+            self.services = pd.merge(
+                self.services,
+                operator_df,
+                left_on="operator_name",
+                right_on="operator_name",
+                how="left",
+            )
+            self.services.operator_id.replace({np.nan: None}, inplace=True)
+        else:
+            self.services["operator_id"] = None
 
     def get_missing_licences(self) -> None:
         """
@@ -122,6 +113,15 @@ class Registry:
             ].reset_index()["licence"]
             return list(set(missing_licences.tolist()))
         return []
+
+    def remove_columns(self):
+        """
+        This function removes the column operator_name and number from the services dataframe
+        """
+        columns_to_remove = ["operator_name", "number"]
+        if not self.services.empty:
+            for column in columns_to_remove:
+                self.services.drop([column], axis=1, inplace=True)
 
     def process_services(self) -> None:
         """
@@ -139,8 +139,10 @@ class Registry:
             logger.info(
                 "Merging EP records for same registration numbers by making service name seprated from pipe."
             )
-            self.merge_service_numbers()
             logger.info("Ignoring OTC services present in EP records.")
-            self.ignore_otc_services()
+            self.ignore_existing_services()
             logger.info("Map licences to database")
-            self.map_otc_licences()
+            self.map_licences()
+            logger.info("Map operator name to database")
+            self.map_operatorname()
+            self.remove_columns()

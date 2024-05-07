@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 class EPAuthenticator:
     """
     Class responsible for providing Microsoft oauth2 Bearer token
-    for sake of sending requests to the OTC API.
-    OTC API requires 'Authorization' header to be added.
+    for sake of sending requests to the EP API.
+    EP API requires 'Authorization' header to be added.
     {
         ...,
         "Authorization": <token>
@@ -36,12 +36,11 @@ def _get_token() -> str:
 
     expiry_time - 5mins (to invalidate cache while the first token is still active)
     """
-    url = f"{settings.MS_LOGIN_URL}/{settings.MS_TENANT_ID}/oauth2/v2.0/token"
+    url = f"{settings.EP_AUTH_URL}"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     body = {
-        "client_secret": settings.OTC_CLIENT_SECRET,
-        "client_id": settings.MS_CLIENT_ID,
-        "scope": settings.MS_SCOPE,
+        "client_secret": settings.EP_CLIENT_SECRET,
+        "client_id": settings.EP_CLIENT_ID,
         "grant_type": "client_credentials",
     }
     response = None
@@ -57,8 +56,10 @@ def _get_token() -> str:
         raise EPAuthorizationTokenException(msg)
 
     response = AuthResponse(**response.json())
-    token_cache_timeout = response.expires_in - 60 * 5
-    cache.set("ep-auth-bearer", response.access_token, timeout=token_cache_timeout)
+    token_cache_timeout = response.expires_in
+    cache.set(
+        "ep-auth-bearer", f"Bearer {response.access_token}", timeout=token_cache_timeout
+    )
     return response.access_token
 
 
@@ -67,7 +68,6 @@ class AuthResponse:
     expires_in: int
     access_token: str
     token_type: str
-    ext_expires_in: int
 
 
 class EPAuthorizationTokenException(Exception):
