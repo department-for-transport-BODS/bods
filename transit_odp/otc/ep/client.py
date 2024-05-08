@@ -44,10 +44,8 @@ class DataModel(BaseModel):
     @validator("registration_number")
     def trim_registration_number(cls, value, values):
         # Split the registration number by slash and take the first part and append the service_number
-        print(f"values: {values}")
         reg_number_parts = value.split("/")
         if len(reg_number_parts) > 1:
-            print(f"'service_number' in values: {'service_number' in values}")
             if "service_number" in values:
                 return reg_number_parts[0] + "/" + values["service_number"]
             else:

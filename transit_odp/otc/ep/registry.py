@@ -121,11 +121,12 @@ class Registry:
         columns_to_remove = ["operator_name", "number"]
         if not self.services.empty:
             for column in columns_to_remove:
-                self.services.drop([column], axis=1, inplace=True)
+                if column in self.services.columns:
+                    self.services.drop([column], axis=1, inplace=True)
 
     def process_services(self) -> None:
         """
-        Fetch records from the weca api, and implement following
+        Fetch records from the EP api, and implement following
         1. Remove duplicate services and service name combination
         2. Merge the services based on service name seprated by pipe
         3. Ignore the services which belongs to OTC
@@ -139,7 +140,7 @@ class Registry:
             logger.info(
                 "Merging EP records for same registration numbers by making service name seprated from pipe."
             )
-            logger.info("Ignoring OTC services present in EP records.")
+            logger.info("Ignoring OTC/WECA services present in EP records.")
             self.ignore_existing_services()
             logger.info("Map licences to database")
             self.map_licences()
