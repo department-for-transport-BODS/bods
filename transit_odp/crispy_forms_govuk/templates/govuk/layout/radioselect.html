@@ -7,7 +7,7 @@
   {% for choice in field.field.choices %}
     <div class="govuk-radios__item">
       <input class="govuk-radios__input"
-             id="id_{{ field.id_for_label }}_{{ forloop.counter }}"
+             id="{{ field.auto_id }}_{{ forloop.counter }}"
              name="{{ field.html_name }}"
              type="radio"
              value="{{ choice.0|unlocalize }}"
@@ -16,7 +16,7 @@
         {% endif %}
         {{ field.field.widget.attrs|flatatt }}
       >
-      <label class="govuk-label govuk-radios__label" for="id_{{ field.id_for_label }}_{{ forloop.counter }}">
+      <label class="govuk-label govuk-radios__label" for="{{ field.auto_id }}_{{ forloop.counter }}">
         {{ choice.1|unlocalize }}
       </label>
     </div>
