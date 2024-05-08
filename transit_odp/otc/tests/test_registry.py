@@ -85,7 +85,6 @@ def test_registry_returns_expired_variation_if_veration_number_zero(
 ):
     registry = Registry()
     service = registry.get_latest_variations_by_id("PC2021320/53")
-    print(service)
     for variation in service:
         assert variation.variation_number == 0
         assert variation.registration_status == RegistrationStatusEnum.EXPIRED.value
