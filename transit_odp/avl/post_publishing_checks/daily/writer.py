@@ -201,7 +201,7 @@ class PostPublishingResultsJsonWriter:
 
                 elif error_code in (
                     ErrorCode.CODE_6_2_A.name,
-                    ErrorCode.CODE_6_2_C.name,
+                    ErrorCode.CODE_6_2_B.name,
                 ):
                     service_org_details = result.transxchange_attribute(
                         TransXChangeField.SERVICE_ORGANISATION_DETAILS
