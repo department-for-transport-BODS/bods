@@ -146,6 +146,32 @@ class VehicleJourneyFinder:
             result.set_txc_value(
                 SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name
             )
+            result.set_transxchange_attribute(TransXChangeField.DATASET_ID, dataset_id)
+            result.set_transxchange_attribute(
+                TransXChangeField.MODIFICATION_DATE,
+                txc_file_attrs[0].modification_datetime,
+            )
+            result.set_transxchange_attribute(
+                TransXChangeField.FILENAME, txc_file_attrs[0].filename
+            )
+            result.set_transxchange_attribute(
+                TransXChangeField.FILENAME, txc_file_attrs[0].filename
+            )
+            result.set_transxchange_attribute(
+                TransXChangeField.OPERATING_PERIOD_END_DATE,
+                txc_file_attrs[0].operating_period_end_date,
+            )
+            result.set_transxchange_attribute(
+                TransXChangeField.OPERATING_PERIOD_START_DATE,
+                txc_file_attrs[0].operating_period_start_date,
+            )
+            result.set_transxchange_attribute(
+                TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
+            )
+            result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
+            result.set_transxchange_attribute(
+                TransXChangeField.REVISION_NUMBER, txc_file_attrs[0].revision_number
+            )
             result.set_matches(SirivmField.LINE_REF)
         else:
             logger.error("Matching TXC files belong to different datasets!\n")
@@ -622,6 +648,21 @@ class VehicleJourneyFinder:
         txc_file_list = []
         service_code_list = []
         for vj in reversed(vehicle_journeys):
+            service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
+            get_service_org_xml_string = self.get_service_org_xml_string(vj)
+            journey_code = vj.vehicle_journey.get_element(
+                ["Operational", "TicketMachine", "JourneyCode"]
+            )
+            journey_code_text = journey_code.text if journey_code else journey_code
+            journey_code_operating_profile_service_org.append(
+                {
+                    "operating_profile_xml_string": get_service_org_xml_string,
+                    "service_organisation_xml_str": service_org_ref,
+                    "service_organisation_day_operating": service_org_ref,
+                    "journey_code": journey_code_text,
+                }
+            )
+
             txc_file_list.append(vj.txc_xml.name)
             service_code = self.get_service_code(vj)[0].text
             service_code_list.append(service_code)
@@ -639,6 +680,7 @@ class VehicleJourneyFinder:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in timetables belonging to a single service code",
+                ErrorCode.CODE_6_2_B,
             )
             return False
         elif len(service_code_set) > 1:
