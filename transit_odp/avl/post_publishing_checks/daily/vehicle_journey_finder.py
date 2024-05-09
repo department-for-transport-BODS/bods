@@ -775,11 +775,16 @@ class VehicleJourneyFinder:
         for vj in reversed(vehicle_journeys):
             service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
             get_service_org_xml_string = self.get_service_org_xml_string(vj)
+            journey_code = vj.vehicle_journey.get_element(
+                ["Operational", "TicketMachine", "JourneyCode"]
+            )
+            journey_code_text = journey_code.text if journey_code else journey_code
             journey_code_operating_profile_service_org.append(
                 {
                     "operating_profile_xml_string": get_service_org_xml_string,
                     "service_organisation_xml_str": service_org_ref,
                     "service_organisation_day_operating": service_org_ref,
+                    "journey_code": journey_code_text,
                 }
             )
 
@@ -809,7 +814,7 @@ class VehicleJourneyFinder:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in timetables belonging to a single service code",
-                ErrorCode.CODE_6_2_C,
+                ErrorCode.CODE_6_2_B,
             )
             return False
         elif len(service_code_set) > 1:

@@ -329,6 +329,9 @@ def create_route_links(timing_links, stop_points):
     columns = timing_links.columns
     if "run_time" in columns:
         columns = [
+            "file_id",
+            "route_link_ref",
+            "jp_section_id",
             "from_stop_ref",
             "to_stop_ref",
             "is_timing_status",
@@ -337,15 +340,18 @@ def create_route_links(timing_links, stop_points):
         ]
     else:
         columns = [
+            "file_id",
+            "route_link_ref",
+            "jp_section_id",
             "from_stop_ref",
             "to_stop_ref",
         ]
 
     route_links = (
         timing_links.reset_index()
-        .drop_duplicates(["file_id", "route_link_ref"])
-        .set_index(["file_id", "route_link_ref"])
+        .drop_duplicates(["file_id", "route_link_ref", "jp_section_id"])
         .loc[:, columns]
+        .set_index(["file_id", "route_link_ref", "jp_section_id"])
         .rename(
             columns={"from_stop_ref": "from_stop_atco", "to_stop_ref": "to_stop_atco"}
         )
@@ -462,6 +468,7 @@ def create_route_to_route_links(
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
                 [
+                    "jp_section_id",
                     "route_link_ref",
                     "run_time_vj",
                     "wait_time_vj",
@@ -477,6 +484,7 @@ def create_route_to_route_links(
         route_to_route_links = route_to_route_links.groupby(route_columns).apply(
             lambda g: g.sort_values(["order_section", "order_link"]).reset_index()[
                 [
+                    "jp_section_id",
                     "route_link_ref",
                     "from_stop_sequence_number",
                     "to_stop_sequence_number",
@@ -580,9 +588,9 @@ def filter_operating_profiles(
             df_merged["exceptions_date"]
         )
 
-        filtered_df = df_merged.groupby(["file_id", "vehicle_journey_code"]).apply(
-            filter_profiles_on_vehicle_journeys
-        )
+        filtered_df = df_merged.groupby(
+            ["file_id", "vehicle_journey_code", "serviced_org_ref"], dropna=False
+        ).apply(filter_profiles_on_vehicle_journeys)
         filtered_df = filtered_df.drop(
             ["start_date", "end_date", "compare_exceptions_date"], axis=1
         ).set_index(indexes)
@@ -711,7 +719,7 @@ def merge_serviced_organisations_with_operating_profile(
     serviced_organisations, operating_profiles
 ):
     serviced_organisations.reset_index(inplace=True)
-
+    serviced_organisations.drop_duplicates(inplace=True)
     df_merged = pd.merge(
         serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
     )
@@ -790,7 +798,7 @@ def transform_service_pattern_to_service_links(
         .merge(
             route_links,
             how="left",
-            left_on=["file_id", "route_link_ref"],
+            left_on=["file_id", "route_link_ref", "jp_section_id"],
             right_index=True,
         )
     )

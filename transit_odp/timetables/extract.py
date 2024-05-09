@@ -493,7 +493,7 @@ class TransXChangeZipExtractor:
             vehicle_journeys=pd.concat(
                 (extract.vehicle_journeys for extract in extracts)
             ),
-            serviced_organisations=concat_and_dedupe(
+            serviced_organisations=pd.concat(
                 (extract.serviced_organisations for extract in extracts)
             ),
             operating_profiles=pd.concat(

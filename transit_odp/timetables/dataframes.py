@@ -753,7 +753,10 @@ def get_operating_profiles_for_all_exceptions(
 
 
 def populate_operating_profiles(
-    operating_profiles: TransXChangeElement, vehicle_journey_code: str, service_ref: str
+    operating_profiles: TransXChangeElement,
+    serviced_org_element: TransXChangeElement,
+    vehicle_journey_code: str,
+    service_ref: str,
 ) -> list:
     """Form the dataframe for operating profile which includes records
     for days of operation and days of non operation based on elements in
@@ -763,9 +766,6 @@ def populate_operating_profiles(
     serviced_org_refs = []
     days_of_week = ""
     operational = ""
-    serviced_organisation_day_type = operating_profiles.get_element_or_none(
-        ["ServicedOrganisationDayType"]
-    )
     regular_day_type = operating_profiles.get_element_or_none(["RegularDayType"])
     special_days_operation = operating_profiles.get_element_or_none(
         ["SpecialDaysOperation"]
@@ -792,31 +792,15 @@ def populate_operating_profiles(
         "operational": operational,
     }
 
-    if serviced_organisation_day_type:
-        days_of_operation = serviced_organisation_day_type.get_element_or_none(
-            ["DaysOfOperation"]
-        )
-        days_of_non_operation = serviced_organisation_day_type.get_element_or_none(
-            ["DaysOfNonOperation"]
-        )
+    if serviced_org_element:
         operational = False
-        if days_of_operation:
-            serviced_orgs_working_days = days_of_operation.get_element_or_none(
-                "WorkingDays"
-            )
-            if not serviced_orgs_working_days:
-                serviced_orgs_working_days = days_of_operation.get_element("Holidays")
-            else:
-                operational = True
-
-        elif days_of_non_operation:
-            serviced_orgs_working_days = days_of_non_operation.get_element_or_none(
-                "WorkingDays"
-            )
-            if not serviced_orgs_working_days:
-                serviced_orgs_working_days = days_of_non_operation.get_element(
-                    "Holidays"
-                )
+        serviced_orgs_working_days = serviced_org_element.get_element_or_none(
+            "WorkingDays"
+        )
+        if not serviced_orgs_working_days:
+            serviced_orgs_working_days = serviced_org_element.get_element("Holidays")
+        elif serviced_org_element.localname == "DaysOfOperation":
+            operational = True
 
         serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
             "ServicedOrganisationRef"
@@ -906,6 +890,20 @@ def populate_operating_profiles(
     return operating_profile_list
 
 
+def get_operating_profiles(
+    operating_profile_list: list,
+    operating_profile: TransXChangeElement,
+    serviced_org_element: TransXChangeElement,
+    vehicle_journey_code: str,
+    service_ref: str,
+) -> list:
+    operating_profiles = populate_operating_profiles(
+        operating_profile, serviced_org_element, vehicle_journey_code, service_ref
+    )
+    operating_profile_list.extend(operating_profiles)
+    return operating_profile_list
+
+
 def operating_profiles_to_dataframe(vehicle_journeys, services):
     operating_profile_list = []
     for vehicle_journey in vehicle_journeys:
@@ -924,10 +922,44 @@ def operating_profiles_to_dataframe(vehicle_journeys, services):
                         ["OperatingProfile"]
                     )
         if operating_profile:
-            operating_profiles = populate_operating_profiles(
-                operating_profile, vehicle_journey_code, service_ref
+            serviced_organisation_day_type = operating_profile.get_element_or_none(
+                ["ServicedOrganisationDayType"]
             )
-            operating_profile_list.extend(operating_profiles)
+            if serviced_organisation_day_type:
+                days_of_operation = serviced_organisation_day_type.get_element_or_none(
+                    ["DaysOfOperation"]
+                )
+                days_of_non_operation = (
+                    serviced_organisation_day_type.get_element_or_none(
+                        ["DaysOfNonOperation"]
+                    )
+                )
+                if days_of_operation:
+                    get_operating_profiles(
+                        operating_profile_list,
+                        operating_profile,
+                        days_of_operation,
+                        vehicle_journey_code,
+                        service_ref,
+                    )
+
+                if days_of_non_operation:
+                    get_operating_profiles(
+                        operating_profile_list,
+                        operating_profile,
+                        days_of_non_operation,
+                        vehicle_journey_code,
+                        service_ref,
+                    )
+
+            else:
+                get_operating_profiles(
+                    operating_profile_list,
+                    operating_profile,
+                    None,
+                    vehicle_journey_code,
+                    service_ref,
+                )
 
     operating_profile_df = pd.DataFrame(operating_profile_list)
     operating_profile_df = operating_profile_df.explode("day_of_week")
