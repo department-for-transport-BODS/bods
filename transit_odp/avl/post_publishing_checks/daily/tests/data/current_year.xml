@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<TransXChange FileName="current_year.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+<TransXChange RevisionNumber="234" FileName="current_year.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.transxchange.org.uk/" SchemaVersion="2.4" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
 <ServicedOrganisations>
 </ServicedOrganisations>
 <StopPoints>
