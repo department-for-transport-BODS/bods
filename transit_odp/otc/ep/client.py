@@ -79,7 +79,6 @@ class EPClient:
         url = f"{settings.EP_API_URL}?active=true"
         headers = {
             "Authorization": f"{self.ep_auth.token}",
-            "accept": "application/json",
         }
 
         try:
@@ -127,5 +126,4 @@ class EPClient:
         Return Pydentic model response
         """
         response = self._make_request()
-        response = APIResponse(**response)
         return response

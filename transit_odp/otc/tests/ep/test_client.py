@@ -26,7 +26,7 @@ class TestEPClient:
 
         # Assert
         mock_make_request.assert_called_once()
-        assert response == APIResponse(**get_ep_data)
+        assert response == get_ep_data
 
     @patch("transit_odp.otc.ep.client.requests.get")
     @patch("transit_odp.otc.ep.client.EPAuthenticator")

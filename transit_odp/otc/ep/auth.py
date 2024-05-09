@@ -1,3 +1,4 @@
+import json
 import logging
 from dataclasses import dataclass
 
@@ -38,11 +39,7 @@ def _get_token() -> str:
     """
     url = f"{settings.EP_AUTH_URL}"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    body = {
-        "client_secret": settings.EP_CLIENT_SECRET,
-        "client_id": settings.EP_CLIENT_ID,
-        "grant_type": "client_credentials",
-    }
+    body = f"client_id={settings.EP_CLIENT_ID}&client_secret={settings.EP_CLIENT_SECRET}&grant_type=client_credentials"
     response = None
     try:
         response = requests.post(url=url, headers=headers, data=body)

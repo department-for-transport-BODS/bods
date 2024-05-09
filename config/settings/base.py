@@ -598,13 +598,13 @@ WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
 # -------------------------------------------------------------------------------
 EP_API_URL = env(
     "EP_API_URL",
-    default="https://dev.publish.bus-registrations.dft.gov.uk/api/v1/search",
+    default="https://djzdv19waj3wh.cloudfront.net/api/v1/search",
 )
 EP_CLIENT_ID = env("EP_CLIENT_ID", default="EP_CLIENT_ID")
 EP_CLIENT_SECRET = env("EP_CLIENT_SECRET", default="EP_CLIENT_SECRET")
 EP_AUTH_URL = env(
     "EP_AUTH_URL",
-    default="https://dev-epp.auth.eu-west-2.amazoncognito.com/oauth2/token",
+    default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
 )
 
 # Disruptions API
