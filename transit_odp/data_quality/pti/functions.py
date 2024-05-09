@@ -475,7 +475,7 @@ def check_vehicle_journey_timing_links(
     xpath = "x:VehicleJourneyTimingLink"
     vehicle_journey_timing_links = vehicleJourney[0].xpath(xpath, namespaces=ns)
 
-    if len(vehicle_journey_timing_links) <= 0:
+    if len(vehicle_journey_timing_links) == 0:
         return True
 
     journey_pattern_ref = vehicleJourney[0].xpath("x:JourneyPatternRef", namespaces=ns)[
@@ -489,7 +489,7 @@ def check_vehicle_journey_timing_links(
         namespaces=ns,
     )
 
-    if len(journey_pattern_sections_refs) <= 0:
+    if len(journey_pattern_sections_refs) == 0:
         return False
 
     journey_pattern_sections_refs_ids = 0
