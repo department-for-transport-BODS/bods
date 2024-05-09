@@ -177,6 +177,25 @@ class Loader:
         count, _ = Operator.objects.filter(services=None).delete()
         logger.info(f"{count} Operators removed")
 
+    def inactivate_bad_services(self):
+        """
+        Inactivate all services whoes status are in RegistrationStatusEnum.to_delete().
+        and their effecitve date is in future
+        """
+        services = self.registry.get_services_with_future_effective_date(
+            services=self.to_delete_service
+        )
+
+        for service in services:
+            InactiveService.objects.get_or_create(
+                registration_number=service.registration_number,
+                registration_status=service.registration_status,
+                effective_date=service.effective_date,
+            )
+        logger.info(
+            f"{len(services)} Services inactivated because of effective date in future"
+        )
+
     def load(self):
         """
         The method is used to update the database, add and remove unnecessary objects.
@@ -221,6 +240,7 @@ class Loader:
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
+            self.inactivate_bad_services()
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
@@ -291,6 +311,8 @@ class Loader:
             f"loading {len(new_otc_objects)} new services into database from API"
         )
         Service.objects.bulk_create(new_otc_objects)
+
+        self.inactivate_bad_services()
 
     @cached_property
     def registered_service(self):

@@ -32,6 +32,7 @@ from transit_odp.timetables.transxchange import (
     TransXChangeDocument,
     TransXChangeElement,
 )
+from transit_odp.common.xmlelements.exceptions import XMLAttributeError
 
 logger = logging.getLogger(__name__)
 
@@ -189,9 +190,6 @@ class VehicleJourneyFinder:
                 TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
             )
             result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
-            result.set_transxchange_attribute(
-                TransXChangeField.REVISION_NUMBER, txc_file_attrs[0].revision_number
-            )
             result.set_matches(SirivmField.LINE_REF)
         else:
             logger.error("Matching TXC files belong to different datasets!\n")
@@ -824,6 +822,35 @@ class VehicleJourneyFinder:
             return False
         return True
 
+    def append_txc_revision_number(
+        self, txc_xml: List[TransXChangeDocument], result: ValidationResult
+    ):
+        """
+        Appends the revision number from the first TransXChange XML document in the given list
+        and sets it in the validation result.
+
+        Args:
+            txc_xml (List[TransXChangeDocument]): A list of TransXChangeDocument objects.
+            result (ValidationResult): The validation result object where the revision number will be set.
+
+        Returns:
+            None
+        """
+        if txc_xml:
+            first_txc_xml = txc_xml[0]
+            try:
+                result.set_transxchange_attribute(
+                    TransXChangeField.REVISION_NUMBER,
+                    first_txc_xml.get_revision_number(),
+                )
+            except (XMLAttributeError, Exception) as exp:
+                file_name = first_txc_xml.get_file_name()
+                error_message = (
+                    f"Revision number not found in transXchange file: {file_name}"
+                )
+                logger.error(f"Exception raised: {exp}")
+                logger.error(error_message)
+
     def record_journey_match(
         self, result: ValidationResult, vehicle_journey_ref: str, vj: TxcVehicleJourney
     ):
@@ -867,6 +894,8 @@ class VehicleJourneyFinder:
             return None
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
+
+        self.append_txc_revision_number(txc_xml, result)
 
         if (recorded_at_time := self.get_recorded_at_time(activity)) is None:
             result.add_error(
