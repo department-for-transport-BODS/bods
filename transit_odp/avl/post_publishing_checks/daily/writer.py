@@ -219,6 +219,9 @@ class PostPublishingResultsJsonWriter:
                                 "Serviced organisation operating on that day": service_org_detail.get(
                                     "service_organisation_day_operating", "-"
                                 ),
+                                "Service Code": result.transxchange_attribute(
+                                    TransXChangeField.SERVICE_CODE
+                                ),
                             }
                         )
                         pretty_printed_data = {

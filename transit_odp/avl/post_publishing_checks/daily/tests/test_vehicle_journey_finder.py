@@ -3,7 +3,10 @@ from pathlib import Path
 
 import pytest
 
-from transit_odp.avl.post_publishing_checks.constants import ErrorCategory
+from transit_odp.avl.post_publishing_checks.constants import (
+    ErrorCategory,
+    TransXChangeField,
+)
 from transit_odp.avl.post_publishing_checks.daily.results import ValidationResult
 from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import (
     DayOfWeek,
@@ -71,6 +74,19 @@ def test_check_same_dataset_fails():
         txc_file_attrs, mvj, ValidationResult()
     )
     assert not consistent
+
+
+def test_append_txc_revision_number():
+    txc_filenames = [
+        str(DATA_DIR / xml)
+        for xml in ("current_year.xml", "next_year.xml", "current_year_no_end_date.xml")
+    ]
+    txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
+    result = ValidationResult()
+    vehicle_journey_finder = VehicleJourneyFinder()
+    vehicle_journey_finder.append_txc_revision_number(txc_xml, result)
+    revision_number = result.transxchange_attribute(TransXChangeField.REVISION_NUMBER)
+    assert revision_number == "234"
 
 
 def test_filter_by_operating_period():
