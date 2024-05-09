@@ -165,6 +165,19 @@ class Registry:
                 service_list.append(service)
         return service_list
 
+    def get_services_with_future_effective_date(self, services) -> List[Service]:
+        """
+        Gets a list of the all services whoes status are in RegistrationStatusEnum.to_delete().
+        and their effecitve date is in future
+        """
+        service_list = [
+            service
+            for service in services
+            if (service.effective_date and service.effective_date > date.today())
+        ]
+
+        return service_list
+
     def get_latest_variations_by_id(self, registration_number) -> List[Registration]:
         """
         Gets a list of the all variations by registration number that are ordered by
