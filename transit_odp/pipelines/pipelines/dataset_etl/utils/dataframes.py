@@ -263,6 +263,7 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
 
 
 def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
+    """Generator function to return vehicle journey records to be loaded into the table"""
     for record in df.to_dict("records"):
         service_pattern_id = record.get("id_service", None)
         if pd.isna(record["vj_departure_time"]):
