@@ -3,6 +3,19 @@
 
 $govuk-table-border: 1px solid $govuk-border-colour;
 
+.timetables_govuk_table {
+  @extend .govuk-table;
+
+  .govuk-table__header:first-child,
+  .govuk-table__cell:first-child {
+    width: 25%; // Set your desired max-width here
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+}
+
 .custom_govuk_table {
   @extend .govuk-table;
 

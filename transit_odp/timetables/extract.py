@@ -7,6 +7,7 @@ from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
 from waffle import flag_is_active
+from pathlib import Path
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -44,11 +45,16 @@ logger = get_task_logger(__name__)
 class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
-    def __init__(self, file_obj: File, start_time):
+    def __init__(self, file_obj: File, start_time, df_txc_files=pd.DataFrame()):
         self.file_id = uuid.uuid4()
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
         self.start_time = start_time
+        self.txc_file_id = None
+        if self.filename:
+            self.txc_file_id = self.get_txc_file_id(
+                df_txc_files, Path(self.filename).name
+            )
 
     def extract(self) -> ExtractedData:
         """Extract data from document
@@ -107,8 +113,8 @@ class TransXChangeExtractor:
         serviced_organisations = pd.DataFrame()
         operating_profiles = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
-        # lines = pd.DataFrame()
-        if is_timetable_visualiser_active:
+
+        if is_timetable_visualiser_active and self.txc_file_id:
             # Extract VehicleJourneys
             logger.debug("Extracting vehicle_journeys")
             (
@@ -211,6 +217,16 @@ class TransXChangeExtractor:
             flexible_operation_periods=flexible_operation_periods,
         )
 
+    def get_txc_file_id(self, txc_files, filename):
+        txc_file_id = None
+        if filename and not txc_files.empty:
+            txc_file_row = txc_files.query("filename == @filename")
+
+            if not txc_file_row.empty:
+                txc_file_id = txc_file_row.iloc[0]["id"]
+
+        return txc_file_id
+
     def extract_flexible_journey_details(self):
         """
         This function extracts the flexible journey patterns
@@ -236,7 +252,9 @@ class TransXChangeExtractor:
 
     def extract_services(self) -> pd.DataFrame:
         try:
-            services_df, lines_df = services_to_dataframe(self.doc.get_services())
+            services_df, lines_df = services_to_dataframe(
+                self.doc.get_services(), self.txc_file_id
+            )
         except MissingLines as err:
             message = (
                 f"Service (service_code=${err.service}) is missing "
@@ -381,9 +399,10 @@ class TransXChangeExtractor:
 
 
 class TransXChangeZipExtractor:
-    def __init__(self, file_obj, start_time):
+    def __init__(self, file_obj, start_time, txc_files=pd.DataFrame()):
         self.file_obj = file_obj
         self.start_time = start_time
+        self.df_txc_files = txc_files
 
     def extract(self) -> ExtractedData:
         """
@@ -415,7 +434,9 @@ class TransXChangeZipExtractor:
             if filename.endswith(".xml"):
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
-                    extractor = TransXChangeExtractor(file_obj, self.start_time)
+                    extractor = TransXChangeExtractor(
+                        file_obj, self.start_time, self.df_txc_files
+                    )
                     extracted = extractor.extract()
                     extracts.append(extracted)
 
@@ -472,7 +493,7 @@ class TransXChangeZipExtractor:
             vehicle_journeys=pd.concat(
                 (extract.vehicle_journeys for extract in extracts)
             ),
-            serviced_organisations=concat_and_dedupe(
+            serviced_organisations=pd.concat(
                 (extract.serviced_organisations for extract in extracts)
             ),
             operating_profiles=pd.concat(

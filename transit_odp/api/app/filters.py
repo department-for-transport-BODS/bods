@@ -4,7 +4,6 @@ from transit_odp.transmodel.models import ServicePattern
 
 
 class ServicePatternFilterSet(filters.FilterSet):
-    line_name = filters.CharFilter(field_name="services__name", lookup_expr="exact")
     service_codes = filters.CharFilter(
         field_name="services__service_code", method="filter_by_service_codes"
     )

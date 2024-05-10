@@ -1,12 +1,20 @@
+import datetime
+import json
 import logging
 import random
+from datetime import timedelta
 from typing import List, Optional, Tuple
 
+import pandas as pd
 import requests
 from django.conf import settings
 
+from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.post_publishing_checks.constants import SirivmField
 from transit_odp.avl.post_publishing_checks.models import Siri, VehicleActivity
+from transit_odp.avl.post_publishing_checks.weekly.constants import DailyReport
+from transit_odp.avl.proxies import AVLDataset
+from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +56,20 @@ class SirivmSampler:
 
         return response.content
 
+    def get_organisation_name_for_feedid(self, feed_id: int) -> Optional[str]:
+        """
+        Retrieve the organization name associated with the given feed ID.
+
+        Args:
+            feed_id (int): The ID of the feed for which the organization name is to be retrieved.
+
+        Returns:
+            str or None: The name of the organization associated with the provided feed ID,
+            or None if no organization is found or if an error occurs during retrieval.
+        """
+        dataset_details = AVLDataset.objects.filter(id=feed_id).first()
+        return dataset_details.organisation.name if dataset_details else None
+
     def get_vehicle_activities(
         self,
         feed_id: int,
@@ -55,6 +77,9 @@ class SirivmSampler:
     ) -> Tuple[SiriHeader, List[VehicleActivity]]:
         random.seed()
         sirivm_fields = {}
+        vehicle_activities = []
+        organisation_name = self.get_organisation_name_for_feedid(feed_id)
+
         feed = self.get_siri_vm_data_feed_by_id(feed_id=feed_id)
         if not isinstance(feed, bytes):
             return sirivm_fields, []
@@ -63,11 +88,41 @@ class SirivmSampler:
         sirivm_header = SiriHeader.from_siri_packet(siri)
 
         vmd = siri.service_delivery.vehicle_monitoring_delivery
-        vehicle_activities = vmd.vehicle_activities
+
         logger.info(
-            f"Client returned {len(vehicle_activities)} vehicle activities for "
+            f"Client returned {len(vmd.vehicle_activities)} vehicle activities for "
             f"feed {feed_id}"
         )
+        organisation_lineref_map = (
+            self.generate_org_line_ref_mapping_for_inscope_lines()
+        )
+
+        vehicle_activities = [
+            vehicle_activity
+            for vehicle_activity in vmd.vehicle_activities
+            if (
+                vehicle_activity.monitored_vehicle_journey.line_ref,
+                organisation_name,
+            )
+            in organisation_lineref_map
+        ]
+        logger.info(
+            f"In Scope and In Season vehicle activities {len(vehicle_activities)} for "
+            f"feed {feed_id}"
+        )
+
+        if len(vehicle_activities) == 0:
+            return sirivm_header, []
+
+        vehicle_activities = self.ignore_old_activites(
+            vehicle_activities, vmd.response_timestamp.date(), feed_id
+        )
+
+        logger.info(
+            f"Vehicle activities not already analised {len(vehicle_activities)} for "
+            f"feed {feed_id}"
+        )
+
         if len(vehicle_activities) == 0:
             return sirivm_header, []
 
@@ -77,4 +132,189 @@ class SirivmSampler:
         logger.debug(
             f"Added {len(samples)} sample vehicle activities for feed id {feed_id}"
         )
+
         return sirivm_header, samples
+
+    def generate_org_line_ref_mapping_for_inscope_lines(self) -> dict:
+        """Generate a mapping of line references (line_ref) and Organisation
+        to their corresponding indices for inscope and inseason lines.
+
+        This function retrieves timetable data, filters for lines within scope and in season,
+        and then generates a dictionary mapping tuples of (line_ref, Organisation Name) to their indices in the DataFrame.
+
+        Returns:
+            dict: A dictionary mapping tuples of (line_ref, Organisation Name) to their indices in the DataFrame.
+        """
+        timetable_df = _get_timetable_catalogue_dataframe()
+        inscope_inseason_lines = timetable_df[
+            (timetable_df["Scope Status"] == "In Scope")
+            & (timetable_df["Seasonal Status"] != "Out of Season")
+        ]
+        inscope_inseason_lines["OTC:Service Number"] = inscope_inseason_lines[
+            "OTC:Service Number"
+        ].apply(lambda x: str(x).split("|"))
+        inscope_inseason_lines = inscope_inseason_lines.explode("OTC:Service Number")
+        inscope_inseason_lines.reset_index(drop=True, inplace=True)
+        noc_line_ref_map = {
+            (row["OTC:Service Number"], row["Organisation Name"]): index
+            for index, row in inscope_inseason_lines.iterrows()
+        }
+        return noc_line_ref_map
+
+    def ignore_old_activites(
+        self,
+        activities: List[VehicleActivity],
+        response_date: datetime.date,
+        feed_id: int,
+    ) -> List[VehicleActivity]:
+        """Ignore vehicle activities which matches any of the two criterias given below
+        1. If same RecordedAtTime and vehicleRef has already been processed in given week
+        2. If vehicle activities RecordedAtTime (date) is different than the response date in XML
+
+        Only dates will be compared, Time part will be ignored
+
+        Args:
+            activities (List[VehicleActivity]): list of activities extracted from XML response
+            response_date (datetime.date): response date from XML response
+            feed_id (int): dataset id being checked
+
+        Returns:
+            List[VehicleActivity]: List of activities which can be processed further
+        """
+        activities_df = self.ignore_first_timer_old_vehicle_activities(
+            self.ignore_second_timer_activities(activities, feed_id), response_date
+        )
+        activities = []
+        for index, row in activities_df.iterrows():
+            activities.append(VehicleActivity(**row))
+
+        return activities
+
+    def ignore_first_timer_old_vehicle_activities(
+        self, activities_df: pd.DataFrame, response_date: datetime.date
+    ) -> pd.DataFrame:
+        """Ignore the vehicle activities for which recorded_at_time != response_date
+
+        Args:
+            activities_df (pd.DataFrame): All the first time activities dataframe
+            response_date (datetime.date): The response date key in Siri response
+
+        Returns:
+            pd.DataFrame: Dataframe after ignoring the first time old activities
+        """
+        return activities_df[activities_df["recorded_at_time"].dt.date == response_date]
+
+    def ignore_second_timer_activities(
+        self, activities: List[VehicleActivity], feed_id: int
+    ) -> pd.DataFrame:
+        """Ignore the vehicle activities which has already been processed
+        by comparing RecordedAtDate and VehicleRef
+
+        Args:
+            activities (List[VehicleActivity]): List of Siri vehicle activities
+            feed_id (int): dataset id
+
+        Returns:
+            pd.DataFrame: returns the dataframe with first time vehicle activities
+        """
+        prev_activities = self.get_week_reports_df(feed_id)
+        curr_activities = pd.DataFrame(
+            [self.format_date(activity.dict()) for activity in activities]
+        )
+
+        if prev_activities.empty:
+            return curr_activities
+
+        prev_activities["RecordedAtDate"] = pd.to_datetime(
+            prev_activities["RecordedAtTime"]
+        ).dt.date
+
+        merged_df = pd.merge(
+            curr_activities,
+            prev_activities,
+            on=["VehicleRef", "RecordedAtDate"],
+            how="left",
+            indicator=True,
+        )
+
+        return (
+            merged_df[merged_df["_merge"] == "left_only"]
+            .drop(prev_activities.columns, axis=1)
+            .drop(columns="_merge")
+        )
+
+    def format_date(self, activity: dict[str, str]) -> dict[str, str]:
+        """Create two columns in incoming df, to make it easier for merge
+
+        Args:
+            activity (dict[str, str]): dict object of vehicle activity
+
+        Returns:
+            dict[str, str]: dict object of vehicle activity with extra columns
+        """
+        activity["RecordedAtDate"] = activity["recorded_at_time"].date()
+        activity["VehicleRef"] = activity["monitored_vehicle_journey"]["vehicle_ref"]
+        return activity
+
+    def get_week_reports_df(self, feed_id: int) -> pd.DataFrame:
+        """Get current week old vehicle activities dataframe
+
+        Args:
+            feed_id (int): dataset id
+
+        Returns:
+            pd.DataFrame: Will have all the vehicle activities proccessed
+            in the current week
+        """
+        start_date, end_date = self.get_start_and_end_date()
+        feeds_in_last_week = PostPublishingCheckReport.objects.filter(
+            created__range=[start_date, end_date],
+            granularity=PPCReportType.DAILY,
+            dataset_id=feed_id,
+        )
+
+        if feeds_in_last_week.count() == 0:
+            return pd.DataFrame()
+
+        dataframes = []
+        final_dataframe = pd.DataFrame()
+
+        for report in feeds_in_last_week:
+            json_report = json.load(report.file.open("rb"))
+            if (
+                "All SIRI-VM analysed" in json_report
+                and len(json_report["All SIRI-VM analysed"]) > 0
+            ):
+                dataframes.append(pd.DataFrame(json_report["All SIRI-VM analysed"]))
+        if len(dataframes):
+            final_dataframe = pd.concat(dataframes, ignore_index=True)
+        return final_dataframe
+
+    def get_start_and_end_date(self) -> tuple[datetime.date, datetime.date]:
+        """Get start and end date for old report
+        in order analize vehicle activity
+
+        Returns:
+            tuple: start date and end date
+        """
+        end_date = datetime.datetime.today()
+        start_date = self.get_prev_monday(end_date)
+        return start_date, end_date
+
+    def get_prev_monday(self, end_date: datetime.date) -> datetime.date:
+        """Get the date on Monday in the week,
+        It will act as a start date for the week
+
+        Args:
+            end_date (Date): today's date
+
+        Returns:
+            start_date (Date)
+        """
+        days_to_monday = end_date.weekday()
+        start_date = (
+            end_date
+            if end_date.weekday() == 0
+            else end_date - timedelta(days=days_to_monday)
+        )
+        return start_date

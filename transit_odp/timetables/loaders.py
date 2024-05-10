@@ -79,10 +79,6 @@ class TransXChangeDataLoader:
         serviced_organisations = self.load_serviced_organisation()
         adapter.info("Finished serviced organisations.")
 
-        adapter.info("Loading serviced organisations working dates.")
-        self.load_serviced_organisation_working_days(serviced_organisations)
-        adapter.info("Finished serviced organisationsworking dates.")
-
         adapter.info("Loading vehicle journeys.")
         vehicle_journeys = self.load_vehicle_journeys(service_patterns)
         adapter.info("Finished vehicle journeys.")
@@ -96,10 +92,16 @@ class TransXChangeDataLoader:
         adapter.info("Finished loading operating profiles.")
 
         adapter.info("Loading serviced organisations vehicle journeys.")
-        self.load_serviced_organisation_vehicle_journey(
+        serviced_orgs_vjs = self.load_serviced_organisation_vehicle_journey(
             vehicle_journeys, serviced_organisations
         )
         adapter.info("Finished serviced organisations vehicle journeys.")
+
+        adapter.info("Loading serviced organisations working dates.")
+        self.load_serviced_organisation_working_days(
+            serviced_organisations, serviced_orgs_vjs
+        )
+        adapter.info("Finished serviced organisationsworking dates.")
 
         adapter.info("Loading service pattern stops.")
         self.load_service_patterns_stops(service_patterns, vehicle_journeys, revision)
@@ -179,10 +181,13 @@ class TransXChangeDataLoader:
 
     def load_vehicle_journeys(self, service_patterns):
         vehicle_journeys = self.transformed.vehicle_journeys
+
         if not vehicle_journeys.empty:
             if not service_patterns.empty:
                 service_patterns = (
-                    service_patterns.reset_index()[["service_pattern_id", "id"]]
+                    service_patterns.reset_index()[
+                        ["service_pattern_id", "id", "file_id"]
+                    ]
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
@@ -190,7 +195,7 @@ class TransXChangeDataLoader:
                     vehicle_journeys.reset_index()
                     .merge(
                         service_patterns,
-                        on=["service_pattern_id"],
+                        on=["file_id", "service_pattern_id"],
                         how="left",
                     )
                     .reset_index()
@@ -291,21 +296,24 @@ class TransXChangeDataLoader:
         else:
             return pd.DataFrame()
 
-    def load_serviced_organisation_working_days(self, serviced_organisations):
-        columns_to_drop = [
-            "file_id",
-            "serviced_org_ref",
-            "operational",
-        ]
-        columns_to_drop_duplicates = ["id", "start_date", "end_date"]
-        serviced_organisation_working_days_objs = list(
-            df_to_serviced_organisation_working_days(
-                serviced_organisations, columns_to_drop, columns_to_drop_duplicates
+    def load_serviced_organisation_working_days(
+        self, serviced_organisations, serviced_orgs_vjs
+    ):
+        columns_to_drop_duplicates = ["start_date", "end_date", "serviced_org_vj_id"]
+        if not serviced_orgs_vjs.empty:
+            merged_df = pd.merge(
+                serviced_organisations,
+                serviced_orgs_vjs,
+                on=["file_id", "serviced_org_ref"],
             )
-        )
-        ServicedOrganisationWorkingDays.objects.bulk_create(
-            serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
-        )
+            serviced_organisation_working_days_objs = list(
+                df_to_serviced_organisation_working_days(
+                    merged_df, columns_to_drop_duplicates
+                )
+            )
+            ServicedOrganisationWorkingDays.objects.bulk_create(
+                serviced_organisation_working_days_objs, batch_size=BATCH_SIZE
+            )
 
     def load_operating_profiles(self, merged_operating_profiles_and_journeys):
         refined_operating_profiles_and_journeys = (
@@ -469,9 +477,18 @@ class TransXChangeDataLoader:
                     operating_profiles_serviced_orgs_vehicle_journeys_merged_df
                 )
             )
-            ServicedOrganisationVehicleJourney.objects.bulk_create(
+            created = ServicedOrganisationVehicleJourney.objects.bulk_create(
                 serviced_org_vehicle_journey_objs, batch_size=BATCH_SIZE
             )
+
+            if not operating_profiles_serviced_orgs_vehicle_journeys_merged_df.empty:
+                operating_profiles_serviced_orgs_vehicle_journeys_merged_df[
+                    "serviced_org_vj_id"
+                ] = [obj.id for obj in created]
+
+            return operating_profiles_serviced_orgs_vehicle_journeys_merged_df
+
+        return pd.DataFrame()
 
     def load_service_links(self, service_links: pd.DataFrame):
         """Load ServiceLinks into DB"""
@@ -529,24 +546,8 @@ class TransXChangeDataLoader:
             service_pattern_objs, batch_size=BATCH_SIZE
         )
 
-        created = pd.DataFrame(
-            (
-                {
-                    "service_pattern_id": obj.service_pattern_id,
-                    "id": obj.id,
-                    "instance": obj,
-                }
-                for obj in created
-            )
-        )
-
-        if not created.empty:
-            created = created.set_index("service_pattern_id")
-
         if not service_patterns.empty:
-            service_patterns = service_patterns.join(
-                created, on="service_pattern_id", how="inner"
-            )
+            service_patterns["id"] = [obj.id for obj in created]
 
         # Add ServiceLinks, ServicePatternStops, Localities, AdminAreas to
         # ServicePattern
@@ -593,6 +594,16 @@ class TransXChangeDataLoader:
                 ],
                 left_on=["file_id", "journey_pattern_id", "vehicle_journey_code"],
                 right_on=["file_id", "journey_pattern_ref", "vehicle_journey_code"],
+            )
+
+        if not service_patterns.empty:
+            sp_records = service_patterns.copy()
+            sp_records = sp_records.rename(columns={"id": "db_service_pattern_id"})
+            service_pattern_stops = service_pattern_stops.merge(
+                sp_records.reset_index()[
+                    ["file_id", "service_pattern_id", "db_service_pattern_id"]
+                ],
+                on=["file_id", "service_pattern_id"],
             )
 
         add_service_pattern_to_service_pattern_stops(

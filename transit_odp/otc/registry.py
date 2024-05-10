@@ -92,9 +92,10 @@ class Registry:
     def get_variations_since(self, when: datetime, services_to_check) -> List[Service]:
         """
         looks up all latest variations since a given date, any variations in the
-        RegistrationStatusEnum.to_change() will be looked up again. This leaves both
+        RegistrationStatusEnum.to_change() will be looked up again. This leaves
         registrations in RegistrationStatusEnum.REGISTERED and
-        RegistrationStatusEnum.to_delete().
+        RegistrationStatusEnum.to_delete()
+        RegistrationStatusEnum.to_change() with variation Zero
         """
         look_up_again = set()
         regs_to_update_lta = []
@@ -139,6 +140,9 @@ class Registry:
                     self.update_registered_variations(variation)
                 elif (
                     variation.registration_status in RegistrationStatusEnum.to_delete()
+                ) or (
+                    variation.registration_status in RegistrationStatusEnum.to_change()
+                    and variation.variation_number == 0
                 ):
                     self.update(variation)
 
@@ -166,7 +170,9 @@ class Registry:
         Gets a list of the all variations by registration number that are ordered by
         variation number descending. We then return all the entries with the highest
         variation number whose status are not in RegistrationStatusEnum.to_change().
-        If all of them are then we return an empty list
+        then we will check if the variation number 0 is with status RegistrationStatusEnum.to_change()
+        Return that variation because we have to remove that from database,
+        Else we return an empty list
         """
         registrations = self._client.get_variations_by_registration_code_desc(
             registration_number
@@ -175,6 +181,10 @@ class Registry:
             if (
                 registration.registration_status
                 not in RegistrationStatusEnum.to_change()
+            ) or (
+                registration.variation_number == 0
+                and registration.registration_status
+                in RegistrationStatusEnum.to_change()
             ):
                 highest_variation_number = registration.variation_number
                 return [
