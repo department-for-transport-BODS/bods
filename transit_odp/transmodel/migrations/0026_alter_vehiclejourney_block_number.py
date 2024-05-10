@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("transmodel", "0021_stopactivity_vehiclejourney_block_number"),
+        ("transmodel", "0025_remove_servicedorganisationworkingdays_serviced_organisation_and_more"),
     ]
 
     operations = [
