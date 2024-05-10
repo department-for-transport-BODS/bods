@@ -233,6 +233,18 @@ class TimetableVisualiser:
 
         return pd.DataFrame.from_records(qs_serviced_orgs)
 
+
+    def get_df_base_journeys(self) -> pd.DataFrame:
+        base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
+        if self._check_public_use_flag:
+            base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
+                txcfileattributes__public_use=True,
+            )
+        df_initial_vehicle_journeys = pd.DataFrame.from_records(
+            base_qs_vehicle_journeys
+        )
+        return df_initial_vehicle_journeys
+    
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
         Get the timetable visualiser for the specific service code, revision id,
