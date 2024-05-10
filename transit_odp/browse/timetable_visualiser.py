@@ -23,6 +23,7 @@ from transit_odp.timetables.utils import (
     fill_missing_journey_codes,
 )
 import pandas as pd
+import sys
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -239,7 +240,6 @@ class TimetableVisualiser:
         """
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
-
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
         if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
@@ -336,8 +336,21 @@ class TimetableVisualiser:
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
 
+            if "pytest" not in sys.modules:
+                file_path="transit_odp/pipelines/tests/test_dataset_etl/data/csv"
+                file_prefix = "with_vj_operating_profile_multi_serviced_org"
+                print_csv = pd.DataFrame.from_records(
+                    base_qs_vehicle_journeys
+                )
+                print_csv.to_csv(f'{file_path}/{file_prefix}_base.csv', index=False)
+                df_nonop_excep_vehicle_journey.to_csv(f'{file_path}/{file_prefix}_non_op_excep.csv', index=False)
+                df_op_excep_vehicle_journey.to_csv(f'{file_path}/{file_prefix}_op_excep.csv', index=False)
+                df_serviced_org.to_csv(f'{file_path}/{file_prefix}_so_data.csv', index=False)
+                df_timetable.to_csv(f'{file_path}/{file_prefix}_{direction}_final.csv')
+
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
             }
         return data
+    
