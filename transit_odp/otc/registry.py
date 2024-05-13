@@ -228,10 +228,13 @@ class Registry:
                 if variation.effective_date <= date.today():
                     self.update(variation)
                 else:
-                    InactiveService.objects.get_or_create(
+                    defaults = {
+                        "registration_status": variation.registration_status,
+                        "effective_date": variation.effective_date,
+                    }
+                    InactiveService.objects.update_or_create(
                         registration_number=variation.registration_number,
-                        registration_status=variation.registration_status,
-                        effective_date=variation.effective_date,
+                        defaults=defaults,
                     )
             else:
                 self.update(variation)

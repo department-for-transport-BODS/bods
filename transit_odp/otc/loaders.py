@@ -187,10 +187,12 @@ class Loader:
         )
 
         for service in services:
-            InactiveService.objects.get_or_create(
-                registration_number=service.registration_number,
-                registration_status=service.registration_status,
-                effective_date=service.effective_date,
+            defaults = {
+                "registration_status": service.registration_status,
+                "effective_date": service.effective_date,
+            }
+            InactiveService.objects.update_or_create(
+                registration_number=service.registration_number, defaults=defaults
             )
         logger.info(
             f"{len(services)} Services inactivated because of effective date in future"
