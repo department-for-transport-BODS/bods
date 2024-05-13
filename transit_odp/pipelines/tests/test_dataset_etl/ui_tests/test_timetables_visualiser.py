@@ -1,24 +1,14 @@
 from datetime import datetime
-from unittest.mock import patch
 import pandas as pd
 import pytest
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.pipelines.tests.utils import (
-    check_frame_equal,
     get_base_csv,
     get_serviced_org_csv,
 )
-from transit_odp.transmodel.factories import (
-    ServiceFactory,
-    ServicePatternFactory,
-    ServiceServicePatternFactory,
-)
-
-import os
 
 pytestmark = pytest.mark.django_db
-
 
 def test_timetable_visualier(mocker):
     revision_id = "1"
