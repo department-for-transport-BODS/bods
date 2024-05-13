@@ -1328,6 +1328,33 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         return (
             self.add_effective_stale_date_last_modified_date().add_effective_stale_date_end_date()  # noqa: E501
         )
+    
+    def for_revision(self, revision_id: int) -> list:
+        """Returns TXCFileAttributes objects for a revision."""
+        today = datetime.today()
+        return self.filter(
+            Q(revision_id=revision_id) &
+            Q(operating_period_start_date__lte=today) &
+            (Q(operating_period_end_date__isnull=True) | Q(operating_period_end_date__gte=today))
+        )
+        
+        # # Subquery to get the service code of the file with the highest revision number
+        # higher_revision_service_code = self.filter(
+        #     revision_id=revision_id,
+        #     operating_period_start_date__lte=today
+        # ).order_by('service_code', '-revision_number').values_list('service_code', flat=True).first()
+        # print("Higher revision service code:", higher_revision_service_code)
+        # queryset = self.filter(
+        #     revision_id=revision_id,
+        #     operating_period_start_date__lte=today,
+        #     operating_period_end_date__isnull=True
+        # )
+        # print("Queryset count after filtering by start date and null end date:", queryset.count())
+        
+        # queryset = queryset.exclude(service_code=higher_revision_service_code)
+        # print("Queryset count after excluding higher revision service code:", queryset.count())
+        
+        # return queryset
 
 
 class ConsumerFeedbackQuerySet(models.QuerySet):

@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import celery
+import itertools
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -43,6 +44,7 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
+from transit_odp.data_quality.models.dqs import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
@@ -77,14 +79,15 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
         args = (task.id,)
         jobs = [
             task_dataset_download.signature(args),
-            task_scan_timetables.signature(args),
-            task_timetable_file_check.signature(args),
-            task_timetable_schema_check.signature(args),
-            task_post_schema_check.signature(args),
+            # task_scan_timetables.signature(args),
+            # task_timetable_file_check.signature(args),
+            # task_timetable_schema_check.signature(args),
+            # task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            task_pti_validation.signature(args),
-            task_dqs_upload.signature(args),
+            # task_pti_validation.signature(args),
+            # task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
+            task_data_quality_service.signature(args),
             task_dataset_etl_finalise.signature(args),
         ]
 
@@ -411,6 +414,34 @@ def task_dataset_etl(revision_id: int, task_id: int):
     adapter.info("Timetable ETL pipeline task completed.")
     return revision_id
 
+
+@shared_task()
+def task_data_quality_service(revision_id: int, task_id: int):
+    """A task that runs the DQS checks on TxC file(s).
+    """
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting DQS checks.")
+    try:
+        task.update_progress(95)
+        report = Report.initialise_dqs_task(revision)
+        checks = Checks.get_all_checks()
+        txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(revision_id)
+        combinations = itertools.product(txc_file_attributes_objects, checks)
+
+        for txc_file_attribute, check in combinations:
+            TaskResults.initialize_task_results(report, txc_file_attribute, check)
+    
+    except Exception as exc:
+        task.handle_general_pipeline_exception(
+            exc,
+            adapter,
+            message="Unknown timetable pipeline error in DQS.",
+            task_name="dataset_etl",
+        )
+    adapter.info("Timetable publish pipeline task completed.")
+    return revision_id
 
 @shared_task()
 def task_dqs_upload(revision_id: int, task_id: int):

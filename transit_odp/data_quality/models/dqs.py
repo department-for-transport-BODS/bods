@@ -16,12 +16,28 @@ class Report(models.Model):
     )
     status = models.CharField(max_length=64, null=True)
 
+    @classmethod
+    def initialise_dqs_task(cls, revision: object) -> object:
+        """
+        Create a new Report instance with the provided data and save it to the database.
+        """
+        new_report = cls(file_name='', revision=revision, status="PENDING")
+        new_report.save()
+        return new_report
+
 
 class Checks(models.Model):
     observation = models.CharField(max_length=1024)
     importance = models.CharField(max_length=64)
     category = models.CharField(max_length=64)
 
+    @classmethod
+    def get_all_checks(cls) -> object:
+        """
+        Fetches all checks in the database
+        """
+        return cls.objects.all()
+    
 
 class TaskResults(models.Model):
     created = CreationDateTimeField(_("created"))
@@ -48,6 +64,24 @@ class TaskResults(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+
+    @classmethod
+    def initialize_task_results(cls, report: object, txc_file_attribute: object, check: object) -> object:
+        """
+        Create a TaskResults object based on the given revision, TXCFileAttribute,
+        and Check objects.
+        """
+        task_results_to_create = []
+        task_result = cls(
+                    status="PENDING",
+                    message="",
+                    checks=check,
+                    dataquality_report=report,
+                    transmodel_txcfileattributes=txc_file_attribute
+                )
+        task_results_to_create.append(task_result)
+
+        return cls.objects.bulk_create(task_results_to_create)
 
 
 class ObservationResults(models.Model):
