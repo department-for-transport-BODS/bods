@@ -4,6 +4,11 @@ import pandas as pd
 import pytest
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.pipelines.tests.utils import (
+    check_frame_equal,
+    get_base_csv,
+    get_serviced_org_csv,
+)
 from transit_odp.transmodel.factories import (
     ServiceFactory,
     ServicePatternFactory,
@@ -15,38 +20,20 @@ import os
 pytestmark = pytest.mark.django_db
 
 
-def modify_time_columns(df: pd.DataFrame, time_columns: list):
-    for col in time_columns:
-        df[col] = pd.to_datetime(df[col], format="%H:%M:%S")
-        df[col] = df[col].dt.time
-
-    return df
-
-
-def modify_date_columns(df: pd.DataFrame, date_columns: list):
-    for col in date_columns:
-        df[col] = pd.to_datetime(df[col])
-    return df
-
-
 def test_timetable_visualier(mocker):
-    revision_id = "8066"
+    revision_id = "1"
     service_code = "1"
     line = "11a"
     target_date = datetime.strptime("2024-05-13", "%Y-%m-%d")
     visualiser = TimetableVisualiser(revision_id, service_code, line, target_date)
-    base_csv = pd.read_csv("base.csv")
-    date_columns = ["start_date", "end_date"]
-    base_csv = modify_date_columns(base_csv, date_columns)
-    base_csv["departure_time"] = pd.to_datetime(
-        base_csv["departure_time"], format="%H:%M:%S"
-    )
-    base_csv["departure_time"] = base_csv["departure_time"].dt.time
 
-    serviced_org = pd.read_csv(
+    base_csv = get_base_csv(
+        "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_base.csv"
+    )
+
+    serviced_org = get_serviced_org_csv(
         "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_so_data.csv"
     )
-    serviced_org = modify_date_columns(serviced_org, date_columns)
     inbound_csv = pd.read_csv(
         "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_inbound_final.csv"
     )
