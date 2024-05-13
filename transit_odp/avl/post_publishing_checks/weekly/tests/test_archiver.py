@@ -22,7 +22,6 @@ def summary_data() -> Mock:
     summary_data_mock.get_origin_ref.return_value = pd.DataFrame()
     summary_data_mock.get_siri_message_analysed.return_value = pd.DataFrame()
     summary_data_mock.get_uncounted_vehicle_activities.return_value = pd.DataFrame()
-    summary_data_mock.get_error_data.return_value = pd.DataFrame()
 
     return summary_data_mock
 

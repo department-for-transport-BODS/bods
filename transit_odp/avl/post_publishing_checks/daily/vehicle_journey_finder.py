@@ -2,17 +2,10 @@ import datetime
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from zipfile import ZipFile
 
-from lxml import etree
-
-from transit_odp.avl.post_publishing_checks.constants import (
-    ErrorCategory,
-    SirivmField,
-    TransXChangeField,
-    ErrorCode,
-)
+from transit_odp.avl.post_publishing_checks.constants import ErrorCategory, SirivmField
 from transit_odp.avl.post_publishing_checks.daily.results import (
     MiscFieldPPC,
     ValidationResult,
@@ -144,52 +137,16 @@ class VehicleJourneyFinder:
         mvj: MonitoredVehicleJourney,
         result: ValidationResult,
     ) -> bool:
-        """
-        Checks if the matched TXC files belong to the same dataset. If they do, sets various attributes in the result object.
-        If they don't, logs an error and adds an error to the result object.
-
-        Args:
-            txc_file_attrs (List[TXCFileAttributes]): List of TXC file attributes.
-            mvj (MonitoredVehicleJourney): The monitored vehicle journey.
-            result (ValidationResult): The result object to be updated.
-
-        Returns:
-            bool: True if the matched TXC files belong to the same dataset, False otherwise.
-        """
         dataset_ids = {txc.dataset_id for txc in txc_file_attrs}
         consistent_data = len(dataset_ids) == 1
         if consistent_data:
-            dataset_id = dataset_ids.pop()
-            result.set_misc_value(MiscFieldPPC.BODS_DATASET_ID, dataset_id)
+            result.set_misc_value(MiscFieldPPC.BODS_DATASET_ID, dataset_ids.pop())
             result.set_txc_value(SirivmField.OPERATOR_REF, mvj.operator_ref)
             result.set_matches(SirivmField.OPERATOR_REF)
             result.set_txc_value(SirivmField.LINE_REF, mvj.line_ref)
             result.set_txc_value(
                 SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name
             )
-            result.set_transxchange_attribute(TransXChangeField.DATASET_ID, dataset_id)
-            result.set_transxchange_attribute(
-                TransXChangeField.MODIFICATION_DATE,
-                txc_file_attrs[0].modification_datetime,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.FILENAME, txc_file_attrs[0].filename
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.FILENAME, txc_file_attrs[0].filename
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.OPERATING_PERIOD_END_DATE,
-                txc_file_attrs[0].operating_period_end_date,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.OPERATING_PERIOD_START_DATE,
-                txc_file_attrs[0].operating_period_start_date,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
-            )
-            result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
             result.set_matches(SirivmField.LINE_REF)
         else:
             logger.error("Matching TXC files belong to different datasets!\n")
@@ -290,7 +247,6 @@ class VehicleJourneyFinder:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "No timetables found with VehicleActivity date in OperatingPeriod",
-                ErrorCode.CODE_1_2,
             )
             return False
 
@@ -344,7 +300,6 @@ class VehicleJourneyFinder:
             result.add_error(
                 ErrorCategory.GENERAL,
                 f"No vehicle journeys found with JourneyCode '{vehicle_journey_ref}'",
-                ErrorCode.CODE_2_1,
             )
 
         return matching_journeys
@@ -354,39 +309,23 @@ class VehicleJourneyFinder:
         vehicle_journeys: List[TxcVehicleJourney],
         published_line_name: str,
         result: ValidationResult,
-        vehicle_journey_ref: str,
     ) -> List[TxcVehicleJourney]:
         """Filter list of timetable files down to individual journeys matching the
         passed published line name. Returns list of matching journeys coupled with their
         parent timetable file.
         """
-        required_vjs = []
-        journey_code_operating_profile = []
+        vehicle_journeys = [
+            vj
+            for vj in vehicle_journeys
+            if vj.vehicle_journey.get_element("LineRef")
+            and vj.vehicle_journey.get_element("LineRef").text.split(":")[3]
+            == published_line_name
+        ]
 
-        for vj in vehicle_journeys:
-            if (
-                vj.vehicle_journey.get_element("LineRef")
-                and vj.vehicle_journey.get_element("LineRef").text.split(":")[3]
-                == published_line_name
-            ):
-                operating_profile_xml_string = (
-                    self.get_operating_profile_xml_tag_for_journey(vj)
-                )
-                journey_code_operating_profile.append(operating_profile_xml_string)
-                required_vjs.append(vj)
-
-        result.set_transxchange_attribute(
-            TransXChangeField.OPERATING_PROFILES, journey_code_operating_profile
-        )
-        result.set_transxchange_attribute(
-            TransXChangeField.JOURNEY_CODE, vehicle_journey_ref
-        )
-
-        if len(required_vjs) == 0:
+        if len(vehicle_journeys) == 0:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName",
-                ErrorCode.CODE_5_1,
             )
             return None
         return vehicle_journeys
@@ -405,32 +344,11 @@ class VehicleJourneyFinder:
             return None
         return operating_profile
 
-    def get_operating_profile_xml_tag_for_journey(
-        self, vj: TxcVehicleJourney
-    ) -> Optional[TransXChangeElement]:
-        """
-        Retrieves the XML tag for the operating profile of a given journey.
-
-        Args:
-            vj (TxcVehicleJourney): The vehicle journey for which the operating profile XML tag is to be retrieved.
-
-        Returns:
-            Optional[TransXChangeElement]: The XML tag for the operating profile of the journey, if it exists. Otherwise, None.
-        """
-        operating_profile_string = None
-        operating_profile_element = self.get_operating_profile_for_journey(vj)
-        if operating_profile_element:
-            operating_profile_string = etree.tostring(
-                operating_profile_element._element, pretty_print=True
-            ).decode()
-        return operating_profile_string
-
     def filter_by_operating_profile(
         self,
         activity_date,
         vehicle_journeys: List[TxcVehicleJourney],
         result: ValidationResult,
-        vehicle_journey_ref: str,
     ) -> bool:
         """Filter list of vehicle journeys down to those whose OperatingProfile applies
         to the VehiclActivity date. The OperatingProfile may be defined globally for
@@ -438,16 +356,10 @@ class VehicleJourneyFinder:
         in place with inapplicable vehicle journeys removed.
         NOTE: Bank Holidays not yet supported
         """
-        journey_code_operating_profile = []
         for vj in reversed(vehicle_journeys):
             operating_profile: TransXChangeElement = (
                 self.get_operating_profile_for_journey(vj)
             )
-            operating_profile_xml_string = (
-                self.get_operating_profile_xml_tag_for_journey(vj)
-            )
-            journey_code_operating_profile.append(operating_profile_xml_string)
-
             if operating_profile is None:
                 logger.debug(
                     "Ignoring VehicleJourney with no operating profile: "
@@ -480,19 +392,12 @@ class VehicleJourneyFinder:
             f"Filtering by OperatingProfile left {len(vehicle_journeys)} matching "
             "journeys"
         )
-        result.set_transxchange_attribute(
-            TransXChangeField.OPERATING_PROFILES, journey_code_operating_profile
-        )
-        result.set_transxchange_attribute(
-            TransXChangeField.JOURNEY_CODE, vehicle_journey_ref
-        )
 
         if len(vehicle_journeys) == 0:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "No vehicle journeys found with OperatingProfile applicable to "
                 "VehicleActivity date",
-                ErrorCode.CODE_3_1,
             )
             return False
 
@@ -611,69 +516,6 @@ class VehicleJourneyFinder:
             return []
         return working_days
 
-    def get_service_org_xml_string(
-        self, vehicle_journey: TxcVehicleJourney
-    ) -> Optional[TransXChangeElement]:
-        """
-        Retrieves the XML string for the service organization of a given vehicle journey.
-
-        Args:
-            vehicle_journey: The vehicle journey for which the service organization XML string is to be retrieved.
-
-        Returns:
-            str: The XML string for the service organization of the vehicle journey.
-        """
-        service_org_xml_str = None
-        service_org_from_vj = self.service_org_day_type(vehicle_journey)
-        if service_org_from_vj:
-            service_org_xml_str = etree.tostring(
-                service_org_from_vj._element, pretty_print=True
-            ).decode()
-        else:
-            service_org_from_service = self.get_service_org_day_type_from_service(
-                vehicle_journey
-            )
-            service_org_xml_str = etree.tostring(
-                service_org_from_service._element, pretty_print=True
-            ).decode()
-        return service_org_xml_str
-
-    def get_service_org_ref_and_days_of_operation(
-        self, vehicle_journey: TxcVehicleJourney
-    ) -> Tuple[Optional[str], Optional[TransXChangeElement]]:
-        """
-        Retrieve the service organization reference and days of operation or non-operation from the provided vehicle journey.
-
-        Args:
-            self: The object instance.
-            vehicle_journey (TxcVehicleJourney): The vehicle journey for which the service organization reference and days of operation or non-operation are to be obtained.
-
-        Returns:
-            Tuple[Optional[str], Optional[TransXChangeElement]]: A tuple containing the service organization reference and the element representing the days of operation or non-operation, or (None, None) if not found.
-        """
-        service_org_ref = None
-        days_of_non_operation = None
-        days_of_operation = None
-
-        service_org_day_type = self.service_org_day_type(
-            vehicle_journey
-        ) or self.get_service_org_day_type_from_service(vehicle_journey)
-
-        if service_org_day_type is not None:
-            days_of_non_operation: TransXChangeElement = (
-                service_org_day_type.get_element_or_none("DaysOfNonOperation")
-            )
-            if days_of_non_operation is not None:
-                service_org_ref = self.get_service_org_ref(days_of_non_operation)
-
-            days_of_operation: TransXChangeElement = (
-                service_org_day_type.get_element_or_none("DaysOfOperation")
-            )
-            if days_of_operation is not None:
-                service_org_ref = self.get_service_org_ref(days_of_operation)
-
-        return service_org_ref, days_of_non_operation, days_of_operation
-
     def filter_by_days_of_operation(
         self,
         recorded_at_time,
@@ -683,14 +525,27 @@ class VehicleJourneyFinder:
         for vj in reversed(vehicle_journeys):
             days_of_non_operation = None
             days_of_operation = None
+            service_org_ref = None
             inside_operating_range = False
             error_msg = None
 
-            (
-                service_org_ref,
-                days_of_non_operation,
-                days_of_operation,
-            ) = self.get_service_org_ref_and_days_of_operation(vj)
+            service_org_day_type = self.service_org_day_type(
+                vj
+            ) or self.get_service_org_day_type_from_service(vj)
+
+            if service_org_day_type is not None:
+                days_of_non_operation: TransXChangeElement = (
+                    service_org_day_type.get_element_or_none("DaysOfNonOperation")
+                )
+                if days_of_non_operation is not None:
+                    service_org_ref = self.get_service_org_ref(days_of_non_operation)
+
+                days_of_operation: TransXChangeElement = (
+                    service_org_day_type.get_element_or_none("DaysOfOperation")
+                )
+                if days_of_operation is not None:
+                    service_org_ref = self.get_service_org_ref(days_of_operation)
+
             service_orgs = self.get_serviced_organisations(vj)
             for org in service_orgs:
                 org_code = org.get_text_or_default("OrganisationCode")
@@ -756,10 +611,7 @@ class VehicleJourneyFinder:
         return True
 
     def filter_by_service_code(
-        self,
-        vehicle_journeys: List[TxcVehicleJourney],
-        result: ValidationResult,
-        vehicle_journey_ref: str,
+        self, vehicle_journeys: List[TxcVehicleJourney], result: ValidationResult
     ):
         """
         Filters vehicle journeys based on service code.
@@ -770,24 +622,7 @@ class VehicleJourneyFinder:
         """
         txc_file_list = []
         service_code_list = []
-        journey_code_operating_profile_service_org = []
-
         for vj in reversed(vehicle_journeys):
-            service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
-            get_service_org_xml_string = self.get_service_org_xml_string(vj)
-            journey_code = vj.vehicle_journey.get_element(
-                ["Operational", "TicketMachine", "JourneyCode"]
-            )
-            journey_code_text = journey_code.text if journey_code else journey_code
-            journey_code_operating_profile_service_org.append(
-                {
-                    "operating_profile_xml_string": get_service_org_xml_string,
-                    "service_organisation_xml_str": service_org_ref,
-                    "service_organisation_day_operating": service_org_ref,
-                    "journey_code": journey_code_text,
-                }
-            )
-
             txc_file_list.append(vj.txc_xml.name)
             service_code = self.get_service_code(vj)[0].text
             service_code_list.append(service_code)
@@ -795,26 +630,16 @@ class VehicleJourneyFinder:
         txc_file_set = set(txc_file_list)
         service_code_set = set(service_code_list)
 
-        result.set_transxchange_attribute(
-            TransXChangeField.SERVICE_ORGANISATION_DETAILS,
-            journey_code_operating_profile_service_org,
-        )
-        result.set_transxchange_attribute(
-            TransXChangeField.JOURNEY_CODE, vehicle_journey_ref
-        )
-
         if len(txc_file_set) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in a single timetables file belonging to a single service code",
-                ErrorCode.CODE_6_2_A,
             )
             return False
         elif len(service_code_set) == 1:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in timetables belonging to a single service code",
-                ErrorCode.CODE_6_2_B,
             )
             return False
         elif len(service_code_set) > 1:
@@ -925,14 +750,13 @@ class VehicleJourneyFinder:
             vehicle_journeys=vehicle_journeys,
             published_line_name=mvj.published_line_name,
             result=result,
-            vehicle_journey_ref=vehicle_journey_ref,
         )
 
         if not vehicle_journeys:
             return None
 
         if not self.filter_by_operating_profile(
-            recorded_at_time, vehicle_journeys, result, vehicle_journey_ref
+            recorded_at_time, vehicle_journeys, result
         ):
             return None
 
@@ -945,9 +769,7 @@ class VehicleJourneyFinder:
             return None
 
         if len(vehicle_journeys) > 1:
-            if not self.filter_by_service_code(
-                vehicle_journeys, result, vehicle_journey_ref
-            ):
+            if not self.filter_by_service_code(vehicle_journeys, result):
                 return None
 
         # If we get to this point, we've matched the SIRI-VM MonitoredVehicleJourney
