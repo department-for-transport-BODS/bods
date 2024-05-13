@@ -10,6 +10,7 @@ from transit_odp.pipelines.tests.utils import (
 
 pytestmark = pytest.mark.django_db
 
+
 def test_timetable_visualier(mocker):
     revision_id = "1"
     service_code = "1"
