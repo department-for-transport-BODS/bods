@@ -2,7 +2,7 @@ import celery
 from django.db import transaction
 from django.dispatch import receiver
 
-from transit_odp.data_quality.tasks import task_dqs_download, task_dqs_report_etl
+# from transit_odp.data_quality.tasks import task_dqs_download, task_dqs_report_etl
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.receivers import logger
@@ -24,22 +24,6 @@ def dataset_etl_handler(sender, revision: DatasetRevision, **kwargs):
 
     # Trigger task once transactions have been fully committed
     transaction.on_commit(lambda: task_dataset_pipeline.delay(revision.id))
-
-
-@receiver(dqs_report_etl)
-def dqs_report_etl_handler(sender, task: DataQualityTask, **kwargs):
-    """
-    Listens on the dqs_report_etl and dispatches a Celery job chain to
-    process the ready DQS report
-    """
-    logger.debug(
-        f"dqs_report_etl_handler called for "
-        f"DataQualityTask(id={task.id}, task_id={task.task_id})"
-    )
-    # Chain Celery tasks: download the report and then run ETL pipeline
-    transaction.on_commit(
-        lambda: celery.chain(task_dqs_download.s(task.id), task_dqs_report_etl.s())()
-    )
 
 
 @receiver(dataset_changed)
