@@ -24,6 +24,7 @@ from transit_odp.timetables.utils import (
 )
 import pandas as pd
 import sys
+from django.db.models import QuerySet
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -233,9 +234,7 @@ class TimetableVisualiser:
 
         return pd.DataFrame.from_records(qs_serviced_orgs)
 
-
-    def get_df_base_journeys(self) -> pd.DataFrame:
-        base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
+    def get_df_base_journeys(self, base_qs_vehicle_journeys: QuerySet) -> pd.DataFrame:
         if self._check_public_use_flag:
             base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
                 txcfileattributes__public_use=True,
@@ -244,7 +243,7 @@ class TimetableVisualiser:
             base_qs_vehicle_journeys
         )
         return df_initial_vehicle_journeys
-    
+
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
         Get the timetable visualiser for the specific service code, revision id,
@@ -253,11 +252,7 @@ class TimetableVisualiser:
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
-        if self._check_public_use_flag:
-            base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
-                txcfileattributes__public_use=True,
-            )
-        df_initial_vehicle_journeys = pd.DataFrame.from_records(
+        df_initial_vehicle_journeys = self.get_df_base_journeys(
             base_qs_vehicle_journeys
         )
 
@@ -296,12 +291,28 @@ class TimetableVisualiser:
         df_serviced_org = self.get_df_servicedorg_vehicle_journey(
             base_vehicle_journey_ids
         )
-
         data = {}
         directions = {
             "inbound": {"inbound", "antiClockwise"},
             "outbound": {"outbound", "clockwise"},
         }
+
+        disable_csv = True
+        file_path = "transit_odp/pipelines/tests/test_dataset_etl/data/csv"
+        file_prefix = "with_vj_operating_profile_multi_serviced_org"
+        if "pytest" not in sys.modules and not disable_csv:
+            print_csv = pd.DataFrame.from_records(base_qs_vehicle_journeys)
+            print_csv.to_csv(f"{file_path}/{file_prefix}_base.csv", index=False)
+            df_nonop_excep_vehicle_journey.to_csv(
+                f"{file_path}/{file_prefix}_non_op_excep.csv", index=False
+            )
+            df_op_excep_vehicle_journey.to_csv(
+                f"{file_path}/{file_prefix}_op_excep.csv", index=False
+            )
+            df_serviced_org.to_csv(
+                f"{file_path}/{file_prefix}_so_data.csv", index=False
+            )
+
         for direction in directions.keys():
             df_base_vehicle_journeys = df_initial_vehicle_journeys[
                 df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
@@ -348,21 +359,13 @@ class TimetableVisualiser:
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
 
-            if "pytest" not in sys.modules:
-                file_path="transit_odp/pipelines/tests/test_dataset_etl/data/csv"
-                file_prefix = "with_vj_operating_profile_multi_serviced_org"
-                print_csv = pd.DataFrame.from_records(
-                    base_qs_vehicle_journeys
+            if "pytest" not in sys.modules and not disable_csv:
+                df_timetable.to_csv(
+                    f"{file_path}/{file_prefix}_{direction}_final.csv", index=False
                 )
-                print_csv.to_csv(f'{file_path}/{file_prefix}_base.csv', index=False)
-                df_nonop_excep_vehicle_journey.to_csv(f'{file_path}/{file_prefix}_non_op_excep.csv', index=False)
-                df_op_excep_vehicle_journey.to_csv(f'{file_path}/{file_prefix}_op_excep.csv', index=False)
-                df_serviced_org.to_csv(f'{file_path}/{file_prefix}_so_data.csv', index=False)
-                df_timetable.to_csv(f'{file_path}/{file_prefix}_{direction}_final.csv')
 
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
             }
         return data
-    
