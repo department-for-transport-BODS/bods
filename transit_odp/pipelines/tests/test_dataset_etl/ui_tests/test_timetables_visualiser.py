@@ -11,25 +11,32 @@ from transit_odp.pipelines.tests.utils import (
 pytestmark = pytest.mark.django_db
 
 
-def test_timetable_visualier(mocker):
+@pytest.mark.parametrize(
+    "line, target_date, folder_path",
+    [
+        ("11a", "2024-05-13", "day_of_week_operational"),
+        ("7", "2024-09-10", "day_of_week_non_operational_so"),
+        ("7", "2024-01-09", "day_of_week_operational_so"),
+        # Add more test cases as needed
+    ],
+)
+def test_timetable_visualiser_day_of_week(mocker, line, target_date, folder_path):
     revision_id = "1"
     service_code = "1"
-    line = "11a"
-    target_date = datetime.strptime("2024-05-13", "%Y-%m-%d")
+    target_date = datetime.strptime(target_date, "%Y-%m-%d")
     visualiser = TimetableVisualiser(revision_id, service_code, line, target_date)
 
     base_csv = get_base_csv(
-        "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_base.csv"
+        f"transit_odp/pipelines/tests/test_dataset_etl/data/csv/{folder_path}/with_vj_operating_profile_multi_serviced_org_base.csv"
     )
-
     serviced_org = get_serviced_org_csv(
-        "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_so_data.csv"
+        f"transit_odp/pipelines/tests/test_dataset_etl/data/csv/{folder_path}/with_vj_operating_profile_multi_serviced_org_so_data.csv"
     )
     inbound_csv = pd.read_csv(
-        "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_inbound_final.csv"
+        f"transit_odp/pipelines/tests/test_dataset_etl/data/csv/{folder_path}/with_vj_operating_profile_multi_serviced_org_inbound_final.csv"
     )
     outbound_csv = pd.read_csv(
-        "transit_odp/pipelines/tests/test_dataset_etl/data/csv/with_vj_operating_profile_multi_serviced_org_outbound_final.csv"
+        f"transit_odp/pipelines/tests/test_dataset_etl/data/csv/{folder_path}/with_vj_operating_profile_multi_serviced_org_outbound_final.csv"
     )
     mocker.patch.multiple(
         visualiser,
