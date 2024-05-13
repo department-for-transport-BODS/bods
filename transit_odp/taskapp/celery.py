@@ -89,10 +89,6 @@ class CeleryAppConfig(AppConfig):
                 "task": PIPELINE_TASKS + "task_run_naptan_etl",
                 "schedule": crontab(minute=0, hour=1),
             },
-            "dqs_monitor": {
-                "task": PIPELINE_TASKS + "task_dqs_monitor",
-                "schedule": 60.0,
-            },
             "update_bods_xsd_zip_files": {
                 "task": PIPELINE_TASKS + "task_update_xsd_zip_cache",
                 "schedule": crontab(
