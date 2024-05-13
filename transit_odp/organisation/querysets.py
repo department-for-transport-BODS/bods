@@ -1328,16 +1328,19 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         return (
             self.add_effective_stale_date_last_modified_date().add_effective_stale_date_end_date()  # noqa: E501
         )
-    
+
     def for_revision(self, revision_id: int) -> list:
         """Returns TXCFileAttributes objects for a revision."""
         today = datetime.today()
         return self.filter(
-            Q(revision_id=revision_id) &
-            Q(operating_period_start_date__lte=today) &
-            (Q(operating_period_end_date__isnull=True) | Q(operating_period_end_date__gte=today))
+            Q(revision_id=revision_id)
+            & Q(operating_period_start_date__lte=today)
+            & (
+                Q(operating_period_end_date__isnull=True)
+                | Q(operating_period_end_date__gte=today)
+            )
         )
-        
+
         # # Subquery to get the service code of the file with the highest revision number
         # higher_revision_service_code = self.filter(
         #     revision_id=revision_id,
@@ -1350,10 +1353,10 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         #     operating_period_end_date__isnull=True
         # )
         # print("Queryset count after filtering by start date and null end date:", queryset.count())
-        
+
         # queryset = queryset.exclude(service_code=higher_revision_service_code)
         # print("Queryset count after excluding higher revision service code:", queryset.count())
-        
+
         # return queryset
 
 

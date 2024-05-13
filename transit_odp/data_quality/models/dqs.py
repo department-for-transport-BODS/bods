@@ -21,7 +21,7 @@ class Report(models.Model):
         """
         Create a new Report instance with the provided data and save it to the database.
         """
-        new_report = cls(file_name='', revision=revision, status="PENDING")
+        new_report = cls(file_name="", revision=revision, status="PENDING")
         new_report.save()
         return new_report
 
@@ -37,7 +37,7 @@ class Checks(models.Model):
         Fetches all checks in the database
         """
         return cls.objects.all()
-    
+
 
 class TaskResults(models.Model):
     created = CreationDateTimeField(_("created"))
@@ -66,19 +66,21 @@ class TaskResults(models.Model):
     )
 
     @classmethod
-    def initialize_task_results(cls, report: object, txc_file_attribute: object, check: object) -> object:
+    def initialize_task_results(
+        cls, report: object, txc_file_attribute: object, check: object
+    ) -> object:
         """
         Create a TaskResults object based on the given revision, TXCFileAttribute,
         and Check objects.
         """
         task_results_to_create = []
         task_result = cls(
-                    status="PENDING",
-                    message="",
-                    checks=check,
-                    dataquality_report=report,
-                    transmodel_txcfileattributes=txc_file_attribute
-                )
+            status="PENDING",
+            message="",
+            checks=check,
+            dataquality_report=report,
+            transmodel_txcfileattributes=txc_file_attribute,
+        )
         task_results_to_create.append(task_result)
 
         return cls.objects.bulk_create(task_results_to_create)

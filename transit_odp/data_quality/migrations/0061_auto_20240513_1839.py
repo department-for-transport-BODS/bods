@@ -3,10 +3,12 @@
 from django.db import migrations
 from transit_odp.data_quality.constants import CHECKS_DATA
 
+
 def insert_data(apps, schema_editor):
-    Checks = apps.get_model('data_quality', 'Checks')
+    Checks = apps.get_model("data_quality", "Checks")
     for entry in CHECKS_DATA:
         Checks.objects.create(**entry)
+
 
 class Migration(migrations.Migration):
     dependencies = [

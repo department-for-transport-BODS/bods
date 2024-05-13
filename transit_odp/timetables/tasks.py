@@ -417,8 +417,7 @@ def task_dataset_etl(revision_id: int, task_id: int):
 
 @shared_task()
 def task_data_quality_service(revision_id: int, task_id: int):
-    """A task that runs the DQS checks on TxC file(s).
-    """
+    """A task that runs the DQS checks on TxC file(s)."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
@@ -427,12 +426,14 @@ def task_data_quality_service(revision_id: int, task_id: int):
         task.update_progress(95)
         report = Report.initialise_dqs_task(revision)
         checks = Checks.get_all_checks()
-        txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(revision_id)
+        txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
+            revision_id
+        )
         combinations = itertools.product(txc_file_attributes_objects, checks)
 
         for txc_file_attribute, check in combinations:
             TaskResults.initialize_task_results(report, txc_file_attribute, check)
-    
+
     except Exception as exc:
         task.handle_general_pipeline_exception(
             exc,
@@ -442,6 +443,7 @@ def task_data_quality_service(revision_id: int, task_id: int):
         )
     adapter.info("Timetable publish pipeline task completed.")
     return revision_id
+
 
 @shared_task()
 def task_dqs_upload(revision_id: int, task_id: int):
