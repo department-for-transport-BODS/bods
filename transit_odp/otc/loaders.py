@@ -124,7 +124,10 @@ class Loader:
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()
 
-                for (db_item, kwargs,) in (
+                for (
+                    db_item,
+                    kwargs,
+                ) in (
                     (db_service.licence, updated_service_kwargs.pop("licence")),
                     (db_service.operator, updated_service_kwargs.pop("operator")),
                     (db_service, updated_service_kwargs),
@@ -187,7 +190,7 @@ class Loader:
         )
 
         for service in services:
-            InactiveService.objects.get_or_create(
+            InactiveService.objects.update_or_create(
                 registration_number=service.registration_number,
                 registration_status=service.registration_status,
                 effective_date=service.effective_date,
