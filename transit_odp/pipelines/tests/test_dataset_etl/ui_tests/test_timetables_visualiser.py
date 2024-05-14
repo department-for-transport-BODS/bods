@@ -10,14 +10,12 @@ from transit_odp.pipelines.tests.utils import (
 
 pytestmark = pytest.mark.django_db
 
-
 @pytest.mark.parametrize(
     "line, target_date, folder_path",
     [
         ("11a", "2024-05-13", "day_of_week_operational"),
         ("7", "2024-09-10", "day_of_week_non_operational_so"),
         ("7", "2024-01-09", "day_of_week_operational_so"),
-        # Add more test cases as needed
     ],
 )
 def test_timetable_visualiser_day_of_week(mocker, line, target_date, folder_path):
