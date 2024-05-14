@@ -129,7 +129,7 @@ class Registry:
         Fetch records from the EP api, and implement following
         1. Remove duplicate services and service name combination
         2. Merge the services based on service name seprated by pipe
-        3. Ignore the services which belongs to OTC
+        3. Ignore the services which belongs to OTC and WECA
         4. Map licence to the ones present in database
         """
         self.fetch_all_records()

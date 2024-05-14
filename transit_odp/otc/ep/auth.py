@@ -35,7 +35,7 @@ def _get_token() -> str:
 
     Token cache timeout is calculated using the data received in response.
 
-    expiry_time - 5mins (to invalidate cache while the first token is still active)
+    expiry_time (to invalidate cache while the first token is still active)
     """
     url = f"{settings.EP_AUTH_URL}"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
