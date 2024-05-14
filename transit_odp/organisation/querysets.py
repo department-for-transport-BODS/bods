@@ -1331,15 +1331,19 @@ class TXCFileAttributesQuerySet(models.QuerySet):
 
     def for_revision(self, revision_id: int) -> list:
         """Returns TXCFileAttributes objects for a revision."""
-        today = datetime.today()
+        # today = datetime.today()
+        # return self.filter(
+        #     Q(revision_id=revision_id)
+        #     & Q(operating_period_start_date__lte=today)
+        #     & (
+        #         Q(operating_period_end_date__isnull=True)
+        #         | Q(operating_period_end_date__gte=today)
+        #     )
+        # )
         return self.filter(
-            Q(revision_id=revision_id)
-            & Q(operating_period_start_date__lte=today)
-            & (
-                Q(operating_period_end_date__isnull=True)
-                | Q(operating_period_end_date__gte=today)
-            )
-        )
+            service_txcfileattributes__revision_id=revision_id
+        ).distinct()
+
 
         # # Subquery to get the service code of the file with the highest revision number
         # higher_revision_service_code = self.filter(

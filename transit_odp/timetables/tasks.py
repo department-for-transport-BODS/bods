@@ -7,7 +7,7 @@ import itertools
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import IntegrityError, transaction
+from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
 
 from transit_odp.common.loggers import (
@@ -79,13 +79,13 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
         args = (task.id,)
         jobs = [
             task_dataset_download.signature(args),
-            task_scan_timetables.signature(args),
-            task_timetable_file_check.signature(args),
-            task_timetable_schema_check.signature(args),
-            task_post_schema_check.signature(args),
+            # task_scan_timetables.signature(args),
+            # task_timetable_file_check.signature(args),
+            # task_timetable_schema_check.signature(args),
+            # task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            task_pti_validation.signature(args),
-            task_dqs_upload.signature(args),
+            # task_pti_validation.signature(args),
+            # task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
             task_data_quality_service.signature(args),
             task_dataset_etl_finalise.signature(args),
@@ -440,6 +440,14 @@ def task_data_quality_service(revision_id: int, task_id: int):
         for txc_file_attribute, check in combinations:
             TaskResults.initialize_task_results(report, txc_file_attribute, check)
 
+    except (DatabaseError, IntegrityError) as db_exc:
+        task.handle_general_pipeline_exception(
+            db_exc,
+            adapter,
+            message="Database error occurred:",
+            task_name="dataset_etl",
+        )
+    
     except Exception as exc:
         task.handle_general_pipeline_exception(
             exc,
@@ -447,7 +455,7 @@ def task_data_quality_service(revision_id: int, task_id: int):
             message="Unknown timetable pipeline error in DQS.",
             task_name="dataset_etl",
         )
-    adapter.info("Timetable publish pipeline task completed.")
+    adapter.info("Timetable DQS initiation task completed.")
     return revision_id
 
 
