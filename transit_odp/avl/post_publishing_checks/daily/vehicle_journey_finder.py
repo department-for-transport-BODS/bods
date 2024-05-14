@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 from zipfile import ZipFile
+import os
 
 from transit_odp.avl.post_publishing_checks.constants import ErrorCategory, SirivmField
 from transit_odp.avl.post_publishing_checks.daily.results import (
@@ -170,7 +171,9 @@ class VehicleJourneyFinder:
             with ZipFile(upload_file) as zin:
                 txc_filenames = [txc.filename for txc in txc_file_attrs]
                 for filename in zin.namelist():
-                    if filename in txc_filenames:
+                    # filename can also contains directory name
+                    base_filename = os.path.basename(filename)
+                    if base_filename in txc_filenames:
                         with zin.open(filename, "r") as fp:
                             timetables.append(TransXChangeDocument(fp))
 
