@@ -7,6 +7,7 @@ from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.naptan.models import AdminArea
 from datetime import timedelta
+from django.db.models.expressions import RawSQL
 
 
 def get_otc_map(org_id: int) -> Dict[str, OTCService]:
@@ -57,6 +58,44 @@ def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
         )
         .distinct("service_code")
     }
+
+
+def get_line_level_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for an organisation
+    with relevant effective staleness dates annotated.
+    """
+    line_level_txc_map = {}
+    field_names = [field.name for field in TXCFileAttributes._meta.get_fields()]
+
+    txc_file_attributes = (
+        TXCFileAttributes.objects.filter(revision__dataset__organisation_id=org_id)
+        .annotate(line_name_unnested=RawSQL("unnest(line_names)", ()))
+        .get_active_live_revisions()
+        .add_staleness_dates()
+        .values(
+            *field_names,
+            "line_name_unnested",
+            "id",
+            "revision__dataset_id",
+            "effective_stale_date_last_modified_date",
+            "effective_stale_date_end_date"
+        )
+        .order_by(
+            "service_code",
+            "-revision__published_at",
+            "-revision_number",
+            "-modification_datetime",
+            "-operating_period_start_date",
+            "-filename",
+        )
+        .all()
+    )
+
+    for txc_file in txc_file_attributes:
+        key = (txc_file["service_code"], txc_file["line_name_unnested"])
+        line_level_txc_map[key] = txc_file
+    return line_level_txc_map
 
 
 def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
