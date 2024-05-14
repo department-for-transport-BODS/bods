@@ -2,19 +2,39 @@ import datetime
 from typing import List
 
 import factory
-from factory.fuzzy import FuzzyDate, FuzzyInteger, FuzzyText
+from factory.fuzzy import FuzzyDate, FuzzyInteger, FuzzyText, FuzzyChoice
 
 from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
-from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.organisation.factories import (
+    DatasetRevisionFactory,
+    TXCFileAttributesFactory,
+)
 from transit_odp.transmodel.models import (
     BankHolidays,
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
+    OperatingProfile,
     Service,
     ServicePattern,
     ServicePatternStop,
+    ServicedOrganisationVehicleJourney,
+    ServicedOrganisationWorkingDays,
     ServicedOrganisations,
+    VehicleJourney,
 )
 from factory.django import DjangoModelFactory
+
+direction_choices = ["inbound", "outbound"]
+day_choices = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+]
 
 
 class ServicePatternFactory(DjangoModelFactory):
@@ -26,6 +46,7 @@ class ServicePatternFactory(DjangoModelFactory):
     origin = factory.Faker("street_name")
     destination = factory.Faker("street_name")
     description = factory.Faker("paragraph")
+    line_name = FuzzyText(length=255)
 
     @factory.post_generation
     def stops(self, create, extracted: List[StopPoint], **kwargs):
@@ -78,6 +99,7 @@ class ServiceFactory(DjangoModelFactory):
     name = FuzzyText(length=12)
     start_date = FuzzyDate(datetime.date.today())
     end_date = FuzzyDate(datetime.date.today())
+    txcfileattributes = factory.SubFactory(TXCFileAttributesFactory)
 
     @factory.post_generation
     def service_patterns(self, create, extracted, **kwargs):
@@ -122,3 +144,76 @@ class BankHolidaysFactory(DjangoModelFactory):
     date = FuzzyDate(datetime.date.today())
     notes = FuzzyText(length=255)
     division = FuzzyText(length=255)
+
+
+class VehicleJourneyFactory(DjangoModelFactory):
+    class Meta:
+        model = VehicleJourney
+
+    start_time = factory.Faker("time", format="%H:%M:%S")
+    line_ref = FuzzyText(length=255)
+    journey_code = FuzzyText(length=255)
+    direction = FuzzyChoice(direction_choices)
+    departure_day_shift = factory.Faker("boolean")
+    service_pattern = factory.SubFactory(ServicePatternStopFactory)
+    block_number = FuzzyInteger(1, 10)
+
+
+class ServiceServicePatternFactory(DjangoModelFactory):
+    class Meta:
+        model = Service.service_patterns.through
+
+    service = factory.SubFactory(ServiceFactory)
+    servicepattern = factory.SubFactory(ServicePatternFactory)
+
+
+class OperatingDatesExceptionsFactory(DjangoModelFactory):
+    class Meta:
+        model = OperatingDatesExceptions
+
+    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
+    operating_date = FuzzyDate(datetime.date.today())
+
+
+class NonOperatingDatesExceptionsFactory(DjangoModelFactory):
+    class Meta:
+        model = NonOperatingDatesExceptions
+
+    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
+    non_operating_date = FuzzyDate(datetime.date.today())
+
+
+class OperatingProfileFactory(DjangoModelFactory):
+    class Meta:
+        model = OperatingProfile
+
+    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
+    day_of_week = FuzzyChoice(day_choices)
+
+
+class ServicedOrganisationsFactory(DjangoModelFactory):
+    class Meta:
+        model = ServicedOrganisations
+
+    organisation_code = FuzzyText(length=255)
+    name = FuzzyText(length=255)
+
+
+class ServicedOrganisationVehicleJourneyFactory(DjangoModelFactory):
+    class Meta:
+        model = ServicedOrganisationVehicleJourney
+
+    serviced_organisation = factory.SubFactory(ServicedOrganisationsFactory)
+    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
+    operating_on_working_days = factory.Faker("boolean")
+
+
+class ServicedOrganisationWorkingDaysFactory(DjangoModelFactory):
+    class Meta:
+        model = ServicedOrganisationWorkingDays
+
+    serviced_organisation_vehicle_journey = factory.SubFactory(
+        ServicedOrganisationVehicleJourneyFactory
+    )
+    start_date = FuzzyDate(datetime.date.today())
+    end_date = FuzzyDate(datetime.date.today())
