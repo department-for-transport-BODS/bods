@@ -20,6 +20,7 @@ from transit_odp.data_quality.models.report import (
     PostSchemaViolation,
     PTIValidationResult,
 )
+from transit_odp.data_quality.tasks import upload_dataset_to_dqs, update_dqs_task_status
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
@@ -84,6 +85,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
+            task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
             task_data_quality_service.signature(args),
             task_dataset_etl_finalise.signature(args),
@@ -408,9 +410,16 @@ def task_dataset_etl(revision_id: int, task_id: int):
             message="Unknown timetable ETL pipeline error.",
             task_name="dataset_etl",
         )
+    update_dqs_task_status(task_id)
     adapter.info("Timetable ETL pipeline task completed.")
     return revision_id
 
+@shared_task()
+def task_dqs_upload(revision_id: int, task_id: int):
+    """A task that uploads a timetables dataset to the DQ Service.
+    N.B. this is just a proxy to `upload_dataset_to_dqs` as part of a refactor.
+    """
+    upload_dataset_to_dqs(task_id)
 
 @shared_task()
 def task_data_quality_service(revision_id: int, task_id: int):

@@ -3,6 +3,7 @@ from collections import namedtuple
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
+from transit_odp.data_quality.tasks import run_dqs_monitoring
 from transit_odp.fares.netex import NETEX_SCHEMA_ZIP_URL
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
@@ -12,6 +13,13 @@ from transit_odp.timetables.constants import TXC_SCHEMA_ZIP_URL
 
 logger = get_task_logger(__name__)
 XMLSchemaDetails = namedtuple("XMLSchemaDetails", ["category", "url"])
+
+
+@shared_task(ignore_result=True)
+def task_dqs_monitor():
+    """A task that monitors the Data Quality Service."""
+    logger.info("[Monitoring] => Starting DQS monitoring job.")
+    run_dqs_monitoring()
 
 
 @shared_task(ignore_result=True)
