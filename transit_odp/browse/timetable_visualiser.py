@@ -352,5 +352,4 @@ class TimetableVisualiser:
                 "df_timetable": df_timetable,
                 "stops": stops,
             }
-
         return data

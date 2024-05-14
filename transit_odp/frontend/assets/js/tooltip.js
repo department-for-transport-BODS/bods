@@ -9,7 +9,7 @@
 function showTooltip(event, rowIndex, direction) {
   hideAllTooltips();
   // Only call the function when the event is triggered by the stop
-  if ((event.target.id !== "") & event.target.id.startsWith("stop")) {
+  if (event.target.id.startsWith("stop-")) {
     const elemId = "tooltip-" + direction + "-" + rowIndex;
     document.getElementById(elemId).classList.add("showtooltip");
   }
@@ -38,12 +38,14 @@ function hideTooltip(rowIndex, direction) {
 
 /**
  *
- * Add the eventListener to close all the tooltips if clicked on the document
+ * Add the eventListener to close all the tooltips if clicked on the document having tooltips
  */
-document.addEventListener("click", function (event) {
-  if (!event.target.id.startsWith("stop-")) {
-    hideAllTooltips();
-  }
-});
+if (document.querySelectorAll("p.tooltiptext").length > 0) {
+  document.addEventListener("click", function (event) {
+    if (!event.target.id.startsWith("stop-")) {
+      hideAllTooltips();
+    }
+  });
+}
 
 export { showTooltip, hideTooltip };

@@ -57,26 +57,3 @@ def query_chop(context, key_to_chop):
         del query[key_to_chop]
     return "?" + query.urlencode()
 
-@register.filter
-def concato(o1, o2):
-    """ It returns variable type as a pure string name """
-    return str(o1) + str(o2)
-
-
-@register.filter("get_value_from_dict2")
-def get_value_from_dict2(dict_data, key):
-    """
-    Return the 
-    usage example {{ your_dict|get_value_from_dict:your_key }}
-    """
-    print(f"Searching {key} in {dict_data}")
-    if key and key in dict_data:
-        return dict_data[key]
-    
-
-    return ""
-
-@register.simple_tag()
-def addstr(key1, key2):
-
-    return str(key1) + "_" +str(key2)
