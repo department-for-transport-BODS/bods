@@ -85,7 +85,7 @@ class TimetableVisualiser:
             "revision_number",
             "start_time",
             "street",
-            "indicator"
+            "indicator",
         ]
 
         qs_vehicle_journeys = (
@@ -154,8 +154,7 @@ class TimetableVisualiser:
                 ),
                 indicator=F(
                     "service_patterns__service_pattern_stops__naptan_stop__indicator",
-                )
-                
+                ),
             )
             .values(*columns)
         )
@@ -307,7 +306,7 @@ class TimetableVisualiser:
                 data[direction] = {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
-                    "stops": {}
+                    "stops": {},
                 }
                 continue
             journey_description = (
@@ -341,15 +340,17 @@ class TimetableVisualiser:
                 )
             ]
 
-            df_timetable, stops = get_df_timetable_visualiser(df_vehicle_journey_operating)
-            
+            df_timetable, stops = get_df_timetable_visualiser(
+                df_vehicle_journey_operating
+            )
+
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
 
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
-                "stops": stops
+                "stops": stops,
             }
-            
+
         return data
