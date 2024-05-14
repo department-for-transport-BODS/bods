@@ -156,7 +156,7 @@ def task_create_sirivm_zipfile(self):
 
 @shared_task()
 def task_create_gtfsrt_zipfile():
-    url = f"{settings.CAVL_CONSUMER_URL}/gtfsrtfeed"
+    url = f"{settings.GTFS_API_BASE_URL}/gtfs-rt"
     _prefix = f"[GTFSRTArchiving] URL {url} => "
     logger.info(_prefix + "Begin archiving GTFSRT data.")
     start = time.time()
