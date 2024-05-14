@@ -25,7 +25,6 @@ def get_value_from_dict(dict_data, key):
     Return the 
     usage example {{ your_dict|get_value_from_dict:your_key }}
     """
-    print(f"Searching {key} in {dict_data}")
     if key and key in dict_data:
         return dict_data[key]
     

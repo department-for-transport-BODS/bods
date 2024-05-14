@@ -56,4 +56,3 @@ def query_chop(context, key_to_chop):
     if key_to_chop in query:
         del query[key_to_chop]
     return "?" + query.urlencode()
-
