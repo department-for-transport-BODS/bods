@@ -96,7 +96,7 @@ class VehicleJourney(models.Model):
         default=None,
         null=True,
     )
-    block_number = models.IntegerField(null=True, default=None)
+    block_number = models.CharField(max_length=10, null=True, default=None)
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""

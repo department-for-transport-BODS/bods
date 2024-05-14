@@ -65,14 +65,4 @@ SIRIVM_TO_TXC_MAP = OrderedDict(
     ]
 )
 
-
-class ErrorCode(ChoiceEnum):
-    CODE_1_2 = "No timetables found with VehicleActivity date in OperatingPeriod"
-    CODE_2_1 = "No vehicle journeys found with JourneyCode {vehicle_journey_ref}"
-    CODE_3_1 = "No vehicle journeys found with OperatingProfile applicable to VehicleActivity date"
-    CODE_5_1 = "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
-    CODE_6_2_A = "Found more than one matching vehicle journey in a single timetables file belonging to a single service code"
-    CODE_6_2_B = "Found more than one matching vehicle journey in timetables belonging to a single service code"
-
-
 NO_PPC_DATA = -1
