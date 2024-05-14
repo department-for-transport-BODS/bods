@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from transit_odp.data_quality_service.models import ObservationResults
+
+admin.site.register(ObservationResults)
