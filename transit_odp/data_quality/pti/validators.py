@@ -579,10 +579,10 @@ class PTIValidator:
             for x in self.schema.observations
             if x.service_type == txc_service_type or x.service_type == "All"
         ]
-        logger.info(f"Checking overvations for the XML file {source.name}")
+        logger.info(f"Checking observations for the XML file {source.name}")
         for observation in service_observations:
             elements = document.xpath(observation.context, namespaces=self.namespaces)
             for element in elements:
                 self.check_observation(observation, element)
-        logger.info(f"Completed overvations for the XML file {source.name}")
+        logger.info(f"Completed observations for the XML file {source.name}")
         return len(self.violations) == 0
