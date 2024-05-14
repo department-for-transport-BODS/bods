@@ -300,7 +300,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
             context["curr_date"] = date
             for direction in ["outbound", "inbound"]:
                 direction_details = timetable_inbound_outbound[direction]
-                journey = direction_details["description"]
+                journey = direction_details["description"]                
                 journey = direction.capitalize() + " - " + journey if journey else ""
                 bound_details = self.get_direction_timetable(
                     direction_details["df_timetable"], direction
@@ -313,6 +313,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
                 context[direction + "_curr_page"] = bound_details["curr_page"]
                 context[direction + "_show_all"] = bound_details["show_all"]
                 context[direction + "_journey_name"] = journey
+                context[direction + "_stops"] = direction_details["stops"]
 
         return context
 

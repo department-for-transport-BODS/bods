@@ -259,7 +259,7 @@ def get_vehicle_journey_codes_sorted(
 
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
-) -> pd.DataFrame:
+) -> Tuple[pd.DataFrame, List]:
     """
     Get the dataframe containing the list of stops and the timetable details
     with journey code as columns
@@ -278,6 +278,8 @@ def get_df_timetable_visualiser(
         "departure_day_shift",
         "start_time",
         "vehicle_journey_id",
+        "street",
+        "indicator"
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
@@ -292,22 +294,24 @@ def get_df_timetable_visualiser(
     df_sequence_time: pd.DataFrame = df_vehicle_journey_operating.sort_values(
         ["stop_sequence", "departure_time"]
     )
-    df_sequence_time = df_sequence_time[["stop_sequence", "common_name"]]
+    df_sequence_time = df_sequence_time[["stop_sequence", "common_name", "street", "indicator", "atco_code"]]
     df_sequence_time = df_sequence_time.drop_duplicates()
     df_sequence_time["key"] = df_sequence_time.apply(
         lambda row: f"{row['common_name']}_{row['stop_sequence']}",
         axis=1,
     )
     bus_stops = df_sequence_time["common_name"].tolist()
-
+    
+    stops = {}
     # Create a dict for storing the unique combination of columns data for fast retreival
-    departure_time_data = {}
-    for row in df_vehicle_journey_operating.to_dict("records"):
+    departure_time_data = {}    
+    for row in df_vehicle_journey_operating.to_dict("records"):        
         departure_time_data[row["key"]] = row["departure_time"].strftime("%H:%M")
 
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
+        stops[f"{row['common_name']}_{idx}"]  = {'atco_code': row['atco_code'], 'street': row["street"], 'indicator': row["indicator"], "common_name": row['common_name'], "stop_seq": row["stop_sequence"]}
         record["Journey Code"] = bus_stops[idx]
         for (
             journey_code,
@@ -321,7 +325,7 @@ def get_df_timetable_visualiser(
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
 
-    return df_vehicle_journey_operating
+    return (df_vehicle_journey_operating, stops)
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:

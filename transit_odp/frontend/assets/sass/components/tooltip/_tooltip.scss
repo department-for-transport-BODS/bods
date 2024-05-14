@@ -1,0 +1,55 @@
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #1d70b8;
+    /* If you want dots under the hoverable text */
+}
+
+.tooltip:hover {
+    color: #1d70b8;
+}
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    text-align: left;
+    padding: 10px 10px;
+    border-radius: 10px;
+    background-color: white;
+
+    /* Position the tooltip text */
+    position: absolute;
+    bottom: 125%;
+    // left: 50%;
+    // margin-left: -130%;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+    border: 2px solid black;
+    cursor: auto;
+        color: #0b0c0c;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.showtooltip {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+// over-ride class
+.gov-table-vr {
+    overflow: visible !important;
+}
