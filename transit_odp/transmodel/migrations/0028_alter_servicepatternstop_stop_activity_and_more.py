@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("transmodel", "0026_auto_create_stop_activity_records"),
+        ("transmodel", "0027_auto_create_stop_activity_records"),
     ]
 
     operations = [

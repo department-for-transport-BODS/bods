@@ -3,7 +3,10 @@ from pathlib import Path
 
 import pytest
 
-from transit_odp.avl.post_publishing_checks.constants import ErrorCategory
+from transit_odp.avl.post_publishing_checks.constants import (
+    ErrorCategory,
+    TransXChangeField,
+)
 from transit_odp.avl.post_publishing_checks.daily.results import ValidationResult
 from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import (
     DayOfWeek,
@@ -71,6 +74,19 @@ def test_check_same_dataset_fails():
         txc_file_attrs, mvj, ValidationResult()
     )
     assert not consistent
+
+
+def test_append_txc_revision_number():
+    txc_filenames = [
+        str(DATA_DIR / xml)
+        for xml in ("current_year.xml", "next_year.xml", "current_year_no_end_date.xml")
+    ]
+    txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
+    result = ValidationResult()
+    vehicle_journey_finder = VehicleJourneyFinder()
+    vehicle_journey_finder.append_txc_revision_number(txc_xml, result)
+    revision_number = result.transxchange_attribute(TransXChangeField.REVISION_NUMBER)
+    assert revision_number == "234"
 
 
 def test_filter_by_operating_period():
@@ -150,8 +166,9 @@ def test_filter_by_operating_profile():
     activity_date = datetime.date.fromisoformat("2022-01-04")
     vehicle_journey_finder = VehicleJourneyFinder()
     vehicle_journey_finder.filter_by_operating_profile(
-        activity_date, txc_vehicle_journeys, ValidationResult(), vehicle_journey_ref=502
+        activity_date, txc_vehicle_journeys, ValidationResult()
     )
+
     assert len(txc_vehicle_journeys) == 1
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "2"
 
@@ -258,7 +275,7 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
     vehicle_journey_finder = VehicleJourneyFinder()
     result = ValidationResult()
     return_result = vehicle_journey_finder.filter_by_service_code(
-        txc_vehicle_journeys, result, vehicle_journey_ref=502
+        txc_vehicle_journeys, result
     )
 
     assert return_result == expected_result
@@ -283,7 +300,6 @@ def test_filter_by_published_line_name():
         txc_vehicle_journeys,
         published_line_name=filter_published_line_name,
         result=result,
-        vehicle_journey_ref=50,
     )
     assert len(txc_vehicle_journey) == 1
     assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
@@ -304,47 +320,8 @@ def test_filter_by_published_line_name_no_matching_lineref():
         txc_vehicle_journeys,
         published_line_name=filter_published_line_name,
         result=result,
-        vehicle_journey_ref=50,
     )
     assert result.errors[ErrorCategory.GENERAL] == [
         "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
     ]
     assert txc_vehicle_journey is None
-
-
-def test_get_service_org_ref_and_days_of_operation():
-    txc_filename = str(DATA_DIR / "vehicle_journeys7.xml")
-    txc_xml = TransXChangeDocument(txc_filename)
-    vehicle_journeys = txc_xml.get_vehicle_journeys()
-    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
-    vehicle_journey_finder = VehicleJourneyFinder()
-    (
-        service_org_ref,
-        days_of_non_operation,
-        days_of_operation,
-    ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
-        txc_vehicle_journeys[0]
-    )
-
-    assert service_org_ref == "KPMG"
-    assert days_of_non_operation is None
-    assert days_of_operation is not None
-
-
-def test_get_service_org_ref_and_days_of_non_operation():
-    txc_filename = str(DATA_DIR / "vehicle_journeys8.xml")
-    txc_xml = TransXChangeDocument(txc_filename)
-    vehicle_journeys = txc_xml.get_vehicle_journeys()
-    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
-    vehicle_journey_finder = VehicleJourneyFinder()
-    (
-        service_org_ref,
-        days_of_non_operation,
-        days_of_operation,
-    ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
-        txc_vehicle_journeys[0]
-    )
-
-    assert service_org_ref is None
-    assert days_of_non_operation is None
-    assert days_of_operation is None

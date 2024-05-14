@@ -5,7 +5,6 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 DailyReportItem = list[dict[str, Any]]
-DailyReportDictItem = dict[str, Any]
 
 
 class DailyReport(BaseModel):
@@ -20,7 +19,6 @@ class DailyReport(BaseModel):
     destination_ref: DailyReportItem = Field(default=[], alias="DestinationRef")
     origin_ref: DailyReportItem = Field(default=[], alias="OriginRef")
     block_ref: DailyReportItem = Field(default=[], alias="BlockRef")
-    error_data: DailyReportDictItem = Field(default=dict(), alias="ErrorData")
     model_config = ConfigDict(populate_by_name=True)
 
 

@@ -428,7 +428,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "wait_time": pd.NaT,
-                    "block_number": "2062",
+                    "block_number": "K2062",
                 },
             ]
         ).set_index("file_id")
@@ -474,7 +474,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "service_code": "PB0000582:186",
                     "direction": "inbound",
                     "departure_day_shift": True,
-                    "block_number": "2062",
+                    "block_number": "K2062",
                 },
             ]
         ).set_index("file_id")
@@ -505,3 +505,4 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
         for journey in vehicle_journeys:
             self.assertEqual(journey.line_ref, "WRAY:PB0000582:186:WF1")
             self.assertIn(journey.journey_code, ["3681", "3682"])
+            self.assertIn(journey.block_number, [None, "K2062"])

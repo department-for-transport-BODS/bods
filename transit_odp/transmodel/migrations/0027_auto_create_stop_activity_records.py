@@ -44,7 +44,7 @@ def insert_data(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("transmodel", "0025_remove_servicedorganisationworkingdays_serviced_organisation_and_more"),
+        ("transmodel", "0026_alter_vehiclejourney_block_number"),
     ]
 
     operations = [

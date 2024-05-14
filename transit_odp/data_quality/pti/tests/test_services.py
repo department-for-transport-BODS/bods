@@ -197,11 +197,19 @@ def test_line_inbound_description_true():
 
 def test_line_description_false():
     lines = """
-    <Lines>
-        <Line id="L1">
-            <LineName>1</LineName>
-        </Line>
-    </Lines>
+    <Services>
+        <Service>
+            <Lines>
+                <Line id="L1">
+                    <LineName>1</LineName>
+                </Line>
+            </Lines>
+            <StandardService>
+                <Origin>Putteridge High School</Origin>
+                <Destination>Church Street</Destination>
+            </StandardService>
+        </Service>
+    </Services>
     """
     xml = lines
     OBSERVATION_ID = 25
@@ -315,7 +323,6 @@ def test_operating_period_end_date(start_date, end_date_in_days, expected):
     ],
 )
 def test_line_id_format(filename, expected):
-
     OBSERVATION_ID = 24
     schema = Schema.from_path(PTI_PATH)
     observations = [o for o in schema.observations if o.number == OBSERVATION_ID]

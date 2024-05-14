@@ -330,6 +330,9 @@ def create_route_links(timing_links, stop_points):
     columns = timing_links.columns
     if "run_time" in columns:
         columns = [
+            "file_id",
+            "route_link_ref",
+            "jp_section_id",
             "from_stop_ref",
             "to_stop_ref",
             "is_timing_status",
@@ -338,15 +341,18 @@ def create_route_links(timing_links, stop_points):
         ]
     else:
         columns = [
+            "file_id",
+            "route_link_ref",
+            "jp_section_id",
             "from_stop_ref",
             "to_stop_ref",
         ]
 
     route_links = (
         timing_links.reset_index()
-        .drop_duplicates(["file_id", "route_link_ref"])
-        .set_index(["file_id", "route_link_ref"])
+        .drop_duplicates(["file_id", "route_link_ref", "jp_section_id"])
         .loc[:, columns]
+        .set_index(["file_id", "route_link_ref", "jp_section_id"])
         .rename(
             columns={"from_stop_ref": "from_stop_atco", "to_stop_ref": "to_stop_atco"}
         )
@@ -442,6 +448,7 @@ def create_route_to_route_links(
     )
 
     r2r_links_columns = [
+        "jp_section_id",
         "route_link_ref",
         "from_stop_sequence_number",
         "to_stop_sequence_number",
@@ -781,7 +788,7 @@ def transform_service_pattern_to_service_links(
         .merge(
             route_links,
             how="left",
-            left_on=["file_id", "route_link_ref"],
+            left_on=["file_id", "route_link_ref", "jp_section_id"],
             right_index=True,
         )
     )
