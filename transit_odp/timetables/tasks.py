@@ -79,13 +79,13 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
         args = (task.id,)
         jobs = [
             task_dataset_download.signature(args),
-            # task_scan_timetables.signature(args),
-            # task_timetable_file_check.signature(args),
-            # task_timetable_schema_check.signature(args),
-            # task_post_schema_check.signature(args),
+            task_scan_timetables.signature(args),
+            task_timetable_file_check.signature(args),
+            task_timetable_schema_check.signature(args),
+            task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            # task_pti_validation.signature(args),
-            # task_dqs_upload.signature(args),
+            task_pti_validation.signature(args),
+            task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
             task_data_quality_service.signature(args),
             task_dataset_etl_finalise.signature(args),
@@ -414,12 +414,14 @@ def task_dataset_etl(revision_id: int, task_id: int):
     adapter.info("Timetable ETL pipeline task completed.")
     return revision_id
 
+
 @shared_task()
 def task_dqs_upload(revision_id: int, task_id: int):
     """A task that uploads a timetables dataset to the DQ Service.
     N.B. this is just a proxy to `upload_dataset_to_dqs` as part of a refactor.
     """
     upload_dataset_to_dqs(task_id)
+
 
 @shared_task()
 def task_data_quality_service(revision_id: int, task_id: int):
@@ -447,7 +449,7 @@ def task_data_quality_service(revision_id: int, task_id: int):
             message="Database error occurred:",
             task_name="dataset_etl",
         )
-    
+
     except Exception as exc:
         task.handle_general_pipeline_exception(
             exc,

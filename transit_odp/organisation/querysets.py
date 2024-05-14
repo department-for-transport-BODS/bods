@@ -1344,7 +1344,6 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             service_txcfileattributes__revision_id=revision_id
         ).distinct()
 
-
         # # Subquery to get the service code of the file with the highest revision number
         # higher_revision_service_code = self.filter(
         #     revision_id=revision_id,
