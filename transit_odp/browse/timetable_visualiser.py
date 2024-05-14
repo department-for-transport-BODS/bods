@@ -262,10 +262,12 @@ class TimetableVisualiser:
                 "outbound": {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
+                    "stops": {}
                 },
                 "inbound": {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
+                    "stops": {}
                 },
             }
 

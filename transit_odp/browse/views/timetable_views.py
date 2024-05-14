@@ -584,6 +584,7 @@ class LineMetadataDetailView(DetailView):
                 kwargs[direction + "_curr_page"] = bound_details["curr_page"]
                 kwargs[direction + "_show_all"] = bound_details["show_all"]
                 kwargs[direction + "_journey_name"] = journey
+                kwargs[direction + "_stops"] = direction_details["stops"]
 
         return kwargs
 
