@@ -43,7 +43,7 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
-from transit_odp.data_quality.models.dqs import Report, Checks, TaskResults
+from transit_odp.data_quality_service.models import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
