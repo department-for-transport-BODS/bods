@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
+from waffle import flag_is_active
 
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
@@ -59,6 +60,9 @@ BATCH_SIZE = 2000
 
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
+    is_data_quality_service_active = flag_is_active(
+        "", "is_data_quality_service_active"
+    )
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
     except DatasetRevision.DoesNotExist as e:
@@ -77,19 +81,33 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
 
         adapter.info(f"Dataset {revision.dataset_id} - task {task.id}")
         args = (task.id,)
-        jobs = [
-            task_dataset_download.signature(args),
-            task_scan_timetables.signature(args),
-            task_timetable_file_check.signature(args),
-            task_timetable_schema_check.signature(args),
-            task_post_schema_check.signature(args),
-            task_extract_txc_file_data.signature(args),
-            task_pti_validation.signature(args),
-            task_dqs_upload.signature(args),
-            task_dataset_etl.signature(args),
-            task_data_quality_service.signature(args),
-            task_dataset_etl_finalise.signature(args),
-        ]
+        if is_data_quality_service_active:
+            jobs = [
+                task_dataset_download.signature(args),
+                task_scan_timetables.signature(args),
+                task_timetable_file_check.signature(args),
+                task_timetable_schema_check.signature(args),
+                task_post_schema_check.signature(args),
+                task_extract_txc_file_data.signature(args),
+                task_pti_validation.signature(args),
+                task_dqs_upload.signature(args),
+                task_dataset_etl.signature(args),
+                task_data_quality_service.signature(args),
+                task_dataset_etl_finalise.signature(args),
+            ]
+        else:
+            jobs = [
+                task_dataset_download.signature(args),
+                task_scan_timetables.signature(args),
+                task_timetable_file_check.signature(args),
+                task_timetable_schema_check.signature(args),
+                task_post_schema_check.signature(args),
+                task_extract_txc_file_data.signature(args),
+                task_pti_validation.signature(args),
+                task_dqs_upload.signature(args),
+                task_dataset_etl.signature(args),
+                task_dataset_etl_finalise.signature(args),
+            ]
 
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
