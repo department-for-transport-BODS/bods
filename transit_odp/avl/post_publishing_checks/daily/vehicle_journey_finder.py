@@ -616,7 +616,7 @@ class VehicleJourneyFinder:
 
     def get_service_org_xml_string(
         self, vehicle_journey: TxcVehicleJourney
-    ) -> Optional[TransXChangeElement]:
+    ) -> Optional[str]:
         """
         Retrieves the XML string for the service organization of a given vehicle journey.
 
@@ -636,9 +636,13 @@ class VehicleJourneyFinder:
             service_org_from_service = self.get_service_org_day_type_from_service(
                 vehicle_journey
             )
-            service_org_xml_str = etree.tostring(
-                service_org_from_service._element, pretty_print=True
-            ).decode()
+            service_org_xml_str = (
+                etree.tostring(
+                    service_org_from_service._element, pretty_print=True
+                ).decode()
+                if service_org_from_service
+                else None
+            )
         return service_org_xml_str
 
     def get_service_org_ref_and_days_of_operation(
