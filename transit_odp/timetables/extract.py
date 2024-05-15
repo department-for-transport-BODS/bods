@@ -45,7 +45,13 @@ logger = get_task_logger(__name__)
 class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
-    def __init__(self, file_obj: File, start_time, stop_activity_cache=[], df_txc_files=pd.DataFrame()):
+    def __init__(
+        self,
+        file_obj: File,
+        start_time,
+        stop_activity_cache=[],
+        df_txc_files=pd.DataFrame(),
+    ):
         self.file_id = uuid.uuid4()
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
@@ -405,12 +411,13 @@ class TransXChangeExtractor:
 
 
 class TransXChangeZipExtractor:
-    def __init__(self, file_obj, start_time, stop_activity_cache, txc_files=pd.DataFrame()):
+    def __init__(
+        self, file_obj, start_time, stop_activity_cache, txc_files=pd.DataFrame()
+    ):
         self.file_obj = file_obj
         self.start_time = start_time
         self.stop_activity_cache = stop_activity_cache
         self.df_txc_files = txc_files
-    
 
     def extract(self) -> ExtractedData:
         """
@@ -443,7 +450,10 @@ class TransXChangeZipExtractor:
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
                     extractor = TransXChangeExtractor(
-                        file_obj, self.start_time, self.stop_activity_cache, self.df_txc_files
+                        file_obj,
+                        self.start_time,
+                        self.stop_activity_cache,
+                        self.df_txc_files,
                     )
                     extracted = extractor.extract()
                     extracts.append(extracted)
