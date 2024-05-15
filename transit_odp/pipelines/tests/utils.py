@@ -32,7 +32,7 @@ def modify_time_columns(df: pd.DataFrame, time_columns: list) -> pd.DataFrame:
 
 def modify_date_columns(df: pd.DataFrame, date_columns: list) -> pd.DataFrame:
     for col in date_columns:
-        df[col] = pd.to_datetime(df[col])
+        df[col] = pd.to_datetime(df[col]).dt.date
     return df
 
 
@@ -48,8 +48,10 @@ def get_base_csv(file_name_with_path: str) -> pd.DataFrame:
     return base_csv
 
 
-def get_serviced_org_csv(file_name_with_path: str) -> pd.DataFrame:
-    date_columns = ["start_date", "end_date"]
-    serviced_org = pd.read_csv(file_name_with_path)
+def get_csv(file_name_with_path: str, date_columns: list) -> pd.DataFrame:
+    try:
+        serviced_org = pd.read_csv(file_name_with_path)
+    except pd.errors.EmptyDataError:
+        serviced_org = pd.DataFrame(columns=date_columns)
     serviced_org = modify_date_columns(serviced_org, date_columns)
     return serviced_org
