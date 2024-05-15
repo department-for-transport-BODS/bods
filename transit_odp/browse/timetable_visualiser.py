@@ -23,7 +23,6 @@ from transit_odp.timetables.utils import (
     fill_missing_journey_codes,
 )
 import pandas as pd
-import sys
 from django.db.models import QuerySet
 
 logger = logging.getLogger(__name__)
@@ -297,22 +296,6 @@ class TimetableVisualiser:
             "outbound": {"outbound", "clockwise"},
         }
 
-        disable_csv = True
-        file_path = "transit_odp/pipelines/tests/test_dataset_etl/data/csv"
-        file_prefix = "with_vj_operating_profile_multi_serviced_org"
-        if "pytest" not in sys.modules and not disable_csv:
-            print_csv = pd.DataFrame.from_records(base_qs_vehicle_journeys)
-            print_csv.to_csv(f"{file_path}/{file_prefix}_base.csv", index=False)
-            df_nonop_excep_vehicle_journey.to_csv(
-                f"{file_path}/{file_prefix}_non_op_excep.csv", index=False
-            )
-            df_op_excep_vehicle_journey.to_csv(
-                f"{file_path}/{file_prefix}_op_excep.csv", index=False
-            )
-            df_serviced_org.to_csv(
-                f"{file_path}/{file_prefix}_so_data.csv", index=False
-            )
-
         for direction in directions.keys():
             df_base_vehicle_journeys = df_initial_vehicle_journeys[
                 df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
@@ -358,11 +341,6 @@ class TimetableVisualiser:
 
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
-
-            if "pytest" not in sys.modules and not disable_csv:
-                df_timetable.to_csv(
-                    f"{file_path}/{file_prefix}_{direction}_final.csv", index=False
-                )
 
             data[direction] = {
                 "description": journey_description,
