@@ -44,6 +44,13 @@ def get_weca_data(path="weca/response.json"):
 
 
 @pytest.fixture
+def get_ep_data(request):
+    path = request.param if hasattr(request, "param") else "ep/response.json"
+    ep_file_path = API_DATA_PATH / Path(path)
+    return get_data_by_path(ep_file_path)
+
+
+@pytest.fixture
 def otc_data_from_filename_truncated():
     """
     Fixture to provide self-consistent OTC API data
