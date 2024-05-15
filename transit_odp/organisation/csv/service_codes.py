@@ -109,6 +109,14 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
             accessor=lambda otc_service: otc_service.get("otc_service_number"),
         ),
         CSVColumn(
+            header="Service Code",
+            accessor=lambda otc_service: otc_service.get("service_code"),
+        ),
+        CSVColumn(
+            header="Line Name",
+            accessor=lambda otc_service: otc_service.get("line_name"),
+        ),
+        CSVColumn(
             header="Requires Attention",
             accessor=lambda otc_service: otc_service.get("require_attention"),
         ),
@@ -154,7 +162,11 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
             accessor=lambda otc_service: otc_service.get("last_modified_date"),
         ),
         CSVColumn(
-            header="XML:Operating Period End Date",
+            header="Operating Period Start Date",
+            accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
+        ),
+        CSVColumn(
+            header="Operating Period End Date",
             accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
         ),
         CSVColumn(
@@ -187,28 +199,66 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
             header="Seasonal End Date",
             accessor=lambda otc_service: otc_service.get("seasonal_end"),
         ),
-        # Registration:Operator Name
+        CSVColumn(
+            header="National Operator Code",
+            accessor=lambda otc_service: otc_service.get("national_operator_code"),
+        ),
+        CSVColumn(
+            header="Licence Number",
+            accessor=lambda otc_service: otc_service.get("licence_number"),
+        ),
+        CSVColumn(
+            header="Revision Number",
+            accessor=lambda otc_service: otc_service.get("revision_number"),
+        ),
+        CSVColumn(
+            header="Registration:Operator Name",
+            accessor=lambda otc_service: otc_service.get("registration_operator_name"),
+        ),
         CSVColumn(
             header="Registration:Licence Number",
             accessor=lambda otc_service: otc_service.get("otc_licence_number"),
         ),
-        # Registration: Service Type Description
+        CSVColumn(
+            header="Registration:Service Type Description",
+            accessor=lambda otc_service: otc_service.get("service_type_description"),
+        ),
         CSVColumn(
             header="Registration:Variation Number",
-            accessor=lambda otc_service: otc_service.get("revision_number"),
+            accessor=lambda otc_service: otc_service.get("variation_number"),
         ),
-        # Registration: Start Point
-        # Registration: Finish Point
-        # Registration: Via
-        # Registration: Granted Date
-        # Registration: Expiry Date
-        # Registration: Effective Date
-        # Registration: Received Date
-        # Registration: Service Type Other Details
-        # CSVColumn(
-        #     header="National Operator Code",
-        #     accessor=lambda otc_service: otc_service.get("national_operator_code"),
-        # ),
+        CSVColumn(
+            header="Registration:Start Point",
+            accessor=lambda otc_service: otc_service.get("start_point"),
+        ),
+        CSVColumn(
+            header="Registration:Finish Point",
+            accessor=lambda otc_service: otc_service.get("finish_point"),
+        ),
+        CSVColumn(
+            header="Registration:Via",
+            accessor=lambda otc_service: otc_service.get("via"),
+        ),
+        CSVColumn(
+            header="Registration:Granted Date",
+            accessor=lambda otc_service: otc_service.get("granted_date"),
+        ),
+        CSVColumn(
+            header="Registration:Expiry Date",
+            accessor=lambda otc_service: otc_service.get("expiry_date"),
+        ),
+        CSVColumn(
+            header="Registration:Effective Date",
+            accessor=lambda otc_service: otc_service.get("effective_date"),
+        ),
+        CSVColumn(
+            header="Registration:Received Date",
+            accessor=lambda otc_service: otc_service.get("received_date"),
+        ),
+        CSVColumn(
+            header="Registration:Service Type Other Details",
+            accessor=lambda otc_service: otc_service.get("service_type_other_details"),
+        ),
         CSVColumn(
             header="Traveline Region",
             accessor=lambda otc_service: otc_service.get("traveline_region"),
@@ -217,10 +267,6 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
             header="Local Transport Authority",
             accessor=lambda otc_service: otc_service.get("ui_lta_name"),
         ),
-        # CSVColumn(
-        #     header="Operating Period Start Date",
-        #     accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
-        # ),
     ]
 
     def __init__(self, organisation_id: int):
@@ -238,7 +284,6 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
         require_attention: str,
         traveline_region: str,
         ui_lta_name: str,
-        line_name: str,
     ) -> None:
         self._object_list.append(
             {
@@ -247,20 +292,20 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service and service.service_number,
-                "licence_number": file_attribute and file_attribute["licence_number"],
-                "service_code": file_attribute and file_attribute["service_code"],
-                "line_name": line_name,
+                "licence_number": file_attribute and file_attribute.licence_number,
+                "service_code": file_attribute and file_attribute.service_code,
+                "line_name": file_attribute and file_attribute.line_name_unnested,
                 "national_operator_code": file_attribute
-                and file_attribute["national_operator_code"],
-                "revision_number": file_attribute and file_attribute["revision_number"],
+                and file_attribute.national_operator_code,
+                "revision_number": file_attribute and file_attribute.revision_number,
                 "last_modified_date": file_attribute
-                and (file_attribute["modification_datetime"].date()),
+                and (file_attribute.modification_datetime.date()),
                 "operating_period_start_date": file_attribute
-                and (file_attribute["operating_period_start_date"]),
+                and (file_attribute.operating_period_start_date),
                 "operating_period_end_date": file_attribute
-                and (file_attribute["operating_period_end_date"]),
-                "xml_filename": file_attribute and file_attribute["filename"],
-                "dataset_id": file_attribute and file_attribute["revision__dataset_id"],
+                and (file_attribute.operating_period_end_date),
+                "xml_filename": file_attribute and file_attribute.filename,
+                "dataset_id": file_attribute and file_attribute.revision.dataset_id,
                 "seasonal_status": seasonal_service
                 and seasonal_service.seasonal_status,
                 "seasonal_start": seasonal_service and seasonal_service.start,
@@ -269,11 +314,25 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
                 "effective_seasonal_start_date": seasonal_service
                 and seasonal_service.start - timedelta(days=42),
                 "effective_stale_date_last_modified_date": file_attribute
-                and file_attribute["effective_stale_date_last_modified_date"],
+                and file_attribute.effective_stale_date_last_modified_date,
                 "effective_stale_date_otc_effective_date": service
                 and (service.effective_stale_date_otc_effective_date),
                 "traveline_region": traveline_region,
                 "ui_lta_name": ui_lta_name,
+                "variation_number": service and service.variation_number,
+                "service_type_description": service
+                and service.service_type_description,
+                "registration_operator_name": (service and service.operator)
+                and service.operator.operator_name,
+                "start_point": service and service.start_point,
+                "finish_point": service and service.finish_point,
+                "via": service and service.via,
+                "granted_date": service and service.licence.granted_date,
+                "expiry_date": service and service.licence.granted_date,
+                "effective_date": service and service.effective_date,
+                "received_date": service and service.received_date,
+                "service_type_order_details": service
+                and service.service_type_other_details,
             }
         )
 
@@ -361,7 +420,6 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
                 require_attention,
                 traveline_region,
                 ui_lta_name,
-                service_code[0],
             )
 
     def get_queryset(self):

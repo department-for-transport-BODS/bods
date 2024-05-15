@@ -24,7 +24,7 @@ from transit_odp.otc.factories import (
 )
 
 pytestmark = pytest.mark.django_db
-CSV_NUMBER_COLUMNS = 27
+CSV_NUMBER_COLUMNS = 38
 
 
 def get_csv_output(csv_string: str) -> Dict[str, list]:
@@ -458,220 +458,236 @@ def test_csv_output():
     csv_output = get_csv_output(csv_string)
 
     assert csv_output["header"] == [
-        '"XML:Service Code"',
-        '"XML:Line Name"',
+        '"Registration:Registration Number"',
+        '"Registration:Service Number"',
+        '"Service Code"',
+        '"Line Name"',
         '"Requires Attention"',
         '"Published Status"',
-        '"OTC Status"',
+        '"Registration Status"',
         '"Scope Status"',
         '"Seasonal Status"',
         '"Timeliness Status"',
         '"Dataset ID"',
-        '"Date OTC variation needs to be published"',
+        '"XML:Filename"',
+        '"XML:Last Modified Date"',
+        '"Operating Period Start Date"',
+        '"Operating Period End Date"',
+        '"Date Registration variation needs to be published"',
         '"Date for complete 42 day look ahead"',
         '"Date when data is over 1 year old"',
         '"Date seasonal service should be published"',
         '"Seasonal Start Date"',
         '"Seasonal End Date"',
-        '"XML:Filename"',
-        '"XML:Last Modified Date"',
-        '"XML:National Operator Code"',
-        '"XML:Licence Number"',
-        '"XML:Revision Number"',
-        '"XML:Operating Period Start Date"',
-        '"XML:Operating Period End Date"',
-        '"OTC:Licence Number"',
-        '"OTC:Registration Number"',
-        '"OTC:Service Number"',
+        '"National Operator Code"',
+        '"Licence Number"',
+        '"Revision Number"',
+        '"Registration:Operator Name"',
+        '"Registration:Licence Number"',
+        '"Registration:Service Type Description"',
+        '"Registration:Variation Number"',
+        '"Registration:Start Point"',
+        '"Registration:Finish Point"',
+        '"Registration:Via"',
+        '"Registration:Granted Date"',
+        '"Registration:Expiry Date"',
+        '"Registration:Effective Date"',
+        '"Registration:Received Date"',
+        '"Registration:Service Type Other Details"',
         '"Traveline Region"',
         '"Local Transport Authority"',
     ]
 
-    assert csv_output["row0"][0] == '""'  # XML:Service Code
-    assert csv_output["row0"][1] == '""'  # XML:Line Name
-    assert csv_output["row0"][2] == '"No"'  # requires attention
-    assert csv_output["row0"][3] == '"Unpublished"'  # published status
-    assert csv_output["row0"][4] == '"Registered"'  # OTC status
-    assert csv_output["row0"][5] == '"In Scope"'  # scope status
-    assert csv_output["row0"][6] == '"Out of Season"'  # seasonal status
-    assert csv_output["row0"][7] == '"Up to date"'  # timeliness status
-    assert csv_output["row0"][8] == '""'  # dataset id
-    assert csv_output["row0"][9] == '"2023-05-12"'
+
+    print(csv_output["row0"])
+
+    assert csv_output["row0"][0] == '"PD0000099:0"'  # Registration:Registration Number
+    assert csv_output["row0"][1] == '"Line0"'  # Registration:Service Number
+    assert csv_output["row0"][2] == '""'  # Service Code
+    assert csv_output["row0"][3] == '""'  # Line Name
+    assert csv_output["row0"][4] == '"No"'  # requires attention
+    assert csv_output["row0"][5] == '"Unpublished"'  # published status
+    assert csv_output["row0"][6] == '"Registered"'  # OTC status
+    assert csv_output["row0"][7] == '"In Scope"'  # scope status
+    assert csv_output["row0"][8] == '"Out of Season"'  # seasonal status
+    assert csv_output["row0"][9] == '"Up to date"'  # timeliness status
+    assert csv_output["row0"][10] == '""'  # dataset id
+    assert csv_output["row0"][11] == '""'  # XML:Filename
+    assert csv_output["row0"][12] == '""'  # XML:Last Modified Date
+    assert csv_output["row0"][13] == '""'  # Operating Period Start Date
+    assert csv_output["row0"][14] == '""'  # Operating Period End Date
+    assert csv_output["row0"][15] == '"2023-05-12"'
     # date OTC variation needs to be published
-    assert csv_output["row0"][10] == '"2023-04-07"'
+    assert csv_output["row0"][16] == '"2023-04-07"'
     # date for complete 42 day look ahead
-    assert csv_output["row0"][11] == '""'
+    assert csv_output["row0"][17] == '""'
     # Date when data is over 1 year old
-    assert csv_output["row0"][12] == '"2024-01-13"'
+    assert csv_output["row0"][18] == '"2024-01-13"'
     # date seasonal service should be published
-    assert csv_output["row0"][13] == '"2024-02-24"'  # seasonal start date
-    assert csv_output["row0"][14] == '"2026-02-24"'  # seasonal end date
-    assert csv_output["row0"][15] == '""'  # XML:Filename
-    assert csv_output["row0"][16] == '""'  # XML:Last Modified Date
-    assert csv_output["row0"][17] == '""'  # XML:National Operator Code
-    assert csv_output["row0"][18] == '""'  # XML:Licence Number
-    assert csv_output["row0"][19] == '""'  # XML:Revision Number
-    assert csv_output["row0"][20] == '""'  # Operating Period Start Date
-    assert csv_output["row0"][21] == '""'  # Operating Period End Date
-    assert csv_output["row0"][22] == '"PD0000099"'  # OTC:Licence Number
-    assert csv_output["row0"][23] == '"PD0000099:0"'  # OTC:Registration Number
-    assert csv_output["row0"][24] == '"Line0"'  # OTC:Service Number
+    assert csv_output["row0"][19] == '"2024-02-24"'  # seasonal start date
+    assert csv_output["row0"][20] == '"2026-02-24"'  # seasonal end date
+    assert csv_output["row0"][21] == '""'  # National Operator Code
+    assert csv_output["row0"][22] == '""'  # Licence Number
+    assert csv_output["row0"][23] == '""'  # Revision Number
+    assert csv_output["row0"][25] == '"PD0000099"'  # Registration:Licence Number
+    
 
-    assert csv_output["row1"][0] == '""'
-    assert csv_output["row1"][1] == '""'
-    assert csv_output["row1"][2] == '"Yes"'
-    assert csv_output["row1"][3] == '"Unpublished"'
-    assert csv_output["row1"][4] == '"Registered"'
-    assert csv_output["row1"][5] == '"In Scope"'
-    assert csv_output["row1"][6] == '"In Season"'
-    assert csv_output["row1"][7] == '"Up to date"'
-    assert csv_output["row1"][8] == '""'
-    assert csv_output["row1"][9] == '"2023-05-12"'
-    assert csv_output["row1"][10] == '"2023-04-07"'
+    assert csv_output["row1"][0] == '"PD0000099:1"'
+    assert csv_output["row1"][1] == '"Line1"'
+    assert csv_output["row1"][2] == '""'
+    assert csv_output["row1"][3] == '""'
+    assert csv_output["row1"][4] == '"Yes"'
+    assert csv_output["row1"][5] == '"Unpublished"'
+    assert csv_output["row1"][6] == '"Registered"'
+    assert csv_output["row1"][7] == '"In Scope"'
+    assert csv_output["row1"][8] == '"In Season"'
+    assert csv_output["row1"][9] == '"Up to date"'
+    assert csv_output["row1"][10] == '""'
     assert csv_output["row1"][11] == '""'
-    assert csv_output["row1"][12] == '"2022-01-13"'
-    assert csv_output["row1"][13] == '"2022-02-24"'
-    assert csv_output["row1"][14] == '"2024-02-24"'
-    assert csv_output["row1"][15] == '""'
-    assert csv_output["row1"][16] == '""'
+    assert csv_output["row1"][12] == '""'
+    assert csv_output["row1"][13] == '""'
+    assert csv_output["row1"][14] == '""'
+    assert csv_output["row1"][15] == '"2023-05-12"'
+    assert csv_output["row1"][16] == '"2023-04-07"'
     assert csv_output["row1"][17] == '""'
-    assert csv_output["row1"][18] == '""'
-    assert csv_output["row1"][19] == '""'
-    assert csv_output["row1"][20] == '""'
+    assert csv_output["row1"][18] == '"2022-01-13"'
+    assert csv_output["row1"][19] == '"2022-02-24"'
+    assert csv_output["row1"][20] == '"2024-02-24"'
     assert csv_output["row1"][21] == '""'
-    assert csv_output["row1"][22] == '"PD0000099"'
-    assert csv_output["row1"][23] == '"PD0000099:1"'
-    assert csv_output["row1"][24] == '"Line1"'
+    assert csv_output["row1"][22] == '""'
+    assert csv_output["row1"][23] == '""'
+    assert csv_output["row1"][25] == '"PD0000099"'
 
-    assert csv_output["row2"][0] == '""'
-    assert csv_output["row2"][1] == '""'
-    assert csv_output["row2"][2] == '"No"'
-    assert csv_output["row2"][3] == '"Unpublished"'
-    assert csv_output["row2"][4] == '"Registered"'
-    assert csv_output["row2"][5] == '"Out of Scope"'
-    assert csv_output["row2"][6] == '"Not Seasonal"'
-    assert csv_output["row2"][7] == '"Up to date"'
-    assert csv_output["row2"][8] == '""'
-    assert csv_output["row2"][9] == '"2023-05-12"'
-    assert csv_output["row2"][10] == '"2023-04-07"'
+    assert csv_output["row2"][0] == '"PD0000099:2"'
+    assert csv_output["row2"][1] == '"Line2"'
+    assert csv_output["row2"][2] == '""'
+    assert csv_output["row2"][3] == '""'
+    assert csv_output["row2"][4] == '"No"'
+    assert csv_output["row2"][5] == '"Unpublished"'
+    assert csv_output["row2"][6] == '"Registered"'
+    assert csv_output["row2"][7] == '"Out of Scope"'
+    assert csv_output["row2"][8] == '"Not Seasonal"'
+    assert csv_output["row2"][9] == '"Up to date"'
+    assert csv_output["row2"][10] == '""'
     assert csv_output["row2"][11] == '""'
     assert csv_output["row2"][12] == '""'
     assert csv_output["row2"][13] == '""'
     assert csv_output["row2"][14] == '""'
-    assert csv_output["row2"][15] == '""'
-    assert csv_output["row2"][16] == '""'
+    assert csv_output["row2"][15] == '"2023-05-12"'
+    assert csv_output["row2"][16] == '"2023-04-07"'
     assert csv_output["row2"][17] == '""'
     assert csv_output["row2"][18] == '""'
     assert csv_output["row2"][19] == '""'
-    assert csv_output["row2"][20] == '""'
+    assert csv_output["row2"][20] == '""'    
     assert csv_output["row2"][21] == '""'
-    assert csv_output["row2"][22] == '"PD0000099"'
-    assert csv_output["row2"][23] == '"PD0000099:2"'
-    assert csv_output["row2"][24] == '"Line2"'
+    assert csv_output["row2"][22] == '""'
+    assert csv_output["row2"][23] == '""'
+    assert csv_output["row2"][25] == '"PD0000099"'
 
     assert csv_output["row3"][0] == '"PD0000099:3"'
-    assert csv_output["row3"][1] == '"line1 line2"'
-    assert csv_output["row3"][2] == '"Yes"'
-    assert csv_output["row3"][3] == '"Published"'
-    assert csv_output["row3"][4] == '"Registered"'
-    assert csv_output["row3"][5] == '"In Scope"'
-    assert csv_output["row3"][6] == '"In Season"'
-    assert csv_output["row3"][7] == '"OTC variation not published"'
-    assert csv_output["row3"][8] == f'"{dataset3.id}"'
-    assert csv_output["row3"][9] == '"2023-02-10"'
-    assert csv_output["row3"][10] == '"2023-04-07"'
-    assert csv_output["row3"][11] == '"2023-01-24"'
-    assert csv_output["row3"][12] == '"2022-01-13"'
-    assert csv_output["row3"][13] == '"2022-02-24"'
-    assert csv_output["row3"][14] == '"2024-02-24"'
-    assert csv_output["row3"][15] == '"test3.xml"'
-    assert csv_output["row3"][16] == '"2022-01-24"'
-    assert csv_output["row3"][17] == f'"{txc_file_3.national_operator_code}"'
-    assert csv_output["row3"][18] == '"PD0000099"'
-    assert csv_output["row3"][19] == '"0"'
-    assert csv_output["row3"][20] == f'"{txc_file_3.operating_period_start_date}"'
-    assert csv_output["row3"][21] == '"2023-02-24"'
+    assert csv_output["row3"][1] == '"Line3"'
+    assert csv_output["row3"][2] == '"PD0000099:3"'
+    assert csv_output["row3"][3] == '"line1 line2"'
+    assert csv_output["row3"][4] == '"Yes"'
+    assert csv_output["row3"][5] == '"Published"'
+    assert csv_output["row3"][6] == '"Registered"'
+    assert csv_output["row3"][7] == '"In Scope"'
+    assert csv_output["row3"][8] == '"In Season"'
+    assert csv_output["row3"][9] == '"OTC variation not published"'
+    assert csv_output["row3"][10] == f'"{dataset3.id}"'
+    assert csv_output["row3"][11] == '"test3.xml"'
+    assert csv_output["row3"][12] == '"2022-01-24"'
+    assert csv_output["row3"][13] == f'"{txc_file_3.operating_period_start_date}"'
+    assert csv_output["row3"][14] == '"2023-02-24"'
+    assert csv_output["row3"][15] == '"2023-02-10"'
+    assert csv_output["row3"][16] == '"2023-04-07"'
+    assert csv_output["row3"][17] == '"2023-01-24"'
+    assert csv_output["row3"][18] == '"2022-01-13"'
+    assert csv_output["row3"][19] == '"2022-02-24"'
+    assert csv_output["row3"][20] == '"2024-02-24"'    
+    assert csv_output["row3"][21] == f'"{txc_file_3.national_operator_code}"'
     assert csv_output["row3"][22] == '"PD0000099"'
-    assert csv_output["row3"][23] == '"PD0000099:3"'
-    assert csv_output["row3"][24] == '"Line3"'
-
+    assert csv_output["row3"][23] == '"0"'
+    assert csv_output["row3"][25] == '"PD0000099"'
+    
     assert csv_output["row4"][0] == '"PD0000099:4"'
-    assert csv_output["row4"][1] == '"line1 line2"'
-    assert csv_output["row4"][2] == '"Yes"'
-    assert csv_output["row4"][3] == '"Published"'
-    assert csv_output["row4"][4] == '"Registered"'
-    assert csv_output["row4"][5] == '"In Scope"'
-    assert csv_output["row4"][6] == '"In Season"'
-    assert csv_output["row4"][7] == '"42 day look ahead is incomplete"'
-    assert csv_output["row4"][8] == f'"{dataset4.id}"'
-    assert csv_output["row4"][9] == '"2022-05-12"'
-    assert csv_output["row4"][10] == '"2023-04-07"'
-    assert csv_output["row4"][11] == '"2024-01-24"'
-    assert csv_output["row4"][12] == '"2022-01-13"'
-    assert csv_output["row4"][13] == '"2022-02-24"'
-    assert csv_output["row4"][14] == '"2024-02-24"'
-    assert csv_output["row4"][15] == '"test4.xml"'
-    assert csv_output["row4"][16] == '"2023-01-24"'
-    assert csv_output["row4"][17] == f'"{txc_file_4.national_operator_code}"'
-    assert csv_output["row4"][18] == '"PD0000099"'
-    assert csv_output["row4"][19] == '"0"'
-    assert csv_output["row4"][20] == f'"{txc_file_4.operating_period_start_date}"'
-    assert csv_output["row4"][21] == '"2023-03-24"'
+    assert csv_output["row4"][1] == '"Line4"'
+    assert csv_output["row4"][2] == '"PD0000099:4"'
+    assert csv_output["row4"][3] == '"line1 line2"'
+    assert csv_output["row4"][4] == '"Yes"'
+    assert csv_output["row4"][5] == '"Published"'
+    assert csv_output["row4"][6] == '"Registered"'
+    assert csv_output["row4"][7] == '"In Scope"'
+    assert csv_output["row4"][8] == '"In Season"'
+    assert csv_output["row4"][9] == '"42 day look ahead is incomplete"'
+    assert csv_output["row4"][10] == f'"{dataset4.id}"'
+    assert csv_output["row4"][11] == '"test4.xml"'
+    assert csv_output["row4"][12] == '"2023-01-24"'
+    assert csv_output["row4"][13] == f'"{txc_file_4.operating_period_start_date}"'
+    assert csv_output["row4"][14] == '"2023-03-24"'
+    assert csv_output["row4"][15] == '"2022-05-12"'
+    assert csv_output["row4"][16] == '"2023-04-07"'
+    assert csv_output["row4"][17] == '"2024-01-24"'
+    assert csv_output["row4"][18] == '"2022-01-13"'
+    assert csv_output["row4"][19] == '"2022-02-24"'
+    assert csv_output["row4"][20] == '"2024-02-24"'
+    assert csv_output["row4"][21] == f'"{txc_file_4.national_operator_code}"'
     assert csv_output["row4"][22] == '"PD0000099"'
-    assert csv_output["row4"][23] == '"PD0000099:4"'
-    assert csv_output["row4"][24] == '"Line4"'
-
+    assert csv_output["row4"][23] == '"0"'
+    assert csv_output["row4"][25] == '"PD0000099"'
+    
     assert csv_output["row5"][0] == '"PD0000099:5"'
-    assert csv_output["row5"][1] == '"line1 line2"'
-    assert csv_output["row5"][2] == '"Yes"'
-    assert csv_output["row5"][3] == '"Published"'
-    assert csv_output["row5"][4] == '"Registered"'
-    assert csv_output["row5"][5] == '"In Scope"'
-    assert csv_output["row5"][6] == '"In Season"'
-    assert csv_output["row5"][7] == '"Service hasn\'t been updated within a year"'
-    assert csv_output["row5"][8] == f'"{dataset5.id}"'
-    assert csv_output["row5"][9] == '"2023-12-13"'
-    assert csv_output["row5"][10] == '"2023-04-07"'
-    assert csv_output["row5"][11] == '"2023-01-24"'
-    assert csv_output["row5"][12] == '"2022-01-13"'
-    assert csv_output["row5"][13] == '"2022-02-24"'
-    assert csv_output["row5"][14] == '"2024-02-24"'
-    assert csv_output["row5"][15] == '"test5.xml"'
-    assert csv_output["row5"][16] == '"2022-01-24"'
-    assert csv_output["row5"][17] == f'"{txc_file_5.national_operator_code}"'
-    assert csv_output["row5"][18] == '"PD0000099"'
-    assert csv_output["row5"][19] == '"0"'
-    assert csv_output["row5"][20] == f'"{txc_file_5.operating_period_start_date}"'
-    assert csv_output["row5"][21] == '"2023-06-24"'
+    assert csv_output["row5"][1] == '"Line5"'
+    assert csv_output["row5"][2] == '"PD0000099:5"'
+    assert csv_output["row5"][3] == '"line1 line2"'
+    assert csv_output["row5"][4] == '"Yes"'
+    assert csv_output["row5"][5] == '"Published"'
+    assert csv_output["row5"][6] == '"Registered"'
+    assert csv_output["row5"][7] == '"In Scope"'
+    assert csv_output["row5"][8] == '"In Season"'
+    assert csv_output["row5"][9] == '"Service hasn\'t been updated within a year"'
+    assert csv_output["row5"][10] == f'"{dataset5.id}"'
+    assert csv_output["row5"][11] == '"test5.xml"'
+    assert csv_output["row5"][12] == '"2022-01-24"'
+    assert csv_output["row5"][13] == f'"{txc_file_5.operating_period_start_date}"'
+    assert csv_output["row5"][14] == '"2023-06-24"'
+    assert csv_output["row5"][15] == '"2023-12-13"'
+    assert csv_output["row5"][16] == '"2023-04-07"'
+    assert csv_output["row5"][17] == '"2023-01-24"'
+    assert csv_output["row5"][18] == '"2022-01-13"'
+    assert csv_output["row5"][19] == '"2022-02-24"'
+    assert csv_output["row5"][20] == '"2024-02-24"'    
+    assert csv_output["row5"][21] == f'"{txc_file_5.national_operator_code}"'
     assert csv_output["row5"][22] == '"PD0000099"'
-    assert csv_output["row5"][23] == '"PD0000099:5"'
-    assert csv_output["row5"][24] == '"Line5"'
-
+    assert csv_output["row5"][23] == '"0"'
+    assert csv_output["row5"][25] == '"PD0000099"'
+    
     assert csv_output["row6"][0] == '"PD0000099:6"'
-    assert csv_output["row6"][1] == '"line1 line2"'
-    assert csv_output["row6"][2] == '"Yes"'
-    assert csv_output["row6"][3] == '"Published"'
-    assert csv_output["row6"][4] == '"Registered"'
-    assert csv_output["row6"][5] == '"In Scope"'
-    assert csv_output["row6"][6] == '"In Season"'
-    assert csv_output["row6"][7] == '"Service hasn\'t been updated within a year"'
-    assert csv_output["row6"][8] == f'"{dataset6.id}"'
-    assert csv_output["row6"][9] == '"2020-12-13"'
-    assert csv_output["row6"][10] == '"2023-04-07"'
-    assert csv_output["row6"][11] == '"2023-01-24"'
-    assert csv_output["row6"][12] == '"2022-01-13"'
-    assert csv_output["row6"][13] == '"2022-02-24"'
-    assert csv_output["row6"][14] == '"2024-02-24"'
-    assert csv_output["row6"][15] == '"test6.xml"'
-    assert csv_output["row6"][16] == '"2022-01-24"'
-    assert csv_output["row6"][17] == f'"{txc_file_6.national_operator_code}"'
-    assert csv_output["row6"][18] == '"PD0000099"'
-    assert csv_output["row6"][19] == '"0"'
-    assert csv_output["row6"][20] == f'"{txc_file_6.operating_period_start_date}"'
-    assert csv_output["row6"][21] == '""'
+    assert csv_output["row6"][1] == '"Line6"'
+    assert csv_output["row6"][2] == '"PD0000099:6"'
+    assert csv_output["row6"][3] == '"line1 line2"'
+    assert csv_output["row6"][4] == '"Yes"'
+    assert csv_output["row6"][5] == '"Published"'
+    assert csv_output["row6"][6] == '"Registered"'
+    assert csv_output["row6"][7] == '"In Scope"'
+    assert csv_output["row6"][8] == '"In Season"'
+    assert csv_output["row6"][9] == '"Service hasn\'t been updated within a year"'
+    assert csv_output["row6"][10] == f'"{dataset6.id}"'
+    assert csv_output["row6"][11] == '"test6.xml"'
+    assert csv_output["row6"][12] == '"2022-01-24"'
+    assert csv_output["row6"][13] == f'"{txc_file_6.operating_period_start_date}"'
+    assert csv_output["row6"][14] == '""'
+    assert csv_output["row6"][15] == '"2020-12-13"'
+    assert csv_output["row6"][16] == '"2023-04-07"'
+    assert csv_output["row6"][17] == '"2023-01-24"'
+    assert csv_output["row6"][18] == '"2022-01-13"'
+    assert csv_output["row6"][19] == '"2022-02-24"'
+    assert csv_output["row6"][20] == '"2024-02-24"'
+    assert csv_output["row6"][21] == f'"{txc_file_6.national_operator_code}"'
     assert csv_output["row6"][22] == '"PD0000099"'
-    assert csv_output["row6"][23] == '"PD0000099:6"'
-    assert csv_output["row6"][24] == '"Line6"'
+    assert csv_output["row6"][23] == '"0"'    
+    assert csv_output["row6"][25] == '"PD0000099"'
+    
 
     assert csv_output["row7"][0] == '"PD0000099:7"'
     assert csv_output["row7"][1] == '"line1 line2"'
