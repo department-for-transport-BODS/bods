@@ -37,6 +37,7 @@ def _get_token() -> str:
 
     expiry_time (to invalidate cache while the first token is still active)
     """
+    logger.info("fetching ep authentication token")
     url = f"{settings.EP_AUTH_URL}"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     body = f"client_id={settings.EP_CLIENT_ID}&client_secret={settings.EP_CLIENT_SECRET}&grant_type=client_credentials"
