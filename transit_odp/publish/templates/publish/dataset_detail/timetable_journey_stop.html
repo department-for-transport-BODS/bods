@@ -2,21 +2,22 @@
 {% load query_transform %}
 {% load parse_dictionary %}
 
-{% if  df.columns|length  <= 5 %}
+
+{% if  timetable_details.df.columns|length  <= 5 %}
 <table class="govuk-table govuk-table--small-text-until-tablet timetables_govuk_table">
 {% else %}
 <table class="govuk-table govuk-table--small-text-until-tablet">
 {% endif %}
-  <caption class="govuk-table__caption govuk-table__caption--m">{% trans journey_name %}</caption>
+  <caption class="govuk-table__caption govuk-table__caption--m">{% trans timetable_details.journey_name %}</caption>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      {% for col in df.columns %}
+      {% for col in timetable_details.df.columns %}
         <th scope="col" class="govuk-table__header ">{{col}}</th>
     {% endfor %}
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    {% for idx, row in df.iterrows %}
+    {% for idx, row in timetable_details.df.iterrows %}
       <tr class="govuk-table__row">
         {% for col_name, cell in row.items %}
         <td class="govuk-table__cell gov-table-vr">          
@@ -24,10 +25,10 @@
               {% with key=cell|concatenate:"_"|concatenate:idx %}              
               <a class="tooltip govuk-link" title="More information" id="stop-{{direction}}-{{idx}}" onclick="BODSFrontend.showTooltip(event,'{{idx}}', '{{direction}}');"  >{{cell}}                
                 <p class="tooltiptext" id="tooltip-{{direction}}-{{idx}}">
-                  ATCO Code: {{ stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}  <br/>
-                  Street: {{ stops|get_value_from_dict:key|get_value_from_dict:'street' }} <br/> 
-                  Indicator: {{ stops|get_value_from_dict:key|get_value_from_dict:'indicator' }} <br/>
-                  <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1" id="closeToolTip-{{direction}}-{{idx}}" onclick="BODSFrontend.hideTooltip('{{idx}}', '{{direction}}');" data-module="govuk-button">
+                  ATCO Code: {{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}  <br/>
+                  Street: {{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }} <br/> 
+                  Indicator: {{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }} <br/>
+                  <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1" id="closeToolTip-{{direction}}-{{idx}}" onclick="BODSFrontend.hideTooltip(event);" data-module="govuk-button">
                     Close
                   </button>
                 </p>
@@ -46,24 +47,24 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <p class="govuk-body">      
-      {% if total_rows > 10  %}
-        {% if show_all %}
-        <a href="{% query_transform_kv show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
+      {% if timetable_details.total_row_count > 10  %}
+        {% if timetable_details.show_all %}
+        <a href="{% query_transform_kv timetable_details.show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
         {% else %}
-        <a href="{% query_transform_kv show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
+        <a href="{% query_transform_kv timetable_details.show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
         {% endif %}
       {% endif %}
     </p>
   </div>
 
-  {% if total_page > 0 %}  
+  {% if timetable_details.total_page > 0 %}  
   <div class="govuk-grid-column-one-half govuk-!-text-align-right">
     <nav class=" govuk-pagination govuk-!-width-full govuk-!-text-align-right" style="justify-content: end;" role="navigation"
       aria-label="Pagination">
-      {% if curr_page != 1 %}
+      {% if timetable_details.curr_page != 1 %}
       <div class="govuk-pagination__prev">
         <a class=" govuk-link govuk-pagination__link" rel="prev"
-        href="{% query_transform_kv page_param curr_page|add:'-1' %}" >
+        href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'-1' %}" >
           <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg"
             height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
             <path
@@ -71,17 +72,17 @@
             </path>
           </svg>
           <span class="govuk-pagination__link-title">
-            Previous <br/> {{ curr_page|add:"-1" }} / {{total_page}} <span class="govuk-visually-hidden"> page</span>
+            Previous <br/> {{ timetable_details.curr_page|add:"-1" }} / {{timetable_details.total_page}} <span class="govuk-visually-hidden"> page</span>
           </span>
         </a>
       </div>
       {% endif %}
-      {% if curr_page != total_page %}
+      {% if timetable_details.curr_page != timetable_details.total_page %}
       <div class="govuk-pagination__next govuk-!-text-align-right">
         <a class="govuk-link govuk-pagination__link" rel="next"
-        href="{% query_transform_kv page_param curr_page|add:'1' %}" >
+        href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'1' %}" >
           <span class="govuk-pagination__link-title">
-            Next <br /> {{curr_page|add:"1" }}/{{total_page}}<span class="govuk-visually-hidden"> page</span>
+            Next <br /> {{ timetable_details.curr_page|add:"1" }}/{{timetable_details.total_page}}<span class="govuk-visually-hidden"> page</span>
           </span>
           <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg"
             height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">

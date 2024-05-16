@@ -121,17 +121,15 @@
         {% if is_timetable_visualiser_active %}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                {% include 'publish/dataset_detail/timetable_filters.html' %}
-            {% if not outbound_timetable.empty %}
-                {% include 'publish/dataset_detail/timetable_journey_stop.html' with direction='outbound' df=outbound_timetable journey_name=outbound_journey_name stops=outbound_stops  show_all=outbound_show_all total_rows=outbound_total_row_count total_page=outbound_total_page curr_page=outbound_curr_page page_param='outboundPage' show_all_param='showAllOutbound'  %}
-            {% endif %}
-            {% if not inbound_timetable.empty %}
-                {% include 'publish/dataset_detail/timetable_journey_stop.html' with direction='inbound' df=inbound_timetable journey_name=inbound_journey_name stops=inbound_stops show_all=inbound_show_all total_rows=inbound_total_row_count total_page=inbound_total_page curr_page=inbound_curr_page page_param='inboundPage' show_all_param='showAllInbound' %}
-            {% endif %}
-            {% if inbound_timetable.empty and outbound_timetable.empty %}
+            {% include 'publish/dataset_detail/timetable_filters.html' %}
+            {% if not is_timetable_info_available %}
             <div class="govuk-inset-text">
                 There is no timetable information available to view for this date. Please select another date.
             </div>
+            {% else %}
+                {% for direction, timetable_details in timetable.items %}
+                    {% include 'publish/dataset_detail/timetable_journey_stop.html' with direction=direction timetable_details=timetable_details %}                
+                {% endfor %}
             {% endif %}
         {% endif %}
         </div>

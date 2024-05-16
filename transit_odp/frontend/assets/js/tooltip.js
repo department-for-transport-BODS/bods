@@ -20,7 +20,7 @@ function showTooltip(event, rowIndex, direction) {
  *
  */
 function hideAllTooltips() {
-  document.querySelectorAll("p.tooltiptext").forEach((element) => {
+  document.querySelectorAll("p.tooltiptext.showtooltip").forEach((element) => {
     element.classList.remove("showtooltip");
   });
 }
@@ -31,9 +31,8 @@ function hideAllTooltips() {
  * @param {string} rowIndex - Row index of the table
  * @param {string} direction - Direction whether the inbound or outbound
  */
-function hideTooltip(rowIndex, direction) {
-  const elemId = "tooltip-" + direction + "-" + rowIndex;
-  document.getElementById(elemId).classList.remove("showtooltip");
+function hideTooltip(event) {
+  event.target.parentElement.classList.remove("showtooltip");
 }
 
 /**

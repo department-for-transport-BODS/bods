@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
-from typing import Tuple, Set
+from typing import Tuple, Dict
 from datetime import time
 
 logger = logging.getLogger(__name__)
@@ -259,14 +259,14 @@ def get_vehicle_journey_codes_sorted(
 
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
-) -> Tuple[pd.DataFrame, List]:
+) -> Tuple[pd.DataFrame, Dict]:
     """
     Get the dataframe containing the list of stops and the timetable details
     with journey code as columns
     """
 
     if df_vehicle_journey_operating.empty:
-        return df_vehicle_journey_operating
+        return (df_vehicle_journey_operating, {})
 
     # Keep the relevant columns of dataframe and remove the duplicates
     columns_to_keep = [
