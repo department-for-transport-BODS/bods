@@ -30,6 +30,7 @@ class Checks(models.Model):
     observation = models.CharField(max_length=1024)
     importance = models.CharField(max_length=64)
     category = models.CharField(max_length=64)
+    queue_name = models.CharField(max_length=256, blank=True, null=True)
 
     @classmethod
     def get_all_checks(cls) -> object:
