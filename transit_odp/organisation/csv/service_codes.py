@@ -63,9 +63,15 @@ def get_all_otc_map(organisation_id: int) -> Dict[str, OTCService]:
     }
 
 
-def get_all_line_level_otc_map(organisation_id: int) -> Dict[str, OTCService]:
+def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
     """
-    Get a dictionary which includes all OTC Services for an organisation.
+    Get a dictionary which includes all line level Services for an organisation.
+
+    Args:
+        organisation_id (int): Organisation id
+
+    Returns:
+        Dict[tuple, OTCService]: List of Services
     """
     services = {}
     for service in OTCService.objects.get_all_otc_data_for_organisation(

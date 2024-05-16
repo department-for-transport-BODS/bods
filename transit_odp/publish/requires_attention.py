@@ -59,7 +59,7 @@ def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
     }
 
 
-def get_line_level_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
+def get_line_level_txc_map(org_id: int) -> Dict[tuple, TXCFileAttributes]:
     """
     Get a list of dictionaries of live TXCFileAttributes for an organisation
     with relevant effective staleness dates annotated.
