@@ -1,6 +1,5 @@
 import datetime
 import random
-import re
 from typing import List
 
 import factory
@@ -37,7 +36,7 @@ faker = Faker()
 class CustomCompanyNameProvider(BaseProvider):
     def company_without_comma(self):
         company_name = self.generator.company()
-        return re.sub(",", "", company_name)
+        return company_name.replace(",", " ")
 
 
 factory.Faker.add_provider(CustomCompanyNameProvider)
