@@ -12,6 +12,7 @@ from faker.providers import BaseProvider
 
 from transit_odp.otc.constants import (
     API_TYPE_WECA,
+    API_TYPE_EP,
     LicenceDescription,
     LicenceStatuses,
     SubsidiesDescription,
@@ -167,6 +168,21 @@ class WecaServiceFactory(DjangoModelFactory, factory.Factory):
     via = factory.Faker("sentence")
     effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
     api_type = API_TYPE_WECA
+    atco_code = f"{factory.fuzzy.FuzzyInteger(high=999, low=100)}"
+
+
+class EPServiceFactory(DjangoModelFactory, factory.Factory):
+    class Meta:
+        model = ServiceModel
+
+    registration_number = CustomRegistrationNumberFaker.registration_number()
+    variation_number = 0
+    service_number = factory.Sequence(lambda n: str(n))
+    start_point = factory.Faker("street_name")
+    finish_point = factory.Faker("street_name")
+    via = factory.Faker("sentence")
+    effective_date = factory.fuzzy.FuzzyDate(start_date=PAST)
+    api_type = API_TYPE_EP
     atco_code = f"{factory.fuzzy.FuzzyInteger(high=999, low=100)}"
 
 
