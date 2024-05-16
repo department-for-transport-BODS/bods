@@ -770,7 +770,7 @@ def _get_gtfs(
         response = requests.get(url, timeout=180, stream=is_stream)
         elapsed_time = response.elapsed.total_seconds()
         logger.info(
-            f"Request to get gtfs regions data took {elapsed_time}s "
+            f"Request to get GTFS data took {elapsed_time}s "
             f"- status {response.status_code}"
         )
 

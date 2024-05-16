@@ -12,7 +12,6 @@ from django.test import RequestFactory
 from django.utils import timezone
 from django_hosts import reverse
 from freezegun import freeze_time
-from requests import Response
 
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import AVLValidationReportFactory
