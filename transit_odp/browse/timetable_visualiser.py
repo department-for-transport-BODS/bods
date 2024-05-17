@@ -23,6 +23,7 @@ from transit_odp.timetables.utils import (
     fill_missing_journey_codes,
 )
 import pandas as pd
+from django.db.models import QuerySet
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -232,6 +233,16 @@ class TimetableVisualiser:
 
         return pd.DataFrame.from_records(qs_serviced_orgs)
 
+    def get_df_base_journeys(self, base_qs_vehicle_journeys: QuerySet) -> pd.DataFrame:
+        if self._check_public_use_flag:
+            base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
+                txcfileattributes__public_use=True,
+            )
+        df_initial_vehicle_journeys = pd.DataFrame.from_records(
+            base_qs_vehicle_journeys
+        )
+        return df_initial_vehicle_journeys
+
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
         Get the timetable visualiser for the specific service code, revision id,
@@ -239,13 +250,8 @@ class TimetableVisualiser:
         """
 
         # Create the dataframes from the service, serviced organisation, operating/non-operating exceptions
-
         base_qs_vehicle_journeys = self.get_qs_service_vehicle_journeys()
-        if self._check_public_use_flag:
-            base_qs_vehicle_journeys = base_qs_vehicle_journeys.filter(
-                txcfileattributes__public_use=True,
-            )
-        df_initial_vehicle_journeys = pd.DataFrame.from_records(
+        df_initial_vehicle_journeys = self.get_df_base_journeys(
             base_qs_vehicle_journeys
         )
 
@@ -284,12 +290,12 @@ class TimetableVisualiser:
         df_serviced_org = self.get_df_servicedorg_vehicle_journey(
             base_vehicle_journey_ids
         )
-
         data = {}
         directions = {
             "inbound": {"inbound", "antiClockwise"},
             "outbound": {"outbound", "clockwise"},
         }
+
         for direction in directions.keys():
             df_base_vehicle_journeys = df_initial_vehicle_journeys[
                 df_initial_vehicle_journeys["direction"].isin(directions.get(direction))
