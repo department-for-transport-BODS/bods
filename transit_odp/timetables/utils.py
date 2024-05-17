@@ -17,7 +17,7 @@ from pydantic import BaseModel, ValidationError, Field
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-from transit_odp.common.utils.s3_bucket_connection import get_s3_bucket_storage
+from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
 from transit_odp.dqs.models import TaskResults
@@ -111,16 +111,17 @@ class APIBankHolidays(BaseModel):
 
 
 class QueuePayloadItem:
-    def __init__(self, file_id, check_id, result_id):
+    def __init__(self, file_id, check_id, result_id, queue_name):
         self.file_id = file_id
         self.check_id = check_id
         self.result_id = result_id
+        self.queue_name = queue_name
 
     def to_dict(self):
         return {
             "file_id": self.file_id,
             "check_id": self.check_id,
-            "result_id": self.result_id
+            "result_id": self.result_id,
         }
 
 
@@ -508,13 +509,17 @@ def create_queue_payload(pending_checks:list) -> list:
     """
     Create JSON payload as queue items for remote queues for lambdas
     """
-    queue_payload = []
+    queue_payload = {}
     for check in pending_checks:
         payload_item = QueuePayloadItem(
             file_id=check.transmodel_txcfileattributes.id,
-            check_id=check.checks.id if check.checks else None,
-            result_id=check.id
+            check_id=check.checks.id,
+            result_id=check.id,
+            queue_name=check.queue_name,
         )
-        queue_payload.append(payload_item.to_dict())
+        queue_name = payload_item.queue_name
+        if queue_name not in queue_payload:
+            queue_payload[queue_name] = []
+        queue_payload[queue_name].append(payload_item.to_dict())
     
     return queue_payload

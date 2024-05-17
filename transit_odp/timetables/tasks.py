@@ -58,7 +58,6 @@ logger = getLogger(__name__)
 
 BATCH_SIZE = 2000
 
-
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
     
@@ -115,7 +114,6 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             ]
 
         jobs = old_dqs_job_list + new_dqs_job_list
-        jobs = list(dict.fromkeys(jobs))
         
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
@@ -470,7 +468,7 @@ def task_data_quality_service(revision_id: int, task_id: int):
         pending_checks = TaskResults.objects.get_pending_objects(txc_file_attributes_objects)
         
         queues_payload = create_queue_payload(pending_checks)
-
+        
     except (DatabaseError, IntegrityError) as db_exc:
         task.handle_general_pipeline_exception(
             db_exc,

@@ -21,6 +21,6 @@ class TaskResultsQueryset(models.QuerySet):
         include_status = STATUSES["PENDING"]
         qs = self.get_valid_taskresults(txcfileattributes).filter(
             status=include_status
-        )
+        ).annotate(queue_name=F("checks__queue_name"))
         
         return qs

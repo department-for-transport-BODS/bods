@@ -19,3 +19,18 @@ def get_s3_bucket_storage():
     except Exception as e:
         logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
         raise
+
+def get_queue_by_name():
+    sqs_queue_name = ""
+    
+    return SQS
+
+def get_all_queues():
+    queues=[]
+    return [get_queue_by_name(queue.queue_name) for queue in queues]
+
+def send_message_to_queue(messages):
+    all_queues=get_all_queues()
+    for message in messages:
+        for queue in all_queues:
+            queue.send_message(message)

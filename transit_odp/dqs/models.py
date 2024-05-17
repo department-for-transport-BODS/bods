@@ -66,6 +66,7 @@ class TaskResults(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+    
     objects = TaskResultsQueryset.as_manager()
 
     @classmethod
