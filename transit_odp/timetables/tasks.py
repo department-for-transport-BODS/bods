@@ -37,6 +37,7 @@ from transit_odp.timetables.utils import (
     get_bank_holidays,
     get_holidays_records_to_insert,
     read_delete_datasets_file_from_s3,
+    create_queue_payload,
 )
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
@@ -45,7 +46,7 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
-from transit_odp.data_quality_service.models import Report, Checks, TaskResults
+from transit_odp.dqs.models import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
@@ -60,10 +61,10 @@ BATCH_SIZE = 2000
 
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
-    (
-        is_old_data_quality_service_active,
-        is_new_data_quality_service_active,
-    ) = flag_is_active("", "is_data_quality_service_active")
+    
+    is_old_data_quality_service_active = flag_is_active("", "is_old_data_quality_service_active")
+    is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
+
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
     except DatasetRevision.DoesNotExist as e:
@@ -108,13 +109,14 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
                 task_post_schema_check.signature(args),
                 task_extract_txc_file_data.signature(args),
                 task_pti_validation.signature(args),
-                task_data_quality_service.signature(args),
                 task_dataset_etl.signature(args),
+                task_data_quality_service.signature(args),
                 task_dataset_etl_finalise.signature(args),
             ]
 
         jobs = old_dqs_job_list + new_dqs_job_list
-
+        jobs = list(dict.fromkeys(jobs))
+        
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
 
@@ -465,8 +467,9 @@ def task_data_quality_service(revision_id: int, task_id: int):
 
         for txc_file_attribute, check in combinations:
             TaskResults.initialize_task_results(report, txc_file_attribute, check)
-
-        # Create queue items
+        pending_checks = TaskResults.objects.get_pending_objects(txc_file_attributes_objects)
+        
+        queues_payload = create_queue_payload(pending_checks)
 
     except (DatabaseError, IntegrityError) as db_exc:
         task.handle_general_pipeline_exception(
