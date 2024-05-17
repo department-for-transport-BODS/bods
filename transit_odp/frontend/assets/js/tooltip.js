@@ -47,4 +47,8 @@ if (document.querySelectorAll("p.tooltiptext").length > 0) {
   });
 }
 
-export { showTooltip, hideTooltip };
+function disableClick(event) {
+  event.stopPropagation();
+}
+
+export { showTooltip, hideTooltip, disableClick };
