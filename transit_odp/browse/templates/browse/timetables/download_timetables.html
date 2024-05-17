@@ -100,22 +100,29 @@
                 Data Service. Where data is not yet published on Bus Open
                 Data, or is published but not compliant, this data is
                 supplemented with
-                <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>
-                and <a class="govuk-link" rel="noopener noreferrer" href="https://tfl.gov.uk/info-for/open-data-users/" target="_blank">Transport for London (TfL)</a>.
+                <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>.
             {% endblocktrans %}
         </p>
-        <ul class="govuk-list download-list">
-            {% for file in gtfs_static_files %}
-                <li>
-                    <a class="govuk-link"
-                        href="{% url 'gtfs-file-download' id=file.id host hosts.data %}"
-                        onClick="sendStaticGTFSEvent('{{file.pretty_name}}')">
-                        {{file.pretty_name}}
-                        {% trans '- Download timetables data in GTFS format' %}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+        {% if gtfs_regions or gtfs_regions|length %}
+            <ul class="govuk-list download-list">
+                {% for region in gtfs_regions %}
+                    <li>
+                        <a class="govuk-link"
+                            href="{% url 'gtfs-file-download' id=region.regionName host hosts.data %}"
+                            onClick="sendStaticGTFSEvent('{{region.regionDisplayName}}')">
+                            {{region.regionDisplayName}}
+                            {% trans '- Download timetables data in GTFS format' %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="govuk-body">
+                {% blocktrans %}
+                    There are no GTFS files currently available. Please check back later.
+                {% endblocktrans %}
+            </p>
+        {% endif %}
     </div>
 {% endblock %}
 
