@@ -1,3 +1,6 @@
+STATUSES = {
+    "PENDING": "PENDING",
+}
 CHECKS_DATA = [
     {
         "observation": "Incorrect NOC",
@@ -75,6 +78,6 @@ CHECKS_DATA = [
         "observation": "Incorrect licence number",
         "importance": "Critical",
         "category": "Data set",
-        "queue_name": "incorrect_licence__number_queue",
+        "queue_name": "incorrect_licence_number_queue",
     },
 ]
