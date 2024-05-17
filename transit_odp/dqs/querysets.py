@@ -16,7 +16,7 @@ class TaskResultsQueryset(models.QuerySet):
     
     def get_pending_objects(self, txcfileattributes: list) -> list:
         """
-        Filter for PENDING TaskResults items for the TxCFiles
+        Filter for PENDING TaskResults items for the TxCFiles and annotate queue_names from Checks
         """
         include_status = STATUSES["PENDING"]
         qs = self.get_valid_taskresults(txcfileattributes).filter(
