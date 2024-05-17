@@ -37,6 +37,7 @@ def _get_token() -> str:
 
     expiry_time (to invalidate cache while the first token is still active)
     """
+    logger.info("fetching ep authentication token")
     url = f"{settings.EP_AUTH_URL}"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     body = f"client_id={settings.EP_CLIENT_ID}&client_secret={settings.EP_CLIENT_SECRET}&grant_type=client_credentials"
@@ -54,9 +55,7 @@ def _get_token() -> str:
 
     response = AuthResponse(**response.json())
     token_cache_timeout = response.expires_in
-    cache.set(
-        "ep-auth-bearer", f"Bearer {response.access_token}", timeout=token_cache_timeout
-    )
+    cache.set("ep-auth-bearer", f"{response.access_token}", timeout=token_cache_timeout)
     return response.access_token
 
 
