@@ -1,0 +1,180 @@
+vehicle_journey_id,operating_on_working_days,serviced_org_id,name,organisation_code,start_date,end_date
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-04-15,2024-05-24
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-06-03,2024-07-19
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-09-04,2024-10-18
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-10-28,2024-12-20
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-01-06,2025-02-14
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-02-24,2025-04-04
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-04-22,2025-05-23
+187305,True,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-06-02,2025-07-18
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-04-15,2024-05-24
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-06-03,2024-07-19
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-09-04,2024-10-18
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2024-10-28,2024-12-20
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-01-06,2025-02-14
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-02-24,2025-04-04
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-04-22,2025-05-23
+187423,False,76,Working Days BGS & BA,WorkingDaysBGSBA,2025-06-02,2025-07-18
+187354,True,77,Working Days BGS,WorkingDaysBGS,2023-06-05,2023-07-14
+187355,True,77,Working Days BGS,WorkingDaysBGS,2023-06-05,2023-07-14
+187354,True,77,Working Days BGS,WorkingDaysBGS,2023-09-04,2023-10-20
+187355,True,77,Working Days BGS,WorkingDaysBGS,2023-09-04,2023-10-20
+187354,True,77,Working Days BGS,WorkingDaysBGS,2023-10-30,2023-12-20
+187355,True,77,Working Days BGS,WorkingDaysBGS,2023-10-30,2023-12-20
+187354,True,77,Working Days BGS,WorkingDaysBGS,2024-01-03,2024-02-09
+187355,True,77,Working Days BGS,WorkingDaysBGS,2024-01-03,2024-02-09
+187354,True,77,Working Days BGS,WorkingDaysBGS,2024-02-19,2024-03-28
+187355,True,77,Working Days BGS,WorkingDaysBGS,2024-02-19,2024-03-28
+187354,True,77,Working Days BGS,WorkingDaysBGS,2024-04-15,2024-05-24
+187355,True,77,Working Days BGS,WorkingDaysBGS,2024-04-15,2024-05-24
+187354,True,77,Working Days BGS,WorkingDaysBGS,2024-06-03,2024-07-12
+187355,True,77,Working Days BGS,WorkingDaysBGS,2024-06-03,2024-07-12
+187356,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187365,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187366,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187367,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187368,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187369,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187370,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187371,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187372,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187373,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187374,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187357,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187375,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187376,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187377,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187378,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187379,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187380,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187381,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187382,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187383,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187384,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187358,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187385,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187386,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187387,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187388,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187389,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187390,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187391,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187392,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187393,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187394,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187359,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187395,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187396,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187397,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187398,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187399,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187400,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187401,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187402,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187403,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187404,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187360,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187405,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187406,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187407,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187408,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187409,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187410,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187411,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187412,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187413,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187414,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187361,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187415,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187416,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187417,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187418,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187419,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187420,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187421,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187422,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187362,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187363,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187364,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187423,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187424,False,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187425,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187434,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187435,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187436,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187437,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187438,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187439,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187440,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187441,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187442,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187443,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187426,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187444,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187445,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187446,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187447,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187448,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187449,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187450,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187451,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187452,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187453,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187427,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187454,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187455,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187456,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187457,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187458,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187459,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187460,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187461,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187462,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187463,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187428,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187464,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187465,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187466,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187467,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187468,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187469,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187470,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187471,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187472,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187473,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187429,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187474,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187475,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187476,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187477,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187478,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187479,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187480,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187481,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187482,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187483,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187430,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187484,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187485,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187486,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187487,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187488,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187431,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187432,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187433,True,78,Christmas Week,ChristmasWeek,2024-12-27,2024-12-30
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2024-04-16,2024-05-24
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2024-06-03,2024-07-19
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2024-09-04,2024-10-25
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2024-11-04,2024-12-19
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2025-01-07,2025-02-14
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2025-02-24,2025-04-04
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2025-04-23,2025-05-23
+187424,False,79,Working Days AMVC,WorkingDaysAMVC,2025-06-02,2025-07-23
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2024-04-16,2024-05-24
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2024-06-03,2024-07-19
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2024-09-04,2024-10-25
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2024-11-04,2024-12-19
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2025-01-07,2025-02-14
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2025-02-24,2025-04-04
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2025-04-23,2025-05-23
+187489,True,79,Working Days AMVC,WorkingDaysAMVC,2025-06-02,2025-07-23

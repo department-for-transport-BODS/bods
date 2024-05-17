@@ -19,6 +19,9 @@ pytestmark = pytest.mark.django_db
         ("7", "2024-01-09", "day_of_week_operational_so"),
         ("11a", "2024-05-27", "target_date_op_non_exception"),
         ("11a", "2024-05-06", "target_date_op_exception"),
+        ("101", "2024-05-17", "with_holidays_day_of_week_operational"),
+        ("101", "2024-05-27", "with_holidays_target_date_op_exceptions"),
+        ("101", "2024-05-06", "with_holidays_target_date_non_op_exceptions"),
     ],
 )
 def test_timetable_visualiser_day_of_week(mocker, line, target_date, folder_path):
