@@ -103,14 +103,14 @@
                 <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>.
             {% endblocktrans %}
         </p>
-        {% if gtfs_static_files or gtfs_static_files|length %}
+        {% if gtfs_regions or gtfs_regions|length %}
             <ul class="govuk-list download-list">
-                {% for file in gtfs_static_files %}
+                {% for region in gtfs_regions %}
                     <li>
                         <a class="govuk-link"
-                            href="{% url 'gtfs-file-download' id=file.regionCode host hosts.data %}"
-                            onClick="sendStaticGTFSEvent('{{file.regionName}}')">
-                            {{file.regionName}}
+                            href="{% url 'gtfs-file-download' id=region.regionName host hosts.data %}"
+                            onClick="sendStaticGTFSEvent('{{region.regionDisplayName}}')">
+                            {{region.regionDisplayName}}
                             {% trans '- Download timetables data in GTFS format' %}
                         </a>
                     </li>

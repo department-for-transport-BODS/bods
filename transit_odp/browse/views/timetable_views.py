@@ -761,28 +761,41 @@ class SearchView(BaseSearchView):
         return qs
 
 
-def _get_gtfs(
-    url: str,
-    is_stream: bool = False,
-):
-    content = None
+def _get_gtfs_regions():
     try:
-        response = requests.get(url, timeout=180, stream=is_stream)
+        response = requests.get(
+            url=f"{settings.GTFS_API_BASE_URL}/gtfs/regions",
+            timeout=180,
+        )
+        elapsed_time = response.elapsed.total_seconds()
+        logger.info(
+            f"Request to get GTFS regions took {elapsed_time}s "
+            f"- status {response.status_code}"
+        )
+
+        return response.json()
+
+    except RequestException:
+        return None
+
+
+def _get_gtfs_file(region):
+    try:
+        response = requests.get(
+            url=f"{settings.GTFS_API_BASE_URL}/gtfs?regionName={region}",
+            timeout=180,
+            stream=True,
+        )
         elapsed_time = response.elapsed.total_seconds()
         logger.info(
             f"Request to get GTFS data took {elapsed_time}s "
             f"- status {response.status_code}"
         )
 
-        if response.status_code == 200 and is_stream is False:
-            content = response.json()
-        if response.status_code == 200 and is_stream:
-            content = response.raw
+        return response.raw
 
     except RequestException:
         return None
-
-    return content
 
 
 class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
@@ -815,17 +828,16 @@ class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
         ]
         context["change_archives"] = change_archives
 
-        gtfs_regions_url = f"{settings.GTFS_API_BASE_URL}/gtfs/regions"
-        context["gtfs_static_files"] = _get_gtfs(gtfs_regions_url)
+        context["gtfs_regions"] = _get_gtfs_regions()
 
         return context
 
 
 class DownloadRegionalGTFSFileView(BaseDownloadFileView):
-    """View from retrieving a GTFS region file from GTFS API and returning it as FileResponse"""
+    """View for retrieving a GTFS region file from the GTFS API and returning it as a StreamingHttpResponse"""
 
     def get(self, request, *args, **kwargs):
-        if self.kwargs.get("id") == TravelineRegions.ALL.upper():
+        if self.kwargs.get("id") == TravelineRegions.ALL.lower():
             db_starttime = datetime.now()
             ResourceRequestCounter.from_request(request)
             db_endtime = datetime.now()
@@ -850,8 +862,7 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def get_download_file(self):
         id_ = self.kwargs.get("id", None)
-        gtfs_region_file_url = f"{settings.GTFS_API_BASE_URL}/gtfs?region={id_}"
-        gtfs_file = _get_gtfs(gtfs_region_file_url, True)
+        gtfs_file = _get_gtfs_file(id_)
 
         return gtfs_file
 

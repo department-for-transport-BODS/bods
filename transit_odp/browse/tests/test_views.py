@@ -953,18 +953,18 @@ class TestDataDownloadCatalogueView:
 class TestGTFSStaticDownloads:
     host = DATA_HOST
 
-    @patch("transit_odp.browse.views.timetable_views._get_gtfs")
+    @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
     def test_download_gtfs_file_404(self, mrequests, client_factory):
-        url = reverse("gtfs-file-download", host=self.host, args=["ALL"])
+        url = reverse("gtfs-file-download", host=self.host, args=["all"])
         client = client_factory(host=self.host)
 
         mrequests.return_value = None
         response = client.get(url)
         assert response.status_code == 404
 
-    @patch("transit_odp.browse.views.timetable_views._get_gtfs")
+    @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
     def test_download_gtfs_increments_resource_counter(self, mrequests, client_factory):
-        url = reverse("gtfs-file-download", host=self.host, args=["ALL"])
+        url = reverse("gtfs-file-download", host=self.host, args=["all"])
         client = client_factory(host=self.host)
 
         gtfs_content = "test"
