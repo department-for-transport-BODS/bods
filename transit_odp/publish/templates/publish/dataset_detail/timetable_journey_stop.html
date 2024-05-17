@@ -26,8 +26,8 @@
               <a class="tooltip govuk-link" title="More information" id="stop-{{direction}}-{{idx}}" onclick="BODSFrontend.showTooltip(event,'{{idx}}', '{{direction}}');"  >{{cell}}                
                 <p class="tooltiptext" id="tooltip-{{direction}}-{{idx}}" onclick="BODSFrontend.disableClick(event);" >
                   <span class="govuk-!-font-weight-bold">ATCO Code: </span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}<br/>
-                  <span class="govuk-!-font-weight-bold">Street:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}<br/> 
-                  <span class="govuk-!-font-weight-bold">Indicator:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}<br/>
+                  <span class="govuk-!-font-weight-bold">Street: </span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}<br/> 
+                  <span class="govuk-!-font-weight-bold">Indicator: </span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}<br/>
                   <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1" id="closeToolTip-{{direction}}-{{idx}}" onclick="BODSFrontend.hideTooltip(event);" data-module="govuk-button">
                     Close
                   </button>
