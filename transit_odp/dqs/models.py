@@ -6,6 +6,7 @@ from django_extensions.db.fields import CreationDateTimeField
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
 from transit_odp.organisation.models.data import TXCFileAttributes
+from transit_odp.dqs.querysets import TaskResultsQueryset
 
 
 class Report(models.Model):
@@ -65,6 +66,7 @@ class TaskResults(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+    objects = TaskResultsQueryset.as_manager()
 
     @classmethod
     def initialize_task_results(
@@ -85,7 +87,6 @@ class TaskResults(models.Model):
         task_results_to_create.append(task_result)
 
         return cls.objects.bulk_create(task_results_to_create)
-
 
 class ObservationResults(models.Model):
     details = models.TextField(

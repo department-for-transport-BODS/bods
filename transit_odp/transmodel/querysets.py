@@ -18,3 +18,7 @@ class ServicePatternQuerySet(models.QuerySet):
         # ServicePattern. This would allow the ServicePattern to has service specific
         # data, such as as the service name
         return self.annotate(service_name=GroupConcat("services__name", ", "))
+
+
+
+

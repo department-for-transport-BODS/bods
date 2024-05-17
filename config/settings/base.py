@@ -169,7 +169,7 @@ LOCAL_APPS = [
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
     "transit_odp.disruptions.apps.DisruptionsConfig",
     "transit_odp.crispy_forms_govuk.apps.CrispyFormsGovukConfig",
-    "transit_odp.data_quality_service.apps.DataQualityServiceConfig",
+    "transit_odp.dqs.apps.DQSConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from transit_odp.data_quality_service.models import Checks
+from transit_odp.dqs.models import Checks
 
 
 @admin.register(Checks)
