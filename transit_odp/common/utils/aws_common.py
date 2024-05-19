@@ -25,55 +25,55 @@ def get_s3_bucket_storage() -> object:
         logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
         raise
 
-def get_sqs_client() -> object:
-    """
-    Initialize and return an SQS client.
-    """
-    return boto3.client(
-        'sqs',
-        endpoint_url=settings.SQS_QUEUE_ENDPOINT_URL,
-        region_name=settings.AWS_REGION_NAME,
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-    )
+class SQSClientWrapper:
+    def __init__(self) -> object:
+        """
+        Initialize and return an SQS client.
+        """
+        return boto3.client(
+            'sqs',
+            endpoint_url=settings.SQS_QUEUE_ENDPOINT_URL,
+            region_name=settings.AWS_REGION_NAME,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
 
-def get_queue_name_from_url(queue_url: str) -> str:
-    """
-    Extract and return the queue name from the queue URL.
-    """
-    return queue_url.split('/')[-1]
+    def get_queue_name_from_url(self, queue_url: str) -> str:
+        """
+        Extract and return the queue name from the queue URL.
+        """
+        return queue_url.split('/')[-1]
 
-def send_message_to_queue(queues_payload: dict):
-    """
-    Send messages to SQS queues based on the provided payload.
-    """
-    sqs_client = get_sqs_client()
+    def send_message_to_queue(self, queues_payload: dict):
+        """
+        Send messages to SQS queues based on the provided payload.
+        """
 
-    try:
-        response = sqs_client.list_queues()
-        if 'QueueUrls' in response:
-            queue_urls = response['QueueUrls']
-            # Create a mapping from queue name to URL
-            queue_url_map = {get_queue_name_from_url(queue_url): queue_url for queue_url in queue_urls}
+        try:
+            response = self.sqs_client.list_queues()
+            if 'QueueUrls' in response:
+                queue_urls = response['QueueUrls']
+                # Create a mapping from queue name to URL
+                queue_url_map = {self.get_queue_name_from_url(queue_url): queue_url for queue_url in queue_urls}
 
-            for queue_name, messages in queues_payload.items():
-                if queue_name in queue_url_map:
-                    queue_url = queue_url_map[queue_name]
-                    for message in messages:
-                        try:
-                            response_send = sqs_client.send_message(
-                                QueueUrl=queue_url,
-                                MessageBody=json.dumps(message)
-                            )
-                            logger.info(f"Message sent to {queue_name}: {response_send['MessageId']}")
-                        except Exception as e:
-                            logger.error(f"Error sending message to {queue_name}: {e}")
-                            raise
-                else:
-                    logger.info(f"Queue {queue_name} not found in SQS queues.")
-        else:
-            logger.error("No SQS queues found.")
-            raise ValueError("No SQS queues found")
-    except Exception as e:
-        logger.error(f"Error when trying to access the queues: {e}")
-        raise
+                for queue_name, messages in queues_payload.items():
+                    if queue_name in queue_url_map:
+                        queue_url = queue_url_map[queue_name]
+                        for message in messages:
+                            try:
+                                response_send = self.sqs_client.send_message(
+                                    QueueUrl=queue_url,
+                                    MessageBody=json.dumps(message)
+                                )
+                                logger.info(f"Message sent to {queue_name}: {response_send['MessageId']}")
+                            except Exception as e:
+                                logger.error(f"Error sending message to {queue_name}: {e}")
+                                raise
+                    else:
+                        logger.info(f"Queue {queue_name} not found in SQS queues.")
+            else:
+                logger.error("No SQS queues found.")
+                raise ValueError("No SQS queues found")
+        except Exception as e:
+            logger.error(f"Error when trying to access the queues: {e}")
+            raise

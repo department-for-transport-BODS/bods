@@ -53,7 +53,7 @@ from transit_odp.validate import (
     FileScanner,
     ValidationException,
 )
-from transit_odp.common.utils.aws_common import send_message_to_queue
+from transit_odp.common.utils.aws_common import SQSClientWrapper
 
 logger = getLogger(__name__)
 
@@ -469,7 +469,8 @@ def task_data_quality_service(revision_id: int, task_id: int):
         pending_checks = TaskResults.objects.get_pending_objects(txc_file_attributes_objects)
         
         queues_payload = create_queue_payload(pending_checks)
-        send_message_to_queue(queues_payload)
+        sqs_queue_client = SQSClientWrapper()
+        sqs_queue_client.send_message_to_queue(queues_payload)
 
     except (DatabaseError, IntegrityError) as db_exc:
         task.handle_general_pipeline_exception(
