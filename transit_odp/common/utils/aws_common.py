@@ -25,13 +25,14 @@ def get_s3_bucket_storage() -> object:
         logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
         raise
 
+
 class SQSClientWrapper:
     def __init__(self) -> object:
         """
         Initialize and return an SQS client.
         """
         return boto3.client(
-            'sqs',
+            "sqs",
             endpoint_url=settings.SQS_QUEUE_ENDPOINT_URL,
             region_name=settings.AWS_REGION_NAME,
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -42,7 +43,7 @@ class SQSClientWrapper:
         """
         Extract and return the queue name from the queue URL.
         """
-        return queue_url.split('/')[-1]
+        return queue_url.split("/")[-1]
 
     def send_message_to_queue(self, queues_payload: dict):
         """
@@ -51,10 +52,13 @@ class SQSClientWrapper:
 
         try:
             response = self.sqs_client.list_queues()
-            if 'QueueUrls' in response:
-                queue_urls = response['QueueUrls']
+            if "QueueUrls" in response:
+                queue_urls = response["QueueUrls"]
                 # Create a mapping from queue name to URL
-                queue_url_map = {self.get_queue_name_from_url(queue_url): queue_url for queue_url in queue_urls}
+                queue_url_map = {
+                    self.get_queue_name_from_url(queue_url): queue_url
+                    for queue_url in queue_urls
+                }
 
                 for queue_name, messages in queues_payload.items():
                     if queue_name in queue_url_map:
@@ -62,12 +66,15 @@ class SQSClientWrapper:
                         for message in messages:
                             try:
                                 response_send = self.sqs_client.send_message(
-                                    QueueUrl=queue_url,
-                                    MessageBody=json.dumps(message)
+                                    QueueUrl=queue_url, MessageBody=json.dumps(message)
                                 )
-                                logger.info(f"Message sent to {queue_name}: {response_send['MessageId']}")
+                                logger.info(
+                                    f"Message sent to {queue_name}: {response_send['MessageId']}"
+                                )
                             except Exception as e:
-                                logger.error(f"Error sending message to {queue_name}: {e}")
+                                logger.error(
+                                    f"Error sending message to {queue_name}: {e}"
+                                )
                                 raise
                     else:
                         logger.info(f"Queue {queue_name} not found in SQS queues.")

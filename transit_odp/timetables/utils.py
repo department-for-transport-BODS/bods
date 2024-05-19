@@ -505,7 +505,7 @@ def get_updated_columns(df: pd.DataFrame) -> pd.Series:
     return ["-" if "-missing_journey_code" in col else col for col in df.columns]
 
 
-def create_queue_payload(pending_checks:list) -> list:
+def create_queue_payload(pending_checks: list) -> list:
     """
     Create JSON payload as queue items for remote queues for lambdas
     """
@@ -521,5 +521,5 @@ def create_queue_payload(pending_checks:list) -> list:
         if queue_name not in queue_payload:
             queue_payload[queue_name] = []
         queue_payload[queue_name].append(payload_item.to_dict())
-    
+
     return queue_payload

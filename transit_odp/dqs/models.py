@@ -66,7 +66,7 @@ class TaskResults(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
-    
+
     objects = TaskResultsQueryset.as_manager()
 
     @classmethod
@@ -88,6 +88,7 @@ class TaskResults(models.Model):
         task_results_to_create.append(task_result)
 
         return cls.objects.bulk_create(task_results_to_create)
+
 
 class ObservationResults(models.Model):
     details = models.TextField(

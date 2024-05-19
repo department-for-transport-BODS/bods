@@ -3,6 +3,7 @@
 from django.db import migrations
 from transit_odp.dqs.constants import CHECKS_DATA
 
+
 def insert_updated_data(apps, schema_editor):
     Checks = apps.get_model("dqs", "Checks")
     for entry in CHECKS_DATA:

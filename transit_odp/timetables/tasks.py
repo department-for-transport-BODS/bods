@@ -59,11 +59,15 @@ logger = getLogger(__name__)
 
 BATCH_SIZE = 2000
 
+
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
-    
-    is_old_data_quality_service_active = flag_is_active("", "is_old_data_quality_service_active")
-    is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
+    is_old_data_quality_service_active = flag_is_active(
+        "", "is_old_data_quality_service_active"
+    )
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
 
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
@@ -115,7 +119,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             ]
 
         jobs = old_dqs_job_list + new_dqs_job_list
-        
+
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
 
@@ -466,8 +470,10 @@ def task_data_quality_service(revision_id: int, task_id: int):
 
         for txc_file_attribute, check in combinations:
             TaskResults.initialize_task_results(report, txc_file_attribute, check)
-        pending_checks = TaskResults.objects.get_pending_objects(txc_file_attributes_objects)
-        
+        pending_checks = TaskResults.objects.get_pending_objects(
+            txc_file_attributes_objects
+        )
+
         queues_payload = create_queue_payload(pending_checks)
         sqs_queue_client = SQSClientWrapper()
         sqs_queue_client.send_message_to_queue(queues_payload)

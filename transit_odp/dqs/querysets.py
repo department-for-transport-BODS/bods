@@ -12,15 +12,16 @@ class TaskResultsQueryset(models.QuerySet):
         """Get valid TaskResults objects for the TxCFiles"""
         txcfileattribute_ids = [attr.id for attr in txcfileattributes]
         return self.filter(transmodel_txcfileattributes__id__in=txcfileattribute_ids)
-        
-    
+
     def get_pending_objects(self, txcfileattributes: list) -> list:
         """
         Filter for PENDING TaskResults items for the TxCFiles and annotate queue_names from Checks
         """
         include_status = STATUSES["PENDING"]
-        qs = self.get_valid_taskresults(txcfileattributes).filter(
-            status=include_status
-        ).annotate(queue_name=F("checks__queue_name"))
-        
+        qs = (
+            self.get_valid_taskresults(txcfileattributes)
+            .filter(status=include_status)
+            .annotate(queue_name=F("checks__queue_name"))
+        )
+
         return qs
