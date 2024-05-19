@@ -613,6 +613,13 @@ EP_AUTH_URL = env(
 DISRUPTIONS_API_BASE_URL = env("DISRUPTIONS_API_BASE_URL", default="")
 DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 
+# SQS QUEUE
+# ------------------------------------------------------------------------------
+SQS_QUEUE_ENDPOINT_URL = env("SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566")
+AWS_REGION_NAME = env("AWS_REGION_NAME", default="us-west-2")
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
+
 # Crispy forms
 # ------------------------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = (
