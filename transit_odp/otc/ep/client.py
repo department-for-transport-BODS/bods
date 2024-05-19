@@ -78,9 +78,10 @@ class EPClient:
         """
         url = f"{settings.EP_API_URL}?active=true"
         headers = {
-            "Authorization": f"{self.ep_auth.token}",
+            "Authorization": f"Bearer {self.ep_auth.token}",
         }
 
+        logger.info(f"headers: {headers}")
         try:
             response = requests.get(
                 url=url,

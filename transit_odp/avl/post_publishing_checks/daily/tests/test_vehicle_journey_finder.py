@@ -285,6 +285,37 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
         assert result.errors == expected_error
 
 
+def test_get_service_org_xml_string():
+    txc_filenames = [
+        str(DATA_DIR / xml)
+        for xml in (
+            "vehicle_journeys.xml",
+            "vehicle_journeys4.xml",
+        )
+    ]
+    expected_service_org_xml_string = """<ServicedOrganisationDayType xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <DaysOfOperation>
+            <WorkingDays>
+              <ServicedOrganisationRef>KPMG</ServicedOrganisationRef>
+            </WorkingDays>
+          </DaysOfOperation>
+        </ServicedOrganisationDayType>"""
+    txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
+    txc_vehicle_journeys = [
+        TxcVehicleJourney(txc.get_vehicle_journeys()[0], txc) for txc in txc_xml
+    ]
+    vehicle_journey_finder = VehicleJourneyFinder()
+    service_org_xml_str_none = vehicle_journey_finder.get_service_org_xml_string(
+        txc_vehicle_journeys[0]
+    )
+    assert service_org_xml_str_none is None
+
+    service_org_xml_str_not_none = vehicle_journey_finder.get_service_org_xml_string(
+        txc_vehicle_journeys[1]
+    )
+    assert service_org_xml_str_not_none.strip() == expected_service_org_xml_string
+
+
 def test_filter_by_published_line_name():
     txc_filenames = [
         str(DATA_DIR / xml) for xml in ("vehicle_journeys_same_journey_code.xml",)

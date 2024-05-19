@@ -424,6 +424,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             dead_run_time = vehicle_journey.get_element_or_none(
                 ["StartDeadRun", "PositioningLink", "RunTime"]
             )
+            vj_departure_time = departure_time
             if dead_run_time:
                 departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
 
@@ -522,7 +523,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             "run_time": run_time,
                             "wait_time": wait_time,
                             "departure_day_shift": departure_day_shift,
-                            "block_number": block_number,
+                            "vj_departure_time": vj_departure_time,
                         }
                     )
 
@@ -541,7 +542,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "run_time": pd.NaT,
                         "wait_time": pd.NaT,
                         "departure_day_shift": departure_day_shift,
-                        "block_number": block_number,
+                        "vj_departure_time": vj_departure_time,
                     }
                 )
 
@@ -575,7 +576,7 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
-                    "block_number": None,
+                    "vj_departure_time": None,
                 }
             )
     return pd.DataFrame(all_vehicle_journeys)
