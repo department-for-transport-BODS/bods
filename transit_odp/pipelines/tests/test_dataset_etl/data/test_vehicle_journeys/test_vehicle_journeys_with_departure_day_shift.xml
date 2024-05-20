@@ -745,6 +745,10 @@
       <OperatorRef>tkt_oid</OperatorRef>
       <DepartureDayShift>+1</DepartureDayShift>
       <Operational>
+        <Block>
+          <Description>2062</Description>
+          <BlockNumber>K2062</BlockNumber>
+        </Block>
         <TicketMachine>
           <JourneyCode>3682</JourneyCode>
         </TicketMachine>
