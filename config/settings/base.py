@@ -618,7 +618,7 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 SQS_QUEUE_ENDPOINT_URL = env(
     "SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566"
 )
-AWS_REGION_NAME = env("AWS_REGION_NAME", default="us-west-2")
+AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
 
