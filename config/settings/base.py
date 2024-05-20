@@ -602,7 +602,7 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 
 # GTFS API
 # ------------------------------------------------------------------------------
-GTFS_API_BASE_URL = env("GTFS_API_BASE_URL")
+GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 
 # Crispy forms
 # ------------------------------------------------------------------------------
