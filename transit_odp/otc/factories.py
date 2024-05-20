@@ -6,8 +6,12 @@ import factory
 import factory.fuzzy
 from django.utils import timezone
 from factory.django import DjangoModelFactory
+from faker import Faker
+from faker.providers import BaseProvider
 
 from transit_odp.otc.constants import (
+    API_TYPE_WECA,
+    API_TYPE_EP,
     LicenceDescription,
     LicenceStatuses,
     SubsidiesDescription,
@@ -19,7 +23,6 @@ from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Operator as OperatorModel
 from transit_odp.otc.models import Service as ServiceModel
 from transit_odp.otc.models import UILta
-from transit_odp.otc.constants import API_TYPE_WECA, API_TYPE_EP
 
 TODAY = datetime.date.today()
 NOW = timezone.now()
@@ -27,6 +30,16 @@ PAST = TODAY - datetime.timedelta(weeks=100)
 RECENT = NOW - datetime.timedelta(days=2)
 DATE_STRING = "%d/%m/%Y"
 DATETIME_STRING = "%d/%m/%Y %H:%M:%S"
+faker = Faker()
+
+
+class CustomCompanyNameProvider(BaseProvider):
+    def company_without_comma(self):
+        company_name = self.generator.company()
+        return company_name.replace(",", " ")
+
+
+factory.Faker.add_provider(CustomCompanyNameProvider)
 
 
 def fuzzy_date_as_text(_):
@@ -98,7 +111,7 @@ class OperatorFactory(factory.Factory):
     discs_in_possession = factory.fuzzy.FuzzyInteger(low=100, high=400)
     authdiscs = 400
     operator_id = factory.sequence(lambda n: n)
-    operator_name = factory.Faker("company")
+    operator_name = factory.Faker("company_without_comma")
     address = factory.Faker("address")
 
 
