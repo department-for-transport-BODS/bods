@@ -42,11 +42,24 @@ class WeeklyReport(Protocol):
     def get_block_ref(self) -> DataFrame:
         ...
 
+    def get_error_data(self) -> DataFrame:
+        ...
+
 
 class WeeklyPPCReportArchiver:
     """Create Weekly Archive for PPC"""
 
     def to_zip(self, data: WeeklyReport):
+        """
+        Converts the provided weekly report data into a zip file. The zip file contains multiple CSV files,
+        each representing a different aspect of the report.
+
+        Args:
+            data (WeeklyReport): The weekly report data to be converted into a zip file.
+
+        Returns:
+            BytesIO: A BytesIO object representing the zip file.
+        """
         bytesio = io.BytesIO()
 
         with ZipFile(bytesio, "w", ZIP_DEFLATED) as archive:
@@ -79,6 +92,16 @@ class WeeklyPPCReportArchiver:
                 data=data.get_uncounted_vehicle_activities().to_csv(index=False),
             )
             archive.writestr(WeeklyPPCSummaryFiles.README, data=self._get_readme())
+
+            error_data = data.get_error_data()
+            if not error_data.empty:
+                grouped_df = error_data.groupby("error_code")
+                for error_code, group in grouped_df:
+                    cleaned_group = group.dropna(how="all", axis=1).drop(
+                        "error_code", axis=1
+                    )
+                    filename = f"ERROR_{error_code}.csv".lower()
+                    archive.writestr(filename, data=cleaned_group.to_csv(index=False))
 
         return bytesio
 

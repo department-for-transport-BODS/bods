@@ -461,13 +461,6 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                 ["VehicleJourneyTimingLink"]
             )
 
-            block_number_element = vehicle_journey.get_element_or_none(
-                ["Operational", "Block", "BlockNumber"]
-            )
-            block_number = None
-            if block_number_element:
-                block_number = block_number_element.text
-
             to_wait_time_exists = False
             if vj_timing_links:
                 for links in vj_timing_links:

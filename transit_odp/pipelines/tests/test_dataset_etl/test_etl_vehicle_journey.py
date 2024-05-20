@@ -505,4 +505,3 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
         for journey in vehicle_journeys:
             self.assertEqual(journey.line_ref, "WRAY:PB0000582:186:WF1")
             self.assertIn(journey.journey_code, ["3681", "3682"])
-            self.assertIn(journey.block_number, [None, "K2062"])
