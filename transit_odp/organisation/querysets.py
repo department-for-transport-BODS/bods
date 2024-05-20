@@ -60,6 +60,7 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
+from django.db.models.expressions import RawSQL
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1322,6 +1323,10 @@ class TXCFileAttributesQuerySet(models.QuerySet):
                 )
             )
         )
+
+    def add_split_linenames(self):
+        """Performs an unnest on the row and create different rows for each line name"""
+        return self.annotate(line_name_unnested=RawSQL("unnest(line_names)", ()))
 
     def add_staleness_dates(self):
         """Adds Effective Stale dates for live revisions."""

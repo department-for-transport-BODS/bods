@@ -189,6 +189,10 @@ class CeleryAppConfig(AppConfig):
                 "task": OTC_TASKS + "task_refresh_weca_data",
                 "schedule": crontab(minute=30, hour=23),
             },
+            "update_ep_data": {
+                "task": OTC_TASKS + "task_refresh_ep_data",
+                "schedule": crontab(minute=30, hour=1),
+            },
             "yearly_task_load_bank_holidays": {
                 "task": TIMETABLE_TASKS + "task_load_bank_holidays",
                 "schedule": crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),
