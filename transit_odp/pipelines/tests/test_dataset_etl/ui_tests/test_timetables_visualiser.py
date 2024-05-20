@@ -27,7 +27,7 @@ pytestmark = pytest.mark.django_db
 def test_timetable_visualiser_day_of_week(mocker, line, target_date, folder_path):
     revision_id = "1"
     service_code = "1"
-    target_date = datetime.strptime(target_date, "%Y-%m-%d").date()
+    target_date = pd.Timestamp(target_date)
     visualiser = TimetableVisualiser(revision_id, service_code, line, target_date)
 
     base_csv = get_base_csv(
