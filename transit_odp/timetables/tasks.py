@@ -62,9 +62,6 @@ BATCH_SIZE = 2000
 
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
-    is_old_data_quality_service_active = flag_is_active(
-        "", "is_old_data_quality_service_active"
-    )
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
@@ -88,11 +85,22 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
         adapter.info(f"Dataset {revision.dataset_id} - task {task.id}")
         args = (task.id,)
 
-        old_dqs_job_list = []
-        new_dqs_job_list = []
-
-        if is_old_data_quality_service_active:
-            old_dqs_job_list = [
+        if is_new_data_quality_service_active:
+            jobs = [
+                task_dataset_download.signature(args),
+                task_scan_timetables.signature(args),
+                task_timetable_file_check.signature(args),
+                task_timetable_schema_check.signature(args),
+                task_post_schema_check.signature(args),
+                task_extract_txc_file_data.signature(args),
+                task_pti_validation.signature(args),
+                task_dqs_upload.signature(args),
+                task_dataset_etl.signature(args),
+                task_data_quality_service.signature(args),
+                task_dataset_etl_finalise.signature(args),
+            ]
+        else:
+            jobs = [
                 task_dataset_download.signature(args),
                 task_scan_timetables.signature(args),
                 task_timetable_file_check.signature(args),
@@ -104,21 +112,6 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
                 task_dataset_etl.signature(args),
                 task_dataset_etl_finalise.signature(args),
             ]
-        if is_new_data_quality_service_active:
-            new_dqs_job_list = [
-                task_dataset_download.signature(args),
-                task_scan_timetables.signature(args),
-                task_timetable_file_check.signature(args),
-                task_timetable_schema_check.signature(args),
-                task_post_schema_check.signature(args),
-                task_extract_txc_file_data.signature(args),
-                task_pti_validation.signature(args),
-                task_dataset_etl.signature(args),
-                task_data_quality_service.signature(args),
-                task_dataset_etl_finalise.signature(args),
-            ]
-
-        jobs = old_dqs_job_list + new_dqs_job_list
 
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
@@ -453,7 +446,7 @@ def task_dqs_upload(revision_id: int, task_id: int):
 
 
 @shared_task()
-def task_data_quality_service(revision_id: int, task_id: int):
+def task_data_quality_service(revision_id: int, task_id: int) -> int:
     """A task that runs the DQS checks on TxC file(s)."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision

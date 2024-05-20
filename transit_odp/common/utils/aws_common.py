@@ -31,7 +31,7 @@ class SQSClientWrapper:
         """
         Initialize and return an SQS client.
         """
-        return boto3.client(
+        self.sqs_client = boto3.client(
             "sqs",
             endpoint_url=settings.SQS_QUEUE_ENDPOINT_URL,
             region_name=settings.AWS_REGION_NAME,
