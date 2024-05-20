@@ -25,6 +25,7 @@ from transit_odp.otc.factories import (
     LocalAuthorityFactory,
     ServiceModelFactory,
     UILtaFactory,
+    OperatorModelFactory,
 )
 
 pytestmark = pytest.mark.django_db
@@ -1144,7 +1145,6 @@ def test_lta_line_level_columns_order():
     csv_output = get_csv_output(csv_string, CSV_LINE_LEVEL_NUMBER_COLUMNS)
     # print(f"csv_output: {csv_output}")
     actual_columns = [header.strip('"') for header in csv_output["header"]]
-    print(f"actual_columns: {actual_columns}")
     assert actual_columns[0] == "Registration:Registration Number"
     assert actual_columns[1] == "Registration:Service Number"
     assert actual_columns[2] == "Requires Attention"
@@ -1177,6 +1177,459 @@ def test_lta_line_level_columns_order():
     assert actual_columns[29] == "Registration:Received Date"
     assert actual_columns[30] == "Traveline Region"
     assert actual_columns[31] == "Local Transport Authority"
+
+
+@freeze_time("2023-02-24")
+def test_lta_line_level_csv():
+    services_list_1 = []
+    licence_number = "PD0000099"
+    num_otc_services = 10
+    service_codes = [f"{licence_number}:{n}" for n in range(num_otc_services)]
+    service_numbers = [f"Line{n}" for n in range(num_otc_services)]
+    operator_factory = OperatorModelFactory(operator_name="operator")
+    org1 = OrganisationFactory(name="test_org_1")
+    bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
+    otc_lic = LicenceModelFactory(number=licence_number)
+
+    # Require Attention: No
+    # TXCFileAttribute = None
+    # SeasonalService = Not None and Out of Season
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[0],
+            service_number=service_numbers[0],
+            effective_date=datetime.datetime(2023, 6, 24),
+            variation_number=11,
+            start_point="start point service 1",
+            finish_point="finish point service 1",
+            via="via service 1",
+            service_type_other_details="service type detail service 1",
+            description="description service 1",
+            operator=operator_factory,
+            service_type_description="service type description service 1",
+        )
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[0][-1:],
+        start=datetime.datetime(2024, 2, 24),
+        end=datetime.datetime(2026, 2, 24),
+    )
+
+    # Require Attention: Yes
+    # TXCFileAttribute = None
+    # SeasonalService = Not None and In Season
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[1],
+            service_number=service_numbers[1],
+            effective_date=datetime.datetime(2023, 6, 24),
+            variation_number=22,
+            start_point="start point service 2",
+            finish_point="finish point service 2",
+            via="via service 2",
+            service_type_other_details="service type detail service 2",
+            description="description service 2",
+            operator=operator_factory,
+            service_type_description="service type description service 2",
+        )
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[1][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
+    )
+
+    # Require Attention: No
+    # TXCFileAttribute = None
+    # Exemption Exists
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[2],
+            service_number=service_numbers[2],
+            effective_date=datetime.datetime(2023, 6, 24),
+            variation_number=33,
+            start_point="start point service 3",
+            finish_point="finish point service 3",
+            via="via service 3",
+            service_type_other_details="service type detail service 3",
+            description="description service 3",
+            operator=operator_factory,
+            service_type_description="service type description service 3",
+        )
+    )
+    ServiceCodeExemptionFactory(
+        licence=bods_licence,
+        registration_code=service_codes[2][-1:],
+    )
+
+    dataset3 = DatasetFactory(organisation=org1)
+    # Require Attention: Yes
+    # operating_period_end_date is not None
+    TXCFileAttributesFactory(
+        revision=dataset3.live_revision,
+        licence_number=otc_lic.number,
+        service_code=service_codes[3],
+        revision_number="1",
+        filename="test3.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        operating_period_end_date=datetime.datetime(2023, 2, 24),
+        modification_datetime=datetime.datetime(2022, 6, 24),
+        national_operator_code=national_operator_code,
+    )
+    # staleness_otc = True => "OTC variation not published"
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[3],
+            service_number=service_numbers[3],
+            effective_date=datetime.datetime(2023, 3, 24),
+            variation_number=44,
+            start_point="start point service 4",
+            finish_point="finish point service 4",
+            via="via service 4",
+            service_type_other_details="service type detail service 4",
+            description="description service 4",
+            operator=operator_factory,
+            service_type_description="service type description service 4",
+        )
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[3][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
+    )
+
+    dataset4 = DatasetFactory(organisation=org1)
+    # Require Attention: Yes
+    # operating_period_end_date is not None
+    TXCFileAttributesFactory(
+        revision=dataset4.live_revision,
+        licence_number=otc_lic.number,
+        service_code=service_codes[4],
+        filename="test4.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        operating_period_end_date=datetime.datetime(2023, 3, 24),
+        modification_datetime=datetime.datetime(2023, 6, 24),
+        national_operator_code=national_operator_code,
+    )
+    # staleness_42_day_look_ahead = True => "42 day look ahead is incomplete"
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[4],
+            service_number=service_numbers[4],
+            effective_date=datetime.datetime(2022, 6, 24),
+            variation_number=55,
+            start_point="start point service 5",
+            finish_point="finish point service 5",
+            via="via service 5",
+            service_type_other_details="service type detail service 5",
+            description="description service 5",
+            operator=operator_factory,
+            service_type_description="service type description service 5",
+        )
+    )
+    # in season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[4][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
+    )
+
+    dataset5 = DatasetFactory(organisation=org1)
+    # operating_period_end_date is not None
+    TXCFileAttributesFactory(
+        revision=dataset5.live_revision,
+        licence_number=otc_lic.number,
+        service_code=service_codes[5],
+        filename="test5.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        operating_period_end_date=datetime.datetime(2023, 6, 24),
+        modification_datetime=datetime.datetime(2022, 1, 24),
+        national_operator_code=national_operator_code,
+    )
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[5],
+            service_number=service_numbers[5],
+            effective_date=datetime.datetime(2024, 1, 24),
+            variation_number=66,
+            start_point="start point service 6",
+            finish_point="finish point service 6",
+            via="via service 6",
+            service_type_other_details="service type detail service 6",
+            description="description service 6",
+            operator=operator_factory,
+            service_type_description="service type description service 6",
+        )
+    )
+    # in season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[5][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
+    )
+
+    dataset6 = DatasetFactory(organisation=org1)
+    # operating_period_end_date is None
+    TXCFileAttributesFactory(
+        revision=dataset6.live_revision,
+        licence_number=otc_lic.number,
+        service_code=service_codes[6],
+        filename="test6.xml",
+        operating_period_start_date=datetime.datetime(1999, 6, 26),
+        operating_period_end_date=None,
+        modification_datetime=datetime.datetime(2022, 1, 24),
+        national_operator_code=national_operator_code,
+    )
+    # staleness_12_months_old = True => "Service hasn't been updated within a year"
+    services_list_1.append(
+        ServiceModelFactory(
+            licence=otc_lic,
+            registration_number=service_codes[6],
+            service_number=service_numbers[6],
+            effective_date=datetime.datetime(2021, 1, 24),
+            variation_number=77,
+            start_point="start point service 7",
+            finish_point="finish point service 7",
+            via="via service 7",
+            service_type_other_details="service type detail service 7",
+            description="description service 7",
+            operator=operator_factory,
+            service_type_description="service type description service 7",
+        )
+    )
+    # in season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        registration_code=service_codes[6][-1:],
+        start=datetime.datetime(2022, 2, 24),
+        end=datetime.datetime(2024, 2, 24),
+    )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+
+    local_authority_1 = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services_list_1, ui_lta=ui_lta
+    )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+    lta_codes_csv = LTALineLevelCSV([local_authority_1])
+    csv_string = lta_codes_csv.to_string()
+    csv_output = get_csv_output(csv_string, CSV_LINE_LEVEL_NUMBER_COLUMNS)
+
+    assert csv_output["row0"][0] == '"PD0000099:0"'
+    assert csv_output["row0"][1] == '"Line0"'
+    assert csv_output["row0"][2] == '"Yes"'
+    assert csv_output["row0"][3] == '"Unpublished"'
+    assert csv_output["row0"][4] == '"Registered"'
+    assert csv_output["row0"][5] == '"In Scope"'
+    assert csv_output["row0"][6] == '"Not Seasonal"'
+    assert csv_output["row0"][7] == '"Up to date"'
+    assert csv_output["row0"][8] == '"test_org_1"'
+    assert csv_output["row0"][9] == '""'
+    assert csv_output["row0"][10] == '""'
+    assert csv_output["row0"][11] == '""'
+    assert csv_output["row0"][12] == '""'
+    assert csv_output["row0"][13] == '"2023-05-12"'
+    assert csv_output["row0"][14] == '"2023-04-07"'
+    assert csv_output["row0"][15] == '""'
+    assert csv_output["row0"][16] == '""'
+    assert csv_output["row0"][17] == '""'
+    assert csv_output["row0"][18] == '""'
+    assert csv_output["row0"][19] == '"operator"'
+    assert csv_output["row0"][20] == '"PD0000099"'
+    assert csv_output["row0"][21] == '"service type description service 1"'
+    assert csv_output["row0"][22] == '"11"'
+    assert csv_output["row0"][23] == '"start point service 1"'
+    assert csv_output["row0"][24] == '"finish point service 1"'
+    assert csv_output["row0"][25] == '"via service 1"'
+    assert csv_output["row0"][30] == '"South East"'
+    assert csv_output["row0"][31] == '"UI_LTA"'
+
+    assert csv_output["row1"][0] == '"PD0000099:1"'
+    assert csv_output["row1"][1] == '"Line1"'
+    assert csv_output["row1"][2] == '"Yes"'
+    assert csv_output["row1"][3] == '"Unpublished"'
+    assert csv_output["row1"][4] == '"Registered"'
+    assert csv_output["row1"][5] == '"In Scope"'
+    assert csv_output["row1"][6] == '"Not Seasonal"'
+    assert csv_output["row1"][7] == '"Up to date"'
+    assert csv_output["row1"][8] == '"test_org_1"'
+    assert csv_output["row1"][9] == '""'
+    assert csv_output["row1"][10] == '""'
+    assert csv_output["row1"][11] == '""'
+    assert csv_output["row1"][12] == '""'
+    assert csv_output["row1"][13] == '"2023-05-12"'
+    assert csv_output["row1"][14] == '"2023-04-07"'
+    assert csv_output["row1"][15] == '""'
+    assert csv_output["row1"][16] == '""'
+    assert csv_output["row1"][17] == '""'
+    assert csv_output["row1"][18] == '""'
+    assert csv_output["row1"][19] == '"operator"'
+    assert csv_output["row1"][20] == '"PD0000099"'
+    assert csv_output["row1"][21] == '"service type description service 2"'
+    assert csv_output["row1"][22] == '"22"'
+    assert csv_output["row1"][23] == '"start point service 2"'
+    assert csv_output["row1"][24] == '"finish point service 2"'
+    assert csv_output["row1"][25] == '"via service 2"'
+    assert csv_output["row1"][30] == '"South East"'
+    assert csv_output["row1"][31] == '"UI_LTA"'
+
+    assert csv_output["row2"][0] == '"PD0000099:2"'
+    assert csv_output["row2"][1] == '"Line2"'
+    assert csv_output["row2"][2] == '"Yes"'
+    assert csv_output["row2"][3] == '"Unpublished"'
+    assert csv_output["row2"][4] == '"Registered"'
+    assert csv_output["row2"][5] == '"In Scope"'
+    assert csv_output["row2"][6] == '"Not Seasonal"'
+    assert csv_output["row2"][7] == '"Up to date"'
+    assert csv_output["row2"][8] == '"test_org_1"'
+    assert csv_output["row2"][9] == '""'
+    assert csv_output["row2"][10] == '""'
+    assert csv_output["row2"][11] == '""'
+    assert csv_output["row2"][12] == '""'
+    assert csv_output["row2"][13] == '"2023-05-12"'
+    assert csv_output["row2"][14] == '"2023-04-07"'
+    assert csv_output["row2"][15] == '""'
+    assert csv_output["row2"][16] == '""'
+    assert csv_output["row2"][17] == '""'
+    assert csv_output["row2"][18] == '""'
+    assert csv_output["row2"][19] == '"operator"'
+    assert csv_output["row2"][20] == '"PD0000099"'
+    assert csv_output["row2"][21] == '"service type description service 3"'
+    assert csv_output["row2"][22] == '"33"'
+    assert csv_output["row2"][23] == '"start point service 3"'
+    assert csv_output["row2"][24] == '"finish point service 3"'
+    assert csv_output["row2"][25] == '"via service 3"'
+    assert csv_output["row2"][30] == '"South East"'
+    assert csv_output["row2"][31] == '"UI_LTA"'
+
+    assert csv_output["row3"][0] == '"PD0000099:3"'
+    assert csv_output["row3"][1] == '"Line3"'
+    assert csv_output["row3"][2] == '"Yes"'
+    assert csv_output["row3"][3] == '"Unpublished"'
+    assert csv_output["row3"][4] == '"Registered"'
+    assert csv_output["row3"][5] == '"In Scope"'
+    assert csv_output["row3"][6] == '"Not Seasonal"'
+    assert csv_output["row3"][7] == '"Up to date"'
+    assert csv_output["row3"][8] == '"test_org_1"'
+    assert csv_output["row3"][9] == '""'
+    assert csv_output["row3"][10] == '""'
+    assert csv_output["row3"][11] == '""'
+    assert csv_output["row3"][12] == '""'
+    assert csv_output["row3"][13] == '"2023-02-10"'
+    assert csv_output["row3"][14] == '"2023-04-07"'
+    assert csv_output["row3"][15] == '""'
+    assert csv_output["row3"][16] == '""'
+    assert csv_output["row3"][17] == '""'
+    assert csv_output["row3"][18] == '""'
+    assert csv_output["row3"][19] == '"operator"'
+    assert csv_output["row3"][20] == '"PD0000099"'
+    assert csv_output["row3"][21] == '"service type description service 4"'
+    assert csv_output["row3"][22] == '"44"'
+    assert csv_output["row3"][23] == '"start point service 4"'
+    assert csv_output["row3"][24] == '"finish point service 4"'
+    assert csv_output["row3"][25] == '"via service 4"'
+    assert csv_output["row3"][30] == '"South East"'
+    assert csv_output["row3"][31] == '"UI_LTA"'
+
+    assert csv_output["row4"][0] == '"PD0000099:4"'
+    assert csv_output["row4"][1] == '"Line4"'
+    assert csv_output["row4"][2] == '"Yes"'
+    assert csv_output["row4"][3] == '"Unpublished"'
+    assert csv_output["row4"][4] == '"Registered"'
+    assert csv_output["row4"][5] == '"In Scope"'
+    assert csv_output["row4"][6] == '"Not Seasonal"'
+    assert csv_output["row4"][7] == '"Up to date"'
+    assert csv_output["row4"][8] == '"test_org_1"'
+    assert csv_output["row4"][9] == '""'
+    assert csv_output["row4"][10] == '""'
+    assert csv_output["row4"][11] == '""'
+    assert csv_output["row4"][12] == '""'
+    assert csv_output["row4"][13] == '"2022-05-12"'
+    assert csv_output["row4"][14] == '"2023-04-07"'
+    assert csv_output["row4"][15] == '""'
+    assert csv_output["row4"][16] == '""'
+    assert csv_output["row4"][17] == '""'
+    assert csv_output["row4"][18] == '""'
+    assert csv_output["row4"][19] == '"operator"'
+    assert csv_output["row4"][20] == '"PD0000099"'
+    assert csv_output["row4"][21] == '"service type description service 5"'
+    assert csv_output["row4"][22] == '"55"'
+    assert csv_output["row4"][23] == '"start point service 5"'
+    assert csv_output["row4"][24] == '"finish point service 5"'
+    assert csv_output["row4"][25] == '"via service 5"'
+    assert csv_output["row4"][30] == '"South East"'
+    assert csv_output["row4"][31] == '"UI_LTA"'
+
+    assert csv_output["row5"][0] == '"PD0000099:5"'
+    assert csv_output["row5"][1] == '"Line5"'
+    assert csv_output["row5"][2] == '"Yes"'
+    assert csv_output["row5"][3] == '"Unpublished"'
+    assert csv_output["row5"][4] == '"Registered"'
+    assert csv_output["row5"][5] == '"In Scope"'
+    assert csv_output["row5"][6] == '"Not Seasonal"'
+    assert csv_output["row5"][7] == '"Up to date"'
+    assert csv_output["row5"][8] == '"test_org_1"'
+    assert csv_output["row5"][9] == '""'
+    assert csv_output["row5"][10] == '""'
+    assert csv_output["row5"][11] == '""'
+    assert csv_output["row5"][12] == '""'
+    assert csv_output["row5"][13] == '"2023-12-13"'
+    assert csv_output["row5"][14] == '"2023-04-07"'
+    assert csv_output["row5"][15] == '""'
+    assert csv_output["row5"][16] == '""'
+    assert csv_output["row5"][17] == '""'
+    assert csv_output["row5"][18] == '""'
+    assert csv_output["row5"][19] == '"operator"'
+    assert csv_output["row5"][20] == '"PD0000099"'
+    assert csv_output["row5"][21] == '"service type description service 6"'
+    assert csv_output["row5"][22] == '"66"'
+    assert csv_output["row5"][23] == '"start point service 6"'
+    assert csv_output["row5"][24] == '"finish point service 6"'
+    assert csv_output["row5"][25] == '"via service 6"'
+    assert csv_output["row5"][30] == '"South East"'
+    assert csv_output["row5"][31] == '"UI_LTA"'
+
+    assert csv_output["row6"][0] == '"PD0000099:6"'
+    assert csv_output["row6"][1] == '"Line6"'
+    assert csv_output["row6"][2] == '"Yes"'
+    assert csv_output["row6"][3] == '"Unpublished"'
+    assert csv_output["row6"][4] == '"Registered"'
+    assert csv_output["row6"][5] == '"In Scope"'
+    assert csv_output["row6"][6] == '"Not Seasonal"'
+    assert csv_output["row6"][7] == '"Up to date"'
+    assert csv_output["row6"][8] == '"test_org_1"'
+    assert csv_output["row6"][9] == '""'
+    assert csv_output["row6"][10] == '""'
+    assert csv_output["row6"][11] == '""'
+    assert csv_output["row6"][12] == '""'
+    assert csv_output["row6"][13] == '"2020-12-13"'
+    assert csv_output["row6"][14] == '"2023-04-07"'
+    assert csv_output["row6"][15] == '""'
+    assert csv_output["row6"][16] == '""'
+    assert csv_output["row6"][17] == '""'
+    assert csv_output["row6"][18] == '""'
+    assert csv_output["row6"][19] == '"operator"'
+    assert csv_output["row6"][20] == '"PD0000099"'
+    assert csv_output["row6"][21] == '"service type description service 7"'
+    assert csv_output["row6"][22] == '"77"'
+    assert csv_output["row6"][23] == '"start point service 7"'
+    assert csv_output["row6"][24] == '"finish point service 7"'
+    assert csv_output["row6"][25] == '"via service 7"'
+    assert csv_output["row6"][30] == '"South East"'
+    assert csv_output["row6"][31] == '"UI_LTA"'
 
 
 def test_lta_csv_output_unpublished_status_no_organisation_name():
