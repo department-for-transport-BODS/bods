@@ -55,9 +55,7 @@ def _get_token() -> str:
 
     response = AuthResponse(**response.json())
     token_cache_timeout = response.expires_in
-    cache.set(
-        "ep-auth-bearer", f"Bearer {response.access_token}", timeout=token_cache_timeout
-    )
+    cache.set("ep-auth-bearer", f"{response.access_token}", timeout=token_cache_timeout)
     return response.access_token
 
 
