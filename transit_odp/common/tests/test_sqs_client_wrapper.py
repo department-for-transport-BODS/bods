@@ -24,8 +24,8 @@ class TestSQSClientWrapper(unittest.TestCase):
         mock_boto3_client.return_value.send_message = mock_send_message
 
         queues_payload = {
-            "queue1": [{"file_id": 16758, "check_id": 1, "result_id": 729}],
-            "queue2": [{"file_id": 16760, "check_id": 1, "result_id": 742}],
+            "incorrect_licence_number_queue": [{"file_id": 16758, "check_id": 1, "result_id": 729}],
+            "stops_not_found_in_queue": [{"file_id": 16760, "check_id": 1, "result_id": 742}],
         }
 
         sqs_wrapper.send_message_to_queue(queues_payload)
@@ -47,7 +47,7 @@ class TestSQSClientWrapper(unittest.TestCase):
 
         mock_list_queues_response = {
             "QueueUrls": [
-                "http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/incorrect_licence_number_queue"
+                "http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/incorrect_licence_number_queue",
             ]
         }
 
