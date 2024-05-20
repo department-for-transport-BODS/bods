@@ -10,8 +10,8 @@ class TestSQSClientWrapper(unittest.TestCase):
 
         mock_list_queues_response = {
             "QueueUrls": [
-                "https://sqs.us-west-2.amazonaws.com/123456789012/queue1",
-                "https://sqs.us-west-2.amazonaws.com/123456789012/queue2",
+                "http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/incorrect_licence_number_queue",
+                "http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/stops_not_found_in_queue",
             ]
         }
 
@@ -33,11 +33,11 @@ class TestSQSClientWrapper(unittest.TestCase):
         mock_boto3_client.return_value.list_queues.assert_called_once()
 
         mock_send_message.assert_any_call(
-            QueueUrl="https://sqs.us-west-2.amazonaws.com/123456789012/queue1",
+            QueueUrl="http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/incorrect_licence_number_queue",
             MessageBody='{"file_id": 16758, "check_id": 1, "result_id": 729}',
         )
         mock_send_message.assert_any_call(
-            QueueUrl="https://sqs.us-west-2.amazonaws.com/123456789012/queue2",
+            QueueUrl="http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/stops_not_found_in_queue",
             MessageBody='{"file_id": 16760, "check_id": 1, "result_id": 742}',
         )
 
@@ -46,7 +46,9 @@ class TestSQSClientWrapper(unittest.TestCase):
         sqs_wrapper = SQSClientWrapper()
 
         mock_list_queues_response = {
-            "QueueUrls": ["https://sqs.us-west-2.amazonaws.com/123456789012/queue1"]
+            "QueueUrls": [
+                "http://sqs.us-east-2.localhost.localstack.cloud:4566/000000000000/incorrect_licence_number_queue"
+            ]
         }
 
         mock_boto3_client.return_value.list_queues.return_value = (
