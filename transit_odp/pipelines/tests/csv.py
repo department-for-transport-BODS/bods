@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 
-
+# Ensure the below folder is present before running. Also update the folder name accordingly
 file_path = "transit_odp/pipelines/tests/test_dataset_etl/data/csv/test"
 file_prefix = "with_vj_operating_profile_multi_serviced_org"
 
