@@ -79,7 +79,6 @@ class SQSClientWrapper:
                     else:
                         logger.info(f"Queue {queue_name} not found in SQS queues.")
             else:
-                logger.error("No SQS queues found.")
                 raise ValueError("No SQS queues found")
         except Exception as e:
             logger.error(f"Error when trying to access the queues: {e}")
