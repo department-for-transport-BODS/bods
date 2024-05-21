@@ -1,9 +1,9 @@
 import csv
 import datetime
+import io
 import zipfile
 from logging import getLogger
 from unittest.mock import patch, MagicMock
-from io import BytesIO
 
 import pytest
 from django.conf import settings
