@@ -54,21 +54,6 @@ def get_csv_output(
     return result
 
 
-# def get_csv_line_level_output(csv_string: str) -> Dict[str, list]:
-#     result_list = csv_string.replace("\r\n", ",").split(",")[:-1]
-#     result = {}
-#     len_result_list = len(result_list)
-#     start = 0
-#     i = 0
-#     result.update({"header": result_list[start:CSV_LINE_LEVEL_NUMBER_COLUMNS]})
-#     start += CSV_LINE_LEVEL_NUMBER_COLUMNS
-#     for end in range(2 * CSV_NUMBER_COLUMNS, len_result_list + 1, CSV_LINE_LEVEL_NUMBER_COLUMNS):
-#         result.update({f"row{i}": result_list[start:end]})
-#         start = end
-#         i += 1
-#     return result
-
-
 def test_lta_queryset():
     services_list_1 = []
     services_list_2 = []
@@ -1143,7 +1128,6 @@ def test_lta_line_level_columns_order():
     lta_codes_csv = LTALineLevelCSV([local_authority_1])
     csv_string = lta_codes_csv.to_string()
     csv_output = get_csv_output(csv_string, CSV_LINE_LEVEL_NUMBER_COLUMNS)
-    # print(f"csv_output: {csv_output}")
     actual_columns = [header.strip('"') for header in csv_output["header"]]
     assert actual_columns[0] == "Registration:Registration Number"
     assert actual_columns[1] == "Registration:Service Number"
@@ -1430,11 +1414,11 @@ def test_lta_line_level_csv():
 
     assert csv_output["row0"][0] == '"PD0000099:0"'
     assert csv_output["row0"][1] == '"Line0"'
-    assert csv_output["row0"][2] == '"Yes"'
+    assert csv_output["row0"][2] == '"No"'
     assert csv_output["row0"][3] == '"Unpublished"'
     assert csv_output["row0"][4] == '"Registered"'
     assert csv_output["row0"][5] == '"In Scope"'
-    assert csv_output["row0"][6] == '"Not Seasonal"'
+    assert csv_output["row0"][6] == '"Out of Season"'
     assert csv_output["row0"][7] == '"Up to date"'
     assert csv_output["row0"][8] == '"test_org_1"'
     assert csv_output["row0"][9] == '""'
@@ -1444,9 +1428,9 @@ def test_lta_line_level_csv():
     assert csv_output["row0"][13] == '"2023-05-12"'
     assert csv_output["row0"][14] == '"2023-04-07"'
     assert csv_output["row0"][15] == '""'
-    assert csv_output["row0"][16] == '""'
-    assert csv_output["row0"][17] == '""'
-    assert csv_output["row0"][18] == '""'
+    assert csv_output["row0"][16] == '"2024-01-13"'
+    assert csv_output["row0"][17] == '"2024-02-24"'
+    assert csv_output["row0"][18] == '"2026-02-24"'
     assert csv_output["row0"][19] == '"operator"'
     assert csv_output["row0"][20] == '"PD0000099"'
     assert csv_output["row0"][21] == '"service type description service 1"'
@@ -1463,7 +1447,7 @@ def test_lta_line_level_csv():
     assert csv_output["row1"][3] == '"Unpublished"'
     assert csv_output["row1"][4] == '"Registered"'
     assert csv_output["row1"][5] == '"In Scope"'
-    assert csv_output["row1"][6] == '"Not Seasonal"'
+    assert csv_output["row1"][6] == '"In Season"'
     assert csv_output["row1"][7] == '"Up to date"'
     assert csv_output["row1"][8] == '"test_org_1"'
     assert csv_output["row1"][9] == '""'
@@ -1473,9 +1457,9 @@ def test_lta_line_level_csv():
     assert csv_output["row1"][13] == '"2023-05-12"'
     assert csv_output["row1"][14] == '"2023-04-07"'
     assert csv_output["row1"][15] == '""'
-    assert csv_output["row1"][16] == '""'
-    assert csv_output["row1"][17] == '""'
-    assert csv_output["row1"][18] == '""'
+    assert csv_output["row1"][16] == '"2022-01-13"'
+    assert csv_output["row1"][17] == '"2022-02-24"'
+    assert csv_output["row1"][18] == '"2024-02-24"'
     assert csv_output["row1"][19] == '"operator"'
     assert csv_output["row1"][20] == '"PD0000099"'
     assert csv_output["row1"][21] == '"service type description service 2"'
@@ -1488,10 +1472,10 @@ def test_lta_line_level_csv():
 
     assert csv_output["row2"][0] == '"PD0000099:2"'
     assert csv_output["row2"][1] == '"Line2"'
-    assert csv_output["row2"][2] == '"Yes"'
+    assert csv_output["row2"][2] == '"No"'
     assert csv_output["row2"][3] == '"Unpublished"'
     assert csv_output["row2"][4] == '"Registered"'
-    assert csv_output["row2"][5] == '"In Scope"'
+    assert csv_output["row2"][5] == '"Out of Scope"'
     assert csv_output["row2"][6] == '"Not Seasonal"'
     assert csv_output["row2"][7] == '"Up to date"'
     assert csv_output["row2"][8] == '"test_org_1"'
@@ -1521,7 +1505,7 @@ def test_lta_line_level_csv():
     assert csv_output["row3"][3] == '"Unpublished"'
     assert csv_output["row3"][4] == '"Registered"'
     assert csv_output["row3"][5] == '"In Scope"'
-    assert csv_output["row3"][6] == '"Not Seasonal"'
+    assert csv_output["row3"][6] == '"In Season"'
     assert csv_output["row3"][7] == '"Up to date"'
     assert csv_output["row3"][8] == '"test_org_1"'
     assert csv_output["row3"][9] == '""'
@@ -1531,9 +1515,9 @@ def test_lta_line_level_csv():
     assert csv_output["row3"][13] == '"2023-02-10"'
     assert csv_output["row3"][14] == '"2023-04-07"'
     assert csv_output["row3"][15] == '""'
-    assert csv_output["row3"][16] == '""'
-    assert csv_output["row3"][17] == '""'
-    assert csv_output["row3"][18] == '""'
+    assert csv_output["row3"][16] == '"2022-01-13"'
+    assert csv_output["row3"][17] == '"2022-02-24"'
+    assert csv_output["row3"][18] == '"2024-02-24"'
     assert csv_output["row3"][19] == '"operator"'
     assert csv_output["row3"][20] == '"PD0000099"'
     assert csv_output["row3"][21] == '"service type description service 4"'
@@ -1550,7 +1534,7 @@ def test_lta_line_level_csv():
     assert csv_output["row4"][3] == '"Unpublished"'
     assert csv_output["row4"][4] == '"Registered"'
     assert csv_output["row4"][5] == '"In Scope"'
-    assert csv_output["row4"][6] == '"Not Seasonal"'
+    assert csv_output["row4"][6] == '"In Season"'
     assert csv_output["row4"][7] == '"Up to date"'
     assert csv_output["row4"][8] == '"test_org_1"'
     assert csv_output["row4"][9] == '""'
@@ -1560,9 +1544,9 @@ def test_lta_line_level_csv():
     assert csv_output["row4"][13] == '"2022-05-12"'
     assert csv_output["row4"][14] == '"2023-04-07"'
     assert csv_output["row4"][15] == '""'
-    assert csv_output["row4"][16] == '""'
-    assert csv_output["row4"][17] == '""'
-    assert csv_output["row4"][18] == '""'
+    assert csv_output["row4"][16] == '"2022-01-13"'
+    assert csv_output["row4"][17] == '"2022-02-24"'
+    assert csv_output["row4"][18] == '"2024-02-24"'
     assert csv_output["row4"][19] == '"operator"'
     assert csv_output["row4"][20] == '"PD0000099"'
     assert csv_output["row4"][21] == '"service type description service 5"'
@@ -1579,7 +1563,7 @@ def test_lta_line_level_csv():
     assert csv_output["row5"][3] == '"Unpublished"'
     assert csv_output["row5"][4] == '"Registered"'
     assert csv_output["row5"][5] == '"In Scope"'
-    assert csv_output["row5"][6] == '"Not Seasonal"'
+    assert csv_output["row5"][6] == '"In Season"'
     assert csv_output["row5"][7] == '"Up to date"'
     assert csv_output["row5"][8] == '"test_org_1"'
     assert csv_output["row5"][9] == '""'
@@ -1589,9 +1573,9 @@ def test_lta_line_level_csv():
     assert csv_output["row5"][13] == '"2023-12-13"'
     assert csv_output["row5"][14] == '"2023-04-07"'
     assert csv_output["row5"][15] == '""'
-    assert csv_output["row5"][16] == '""'
-    assert csv_output["row5"][17] == '""'
-    assert csv_output["row5"][18] == '""'
+    assert csv_output["row5"][16] == '"2022-01-13"'
+    assert csv_output["row5"][17] == '"2022-02-24"'
+    assert csv_output["row5"][18] == '"2024-02-24"'
     assert csv_output["row5"][19] == '"operator"'
     assert csv_output["row5"][20] == '"PD0000099"'
     assert csv_output["row5"][21] == '"service type description service 6"'
@@ -1608,7 +1592,7 @@ def test_lta_line_level_csv():
     assert csv_output["row6"][3] == '"Unpublished"'
     assert csv_output["row6"][4] == '"Registered"'
     assert csv_output["row6"][5] == '"In Scope"'
-    assert csv_output["row6"][6] == '"Not Seasonal"'
+    assert csv_output["row6"][6] == '"In Season"'
     assert csv_output["row6"][7] == '"Up to date"'
     assert csv_output["row6"][8] == '"test_org_1"'
     assert csv_output["row6"][9] == '""'
@@ -1618,9 +1602,9 @@ def test_lta_line_level_csv():
     assert csv_output["row6"][13] == '"2020-12-13"'
     assert csv_output["row6"][14] == '"2023-04-07"'
     assert csv_output["row6"][15] == '""'
-    assert csv_output["row6"][16] == '""'
-    assert csv_output["row6"][17] == '""'
-    assert csv_output["row6"][18] == '""'
+    assert csv_output["row6"][16] == '"2022-01-13"'
+    assert csv_output["row6"][17] == '"2022-02-24"'
+    assert csv_output["row6"][18] == '"2024-02-24"'
     assert csv_output["row6"][19] == '"operator"'
     assert csv_output["row6"][20] == '"PD0000099"'
     assert csv_output["row6"][21] == '"service type description service 7"'
