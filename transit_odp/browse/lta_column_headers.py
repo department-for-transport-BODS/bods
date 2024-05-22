@@ -28,75 +28,6 @@ def get_operator_name(otc_service: dict) -> str:
         return operator_name
 
 
-def get_otc_operator_name(otc_service: dict) -> str:
-    """
-    Retrieves the operator name from OTC Operator table.
-
-
-    Args:
-        otc_service (dict): OTC Service dictionary
-
-    Returns:
-        str: Returns the operator name from the OTC
-    """
-    otc_operator = otc_service.get("otc_operator")
-    otc_operator_id = getattr(otc_operator, "id", None)
-    otc_operator_name = OTCOperator.objects.filter(id=otc_operator_id).values_list(
-        "operator_name", flat=True
-    )[0]
-    return otc_operator_name
-
-
-def get_otc_licence_id(otc_service: dict) -> int:
-    """
-    Function to retrieve the id from the licence object
-    in the OTC Service table.
-
-    Args:
-        otc_service (dict): OTC Service dictionary
-
-    Returns:
-        int: Returns the licence id
-    """
-    otc_licence = otc_service.get("otc_licence")
-    return getattr(otc_licence, "id", None)
-
-
-def get_granted_date(otc_service: dict) -> str:
-    """
-    Retrieves granted date from OTC Licence table.
-
-    Args:
-        otc_service (dict): OTC Service dictionary
-
-    Returns:
-        str: Returns the granted date for licence
-
-    """
-    otc_licence_id = get_otc_licence_id(otc_service)
-    granted_date = OTCLicence.objects.filter(id=otc_licence_id).values_list(
-        "granted_date", flat=True
-    )[0]
-    return granted_date
-
-
-def get_expiry_date(otc_service: dict) -> str:
-    """
-    Retrieves expiry date from OTC Licence table.
-
-    Args:
-        otc_service (dict): OTC Service dictionary
-
-    Returns:
-        str: Returns the expiry date for licence
-    """
-    otc_licence_id = get_otc_licence_id(otc_service)
-    expiry_date = OTCLicence.objects.filter(id=otc_licence_id).values_list(
-        "expiry_date", flat=True
-    )[0]
-    return expiry_date
-
-
 header_accessor_data = [
     ("XML:Service Code", lambda otc_service: otc_service.get("service_code")),
     ("XML:Line Name", lambda otc_service: otc_service.get("line_name")),
@@ -256,7 +187,7 @@ header_accessor_data_line_level = [
     ("Seasonal End Date", lambda otc_service: otc_service.get("seasonal_end")),
     (
         "Registration:Operator Name",
-        lambda otc_service: get_otc_operator_name(otc_service),
+        lambda otc_service: otc_service.get("otc_operator"),
     ),
     (
         "Registration:Licence Number",
@@ -281,11 +212,11 @@ header_accessor_data_line_level = [
     ("Registration:Via", lambda otc_service: otc_service.get("otc_via")),
     (
         "Registration:Granted Date",
-        lambda otc_service: get_granted_date(otc_service),
+        lambda otc_service: otc_service.get("otc_licence_granted_date"),
     ),
     (
         "Registration:Expiry Date",
-        lambda otc_service: get_expiry_date(otc_service),
+        lambda otc_service: otc_service.get("otc_licence_expiry_date"),
     ),
     (
         "Registration:Effective Date",

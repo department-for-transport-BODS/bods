@@ -162,48 +162,6 @@ def get_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
         return {}
 
 
-def get_line_level_seasonal_service_map(lta_list) -> Dict[str, SeasonalService]:
-    """
-    Get a dictionary which includes all the Seasonal Services
-    for an organisation.
-    """
-    services_subquery_list = [
-        x.registration_numbers.values("id")
-        for x in lta_list
-        if x.registration_numbers.values("id")
-    ]
-
-    if len(lta_list) > 0:
-        weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
-        if weca_services_list:
-            services_subquery_list.append(weca_services_list)
-
-    if services_subquery_list:
-        final_subquery = None
-        for service_queryset in services_subquery_list:
-            if final_subquery is None:
-                final_subquery = service_queryset
-            else:
-                final_subquery = final_subquery | service_queryset
-        final_subquery = final_subquery.distinct()
-
-        return {
-            (
-                service.registration_code,
-                service.registration_number.replace("/", ":"),
-            ): service
-            for service in SeasonalService.objects.filter(
-                licence__organisation__licences__number__in=Subquery(
-                    final_subquery.values("licence__number")
-                )
-            )
-            .add_registration_number()
-            .add_seasonal_status()
-        }
-    else:
-        return {}
-
-
 def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
     services_subquery_list = [
         x.registration_numbers.values("id")
@@ -227,44 +185,6 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
 
         return {
             service.registration_number.replace("/", ":"): service
-            for service in ServiceCodeExemption.objects.add_registration_number().filter(
-                licence__organisation__licences__number__in=Subquery(
-                    final_subquery.values("licence__number")
-                )
-            )
-        }
-    else:
-        return {}
-
-
-def get_line_level_service_code_exemption_map(
-    lta_list,
-) -> Dict[str, ServiceCodeExemption]:
-    services_subquery_list = [
-        x.registration_numbers.values("id")
-        for x in lta_list
-        if x.registration_numbers.values("id")
-    ]
-
-    if len(lta_list) > 0:
-        weca_services_list = get_weca_services_register_numbers(lta_list[0].ui_lta)
-        if weca_services_list:
-            services_subquery_list.append(weca_services_list)
-
-    if services_subquery_list:
-        final_subquery = None
-        for service_queryset in services_subquery_list:
-            if final_subquery is None:
-                final_subquery = service_queryset
-            else:
-                final_subquery = final_subquery | service_queryset
-        final_subquery = final_subquery.distinct()
-
-        return {
-            (
-                service.registration_code,
-                service.registration_number.replace("/", ":"),
-            ): service
             for service in ServiceCodeExemption.objects.add_registration_number().filter(
                 licence__organisation__licences__number__in=Subquery(
                     final_subquery.values("licence__number")
@@ -743,7 +663,7 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service_number,
-                "otc_operator": service and service.operator,
+                "otc_operator": service and service.operator.operator_name,
                 "otc_licence": service and service.licence,
                 "otc_service_type_description": service
                 and service.service_type_description,
@@ -790,6 +710,8 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 and file_attribute.national_operator_code,
                 "traveline_region": traveline_region,
                 "ui_lta_name": ui_lta_name,
+                "otc_licence_granted_date": service and service.licence.granted_date,
+                "otc_licence_expiry_date": service and service.licence.expiry_date,
             }
         )
 
@@ -918,13 +840,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
         """
         ui_lta = lta_list[0].ui_lta
         otc_map = get_line_level_otc_map_lta(lta_list)
-        # print(f"otc_map: {otc_map}")
         txcfa_map = get_line_level_txc_map_lta(lta_list)
-        # print(f"txcfa_map: {txcfa_map}")
-        seasonal_service_map = get_line_level_seasonal_service_map(lta_list)
-        # print(f"seasonal_service_map: {seasonal_service_map}")
-        service_code_exemption_map = get_line_level_service_code_exemption_map(lta_list)
-        # print(f"service_code_exemption_map: {service_code_exemption_map}")
+        seasonal_service_map = get_seasonal_service_map(lta_list)
+        service_code_exemption_map = get_service_code_exemption_map(lta_list)
         naptan_adminarea_df = get_all_naptan_atco_df()
         traveline_region_map_weca = get_weca_traveline_region_map(ui_lta)
         service_number_registration_number_map = set(otc_map)
@@ -938,12 +856,8 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
         ) in service_number_registration_number_map:
             service = otc_map.get((service_number, registration_number))
             file_attribute = txcfa_map.get((service_number, registration_number))
-            seasonal_service = seasonal_service_map.get(
-                (service_number, registration_number)
-            )
-            exemption = service_code_exemption_map.get(
-                (service_number, registration_number)
-            )
+            seasonal_service = seasonal_service_map.get(registration_number)
+            exemption = service_code_exemption_map.get(registration_number)
 
             if service.api_type == API_TYPE_WECA:
                 is_english_region = self.get_is_english_region_weca(
