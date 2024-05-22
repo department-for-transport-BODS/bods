@@ -58,7 +58,7 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
         ),
         "national_operator_code": Column(
             "National Operator Code",
-            "The National Operator Codes for the particular publisher as extracted "
+            "The National Operator Code(s) for the particular publisher as extracted "
             "from the TransXChange or NeTEx file they provided.",
         ),
         "service_code": Column(
@@ -68,8 +68,33 @@ FEATURE_FLAG_OVERALL_COLUMN_MAP = OrderedDict(
         ),
         "string_lines": Column(
             "Line Name",
-            "The linename for the particular publisher as extracted from "
+            "The line name(s) for the particular publisher as extracted from "
             "the TransXChange or NeTEx file they provided.",
+        ),
+        "licence_number": Column(
+            "Licence Number",
+            "The License number(s) as extracted from the files provided by "
+            "the operator/publisher to BODS.",
+        ),
+        "public_use": Column(
+            "Public Use Flag",
+            "The Public Use Flag element as extracted from the files provided "
+            "by the operator/publisher to BODS.",
+        ),
+        "revision_number": Column(
+            "Revision Number",
+            "The service revision number date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
+        "operating_period_start_date": Column(
+            "Operating Period Start Date",
+            "The operating period start date as extracted from the files provided "
+            "by the operator/publisher to BODS.",
+        ),
+        "operating_period_end_date": Column(
+            "Operating Period End Date",
+            "The operating period end date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
         ),
         "avl_to_timtables_matching_score": Column(
             "% AVL to Timetables feed matching score",
@@ -167,6 +192,11 @@ TXC_FILE_ATTRIBUTE_FIELDS = (
     "national_operator_code",
     "service_code",
     "string_lines",
+    "licence_number",
+    "public_use",
+    "revision_number",
+    "operating_period_start_date",
+    "operating_period_end_date",
 )
 
 DATACATALOGUE_ATTRIBUTE_FIELDS = (

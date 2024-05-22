@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 from zipfile import ZipFile
+import os
 
 from transit_odp.avl.post_publishing_checks.constants import ErrorCategory, SirivmField
 from transit_odp.avl.post_publishing_checks.daily.results import (
@@ -170,7 +171,9 @@ class VehicleJourneyFinder:
             with ZipFile(upload_file) as zin:
                 txc_filenames = [txc.filename for txc in txc_file_attrs]
                 for filename in zin.namelist():
-                    if filename in txc_filenames:
+                    # filename can also contains directory name
+                    base_filename = os.path.basename(filename)
+                    if base_filename in txc_filenames:
                         with zin.open(filename, "r") as fp:
                             timetables.append(TransXChangeDocument(fp))
 
@@ -515,6 +518,73 @@ class VehicleJourneyFinder:
         except NoElement:
             return []
         return working_days
+
+    def get_service_org_xml_string(
+        self, vehicle_journey: TxcVehicleJourney
+    ) -> Optional[str]:
+        """
+        Retrieves the XML string for the service organization of a given vehicle journey.
+
+        Args:
+            vehicle_journey: The vehicle journey for which the service organization XML string is to be retrieved.
+
+        Returns:
+            str: The XML string for the service organization of the vehicle journey.
+        """
+        service_org_xml_str = None
+        service_org_from_vj = self.service_org_day_type(vehicle_journey)
+        if service_org_from_vj:
+            service_org_xml_str = etree.tostring(
+                service_org_from_vj._element, pretty_print=True
+            ).decode()
+        else:
+            service_org_from_service = self.get_service_org_day_type_from_service(
+                vehicle_journey
+            )
+            service_org_xml_str = (
+                etree.tostring(
+                    service_org_from_service._element, pretty_print=True
+                ).decode()
+                if service_org_from_service
+                else None
+            )
+        return service_org_xml_str
+
+    def get_service_org_ref_and_days_of_operation(
+        self, vehicle_journey: TxcVehicleJourney
+    ) -> Tuple[Optional[str], Optional[TransXChangeElement]]:
+        """
+        Retrieve the service organization reference and days of operation or non-operation from the provided vehicle journey.
+
+        Args:
+            self: The object instance.
+            vehicle_journey (TxcVehicleJourney): The vehicle journey for which the service organization reference and days of operation or non-operation are to be obtained.
+
+        Returns:
+            Tuple[Optional[str], Optional[TransXChangeElement]]: A tuple containing the service organization reference and the element representing the days of operation or non-operation, or (None, None) if not found.
+        """
+        service_org_ref = None
+        days_of_non_operation = None
+        days_of_operation = None
+
+        service_org_day_type = self.service_org_day_type(
+            vehicle_journey
+        ) or self.get_service_org_day_type_from_service(vehicle_journey)
+
+        if service_org_day_type is not None:
+            days_of_non_operation: TransXChangeElement = (
+                service_org_day_type.get_element_or_none("DaysOfNonOperation")
+            )
+            if days_of_non_operation is not None:
+                service_org_ref = self.get_service_org_ref(days_of_non_operation)
+
+            days_of_operation: TransXChangeElement = (
+                service_org_day_type.get_element_or_none("DaysOfOperation")
+            )
+            if days_of_operation is not None:
+                service_org_ref = self.get_service_org_ref(days_of_operation)
+
+        return service_org_ref, days_of_non_operation, days_of_operation
 
     def filter_by_days_of_operation(
         self,
