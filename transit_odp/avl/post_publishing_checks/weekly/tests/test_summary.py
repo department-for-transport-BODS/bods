@@ -804,3 +804,58 @@ def test_ppc_summary_no_data(
 
     assert df.iloc[1]["Successful match with TXC"] == 0
     assert df.iloc[1]["%match"] == str(float(0)) + "%"
+
+
+def test_create_error_data_df(
+    ppc_summary_data: PostPublishingChecksSummaryData,
+):
+    error_data = {
+        "CODE_3_1": [
+            {
+                "Dataset ID": "6839",
+                "Filename": "PTI_PASS_DQ_PASS_2GmrsMk.xml",
+                "Modification date": "2020-12-18T12:13:57.543011+00:00",
+                "Revision number": "-",
+                "Operation period start date": "2020-12-17",
+                "Operating period end date": "-",
+                "Operating Profile": '<OperatingProfile xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n        <RegularDayType>\n          <DaysOfWeek>\n            <Monday/>\n            <Tuesday/>\n            <Wednesday/>\n            <Thursday/>\n            <Friday/>\n            <Saturday/>\n          </DaysOfWeek>\n        </RegularDayType>\n        <BankHolidayOperation>\n          <DaysOfOperation>\n            <Jan2ndScotland/>\n            <StAndrewsDay/>\n            <EasterMonday/>\n            <AugustBankHolidayScotland/>\n            <Jan2ndScotlandHoliday/>\n            <StAndrewsDayHoliday/>\n          </DaysOfOperation>\n        </BankHolidayOperation>\n      </OperatingProfile>\n      \n',
+                "Service Code": "PD1073423:5",
+            },
+            {
+                "Dataset ID": "1234",
+                "Filename": "PTI_PASS_DQ_PASS_2GmrsMk.xml",
+                "Modification date": "2020-12-18T12:13:57.543011+00:00",
+                "Revision number": "-",
+                "Operation period start date": "2020-12-17",
+                "Operating period end date": "-",
+                "Operating Profile": "-",
+                "Service Code": "PD1073423:5",
+            },
+        ],
+        "CODE_1_2": [
+            {
+                "Dataset ID": "6839",
+                "Filename": "PTI_PASS_DQ_PASS_2GmrsMk.xml",
+                "Modification date": "2020-12-18T12:13:57.543011+00:00",
+                "Revision number": "-",
+                "Operation period start date": "2020-12-17",
+                "Operating period end date": "-",
+            }
+        ],
+    }
+    expected_df_columns = [
+        "Dataset ID",
+        "Filename",
+        "Modification date",
+        "Revision number",
+        "Operation period start date",
+        "Operating period end date",
+        "error_code",
+        "Operating Profile",
+        "Service Code",
+    ]
+    error_data_df = ppc_summary_data.create_error_data_df(error_data)
+    assert len(error_data_df) == 3
+    for column in expected_df_columns:
+        if column not in error_data_df.columns:
+            assert False
