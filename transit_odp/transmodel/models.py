@@ -139,6 +139,14 @@ class ServicePatternStop(models.Model):
         blank=True,
     )
 
+    stop_activity = models.ForeignKey(
+        StopActivity,
+        related_name="stop_activity",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
     sequence_number = models.IntegerField()
 
     # Store the atco_code explicitly in case the naptan_stop fails to lookup.

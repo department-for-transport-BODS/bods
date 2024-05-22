@@ -23,6 +23,7 @@ from transit_odp.transmodel.models import (
     ServiceLink,
     ServicePattern,
     ServicedOrganisationWorkingDays,
+    StopActivity,
     StopPoint,
     BookingArrangements,
     VehicleJourney,
@@ -69,6 +70,10 @@ def create_flexible_zone_df(data=None):
     )
     df = geopandas.GeoDataFrame(data, columns=typings.keys()).astype(typings)
     return df
+
+
+def get_stop_activities():
+    return StopActivity.objects.all()
 
 
 def create_stop_point_cache(revision_id):
