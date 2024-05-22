@@ -621,6 +621,7 @@ SQS_QUEUE_ENDPOINT_URL = env(
 AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
+AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="local")
 
 # Crispy forms
 # ------------------------------------------------------------------------------

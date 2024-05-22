@@ -2,11 +2,13 @@
 
 from django.db import migrations
 from transit_odp.dqs.constants import CHECKS_DATA
+from transit_odp.dqs.utils import get_checks_data
 
 
 def insert_updated_data(apps, schema_editor):
     Checks = apps.get_model("dqs", "Checks")
-    for entry in CHECKS_DATA:
+    checks_data = get_checks_data(CHECKS_DATA)
+    for entry in checks_data:
         Checks.objects.create(**entry)
 
 
