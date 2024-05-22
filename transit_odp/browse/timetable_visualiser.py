@@ -53,7 +53,40 @@ class TimetableVisualiser:
         self._target_date = target_date
         self._day_of_week = target_date.strftime("%A")
         self._check_public_use_flag = public_use_check_flag
+        self.get_df_service_test()
 
+    def get_df_service_test(self):
+
+        columns = [
+            "service_code",
+            "revision_id",            
+            "end_date",
+            "stop_sequence",
+            "vehicle_journey_id",
+            "activity"]
+        records = Service.objects.filter(
+            txcfileattributes_id=361
+        ).annotate(
+            service_code_s=F("service_code"),
+                revision_id_s=F("revision_id"),
+                vehicle_journey_id=F(
+                    "service_patterns__service_pattern_vehicle_journey__id"
+                ),
+                stop_sequence=F(
+                    "service_patterns__service_pattern_stops__sequence_number"
+                ),
+                activity=F(
+                    "service_patterns__service_pattern_stops__stop_activity__stop_activity_id"
+                ),
+        ).values(*columns)
+        df = pd.DataFrame.from_records(records)
+        print("Creating csv")
+        df.to_csv("get_df_service_test.csv")
+        df.groupby("vehicle_journey_id").apply(
+            lambda df: df["stop_sequence"].min()
+        )
+    
+    
     def get_qs_service_vehicle_journeys(self) -> pd.DataFrame:
         """
         Get the dataframe of vehicle journey for the service with respect to service code, revision

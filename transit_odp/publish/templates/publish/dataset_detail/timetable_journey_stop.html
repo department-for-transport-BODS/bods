@@ -20,7 +20,7 @@
     {% for idx, row in timetable_details.df.iterrows %}
       <tr class="govuk-table__row">
         {% for col_name, cell in row.items %}
-        <td class="govuk-table__cell gov-table-vr">          
+        <td class="govuk-table__cell timetable_govuk_body">          
             {% if col_name == 'Journey Code'  %}
               {% with key=cell|concatenate:"_"|concatenate:idx %}              
               <a class="tooltip govuk-link" title="More information" id="stop-{{direction}}-{{idx}}" onclick="BODSFrontend.showTooltip(event,'{{idx}}', '{{direction}}');"  >{{cell}}                

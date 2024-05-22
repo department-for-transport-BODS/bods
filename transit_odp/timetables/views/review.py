@@ -233,6 +233,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         }
 
     def get_context_data(self, **kwargs):
+        
         """
         Get the context data for the view.
 
