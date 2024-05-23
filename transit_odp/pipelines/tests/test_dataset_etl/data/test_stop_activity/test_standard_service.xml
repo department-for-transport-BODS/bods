@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <TransXChange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SchemaVersion="2.4" CreationDateTime="2020-09-18T09:27:54" ModificationDateTime="2022-12-15T15:37:41" Modification="revise" RevisionNumber="15" FileName="WRAY_WF1_WRAYPB0000582186WF1_20230102_20230108_79faba8f-b9fb-4253-8e43-73cab5129d68.xml" xmlns="http://www.transxchange.org.uk/">
   <ServicedOrganisations>
     <ServicedOrganisation>
@@ -535,10 +535,12 @@
       </JourneyPatternTimingLink>
       <JourneyPatternTimingLink id="jptl_11">
         <From SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>450029894</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
         </From>
         <To SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
           <StopPointRef>450050590</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
         </To>
@@ -551,6 +553,7 @@
           <TimingStatus>otherPoint</TimingStatus>
         </From>
         <To SequenceNumber="4">
+          <Activity>pickUpAndSetDownDriverRequest</Activity>
           <StopPointRef>450029899</StopPointRef>
           <TimingStatus>otherPoint</TimingStatus>
         </To>
@@ -729,7 +732,6 @@
   <VehicleJourneys>
     <VehicleJourney>
       <OperatorRef>tkt_oid</OperatorRef>
-      <DepartureDayShift>+1</DepartureDayShift>
       <Operational>
         <TicketMachine>
           <JourneyCode>3681</JourneyCode>
@@ -743,12 +745,7 @@
     </VehicleJourney>
     <VehicleJourney>
       <OperatorRef>tkt_oid</OperatorRef>
-      <DepartureDayShift>+1</DepartureDayShift>
       <Operational>
-        <Block>
-          <Description>2062</Description>
-          <BlockNumber>K2062</BlockNumber>
-        </Block>
         <TicketMachine>
           <JourneyCode>3682</JourneyCode>
         </TicketMachine>
@@ -758,17 +755,6 @@
       <LineRef>WRAY:PB0000582:186:WF1</LineRef>
       <JourneyPatternRef>jp_2</JourneyPatternRef>
       <DepartureTime>16:40:00</DepartureTime>
-      <StartDeadRun id="VJDR1" CreationDateTime="2024-01-03T08:36:37" Modification="new" RevisionNumber="0">
-        <PositioningLink CreationDateTime="2024-01-03T08:36:37" Modification="new" RevisionNumber="0" id="VJPL1">
-          <RunTime>PT4M</RunTime>
-          <From>
-            <GarageRef>CV</GarageRef>
-          </From>
-          <To>
-            <StopPointRef>43000001204</StopPointRef>
-          </To>
-        </PositioningLink>
-      </StartDeadRun>
     </VehicleJourney>
   </VehicleJourneys>
 </TransXChange>
