@@ -22,6 +22,7 @@ from transit_odp.transmodel.models import (
     ServicedOrganisationWorkingDays,
     ServicedOrganisations,
     VehicleJourney,
+    StopActivity,
 )
 from factory.django import DjangoModelFactory
 
@@ -217,3 +218,11 @@ class ServicedOrganisationWorkingDaysFactory(DjangoModelFactory):
     )
     start_date = FuzzyDate(datetime.date.today())
     end_date = FuzzyDate(datetime.date.today())
+class StopActivityFactory(DjangoModelFactory):
+    class Meta:
+        model = StopActivity
+
+    name = FuzzyText(length=255)
+    is_pickup = FuzzyChoice(choices=[True, False])
+    is_setdown = FuzzyChoice(choices=[True, False])
+    is_driverrequest = FuzzyChoice(choices=[True, False])
