@@ -668,9 +668,6 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 "otc_service_type_description": service
                 and service.service_type_description,
                 "otc_variation_number": service and service.variation_number,
-                "otc_start_point": service and service.start_point,
-                "otc_finish_point": service and service.finish_point,
-                "otc_via": service and service.via,
                 "otc_effective_date": service and service.effective_date,
                 "otc_received_date": service and service.received_date,
                 "operator_name": file_attribute and file_attribute.organisation_name,
@@ -710,7 +707,6 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 and file_attribute.national_operator_code,
                 "traveline_region": traveline_region,
                 "ui_lta_name": ui_lta_name,
-                "otc_licence_granted_date": service and service.licence.granted_date,
                 "otc_licence_expiry_date": service and service.licence.expiry_date,
             }
         )

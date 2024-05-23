@@ -1152,15 +1152,11 @@ def test_lta_line_level_columns_order():
     assert actual_columns[20] == "Registration:Licence Number"
     assert actual_columns[21] == "Registration:Service Type Description"
     assert actual_columns[22] == "Registration:Variation Number"
-    assert actual_columns[23] == "Registration:Start Point"
-    assert actual_columns[24] == "Registration:Finish Point"
-    assert actual_columns[25] == "Registration:Via"
-    assert actual_columns[26] == "Registration:Granted Date"
-    assert actual_columns[27] == "Registration:Expiry Date"
-    assert actual_columns[28] == "Registration:Effective Date"
-    assert actual_columns[29] == "Registration:Received Date"
-    assert actual_columns[30] == "Traveline Region"
-    assert actual_columns[31] == "Local Transport Authority"
+    assert actual_columns[23] == "Registration:Expiry Date"
+    assert actual_columns[24] == "Registration:Effective Date"
+    assert actual_columns[25] == "Registration:Received Date"
+    assert actual_columns[26] == "Traveline Region"
+    assert actual_columns[27] == "Local Transport Authority"
 
 
 @freeze_time("2023-02-24")
@@ -1435,11 +1431,8 @@ def test_lta_line_level_csv():
     assert csv_output["row0"][20] == '"PD0000099"'
     assert csv_output["row0"][21] == '"service type description service 1"'
     assert csv_output["row0"][22] == '"11"'
-    assert csv_output["row0"][23] == '"start point service 1"'
-    assert csv_output["row0"][24] == '"finish point service 1"'
-    assert csv_output["row0"][25] == '"via service 1"'
-    assert csv_output["row0"][30] == '"South East"'
-    assert csv_output["row0"][31] == '"UI_LTA"'
+    assert csv_output["row0"][26] == '"South East"'
+    assert csv_output["row0"][27] == '"UI_LTA"'
 
     assert csv_output["row1"][0] == '"PD0000099:1"'
     assert csv_output["row1"][1] == '"Line1"'
@@ -1464,11 +1457,8 @@ def test_lta_line_level_csv():
     assert csv_output["row1"][20] == '"PD0000099"'
     assert csv_output["row1"][21] == '"service type description service 2"'
     assert csv_output["row1"][22] == '"22"'
-    assert csv_output["row1"][23] == '"start point service 2"'
-    assert csv_output["row1"][24] == '"finish point service 2"'
-    assert csv_output["row1"][25] == '"via service 2"'
-    assert csv_output["row1"][30] == '"South East"'
-    assert csv_output["row1"][31] == '"UI_LTA"'
+    assert csv_output["row1"][26] == '"South East"'
+    assert csv_output["row1"][27] == '"UI_LTA"'
 
     assert csv_output["row2"][0] == '"PD0000099:2"'
     assert csv_output["row2"][1] == '"Line2"'
@@ -1493,11 +1483,8 @@ def test_lta_line_level_csv():
     assert csv_output["row2"][20] == '"PD0000099"'
     assert csv_output["row2"][21] == '"service type description service 3"'
     assert csv_output["row2"][22] == '"33"'
-    assert csv_output["row2"][23] == '"start point service 3"'
-    assert csv_output["row2"][24] == '"finish point service 3"'
-    assert csv_output["row2"][25] == '"via service 3"'
-    assert csv_output["row2"][30] == '"South East"'
-    assert csv_output["row2"][31] == '"UI_LTA"'
+    assert csv_output["row2"][26] == '"South East"'
+    assert csv_output["row2"][27] == '"UI_LTA"'
 
     assert csv_output["row3"][0] == '"PD0000099:3"'
     assert csv_output["row3"][1] == '"Line3"'
@@ -1522,11 +1509,8 @@ def test_lta_line_level_csv():
     assert csv_output["row3"][20] == '"PD0000099"'
     assert csv_output["row3"][21] == '"service type description service 4"'
     assert csv_output["row3"][22] == '"44"'
-    assert csv_output["row3"][23] == '"start point service 4"'
-    assert csv_output["row3"][24] == '"finish point service 4"'
-    assert csv_output["row3"][25] == '"via service 4"'
-    assert csv_output["row3"][30] == '"South East"'
-    assert csv_output["row3"][31] == '"UI_LTA"'
+    assert csv_output["row3"][26] == '"South East"'
+    assert csv_output["row3"][27] == '"UI_LTA"'
 
     assert csv_output["row4"][0] == '"PD0000099:4"'
     assert csv_output["row4"][1] == '"Line4"'
@@ -1551,11 +1535,8 @@ def test_lta_line_level_csv():
     assert csv_output["row4"][20] == '"PD0000099"'
     assert csv_output["row4"][21] == '"service type description service 5"'
     assert csv_output["row4"][22] == '"55"'
-    assert csv_output["row4"][23] == '"start point service 5"'
-    assert csv_output["row4"][24] == '"finish point service 5"'
-    assert csv_output["row4"][25] == '"via service 5"'
-    assert csv_output["row4"][30] == '"South East"'
-    assert csv_output["row4"][31] == '"UI_LTA"'
+    assert csv_output["row4"][26] == '"South East"'
+    assert csv_output["row4"][27] == '"UI_LTA"'
 
     assert csv_output["row5"][0] == '"PD0000099:5"'
     assert csv_output["row5"][1] == '"Line5"'
@@ -1580,11 +1561,8 @@ def test_lta_line_level_csv():
     assert csv_output["row5"][20] == '"PD0000099"'
     assert csv_output["row5"][21] == '"service type description service 6"'
     assert csv_output["row5"][22] == '"66"'
-    assert csv_output["row5"][23] == '"start point service 6"'
-    assert csv_output["row5"][24] == '"finish point service 6"'
-    assert csv_output["row5"][25] == '"via service 6"'
-    assert csv_output["row5"][30] == '"South East"'
-    assert csv_output["row5"][31] == '"UI_LTA"'
+    assert csv_output["row5"][26] == '"South East"'
+    assert csv_output["row5"][27] == '"UI_LTA"'
 
     assert csv_output["row6"][0] == '"PD0000099:6"'
     assert csv_output["row6"][1] == '"Line6"'
@@ -1609,11 +1587,8 @@ def test_lta_line_level_csv():
     assert csv_output["row6"][20] == '"PD0000099"'
     assert csv_output["row6"][21] == '"service type description service 7"'
     assert csv_output["row6"][22] == '"77"'
-    assert csv_output["row6"][23] == '"start point service 7"'
-    assert csv_output["row6"][24] == '"finish point service 7"'
-    assert csv_output["row6"][25] == '"via service 7"'
-    assert csv_output["row6"][30] == '"South East"'
-    assert csv_output["row6"][31] == '"UI_LTA"'
+    assert csv_output["row6"][26] == '"South East"'
+    assert csv_output["row6"][27] == '"UI_LTA"'
 
 
 def test_lta_csv_output_unpublished_status_no_organisation_name():

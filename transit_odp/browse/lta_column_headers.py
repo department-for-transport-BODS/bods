@@ -200,19 +200,6 @@ header_accessor_data_line_level = [
         lambda otc_service: otc_service.get("otc_variation_number"),
     ),
     (
-        "Registration:Start Point",
-        lambda otc_service: otc_service.get("otc_start_point"),
-    ),
-    (
-        "Registration:Finish Point",
-        lambda otc_service: otc_service.get("otc_finish_point"),
-    ),
-    ("Registration:Via", lambda otc_service: otc_service.get("otc_via")),
-    (
-        "Registration:Granted Date",
-        lambda otc_service: otc_service.get("otc_licence_granted_date"),
-    ),
-    (
         "Registration:Expiry Date",
         lambda otc_service: otc_service.get("otc_licence_expiry_date"),
     ),
