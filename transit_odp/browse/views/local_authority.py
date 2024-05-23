@@ -663,7 +663,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
                 "otc_service_number": service_number,
-                "otc_operator": service and service.operator.operator_name,
+                "otc_operator": service
+                and service.operator
+                and service.operator.operator_name,
                 "otc_licence": service and service.licence,
                 "otc_service_type_description": service
                 and service.service_type_description,
