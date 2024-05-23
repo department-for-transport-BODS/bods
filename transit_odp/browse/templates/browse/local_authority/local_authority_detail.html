@@ -73,6 +73,13 @@
                     </a>
                 </li>
             </ul>
+            <ul class="govuk-list govuk-!-margin-top-5">
+                <li>
+                    <a class="govuk-link" href="{% url 'local-authority-line-level-export' host hosts.data %}?auth_ids={{ auth_ids }}">
+                        {% filter force_escape %}{% trans 'Download detailed line level export' %}{% endfilter %}
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <div class="govuk-grid-column-one-third">
