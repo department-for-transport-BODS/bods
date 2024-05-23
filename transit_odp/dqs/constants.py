@@ -57,16 +57,16 @@ CHECKS_DATA = [
         "queue_name": "missing_bus_working_number_queue",
     },
     {
-        "observation": "Missing stops",
+        "observation": "Missing stop",
         "importance": "Advisory",
         "category": "Stop",
-        "queue_name": "missing_stops_queue",
+        "queue_name": "missing_stop_queue",
     },
     {
-        "observation": "Stop(s) not found in NaPTAN",
+        "observation": "Stop not found in NaPTAN",
         "importance": "Critical",
         "category": "Stop",
-        "queue_name": "stops_not_found_in_queue",
+        "queue_name": "stop_not_found_in_naptan_queue",
     },
     {
         "observation": "Same stop found multiple times",
