@@ -96,7 +96,7 @@ class VehicleJourney(models.Model):
         default=None,
         null=True,
     )
-    block_number = models.IntegerField(null=True, default=None)
+    block_number = models.CharField(max_length=10, null=True, default=None)
 
     def __str__(self):
         start_time_str = self.start_time.strftime("%H:%M:%S") if self.start_time else ""
@@ -134,6 +134,14 @@ class ServicePatternStop(models.Model):
     vehicle_journey = models.ForeignKey(
         VehicleJourney,
         related_name="service_pattern_stops_vehicle_journey",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    stop_activity = models.ForeignKey(
+        StopActivity,
+        related_name="stop_activity",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

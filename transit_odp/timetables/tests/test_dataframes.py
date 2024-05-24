@@ -10,6 +10,9 @@ from transit_odp.timetables.dataframes import (
     flexible_stop_points_from_journey_details,
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
+from transit_odp.transmodel.models import StopActivity
+
+pytestmark = pytest.mark.django_db
 
 
 def test_flexible_journey_patterns_to_dataframe():
@@ -28,6 +31,7 @@ def test_flexible_journey_patterns_to_dataframe():
                 "journey_pattern_id": "PB0002032:467-jp_1",
                 "service_code": "PB0002032:467",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "atco_code": "02901353",
@@ -35,6 +39,7 @@ def test_flexible_journey_patterns_to_dataframe():
                 "journey_pattern_id": "PB0002032:467-jp_1",
                 "service_code": "PB0002032:467",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "atco_code": "02901278",
@@ -42,11 +47,13 @@ def test_flexible_journey_patterns_to_dataframe():
                 "journey_pattern_id": "UZ000WOCT:216-jp_2",
                 "service_code": "UZ000WOCT:216",
                 "direction": "outbound",
+                "activity_id": 1,
             },
         ]
     )
     # test
-    stoppoint_df = flexible_journey_patterns_to_dataframe(services)
+    stop_activities = StopActivity.objects.all()
+    stoppoint_df = flexible_journey_patterns_to_dataframe(services, stop_activities)
     assert check_frame_equal(stoppoint_df, expected_stopoint_df)
 
 
@@ -66,6 +73,7 @@ def test_flexible_journey_patterns():
                 "journey_pattern_id": "PF0000508:11-jp_1",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "atco_code": "030058860001",
@@ -73,6 +81,7 @@ def test_flexible_journey_patterns():
                 "journey_pattern_id": "PF0000508:11-jp_1",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "atco_code": "030058920001",
@@ -80,6 +89,7 @@ def test_flexible_journey_patterns():
                 "journey_pattern_id": "PF0000508:11-jp_1",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "atco_code": "030058870001",
@@ -87,11 +97,13 @@ def test_flexible_journey_patterns():
                 "journey_pattern_id": "PF0000508:11-jp_1",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
         ]
     )
     # test
-    stoppoint_df = flexible_journey_patterns_to_dataframe(services)
+    stop_activities = StopActivity.objects.all()
+    stoppoint_df = flexible_journey_patterns_to_dataframe(services, stop_activities)
     assert check_frame_equal(stoppoint_df, expected_stopoint_df)
 
 
@@ -106,6 +118,7 @@ def test_flexible_stop_points_from_journey_details():
                 "bus_stop_type": "flexible",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
@@ -114,6 +127,7 @@ def test_flexible_stop_points_from_journey_details():
                 "bus_stop_type": "flexible",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
@@ -122,6 +136,7 @@ def test_flexible_stop_points_from_journey_details():
                 "bus_stop_type": "fixed_flexible",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
             {
                 "file_id": "339cfb45-3123-4828-8f60-28489f5646cc",
@@ -130,6 +145,7 @@ def test_flexible_stop_points_from_journey_details():
                 "bus_stop_type": "fixed_flexible",
                 "service_code": "PF0000508:11",
                 "direction": "outbound",
+                "activity_id": 1,
             },
         ]
     )
