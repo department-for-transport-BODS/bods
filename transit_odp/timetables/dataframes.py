@@ -791,24 +791,26 @@ def populate_operating_profiles(
         "day_of_week": days_of_week,
         "operational": operational,
     }
-
     if serviced_org_element:
         operational = False
         serviced_orgs_working_days = serviced_org_element.get_element_or_none(
             "WorkingDays"
         )
         if not serviced_orgs_working_days:
-            serviced_orgs_working_days = serviced_org_element.get_element("Holidays")
+            serviced_orgs_working_days = serviced_org_element.get_element_or_none(
+                "Holidays"
+            )
         elif serviced_org_element.localname == "DaysOfOperation":
             operational = True
-
-        serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
-            "ServicedOrganisationRef"
-        )
-        serviced_org_refs = [
-            serviced_org_ref_element.text
-            for serviced_org_ref_element in serviced_org_ref_elements
-        ]
+        serviced_org_refs = []
+        if serviced_orgs_working_days:
+            serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
+                "ServicedOrganisationRef"
+            )
+            serviced_org_refs = [
+                serviced_org_ref_element.text
+                for serviced_org_ref_element in serviced_org_ref_elements
+            ]
         operating_profile_obj["serviced_org_ref"] = serviced_org_refs
         operating_profile_obj["operational"] = operational
 
