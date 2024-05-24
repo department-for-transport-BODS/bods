@@ -53,40 +53,7 @@ class TimetableVisualiser:
         self._target_date = target_date
         self._day_of_week = target_date.strftime("%A")
         self._check_public_use_flag = public_use_check_flag
-        self.get_df_service_test()
 
-    def get_df_service_test(self):
-
-        columns = [
-            "service_code",
-            "revision_id",            
-            "end_date",
-            "stop_sequence",
-            "vehicle_journey_id",
-            "activity"]
-        records = Service.objects.filter(
-            txcfileattributes_id=361
-        ).annotate(
-            service_code_s=F("service_code"),
-                revision_id_s=F("revision_id"),
-                vehicle_journey_id=F(
-                    "service_patterns__service_pattern_vehicle_journey__id"
-                ),
-                stop_sequence=F(
-                    "service_patterns__service_pattern_stops__sequence_number"
-                ),
-                activity=F(
-                    "service_patterns__service_pattern_stops__stop_activity__stop_activity_id"
-                ),
-        ).values(*columns)
-        df = pd.DataFrame.from_records(records)
-        print("Creating csv")
-        df.to_csv("get_df_service_test.csv")
-        df.groupby("vehicle_journey_id").apply(
-            lambda df: df["stop_sequence"].min()
-        )
-    
-    
     def get_qs_service_vehicle_journeys(self) -> pd.DataFrame:
         """
         Get the dataframe of vehicle journey for the service with respect to service code, revision
@@ -117,8 +84,6 @@ class TimetableVisualiser:
             "public_use",
             "revision_number",
             "start_time",
-            "street",
-            "indicator",
         ]
 
         qs_vehicle_journeys = (
@@ -182,12 +147,6 @@ class TimetableVisualiser:
                 ),
                 public_use=F("txcfileattributes__public_use"),
                 revision_number=F("txcfileattributes__revision_number"),
-                street=F(
-                    "service_patterns__service_pattern_stops__naptan_stop__street",
-                ),
-                indicator=F(
-                    "service_patterns__service_pattern_stops__naptan_stop__indicator",
-                ),
             )
             .values(*columns)
         )
@@ -295,12 +254,10 @@ class TimetableVisualiser:
                 "outbound": {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
-                    "stops": {},
                 },
                 "inbound": {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
-                    "stops": {},
                 },
             }
 
@@ -341,7 +298,6 @@ class TimetableVisualiser:
                 data[direction] = {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
-                    "stops": {},
                 }
                 continue
             journey_description = (
@@ -375,9 +331,7 @@ class TimetableVisualiser:
                 )
             ]
 
-            df_timetable, stops = get_df_timetable_visualiser(
-                df_vehicle_journey_operating
-            )
+            df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
 
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
@@ -385,6 +339,5 @@ class TimetableVisualiser:
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
-                "stops": stops,
             }
         return data
