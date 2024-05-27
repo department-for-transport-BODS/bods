@@ -73,12 +73,14 @@ def get_line_level_txc_map(org_id: int) -> Dict[tuple, TXCFileAttributes]:
         .add_split_linenames()
         .order_by(
             "service_code",
+            "line_name_unnested",
             "-revision__published_at",
             "-revision_number",
             "-modification_datetime",
             "-operating_period_start_date",
             "-filename",
         )
+        .group_by("service_code", "line_name_unnested")
     )
 
     for txc_file in txc_file_attributes:
