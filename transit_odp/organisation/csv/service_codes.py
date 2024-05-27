@@ -1,4 +1,3 @@
-import copy
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
@@ -18,8 +17,8 @@ from transit_odp.otc.constants import (
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
+    get_all_line_level_otc_map,
     get_line_level_txc_map,
-    get_txc_map,
     is_stale,
 )
 
@@ -61,32 +60,6 @@ def get_all_otc_map(organisation_id: int) -> Dict[str, OTCService]:
             organisation_id
         )
     }
-
-
-def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
-    """
-    Get a dictionary which includes all line level Services for an organisation.
-
-    Args:
-        organisation_id (int): Organisation id
-
-    Returns:
-        Dict[tuple, OTCService]: List of Services
-    """
-    services = {}
-    for service in OTCService.objects.get_all_otc_data_for_organisation(
-        organisation_id
-    ):
-        service_numbers = service.service_number.split("|")
-        for service_number in service_numbers:
-            service_copy = copy.deepcopy(service)
-            service_copy.service_number = service_number
-            key = (
-                service_copy.registration_number.replace("/", ":"),
-                service_number,
-            )
-            services[key] = service_copy
-    return services
 
 
 def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]:

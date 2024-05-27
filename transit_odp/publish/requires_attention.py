@@ -1,4 +1,5 @@
 from typing import Dict, List
+import copy
 
 from django.db.models import Subquery
 from django.utils.timezone import now
@@ -18,6 +19,32 @@ def get_otc_map(org_id: int) -> Dict[str, OTCService]:
         service.registration_number.replace("/", ":"): service
         for service in OTCService.objects.get_otc_data_for_organisation(org_id)
     }
+
+
+def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
+    """
+    Get a dictionary which includes all line level Services for an organisation.
+
+    Args:
+        organisation_id (int): Organisation id
+
+    Returns:
+        Dict[tuple, OTCService]: List of Services
+    """
+    services = {}
+    for service in OTCService.objects.get_all_otc_data_for_organisation(
+        organisation_id
+    ):
+        service_numbers = service.service_number.split("|")
+        for service_number in service_numbers:
+            service_copy = copy.deepcopy(service)
+            service_copy.service_number = service_number
+            key = (
+                service_copy.registration_number.replace("/", ":"),
+                service_number,
+            )
+            services[key] = service_copy
+    return services
 
 
 def get_otc_map_lta(lta_list) -> Dict[str, OTCService]:
@@ -249,6 +276,28 @@ def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
 
     for service_code, service in otc_map.items():
         file_attribute = txcfa_map.get(service_code)
+        if file_attribute is None:
+            _update_data(object_list, service)
+        elif is_stale(service, file_attribute):
+            _update_data(object_list, service)
+    return object_list
+
+
+def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. not live
+    in BODS at all, or live but meeting new Staleness conditions.
+
+    Returns list of objects of each service requiring attention for an organisation.
+    """
+    object_list = []
+
+    otc_map = get_all_line_level_otc_map(org_id)
+    txcfa_map = get_line_level_txc_map(org_id)
+
+    for service_key, service in otc_map.items():
+        file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
             _update_data(object_list, service)
         elif is_stale(service, file_attribute):
