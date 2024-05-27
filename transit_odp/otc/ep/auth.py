@@ -53,10 +53,14 @@ def _get_token() -> str:
             logger.info(f"with content {response.content}")
         raise EPAuthorizationTokenException(msg)
 
+    logger.info(f"EP auth url body: {body}")
+    logger.info(f"EP auth url headers: {headers}")
     response = AuthResponse(**response.json())
     token_cache_timeout = response.expires_in
     cache.set("ep-auth-bearer", f"{response.access_token}", timeout=token_cache_timeout)
-    return response.access_token
+    auth_token = cache.get("ep-auth-bearer", None)
+    logger.info(f"EP auth token from cache: {auth_token}")
+    return auth_token
 
 
 @dataclass(frozen=True)
