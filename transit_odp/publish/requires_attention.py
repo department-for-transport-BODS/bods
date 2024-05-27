@@ -144,7 +144,7 @@ def get_line_level_txc_map(org_id: int) -> Dict[tuple, TXCFileAttributes]:
             "-operating_period_start_date",
             "-filename",
         )
-        .group_by("service_code", "line_name_unnested")
+        .distinct("service_code", "line_name_unnested")
     )
 
     for txc_file in txc_file_attributes:
