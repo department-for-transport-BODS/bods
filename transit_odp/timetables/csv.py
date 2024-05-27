@@ -796,8 +796,9 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
     today = datetime.date.today()
 
     txc_df = pd.DataFrame.from_records(
-        TXCFileAttributes.objects.get_active_txc_files_line_level()
-        .values(*TXC_LINE_LEVEL_COLUMNS)
+        TXCFileAttributes.objects.get_active_txc_files_line_level().values(
+            *TXC_LINE_LEVEL_COLUMNS
+        )
     )
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
