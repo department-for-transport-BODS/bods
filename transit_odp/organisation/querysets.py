@@ -1291,7 +1291,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             )
             .distinct("service_code")
         )
-    
+
     def get_active_txc_files_line_level(self):
         return (
             self.get_active_live_revisions()
