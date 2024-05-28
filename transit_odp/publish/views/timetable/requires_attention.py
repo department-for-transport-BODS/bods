@@ -8,7 +8,6 @@ from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
-    get_requires_attention_data,
     get_requires_attention_line_level_data,
 )
 from transit_odp.timetables.tables import RequiresAttentionTable
