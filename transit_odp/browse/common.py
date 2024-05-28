@@ -248,10 +248,20 @@ class LTACSVHelper:
         return is_english_region, ui_lta_name, traveline_region
 
 
-def get_in_scope_in_season_services_line_level(org_id: int):
-    services_df = pd.DataFrame.from_records(
-        Service.objects.get_in_scope_in_season_services(org_id).all()
-    )
+def get_in_scope_in_season_services_line_level(org_id: int) -> pd.DataFrame:
+    """Return datagrame with services with line level split the names
+
+    Args:
+        org_id (int):
+
+    Returns:
+        pd.DataFrame: Dataframe with services list
+    """
+    services_qs = Service.objects.get_in_scope_in_season_services(org_id)
+    if services_qs.count() == 0:
+        return pd.DataFrame()
+
+    services_df = pd.DataFrame.from_records(list(services_qs.all().values()))
 
     if services_df.empty:
         return services_df
@@ -263,5 +273,13 @@ def get_in_scope_in_season_services_line_level(org_id: int):
     return services_df
 
 
-def get_in_scope_in_season_services_line_level_count(org_id: int):
+def get_in_scope_in_season_services_line_level_count(org_id: int) -> int:
+    """Get count for in_scope and in_season services line level
+
+    Args:
+        org_id (int):
+
+    Returns:
+        int: total in_scope_in_season_services count
+    """
     return len(get_in_scope_in_season_services_line_level(org_id))
