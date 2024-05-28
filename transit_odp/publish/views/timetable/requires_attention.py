@@ -3,10 +3,14 @@ from django.utils.timezone import now
 from django.views import View
 from django_tables2 import SingleTableView
 
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level_count
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.requires_attention import get_requires_attention_data
+from transit_odp.publish.requires_attention import (
+    get_requires_attention_data,
+    get_requires_attention_line_level_data,
+)
 from transit_odp.timetables.tables import RequiresAttentionTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
@@ -27,7 +31,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         context["services_requiring_attention"] = len(self.object_list)
         context[
             "total_in_scope_in_season_services"
-        ] = OTCService.objects.get_in_scope_in_season_services(org_id).count()
+        ] = get_in_scope_in_season_services_line_level_count(org_id)
         try:
             context["services_require_attention_percentage"] = round(
                 100
@@ -56,7 +60,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
     def get_queryset(self):
         org_id = self.kwargs["pk1"]
-        return get_requires_attention_data(org_id)
+        return get_requires_attention_line_level_data(org_id)
 
 
 class ServiceCodeView(View):

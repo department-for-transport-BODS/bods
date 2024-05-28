@@ -3,10 +3,12 @@ import datetime
 from django_hosts import reverse
 
 from config.hosts import PUBLISH_HOST
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level_count
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import ConsumerFeedback, SeasonalService
-from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.requires_attention import get_requires_attention_data
+from transit_odp.publish.requires_attention import (
+    get_requires_attention_line_level_data,
+)
 from transit_odp.publish.tables import DatasetTable
 from transit_odp.publish.views.base import BasePublishListView
 from transit_odp.timetables.proxies import TimetableDataset
@@ -28,9 +30,9 @@ class ListView(BasePublishListView):
         org_id = context["pk1"]
         context[
             "applicable_services"
-        ] = OTCService.objects.get_in_scope_in_season_services(org_id).count()
+        ] = get_in_scope_in_season_services_line_level_count(org_id)
         context["services_requiring_attention"] = len(
-            get_requires_attention_data(org_id)
+            get_requires_attention_line_level_data(org_id)
         )
         today_start = datetime.datetime.today().replace(
             hour=0, minute=0, second=0, microsecond=0
