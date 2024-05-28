@@ -1,7 +1,9 @@
 on:
-  workflow_dispatch:
+  push:
+    branches:
+    - patch/v1.36.1 
 
-name: 'hotfix_deployment'
+name: 'patch_1_36_1_deployment'
 
 defaults:
   run:
@@ -15,7 +17,7 @@ env:
 jobs:
 
   hotfix_deployment:
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'patch/v1.36.1'
     name: 'hotfix_deployment'
     runs-on: ubuntu-latest
     environment:
