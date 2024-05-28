@@ -21,6 +21,31 @@ def get_otc_map(org_id: int) -> Dict[str, OTCService]:
     }
 
 
+def get_line_level_in_scope_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
+    """
+    Get a dictionary which includes all line level Services for an organisation.
+    excluding exempted services and Out of Season seasonal services.
+
+    Args:
+        organisation_id (int): Organisation id
+
+    Returns:
+        Dict[tuple, OTCService]: List of Services
+    """
+    services = {}
+    for service in OTCService.objects.get_otc_data_for_organisation(organisation_id):
+        service_numbers = service.service_number.split("|")
+        for service_number in service_numbers:
+            service_copy = copy.deepcopy(service)
+            service_copy.service_number = service_number
+            key = (
+                service_copy.registration_number.replace("/", ":"),
+                service_number,
+            )
+            services[key] = service_copy
+    return services
+
+
 def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
     """
     Get a dictionary which includes all line level Services for an organisation.
@@ -293,7 +318,7 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     """
     object_list = []
 
-    otc_map = get_all_line_level_otc_map(org_id)
+    otc_map = get_line_level_in_scope_otc_map(org_id)
     txcfa_map = get_line_level_txc_map(org_id)
 
     for service_key, service in otc_map.items():
