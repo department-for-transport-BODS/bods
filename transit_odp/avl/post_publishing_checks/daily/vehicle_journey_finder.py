@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
 from zipfile import ZipFile
+import os
 
 from lxml import etree
 
@@ -32,6 +33,7 @@ from transit_odp.timetables.transxchange import (
     TransXChangeDocument,
     TransXChangeElement,
 )
+from transit_odp.common.xmlelements.exceptions import XMLAttributeError
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +214,9 @@ class VehicleJourneyFinder:
             with ZipFile(upload_file) as zin:
                 txc_filenames = [txc.filename for txc in txc_file_attrs]
                 for filename in zin.namelist():
-                    if filename in txc_filenames:
+                    # filename can also contains directory name
+                    base_filename = os.path.basename(filename)
+                    if base_filename in txc_filenames:
                         with zin.open(filename, "r") as fp:
                             timetables.append(TransXChangeDocument(fp))
 
@@ -612,7 +616,7 @@ class VehicleJourneyFinder:
 
     def get_service_org_xml_string(
         self, vehicle_journey: TxcVehicleJourney
-    ) -> Optional[TransXChangeElement]:
+    ) -> Optional[str]:
         """
         Retrieves the XML string for the service organization of a given vehicle journey.
 
@@ -632,9 +636,13 @@ class VehicleJourneyFinder:
             service_org_from_service = self.get_service_org_day_type_from_service(
                 vehicle_journey
             )
-            service_org_xml_str = etree.tostring(
-                service_org_from_service._element, pretty_print=True
-            ).decode()
+            service_org_xml_str = (
+                etree.tostring(
+                    service_org_from_service._element, pretty_print=True
+                ).decode()
+                if service_org_from_service
+                else None
+            )
         return service_org_xml_str
 
     def get_service_org_ref_and_days_of_operation(
@@ -774,11 +782,16 @@ class VehicleJourneyFinder:
         for vj in reversed(vehicle_journeys):
             service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
             get_service_org_xml_string = self.get_service_org_xml_string(vj)
+            journey_code = vj.vehicle_journey.get_element(
+                ["Operational", "TicketMachine", "JourneyCode"]
+            )
+            journey_code_text = journey_code.text if journey_code else journey_code
             journey_code_operating_profile_service_org.append(
                 {
                     "operating_profile_xml_string": get_service_org_xml_string,
                     "service_organisation_xml_str": service_org_ref,
                     "service_organisation_day_operating": service_org_ref,
+                    "journey_code": journey_code_text,
                 }
             )
 
@@ -808,13 +821,42 @@ class VehicleJourneyFinder:
             result.add_error(
                 ErrorCategory.GENERAL,
                 "Found more than one matching vehicle journey in timetables belonging to a single service code",
-                ErrorCode.CODE_6_2_C,
+                ErrorCode.CODE_6_2_B,
             )
             return False
         elif len(service_code_set) > 1:
             result.errors = None
             return False
         return True
+
+    def append_txc_revision_number(
+        self, txc_xml: List[TransXChangeDocument], result: ValidationResult
+    ):
+        """
+        Appends the revision number from the first TransXChange XML document in the given list
+        and sets it in the validation result.
+
+        Args:
+            txc_xml (List[TransXChangeDocument]): A list of TransXChangeDocument objects.
+            result (ValidationResult): The validation result object where the revision number will be set.
+
+        Returns:
+            None
+        """
+        if txc_xml:
+            first_txc_xml = txc_xml[0]
+            try:
+                result.set_transxchange_attribute(
+                    TransXChangeField.REVISION_NUMBER,
+                    first_txc_xml.get_revision_number(),
+                )
+            except (XMLAttributeError, Exception) as exp:
+                file_name = first_txc_xml.get_file_name()
+                error_message = (
+                    f"Revision number not found in transXchange file: {file_name}"
+                )
+                logger.error(f"Exception raised: {exp}")
+                logger.error(error_message)
 
     def record_journey_match(
         self, result: ValidationResult, vehicle_journey_ref: str, vj: TxcVehicleJourney
@@ -859,6 +901,8 @@ class VehicleJourneyFinder:
             return None
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
+
+        self.append_txc_revision_number(txc_xml, result)
 
         if (recorded_at_time := self.get_recorded_at_time(activity)) is None:
             result.add_error(

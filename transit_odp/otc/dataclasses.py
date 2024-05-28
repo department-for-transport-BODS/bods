@@ -9,7 +9,7 @@ from pydantic.main import BaseModel
 class Registration(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    registration_number: str = Field(alias="registrationNumber", max_length=20)
+    registration_number: str = Field(alias="registrationNumber", max_length=25)
     variation_number: int = Field(alias="variationNumber")
     other_service_number: Optional[str] = Field(None, alias="otherServiceNumber")
     service_number: Optional[str] = Field(None, alias="serviceNumber", max_length=1000)

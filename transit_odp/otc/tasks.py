@@ -9,6 +9,8 @@ from transit_odp.otc.weca.registry import Registry as WecaRegistry
 from transit_odp.otc.weca.loaders import Loader as WecaLoader
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.loaderslta import LoaderLTA
+from transit_odp.otc.ep.registry import Registry as EPRegistry
+from transit_odp.otc.ep.loaders import Loader as EPLoader
 
 logger = getLogger(__name__)
 
@@ -39,3 +41,10 @@ def task_populate_lta_data():
     populate_lta = PopulateLTA()
     loader = LoaderLTA(populate_lta)
     loader.load_lta_into_fresh_database()
+
+
+@shared_task()
+def task_refresh_ep_data():
+    registry = EPRegistry()
+    loader = EPLoader(registry)
+    loader.load()

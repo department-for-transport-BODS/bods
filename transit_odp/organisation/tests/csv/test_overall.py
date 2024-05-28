@@ -47,6 +47,46 @@ def test_df_contains_correct_number_of_rows():
 
 @override_flag("is_fares_validator_active", active=True)
 @pytest.mark.django_db
+def test_df_contains_correct_columns():
+    past = datetime.datetime(2020, 12, 25)
+    current = now()
+    timetable = DatasetRevisionFactory(published_at=current)
+    TXCFileAttributesFactory(revision=timetable, service_code="PD000001")
+    AVLDatasetRevisionFactory(published_at=past, dataset__avl_feed_last_checked=current)
+    orgs = OrganisationFactory.create_batch(3)
+    DataCatalogueMetaDataFactory(
+        fares_metadata__revision__dataset__organisation=orgs[0],
+        fares_metadata__revision__is_published=True,
+    )
+    FaresDatasetRevisionFactory(published_at=current)
+    df = _get_overall_catalogue_dataframe()
+    columns = df.columns
+
+    assert columns[0] == "Operator"
+    assert columns[1] == "Operator ID"
+    assert columns[2] == "Profile NOCs"
+    assert columns[3] == "Data Type"
+    assert columns[4] == "Status"
+    assert columns[5] == "Last Updated"
+    assert columns[6] == "File Name"
+    assert columns[7] == "XML File Name"
+    assert columns[8] == "Data Set/Feed Name"
+    assert columns[9] == "Data ID"
+    assert columns[10] == "Mode"
+    assert columns[11] == "National Operator Code"
+    assert columns[12] == "Service Code"
+    assert columns[13] == "Line Name"
+    assert columns[14] == "Licence Number"
+    assert columns[15] == "Public Use Flag"
+    assert columns[16] == "Revision Number"
+    assert columns[17] == "Operating Period Start Date"
+    assert columns[18] == "Operating Period End Date"
+    assert columns[19] == "% AVL to Timetables feed matching score"
+    assert columns[20] == "Latest matching report URL"
+
+
+@override_flag("is_fares_validator_active", active=True)
+@pytest.mark.django_db
 def test_df_timetables_expected():
     current = now()
     org = OrganisationFactory(nocs=["test1", "test2", "test3"])

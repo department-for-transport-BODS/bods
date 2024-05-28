@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+from pathlib import Path
 
 import pytest
 from dateutil import parser
@@ -14,6 +15,7 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_timing_status,
     check_inbound_outbound_description,
     check_service_group_validations,
+    check_vehicle_journey_timing_links,
     contains_date,
     has_flexible_or_standard_service,
     has_flexible_service_classification,
@@ -28,6 +30,8 @@ from transit_odp.naptan.factories import (
     LocalityFactory,
     StopPointFactory,
 )
+
+DATA_DIR = Path(__file__).parent / "data/pti"
 
 
 @pytest.mark.parametrize(
@@ -985,3 +989,25 @@ def test_check_flexible_service_stop_point_flexible_zone_stop_type(values, expec
     )
     actual = check_flexible_service_stop_point_ref("", elements)
     assert actual == expected
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        ("vj_timing_link_w_errors.xml", False),
+        ("vj_timing_link_w_success.xml", True),
+        ("vj_timing_link_without_vjtl.xml", True),
+        ("vj_timing_link_without_jptl.xml", False),
+    ],
+)
+def test_check_vehicle_journey_timing_links_with_errors(values, expected):
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    string_xml = DATA_DIR / values
+    with string_xml.open("r") as txc_xml:
+        doc = etree.parse(txc_xml)
+        elements = doc.xpath(
+            "//x:VehicleJourneys/x:VehicleJourney", namespaces=NAMESPACE
+        )
+        actual = check_vehicle_journey_timing_links("", elements)
+        assert actual == expected

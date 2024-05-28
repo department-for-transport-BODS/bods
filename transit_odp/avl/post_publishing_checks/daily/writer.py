@@ -201,7 +201,7 @@ class PostPublishingResultsJsonWriter:
 
                 elif error_code in (
                     ErrorCode.CODE_6_2_A.name,
-                    ErrorCode.CODE_6_2_C.name,
+                    ErrorCode.CODE_6_2_B.name,
                 ):
                     service_org_details = result.transxchange_attribute(
                         TransXChangeField.SERVICE_ORGANISATION_DETAILS
@@ -221,6 +221,9 @@ class PostPublishingResultsJsonWriter:
                                 ),
                                 "Serviced organisation operating on that day": service_org_detail.get(
                                     "service_organisation_day_operating", "-"
+                                ),
+                                "Service Code": result.transxchange_attribute(
+                                    TransXChangeField.SERVICE_CODE
                                 ),
                             }
                         )

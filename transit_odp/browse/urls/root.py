@@ -20,6 +20,7 @@ from transit_odp.browse.views.local_authority import (
     LocalAuthorityDetailView,
     LocalAuthorityExportView,
     LocalAuthorityView,
+    LocalAuthorityLineLevelExportView,
 )
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.common.views import ComingSoonView, VersionView
@@ -90,6 +91,11 @@ urlpatterns = [
                     "export/",
                     view=LocalAuthorityExportView.as_view(),
                     name="local-authority-export",
+                ),
+                path(
+                    "line-level-export/",
+                    view=LocalAuthorityLineLevelExportView.as_view(),
+                    name="local-authority-line-level-export",
                 ),
             ]
         ),

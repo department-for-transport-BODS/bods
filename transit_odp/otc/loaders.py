@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from functools import cached_property
 from itertools import chain
 from logging import getLogger
-from typing import Set, Tuple, Union
+from typing import List, Set, Tuple, Union
 
 from django.conf import settings
 from django.db import transaction
@@ -163,7 +163,10 @@ class Loader:
                     to_delete_services
                 )
             ]
-            + [service.registration_number for service in self.inactive_services]
+            + [
+                service.registration_number
+                for service in self.to_change_services_with_variation_zero
+            ]
         )
 
         count, _ = Service.objects.filter(registration_number__in=services).delete()
@@ -173,6 +176,27 @@ class Loader:
         logger.info(f"{count} Licences removed")
         count, _ = Operator.objects.filter(services=None).delete()
         logger.info(f"{count} Operators removed")
+
+    def inactivate_bad_services(self):
+        """
+        Inactivate all services whoes status are in RegistrationStatusEnum.to_delete().
+        and their effecitve date is in future
+        """
+        services = self.registry.get_services_with_future_effective_date(
+            services=self.to_delete_service
+        )
+
+        for service in services:
+            defaults = {
+                "registration_status": service.registration_status,
+                "effective_date": service.effective_date,
+            }
+            InactiveService.objects.update_or_create(
+                registration_number=service.registration_number, defaults=defaults
+            )
+        logger.info(
+            f"{len(services)} Services inactivated because of effective date in future"
+        )
 
     def load(self):
         """
@@ -218,6 +242,7 @@ class Loader:
             self.load_services()
             self.update_services_and_operators()
             self.delete_bad_data()
+            self.inactivate_bad_services()
             self.refresh_lta(_registrations)
 
     def refresh_lta(self, regs_to_update_lta):
@@ -289,12 +314,20 @@ class Loader:
         )
         Service.objects.bulk_create(new_otc_objects)
 
+        self.inactivate_bad_services()
+
     @cached_property
     def registered_service(self):
         return self.registry.filter_by_status(RegistrationStatusEnum.REGISTERED.value)
 
     @cached_property
-    def inactive_services(self):
+    def to_change_services_with_variation_zero(self) -> List[Service]:
+        """Property to get list of variations which are in RegistrationStatusEnum.to_change
+        with the variation number Zero
+
+        Returns:
+            List[Service]: List of services
+        """
         return [
             service
             for service in self.registry.services

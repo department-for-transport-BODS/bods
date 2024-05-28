@@ -75,6 +75,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "bus_stop_type": "fixed_flexible",
                     "service_code": "PB0002032:468",
                     "direction": "outbound",
+                    "activity_id": 1,
                 },
                 {
                     "file_id": file_id,
@@ -83,6 +84,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "bus_stop_type": "flexible",
                     "service_code": "PB0002032:468",
                     "direction": "outbound",
+                    "activity_id": 1,
                 },
                 {
                     "file_id": file_id,
@@ -91,6 +93,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "bus_stop_type": "fixed_flexible",
                     "service_code": "PB0002032:468",
                     "direction": "outbound",
+                    "activity_id": 1,
                 },
                 {
                     "file_id": file_id,
@@ -99,6 +102,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "bus_stop_type": "flexible",
                     "service_code": "PB0002032:468",
                     "direction": "outbound",
+                    "activity_id": 1,
                 },
             ]
         ).set_index(["file_id", "journey_pattern_id"])
@@ -134,6 +138,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "admin_area_id",
                     "common_name",
                     "sequence_number",
+                    "activity_id",
                 ]
             ),
         )
@@ -144,6 +149,8 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                 [
                     "service_code",
                     "from_stop_atco",
+                    "from_activity_id",
+                    "to_activity_id",
                     "to_stop_atco",
                     "geometry",
                     "localities",

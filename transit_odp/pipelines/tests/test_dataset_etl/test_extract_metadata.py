@@ -26,7 +26,10 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
-from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import get_txc_files
+from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
+    get_stop_activities,
+    get_txc_files,
+)
 from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     agg_service_pattern_sequences,
 )
@@ -102,7 +105,10 @@ class ExtractBaseTestCase(TestCase):
         txc_files = get_txc_files(self.revision.id)
 
         self.trans_xchange_extractor = TransXChangeExtractor(
-            self.file_obj, self.now, df_txc_files=txc_files
+            self.file_obj,
+            self.now,
+            stop_activity_cache=get_stop_activities(),
+            df_txc_files=txc_files,
         )
 
         # Create bogus admin area
@@ -348,7 +354,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 10))
+        self.assertEqual(extracted.timing_links.shape, (20, 12))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -356,6 +362,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "order",
                 "from_stop_ref",
                 "to_stop_ref",
+                "from_activity_id",
+                "to_activity_id",
                 "route_link_ref",
                 "is_timing_status",
                 "run_time",
@@ -490,7 +498,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 10))
+        self.assertEqual(extracted.timing_links.shape, (20, 12))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -498,6 +506,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "order",
                 "from_stop_ref",
                 "to_stop_ref",
+                "from_activity_id",
+                "to_activity_id",
                 "route_link_ref",
                 "is_timing_status",
                 "run_time",
@@ -620,6 +630,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
             [
                 "from_stop_atco",
                 "to_stop_atco",
+                "from_activity_id",
+                "to_activity_id",
                 "file_id",
                 "service_pattern_id",
                 "journey_pattern_id",

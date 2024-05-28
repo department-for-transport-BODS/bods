@@ -255,7 +255,6 @@ class TransXChangeTransformer:
                     flexible_timing_links = self.create_flexible_timing_link(
                         flexible_journey_details
                     )
-
                     # create flexible service link
                     if not flexible_timing_links.empty:
                         flexible_service_links = transform_service_links(
@@ -468,6 +467,8 @@ class TransXChangeTransformer:
             group["vehicle_journey_code"] = vehicle_journey_code
             group["from_stop_atco"] = group["atco_code"].shift(0)
             group["to_stop_atco"] = group["atco_code"].shift(-1)
+            group["from_activity_id"] = group["activity_id"].shift(0)
+            group["to_activity_id"] = group["activity_id"].shift(-1)
             return group.dropna(subset=["to_stop_atco"])
 
         if not flexible_journey_details.empty:
@@ -483,7 +484,9 @@ class TransXChangeTransformer:
                     "file_id",
                     "order",
                     "from_stop_atco",
+                    "from_activity_id",
                     "to_stop_atco",
+                    "to_activity_id",
                     "journey_pattern_id",
                     "service_code",
                     "route_hash",

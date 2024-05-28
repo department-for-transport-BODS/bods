@@ -11,6 +11,8 @@ from pytest_factoryboy import register
 
 from config import hosts
 from transit_odp.organisation.factories import OrganisationFactory
+from transit_odp.transmodel.factories import StopActivityFactory
+from transit_odp.transmodel.models import StopActivity
 from transit_odp.users.factories import InvitationFactory, UserFactory
 
 # TODO - remove these as they make refactoring awkward
@@ -96,3 +98,23 @@ def pti_unenforced():
     settings.PTI_ENFORCED_DATE = the_future
     yield settings.PTI_ENFORCED_DATE
     settings.PTI_ENFORCED_DATE = original_value
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_stop_activities(django_db_setup, django_db_blocker):
+    stop_activities = [
+        "none",
+        "pickUp",
+        "setDown",
+        "pickUpAndSetDown",
+        "pass",
+        "pickUpDriverRequest",
+        "setDownDriverRequest",
+        "pickUpAndSetDownDriverRequest",
+    ]
+
+    with django_db_blocker.unblock():
+        # Clear existing StopActivity records
+        StopActivity.objects.all().delete()
+        for index, stop in enumerate(stop_activities):
+            StopActivityFactory(name=stop, id=index + 1)

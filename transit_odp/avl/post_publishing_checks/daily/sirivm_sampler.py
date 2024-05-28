@@ -13,6 +13,7 @@ from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.post_publishing_checks.constants import SirivmField
 from transit_odp.avl.post_publishing_checks.models import Siri, VehicleActivity
 from transit_odp.avl.post_publishing_checks.weekly.constants import DailyReport
+from transit_odp.avl.proxies import AVLDataset
 from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,20 @@ class SirivmSampler:
 
         return response.content
 
+    def get_organisation_name_for_feedid(self, feed_id: int) -> Optional[str]:
+        """
+        Retrieve the organization name associated with the given feed ID.
+
+        Args:
+            feed_id (int): The ID of the feed for which the organization name is to be retrieved.
+
+        Returns:
+            str or None: The name of the organization associated with the provided feed ID,
+            or None if no organization is found or if an error occurs during retrieval.
+        """
+        dataset_details = AVLDataset.objects.filter(id=feed_id).first()
+        return dataset_details.organisation.name if dataset_details else None
+
     def get_vehicle_activities(
         self,
         feed_id: int,
@@ -62,6 +77,9 @@ class SirivmSampler:
     ) -> Tuple[SiriHeader, List[VehicleActivity]]:
         random.seed()
         sirivm_fields = {}
+        vehicle_activities = []
+        organisation_name = self.get_organisation_name_for_feedid(feed_id)
+
         feed = self.get_siri_vm_data_feed_by_id(feed_id=feed_id)
         if not isinstance(feed, bytes):
             return sirivm_fields, []
@@ -75,15 +93,19 @@ class SirivmSampler:
             f"Client returned {len(vmd.vehicle_activities)} vehicle activities for "
             f"feed {feed_id}"
         )
-        inscope_inseason_lines = self.get_inscope_inseason_lines()
+        organisation_lineref_map = (
+            self.generate_org_line_ref_mapping_for_inscope_lines()
+        )
 
         vehicle_activities = [
             vehicle_activity
             for vehicle_activity in vmd.vehicle_activities
-            if vehicle_activity.monitored_vehicle_journey.line_ref
-            in inscope_inseason_lines
+            if (
+                vehicle_activity.monitored_vehicle_journey.line_ref,
+                organisation_name,
+            )
+            in organisation_lineref_map
         ]
-
         logger.info(
             f"In Scope and In Season vehicle activities {len(vehicle_activities)} for "
             f"feed {feed_id}"
@@ -113,25 +135,31 @@ class SirivmSampler:
 
         return sirivm_header, samples
 
-    def get_inscope_inseason_lines(self) -> set:
-        """
-        Retrieves a set of unique service numbers corresponding to lines that are 'In Scope' and 'In Season'
-        according to the timetable catalogue.
+    def generate_org_line_ref_mapping_for_inscope_lines(self) -> dict:
+        """Generate a mapping of line references (line_ref) and Organisation
+        to their corresponding indices for inscope and inseason lines.
+
+        This function retrieves timetable data, filters for lines within scope and in season,
+        and then generates a dictionary mapping tuples of (line_ref, Organisation Name) to their indices in the DataFrame.
 
         Returns:
-            set: A set containing unique service numbers of lines that are 'In Scope' and 'In Season'.
+            dict: A dictionary mapping tuples of (line_ref, Organisation Name) to their indices in the DataFrame.
         """
         timetable_df = _get_timetable_catalogue_dataframe()
         inscope_inseason_lines = timetable_df[
             (timetable_df["Scope Status"] == "In Scope")
             & (timetable_df["Seasonal Status"] != "Out of Season")
         ]
-        inscope_inseason_lines = inscope_inseason_lines["OTC:Service Number"].str.split(
-            "|", expand=True
-        )
-        inscope_inseason_lines = inscope_inseason_lines.melt()["value"].dropna()
-        inscope_inseason_lines = set(inscope_inseason_lines)
-        return inscope_inseason_lines
+        inscope_inseason_lines["OTC:Service Number"] = inscope_inseason_lines[
+            "OTC:Service Number"
+        ].apply(lambda x: str(x).split("|"))
+        inscope_inseason_lines = inscope_inseason_lines.explode("OTC:Service Number")
+        inscope_inseason_lines.reset_index(drop=True, inplace=True)
+        noc_line_ref_map = {
+            (row["OTC:Service Number"], row["Organisation Name"]): index
+            for index, row in inscope_inseason_lines.iterrows()
+        }
+        return noc_line_ref_map
 
     def ignore_old_activites(
         self,

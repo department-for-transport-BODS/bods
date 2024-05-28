@@ -35,6 +35,7 @@ class SubsidiesDescription(TextChoices):
 SCHOOL_OR_WORKS = "School or Works"
 FLEXIBLE_REG = "Flexible Registration"
 API_TYPE_WECA = "WECA"
+API_TYPE_EP = "EP"
 OTC_STATUS_REGISTERED = "Registered"
 OTC_STATUS_UNREGISTERED = "Unregistered"
 OTC_SCOPE_STATUS_OUT_OF_SCOPE = "Out of Scope"

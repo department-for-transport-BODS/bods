@@ -37,7 +37,11 @@ from transit_odp.organisation.csv.overall import (
     get_overall_data_catalogue_csv,
 )
 from transit_odp.organisation.models import Organisation
-from transit_odp.timetables.csv import TIMETABLE_COLUMN_MAP, get_timetable_catalogue_csv
+from transit_odp.timetables.csv import (
+    TIMETABLE_COLUMN_MAP,
+    get_line_level_timetable_catalogue_csv,
+    get_timetable_catalogue_csv,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +50,7 @@ GUIDANCE_TEMPLATE = "browse/guideme/data_catalogue_guidance.txt"
 GUIDANCE_FILENAME = "data_catalogue_guidance.txt"
 ORGANISATION_FILENAME = "organisations_data_catalogue.csv"
 TIMETABLE_FILENAME = "timetables_data_catalogue.csv"
+TIMETABLE_LINE_LEVEL_FILENAME = "timetables_line_level_data_catalogue.csv"
 OVERALL_FILENAME = "overall_data_catalogue.csv"
 LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
@@ -230,6 +235,14 @@ def create_data_catalogue_file() -> BinaryIO:
 
         try:
             zin.writestr(TIMETABLE_FILENAME, get_timetable_catalogue_csv())
+
+        except EmptyDataFrame as exc:
+            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
+
+        try:
+            zin.writestr(
+                TIMETABLE_LINE_LEVEL_FILENAME, get_line_level_timetable_catalogue_csv()
+            )
 
         except EmptyDataFrame as exc:
             logger.warning(OTC_EMPTY_WARNING, exc_info=exc)

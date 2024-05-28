@@ -43,6 +43,8 @@ TXC_COLUMNS = (
     "destination",
 )
 
+TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested",)
+
 OTC_COLUMNS = (
     "service_code",
     "otc_operator_id",
@@ -299,6 +301,170 @@ TIMETABLE_COLUMN_MAP = OrderedDict(
             "OTC:Service Type Other Details",
             "The service type other details element as extracted from the "
             "OTC database.",
+        ),
+        "traveline_region": Column(
+            "Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
+        ),
+    }
+)
+
+TIMETABLE_LINE_LEVEL_COLUMN_MAP = OrderedDict(
+    {
+        "registration_number": Column(
+            "Registration:Registration Number",
+            "The registration number element as extracted from the OTC database.",
+        ),
+        "service_number": Column(
+            "Registration:Service Number",
+            "The service number element as extracted from the OTC database.",
+        ),
+        "requires_attention": Column(
+            "Requires Attention",
+            "No: </br>"
+            "Default state for correctly published services, will be “No” "
+            "unless any of the logic below is met. </br></br>"
+            "Yes: </br>"
+            "Yes If OTC status = Registered and Scope Status = In scope and "
+            "Seasonal Status ≠ Out of season and Published Status = Unpublished. </br>"
+            "Yes if OTC status = Registered and Scope Status = In scope and "
+            "Seasonal Status ≠ Out of season and Published Status = Published "
+            "and Timeliness Status ≠ Up to date. ",
+        ),
+        "published_status": Column(
+            "Published Status",
+            "Published: Published to BODS by an Operator/Agent. </br></br>"
+            "Unpublished: Not published to BODS by an Operator/Agent.",
+        ),
+        "otc_status": Column(
+            "Registration Status",
+            "Registered: Registered and not cancelled within the OTC "
+            "database. </br></br>"
+            "Unregistered: Not Registered within the OTC.",
+        ),
+        "scope_status": Column(
+            "Scope Status",
+            "In scope: Default status for services registered with the OTC and "
+            "other enhanced partnerships. </br></br>"
+            "Out of Scope: Service code has been marked as exempt by the DVSA "
+            "or the BODS team.",
+        ),
+        "seasonal_status": Column(
+            "Seasonal Status",
+            "In season: Service code has been marked as seasonal by the "
+            "operator or their agent and todays date falls within the "
+            "relevant date range for that service code.  </br></br>"
+            "Out of Season: Service code has been marked as seasonal by "
+            "the operator or their agent and todays date falls outside "
+            "the relevant date range for that service code.  </br></br>"
+            "Not Seasonal: Default status for published or unpublished services"
+            "to BODS. </br> Assumed Not seasonal unless service code has been marked "
+            "with a date range within the seasonal services flow.",
+        ),
+        "staleness_status": Column(
+            "Timeliness Status",
+            "Up to date: Default status for service codes published to BODS. </br></br>"
+            "Timeliness checks are evaluated in this order: </br></br>"
+            "1) OTC Variation not published: </br>"
+            "If 'XML:Last modified date' is earlier than 'Date OTC variation needs "
+            "to be published' </br> and </br> 'Date OTC variation needs to be "
+            "published'is earlier than today's date.</br> and </br>"
+            "No associated data has been published. </br>"
+            "NB there are two association methods: </br> Method 1: </br>"
+            "Data for that service code has been updated within 70 days before "
+            "the OTC variation effective date.</br> Method 2: </br>"
+            "Data for that service code has been updated with a 'XML:Operating "
+            "Period Start Date' which equals OTC variation effective date. </br></br>"
+            "2) 42 day look ahead is incomplete: </br> If not out of date due to  "
+            "'OTC variation not published' </br> and </br> 'XML:Operating Period "
+            "End Date' is earlier than 'Date for complete 42 day look "
+            "ahead'. </br></br>"
+            "3) Service hasn't been updated within a year: </br> If not out of date "
+            "due to '42 day lookahead is incomplete' or 'OTC variation not published'"
+            "</br> and </br> 'Date at which data is 1 year old' is earlier than "
+            "today's date.",
+        ),
+        "organisation_name": Column(
+            "Organisation Name",
+            "The name of the operator/publisher providing data on BODS.",
+        ),
+        "dataset_id": Column(
+            "Data set ID",
+            "The internal BODS generated ID of the dataset "
+            "that contains the data for this row.",
+        ),
+        "filename": Column(
+            "XML:Filename",
+            "The exact name of the file provided to BODS. This is usually "
+            "generated by the publisher or their supplier.",
+        ),
+        "last_modified_date": Column(
+            "XML:Last Modified Date",
+            "Date of last modified file within the service codes dataset.",
+        ),
+        "operating_period_end_date": Column(
+            "XML:Operating Period End Date",
+            "The operating period end date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
+        "effective_stale_date_from_otc_effective": Column(
+            "Date Registration variation needs to be published",
+            "Registration:Effective date from timetable data catalogue minus 42 days.",
+        ),
+        "date_42_day_look_ahead": Column(
+            "Date for complete 42 day look ahead",
+            "Today's date + 42 days.",
+        ),
+        "effective_stale_date_from_last_modified": Column(
+            "Date when data is over 1 year old",
+            "'XML:Last Modified date' from timetable data catalogue plus 12 months.",
+        ),
+        "effective_seasonal_start": Column(
+            "Date seasonal service should be published",
+            "If Seasonal Start Date is present, then Seasonal Start Date minus "
+            "42 days, else null.",
+        ),
+        "seasonal_start": Column(
+            "Seasonal Start Date",
+            "If service has been assigned a date range from within the seasonal "
+            "services flow, then take start date, else null.",
+        ),
+        "seasonal_end": Column(
+            "Seasonal End Date",
+            "If service has been assigned a date range from within the "
+            "seasonal services flow, then take end date, else null.",
+        ),
+        "operator_name": Column(
+            "Registration:Operator Name",
+            "The operator name element as extracted from the OTC database.",
+        ),
+        "otc_licence_number": Column(
+            "Registration:Licence Number",
+            "The licence number element as extracted from the OTC database.",
+        ),
+        "service_type_description": Column(
+            "Registration:Service Type Description",
+            "The service type description element as extracted from the OTC database.",
+        ),
+        "variation_number": Column(
+            "Registration:Variation Number",
+            "The variation number element as extracted from the OTC database.",
+        ),
+        "expiry_date": Column(
+            "Registration:Expiry Date",
+            "The expiry date element as extracted from the OTC database.",
+        ),
+        "effective_date": Column(
+            "Registration:Effective Date",
+            "The effective date element as extracted from the OTC database.",
+        ),
+        "received_date": Column(
+            "Registration:Received Date",
+            "The received date element as extracted from the OTC database.",
         ),
         "traveline_region": Column(
             "Traveline Region",
@@ -626,5 +792,63 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     return merged
 
 
+def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
+    today = datetime.date.today()
+
+    txc_df = pd.DataFrame.from_records(
+        TXCFileAttributes.objects.get_active_txc_files()
+        .add_split_linenames()
+        .values(*TXC_LINE_LEVEL_COLUMNS)
+    )
+    otc_df = pd.DataFrame.from_records(
+        OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
+    )
+    if txc_df.empty or otc_df.empty:
+        raise EmptyDataFrame()
+
+    otc_df["service_number"] = otc_df["service_number"].str.split("|")
+    otc_df = otc_df.explode("service_number")
+
+    castings = (
+        ("dataset_id", "Int64"),
+        ("revision_number", "Int64"),
+        ("public_use", "boolean"),
+        ("variation_number", "Int64"),
+        ("otc_operator_id", "Int64"),
+    )
+
+    merged = pd.merge(
+        otc_df,
+        txc_df,
+        left_on=["service_code", "service_number"],
+        right_on=["service_code", "line_name_unnested"],
+        how="outer",
+    )
+
+    for field, type_ in castings:
+        merged[field] = merged[field].astype(type_)
+
+    merged.sort_values("dataset_id", inplace=True)
+    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_status_columns(merged)
+    merged = add_seasonal_status(merged, today)
+    merged = add_staleness_metrics(merged, today)
+    merged = add_requires_attention_column(merged, today)
+    merged = add_traveline_regions(merged)
+
+    merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
+
+    rename_map = {
+        old_name: column_tuple.field_name
+        for old_name, column_tuple in TIMETABLE_LINE_LEVEL_COLUMN_MAP.items()
+    }
+    merged = merged[TIMETABLE_LINE_LEVEL_COLUMN_MAP.keys()].rename(columns=rename_map)
+    return merged
+
+
 def get_timetable_catalogue_csv():
     return _get_timetable_catalogue_dataframe().to_csv(index=False)
+
+
+def get_line_level_timetable_catalogue_csv():
+    return _get_timetable_line_level_catalogue_dataframe().to_csv(index=False)
