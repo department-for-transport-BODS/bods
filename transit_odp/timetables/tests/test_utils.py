@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from transit_odp.timetables.utils import (
+    get_filtered_rows_by_journeys,
+    get_journey_mappings,
     get_vehicle_journeyids_exceptions,
     get_non_operating_vj_serviced_org,
     get_df_operating_vehicle_journey,
@@ -32,6 +34,12 @@ csv_file = "data/test_timetable_visualiser.csv"
 expected_df_timetable_visualiser = pd.read_csv(
     os.path.join(cur_dir, csv_file), index_col=0
 )
+
+csv_file = "data/test_input_filter_row_journeys.csv"
+df_input_operating_profiles = pd.read_csv(os.path.join(cur_dir, csv_file), index_col=0)
+
+csv_file = "data/test_output_filter_row_journeys.csv"
+df_output_operating_profiles = pd.read_csv(os.path.join(cur_dir, csv_file), index_col=0)
 
 
 def test_get_vehicle_journeys_operating_nonoperating():
@@ -235,3 +243,19 @@ def test_get_vehicle_journey_codes_sorted():
         df_vehicle_journey_operating
     )
     assert expected_vehicle_journey_ids == actual_vehicle_journey_ids
+
+
+def test_filter_rows_by_journeys():
+    df_input_operating_profiles["exceptions_date"] = pd.to_datetime(
+        df_input_operating_profiles["exceptions_date"]
+    )
+    df_output_operating_profiles["exceptions_date"] = pd.to_datetime(
+        df_output_operating_profiles["exceptions_date"]
+    )
+
+    journey_mapping = get_journey_mappings(df_input_operating_profiles)
+    filtered_data = get_filtered_rows_by_journeys(
+        df_input_operating_profiles, journey_mapping
+    )
+
+    pd.testing.assert_frame_equal(filtered_data, df_output_operating_profiles)
