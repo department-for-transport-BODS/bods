@@ -236,7 +236,7 @@ def get_journey_mappings(df: pd.DataFrame) -> dict:
 
 
 def filter_rows_by_journeys(row: pd.Series, journey_mapping: Dict) -> bool:
-    """Filter out row is the date is considered operational and doesnt need an explicit entry into th exceptions table as its operation is covered by the operating profile"""
+    """Filter out row if the date is considered operational and doesnt need an explicit entry into th exceptions table as its operation is covered by the operating profile"""
     date_obj = row["exceptions_date"]
     if date_obj:
         day_of_week = date_obj.strftime("%A")
