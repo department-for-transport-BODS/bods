@@ -2,7 +2,7 @@ import datetime
 from typing import List
 
 import factory
-from factory.fuzzy import FuzzyDate, FuzzyInteger, FuzzyText
+from factory.fuzzy import FuzzyDate, FuzzyInteger, FuzzyText, FuzzyChoice
 
 from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
@@ -13,6 +13,7 @@ from transit_odp.transmodel.models import (
     ServicePattern,
     ServicePatternStop,
     ServicedOrganisations,
+    StopActivity,
 )
 from factory.django import DjangoModelFactory
 
@@ -122,3 +123,13 @@ class BankHolidaysFactory(DjangoModelFactory):
     date = FuzzyDate(datetime.date.today())
     notes = FuzzyText(length=255)
     division = FuzzyText(length=255)
+
+
+class StopActivityFactory(DjangoModelFactory):
+    class Meta:
+        model = StopActivity
+
+    name = FuzzyText(length=255)
+    is_pickup = FuzzyChoice(choices=[True, False])
+    is_setdown = FuzzyChoice(choices=[True, False])
+    is_driverrequest = FuzzyChoice(choices=[True, False])

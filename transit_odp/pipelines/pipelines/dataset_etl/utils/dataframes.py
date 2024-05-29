@@ -23,6 +23,7 @@ from transit_odp.transmodel.models import (
     ServiceLink,
     ServicePattern,
     ServicedOrganisationWorkingDays,
+    StopActivity,
     StopPoint,
     BookingArrangements,
     VehicleJourney,
@@ -69,6 +70,10 @@ def create_flexible_zone_df(data=None):
     )
     df = geopandas.GeoDataFrame(data, columns=typings.keys()).astype(typings)
     return df
+
+
+def get_stop_activities():
+    return StopActivity.objects.all()
 
 
 def create_stop_point_cache(revision_id):
@@ -272,12 +277,13 @@ def df_to_services(revision: DatasetRevision, df: pd.DataFrame) -> Iterator[Serv
 
 
 def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
+    """Generator function to return vehicle journey records to be loaded into the table"""
     for record in df.to_dict("records"):
         service_pattern_id = record.get("id_service", None)
-        if pd.isna(record["departure_time"]):
+        if pd.isna(record["vj_departure_time"]):
             departure_time = None
         else:
-            departure_time = str(record["departure_time"]).split()[2]
+            departure_time = str(record["vj_departure_time"]).split()[2]
 
         yield VehicleJourney(
             journey_code=record["journey_code"],
@@ -286,6 +292,7 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             direction=record["direction"],
             departure_day_shift=record["departure_day_shift"],
             service_pattern_id=service_pattern_id,
+            block_number=record["block_number"],
         )
 
 

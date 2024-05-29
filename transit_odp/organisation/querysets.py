@@ -60,6 +60,7 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
+from django.db.models.expressions import RawSQL
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1291,6 +1292,27 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .distinct("service_code")
         )
 
+    def get_active_txc_files_line_level(self):
+        return (
+            self.get_active_live_revisions()
+            .add_bods_compliant()
+            .add_dq_score()
+            .add_revision_details()
+            .add_organisation_name()
+            .add_string_lines()
+            .add_split_linenames()
+            .order_by(
+                "service_code",
+                "line_name_unnested",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
+            )
+            .distinct("service_code", "line_name_unnested")
+        )
+
     def get_overall_data_catalogue(self):
         return (
             self.filter(revision=F("revision__dataset__live_revision"))
@@ -1322,6 +1344,10 @@ class TXCFileAttributesQuerySet(models.QuerySet):
                 )
             )
         )
+
+    def add_split_linenames(self):
+        """Performs an unnest on the row and create different rows for each line name"""
+        return self.annotate(line_name_unnested=RawSQL("unnest(line_names)", ()))
 
     def add_staleness_dates(self):
         """Adds Effective Stale dates for live revisions."""
