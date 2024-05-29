@@ -711,7 +711,10 @@ def merge_serviced_organisations_with_operating_profile(
     serviced_organisations.reset_index(inplace=True)
     serviced_organisations.drop_duplicates(inplace=True)
     df_merged = pd.merge(
-        serviced_organisations, operating_profiles, on="serviced_org_ref", how="inner"
+        serviced_organisations,
+        operating_profiles,
+        on=["serviced_org_ref", "file_id"],
+        how="inner",
     )
     df_merged = df_merged[
         ["file_id", "serviced_org_ref", "name", "operational", "start_date", "end_date"]
