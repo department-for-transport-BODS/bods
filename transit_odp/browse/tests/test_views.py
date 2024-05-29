@@ -4,6 +4,7 @@ import io
 import zipfile
 from logging import getLogger
 from unittest.mock import Mock, patch
+import random
 
 import pytest
 from django.conf import settings
@@ -97,6 +98,7 @@ def get_lta_complaint_data_queryset():
                 licence=otc_lic,
                 registration_number=code.replace(":", "/"),
                 effective_date=datetime.date(year=2020, month=1, day=1),
+                service_number="line1",
             )
         )
 
@@ -207,6 +209,7 @@ def get_lta_complaint_weca_data_queryset():
                 effective_date=datetime.date(year=2020, month=1, day=1),
                 api_type=API_TYPE_WECA,
                 atco_code=atco_code,
+                service_number="line1",
             )
         )
 
@@ -1813,6 +1816,7 @@ class TestLTADetailView:
                     licence=otc_lic,
                     registration_number=code.replace(":", "/"),
                     effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number="line1",
                 )
             )
 
@@ -1940,6 +1944,7 @@ class TestLTADetailView:
                 effective_date=datetime.date(year=2020, month=1, day=1),
                 api_type=API_TYPE_WECA,
                 atco_code=atco_code,
+                service_number="line1",
             )
 
         ui_lta = UILtaFactory(

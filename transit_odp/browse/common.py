@@ -5,6 +5,7 @@ import pandas as pd
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
 from transit_odp.otc.models import Service, UILta
+from transit_odp.otc.models import Service as OTCService, LocalAuthority
 
 
 def get_all_naptan_atco_df() -> pd.DataFrame:
@@ -246,3 +247,38 @@ class LTACSVHelper:
         )
 
         return is_english_region, ui_lta_name, traveline_region
+
+
+def get_in_scope_in_season_lta_service_numbers(
+    lta_list: list[LocalAuthority],
+) -> pd.DataFrame:
+    """
+    Retrieves in-scope, in-season LTA (Local Transport Authority) services and splits the service numbers.
+
+    This function takes a list of Local Authority objects and fetches the corresponding in-scope,
+    in-season services. It then processes the service numbers, which may contain multiple values
+    separated by '|'. The function returns a DataFrame with each service number split into individual rows.
+
+    Args:
+        lta_list (list[LocalAuthority]): A list of Local Authority objects to filter the services.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the exploded service numbers. If no services are found,
+                      an empty DataFrame is returned. The DataFrame has the following columns:
+                      - 'service_number': Original service number.
+                      - 'split_service_number': Split parts of the service number.
+
+    """
+    lta_inscope_inseason_services = (
+        OTCService.objects.get_in_scope_in_season_lta_services(lta_list)
+    )
+    if lta_inscope_inseason_services:
+        otc_service_service_number = lta_inscope_inseason_services.values_list(
+            "service_number", flat=True
+        )
+        service_numbers = list(otc_service_service_number)
+        df = pd.DataFrame(service_numbers, columns=["service_number"])
+        df["split_service_number"] = df["service_number"].str.split("|")
+        df_exploded = df.explode("split_service_number")
+        return df_exploded
+    return pd.DataFrame()
