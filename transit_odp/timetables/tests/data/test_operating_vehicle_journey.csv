@@ -1,4 +1,4 @@
-,service_code,revision_id,name,start_date,end_date,origin,destination,journey_description,line_name,stop_sequence,departure_time,is_timing_point,common_name,atco_code,direction,vehicle_journey_code,line_ref,departure_day_shift,day_of_week,vehicle_journey_id,start_time
+,service_code,revision_id,name,start_date,end_date,origin,destination,journey_description,line_name,stop_sequence,departure_time,is_timing_point,common_name,atco_code,direction,vehicle_journey_code,line_ref,departure_day_shift,day_of_week,vehicle_journey_id,start_time,street,indicator
 0,PB0001746:15,28,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,1,06:45:00,True,Hgte Bus Stn Stand 3,3200YND12500,outbound,6001,HRGT:PB0001746:15:6,False,Monday,540,06:45:00
 5,PB0001746:15,28,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,2,06:45:00,False,Victoria Avenue,3200YND81000,outbound,6001,HRGT:PB0001746:15:6,False,Monday,540
 10,PB0001746:15,28,6,2023-01-08,,,,Harrogate - Pannal Ash Circular,6,3,06:46:00,False,Montpellier Hill,3200YND81010,outbound,6001,HRGT:PB0001746:15:6,False,Monday,540
