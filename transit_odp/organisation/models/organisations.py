@@ -38,6 +38,10 @@ class Organisation(TimeStampedModel):
     is_active = models.BooleanField(
         default=False, help_text="Whether the organisation is active or not"
     )
+    is_abods_global_viewer = models.BooleanField(
+        default=False,
+        help_text="Whether organisation will be used solely for managing ABODS global viewer users",
+    )
     licence_required = models.BooleanField(
         _("Whether an organisation requires a PSV licence"), null=True, default=None
     )
