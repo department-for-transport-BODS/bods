@@ -1127,6 +1127,7 @@ class TestOperatorDetailView:
         total_services = 9
         licence_number = "PD5000229"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"Line:{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
 
@@ -1137,6 +1138,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
 
         TXCFileAttributesFactory(
@@ -1145,11 +1147,14 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=75),
             modification_datetime=timezone.now() - datetime.timedelta(days=50),
+            line_names=[all_line_names[1]],
         )
         # Setup a draft TXCFileAttributes
         dataset2 = DraftDatasetFactory(organisation=org)
         TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+            revision=dataset2.revisions.last(),
+            service_code=all_service_codes[2],
+            line_names=[all_line_names[2]],
         )
 
         live_revision = DatasetRevisionFactory(dataset=dataset2)
@@ -1160,6 +1165,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[3],
             operating_period_end_date=None,
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[3]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -1169,6 +1175,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             - datetime.timedelta(weeks=105),
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[4]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -1177,6 +1184,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[5],
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
+            line_names=[all_line_names[5]],
         )
 
         # Create Seasonal Services - one in season, one out of season
@@ -1195,12 +1203,13 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes, start=0):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
                     registration_number=code.replace(":", "/"),
                     effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1244,6 +1253,7 @@ class TestOperatorDetailView:
         all_service_codes = [
             f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
         ]
+        all_line_names = [f"Line{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
 
@@ -1254,6 +1264,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
 
         TXCFileAttributesFactory(
@@ -1262,11 +1273,14 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=75),
             modification_datetime=timezone.now() - datetime.timedelta(days=50),
+            line_names=[all_line_names[1]],
         )
         # Setup a draft TXCFileAttributes
         dataset2 = DraftDatasetFactory(organisation=org)
         TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+            revision=dataset2.revisions.last(),
+            service_code=all_service_codes[2],
+            line_names=[all_line_names[2]],
         )
 
         live_revision = DatasetRevisionFactory(dataset=dataset2)
@@ -1277,6 +1291,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[3],
             operating_period_end_date=None,
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[3]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -1286,6 +1301,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             - datetime.timedelta(weeks=105),
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[4]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -1294,6 +1310,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[5],
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
+            line_names=[all_line_names[5]],
         )
 
         # Create Seasonal Services - one in season, one out of season
@@ -1312,7 +1329,7 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
@@ -1320,6 +1337,7 @@ class TestOperatorDetailView:
                     effective_date=datetime.date(year=2020, month=1, day=1),
                     atco_code=atco_code,
                     api_type=API_TYPE_WECA,
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1351,6 +1369,7 @@ class TestOperatorDetailView:
         total_services = 4
         licence_number = "PD5000123"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
@@ -1365,6 +1384,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
@@ -1372,6 +1392,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[1]],
         )
         TXCFileAttributesFactory(
             revision=dataset2.live_revision,
@@ -1379,6 +1400,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[2]],
         )
 
         # Create Out of Season Seasonal Service
@@ -1398,12 +1420,13 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
                     registration_number=code.replace(":", "/"),
                     effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1443,6 +1466,7 @@ class TestOperatorDetailView:
         all_service_codes = [
             f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
         ]
+        all_line_names = [f"line{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
@@ -1457,6 +1481,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
@@ -1464,6 +1489,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[1]],
         )
         TXCFileAttributesFactory(
             revision=dataset2.live_revision,
@@ -1471,6 +1497,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[2]],
         )
 
         # Create Out of Season Seasonal Service
@@ -1490,7 +1517,7 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
@@ -1498,6 +1525,7 @@ class TestOperatorDetailView:
                     effective_date=datetime.date(year=2020, month=1, day=1),
                     api_type=API_TYPE_WECA,
                     atco_code=atco_code,
+                    service_number=all_line_names[index],
                 )
             )
 
