@@ -85,6 +85,8 @@ class TimetableVisualiser:
             "public_use",
             "revision_number",
             "start_time",
+            "street",
+            "indicator",
         ]
 
         qs_vehicle_journeys = (
@@ -148,6 +150,12 @@ class TimetableVisualiser:
                 ),
                 public_use=F("txcfileattributes__public_use"),
                 revision_number=F("txcfileattributes__revision_number"),
+                street=F(
+                    "service_patterns__service_pattern_stops__naptan_stop__street"
+                ),
+                indicator=F(
+                    "service_patterns__service_pattern_stops__naptan_stop__indicator"
+                ),
             )
             .values(*columns)
         )
@@ -260,10 +268,12 @@ class TimetableVisualiser:
                 "outbound": {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
+                    "stops": {},
                 },
                 "inbound": {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
+                    "stops": {},
                 },
             }
 
@@ -304,6 +314,7 @@ class TimetableVisualiser:
                 data[direction] = {
                     "description": "",
                     "df_timetable": pd.DataFrame(),
+                    "stops": {},
                 }
                 continue
             journey_description = (
@@ -337,7 +348,9 @@ class TimetableVisualiser:
                 )
             ]
 
-            df_timetable = get_df_timetable_visualiser(df_vehicle_journey_operating)
+            df_timetable, stops = get_df_timetable_visualiser(
+                df_vehicle_journey_operating
+            )
 
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
@@ -345,5 +358,6 @@ class TimetableVisualiser:
             data[direction] = {
                 "description": journey_description,
                 "df_timetable": df_timetable,
+                "stops": stops,
             }
         return data
