@@ -45,7 +45,7 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
 
     class Meta:
         model = Organisation
-        fields = ("name", "short_name")
+        fields = ("name", "short_name", "is_abods_global_viewer")
 
     email = forms.EmailField(
         label=_("Key contact email (optional)"),
@@ -76,6 +76,15 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             {"required": _("Enter the organisation short name")}
         )
 
+        self.fields.update(
+            {
+                "is_abods_global_viewer": forms.BooleanField(
+                    label=_("Is ABODS Organisation"),
+                    required=False,
+                )
+            }
+        )
+
         self.nested_noc = NOCFormset(
             instance=self.instance,
             data=self.data if self.is_bound else None,
@@ -98,6 +107,7 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             "name",
             "short_name",
             "email",
+            "is_abods_global_viewer",
             InlineFormset("nested_noc"),
             InlineFormset("nested_psv"),
             ButtonHolder(
