@@ -211,3 +211,31 @@ class ETLOperatingProfilesWithSmalleroperatingPeriods(ExtractBaseTestCase):
 
         self.assertEqual(521, operating_profiles.count())
         self.assertEqual(2478, service_pattern_stops.count())
+
+
+@override_flag("is_timetable_visualiser_active", active=True)
+class ETLOperatingProfilesServices(ExtractBaseTestCase):
+    """
+    Test case for extracting operating profiles from a TransXChange file.
+    Ensure that the extracted operating profiles DataFrame
+    meets the expected structure and values.
+    Specifically check that if both the WorkingDays and Holidays are missing from the ServicedOrgRef element,
+    then the serviced_org_ref property in the df should be None.
+
+    """
+
+    test_file = "data/test_operating_profiles/test_operating_profiles_missing_working_days_holidays_serviced_org_ref.xml"
+
+    def test_extract(self):
+        # test
+        extracted = self.trans_xchange_extractor.extract()
+        self.assertEqual(extracted.operating_profiles.shape[0], 70)
+
+        self.assertEqual(extracted.operating_profiles.index.names, ["file_id"])
+
+        self.assertIn("serviced_org_ref", extracted.operating_profiles.columns)
+
+        self.assertTrue(
+            extracted.operating_profiles["serviced_org_ref"].isnull().all(),
+            "Not all 'serviced_org_ref' values are None",
+        )
