@@ -33,6 +33,7 @@ from transit_odp.transmodel.models import Service, ServiceLink
 from .utils.dataframes import (
     create_naptan_stoppoint_df_from_queryset,
     create_service_link_df_from_queryset,
+    get_stop_activities,
 )
 from .utils.stats import get_extracted_stats, get_transformed_stats
 
@@ -131,9 +132,13 @@ class FeedParser(ETLUtility):
         logger.info("Begin extraction step")
         filename = file_obj.name
         if filename.endswith("zip"):
-            extracted = TransXChangeZipExtractor(file_obj, self.now).extract()
+            extracted = TransXChangeZipExtractor(
+                file_obj, self.now, stop_activity_cache=get_stop_activities()
+            ).extract()
         elif filename.endswith("xml"):
-            extracted = TransXChangeExtractor(file_obj, self.now).extract()
+            extracted = TransXChangeExtractor(
+                file_obj, self.now, stop_activity_cache=get_stop_activities()
+            ).extract()
         else:
             raise exceptions.NoDataFoundError(filename)
 
