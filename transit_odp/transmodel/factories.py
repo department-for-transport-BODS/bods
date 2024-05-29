@@ -218,6 +218,8 @@ class ServicedOrganisationWorkingDaysFactory(DjangoModelFactory):
     )
     start_date = FuzzyDate(datetime.date.today())
     end_date = FuzzyDate(datetime.date.today())
+
+
 class StopActivityFactory(DjangoModelFactory):
     class Meta:
         model = StopActivity
