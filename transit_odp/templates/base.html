@@ -71,7 +71,7 @@
                     BODSFrontend.initAll();
                 </script>
 
-                {% if not request.COOKIES.keys|get_value_from_dict:'cookie_policy' %}
+                {% if not request.COOKIES.keys|is_value_in_dict:'cookie_policy' %}
                     <!-- Global site tag (gtag.js) - Google Analytics -->
                     <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
                     <script>
