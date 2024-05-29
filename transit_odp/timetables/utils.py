@@ -218,8 +218,9 @@ def get_holidays_records_to_insert(records):
 
 
 def get_filtered_rows_by_journeys(
-    df: pd.DataFrame, journey_mappings: dict
+    df: pd.DataFrame, journey_mappings: Dict
 ) -> pd.DataFrame:
+    """Apply the filter function for each row"""
     return df[
         df.apply(lambda row: filter_rows_by_journeys(row, journey_mappings), axis=1)
     ]
@@ -234,7 +235,8 @@ def get_journey_mappings(df: pd.DataFrame) -> dict:
     )
 
 
-def filter_rows_by_journeys(row, journey_mapping):
+def filter_rows_by_journeys(row, journey_mapping) -> bool:
+    """Filter out row is the date is considered operational and doesnt need an explicit entry into th exceptions table as its operation is covered by the operating profile"""
     date_obj = row["exceptions_date"]
     if date_obj:
         day_of_week = date_obj.strftime("%A")
@@ -244,8 +246,8 @@ def filter_rows_by_journeys(row, journey_mapping):
         if row["exceptions_operational"] == True:
             return day_of_week not in operational_days
         return day_of_week in operational_days
-    else:
-        return False
+
+    return False
 
 
 def get_line_description_based_on_direction(row: pd.Series) -> str:
