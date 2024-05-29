@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import F
-from transit_odp.dqs.constants import STATUSES
+from transit_odp.dqs.constants import Status
 
 
 class TaskResultsQueryset(models.QuerySet):
@@ -17,7 +17,7 @@ class TaskResultsQueryset(models.QuerySet):
         """
         Filter for PENDING TaskResults items for the TxCFiles and annotate queue_names from Checks
         """
-        include_status = STATUSES["PENDING"]
+        include_status = Status.PENDING.value
         qs = (
             self.get_valid_taskresults(txcfileattributes)
             .filter(status=include_status)

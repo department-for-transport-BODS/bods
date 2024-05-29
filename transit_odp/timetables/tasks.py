@@ -451,7 +451,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
-    adapter.info("Starting DQS checks.")
+    adapter.info("Starting DQS checks initiation task.")
     try:
         task.update_progress(95)
         report = Report.initialise_dqs_task(revision)
@@ -460,9 +460,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             revision_id
         )
         combinations = itertools.product(txc_file_attributes_objects, checks)
-
-        for txc_file_attribute, check in combinations:
-            TaskResults.initialize_task_results(report, txc_file_attribute, check)
+        TaskResults.initialize_task_results(report, combinations)
         pending_checks = TaskResults.objects.get_pending_objects(
             txc_file_attributes_objects
         )

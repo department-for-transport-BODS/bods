@@ -31,13 +31,20 @@ class SQSClientWrapper:
         """
         Initialize and return an SQS client.
         """
-        self.sqs_client = boto3.client(
-            "sqs",
-            endpoint_url=settings.SQS_QUEUE_ENDPOINT_URL,
-            region_name=settings.AWS_REGION_NAME,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-        )
+        self.endpoint_url = settings.SQS_QUEUE_ENDPOINT_URL
+        if settings.AWS_ENVIRONMENT == "LOCAL":
+            self.sqs_client = boto3.client(
+                "sqs",
+                endpoint_url=self.endpoint_url,
+                region_name=settings.AWS_REGION_NAME,
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
+        else:
+            self.sqs_client = boto3.client(
+                "sqs",
+                endpoint_url=self.endpoint_url,
+            )
 
     def get_queue_name_from_url(self, queue_url: str) -> str:
         """

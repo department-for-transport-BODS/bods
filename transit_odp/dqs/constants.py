@@ -1,6 +1,10 @@
-STATUSES = {
-    "PENDING": "PENDING",
-}
+from enum import Enum
+
+
+class Status(Enum):
+    PENDING = "PENDING"
+
+
 CHECKS_DATA = [
     {
         "observation": "Incorrect NOC",
