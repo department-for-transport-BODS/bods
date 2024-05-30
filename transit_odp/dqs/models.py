@@ -7,7 +7,7 @@ from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.dqs.querysets import TaskResultsQueryset
-from transit_odp.dqs.constants import Status
+from transit_odp.dqs.constants import ReportStatus, TaskResultsStatus
 
 BATCH_SIZE = 1000
 
@@ -25,7 +25,9 @@ class Report(models.Model):
         """
         Create a new Report instance with the provided data and save it to the database.
         """
-        new_report = cls(file_name="", revision=revision, status=Status.PENDING.value)
+        new_report = cls(
+            file_name="", revision=revision, status=ReportStatus.PENDING_PIPELINE.value
+        )
         new_report.save()
         return new_report
 
@@ -81,7 +83,7 @@ class TaskResults(models.Model):
         task_results_to_create = []
         for txc_file_attribute, check in combinations:
             task_result = cls(
-                status=Status.PENDING.value,
+                status=TaskResultsStatus.PENDING.value,
                 message="",
                 checks=check,
                 dataquality_report=report,

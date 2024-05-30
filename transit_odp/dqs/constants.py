@@ -1,8 +1,12 @@
 from enum import Enum
 
 
-class Status(Enum):
+class TaskResultsStatus(Enum):
     PENDING = "PENDING"
+
+
+class ReportStatus(Enum):
+    PENDING_PIPELINE = "PENDING_PIPELINE"
 
 
 CHECKS_DATA = [
