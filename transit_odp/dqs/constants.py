@@ -6,7 +6,7 @@ class TaskResultsStatus(Enum):
 
 
 class ReportStatus(Enum):
-    PENDING_PIPELINE = "PENDING_PIPELINE"
+    PIPELINE_PENDING = "PIPELINE_PENDING"
 
 
 CHECKS_DATA = [
