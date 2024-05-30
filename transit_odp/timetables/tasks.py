@@ -557,6 +557,7 @@ def task_rerun_timetables_etl_specific_datasets():
     """
     csv_file_name = "rerun_timetables_etl.csv"
     dataset_ids = read_datasets_file_from_s3(csv_file_name)
+    # dataset_ids = [18, 64]
     if not dataset_ids:
         logger.info("No valid dataset IDs found in the file.")
         return
@@ -593,8 +594,8 @@ def task_rerun_timetables_etl_specific_datasets():
                     revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
                 )
 
-                task_dataset_download(task.id)
-                task_dataset_etl(task.id)
+                task_dataset_download(revision_id, task.id)
+                task_dataset_etl(revision_id, task.id)
 
                 task.update_progress(100)
                 task.to_success()
