@@ -28,7 +28,7 @@ CHECKS_DATA = [
         "observation": "First stop is not a timing point",
         "importance": "Critical",
         "category": "Timing",
-        "queue_name": "first_step_is_not_a_timing_point_queue",
+        "queue_name": "first_stop_is_not_a_timing_point_queue",
     },
     {
         "observation": "Last stop is not a timing point",
