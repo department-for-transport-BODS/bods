@@ -257,6 +257,9 @@ class OrganisationDetailView(SiteAdminViewMixin, DetailView):
         )
 
         properties = {
+            "is_abods_global_viewer": "Yes"
+            if organisation.is_abods_global_viewer
+            else "No",
             "agents": agent_users,
             "avls_created": organisation.published_avl_count,
             "date_added": organisation.created,
