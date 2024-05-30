@@ -9,6 +9,8 @@ from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.dqs.querysets import TaskResultsQueryset
 from transit_odp.dqs.constants import Status
 
+BATCH_SIZE = 1000
+
 
 class Report(models.Model):
     created = CreationDateTimeField(_("created"))
@@ -87,7 +89,7 @@ class TaskResults(models.Model):
             )
             task_results_to_create.append(task_result)
 
-        return cls.objects.bulk_create(task_results_to_create)
+        return cls.objects.bulk_create(task_results_to_create, batch_size=BATCH_SIZE)
 
 
 class ObservationResults(models.Model):
