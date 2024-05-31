@@ -24,8 +24,7 @@ def get_s3_bucket_storage():
 
 
 def read_datasets_file_from_s3(csv_file_name: object) -> list:
-    """Read csv from S3 bucket and return a list of dataset ids
-    """
+    """Read csv from S3 bucket and return a list of dataset ids"""
     try:
         storage = get_s3_bucket_storage()
 

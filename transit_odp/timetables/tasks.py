@@ -574,7 +574,9 @@ def task_rerun_timetables_etl_specific_datasets():
     total_count = timetables_datasets.count()
     for timetables_dataset in timetables_datasets:
         try:
-            logger.info(f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}")
+            logger.info(
+                f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
+            )
             revision = timetables_dataset.live_revision
             if revision:
                 revision_id = revision.id
@@ -590,7 +592,9 @@ def task_rerun_timetables_etl_specific_datasets():
 
                 task_id = uuid.uuid4()
                 task = DatasetETLTaskResult.objects.create(
-                    revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
                 )
 
                 task_dataset_download(revision_id, task.id)
@@ -600,12 +604,14 @@ def task_rerun_timetables_etl_specific_datasets():
                 task.to_success()
                 successfully_processed_ids.append(timetables_dataset.id)
                 processed_count += 1
-                logger.info(f"The task completed for {processed_count} of {total_count}")
+                logger.info(
+                    f"The task completed for {processed_count} of {total_count}"
+                )
 
         except Exception as exc:
-                failed_datasets.append(timetables_dataset.id)
-                message = f"Error processing dataset id {timetables_dataset.id}: {exc}"
-                logger.exception(message, exc_info=True)
+            failed_datasets.append(timetables_dataset.id)
+            message = f"Error processing dataset id {timetables_dataset.id}: {exc}"
+            logger.exception(message, exc_info=True)
 
     logger.info(
         f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
