@@ -3,6 +3,8 @@ from logging import getLogger
 from transit_odp.otc.constants import API_TYPE_EP
 from transit_odp.otc.models import Licence, Service
 from transit_odp.otc.ep.registry import Registry
+from django.db import DataError, IntegrityError
+
 
 logger = getLogger(__name__)
 
@@ -58,14 +60,20 @@ class Loader:
         assign licence_id to the service object
         """
         logger.info("Loading services into the database")
-        service_objects = []
         for _, service in self.registry.services.iterrows():
             if not service["licence_id"]:
                 service["licence_id"] = self.licences.get(service["licence"], None)
             service.drop(["licence"], inplace=True)
-            service_objects.append(Service(**service))
+            try:
+                service_instance = Service(**service)
+                service_instance.save()
+            except DataError as exp:
+                logger.error(f"DataError occurred: {exp}")
+            except IntegrityError as exp:
+                logger.error(f"IntegrityError occurred: {exp}")
+            except Exception as exp:
+                logger.error(f"An unexpected exception occurred: {exp}")
 
-        Service.objects.bulk_create(service_objects)
         logger.info("EP services inserted into the database")
 
     def delete_services(self):

@@ -568,6 +568,8 @@ class LineMetadataDetailView(DetailView):
         if is_timetable_visualiser_active:
             # Set the context for the timetable visualiser and the line details
             kwargs["curr_date"] = date
+            is_timetable_info_available = False
+            timetable = {}
             for direction in ["outbound", "inbound"]:
                 direction_details = timetable_inbound_outbound[direction]
                 journey = direction_details["description"]
@@ -575,14 +577,24 @@ class LineMetadataDetailView(DetailView):
                 bound_details = self.get_direction_timetable(
                     direction_details["df_timetable"], direction
                 )
-                kwargs[direction + "_timetable"] = bound_details["df_timetable"]
-                kwargs[direction + "_total_page"] = bound_details["total_page"]
-                kwargs[direction + "_total_row_count"] = bound_details[
-                    "total_row_count"
-                ]
-                kwargs[direction + "_curr_page"] = bound_details["curr_page"]
-                kwargs[direction + "_show_all"] = bound_details["show_all"]
-                kwargs[direction + "_journey_name"] = journey
+                if (
+                    not is_timetable_info_available
+                    and not bound_details["df_timetable"].empty
+                ):
+                    is_timetable_info_available = True
+                timetable[direction] = {
+                    "df": bound_details["df_timetable"],
+                    "total_page": bound_details["total_page"],
+                    "total_row_count": bound_details["total_row_count"],
+                    "curr_page": bound_details["curr_page"],
+                    "show_all": bound_details["show_all"],
+                    "journey_name": journey,
+                    "stops": direction_details["stops"],
+                    "page_param": direction + "Page",
+                    "show_all_param": "showAll" + direction.capitalize(),
+                }
+            kwargs["timetable"] = timetable
+            kwargs["is_timetable_info_available"] = is_timetable_info_available
 
         return kwargs
 
