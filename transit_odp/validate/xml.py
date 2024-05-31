@@ -6,9 +6,8 @@ from defusedxml import ElementTree as detree
 from defusedxml.ElementTree import ParseError
 from lxml import etree
 
-from transit_odp.validate.exceptions import ValidationException
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
-
+from transit_odp.validate.exceptions import ValidationException
 from transit_odp.validate.utils import get_file_size
 
 logger = logging.getLogger(__name__)
@@ -147,6 +146,9 @@ def validate_xml_files_in_zip(zip_file, schema=None):
             adapter.info(f"XML Validation of file {index} of {total_files} - {name}.")
             with zout.open(name) as xmlout:
                 XMLValidator(xmlout, schema=lxml_schema).validate()
+                adapter.info(
+                    f"Completed XML Validation of file {index} of {total_files} - {name}."
+                )
 
 
 def get_lxml_schema(schema):
