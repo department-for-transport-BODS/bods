@@ -6,6 +6,10 @@ from django_extensions.db.fields import CreationDateTimeField
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
 from transit_odp.organisation.models.data import TXCFileAttributes
+from transit_odp.dqs.querysets import TaskResultsQueryset
+from transit_odp.dqs.constants import ReportStatus, TaskResultsStatus
+
+BATCH_SIZE = 1000
 
 
 class Report(models.Model):
@@ -16,11 +20,30 @@ class Report(models.Model):
     )
     status = models.CharField(max_length=64, null=True)
 
+    @classmethod
+    def initialise_dqs_task(cls, revision: object) -> object:
+        """
+        Create a new Report instance with the provided data and save it to the database.
+        """
+        new_report = cls(
+            file_name="", revision=revision, status=ReportStatus.PENDING_PIPELINE.value
+        )
+        new_report.save()
+        return new_report
+
 
 class Checks(models.Model):
     observation = models.CharField(max_length=1024)
     importance = models.CharField(max_length=64)
     category = models.CharField(max_length=64)
+    queue_name = models.CharField(max_length=256, blank=True, null=True)
+
+    @classmethod
+    def get_all_checks(cls) -> object:
+        """
+        Fetches all checks in the database
+        """
+        return cls.objects.all()
 
 
 class TaskResults(models.Model):
@@ -48,6 +71,27 @@ class TaskResults(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+
+    objects = TaskResultsQueryset.as_manager()
+
+    @classmethod
+    def initialize_task_results(cls, report: object, combinations: object) -> object:
+        """
+        Create a TaskResults object based on the given revision, TXCFileAttribute,
+        and Check objects.
+        """
+        task_results_to_create = []
+        for txc_file_attribute, check in combinations:
+            task_result = cls(
+                status=TaskResultsStatus.PENDING.value,
+                message="",
+                checks=check,
+                dataquality_report=report,
+                transmodel_txcfileattributes=txc_file_attribute,
+            )
+            task_results_to_create.append(task_result)
+
+        return cls.objects.bulk_create(task_results_to_create, batch_size=BATCH_SIZE)
 
 
 class ObservationResults(models.Model):

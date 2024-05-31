@@ -1334,6 +1334,12 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             self.add_effective_stale_date_last_modified_date().add_effective_stale_date_end_date()  # noqa: E501
         )
 
+    def for_revision(self, revision_id: int) -> list:
+        """Returns TXCFileAttributes objects for a revision."""
+        return self.filter(
+            service_txcfileattributes__revision_id=revision_id
+        ).distinct()
+
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
     def add_feedback_type(self):

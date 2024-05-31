@@ -4,7 +4,7 @@ from io import StringIO
 
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.common.utils.s3_bucket_connection import get_s3_bucket_storage
+from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 
 logger = logging.getLogger(__name__)
