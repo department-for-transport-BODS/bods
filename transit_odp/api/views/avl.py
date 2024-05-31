@@ -76,8 +76,9 @@ class AVLGTFSRTApiView(views.APIView):
 
     def get(self, request, format=None):
         """Get GTFS RT response from consumer API."""
-        url = f"{settings.CAVL_CONSUMER_URL}/gtfsrtfeed"
+        url = f"{settings.GTFS_API_BASE_URL}/gtfs-rt"
         content, status_code = _get_gtfs_rt_response(url, request.query_params)
+
         return Response(content, status=status_code)
 
 
