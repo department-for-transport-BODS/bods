@@ -360,6 +360,10 @@ class ETLSPSWithWaitTimeInVehicleJourney(ExtractBaseTestCase):
             transformed_service_pattern_stops["vehicle_journey_code"] == "VJ90"
         ]
 
+        stop_with_ignored_wait_time = transformed_service_pattern_stops[
+            transformed_service_pattern_stops["vehicle_journey_code"] == "VJ39"
+        ]
+
         self.assertEqual(60, stops_with_vj_wait_time.shape[0])
         self.assertEqual(
             "17:52:00",
@@ -397,4 +401,11 @@ class ETLSPSWithWaitTimeInVehicleJourney(ExtractBaseTestCase):
             stops_without_vj_wait_time[stops_without_vj_wait_time["order"] == 32][
                 "departure_time"
             ].item(),
+        )
+
+        self.assertEqual(
+            "13:30:00",
+            stop_with_ignored_wait_time[
+                stop_with_ignored_wait_time["sequence_number"] == "61"
+            ]["departure_time"].item(),
         )

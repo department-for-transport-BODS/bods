@@ -23,7 +23,7 @@ class OperatorCodeInline(admin.TabularInline):
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ["name"]
+    list_display = ["name", "is_abods_global_viewer"]
     search_fields = ["name"]
 
     inlines = [OperatorCodeInline]
@@ -98,7 +98,6 @@ class DatasetAdmin(admin.ModelAdmin):
 
 @admin.register(DatasetRevision)
 class DatasetRevisionAdmin(admin.ModelAdmin):
-
     actions = ["publish_revisions"]
     ordering = ("id", "name")
     search_fields = ["dataset__id", "id", "name"]
