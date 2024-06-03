@@ -15,3 +15,4 @@ jobs:
           days-before-branch-stale: 60
           exempt-branches-regex: ^(main|dev|test)$
           exempt-protected-branches: true
+          operations-per-run: 100

@@ -40,6 +40,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "run_time": pd.NaT,
                     "wait_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("08:14:00"),
                 },
                 {
                     "file_id": file_id,
@@ -53,6 +55,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "run_time": pd.NaT,
                     "wait_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("16:40:00"),
                 },
             ]
         ).set_index("file_id")
@@ -85,6 +89,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "service_code": "PB0000582:186",
                     "direction": "outbound",
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("08:14:00"),
                 },
                 {
                     "file_id": file_id,
@@ -96,6 +102,8 @@ class ExtractStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "service_code": "PB0000582:186",
                     "direction": "inbound",
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("16:40:00"),
                 },
             ]
         ).set_index("file_id")
@@ -148,6 +156,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 }
             ]
         ).set_index("file_id")
@@ -188,6 +198,8 @@ class ExtractFlexibleServiceVehicleJourney(ExtractBaseTestCase):
                     "service_code": "UZ000CALC:53M",
                     "direction": "inbound",
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 },
             ]
         ).set_index("file_id")
@@ -242,6 +254,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "run_time": pd.NaT,
                     "wait_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("15:10:00"),
                 },
             ]
         ).set_index("file_id")
@@ -259,6 +273,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 },
                 {
                     "file_id": file_id,
@@ -271,6 +287,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 },
             ]
         ).set_index("file_id")
@@ -310,6 +328,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "service_code": "UZ000WBCT:B1081",
                     "direction": "inbound",
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("15:10:00"),
                 },
                 {
                     "file_id": file_id,
@@ -321,6 +341,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "service_code": "PB0002032:467",
                     "direction": "outbound",
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 },
                 {
                     "file_id": file_id,
@@ -332,6 +354,8 @@ class ExtractFlexibleAndStandardServiceVehicleJourney(ExtractBaseTestCase):
                     "service_code": "UZ000WOCT:216",
                     "direction": "outbound",
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 },
             ]
         ).set_index("file_id")
@@ -402,6 +426,8 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "wait_time": pd.NaT,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("08:14:00"),
                 },
                 {
                     "file_id": file_id,
@@ -415,6 +441,8 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "wait_time": pd.NaT,
+                    "block_number": "K2062",
+                    "vj_departure_time": pd.to_timedelta("16:40:00"),
                 },
             ]
         ).set_index("file_id")
@@ -448,6 +476,8 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "service_code": "PB0000582:186",
                     "direction": "outbound",
                     "departure_day_shift": True,
+                    "block_number": None,
+                    "vj_departure_time": pd.to_timedelta("08:14:00"),
                 },
                 {
                     "file_id": file_id,
@@ -459,6 +489,8 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                     "service_code": "PB0000582:186",
                     "direction": "inbound",
                     "departure_day_shift": True,
+                    "block_number": "K2062",
+                    "vj_departure_time": pd.to_timedelta("16:40:00"),
                 },
             ]
         ).set_index("file_id")
@@ -489,3 +521,4 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
         for journey in vehicle_journeys:
             self.assertEqual(journey.line_ref, "WRAY:PB0000582:186:WF1")
             self.assertIn(journey.journey_code, ["3681", "3682"])
+            self.assertIn(journey.block_number, [None, "K2062"])

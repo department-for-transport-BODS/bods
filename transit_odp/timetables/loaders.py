@@ -37,7 +37,11 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
     empty_timestamp,
     starting_timestamp,
 )
-from transit_odp.timetables.utils import filter_rows_by_journeys
+from transit_odp.timetables.utils import (
+    filter_rows_by_journeys,
+    get_filtered_rows_by_journeys,
+    get_journey_mappings,
+)
 from transit_odp.transmodel.models import (
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
@@ -339,19 +343,11 @@ class TransXChangeDataLoader:
 
     def load_operating_dates_exceptions(self, merged_operating_profiles_and_journeys):
         merged_operating_profiles_and_journeys.drop_duplicates(inplace=True)
-        journey_mapping = (
-            merged_operating_profiles_and_journeys.groupby("vehicle_journey_code")[
-                "day_of_week"
-            ]
-            .unique()
-            .apply(list)
-            .to_dict()
+        journey_mapping = get_journey_mappings(merged_operating_profiles_and_journeys)
+
+        merged_operating_profiles_and_journeys = get_filtered_rows_by_journeys(
+            merged_operating_profiles_and_journeys, journey_mapping
         )
-        merged_operating_profiles_and_journeys = merged_operating_profiles_and_journeys[
-            merged_operating_profiles_and_journeys.apply(
-                lambda row: filter_rows_by_journeys(row, journey_mapping), axis=1
-            )
-        ]
 
         df_to_load = merged_operating_profiles_and_journeys[
             ["id", "exceptions_operational", "exceptions_date"]

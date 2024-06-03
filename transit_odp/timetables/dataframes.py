@@ -5,6 +5,7 @@
 import logging
 
 import pandas as pd
+import isodate
 from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_str
@@ -20,12 +21,18 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 )
 from datetime import datetime, timedelta
 from typing import Dict, Any, Union
+from transit_odp.transmodel.models import StopActivity
 
 logger = logging.getLogger(__name__)
 
 
 def get_flexible_journey_details(
-    stop_points, service_code, pattern, direction, element_name
+    stop_points,
+    service_code,
+    pattern,
+    direction,
+    stop_activities,
+    element_name,
 ):
     """
     This function converts the FixedStopUsage and FlexibleStopUsage xml tag data to
@@ -38,6 +45,12 @@ def get_flexible_journey_details(
         )
         for fixed_stop_usage in stop_points.get_elements(element_name):
             atco_code = fixed_stop_usage.get_element("StopPointRef").text
+            activity = "none"
+            activity_element = fixed_stop_usage.get_element_or_none(["Activity"])
+            if activity_element:
+                activity = activity_element.text
+
+            activity_id = get_stop_activity_id(stop_activities, activity)
             stop_points_details.append(
                 {
                     "service_code": service_code,
@@ -45,12 +58,13 @@ def get_flexible_journey_details(
                     "bus_stop_type": bus_stop_type,
                     "journey_pattern_id": pattern["id"],
                     "direction": direction,
+                    "activity_id": activity_id,
                 }
             )
     return stop_points_details
 
 
-def flexible_journey_patterns_to_dataframe(services):
+def flexible_journey_patterns_to_dataframe(services, stop_activities):
     """
     This function iterates over FlexibleService xml tag and converts FlexibleJourneyPattern
     to pandas dataframe
@@ -73,6 +87,7 @@ def flexible_journey_patterns_to_dataframe(services):
                             service_code,
                             pattern,
                             direction,
+                            stop_activities,
                             element_name="FlexibleStopUsage",
                         )
                     )
@@ -83,6 +98,7 @@ def flexible_journey_patterns_to_dataframe(services):
                             service_code,
                             pattern,
                             direction,
+                            stop_activities,
                             element_name="FixedStopUsage",
                         )
                     )
@@ -99,6 +115,18 @@ def flexible_journey_patterns_to_dataframe(services):
                             atco_code = children.get_element_or_none(
                                 "StopPointRef"
                             ).text
+
+                            activity = "none"
+                            activity_element = children.get_element_or_none(
+                                ["Activity"]
+                            )
+                            if activity_element:
+                                activity = activity_element.text
+
+                            activity_id = get_stop_activity_id(
+                                stop_activities, activity
+                            )
+
                             flexible_journey_patterns.append(
                                 {
                                     "service_code": service_code,
@@ -106,6 +134,7 @@ def flexible_journey_patterns_to_dataframe(services):
                                     "bus_stop_type": bus_stop_type,
                                     "journey_pattern_id": pattern["id"],
                                     "direction": direction,
+                                    "activity_id": int(activity_id),
                                 }
                             )
 
@@ -116,6 +145,7 @@ def flexible_journey_patterns_to_dataframe(services):
             "journey_pattern_id",
             "service_code",
             "direction",
+            "activity_id",
         ]
         flexible_journey_patterns_df = pd.DataFrame(
             flexible_journey_patterns, columns=columns
@@ -355,7 +385,15 @@ def journey_pattern_section_from_journey_pattern(df: pd.DataFrame):
         return pd.DataFrame()
 
 
-def journey_pattern_sections_to_dataframe(sections):
+def get_stop_activity_id(stop_activities, name):
+    matching_activity = next(
+        (activity.id for activity in stop_activities if activity.name == name), None
+    )
+
+    return matching_activity
+
+
+def journey_pattern_sections_to_dataframe(sections, stop_activities):
     all_links = []
     if sections is not None:
         for section in sections:
@@ -392,6 +430,20 @@ def journey_pattern_sections_to_dataframe(sections):
                 else:
                     route_link_ref = hash((from_stop_ref, to_stop_ref))
 
+                # Default key for activity name is none in db when there are no elements
+                from_activity = "none"
+                to_activity = "none"
+                from_activity_element = from_stop.get_element_or_none(["Activity"])
+                to_activity_element = to_stop.get_element_or_none(["Activity"])
+                if from_activity_element:
+                    from_activity = from_activity_element.text
+
+                if to_activity_element:
+                    to_activity = to_activity_element.text
+
+                from_activity_id = get_stop_activity_id(stop_activities, from_activity)
+                to_activity_id = get_stop_activity_id(stop_activities, to_activity)
+
                 all_links.append(
                     {
                         "jp_section_id": id_,
@@ -405,6 +457,8 @@ def journey_pattern_sections_to_dataframe(sections):
                         "is_timing_status": is_timing_status,
                         "run_time": run_time,
                         "wait_time": wait_time,
+                        "from_activity_id": from_activity_id,
+                        "to_activity_id": to_activity_id,
                     }
                 )
     timing_links = pd.DataFrame(all_links)
@@ -424,6 +478,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             dead_run_time = vehicle_journey.get_element_or_none(
                 ["StartDeadRun", "PositioningLink", "RunTime"]
             )
+            vj_departure_time = departure_time
             if dead_run_time:
                 departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
 
@@ -460,9 +515,17 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                 ["VehicleJourneyTimingLink"]
             )
 
+            block_number_element = vehicle_journey.get_element_or_none(
+                ["Operational", "Block", "BlockNumber"]
+            )
+            block_number = None
+            if block_number_element:
+                block_number = block_number_element.text
+
             to_wait_time_exists = False
             if vj_timing_links:
-                for links in vj_timing_links:
+                len_timing_links = len(vj_timing_links)
+                for index, links in enumerate(vj_timing_links):
                     timing_link_ref = links.get_element(
                         ["JourneyPatternTimingLinkRef"]
                     ).text
@@ -482,19 +545,29 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             ["WaitTime"]
                         )
                         if from_wait_time:
-                            wait_time = pd.to_timedelta(from_wait_time.text)
+                            parsed_from_wait_time = isodate.parse_duration(
+                                from_wait_time.text
+                            )
+                            wait_time = pd.to_timedelta(
+                                parsed_from_wait_time.total_seconds(), unit="s"
+                            )
 
-                    if to_wait_time_element:
+                    if to_wait_time_element and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
                         if to_wait_time:
                             to_wait_time_exists = True
+                            parsed_to_wait_time = isodate.parse_duration(
+                                to_wait_time.text
+                            )
                             if pd.isna(wait_time):
-                                wait_time = pd.to_timedelta(to_wait_time.text)
+                                wait_time = pd.to_timedelta(
+                                    parsed_to_wait_time.total_seconds(), unit="s"
+                                )
                             else:
                                 wait_time = wait_time + pd.to_timedelta(
-                                    to_wait_time.text
+                                    parsed_to_wait_time.total_seconds(), unit="s"
                                 )
 
                     else:
@@ -515,6 +588,8 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             "run_time": run_time,
                             "wait_time": wait_time,
                             "departure_day_shift": departure_day_shift,
+                            "block_number": block_number,
+                            "vj_departure_time": vj_departure_time,
                         }
                     )
 
@@ -533,6 +608,8 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "run_time": pd.NaT,
                         "wait_time": pd.NaT,
                         "departure_day_shift": departure_day_shift,
+                        "block_number": block_number,
+                        "vj_departure_time": vj_departure_time,
                     }
                 )
 
@@ -566,6 +643,8 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
                     "timing_link_ref": None,
                     "run_time": pd.NaT,
                     "departure_day_shift": False,
+                    "block_number": None,
+                    "vj_departure_time": None,
                 }
             )
     return pd.DataFrame(all_vehicle_journeys)
@@ -791,24 +870,26 @@ def populate_operating_profiles(
         "day_of_week": days_of_week,
         "operational": operational,
     }
-
     if serviced_org_element:
         operational = False
         serviced_orgs_working_days = serviced_org_element.get_element_or_none(
             "WorkingDays"
         )
         if not serviced_orgs_working_days:
-            serviced_orgs_working_days = serviced_org_element.get_element("Holidays")
+            serviced_orgs_working_days = serviced_org_element.get_element_or_none(
+                "Holidays"
+            )
         elif serviced_org_element.localname == "DaysOfOperation":
             operational = True
-
-        serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
-            "ServicedOrganisationRef"
-        )
-        serviced_org_refs = [
-            serviced_org_ref_element.text
-            for serviced_org_ref_element in serviced_org_ref_elements
-        ]
+        serviced_org_refs = []
+        if serviced_orgs_working_days:
+            serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
+                "ServicedOrganisationRef"
+            )
+            serviced_org_refs = [
+                serviced_org_ref_element.text
+                for serviced_org_ref_element in serviced_org_ref_elements
+            ]
         operating_profile_obj["serviced_org_ref"] = serviced_org_refs
         operating_profile_obj["operational"] = operational
 

@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TransXChange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SchemaVersion="2.4" CreationDateTime="2019-01-08T18:39:27" ModificationDateTime="2023-05-02T15:40:29" Modification="revise" RevisionNumber="18" FileName="ARBB_1802_ARBBPF0000508531802_20230425_-_101c9568-6893-468e-bcd6-cb9b1167db9b.xml" xmlns="http://www.transxchange.org.uk/">
+  <ServicedOrganisations>
+    <ServicedOrganisation>
+      <OrganisationCode>Sch:12</OrganisationCode>
+      <Name>SCHOOLDAYS</Name>
+      <WorkingDays>
+        <DateRange>
+          <StartDate>2023-04-17</StartDate>
+          <EndDate>2023-04-21</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-04-24</StartDate>
+          <EndDate>2023-04-28</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-05-01</StartDate>
+          <EndDate>2023-05-05</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-05-08</StartDate>
+          <EndDate>2023-05-12</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-05-15</StartDate>
+          <EndDate>2023-05-19</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-05-22</StartDate>
+          <EndDate>2023-05-26</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-06-05</StartDate>
+          <EndDate>2023-06-09</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-06-12</StartDate>
+          <EndDate>2023-06-16</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-06-19</StartDate>
+          <EndDate>2023-06-23</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-06-26</StartDate>
+          <EndDate>2023-06-30</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-07-03</StartDate>
+          <EndDate>2023-07-07</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-07-10</StartDate>
+          <EndDate>2023-07-14</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-07-17</StartDate>
+          <EndDate>2023-07-21</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-09-04</StartDate>
+          <EndDate>2023-09-08</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-09-11</StartDate>
+          <EndDate>2023-09-15</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-09-18</StartDate>
+          <EndDate>2023-09-22</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-09-25</StartDate>
+          <EndDate>2023-09-29</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-10-02</StartDate>
+          <EndDate>2023-10-06</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-10-09</StartDate>
+          <EndDate>2023-10-13</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-10-16</StartDate>
+          <EndDate>2023-10-20</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-10-30</StartDate>
+          <EndDate>2023-10-31</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-11-01</StartDate>
+          <EndDate>2023-11-03</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-11-06</StartDate>
+          <EndDate>2023-11-10</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-11-13</StartDate>
+          <EndDate>2023-11-17</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-11-20</StartDate>
+          <EndDate>2023-11-24</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-11-27</StartDate>
+          <EndDate>2023-11-30</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-12-01</StartDate>
+          <EndDate>2023-12-01</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-12-04</StartDate>
+          <EndDate>2023-12-08</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-12-11</StartDate>
+          <EndDate>2023-12-15</EndDate>
+        </DateRange>
+        <DateRange>
+          <StartDate>2023-12-18</StartDate>
+          <EndDate>2023-12-19</EndDate>
+        </DateRange>
+      </WorkingDays>
+    </ServicedOrganisation>
+  </ServicedOrganisations>
+  <StopPoints>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02903617</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Church Street</CommonName>
+      <Location>
+        <Longitude>-0.411325</Longitude>
+        <Latitude>51.878870</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02903803</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Burr Street</CommonName>
+      <Location>
+        <Longitude>-0.410090</Longitude>
+        <Latitude>51.882647</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901356</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Charles Street</CommonName>
+      <Location>
+        <Longitude>-0.407644</Longitude>
+        <Latitude>51.884853</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901355</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Jubilee Street</CommonName>
+      <Location>
+        <Longitude>-0.406538</Longitude>
+        <Latitude>51.885710</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901354</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>High Town Road</CommonName>
+      <Location>
+        <Longitude>-0.403586</Longitude>
+        <Latitude>51.888664</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02903501</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Vicarage Street</CommonName>
+      <Location>
+        <Longitude>-0.409481</Longitude>
+        <Latitude>51.877252</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02903511</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Vicarage Street</CommonName>
+      <Location>
+        <Longitude>-0.409481</Longitude>
+        <Latitude>51.877252</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02903020</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>St Marys Road</CommonName>
+      <Location>
+        <Longitude>-0.409545</Longitude>
+        <Latitude>51.879151</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02903802</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Burr Street</CommonName>
+      <Location>
+        <Longitude>-0.409722</Longitude>
+        <Latitude>51.882795</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901353</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Hart Lane</CommonName>
+      <Location>
+        <Longitude>-0.402831</Longitude>
+        <Latitude>51.889454</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901363</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Hart Lane</CommonName>
+      <Location>
+        <Longitude>-0.402831</Longitude>
+        <Latitude>51.889454</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901376</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Deep Denes</CommonName>
+      <Location>
+        <Longitude>-0.401464</Longitude>
+        <Latitude>51.893167</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901350</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Round Green Tavern</CommonName>
+      <Location>
+        <Longitude>-0.401607</Longitude>
+        <Latitude>51.891586</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901375</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Moreton Road South</CommonName>
+      <Location>
+        <Longitude>-0.400908</Longitude>
+        <Latitude>51.892062</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901378</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Birchen Grove</CommonName>
+      <Location>
+        <Longitude>-0.401829</Longitude>
+        <Latitude>51.895177</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901377</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Deep Denes</CommonName>
+      <Location>
+        <Longitude>-0.401566</Longitude>
+        <Latitude>51.893987</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901281</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Jansel House</CommonName>
+      <Location>
+        <Longitude>-0.394145</Longitude>
+        <Latitude>51.902401</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901280</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Jansel House</CommonName>
+      <Location>
+        <Longitude>-0.394426</Longitude>
+        <Latitude>51.902243</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901050</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Collingtree</CommonName>
+      <Location>
+        <Longitude>-0.390130</Longitude>
+        <Latitude>51.903299</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901279</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Wood Green Road</CommonName>
+      <Location>
+        <Longitude>-0.385755</Longitude>
+        <Latitude>51.903680</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901049</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Collingtree</CommonName>
+      <Location>
+        <Longitude>-0.390251</Longitude>
+        <Latitude>51.903166</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02900018</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Putteridge High School</CommonName>
+      <Location>
+        <Longitude>-0.382530</Longitude>
+        <Latitude>51.904840</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>02901278</StopPointRef>
+      <LocalityName>Bar Hill</LocalityName>
+      <CommonName>Wood Green Road</CommonName>
+      <Location>
+        <Longitude>-0.386638</Longitude>
+        <Latitude>51.903395</Latitude>
+      </Location>
+    </AnnotatedStopPointRef>
+  </StopPoints>
+  <RouteSections>
+    <RouteSection id="rsf_0000">
+      <RouteLink id="rl_0000_1">
+        <From>
+          <StopPointRef>02900018</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02901278</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_2">
+        <From>
+          <StopPointRef>02901278</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02901049</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_3">
+        <From>
+          <StopPointRef>02901049</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02901280</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_4">
+        <From>
+          <StopPointRef>02901280</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02901350</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_5">
+        <From>
+          <StopPointRef>02901350</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02901353</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_6">
+        <From>
+          <StopPointRef>02901353</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02903802</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_7">
+        <From>
+          <StopPointRef>02903802</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02903020</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_8">
+        <From>
+          <StopPointRef>02903020</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02903501</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="rl_0000_9">
+        <From>
+          <StopPointRef>02903501</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>02903617</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+  </RouteSections>
+  <Routes>
+    <Route id="rt_0000">
+      <Description>No route description available</Description>
+      <RouteSectionRef>rsf_0000</RouteSectionRef>
+    </Route>
+  </Routes>
+  <JourneyPatternSections>
+    <JourneyPatternSection id="js_1">
+      <JourneyPatternTimingLink id="jptl_1">
+        <From SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>02900018</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="2">
+          <StopPointRef>02901278</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_1</RouteLinkRef>
+        <RunTime>PT2M</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_2">
+        <From SequenceNumber="2">
+          <StopPointRef>02901278</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="3">
+          <StopPointRef>02901049</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_2</RouteLinkRef>
+        <RunTime>PT2M</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_3">
+        <From SequenceNumber="3">
+          <StopPointRef>02901049</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="4">
+          <StopPointRef>02901280</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_3</RouteLinkRef>
+        <RunTime>PT2M</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_4">
+        <From SequenceNumber="4">
+          <StopPointRef>02901280</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="5">
+          <StopPointRef>02901350</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_4</RouteLinkRef>
+        <RunTime>PT8M58S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_5">
+        <From SequenceNumber="5">
+          <WaitTime>PT2S</WaitTime>
+          <StopPointRef>02901350</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="6">
+          <StopPointRef>02901363</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_5</RouteLinkRef>
+        <RunTime>PT0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_6">
+        <From SequenceNumber="6">
+          <StopPointRef>02901363</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="7">
+          <StopPointRef>02903802</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_6</RouteLinkRef>
+        <RunTime>PT2M</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_7">
+        <From SequenceNumber="7">
+          <StopPointRef>02903802</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="8">
+          <StopPointRef>02903020</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_7</RouteLinkRef>
+        <RunTime>PT1M</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_8">
+        <From SequenceNumber="8">
+          <StopPointRef>02903020</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="9">
+          <StopPointRef>02903511</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_8</RouteLinkRef>
+        <RunTime>PT1M</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="jptl_9">
+        <From SequenceNumber="9">
+          <StopPointRef>02903511</StopPointRef>
+          <TimingStatus>otherPoint</TimingStatus>
+        </From>
+        <To SequenceNumber="10">
+          <Activity>setDown</Activity>
+          <StopPointRef>02903617</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>rl_0000_9</RouteLinkRef>
+        <RunTime>PT1M</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+  </JourneyPatternSections>
+  <Operators>
+    <Operator id="tkt_oid">
+      <NationalOperatorCode>ARBB</NationalOperatorCode>
+      <OperatorCode>ATS</OperatorCode>
+      <OperatorShortName>Arriva Beds &amp; Bucks</OperatorShortName>
+      <LicenceNumber>PB0002032</LicenceNumber>
+    </Operator>
+  </Operators>
+  <Services>
+    <Service>
+			<ServiceCode>PB0002032:467</ServiceCode>
+			<Lines>
+				<Line id="ARBB:PB0002032:467:53M">
+					<LineName>53M</LineName>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2022-01-01</StartDate>
+			</OperatingPeriod>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek> 
+						<Monday/> 
+					</DaysOfWeek> 
+				</RegularDayType>
+				<BankHolidayOperation>
+							<DaysOfNonOperation>
+						<ChristmasDay/>
+						<BoxingDay/>
+						<GoodFriday/>
+						<NewYearsDay/>
+						<LateSummerBankHolidayNotScotland/>
+						<MayDay/>
+						<EasterMonday/>
+						<SpringBank/>
+						<ChristmasDayHoliday/>
+						<BoxingDayHoliday/>
+						<NewYearsDayHoliday/>
+						<OtherPublicHoliday>
+								<Description>CoronationBankHoliday</Description>
+								<Date>2023-05-08</Date>
+						</OtherPublicHoliday>
+						<ChristmasEve/>
+						<NewYearsEve/>
+					</DaysOfNonOperation>
+				</BankHolidayOperation>
+			</OperatingProfile>
+			<ServiceClassification>
+				<Flexible/>
+			</ServiceClassification>
+			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+			<PublicUse>true</PublicUse>
+			<Description>Flexible on demand service for Market Rasen Area</Description>
+			<SchematicMap>CallConnect-Market-Rasen.jpg</SchematicMap>
+			<FlexibleService>
+				<Origin>Market Rasen</Origin>
+				<Destination>Market Rasen</Destination>
+				<FlexibleJourneyPattern id="jp_1">
+					<Direction>outbound</Direction>
+					<StopPointsInSequence>
+					<FixedStopUsage>
+          <Activity>pickUp</Activity>
+					<StopPointRef>02903501</StopPointRef>
+					<TimingStatus>otherPoint</TimingStatus>
+					</FixedStopUsage>
+					<FlexibleStopUsage>
+            <Activity>setDown</Activity>
+					<StopPointRef>02901353</StopPointRef>
+					</FlexibleStopUsage>
+					</StopPointsInSequence>
+					<BookingArrangements>
+						<Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
+						<Phone>
+							<TelNationalNumber>0345 234 3344</TelNationalNumber>
+						</Phone>
+						<Email>CallConnect@lincolnshire.gov.uk</Email>
+						<WebAddress>https://callconnect.opendrt.co.uk/OpenDRT/</WebAddress>
+						<AllBookingsTaken>true</AllBookingsTaken>
+					</BookingArrangements>
+				</FlexibleJourneyPattern>
+			</FlexibleService>
+		</Service>
+		    <Service>
+			<ServiceCode>UZ000WOCT:216</ServiceCode>
+			<Lines>
+				<Line id="ARBB:UZ000WOCT:216:53M">
+					<LineName>53M</LineName>
+									<OutboundDescription>
+            <Description>Putteridge High School to Church Street</Description>
+          </OutboundDescription>
+				</Line>
+			</Lines>
+			<OperatingPeriod>
+				<StartDate>2022-01-01</StartDate>
+			</OperatingPeriod>
+			<OperatingProfile>
+				<RegularDayType>
+					<DaysOfWeek> 
+						<Monday/> 
+						<Tuesday/> 
+						<Wednesday/> 
+						<Thursday/> 
+						<Friday/>
+						<Saturday/> 
+						<Sunday/> 
+					</DaysOfWeek> 
+				</RegularDayType>
+				<BankHolidayOperation>
+					<DaysOfOperation>
+						<ChristmasDay/>
+						<BoxingDay/>
+						<GoodFriday/>
+						<NewYearsDay/>
+						<LateSummerBankHolidayNotScotland/>
+						<MayDay/>
+						<EasterMonday/>
+						<SpringBank/>
+						<ChristmasDayHoliday/>
+						<BoxingDayHoliday/>
+						<NewYearsDayHoliday/>
+						<OtherPublicHoliday>
+								<Description>CoronationBankHoliday</Description>
+								<Date>2023-05-08</Date>
+						</OtherPublicHoliday>
+						<ChristmasEve/>
+						<NewYearsEve/>
+					</DaysOfOperation>
+				</BankHolidayOperation>
+			</OperatingProfile>
+			<ServiceClassification>
+				<Flexible/>
+			</ServiceClassification>
+			<RegisteredOperatorRef>O1</RegisteredOperatorRef>
+			<PublicUse>true</PublicUse>
+			<Description>Flexible on demand service for Market Rasen Area</Description>
+			<SchematicMap>CallConnect-Market-Rasen.jpg</SchematicMap>
+			<FlexibleService>
+				<Origin>Market Rasen</Origin>
+				<Destination>Market Rasen</Destination>
+				<FlexibleJourneyPattern id="jp_2">
+					<Direction>outbound</Direction>
+					<FlexibleZones>					
+						<FlexibleStopUsage>
+							<StopPointRef>02901278</StopPointRef>
+						</FlexibleStopUsage>
+					</FlexibleZones>
+					<BookingArrangements>
+						<Description>The booking office is open for all advance booking Monday to Friday 8:30am – 6:30pm, Saturday 9am – 5pm</Description>
+						<WebAddress>https://callconnect.opendrt.co.uk/OpenDRT/</WebAddress>
+						<AllBookingsTaken>true</AllBookingsTaken>
+					</BookingArrangements>
+				</FlexibleJourneyPattern>
+			</FlexibleService>
+		</Service>
+	    <Service>
+      <ServiceCode>UZ000WBCT:B1081</ServiceCode>
+      <Lines>
+        <Line id="ARBB:UZ000WBCT:B1081:123">
+          <LineName>123</LineName>
+          <OutboundDescription>
+            <Description>Putteridge High School to Church Street</Description>
+          </OutboundDescription>
+          <InboundDescription>
+            <Description>Church Street to Putteridge High School</Description>
+          </InboundDescription>
+        </Line>
+      </Lines>
+      <OperatingPeriod>
+        <StartDate>2023-04-25</StartDate>
+      </OperatingPeriod>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <ServicedOrganisationDayType>
+          <DaysOfOperation>
+            <WorkingDays>
+              <ServicedOrganisationRef>Sch:12</ServicedOrganisationRef>
+            </WorkingDays>
+          </DaysOfOperation>
+        </ServicedOrganisationDayType>
+        <BankHolidayOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay />
+            <BoxingDay />
+            <GoodFriday />
+            <NewYearsDay />
+            <LateSummerBankHolidayNotScotland />
+            <MayDay />
+            <EasterMonday />
+            <SpringBank />
+            <ChristmasDayHoliday />
+            <BoxingDayHoliday />
+            <NewYearsDayHoliday />
+            <OtherPublicHoliday>
+              <Description>CoronationOfKingCharlesIII</Description>
+              <Date>2023-05-08</Date>
+            </OtherPublicHoliday>
+            <ChristmasEve />
+            <NewYearsEve />
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <RegisteredOperatorRef>tkt_oid</RegisteredOperatorRef>
+      <PublicUse>true</PublicUse>
+      	<StandardService>
+        <Origin>Putteridge High School</Origin>
+        <Destination>Church Street</Destination>
+        <JourneyPattern id="jp_3">
+          <DestinationDisplay>Church Street</DestinationDisplay>
+          <OperatorRef>tkt_oid</OperatorRef>
+          <Direction>inbound</Direction>
+          <RouteRef>rt_0000</RouteRef>
+          <JourneyPatternSectionRefs>js_1</JourneyPatternSectionRefs>
+        </JourneyPattern>
+      </StandardService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+  		<FlexibleVehicleJourney>
+			<DestinationDisplay>Flexible</DestinationDisplay>
+			<Direction>outbound</Direction>
+			<Description>Monday to Friday service around Market Rasen</Description>
+			<VehicleJourneyCode>vj_1</VehicleJourneyCode>
+			<ServiceRef>PB0002032:467</ServiceRef>
+			<LineRef>ARBB:PB0002032:467:53M</LineRef>
+			<JourneyPatternRef>jp_1</JourneyPatternRef>
+			<FlexibleServiceTimes>
+				<ServicePeriod>
+					<StartTime>07:00:00</StartTime>
+					<EndTime>19:00:00</EndTime>
+				</ServicePeriod>
+			</FlexibleServiceTimes>
+		</FlexibleVehicleJourney>
+		<FlexibleVehicleJourney>
+			<Direction>outbound</Direction>
+			<Description>Monday to Friday service around Market Rasen</Description>
+			<VehicleJourneyCode>vj_2</VehicleJourneyCode>
+			<ServiceRef>UZ000WOCT:216</ServiceRef>
+			<LineRef>ARBB:UZ000WOCT:216:53M</LineRef>
+			<JourneyPatternRef>jp_2</JourneyPatternRef>
+			<FlexibleServiceTimes>
+				<ServicePeriod>
+					<StartTime>07:00:00</StartTime>
+					<EndTime>19:00:00</EndTime>
+				</ServicePeriod>
+			</FlexibleServiceTimes>
+		</FlexibleVehicleJourney>
+    <VehicleJourney>
+      <OperatorRef>tkt_oid</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>1094</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <VehicleJourneyCode>vj_3</VehicleJourneyCode>
+      <ServiceRef>UZ000WBCT:B1081</ServiceRef>
+      <LineRef>ARBB:UZ000WBCT:B1081:123</LineRef>
+      <JourneyPatternRef>jp_3</JourneyPatternRef>
+      <DepartureTime>15:10:00</DepartureTime>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>

@@ -59,6 +59,101 @@ def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
     }
 
 
+def get_line_level_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for a LTA
+    with relevant effective staleness dates annotated.
+    """
+    line_level_txc_map = {}
+    services_subquery_list = [
+        x.registration_numbers.values("id")
+        for x in lta_list
+        if x.registration_numbers.values("id")
+    ]
+
+    if len(lta_list) > 0:
+        weca_services_list = OTCService.objects.filter(
+            atco_code__in=AdminArea.objects.filter(ui_lta=lta_list[0].ui_lta).values(
+                "atco_code"
+            ),
+            licence_id__isnull=False,
+        ).values("id")
+
+        if weca_services_list:
+            services_subquery_list.append(weca_services_list)
+
+    if services_subquery_list:
+        final_subquery = None
+        for service_queryset in services_subquery_list:
+            if final_subquery is None:
+                final_subquery = service_queryset
+            else:
+                final_subquery = final_subquery | service_queryset
+        final_subquery = final_subquery.distinct()
+
+        service_code_subquery = Subquery(
+            OTCService.objects.filter(id__in=Subquery(final_subquery.values("id")))
+            .add_service_code()
+            .values("service_code")
+        )
+
+        txc_file_attributes = (
+            TXCFileAttributes.objects.filter(service_code__in=service_code_subquery)
+            .get_active_live_revisions()
+            .add_staleness_dates()
+            .add_split_linenames()
+            .add_organisation_name()
+            .order_by(
+                "service_code",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
+            )
+        )
+
+        for txc_attribute in txc_file_attributes:
+            key = (txc_attribute.line_name_unnested, txc_attribute.service_code)
+            if key not in line_level_txc_map:
+                line_level_txc_map[key] = txc_attribute
+        return line_level_txc_map
+
+    else:
+        return {}
+
+
+def get_line_level_txc_map(org_id: int) -> Dict[tuple, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for an organisation
+    with relevant effective staleness dates annotated.
+    """
+    line_level_txc_map = {}
+
+    txc_file_attributes = (
+        TXCFileAttributes.objects.filter(revision__dataset__organisation_id=org_id)
+        .get_active_live_revisions()
+        .add_staleness_dates()
+        .add_split_linenames()
+        .order_by(
+            "service_code",
+            "line_name_unnested",
+            "-revision__published_at",
+            "-revision_number",
+            "-modification_datetime",
+            "-operating_period_start_date",
+            "-filename",
+        )
+        .distinct("service_code", "line_name_unnested")
+    )
+
+    for txc_file in txc_file_attributes:
+        key = (txc_file.service_code, txc_file.line_name_unnested)
+        if key not in line_level_txc_map:
+            line_level_txc_map[key] = txc_file
+    return line_level_txc_map
+
+
 def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
     """
     Get a list of dictionaries of live TXCFileAttributes for a LTA

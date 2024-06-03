@@ -45,11 +45,18 @@ logger = get_task_logger(__name__)
 class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
-    def __init__(self, file_obj: File, start_time, df_txc_files=pd.DataFrame()):
+    def __init__(
+        self,
+        file_obj: File,
+        start_time,
+        stop_activity_cache=[],
+        df_txc_files=pd.DataFrame(),
+    ):
         self.file_id = uuid.uuid4()
         self.filename = file_obj.name
         self.doc = TransXChangeDocument(file_obj.file)
         self.start_time = start_time
+        self.stop_activity_cache = stop_activity_cache
         self.txc_file_id = None
         if self.filename:
             self.txc_file_id = self.get_txc_file_id(
@@ -232,12 +239,15 @@ class TransXChangeExtractor:
         This function extracts the flexible journey patterns
         """
         services = self.doc.get_services()
-        flexible_journey_patterns = flexible_journey_patterns_to_dataframe(services)
+        flexible_journey_patterns = flexible_journey_patterns_to_dataframe(
+            services, self.stop_activity_cache
+        )
         if not flexible_journey_patterns.empty:
             flexible_journey_patterns["file_id"] = self.file_id
             flexible_journey_patterns.set_index(
                 ["file_id", "journey_pattern_id"], inplace=True
             )
+
         return flexible_journey_patterns
 
     def construct_geometry(self, point: Point):
@@ -340,7 +350,9 @@ class TransXChangeExtractor:
 
     def extract_journey_pattern_sections(self):
         sections = self.doc.get_journey_pattern_sections(allow_none=True)
-        timing_links = journey_pattern_sections_to_dataframe(sections)
+        timing_links = journey_pattern_sections_to_dataframe(
+            sections, self.stop_activity_cache
+        )
 
         jp_sections = pd.DataFrame()
         if not timing_links.empty:
@@ -399,9 +411,12 @@ class TransXChangeExtractor:
 
 
 class TransXChangeZipExtractor:
-    def __init__(self, file_obj, start_time, txc_files=pd.DataFrame()):
+    def __init__(
+        self, file_obj, start_time, stop_activity_cache, txc_files=pd.DataFrame()
+    ):
         self.file_obj = file_obj
         self.start_time = start_time
+        self.stop_activity_cache = stop_activity_cache
         self.df_txc_files = txc_files
 
     def extract(self) -> ExtractedData:
@@ -435,7 +450,10 @@ class TransXChangeZipExtractor:
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
                     extractor = TransXChangeExtractor(
-                        file_obj, self.start_time, self.df_txc_files
+                        file_obj,
+                        self.start_time,
+                        self.stop_activity_cache,
+                        self.df_txc_files,
                     )
                     extracted = extractor.extract()
                     extracts.append(extracted)
