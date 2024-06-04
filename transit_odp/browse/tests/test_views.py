@@ -3,7 +3,7 @@ import datetime
 import io
 import zipfile
 from logging import getLogger
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock, MagicMock
 
 import pytest
 from django.conf import settings
@@ -77,6 +77,9 @@ from transit_odp.users.factories import (
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
+from waffle.testutils import override_flag
+from django.test import TestCase
+
 
 pytestmark = pytest.mark.django_db
 
@@ -951,8 +954,8 @@ class TestDataDownloadCatalogueView:
         assert body == expected
 
 
-@override_flag("is_new_gtfs_Api_active", active=False)
-class TestGTFSStaticDownloads:
+@override_flag("is_new_gtfs_api_active", active=False)
+class TestGTFSStaticDownloads(TestCase):
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
@@ -988,8 +991,8 @@ class TestGTFSStaticDownloads:
         assert ResourceRequestCounter.objects.count() == 1
 
 
-@override_flag("is_new_gtfs_Api_active", active=True)
-class TestNewGTFSStaticDownloads:
+@override_flag("is_new_gtfs_api_active", active=True)
+class TestNewGTFSStaticDownloads(TestCase):
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
