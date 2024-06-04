@@ -48,7 +48,6 @@ local-db-restore:
 	docker exec -i bods-postgres-1 psql -U transit_odp -d transit_odp < db_backup.sql
 	rm -rf db_backup.sql
 
-
 django:
 	python -m manage runserver 0.0.0.0:8001 | sed 's/^/[$@]\t/'
 
@@ -67,7 +66,10 @@ redis:
 mailhog:
 	mailhog | sed 's/^/[$@]\t/'
 
+migrate:
+	python -m manage migrate | sed 's/^/[$@]\t/'
+
 test:
 	pytest -vv --junitxml=junit_report.xml || [ $? = 1 ] | sed 's/^/[$@]\t/'
 
-serve: django beat flower worker redis mailhog
+serve: redis mailhog migrate django beat flower worker
