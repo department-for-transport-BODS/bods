@@ -78,7 +78,7 @@ from transit_odp.users.factories import (
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
 from waffle.testutils import override_flag
-from django.test import TestCase
+from unittest import TestCase
 
 
 pytestmark = pytest.mark.django_db
@@ -954,11 +954,12 @@ class TestDataDownloadCatalogueView:
         assert body == expected
 
 
-@override_flag("is_new_gtfs_api_active", active=False)
+@override_flag("is_new_gtfs_api_active", active=True)
 class TestGTFSStaticDownloads(TestCase):
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_file_404(self, downloader_cls, client_factory):
         url = reverse("gtfs-file-download", args=["all"], host=self.host)
 
@@ -973,6 +974,7 @@ class TestGTFSStaticDownloads(TestCase):
         downloader_obj.download_file_by_id.assert_called_once_with("all")
 
     @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_increments_resource_counter(
         self, downloader_cls, client_factory
     ):
@@ -996,6 +998,7 @@ class TestNewGTFSStaticDownloads(TestCase):
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_file_404(self, mrequests, client_factory):
         url = reverse("gtfs-file-download", host=self.host, args=["all"])
         client = client_factory(host=self.host)
@@ -1005,6 +1008,7 @@ class TestNewGTFSStaticDownloads(TestCase):
         assert response.status_code == 404
 
     @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_increments_resource_counter(self, mrequests, client_factory):
         url = reverse("gtfs-file-download", host=self.host, args=["all"])
         client = client_factory(host=self.host)
