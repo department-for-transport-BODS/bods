@@ -33,6 +33,7 @@ from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
 )
+from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.loggers import DatafeedPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.factories import DataQualityReportFactory
@@ -950,7 +951,45 @@ class TestDataDownloadCatalogueView:
         assert body == expected
 
 
+@override_flag("is_new_gtfs_Api_active", active=False)
 class TestGTFSStaticDownloads:
+    host = DATA_HOST
+
+    @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    def test_download_gtfs_file_404(self, downloader_cls, client_factory):
+        url = reverse("gtfs-file-download", args=["all"], host=self.host)
+
+        downloader_obj = Mock()
+        downloader_cls.return_value = downloader_obj
+        gtfs_file = GTFSFile(filename="wah")
+        downloader_obj.download_file_by_id.return_value = gtfs_file
+
+        client = client_factory(host=self.host)
+        response = client.get(url)
+        assert response.status_code == 404
+        downloader_obj.download_file_by_id.assert_called_once_with("all")
+
+    @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    def test_download_gtfs_increments_resource_counter(
+        self, downloader_cls, client_factory
+    ):
+        url = reverse("gtfs-file-download", args=["all"], host=self.host)
+
+        downloader_obj = Mock()
+        downloader_cls.return_value = downloader_obj
+        gtfs_file = GTFSFile.from_id("all")
+        gtfs_file.file = io.StringIO("blahblah")
+        downloader_obj.download_file_by_id.return_value = gtfs_file
+
+        client = client_factory(host=self.host)
+        assert ResourceRequestCounter.objects.count() == 0
+        response = client.get(url)
+        assert response.status_code == 200
+        assert ResourceRequestCounter.objects.count() == 1
+
+
+@override_flag("is_new_gtfs_Api_active", active=True)
+class TestNewGTFSStaticDownloads:
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
