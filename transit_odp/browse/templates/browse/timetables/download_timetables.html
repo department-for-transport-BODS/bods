@@ -131,7 +131,7 @@
                     </li>
                 {% endfor %}
             </ul>
-        {% elseif gtfs_static_files or gtfs_static_files|length %}
+        {% elif gtfs_static_files or gtfs_static_files|length %}
             <ul class="govuk-list download-list">
               {% for file in gtfs_static_files %}
                   <li>
