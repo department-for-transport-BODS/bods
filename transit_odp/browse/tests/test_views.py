@@ -1,9 +1,10 @@
 import csv
 import datetime
 import io
+from django.test import TestCase
 import zipfile
 from logging import getLogger
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock
 
 import pytest
 from django.conf import settings
@@ -78,8 +79,6 @@ from transit_odp.users.factories import (
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
 from waffle.testutils import override_flag
-from django.test import TestCase
-
 
 pytestmark = pytest.mark.django_db
 
