@@ -27,7 +27,9 @@ from transit_odp.browse.views.base_views import (
     ChangeLogView,
 )
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
+from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
     DownloadView,
@@ -840,7 +842,15 @@ class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
         ]
         context["change_archives"] = change_archives
 
-        context["gtfs_regions"] = _get_gtfs_regions()
+        is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
+
+        if is_new_gtfs_api_active:
+            context["gtfs_regions"] = _get_gtfs_regions()
+            context["is_new_gtfs_api_active"] = True
+        else:
+            downloader = GTFSFileDownloader(get_gtfs_bucket_service)
+            context["gtfs_static_files"] = downloader.get_files()
+            context["is_new_gtfs_api_active"] = False
 
         return context
 
@@ -849,6 +859,7 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
     """View for retrieving a GTFS region file from the GTFS API and returning it as a StreamingHttpResponse"""
 
     def get(self, request, *args, **kwargs):
+        is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
         if self.kwargs.get("id") == TravelineRegions.ALL.lower():
             db_starttime = datetime.now()
             ResourceRequestCounter.from_request(request)
@@ -856,9 +867,11 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             logger.info(
                 f"Database call for GTFS ResourceRequestCounter took {(db_endtime - db_starttime).total_seconds()} seconds"
             )
+        if is_new_gtfs_api_active:
+            return self.render_to_response_active()
         return self.render_to_response()
 
-    def render_to_response(self):
+    def render_to_response_active(self):
         id_ = self.kwargs.get("id", None)
 
         gtfs_region_file = self.get_download_file()
@@ -877,6 +890,23 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
         gtfs_file = _get_gtfs_file(id_)
 
         return gtfs_file
+
+    def render_to_response(self):
+        id_ = self.kwargs.get("id", None)
+        gtfs = self.get_download_file_by_id(id_)
+        if gtfs.file is None:
+            raise Http404
+        return FileResponse(gtfs.file, filename=gtfs.filename, as_attachment=True)
+
+    def get_download_file_by_id(self, id_):
+        s3_start = datetime.now()
+        downloader = GTFSFileDownloader(get_gtfs_bucket_service)
+        gtfs = downloader.download_file_by_id(id_)
+        s3_endtime = datetime.now()
+        logger.info(
+            f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
+        )
+        return gtfs
 
 
 class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
@@ -899,7 +929,7 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self):
+    def get_download_file_by_id(self):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -933,7 +963,7 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self, *args):
+    def get_download_file_by_id(self, *args):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -959,7 +989,7 @@ class DownloadCompliantBulkDataArchiveView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self):
+    def get_download_file_by_id(self):
         return self.object.data
 
 
@@ -985,7 +1015,7 @@ class DownloadChangeDataArchiveView(DownloadView):
         last_week = timezone.now() - timedelta(days=7)
         return ChangeDataArchive.objects.filter(published_at__gte=last_week)
 
-    def get_download_file(self):
+    def get_download_file_by_id(self):
         return self.object.data
 
 

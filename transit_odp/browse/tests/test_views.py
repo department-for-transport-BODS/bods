@@ -3,7 +3,7 @@ import datetime
 import io
 import zipfile
 from logging import getLogger
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock, MagicMock
 
 import pytest
 from django.conf import settings
@@ -33,6 +33,7 @@ from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
 )
+from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.loggers import DatafeedPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.factories import DataQualityReportFactory
@@ -76,6 +77,9 @@ from transit_odp.users.factories import (
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
+from waffle.testutils import override_flag
+from unittest import TestCase
+
 
 pytestmark = pytest.mark.django_db
 
@@ -950,10 +954,51 @@ class TestDataDownloadCatalogueView:
         assert body == expected
 
 
-class TestGTFSStaticDownloads:
+@override_flag("is_new_gtfs_api_active", active=True)
+class TestGTFSStaticDownloads(TestCase):
+    host = DATA_HOST
+
+    @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
+    def test_download_gtfs_file_404(self, downloader_cls, client_factory):
+        url = reverse("gtfs-file-download", args=["all"], host=self.host)
+
+        downloader_obj = Mock()
+        downloader_cls.return_value = downloader_obj
+        gtfs_file = GTFSFile(filename="wah")
+        downloader_obj.download_file_by_id.return_value = gtfs_file
+
+        client = client_factory(host=self.host)
+        response = client.get(url)
+        assert response.status_code == 404
+        downloader_obj.download_file_by_id.assert_called_once_with("all")
+
+    @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
+    def test_download_gtfs_increments_resource_counter(
+        self, downloader_cls, client_factory
+    ):
+        url = reverse("gtfs-file-download", args=["all"], host=self.host)
+
+        downloader_obj = Mock()
+        downloader_cls.return_value = downloader_obj
+        gtfs_file = GTFSFile.from_id("all")
+        gtfs_file.file = io.StringIO("blahblah")
+        downloader_obj.download_file_by_id.return_value = gtfs_file
+
+        client = client_factory(host=self.host)
+        assert ResourceRequestCounter.objects.count() == 0
+        response = client.get(url)
+        assert response.status_code == 200
+        assert ResourceRequestCounter.objects.count() == 1
+
+
+@override_flag("is_new_gtfs_api_active", active=True)
+class TestNewGTFSStaticDownloads(TestCase):
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_file_404(self, mrequests, client_factory):
         url = reverse("gtfs-file-download", host=self.host, args=["all"])
         client = client_factory(host=self.host)
@@ -963,6 +1008,7 @@ class TestGTFSStaticDownloads:
         assert response.status_code == 404
 
     @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_increments_resource_counter(self, mrequests, client_factory):
         url = reverse("gtfs-file-download", host=self.host, args=["all"])
         client = client_factory(host=self.host)
