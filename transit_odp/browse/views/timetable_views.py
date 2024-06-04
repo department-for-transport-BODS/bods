@@ -893,12 +893,12 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def render_to_response(self):
         id_ = self.kwargs.get("id", None)
-        gtfs = self.get_download_file(id_)
+        gtfs = self.get_download_file_by_id(id_)
         if gtfs.file is None:
             raise Http404
         return FileResponse(gtfs.file, filename=gtfs.filename, as_attachment=True)
 
-    def get_download_file(self, id_):
+    def get_download_file_by_id(self, id_):
         s3_start = datetime.now()
         downloader = GTFSFileDownloader(get_gtfs_bucket_service)
         gtfs = downloader.download_file_by_id(id_)
@@ -929,7 +929,7 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self):
+    def get_download_file_by_id(self):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -963,7 +963,7 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self, *args):
+    def get_download_file_by_id(self, *args):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -989,7 +989,7 @@ class DownloadCompliantBulkDataArchiveView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self):
+    def get_download_file_by_id(self):
         return self.object.data
 
 
@@ -1015,7 +1015,7 @@ class DownloadChangeDataArchiveView(DownloadView):
         last_week = timezone.now() - timedelta(days=7)
         return ChangeDataArchive.objects.filter(published_at__gte=last_week)
 
-    def get_download_file(self):
+    def get_download_file_by_id(self):
         return self.object.data
 
 
