@@ -48,6 +48,12 @@
                                                     <td class="govuk-table__cell manage-users-table__key">{% trans 'Status' %}</td>
                                                         <td colspan="2" class="govuk-table__cell">{{ properties.status }}</td>
                                                             </tr>
+                                                
+                                                    {# Is ABODS Organisation #}
+                                                        <tr class="govuk-table__row">
+                                                            <td class="govuk-table__cell manage-users-table__key">{% trans 'Is ABODS Organisation' %}</td>
+                                                                <td colspan="2" class="govuk-table__cell">{{ properties.is_abods_global_viewer }}</td>
+                                                                    </tr>
 
                                                             {# Operator ID #}
                                                             <tr class="govuk-table__row">

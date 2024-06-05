@@ -217,15 +217,37 @@ def get_holidays_records_to_insert(records):
             )
 
 
-def filter_rows_by_journeys(row, journey_mapping):
+def get_filtered_rows_by_journeys(
+    df: pd.DataFrame, journey_mappings: Dict
+) -> pd.DataFrame:
+    """Apply the filter function for each row"""
+    return df[
+        df.apply(lambda row: filter_rows_by_journeys(row, journey_mappings), axis=1)
+    ]
+
+
+def get_journey_mappings(df: pd.DataFrame) -> dict:
+    return (
+        df.groupby(["file_id", "vehicle_journey_code"])["day_of_week"]
+        .unique()
+        .apply(list)
+        .to_dict()
+    )
+
+
+def filter_rows_by_journeys(row: pd.Series, journey_mapping: Dict) -> bool:
+    """Filter out row if the date is considered operational and doesnt need an explicit entry into th exceptions table as its operation is covered by the operating profile"""
     date_obj = row["exceptions_date"]
     if date_obj:
         day_of_week = date_obj.strftime("%A")
+        operational_days = journey_mapping[
+            (row["file_id"], row["vehicle_journey_code"])
+        ]
         if row["exceptions_operational"] == True:
-            return day_of_week not in journey_mapping[row["vehicle_journey_code"]]
-        return day_of_week in journey_mapping[row["vehicle_journey_code"]]
-    else:
-        return False
+            return day_of_week not in operational_days
+        return day_of_week in operational_days
+
+    return False
 
 
 def get_line_description_based_on_direction(row: pd.Series) -> str:
