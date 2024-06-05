@@ -9,7 +9,7 @@ from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.common import (
-    get_in_scope_in_season_services_line_level_count,
+    get_in_scope_in_season_services_line_level,
 )
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
@@ -82,9 +82,9 @@ class OperatorDetailView(BaseDetailView):
         context["total_services_requiring_attention"] = len(
             get_requires_attention_line_level_data(organisation.id)
         )
-        context[
-            "total_in_scope_in_season_services"
-        ] = get_in_scope_in_season_services_line_level_count(organisation.id)
+        context["total_in_scope_in_season_services"] = len(
+            get_in_scope_in_season_services_line_level(organisation.id)
+        )
         try:
             context["services_require_attention_percentage"] = round(
                 100

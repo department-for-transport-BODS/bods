@@ -21,18 +21,14 @@ def get_line_level_in_scope_otc_map(organisation_id: int) -> Dict[tuple, OTCServ
     Returns:
         Dict[tuple, OTCService]: List of Services
     """
-    services = {}
-    for service in OTCService.objects.get_otc_data_for_organisation(organisation_id):
-        service_numbers = service.service_number.split("|")
-        for service_number in service_numbers:
-            service_copy = copy.deepcopy(service)
-            service_copy.service_number = service_number
-            key = (
-                service_copy.registration_number.replace("/", ":"),
-                service_number,
-            )
-            services[key] = service_copy
-    return services
+    return {
+        (
+            f"{service.registration_number.replace('/', ':')}",
+            f"{split_service_number}",
+        ): service
+        for service in OTCService.objects.get_otc_data_for_organisation(organisation_id)
+        for split_service_number in service.service_number.split("|")
+    }
 
 
 def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
@@ -45,20 +41,16 @@ def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
     Returns:
         Dict[tuple, OTCService]: List of Services
     """
-    services = {}
-    for service in OTCService.objects.get_all_otc_data_for_organisation(
-        organisation_id
-    ):
-        service_numbers = service.service_number.split("|")
-        for service_number in service_numbers:
-            service_copy = copy.deepcopy(service)
-            service_copy.service_number = service_number
-            key = (
-                service_copy.registration_number.replace("/", ":"),
-                service_number,
-            )
-            services[key] = service_copy
-    return services
+    return {
+        (
+            f"{service.registration_number.replace('/', ':')}",
+            f"{split_service_number}",
+        ): service
+        for service in OTCService.objects.get_all_otc_data_for_organisation(
+            organisation_id
+        )
+        for split_service_number in service.service_number.split("|")
+    }
 
 
 def get_otc_map_lta(lta_list) -> Dict[str, OTCService]:

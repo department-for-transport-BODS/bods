@@ -3,7 +3,7 @@ import datetime
 from django_hosts import reverse
 
 from config.hosts import PUBLISH_HOST
-from transit_odp.browse.common import get_in_scope_in_season_services_line_level_count
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import ConsumerFeedback, SeasonalService
 from transit_odp.publish.requires_attention import (
@@ -28,9 +28,9 @@ class ListView(BasePublishListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = context["pk1"]
-        context[
-            "applicable_services"
-        ] = get_in_scope_in_season_services_line_level_count(org_id)
+        context["applicable_services"] = len(
+            get_in_scope_in_season_services_line_level(org_id)
+        )
         context["services_requiring_attention"] = len(
             get_requires_attention_line_level_data(org_id)
         )

@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from django.views import View
 from django_tables2 import SingleTableView
 
-from transit_odp.browse.common import get_in_scope_in_season_services_line_level_count
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level
 from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
 from transit_odp.organisation.models import Organisation
 from transit_odp.otc.models import Service as OTCService
@@ -28,9 +28,9 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
         context["ancestor"] = f"Review {data_owner} Timetables Data"
         context["services_requiring_attention"] = len(self.object_list)
-        context[
-            "total_in_scope_in_season_services"
-        ] = get_in_scope_in_season_services_line_level_count(org_id)
+        context["total_in_scope_in_season_services"] = len(
+            get_in_scope_in_season_services_line_level(org_id)
+        )
         try:
             context["services_require_attention_percentage"] = round(
                 100

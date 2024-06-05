@@ -261,7 +261,9 @@ def get_in_scope_in_season_services_line_level(org_id: int) -> pd.DataFrame:
     if services_qs.count() == 0:
         return pd.DataFrame()
 
-    services_df = pd.DataFrame.from_records(list(services_qs.all().values()))
+    services_df = pd.DataFrame.from_records(
+        list(services_qs.all().values("service_number", "registration_number"))
+    )
 
     if services_df.empty:
         return services_df
@@ -271,15 +273,3 @@ def get_in_scope_in_season_services_line_level(org_id: int) -> pd.DataFrame:
     )
     services_df = services_df.explode("service_number")
     return services_df
-
-
-def get_in_scope_in_season_services_line_level_count(org_id: int) -> int:
-    """Get count for in_scope and in_season services line level
-
-    Args:
-        org_id (int):
-
-    Returns:
-        int: total in_scope_in_season_services count
-    """
-    return len(get_in_scope_in_season_services_line_level(org_id))

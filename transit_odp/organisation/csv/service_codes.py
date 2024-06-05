@@ -218,6 +218,7 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
         require_attention: str,
         traveline_region: str,
         ui_lta_name: str,
+        line_name: str,
     ) -> None:
         self._object_list.append(
             {
@@ -225,7 +226,7 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
                 "scope_status": exempted,
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
-                "otc_service_number": service and service.service_number,
+                "otc_service_number": line_name,
                 "last_modified_date": file_attribute
                 and (file_attribute.modification_datetime.date()),
                 "operating_period_start_date": file_attribute
@@ -288,11 +289,11 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
         services_code = set(otc_map)
         services_code = sorted(services_code)
 
-        for service_code in services_code:
-            service = otc_map.get(service_code)
-            file_attribute = txcfa_map.get(service_code)
-            seasonal_service = seasonal_service_map.get(service_code[0])
-            exemption = service_code_exemption_map.get(service_code[0])
+        for (service_code, line_name) in services_code:
+            service = otc_map.get((service_code, line_name))
+            file_attribute = txcfa_map.get((service_code, line_name))
+            seasonal_service = seasonal_service_map.get(service_code)
+            exemption = service_code_exemption_map.get(service_code)
             is_english_region = False
             traveline_region = ui_lta_name = ""
 
@@ -342,6 +343,7 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
                 require_attention,
                 traveline_region,
                 ui_lta_name,
+                line_name,
             )
 
     def get_queryset(self):
