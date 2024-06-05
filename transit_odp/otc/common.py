@@ -55,20 +55,20 @@ def process_service_number(string: str) -> List:
     Returns:
         List: List of service numbers after processing
     """
-    if "|" in string:
-        return string.split("|")
-    elif "(" in string or ")" in string:
+    if not string:
+        return []
+
+    if "(" in string or ")" in string:
         return process_brackets(string)
     else:
-        if any(
-            char.isdigit()
-            for char in string.replace(" ", "").replace(",", "").replace(":", "")
-        ):
-            delimiters = [",", " ", ":"]
+        if string[0].isdigit():
+            delimiters = [",", " ", ":", "-", "|"]
             regex_pattern = "|".join(map(re.escape, delimiters))
             return re.split(regex_pattern, string)
         else:
-            return [string]
+            delimiters = [",", ":", "-", "|"]
+            regex_pattern = "|".join(map(re.escape, delimiters))
+            return re.split(regex_pattern, string)
 
 
 def format_service_number(service_number: str, other_service_number: str) -> str:
@@ -85,10 +85,17 @@ def format_service_number(service_number: str, other_service_number: str) -> str
     Returns:
         str: evaluated string
     """
-    service_list = process_service_number(service_number)
-    other_service_list = process_service_number(other_service_number)
+    service_list = other_service_list = []
+    if service_number:
+        service_list = process_service_number(service_number)
+    if other_service_number:
+        other_service_list = process_service_number(other_service_number)
 
     combined_list = list(dict.fromkeys((service_list + other_service_list)))
+
+    if len(combined_list) == 0:
+        return ""
+
     combined_list.sort()
 
     unique_list = []
