@@ -9,6 +9,7 @@ from requests import RequestException
 from rest_framework import status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from waffle import flag_is_active
 
 from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
@@ -76,7 +77,12 @@ class AVLGTFSRTApiView(views.APIView):
 
     def get(self, request, format=None):
         """Get GTFS RT response from consumer API."""
-        url = f"{settings.GTFS_API_BASE_URL}/gtfs-rt"
+        is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
+        url = (
+            f"{settings.GTFS_API_BASE_URL}/gtfs-rt"
+            if is_new_gtfs_api_active
+            else f"{settings.CAVL_CONSUMER_URL}/gtfsrtfeed"
+        )
         content, status_code = _get_gtfs_rt_response(url, request.query_params)
 
         return Response(content, status=status_code)
