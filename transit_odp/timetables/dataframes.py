@@ -5,6 +5,7 @@
 import logging
 
 import pandas as pd
+import isodate
 from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_str
@@ -20,7 +21,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 )
 from datetime import datetime, timedelta
 from typing import Dict, Any, Union
-
 from transit_odp.transmodel.models import StopActivity
 
 logger = logging.getLogger(__name__)
@@ -524,7 +524,8 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
 
             to_wait_time_exists = False
             if vj_timing_links:
-                for links in vj_timing_links:
+                len_timing_links = len(vj_timing_links)
+                for index, links in enumerate(vj_timing_links):
                     timing_link_ref = links.get_element(
                         ["JourneyPatternTimingLinkRef"]
                     ).text
@@ -544,19 +545,29 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             ["WaitTime"]
                         )
                         if from_wait_time:
-                            wait_time = pd.to_timedelta(from_wait_time.text)
+                            parsed_from_wait_time = isodate.parse_duration(
+                                from_wait_time.text
+                            )
+                            wait_time = pd.to_timedelta(
+                                parsed_from_wait_time.total_seconds(), unit="s"
+                            )
 
-                    if to_wait_time_element:
+                    if to_wait_time_element and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
                         if to_wait_time:
                             to_wait_time_exists = True
+                            parsed_to_wait_time = isodate.parse_duration(
+                                to_wait_time.text
+                            )
                             if pd.isna(wait_time):
-                                wait_time = pd.to_timedelta(to_wait_time.text)
+                                wait_time = pd.to_timedelta(
+                                    parsed_to_wait_time.total_seconds(), unit="s"
+                                )
                             else:
                                 wait_time = wait_time + pd.to_timedelta(
-                                    to_wait_time.text
+                                    parsed_to_wait_time.total_seconds(), unit="s"
                                 )
 
                     else:
@@ -859,24 +870,26 @@ def populate_operating_profiles(
         "day_of_week": days_of_week,
         "operational": operational,
     }
-
     if serviced_org_element:
         operational = False
         serviced_orgs_working_days = serviced_org_element.get_element_or_none(
             "WorkingDays"
         )
         if not serviced_orgs_working_days:
-            serviced_orgs_working_days = serviced_org_element.get_element("Holidays")
+            serviced_orgs_working_days = serviced_org_element.get_element_or_none(
+                "Holidays"
+            )
         elif serviced_org_element.localname == "DaysOfOperation":
             operational = True
-
-        serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
-            "ServicedOrganisationRef"
-        )
-        serviced_org_refs = [
-            serviced_org_ref_element.text
-            for serviced_org_ref_element in serviced_org_ref_elements
-        ]
+        serviced_org_refs = []
+        if serviced_orgs_working_days:
+            serviced_org_ref_elements = serviced_orgs_working_days.get_elements(
+                "ServicedOrganisationRef"
+            )
+            serviced_org_refs = [
+                serviced_org_ref_element.text
+                for serviced_org_ref_element in serviced_org_ref_elements
+            ]
         operating_profile_obj["serviced_org_ref"] = serviced_org_refs
         operating_profile_obj["operational"] = operational
 

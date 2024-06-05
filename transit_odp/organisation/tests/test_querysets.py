@@ -65,6 +65,19 @@ class TestOrganisationQuerySet:
     # TODO - test add_org_admin_count
     # TODO - test add_org_staff_count
 
+    def test_is_abods_organisation(self):
+        abods_organisation = OrganisationFactory(
+            is_abods_global_viewer=True, name="dummy_aboads_org", short_name="dummy org"
+        )
+        assert abods_organisation.is_abods_global_viewer == True
+        assert abods_organisation.name == "dummy_aboads_org"
+
+        bods_organisation = OrganisationFactory(
+            name="dummy_bods_org", short_name="dummy org"
+        )
+        assert bods_organisation.is_abods_global_viewer == False
+        assert bods_organisation.name == "dummy_bods_org"
+
     # Filters
     def test_has_published_feeds(self):
         """Tests the queryset is annotated with the total dataset count

@@ -40,6 +40,9 @@ class DataModel(BaseModel):
     subsidies_description: str = Field(alias="subsidised")
     subsidies_details: str = Field(alias="subsidyDetail")
     atco_code: Optional[str] = Field(alias="registrationNumber")
+    short_notice: bool = Field(alias="isShortNotice")
+    received_date: date = Field(alias="receivedDate")
+    end_date: date = Field(alias="endDate")
 
     @validator("registration_number")
     def trim_registration_number(cls, value, values):

@@ -45,7 +45,7 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
 
     class Meta:
         model = Organisation
-        fields = ("name", "short_name")
+        fields = ("name", "short_name", "is_abods_global_viewer")
 
     email = forms.EmailField(
         label=_("Key contact email (optional)"),
@@ -76,6 +76,15 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             {"required": _("Enter the organisation short name")}
         )
 
+        self.fields.update(
+            {
+                "is_abods_global_viewer": forms.BooleanField(
+                    label=_("Is ABODS Organisation"),
+                    required=False,
+                )
+            }
+        )
+
         self.nested_noc = NOCFormset(
             instance=self.instance,
             data=self.data if self.is_bound else None,
@@ -98,6 +107,7 @@ class OrganisationNameForm(GOVUKModelForm, CleanEmailMixin):
             "name",
             "short_name",
             "email",
+            "is_abods_global_viewer",
             InlineFormset("nested_noc"),
             InlineFormset("nested_psv"),
             ButtonHolder(
@@ -159,7 +169,13 @@ class OrganisationContactEmailForm(CleanEmailMixin, GOVUKForm):
 class OrganisationForm(OrganisationProfileForm):
     class Meta:
         model = Organisation
-        fields = ["name", "short_name", "key_contact", "licence_required"]
+        fields = [
+            "name",
+            "short_name",
+            "key_contact",
+            "licence_required",
+            "is_abods_global_viewer",
+        ]
         labels = {
             "name": _("Organisation name"),
             "short_name": _("Organisation short name"),
@@ -190,6 +206,14 @@ class OrganisationForm(OrganisationProfileForm):
                 )
             }
         )
+        self.fields.update(
+            {
+                "is_abods_global_viewer": forms.BooleanField(
+                    label=_("Is ABODS Organisation"),
+                    required=False,
+                )
+            }
+        )
         key_contact = self.fields["key_contact"]
         self.fields["key_contact"].label_from_instance = lambda obj: obj.email
         key_contact.widget.attrs.update({"class": "govuk-!-width-full govuk-select"})
@@ -215,6 +239,10 @@ class OrganisationForm(OrganisationProfileForm):
             ),
             Field(
                 "key_contact",
+                wrapper_class="govuk-form-group govuk-!-margin-bottom-4",
+            ),
+            Field(
+                "is_abods_global_viewer",
                 wrapper_class="govuk-form-group govuk-!-margin-bottom-4",
             ),
             InlineFormset("nested_noc"),

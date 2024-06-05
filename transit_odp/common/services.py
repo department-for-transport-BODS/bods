@@ -21,13 +21,11 @@ def get_gtfs_bucket_service():
 
 class S3BucketService:
     """Service for interacting with an S3 bucket.
-
     Args:
         aws_access_key_id (str): AWS Key ID
         aws_secret_access_key (str): AWS Secret Key
         bucket_name (str): Name of bucket
         region_name (str): Region bucket is found in
-
     """
 
     def __init__(

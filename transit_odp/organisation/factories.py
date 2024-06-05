@@ -43,6 +43,7 @@ class OrganisationFactory(DjangoModelFactory):
     key_contact = None
     is_active = True
     licence_required = None
+    is_abods_global_viewer = False
 
     @factory.post_generation
     def nocs(obj, create, extracted: Union[int, List[str]] = None, **kwargs):
