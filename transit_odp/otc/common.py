@@ -1,7 +1,16 @@
 import re
+from typing import List
 
 
-def process_brackets(text):
+def process_brackets(text: str) -> List:
+    """Get the processed string based on paranthesis
+
+    Args:
+        text (str): input string with brackets
+
+    Returns:
+        List
+    """
     if text.count("(") == 1:
         prefix, suffix = text.split("(", 1)
         suffix = suffix.rstrip(")")
@@ -35,7 +44,17 @@ def process_brackets(text):
         return text
 
 
-def process_string(string):
+def process_service_number(string: str) -> List:
+    """
+    Evaluate a given service number based on different operators |, parantheses, ",", " ", ":"
+    and return a single
+
+    Args:
+        string (str): string to be processed
+
+    Returns:
+        List: List of service numbers after processing
+    """
     if "|" in string:
         return string.split("|")
     elif "(" in string or ")" in string:
@@ -52,9 +71,22 @@ def process_string(string):
             return [string]
 
 
-def format_service_number(service_number, other_service_number):
-    service_list = process_string(service_number)
-    other_service_list = process_string(other_service_number)
+def format_service_number(service_number: str, other_service_number: str) -> str:
+    """Get unique service numbers seprated with | by handling parantheses
+
+    Excel (A,B,C) -> Excel A|Excel B|Excel C
+    418 (418W)(418R) -> 418|418R|418W
+    ("192 Rural Rider", "193 Rural Rider") -> 192|193|Rider|Rural
+
+    Args:
+        service_number (str): service_number value
+        other_service_number (str): other_service_number value
+
+    Returns:
+        str: evaluated string
+    """
+    service_list = process_service_number(service_number)
+    other_service_list = process_service_number(other_service_number)
 
     combined_list = list(dict.fromkeys((service_list + other_service_list)))
     combined_list.sort()
