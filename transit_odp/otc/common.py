@@ -56,6 +56,14 @@ def format_service_number(service_number, other_service_number):
     service_list = process_string(service_number)
     other_service_list = process_string(other_service_number)
 
-    combined_list = list(set(service_list + other_service_list))
-    combined_list = [item.strip() for item in combined_list if item.strip()]
-    return "|".join(combined_list)
+    combined_list = list(dict.fromkeys((service_list + other_service_list)))
+    combined_list.sort()
+
+    unique_list = []
+    unique_list_lowercase = []
+    for item in combined_list:
+        item = item.strip()
+        if item and item.lower() not in unique_list_lowercase:
+            unique_list.append(item)
+            unique_list_lowercase.append(item.lower())
+    return "|".join(unique_list)
