@@ -111,6 +111,7 @@ def task_download_fares_file(task_id: int):
             revision.upload_file = file_
             revision.save()
     else:
+        adapter.info(f"Saving fares upload file - {revision.upload_file}.")
         file_ = revision.upload_file
 
     if not file_:
@@ -165,9 +166,11 @@ def task_run_fares_validation(task_id):
                 validator.validate()
             adapter.info("Validating fares NeTEx file.")
             validate_xml_files_in_zip(file_, schema=schema)
+            adapter.info("Completed validating fares NeTEx file.")
         else:
             adapter.info("Validating fares NeTEx file.")
             NeTExValidator(file_, schema=schema).validate()
+            adapter.info("Completed validating fares NeTEx file.")
     except ValidationException as exc:
         adapter.error(exc.message, exc_info=True)
         task.to_error("dataset_validate", exc.code)
@@ -243,6 +246,7 @@ def task_run_fares_etl(task_id):
 
     task.update_progress(90)
 
+    adapter.info("Loading fares metadata.")
     naptan_stop_ids = transformed_data.pop("naptan_stop_ids")
     is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
     if is_fares_validator_active:
@@ -259,6 +263,7 @@ def task_run_fares_etl(task_id):
         ).values_list("id")
         FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
 
+    adapter.info("Creating fares data catalogue metadata.")
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
     if is_fares_validator_active:
         for element in fares_data_catlogue:
