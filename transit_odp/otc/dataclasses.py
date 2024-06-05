@@ -137,7 +137,7 @@ class Registration(BaseModel):
     def combine_service_numbers(cls, v, values):
         values = hasattr(values, "data") and values.data or values
         other_service_number = values.get("other_service_number", "")
-        
+
         return format_service_number(v, other_service_number)
 
 
