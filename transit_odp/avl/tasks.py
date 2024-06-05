@@ -14,6 +14,7 @@ from django.db import transaction
 from django.utils import timezone
 from requests import RequestException
 from urllib3.exceptions import ReadTimeoutError
+from waffle import flag_is_active
 
 from transit_odp.avl.archivers import GTFSRTArchiver
 from transit_odp.avl.client import CAVLService
@@ -156,7 +157,12 @@ def task_create_sirivm_zipfile(self):
 
 @shared_task()
 def task_create_gtfsrt_zipfile():
-    url = f"{settings.GTFS_API_BASE_URL}/gtfs-rt"
+    is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
+    url = (
+        f"{settings.GTFS_API_BASE_URL}/gtfs-rt"
+        if is_new_gtfs_api_active
+        else f"{settings.CAVL_CONSUMER_URL}/gtfsrtfeed"
+    )
     _prefix = f"[GTFSRTArchiving] URL {url} => "
     logger.info(_prefix + "Begin archiving GTFSRT data.")
     start = time.time()
