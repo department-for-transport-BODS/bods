@@ -894,7 +894,6 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             logger.info(
                 f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
             )
-            gtfs
             if gtfs.file is None:
                 raise Http404
             return FileResponse(gtfs.file, filename=gtfs.filename, as_attachment=True)
