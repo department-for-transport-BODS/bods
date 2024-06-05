@@ -418,11 +418,19 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 run_time = pd.NaT
                 element_run_time = link.get_element_or_none(["RunTime"])
                 if element_run_time:
-                    run_time = pd.to_timedelta(element_run_time.text)
+                    parsed_run_time = isodate.parse_duration(element_run_time.text)
+                    run_time = pd.to_timedelta(
+                        parsed_run_time.total_seconds(), unit="s"
+                    )
                 element_wait_time = link.get_element_or_none(["To", "WaitTime"])
                 wait_time = pd.NaT
                 if element_wait_time:
-                    wait_time = pd.to_timedelta(element_wait_time.text)
+                    parsed_from_wait_time = isodate.parse_duration(
+                        element_wait_time.text
+                    )
+                    wait_time = pd.to_timedelta(
+                        parsed_from_wait_time.total_seconds(), unit="s"
+                    )
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
