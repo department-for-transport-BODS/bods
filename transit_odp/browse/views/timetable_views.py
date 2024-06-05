@@ -27,9 +27,7 @@ from transit_odp.browse.views.base_views import (
     ChangeLogView,
 )
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
-from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
-from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
     DownloadView,
@@ -570,8 +568,6 @@ class LineMetadataDetailView(DetailView):
         if is_timetable_visualiser_active:
             # Set the context for the timetable visualiser and the line details
             kwargs["curr_date"] = date
-            is_timetable_info_available = False
-            timetable = {}
             for direction in ["outbound", "inbound"]:
                 direction_details = timetable_inbound_outbound[direction]
                 journey = direction_details["description"]
@@ -579,24 +575,14 @@ class LineMetadataDetailView(DetailView):
                 bound_details = self.get_direction_timetable(
                     direction_details["df_timetable"], direction
                 )
-                if (
-                    not is_timetable_info_available
-                    and not bound_details["df_timetable"].empty
-                ):
-                    is_timetable_info_available = True
-                timetable[direction] = {
-                    "df": bound_details["df_timetable"],
-                    "total_page": bound_details["total_page"],
-                    "total_row_count": bound_details["total_row_count"],
-                    "curr_page": bound_details["curr_page"],
-                    "show_all": bound_details["show_all"],
-                    "journey_name": journey,
-                    "stops": direction_details["stops"],
-                    "page_param": direction + "Page",
-                    "show_all_param": "showAll" + direction.capitalize(),
-                }
-            kwargs["timetable"] = timetable
-            kwargs["is_timetable_info_available"] = is_timetable_info_available
+                kwargs[direction + "_timetable"] = bound_details["df_timetable"]
+                kwargs[direction + "_total_page"] = bound_details["total_page"]
+                kwargs[direction + "_total_row_count"] = bound_details[
+                    "total_row_count"
+                ]
+                kwargs[direction + "_curr_page"] = bound_details["curr_page"]
+                kwargs[direction + "_show_all"] = bound_details["show_all"]
+                kwargs[direction + "_journey_name"] = journey
 
         return kwargs
 
@@ -842,15 +828,7 @@ class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
         ]
         context["change_archives"] = change_archives
 
-        is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
-
-        if is_new_gtfs_api_active:
-            context["gtfs_regions"] = _get_gtfs_regions()
-            context["is_new_gtfs_api_active"] = True
-        else:
-            downloader = GTFSFileDownloader(get_gtfs_bucket_service)
-            context["gtfs_static_files"] = downloader.get_files()
-            context["is_new_gtfs_api_active"] = False
+        context["gtfs_regions"] = _get_gtfs_regions()
 
         return context
 
@@ -869,34 +847,24 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
         return self.render_to_response()
 
     def render_to_response(self):
-        is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
-        if is_new_gtfs_api_active:
-            id_ = self.kwargs.get("id", None)
+        id_ = self.kwargs.get("id", None)
 
-            gtfs_region_file = _get_gtfs_file(id_)
+        gtfs_region_file = self.get_download_file()
 
-            if gtfs_region_file is None:
-                raise Http404
+        if gtfs_region_file is None:
+            raise Http404
 
-            response = StreamingHttpResponse(
-                gtfs_region_file, content_type="application/zip"
-            )
-            response[
-                "Content-Disposition"
-            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
-            return response
-        else:
-            id_ = self.kwargs.get("id", None)
-            s3_start = datetime.now()
-            downloader = GTFSFileDownloader(get_gtfs_bucket_service)
-            gtfs = downloader.download_file_by_id(id_)
-            s3_endtime = datetime.now()
-            logger.info(
-                f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
-            )
-            if gtfs.file is None:
-                raise Http404
-            return FileResponse(gtfs.file, filename=gtfs.filename, as_attachment=True)
+        response = StreamingHttpResponse(
+            gtfs_region_file, content_type="application/zip"
+        )
+        response["Content-Disposition"] = f'attachment; filename="itm_{id_}_gtfs.zip"'
+        return response
+
+    def get_download_file(self):
+        id_ = self.kwargs.get("id", None)
+        gtfs_file = _get_gtfs_file(id_)
+
+        return gtfs_file
 
 
 class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
@@ -919,7 +887,7 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file_by_id(self):
+    def get_download_file(self):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -953,7 +921,7 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file_by_id(self, *args):
+    def get_download_file(self, *args):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -979,7 +947,7 @@ class DownloadCompliantBulkDataArchiveView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file_by_id(self):
+    def get_download_file(self):
         return self.object.data
 
 
@@ -1005,7 +973,7 @@ class DownloadChangeDataArchiveView(DownloadView):
         last_week = timezone.now() - timedelta(days=7)
         return ChangeDataArchive.objects.filter(published_at__gte=last_week)
 
-    def get_download_file_by_id(self):
+    def get_download_file(self):
         return self.object.data
 
 
