@@ -339,6 +339,58 @@ def check_inbound_outbound_description(context, services):
         return True
 
 
+def check_description_for_inbound_description(context, services):
+    """
+    Check when file has detected a standard service (includes StandardService):
+        - If both InboundDescription and OutboundDescription are not present, return False.
+        - All other combinations are acceptable, return True.
+    """
+    for service in services:
+        inbound_description_list = []
+        ns = {"x": service.nsmap.get(None)}
+        standard_service_list = service.xpath(
+            "x:Service/x:StandardService", namespaces=ns
+        )
+        if standard_service_list:
+            inbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:InboundDescription", namespaces=ns
+            )
+        for inbound_description_tag in inbound_description_list:
+            description_tag = inbound_description_tag.xpath(
+                "x:Description", namespaces=ns
+            )
+            print(f"description_tag in inbound: {description_tag}")
+            if len(inbound_description_tag.xpath("x:Description", namespaces=ns)) == 0:
+                return False
+        return True
+
+
+def check_description_for_outbound_description(context, services):
+    """
+    Check when file has detected a standard service (includes StandardService):
+        - If both InboundDescription and OutboundDescription are not present, return False.
+        - All other combinations are acceptable, return True.
+    """
+    for service in services:
+        outbound_description_tag = []
+        ns = {"x": service.nsmap.get(None)}
+        standard_service_list = service.xpath(
+            "x:Service/x:StandardService", namespaces=ns
+        )
+        if standard_service_list:
+            outbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:OutboundDescription", namespaces=ns
+            )
+        for outbound_description_tag in outbound_description_list:
+            description_tag = outbound_description_tag.xpath(
+                "x:Description", namespaces=ns
+            )
+            print(f"description_tag in outbound: {description_tag}")
+            if len(outbound_description_tag.xpath("x:Description", namespaces=ns)) == 0:
+                return False
+        return True
+
+
 def has_flexible_service_classification(context, services):
     """
     Check when file has detected a flexible service (includes
