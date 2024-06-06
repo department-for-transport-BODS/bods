@@ -1,6 +1,37 @@
 {% load i18n %}
 
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+    {% trans "June 2024 (1.37.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+    {% blocktrans %}
+        This release will deploy the following changes:
+    {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>
+        {% blocktrans %}
+            A fix to remove cancelled registrations from the completeness reports.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Additional logging to help us troubleshoot intermittent publishing issues.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            Line (service) level reports for LTA's and operators.
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans %}
+            A new line (service) level overall compliance catalogue.
+        {% endblocktrans %}
+    </li>
+</ul>
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
     {% trans "May 2024 (1.36.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">

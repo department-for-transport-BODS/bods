@@ -26381,6 +26381,9 @@
       <VehicleJourneyTimingLink id="VJTL1062">
         <JourneyPatternTimingLinkRef>JPTL59</JourneyPatternTimingLinkRef>
         <RunTime>PT2M</RunTime>
+        <To>
+          <WaitTime>PT5M</WaitTime>
+        </To>
       </VehicleJourneyTimingLink>
     </VehicleJourney>
     <VehicleJourney SequenceNumber="13" CreationDateTime="2023-12-09T13:00:15" Modification="new" RevisionNumber="0">
@@ -29767,7 +29770,7 @@
         <JourneyPatternTimingLinkRef>JPTL32</JourneyPatternTimingLinkRef>
         <RunTime>PT0S</RunTime>
         <From>
-          <WaitTime>PT5M</WaitTime>
+          <WaitTime>PT275M</WaitTime>
         </From>
       </VehicleJourneyTimingLink>
       <VehicleJourneyTimingLink id="VJTL1744">

@@ -5,6 +5,7 @@
 import logging
 
 import pandas as pd
+import isodate
 from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import grid_gemotry_from_str, wsg84_from_str
@@ -20,7 +21,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 )
 from datetime import datetime, timedelta
 from typing import Dict, Any, Union
-
 from transit_odp.transmodel.models import StopActivity
 
 logger = logging.getLogger(__name__)
@@ -418,11 +418,19 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 run_time = pd.NaT
                 element_run_time = link.get_element_or_none(["RunTime"])
                 if element_run_time:
-                    run_time = pd.to_timedelta(element_run_time.text)
+                    parsed_run_time = isodate.parse_duration(element_run_time.text)
+                    run_time = pd.to_timedelta(
+                        parsed_run_time.total_seconds(), unit="s"
+                    )
                 element_wait_time = link.get_element_or_none(["To", "WaitTime"])
                 wait_time = pd.NaT
                 if element_wait_time:
-                    wait_time = pd.to_timedelta(element_wait_time.text)
+                    parsed_from_wait_time = isodate.parse_duration(
+                        element_wait_time.text
+                    )
+                    wait_time = pd.to_timedelta(
+                        parsed_from_wait_time.total_seconds(), unit="s"
+                    )
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
@@ -524,7 +532,8 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
 
             to_wait_time_exists = False
             if vj_timing_links:
-                for links in vj_timing_links:
+                len_timing_links = len(vj_timing_links)
+                for index, links in enumerate(vj_timing_links):
                     timing_link_ref = links.get_element(
                         ["JourneyPatternTimingLinkRef"]
                     ).text
@@ -544,19 +553,29 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             ["WaitTime"]
                         )
                         if from_wait_time:
-                            wait_time = pd.to_timedelta(from_wait_time.text)
+                            parsed_from_wait_time = isodate.parse_duration(
+                                from_wait_time.text
+                            )
+                            wait_time = pd.to_timedelta(
+                                parsed_from_wait_time.total_seconds(), unit="s"
+                            )
 
-                    if to_wait_time_element:
+                    if to_wait_time_element and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
                         if to_wait_time:
                             to_wait_time_exists = True
+                            parsed_to_wait_time = isodate.parse_duration(
+                                to_wait_time.text
+                            )
                             if pd.isna(wait_time):
-                                wait_time = pd.to_timedelta(to_wait_time.text)
+                                wait_time = pd.to_timedelta(
+                                    parsed_to_wait_time.total_seconds(), unit="s"
+                                )
                             else:
                                 wait_time = wait_time + pd.to_timedelta(
-                                    to_wait_time.text
+                                    parsed_to_wait_time.total_seconds(), unit="s"
                                 )
 
                     else:

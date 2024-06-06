@@ -612,6 +612,10 @@ EP_AUTH_URL = env(
 DISRUPTIONS_API_BASE_URL = env("DISRUPTIONS_API_BASE_URL", default="")
 DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 
+# GTFS API
+# ------------------------------------------------------------------------------
+GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
+
 # Crispy forms
 # ------------------------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = (
