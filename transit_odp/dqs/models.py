@@ -26,7 +26,7 @@ class Report(models.Model):
         Create a new Report instance with the provided data and save it to the database.
         """
         new_report = cls(
-            file_name="", revision=revision, status=ReportStatus.PENDING_PIPELINE.value
+            file_name="", revision=revision, status=ReportStatus.PIPELINE_PENDING.value
         )
         new_report.save()
         return new_report
