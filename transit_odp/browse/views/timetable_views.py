@@ -28,8 +28,8 @@ from transit_odp.browse.views.base_views import (
 )
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.common.downloaders import GTFSFileDownloader
-from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.services import get_gtfs_bucket_service
+from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
     DownloadView,
@@ -859,7 +859,7 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
     """View for retrieving a GTFS region file from the GTFS API and returning it as a StreamingHttpResponse"""
 
     def get(self, request, *args, **kwargs):
-        is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
+        self.is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
         if self.kwargs.get("id") == TravelineRegions.ALL.lower():
             db_starttime = datetime.now()
             ResourceRequestCounter.from_request(request)
@@ -867,46 +867,45 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             logger.info(
                 f"Database call for GTFS ResourceRequestCounter took {(db_endtime - db_starttime).total_seconds()} seconds"
             )
-        if is_new_gtfs_api_active:
-            return self.render_to_response_active()
         return self.render_to_response()
-
-    def render_to_response_active(self):
-        id_ = self.kwargs.get("id", None)
-
-        gtfs_region_file = self.get_download_file()
-
-        if gtfs_region_file is None:
-            raise Http404
-
-        response = StreamingHttpResponse(
-            gtfs_region_file, content_type="application/zip"
-        )
-        response["Content-Disposition"] = f'attachment; filename="itm_{id_}_gtfs.zip"'
-        return response
-
-    def get_download_file(self):
-        id_ = self.kwargs.get("id", None)
-        gtfs_file = _get_gtfs_file(id_)
-
-        return gtfs_file
 
     def render_to_response(self):
         id_ = self.kwargs.get("id", None)
-        gtfs = self.get_download_file_by_id(id_)
-        if gtfs.file is None:
-            raise Http404
-        return FileResponse(gtfs.file, filename=gtfs.filename, as_attachment=True)
 
-    def get_download_file_by_id(self, id_):
-        s3_start = datetime.now()
-        downloader = GTFSFileDownloader(get_gtfs_bucket_service)
-        gtfs = downloader.download_file_by_id(id_)
-        s3_endtime = datetime.now()
-        logger.info(
-            f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
-        )
-        return gtfs
+        if self.is_new_gtfs_api_active:
+            gtfs_region_file = self.get_download_file()
+            if gtfs_region_file is None:
+                raise Http404
+            response = StreamingHttpResponse(
+                gtfs_region_file, content_type="application/zip"
+            )
+            response[
+                "Content-Disposition"
+            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
+        else:
+            gtfs = self.get_download_file(id_)
+            if gtfs.file is None:
+                raise Http404
+            response = FileResponse(
+                gtfs.file, filename=gtfs.filename, as_attachment=True
+            )
+
+        return response
+
+    def get_download_file(self, id_=None):
+        if self.is_new_gtfs_api_active:
+            id_ = self.kwargs.get("id", None)
+            gtfs_file = _get_gtfs_file(id_)
+        else:
+            s3_start = datetime.now()
+            downloader = GTFSFileDownloader(get_gtfs_bucket_service)
+            gtfs_file = downloader.download_file_by_id(id_)
+            s3_endtime = datetime.now()
+            logger.info(
+                f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
+            )
+
+        return gtfs_file
 
 
 class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
@@ -929,7 +928,7 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file_by_id(self):
+    def get_download_file(self):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -963,7 +962,7 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file_by_id(self, *args):
+    def get_download_file(self, *args):
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -989,7 +988,7 @@ class DownloadCompliantBulkDataArchiveView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file_by_id(self):
+    def get_download_file(self):
         return self.object.data
 
 
@@ -1015,7 +1014,7 @@ class DownloadChangeDataArchiveView(DownloadView):
         last_week = timezone.now() - timedelta(days=7)
         return ChangeDataArchive.objects.filter(published_at__gte=last_week)
 
-    def get_download_file_by_id(self):
+    def get_download_file(self):
         return self.object.data
 
 
