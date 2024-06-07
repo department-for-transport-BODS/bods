@@ -1024,6 +1024,7 @@ class TestPublishView:
         total_services = 12
         licence_number = "PD5000229"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
         dataset1 = DatasetFactory(organisation=org1)
 
@@ -1033,6 +1034,7 @@ class TestPublishView:
             service_code=all_service_codes[0],
             operating_period_end_date=today + timedelta(days=50),
             modification_datetime=time_now,
+            line_names=[all_line_names[0]],
         )
 
         TXCFileAttributesFactory(
@@ -1040,11 +1042,14 @@ class TestPublishView:
             service_code=all_service_codes[1],
             operating_period_end_date=today + timedelta(days=50),
             modification_datetime=time_now,
+            line_names=[all_line_names[1]],
         )
 
         dataset2 = DraftDatasetFactory(organisation=org1)
         TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+            revision=dataset2.revisions.last(),
+            service_code=all_service_codes[2],
+            line_names=[all_line_names[2]],
         )
         live_revision = DatasetRevisionFactory(dataset=dataset2)
 
@@ -1054,6 +1059,7 @@ class TestPublishView:
             service_code=all_service_codes[3],
             operating_period_end_date=None,
             modification_datetime=time_now - timedelta(weeks=100),
+            line_names=[all_line_names[3]],
         )
 
         # Set up a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -1062,6 +1068,7 @@ class TestPublishView:
             service_code=all_service_codes[4],
             operating_period_end_date=today - timedelta(weeks=105),
             modification_datetime=time_now - timedelta(weeks=100),
+            line_names=[all_line_names[4]],
         )
 
         # Set up a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -1069,6 +1076,7 @@ class TestPublishView:
             revision=live_revision,
             service_code=all_service_codes[5],
             operating_period_end_date=today + timedelta(days=50),
+            line_names=[all_line_names[5]],
         )
 
         # Set up a TXCFileAttributes that will be 'Stale - 12 months old' that
@@ -1078,6 +1086,7 @@ class TestPublishView:
             service_code=all_service_codes[6],
             operating_period_end_date=None,
             modification_datetime=time_now - timedelta(weeks=100),
+            line_names=[all_line_names[6]],
         )
         SeasonalServiceFactory(
             licence=bods_licence,
@@ -1093,6 +1102,7 @@ class TestPublishView:
             service_code=all_service_codes[7],
             operating_period_end_date=None,
             modification_datetime=time_now - timedelta(weeks=100),
+            line_names=[all_line_names[7]],
         )
         SeasonalServiceFactory(
             licence=bods_licence,
@@ -1108,6 +1118,7 @@ class TestPublishView:
             service_code=all_service_codes[8],
             operating_period_end_date=None,
             modification_datetime=time_now - timedelta(weeks=100),
+            line_names=[all_line_names[8]],
         )
         ServiceCodeExemptionFactory(
             licence=bods_licence,
@@ -1119,12 +1130,13 @@ class TestPublishView:
         # plus 3 more that are unmatched
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
                     registration_number=code.replace(":", "/"),
                     effective_date=date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1779,6 +1791,7 @@ def test_require_attention_empty_search_box(publish_client):
     total_services = 7
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1786,16 +1799,20 @@ def test_require_attention_empty_search_box(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
     TXCFileAttributesFactory(
@@ -1803,13 +1820,16 @@ def test_require_attention_empty_search_box(publish_client):
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[3]],
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
-                licence=otc_lic1, registration_number=code.replace(":", "/")
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                service_number=all_line_names[index],
             )
         )
 
@@ -1837,6 +1857,7 @@ def test_require_attention_field_in_search_box(publish_client):
     total_services = 7
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1844,16 +1865,20 @@ def test_require_attention_field_in_search_box(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
     TXCFileAttributesFactory(
@@ -1861,13 +1886,16 @@ def test_require_attention_field_in_search_box(publish_client):
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[3]],
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
-                licence=otc_lic1, registration_number=code.replace(":", "/")
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                service_number=all_line_names[index],
             )
         )
 
@@ -1895,6 +1923,7 @@ def test_require_attention_search_no_results(publish_client):
     total_services = 3
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1902,19 +1931,23 @@ def test_require_attention_search_no_results(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
-                licence=otc_lic1, registration_number=code.replace(":", "/")
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                service_number=all_line_names[index],
             )
         )
 
@@ -1945,6 +1978,7 @@ def test_require_attention_seasonal_services(publish_client):
     total_services = 5
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -1952,18 +1986,22 @@ def test_require_attention_seasonal_services(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
         revision=dataset2.revisions.last(),
         service_code=all_service_codes[1],
+        line_names=[all_line_names[1]],
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
-                licence=otc_lic1, registration_number=code.replace(":", "/")
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                service_number=all_line_names[index],
             )
         )
 
@@ -2006,6 +2044,7 @@ def test_require_attention_stale_otc_effective_date(publish_client):
     total_services = 7
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
 
@@ -2015,6 +2054,7 @@ def test_require_attention_stale_otc_effective_date(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
 
     TXCFileAttributesFactory(
@@ -2022,11 +2062,14 @@ def test_require_attention_stale_otc_effective_date(publish_client):
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
 
@@ -2035,14 +2078,17 @@ def test_require_attention_stale_otc_effective_date(publish_client):
         revision=live_revision,
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() + timedelta(days=50),
+        line_names=[all_line_names[3]],
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
-                licence=otc_lic1, registration_number=code.replace(":", "/")
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                service_number=all_line_names[index],
             )
         )
 
@@ -2070,6 +2116,7 @@ def test_require_attention_stale_end_date(publish_client):
     total_services = 7
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
 
@@ -2079,6 +2126,7 @@ def test_require_attention_stale_end_date(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
 
     TXCFileAttributesFactory(
@@ -2086,11 +2134,14 @@ def test_require_attention_stale_end_date(publish_client):
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
 
@@ -2100,15 +2151,17 @@ def test_require_attention_stale_end_date(publish_client):
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() - timedelta(weeks=105),
         modification_datetime=now() - timedelta(weeks=100),
+        line_names=[all_line_names[3]],
     )
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
                 licence=otc_lic1,
                 registration_number=code.replace(":", "/"),
                 effective_date=date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
             )
         )
 
@@ -2136,6 +2189,7 @@ def test_require_attention_stale_last_modified_date(publish_client):
     total_services = 7
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
 
@@ -2145,6 +2199,7 @@ def test_require_attention_stale_last_modified_date(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
 
     TXCFileAttributesFactory(
@@ -2152,11 +2207,14 @@ def test_require_attention_stale_last_modified_date(publish_client):
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
 
@@ -2166,16 +2224,18 @@ def test_require_attention_stale_last_modified_date(publish_client):
         service_code=all_service_codes[3],
         operating_period_end_date=date.today() - timedelta(days=1),
         modification_datetime=now() - timedelta(weeks=100),
+        line_names=[all_line_names[3]],
     )
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
                 licence=otc_lic1,
                 registration_number=code.replace(":", "/"),
                 effective_date=date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
             )
         )
 
@@ -2206,6 +2266,7 @@ def test_require_attention_all_variations(publish_client):
     total_services = 9
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
 
@@ -2215,6 +2276,7 @@ def test_require_attention_all_variations(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
 
     TXCFileAttributesFactory(
@@ -2222,11 +2284,14 @@ def test_require_attention_all_variations(publish_client):
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
 
     dataset2 = DraftDatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
-        revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
     )
     live_revision = DatasetRevisionFactory(dataset=dataset2)
 
@@ -2236,6 +2301,7 @@ def test_require_attention_all_variations(publish_client):
         service_code=all_service_codes[3],
         operating_period_end_date=None,
         modification_datetime=now() - timedelta(weeks=100),
+        line_names=[all_line_names[3]],
     )
 
     # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -2244,6 +2310,7 @@ def test_require_attention_all_variations(publish_client):
         service_code=all_service_codes[4],
         operating_period_end_date=date.today() - timedelta(weeks=105),
         modification_datetime=now() - timedelta(weeks=100),
+        line_names=[all_line_names[4]],
     )
 
     # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -2251,6 +2318,7 @@ def test_require_attention_all_variations(publish_client):
         revision=live_revision,
         service_code=all_service_codes[5],
         operating_period_end_date=date.today() + timedelta(days=50),
+        line_names=[all_line_names[5]],
     )
 
     # Create Seasonal Services - one in season, one out of season
@@ -2269,12 +2337,13 @@ def test_require_attention_all_variations(publish_client):
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
                 licence=otc_lic1,
                 registration_number=code.replace(":", "/"),
                 effective_date=date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
             )
         )
 
@@ -2305,6 +2374,7 @@ def test_require_attention_compliant(publish_client):
     total_services = 4
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    all_line_names = [f"line:{n}" for n in range(total_services)]
     bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     dataset2 = DatasetFactory(organisation=org1)
@@ -2315,18 +2385,21 @@ def test_require_attention_compliant(publish_client):
         service_code=all_service_codes[0],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[0]],
     )
     TXCFileAttributesFactory(
         revision=dataset1.live_revision,
         service_code=all_service_codes[1],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[1]],
     )
     TXCFileAttributesFactory(
         revision=dataset2.live_revision,
         service_code=all_service_codes[2],
         operating_period_end_date=date.today() + timedelta(days=50),
         modification_datetime=now(),
+        line_names=[all_line_names[2]],
     )
 
     # Create Out of Season Seasonal Services
@@ -2339,12 +2412,13 @@ def test_require_attention_compliant(publish_client):
 
     otc_lic1 = LicenceModelFactory(number=licence_number)
     services = []
-    for code in all_service_codes:
+    for index, code in enumerate(all_service_codes):
         services.append(
             ServiceModelFactory(
                 licence=otc_lic1,
                 registration_number=code.replace(":", "/"),
                 effective_date=date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
             )
         )
 
