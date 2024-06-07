@@ -1,5 +1,4 @@
-from typing import Dict, List
-import copy
+from typing import Dict, List, Optional
 
 from django.db.models import Subquery
 from django.utils.timezone import now
@@ -68,10 +67,71 @@ def get_otc_map_lta(lta_list) -> Dict[str, OTCService]:
         return {}
 
 
-def get_line_level_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
+def get_line_level_otc_map_lta(lta_list) -> Dict[tuple, OTCService]:
     """
-    Get a list of dictionaries of live TXCFileAttributes for a LTA
+    Get a mapping of line-level OTC (Office of Transport Commissioner) services for each LTA (Local Transport Authority).
+
+    This function fetches all OTC services for the given list of Local Authorities, excluding exempted services and
+    out-of-season seasonal services. It returns a dictionary where the keys are tuples composed of split service numbers
+    and modified registration numbers, and the values are the corresponding OTCService instances.
+
+    Args:
+        lta_list (list[LocalAuthority]): A list of Local Authority objects to filter the services.
+
+    Returns:
+        Dict[tuple, OTCService]
+    """
+    otc_data_lta_queryset = OTCService.objects.get_otc_data_for_lta(lta_list)
+    if otc_data_lta_queryset is not None:
+        return {
+            (
+                f"{split_service_number}",
+                f"{service.registration_number.replace('/', ':')}",
+            ): service
+            for service in otc_data_lta_queryset
+            for split_service_number in service.service_number.split("|")
+        }
+    else:
+        return {}
+
+
+def get_txc_map(org_id: int) -> Dict[str, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for an organisation
     with relevant effective staleness dates annotated.
+    """
+    return {
+        txcfa.service_code: txcfa
+        for txcfa in TXCFileAttributes.objects.filter(
+            revision__dataset__organisation_id=org_id
+        )
+        .get_active_live_revisions()
+        .add_staleness_dates()
+        .order_by(
+            "service_code",
+            "-revision__published_at",
+            "-revision_number",
+            "-modification_datetime",
+            "-operating_period_start_date",
+            "-filename",
+        )
+        .distinct("service_code")
+    }
+
+
+def get_line_level_txc_map_lta(lta_list) -> Dict[tuple, TXCFileAttributes]:
+    """
+    Get a dictionary of live TXCFileAttributes for each LTA (Local Transport Authority) with relevant effective staleness dates annotated.
+
+    This function retrieves all live TXCFileAttributes for the given list of Local Authorities. It includes annotations for
+    effective staleness dates and returns a dictionary where the keys are tuples of line names and service codes, and the
+    values are the corresponding TXCFileAttributes instances.
+
+    Args:
+        lta_list (list[LocalAuthority]): A list of Local Authority objects to filter the services.
+
+    Returns:
+        Dict[tuple, TXCFileAttributes]
     """
     line_level_txc_map = {}
     services_subquery_list = [
@@ -221,17 +281,30 @@ def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
         return {}
 
 
-def _update_data(object_list: List[Dict[str, str]], service: OTCService) -> None:
+def _update_data(
+    object_list: List[Dict[str, str]],
+    service: OTCService,
+    line_number: Optional[str] = None,
+) -> None:
     """
     Append data to object_list of services requiring attention.
     """
-    object_list.append(
-        {
-            "licence_number": service.otc_licence_number,
-            "service_code": service.registration_number,
-            "line_number": service.service_number,
-        }
-    )
+    if not line_number:
+        object_list.append(
+            {
+                "licence_number": service.otc_licence_number,
+                "service_code": service.registration_number,
+                "line_number": service.service_number,
+            }
+        )
+    else:
+        object_list.append(
+            {
+                "licence_number": service.otc_licence_number,
+                "service_code": service.registration_number,
+                "line_number": line_number,
+            }
+        )
 
 
 def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -> tuple:
@@ -350,6 +423,38 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
             _update_data(object_list, service)
         elif is_stale(service, file_attribute):
             _update_data(object_list, service)
+    lta_services_requiring_attention = len(object_list)
+
+    return lta_services_requiring_attention
+
+
+def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention, i.e., those not live
+    in BODS (Bus Open Data Service) at all, or live but meeting new staleness conditions.
+
+    This function identifies services that require attention based on their status in BODS. It compares the OTC services
+    with the TXCFileAttributes and updates a list of services requiring attention if they are not live or are considered
+    stale. The length of this list is returned as the result.
+
+    Args:
+        lta_list (list): A list of Local Authority objects to filter the services.
+
+    Returns:
+        int: The count of services requiring attention.
+    """
+    object_list = []
+    lta_services_requiring_attention = 0
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+
+    for (service_number, registration_number), service in otc_map.items():
+        file_attribute = txcfa_map.get((service_number, registration_number))
+        if file_attribute is None:
+            _update_data(object_list, service, line_number=service_number)
+        elif is_stale(service, file_attribute):
+            _update_data(object_list, service, line_number=service_number)
     lta_services_requiring_attention = len(object_list)
 
     return lta_services_requiring_attention
