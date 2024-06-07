@@ -367,15 +367,15 @@ class VehicleJourneyFinder:
         journey_code_operating_profile = []
 
         for vj in vehicle_journeys:
+            operating_profile_xml_string = (
+                self.get_operating_profile_xml_tag_for_journey(vj)
+            )
+            journey_code_operating_profile.append(operating_profile_xml_string)
             if (
                 vj.vehicle_journey.get_element("LineRef")
                 and vj.vehicle_journey.get_element("LineRef").text.split(":")[3]
                 == published_line_name
-            ):
-                operating_profile_xml_string = (
-                    self.get_operating_profile_xml_tag_for_journey(vj)
-                )
-                journey_code_operating_profile.append(operating_profile_xml_string)
+            ):  # add to required_vj only if published_line_name matches the last part of line ref in transxchange file
                 required_vjs.append(vj)
 
         result.set_transxchange_attribute(
