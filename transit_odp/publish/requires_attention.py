@@ -9,14 +9,46 @@ from transit_odp.naptan.models import AdminArea
 from datetime import timedelta
 
 
-def get_otc_map(org_id: int) -> Dict[str, OTCService]:
+def get_line_level_in_scope_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
     """
-    Get a list of dictionaries which includes all OTC Services for an organisation,
+    Get a dictionary which includes all line level Services for an organisation.
     excluding exempted services and Out of Season seasonal services.
+
+    Args:
+        organisation_id (int): Organisation id
+
+    Returns:
+        Dict[tuple, OTCService]: List of Services
     """
     return {
-        service.registration_number.replace("/", ":"): service
-        for service in OTCService.objects.get_otc_data_for_organisation(org_id)
+        (
+            f"{service.registration_number.replace('/', ':')}",
+            f"{split_service_number}",
+        ): service
+        for service in OTCService.objects.get_otc_data_for_organisation(organisation_id)
+        for split_service_number in service.service_number.split("|")
+    }
+
+
+def get_all_line_level_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
+    """
+    Get a dictionary which includes all line level Services for an organisation.
+
+    Args:
+        organisation_id (int): Organisation id
+
+    Returns:
+        Dict[tuple, OTCService]: List of Services
+    """
+    return {
+        (
+            f"{service.registration_number.replace('/', ':')}",
+            f"{split_service_number}",
+        ): service
+        for service in OTCService.objects.get_all_otc_data_for_organisation(
+            organisation_id
+        )
+        for split_service_number in service.service_number.split("|")
     }
 
 
@@ -350,7 +382,7 @@ def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
     return any(evaluate_staleness(service, file_attribute))
 
 
-def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
+def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. not live
@@ -360,11 +392,11 @@ def get_requires_attention_data(org_id: int) -> List[Dict[str, str]]:
     """
     object_list = []
 
-    otc_map = get_otc_map(org_id)
-    txcfa_map = get_txc_map(org_id)
+    otc_map = get_line_level_in_scope_otc_map(org_id)
+    txcfa_map = get_line_level_txc_map(org_id)
 
-    for service_code, service in otc_map.items():
-        file_attribute = txcfa_map.get(service_code)
+    for service_key, service in otc_map.items():
+        file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
             _update_data(object_list, service)
         elif is_stale(service, file_attribute):
