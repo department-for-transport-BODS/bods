@@ -303,6 +303,7 @@ def test_filter_by_published_line_name():
     )
     assert len(txc_vehicle_journey) == 1
     assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
+    assert len(result.transxchange_attribute(TransXChangeField.OPERATING_PROFILES)) == 1
 
 
 def test_filter_by_published_line_name_no_matching_lineref():
@@ -325,6 +326,7 @@ def test_filter_by_published_line_name_no_matching_lineref():
     assert result.errors[ErrorCategory.GENERAL] == [
         "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
     ]
+    assert len(result.transxchange_attribute(TransXChangeField.OPERATING_PROFILES)) == 1
     assert txc_vehicle_journey is None
 
 
