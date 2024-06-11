@@ -341,9 +341,14 @@ def check_inbound_outbound_description(context, services):
 
 def check_description_for_inbound_description(context, services):
     """
-    Check when file has detected a standard service (includes StandardService):
-        - If both InboundDescription and OutboundDescription are not present, return False.
-        - All other combinations are acceptable, return True.
+    Check if a standard service (includes StandardService) has description present for InboundDescription.
+
+    Args:
+        context: The context for the check.
+        services: A list of service elements to be checked.
+
+    Returns:
+        bool: True if all services have descriptions for InboundDescription, False otherwise.
     """
     for service in services:
         inbound_description_list = []
@@ -363,9 +368,14 @@ def check_description_for_inbound_description(context, services):
 
 def check_description_for_outbound_description(context, services):
     """
-    Check when file has detected a standard service (includes StandardService):
-        - If both InboundDescription and OutboundDescription are not present, return False.
-        - All other combinations are acceptable, return True.
+    Check if a standard service (includes StandardService) has description present for OutboundDescription.
+
+    Args:
+        context: The context for the check.
+        services: A list of service elements to be checked.
+
+    Returns:
+        bool: True if all services have descriptions for OutboundDescription, False otherwise.
     """
     for service in services:
         outbound_description_tag = []
