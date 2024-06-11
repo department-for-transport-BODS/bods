@@ -21,6 +21,8 @@ from transit_odp.data_quality.pti.functions import (
     check_flexible_service_times,
     check_flexible_service_timing_status,
     check_inbound_outbound_description,
+    check_description_for_inbound_description,
+    check_description_for_outbound_description,
     check_service_group_validations,
     check_vehicle_journey_timing_links,
     contains_date,
@@ -490,6 +492,14 @@ class PTIValidator:
         self.register_function(
             "check_inbound_outbound_description",
             check_inbound_outbound_description,
+        )
+        self.register_function(
+            "check_description_for_inbound_description",
+            check_description_for_inbound_description,
+        )
+        self.register_function(
+            "check_description_for_outbound_description",
+            check_description_for_outbound_description,
         )
         self.register_function("date", cast_to_date)
         self.register_function("days", to_days)
