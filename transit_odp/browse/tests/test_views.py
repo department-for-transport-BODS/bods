@@ -77,6 +77,9 @@ from transit_odp.users.factories import (
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
+from waffle.testutils import override_flag
+from unittest import TestCase
+
 
 pytestmark = pytest.mark.django_db
 
@@ -97,6 +100,7 @@ def get_lta_complaint_data_queryset():
                 licence=otc_lic,
                 registration_number=code.replace(":", "/"),
                 effective_date=datetime.date(year=2020, month=1, day=1),
+                service_number="line1",
             )
         )
 
@@ -207,6 +211,7 @@ def get_lta_complaint_weca_data_queryset():
                 effective_date=datetime.date(year=2020, month=1, day=1),
                 api_type=API_TYPE_WECA,
                 atco_code=atco_code,
+                service_number="line1",
             )
         )
 
@@ -951,10 +956,12 @@ class TestDataDownloadCatalogueView:
         assert body == expected
 
 
-class TestGTFSStaticDownloads:
+@override_flag("is_new_gtfs_api_active", active=True)
+class TestGTFSStaticDownloads(TestCase):
     host = DATA_HOST
 
     @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_file_404(self, downloader_cls, client_factory):
         url = reverse("gtfs-file-download", args=["all"], host=self.host)
 
@@ -969,6 +976,7 @@ class TestGTFSStaticDownloads:
         downloader_obj.download_file_by_id.assert_called_once_with("all")
 
     @patch("transit_odp.browse.views.timetable_views.GTFSFileDownloader")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
     def test_download_gtfs_increments_resource_counter(
         self, downloader_cls, client_factory
     ):
@@ -985,6 +993,36 @@ class TestGTFSStaticDownloads:
         response = client.get(url)
         assert response.status_code == 200
         assert ResourceRequestCounter.objects.count() == 1
+
+
+@override_flag("is_new_gtfs_api_active", active=True)
+class TestNewGTFSStaticDownloads(TestCase):
+    host = DATA_HOST
+
+    @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
+    def test_download_gtfs_file_404(self, mrequests, client_factory):
+        url = reverse("gtfs-file-download", host=self.host, args=["all"])
+        client = client_factory(host=self.host)
+
+        mrequests.return_value = None
+        response = client.get(url)
+        assert response.status_code == 404
+
+    @patch("transit_odp.browse.views.timetable_views._get_gtfs_file")
+    @pytest.mark.skip(reason="to be removed when GTFS feature goes live")
+    def test_download_gtfs_increments_resource_counter(self, mrequests, client_factory):
+        url = reverse("gtfs-file-download", host=self.host, args=["all"])
+        client = client_factory(host=self.host)
+
+        gtfs_content = "test"
+        mrequests.return_value = gtfs_content
+
+        assert ResourceRequestCounter.objects.count() == 0
+        response = client.get(url)
+        assert response.status_code == 200
+        assert ResourceRequestCounter.objects.count() == 1
+        assert response.getvalue() == bytes(gtfs_content, encoding="utf-8")
 
 
 class TestUserAgentMyAccountView:
@@ -1127,6 +1165,7 @@ class TestOperatorDetailView:
         total_services = 9
         licence_number = "PD5000229"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"Line:{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
 
@@ -1137,6 +1176,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
 
         TXCFileAttributesFactory(
@@ -1145,11 +1185,14 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=75),
             modification_datetime=timezone.now() - datetime.timedelta(days=50),
+            line_names=[all_line_names[1]],
         )
         # Setup a draft TXCFileAttributes
         dataset2 = DraftDatasetFactory(organisation=org)
         TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+            revision=dataset2.revisions.last(),
+            service_code=all_service_codes[2],
+            line_names=[all_line_names[2]],
         )
 
         live_revision = DatasetRevisionFactory(dataset=dataset2)
@@ -1160,6 +1203,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[3],
             operating_period_end_date=None,
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[3]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -1169,6 +1213,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             - datetime.timedelta(weeks=105),
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[4]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -1177,6 +1222,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[5],
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
+            line_names=[all_line_names[5]],
         )
 
         # Create Seasonal Services - one in season, one out of season
@@ -1195,12 +1241,13 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes, start=0):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
                     registration_number=code.replace(":", "/"),
                     effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1244,6 +1291,7 @@ class TestOperatorDetailView:
         all_service_codes = [
             f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
         ]
+        all_line_names = [f"Line{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
 
@@ -1254,6 +1302,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
 
         TXCFileAttributesFactory(
@@ -1262,11 +1311,14 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=75),
             modification_datetime=timezone.now() - datetime.timedelta(days=50),
+            line_names=[all_line_names[1]],
         )
         # Setup a draft TXCFileAttributes
         dataset2 = DraftDatasetFactory(organisation=org)
         TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(), service_code=all_service_codes[2]
+            revision=dataset2.revisions.last(),
+            service_code=all_service_codes[2],
+            line_names=[all_line_names[2]],
         )
 
         live_revision = DatasetRevisionFactory(dataset=dataset2)
@@ -1277,6 +1329,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[3],
             operating_period_end_date=None,
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[3]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -1286,6 +1339,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             - datetime.timedelta(weeks=105),
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            line_names=[all_line_names[4]],
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -1294,6 +1348,7 @@ class TestOperatorDetailView:
             service_code=all_service_codes[5],
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
+            line_names=[all_line_names[5]],
         )
 
         # Create Seasonal Services - one in season, one out of season
@@ -1312,7 +1367,7 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
@@ -1320,6 +1375,7 @@ class TestOperatorDetailView:
                     effective_date=datetime.date(year=2020, month=1, day=1),
                     atco_code=atco_code,
                     api_type=API_TYPE_WECA,
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1351,6 +1407,7 @@ class TestOperatorDetailView:
         total_services = 4
         licence_number = "PD5000123"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
@@ -1365,6 +1422,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
@@ -1372,6 +1430,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[1]],
         )
         TXCFileAttributesFactory(
             revision=dataset2.live_revision,
@@ -1379,6 +1438,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[2]],
         )
 
         # Create Out of Season Seasonal Service
@@ -1398,12 +1458,13 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
                     registration_number=code.replace(":", "/"),
                     effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1443,6 +1504,7 @@ class TestOperatorDetailView:
         all_service_codes = [
             f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
         ]
+        all_line_names = [f"line{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
@@ -1457,6 +1519,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
         )
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
@@ -1464,6 +1527,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[1]],
         )
         TXCFileAttributesFactory(
             revision=dataset2.live_revision,
@@ -1471,6 +1535,7 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
+            line_names=[all_line_names[2]],
         )
 
         # Create Out of Season Seasonal Service
@@ -1490,7 +1555,7 @@ class TestOperatorDetailView:
 
         otc_lic1 = LicenceModelFactory(number=licence_number)
         services = []
-        for code in all_service_codes:
+        for index, code in enumerate(all_service_codes):
             services.append(
                 ServiceModelFactory(
                     licence=otc_lic1,
@@ -1498,6 +1563,7 @@ class TestOperatorDetailView:
                     effective_date=datetime.date(year=2020, month=1, day=1),
                     api_type=API_TYPE_WECA,
                     atco_code=atco_code,
+                    service_number=all_line_names[index],
                 )
             )
 
@@ -1813,6 +1879,7 @@ class TestLTADetailView:
                     licence=otc_lic,
                     registration_number=code.replace(":", "/"),
                     effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number="line1",
                 )
             )
 
@@ -1940,6 +2007,7 @@ class TestLTADetailView:
                 effective_date=datetime.date(year=2020, month=1, day=1),
                 api_type=API_TYPE_WECA,
                 atco_code=atco_code,
+                service_number="line1",
             )
 
         ui_lta = UILtaFactory(

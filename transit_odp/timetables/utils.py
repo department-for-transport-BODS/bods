@@ -20,9 +20,7 @@ from datetime import datetime, timedelta
 from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
-from transit_odp.dqs.models import TaskResults
-from typing import Tuple, Set
-from datetime import time
+from typing import Tuple, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -31,44 +29,6 @@ def get_transxchange_schema():
     definition = SchemaDefinition.objects.get(category=SchemaCategory.TXC)
     schema_loader = SchemaLoader(definition, TXC_XSD_PATH)
     return schema_loader.schema
-
-
-def read_delete_datasets_file_from_s3():
-    try:
-        storage = get_s3_bucket_storage()
-        file_name = "delete_datasets.csv"
-
-        if not storage.exists(file_name):
-            logger.warning(f"{file_name} does not exist in the S3 bucket.")
-            return []
-
-        file = storage._open(file_name)
-        content = file.read().decode()
-        file.close()
-
-        # Remove BOM character if present
-        if content.startswith("\ufeff"):
-            content = content.lstrip("\ufeff")
-
-        csv_file = StringIO(content)
-        reader = csv.DictReader(csv_file)
-        dataset_ids = [
-            int(row["Dataset ID"]) for row in reader if row["Dataset ID"].strip()
-        ]
-
-        if dataset_ids:
-            logger.info(
-                f"Successfully read {len(dataset_ids)} dataset IDs from {file_name} in S3."
-            )
-        else:
-            logger.warning(
-                f"{file_name} in S3 is empty or does not contain valid dataset IDs."
-            )
-
-        return dataset_ids
-    except Exception as e:
-        logger.error(f"Error reading {file_name} from S3: {str(e)}")
-        raise
 
 
 class HolidaysNonSubstituteEnum(Enum):
@@ -233,15 +193,37 @@ def get_holidays_records_to_insert(records):
             )
 
 
-def filter_rows_by_journeys(row, journey_mapping):
+def get_filtered_rows_by_journeys(
+    df: pd.DataFrame, journey_mappings: Dict
+) -> pd.DataFrame:
+    """Apply the filter function for each row"""
+    return df[
+        df.apply(lambda row: filter_rows_by_journeys(row, journey_mappings), axis=1)
+    ]
+
+
+def get_journey_mappings(df: pd.DataFrame) -> dict:
+    return (
+        df.groupby(["file_id", "vehicle_journey_code"])["day_of_week"]
+        .unique()
+        .apply(list)
+        .to_dict()
+    )
+
+
+def filter_rows_by_journeys(row: pd.Series, journey_mapping: Dict) -> bool:
+    """Filter out row if the date is considered operational and doesnt need an explicit entry into th exceptions table as its operation is covered by the operating profile"""
     date_obj = row["exceptions_date"]
     if date_obj:
         day_of_week = date_obj.strftime("%A")
+        operational_days = journey_mapping[
+            (row["file_id"], row["vehicle_journey_code"])
+        ]
         if row["exceptions_operational"] == True:
-            return day_of_week not in journey_mapping[row["vehicle_journey_code"]]
-        return day_of_week in journey_mapping[row["vehicle_journey_code"]]
-    else:
-        return False
+            return day_of_week not in operational_days
+        return day_of_week in operational_days
+
+    return False
 
 
 def get_line_description_based_on_direction(row: pd.Series) -> str:
@@ -275,14 +257,14 @@ def get_vehicle_journey_codes_sorted(
 
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
-) -> pd.DataFrame:
+) -> Tuple[pd.DataFrame, Dict]:
     """
     Get the dataframe containing the list of stops and the timetable details
     with journey code as columns
     """
 
     if df_vehicle_journey_operating.empty:
-        return df_vehicle_journey_operating
+        return (df_vehicle_journey_operating, {})
 
     # Keep the relevant columns of dataframe and remove the duplicates
     columns_to_keep = [
@@ -294,6 +276,8 @@ def get_df_timetable_visualiser(
         "departure_day_shift",
         "start_time",
         "vehicle_journey_id",
+        "street",
+        "indicator",
     ]
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
@@ -308,7 +292,9 @@ def get_df_timetable_visualiser(
     df_sequence_time: pd.DataFrame = df_vehicle_journey_operating.sort_values(
         ["stop_sequence", "departure_time"]
     )
-    df_sequence_time = df_sequence_time[["stop_sequence", "common_name"]]
+    df_sequence_time = df_sequence_time[
+        ["stop_sequence", "common_name", "street", "indicator", "atco_code"]
+    ]
     df_sequence_time = df_sequence_time.drop_duplicates()
     df_sequence_time["key"] = df_sequence_time.apply(
         lambda row: f"{row['common_name']}_{row['stop_sequence']}",
@@ -316,6 +302,7 @@ def get_df_timetable_visualiser(
     )
     bus_stops = df_sequence_time["common_name"].tolist()
 
+    stops = {}
     # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
     for row in df_vehicle_journey_operating.to_dict("records"):
@@ -324,6 +311,13 @@ def get_df_timetable_visualiser(
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
+        stops[f"{row['common_name']}_{idx}"] = {
+            "atco_code": row["atco_code"],
+            "street": row["street"],
+            "indicator": row["indicator"],
+            "common_name": row["common_name"],
+            "stop_seq": row["stop_sequence"],
+        }
         record["Journey Code"] = bus_stops[idx]
         for (
             journey_code,
@@ -337,7 +331,7 @@ def get_df_timetable_visualiser(
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
 
-    return df_vehicle_journey_operating
+    return (df_vehicle_journey_operating, stops)
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
