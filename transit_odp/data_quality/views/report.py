@@ -40,17 +40,20 @@ class ReportOverviewView(DetailView):
 
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
-        return (
+        result = (
             super()
             .get_queryset()
             .add_number_of_lines()
             .filter(revision__dataset_id=dataset_id)
             .select_related("summary")
         )
+        print(result.query)
+        return result 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         report = self.get_object()
+        print(report)
         summary = Summary.from_report_summary(report.summary)
         rag = get_data_quality_rag(report)
         context.update(
@@ -61,6 +64,7 @@ class ReportOverviewView(DetailView):
                 "dq_score": rag,
             }
         )
+        print(context)
         return context
 
 

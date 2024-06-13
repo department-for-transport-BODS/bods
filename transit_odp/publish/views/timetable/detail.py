@@ -28,7 +28,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-        return (
+        query =  (
             super()
             .get_queryset()
             .filter(
@@ -41,17 +41,23 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
+        print(query.query)
+        return query
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
+        print("before adding report_id")
+        print(kwargs)
 
         dataset = self.object
+        print("dataset ", dataset)
         live_revision = dataset.live_revision
         report = live_revision.report.order_by("-created").first()
+        print("report ", report)
         summary = getattr(report, "summary", None)
 
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        kwargs["admin_areas"] = self.object.admin_area_names
+        # kwargs["admin_areas"] = self.object.admin_area_names
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
 
@@ -73,11 +79,14 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
 
+
         kwargs["report_id"] = report.id if summary else None
         kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
         kwargs["distinct_attributes"] = get_distinct_dataset_txc_attributes(
             live_revision.id
         )
+        print("after adding report_id")
+        print(kwargs)
 
         return kwargs
 

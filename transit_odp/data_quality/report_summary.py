@@ -7,7 +7,7 @@ from transit_odp.data_quality.models import DataQualityReportSummary
 
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
-    "An operator should aim to have zero critical observations in their data."
+    "An operator should aim to have zero critical observations in their data.!!"
 )
 ADVISORY_INTRO = (
     "These observations suggest there may be an error in the data. "
