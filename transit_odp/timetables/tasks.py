@@ -38,6 +38,7 @@ from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.utils import (
     get_bank_holidays,
     get_holidays_records_to_insert,
+    create_queue_payload,
 )
 from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
 from transit_odp.organisation.constants import TimetableType
