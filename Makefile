@@ -49,4 +49,33 @@ local-db-restore:
 	rm -rf db_backup.sql
 
 djlint:
-	djlint ./transit_odp --reformat
+	djlint ./transit_odp --reformat | sed 's/^/[$@]\t/'
+
+static:
+	webpack --config webpack/dev.js | sed 's/^/[$@]\t/'
+
+django:
+	python -m manage runserver 0.0.0.0:8001 | sed 's/^/[$@]\t/'
+
+beat:
+	celery -A transit_odp.taskapp beat -l INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler | sed 's/^/[$@]\t/'
+
+flower:
+	celery --app=transit_odp.taskapp --broker=\"redis://localhost:6379/0\" flower --basic_auth=\"admin:admin\" | sed 's/^/[$@]\t/'
+
+worker:
+	hupper -m celery -A transit_odp.taskapp worker --pool threads -l INFO | sed 's/^/[$@]\t/'
+
+redis:
+	redis-server | sed 's/^/[$@]\t/'
+
+mailhog:
+	mailhog | sed 's/^/[$@]\t/'
+
+migrate:
+	python -m manage migrate | sed 's/^/[$@]\t/'
+
+test:
+	pytest -vv --junitxml=junit_report.xml || [ $? = 1 ] | sed 's/^/[$@]\t/'
+
+serve: redis mailhog migrate django beat flower worker static
